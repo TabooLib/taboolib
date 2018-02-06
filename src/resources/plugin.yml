@@ -1,0 +1,17 @@
+
+name: TabooLib
+
+authors: [坏黑]
+website: http://www.15imc.com/index.html
+
+main: me.skymc.taboolib.Main
+
+version: {$VERSION}
+
+commands:
+  taboolib:
+    aliases: [tlib]
+    permission: taboolib.admin
+    
+loadbefore: [Vault]
+soft-depend: [PlaceholderAPI]

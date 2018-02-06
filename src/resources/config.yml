@@ -1,0 +1,58 @@
+# 权限不足时提示
+NO-PERMISSION-MESSAGE: '&f&l(&4&l？&f&l) &c你没有权利这么做'
+# 不满足条件时提示
+NO-CLAIM-MESSAGE: '&f&l(&4&l？&f&l) &c你现在还不能这么做 &7(%s%&7)'
+
+# 数据储存地址
+# 该配置将在启用数据库储存时失效
+DATAURL:
+  # 玩家数据
+  PLAYER-DATA: 'plugins/TabooLib/playerdata/'
+  # 插件数据
+  SERVER-DATA: 'plugins/TabooLib/serverdata/'
+  # 物品数据（来自 ItemSave 插件）
+  ITEMDIR: 'plugins/Skript/scripts/config/item.yml'
+  
+# 是否启用调试模式
+# 启用后将收到来自其他插件的调试信息
+DEBUG: false
+
+# 是否在关闭服务器时清理玩家数据
+# 该配置将在启用数据库储存时失效
+DELETE-DATA: false
+
+# 是否在服务器关闭时清理无效变量
+# 该配置仅在启用数据库储存时有效
+# 该方法可能会导致数据丢失? 
+# 不建议开启
+DELETE-VARIABLE: false
+
+# 是否以 UUID 的形式创建玩家数据
+# 不建议开启！除非用 TabooLib 储存的插件支持新版储存方式！
+ENABLE-UUID: false
+
+# 是否隐藏保存数据的提示
+HIDE-NOTIFY: false
+
+# 数据库信息
+MYSQL:
+  # 是否启用数据库
+  ENABLE: false
+  # 数据库地址
+  HOST: 'localhost'
+  # 数据库端口
+  PORT: 3306
+  # 数据库用户
+  USER: root
+  # 数据库密码
+  PASSWORD: ''
+  # 数据库名称
+  DATABASE: 'test'
+  # 数据表前缀
+  PREFIX: 'taboolib'
+  
+# 全局变量信息
+PluginData:
+  # 检查更新间隔（单位：秒）
+  # 检查变量是否被其他服务器更新
+  CHECK-DELAY: 30

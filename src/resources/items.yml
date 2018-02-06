@@ -1,0 +1,51 @@
+UnlimitSword:
+  material: DIAMOND_SWORD
+  name: '&b&nUnlimitSword'
+  lore:
+  - ''
+  - '&8&oAn sword of infinitely durable'
+  - '&8&oAnd hide attributes lore'
+  - ''
+  flags:
+  - HIDE_ATTRIBUTES
+  nbt:
+    Unbreakable: 1
+ 
+ColorLeather:
+  material: LEATHER_CHESTPLATE
+  name: '&aLe&2at&3he&4r C&5he&6st&7pl&8at&9e'
+  lore:
+  - ''
+  - '&8&oA chestplate of colored'
+  - '&8&oAnd enchanted with &7DURABILITY I'
+  - ''
+  enchants:
+    DURABILITY: 1
+  color: 255-0-0
+  
+SpeedPotion:
+  material: POTION
+  name: '&1&nSpeed Potion'
+  lore:
+  - ''
+  - '&8&oA potion of &7SPEED I'
+  - '&8&oAnd not have Particles'
+  - ''
+  potions:
+    SPEED: 200-5
+
+KingsAxe:
+  material: GOLD_AXE
+  name: '&e&nKingsAxe'
+  lore:
+  - ''
+  - '&6&o100 damage !!!'
+  - '&6&o30% speed !!!'
+  - ''
+  - '&e&oA knife a pupil !!!'
+  - ''
+  attributes:
+    mainhand:
+      damage: 100
+      speed: 30%
+  
