@@ -316,18 +316,33 @@ public class GlobalDataManager {
 				
 				@Override
 				public void run() {
-					for (String name : variables.keySet()) {
-						// 获取数据
-						HashMap<String, Object> value = Main.getConnection().getValueLast(Main.getTablePrefix() + "_plugindata", "name", name, "variable", "upgrade");
+					/**
+					 * 根据正序排列获取所有变量
+					 * 新的变量会覆盖旧的变量
+					 */
+					LinkedList<HashMap<String, Object>> list = Main.getConnection().getValues(Main.getTablePrefix() + "_plugindata", "id", -1, false, "name", "variable", "upgrade");
+					// 循环变量
+					for (HashMap<String, Object> value : list) {
+						Object name = value.get("name");
 						try {
-							// 检查更新服务器的名称是与本服不同
-							if (!value.get("upgrade").toString().equals(variables.get(name).getUpgradeUID())) {
-								if (value.get("variable").toString().equals("null")) {
-									variables.remove(name);
+							// 如果变量存在
+							if (variables.containsKey(name)) {
+								// 如果变量不是由本服更新
+								if (!value.get("upgrade").equals(variables.get(name).getUpgradeUID())) {
+									// 如果变量是空
+									if (value.get("variable").equals("null")) {
+										// 删除变量
+										variables.remove(name);
+									}
+									else {
+										// 更新变量
+										variables.get(name).setVariable(value.get("variable").toString());
+									}
 								}
-								else {
-									variables.get(name).setVariable(value.get("variable").toString());
-								}
+							}
+							// 如果变量存在则下载到本地
+							else if (!value.get("variable").equals("null")) {
+								variables.put(value.get("name").toString(), new SQLVariable(value.get("name").toString(), value.get("variable").toString(), value.get("upgrade").toString()));
 							}
 						}
 						catch (Exception e) {
