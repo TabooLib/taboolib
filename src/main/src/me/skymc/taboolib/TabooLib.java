@@ -67,7 +67,7 @@ public class TabooLib {
 			return 10800;
 		}
 		else if (getVersion().startsWith("v1_9")) {
-			return 10800;
+			return 10900;
 		}
 		else if (getVersion().startsWith("v1_10")) {
 			return 11000;

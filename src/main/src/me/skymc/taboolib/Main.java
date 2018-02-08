@@ -25,6 +25,7 @@ import com.google.common.base.Charsets;
 import lombok.Getter;
 import lombok.Setter;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
+import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.client.LogClient;
 import me.skymc.taboolib.commands.MainCommands;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
@@ -105,6 +106,9 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
     public void onLoad() {
     	inst = this; disable = false;
+    	
+    	// 启动监控
+    	new Metrics(this);
     	
     	// 载入配置
 		saveDefaultConfig();
