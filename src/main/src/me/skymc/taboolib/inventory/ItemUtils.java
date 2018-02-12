@@ -93,7 +93,7 @@ public class ItemUtils {
 	}
 	
 	public static void loadItemsFile(File file, boolean finalFile) {
-		YamlConfiguration conf = ConfigUtils.load(Main.getInst(), file);
+		FileConfiguration conf = ConfigUtils.load(Main.getInst(), file);
 		for (String name : conf.getConfigurationSection("").getKeys(false)) {
 			if (isExists(name)) {
 				MsgUtils.warn("无法载入载入物品 &4" + name + "&c, 因为它已经存在了");
