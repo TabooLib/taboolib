@@ -11,6 +11,7 @@ public class PlayerLoadedEvent extends Event {
 	private Player player;
   
 	public PlayerLoadedEvent(Player player) {
+		super(true);
 		this.player = player;
 	}
   
