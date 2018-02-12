@@ -11,6 +11,7 @@ import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
 import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
+import me.skymc.taboolib.jsonformatter.hover.ShowItemEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
 import me.skymc.taboolib.message.MsgUtils;
 
@@ -36,6 +37,8 @@ public class InfoCommand extends SubCommand {
 				json.append("§7 - 物品名称: §f"); json.appendHoverClick("§f" + ItemUtils.getCustomName(player.getItemInHand()), new ShowTextEvent("§f点击复制"), new SuggestCommandEvent(ItemUtils.getCustomName(player.getItemInHand()).replace("§", "&")));
 				json.newLine();
 				json.append("§7 - 物品序号: §f" + player.getItemInHand().getTypeId() + ":" + player.getItemInHand().getDurability());
+				json.newLine();
+				json.append("§7 - 物品展示: §f"); json.appendHover(ItemUtils.getCustomName(player.getItemInHand()), new ShowItemEvent(player.getItemInHand()));
 				json.send(player);
 				
 				NBTItem nbt = new NBTItem(((Player) sender).getItemInHand());
