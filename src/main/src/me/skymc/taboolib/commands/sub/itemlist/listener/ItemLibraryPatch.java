@@ -31,7 +31,7 @@ public class ItemLibraryPatch implements Listener {
 		if (e.getInventory().getHolder() instanceof ItemLibraryHolder) {
 			e.setCancelled(true);
 			
-			if (e.getCurrentItem() == null) {
+			if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR)) {
 				return;
 			}
 			

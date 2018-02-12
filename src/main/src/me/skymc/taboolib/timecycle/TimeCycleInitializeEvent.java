@@ -1,5 +1,6 @@
 package me.skymc.taboolib.timecycle;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -13,6 +14,11 @@ public class TimeCycleInitializeEvent extends Event {
 		super(true);
 		this.cycle = cycle;
 		this.time = time;
+	}
+	
+	public TimeCycleInitializeEvent call() {
+		Bukkit.getPluginManager().callEvent(this);
+		return this;
 	}
 	
 	public Long getTimeline() {

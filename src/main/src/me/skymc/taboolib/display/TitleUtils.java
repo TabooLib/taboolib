@@ -36,6 +36,10 @@ public class TitleUtils {
         return null;
     }
     
+    public static void sendTitle(Player p, String title, String subtitle, int fadein, int stay, int fadeout) {
+    	sendTitle(p, title, fadein, stay, fadeout, subtitle, fadein, stay, fadeout);
+    }
+    
     public static void sendTitle(Player p, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst)
     {
         if (title == null) {

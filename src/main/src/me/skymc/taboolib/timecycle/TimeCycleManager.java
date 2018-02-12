@@ -144,19 +144,22 @@ public class TimeCycleManager {
 				for (TimeCycle cycle : cycles.values()) {
 					// 调度器没有被执行过
 					if (!GlobalDataManager.contains("timecycle:" + cycle.getName())) {
-						long time = System.currentTimeMillis();
-						// 触发器
-						TimeCycleInitializeEvent event1 = new TimeCycleInitializeEvent(cycle, time);
-						Bukkit.getPluginManager().callEvent(event1);
+						long time = new TimeCycleInitializeEvent(cycle, System.currentTimeMillis()).call().getTimeline();
 						// 初始化
-						GlobalDataManager.setVariable("timecycle:" + cycle.getName(), event1.getTimeline().toString());
+						GlobalDataManager.setVariable("timecycle:" + cycle.getName(), String.valueOf(time));
 						// 触发器
 						Bukkit.getPluginManager().callEvent(new TimeCycleEvent(cycle));
 					}
-					// 可执行
-					else if (System.currentTimeMillis() - getAfterTimeline(cycle.getName()) >= cycle.getCycle()) {
+					// 如果超出刷新时间
+					else if (System.currentTimeMillis() >= getAfterTimeline(cycle.getName())) {
+						long time = System.currentTimeMillis();
+						// 如果时间差大于 30 秒
+						if (time - getAfterTimeline(cycle.getName()) > 30000) {
+							// 初始化
+							time = new TimeCycleInitializeEvent(cycle, time).call().getTimeline();
+						}
 						// 重置
-						GlobalDataManager.setVariable("timecycle:" + cycle.getName(), String.valueOf(System.currentTimeMillis()));
+						GlobalDataManager.setVariable("timecycle:" + cycle.getName(), String.valueOf(time));
 						// 触发器
 						Bukkit.getPluginManager().callEvent(new TimeCycleEvent(cycle));
 					}

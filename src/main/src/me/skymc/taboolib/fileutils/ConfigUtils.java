@@ -28,13 +28,30 @@ public class ConfigUtils {
 	}
 	
 	/**
+	 * 以 UTF-8 的格式释放配置文件并载入
+	 * 
+	 * 录入时间：2018年2月10日21:28:30
+	 * 录入版本：3.49
+	 * 
+	 * @param plugin
+	 * @return
+	 */
+	public static FileConfiguration saveDefaultConfig(Plugin plugin, String name) {
+		File file = new File(plugin.getDataFolder(), name);
+		if (!file.exists()) {
+			plugin.saveResource(name, true);
+		}
+		return load(plugin, file);
+	}
+	
+	/**
 	 * 以 UTF-8 的格式载入配置文件
 	 * 
 	 * @param main
 	 * @param filename
 	 * @return
 	 */
-	public static YamlConfiguration load(Plugin plugin, File file) {
+	public static FileConfiguration load(Plugin plugin, File file) {
 		YamlConfiguration yaml = new YamlConfiguration();
 		try {
 			yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
@@ -47,7 +64,7 @@ public class ConfigUtils {
 	}
 	
 	@Deprecated
-	public static YamlConfiguration load(Plugin plugin, String file) {
+	public static FileConfiguration load(Plugin plugin, String file) {
 		return load(plugin, FileUtils.file(file));
 	}
 }
