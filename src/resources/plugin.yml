@@ -12,6 +12,9 @@ commands:
   taboolib:
     aliases: [tlib]
     permission: taboolib.admin
+  language2:
+    aliases: [lang2]
+    permission: taboolib.admin
     
 loadbefore: [Vault]
 soft-depend: [PlaceholderAPI]
