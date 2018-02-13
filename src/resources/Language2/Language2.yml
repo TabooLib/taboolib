@@ -1,0 +1,66 @@
+# UTF-8
+
+# 错误代码：
+#   0：语言文件不存在
+#   1：语言文本不存在
+#   10: 大标题语言类型识别异常
+#   11: 动作栏语言类型识别异常
+#   12: 动作栏重复次数异常
+#   20: JSON 空文本异常
+#   21: JSON 语言类型识别异常
+#   30: 大标题不兼容当前版本服务器
+#   31: 动作栏不兼容当前版本服务器
+
+# 正常提示
+TEXT: '&f正常的提示'
+
+# JSON提示 + 占位符
+# 占位符注释可以追加到任何类型之后
+PAPI-TEXT:
+- '[json][papi]'
+- '&f变量提示, 玩家名称: %player_name%'
+
+# JSON提示
+JSON-NORMAL-TEXT:
+- '[json]'
+- '提示信息 - 1'
+- '    text: 这是一个一般提示'
+
+# JSON提示
+JSON-COMMAND-TEXT:
+- '[json]'
+- '提示信息 - 2'
+- '    text: 点击执行指令'
+- '    command: /say %player% 牛逼'
+
+# JSON提示
+JSON-SUGGEST-TEXT:
+- '[json]'
+- '提示信息 - 3'
+- '    text: 点击打印指令'
+- '    suggest: /say %player% 牛逼'
+
+# JSON提示
+# [breka] 注释为 JSON 提示类型中的换行符
+JSON-MULTILINE-TEXT:
+- '[json]'
+- '提示信息 - 4'
+- '    text: 这是一段换行提示1'
+- '&a (单行追加内容)'
+- '[break]'
+- '提示信息 - 6'
+- '    text: 这是一段换行提示3'
+- '&a (单行追加内容)'
+
+# 大标题提示
+TITLE-TEXT:
+- '[title]'
+- '    title: 大标题'
+- '    subtitle: 小标题'
+- '    stay: 10|40|10'
+
+# 动作栏提示
+ACTION-TEXT:
+- '[action]'
+- '    text: 动作栏提示'
+- '    repeat: 10'

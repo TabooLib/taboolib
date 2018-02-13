@@ -28,6 +28,7 @@ import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.client.LogClient;
 import me.skymc.taboolib.commands.MainCommands;
+import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.database.GlobalDataManager;
@@ -45,6 +46,7 @@ import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.sign.SignUtils;
 import me.skymc.taboolib.string.StringUtils;
+import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
@@ -80,6 +82,8 @@ public class Main extends JavaPlugin implements Listener {
     private FileConfiguration config = null;
     @Getter
     private static LogClient client;
+    @Getter
+    private static Language2 exampleLangauge2;
     
     public static Random getRandom() {
 		return NumberUtils.getRand();
@@ -163,6 +167,7 @@ public class Main extends JavaPlugin implements Listener {
 	public void onEnable() {
 		// 注册指令
 		getCommand("taboolib").setExecutor(new MainCommands());
+		getCommand("language2").setExecutor(new Language2Command());
 		
 		// 注册监听
 		registerListener();
@@ -178,6 +183,8 @@ public class Main extends JavaPlugin implements Listener {
 		TimeCycleManager.load();
 		// 启动脚本
 		JavaShell.javaShellSetup();
+		// 载入语言文件
+		exampleLangauge2 = new Language2("Language2", this);
 		
 		// 启动数据库储存方法
 		if (getStorageType() == StorageType.SQL) {

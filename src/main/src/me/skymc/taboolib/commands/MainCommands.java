@@ -56,56 +56,54 @@ public class MainCommands implements CommandExecutor{
 			sender.sendMessage("§f");
 			sender.sendMessage("§c /taboolib importdata §f- §4向数据库导入本地数据 §8(该操作将会清空数据库)");
 			sender.sendMessage("§f");
-			return false;
 		}
 		else if (args[0].equalsIgnoreCase("itemreload") || args[0].equalsIgnoreCase("ireload")) {
 			ItemUtils.reloadItemCache();
 			ItemUtils.reloadItemName();
 			MsgUtils.send(sender, "重载成功");
-			return true;
 		}
 		else if (args[0].equalsIgnoreCase("save")) {
-			return new SaveCommand(sender, args).command();
+			new SaveCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("enchants")) {
-			return new EnchantCommand(sender, args).command();
+			new EnchantCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("potions")) {
-			return new PotionCommand(sender, args).command();
+			new PotionCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("flags")) {
-			return new FlagCommand(sender, args).command();
+			new FlagCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("attributes")) {
-			return new AttributesCommand(sender, args).command();
+			new AttributesCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("slots")) {
-			return new SlotCommand(sender, args).command();
+			new SlotCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("importdata")) {
-			return new ImportCommand(sender, args).command();
+			new ImportCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("iteminfo")) {
-			return new InfoCommand(sender, args).command();
+			new InfoCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("itemlist")) {
-			return new ItemListCommand(sender, args).command();
+			new ItemListCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("item") || args[0].equalsIgnoreCase("i")) {
-			return new ItemCommand(sender, args).command();
+			new ItemCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("setvariable")) {
-			return new VariableSetCommand(sender, args).command();
+			new VariableSetCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("getvariable")) {
-			return new VariableGetCommand(sender, args).command();
+			new VariableGetCommand(sender, args);
 		}
 		else if (args[0].equalsIgnoreCase("shell") || args[0].equalsIgnoreCase("s")) {
-			return new ShellCommand(sender, args).command();
+			new ShellCommand(sender, args);
 		}
 		else {
 			MsgUtils.send(sender, "&4指令错误");
 		}
-		return false;
+		return true;
 	}
 }
