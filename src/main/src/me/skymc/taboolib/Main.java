@@ -36,6 +36,7 @@ import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.entity.EntityUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.javashell.JavaShell;
 import me.skymc.taboolib.listener.ListenerPlayerCommand;
 import me.skymc.taboolib.listener.ListenerPlayerQuit;
@@ -50,6 +51,9 @@ import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
+import me.skymc.tlm.TLM;
+import me.skymc.tlm.command.TLMCommands;
+import me.skymc.tlm.module.TabooLibraryModule;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
@@ -168,6 +172,7 @@ public class Main extends JavaPlugin implements Listener {
 		// 注册指令
 		getCommand("taboolib").setExecutor(new MainCommands());
 		getCommand("language2").setExecutor(new Language2Command());
+		getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
 		
 		// 注册监听
 		registerListener();
@@ -209,6 +214,10 @@ public class Main extends JavaPlugin implements Listener {
 				if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 					new SupportPlaceholder(getInst(), "taboolib").hook();
 				}
+				// 载入 SpecialItem 接口
+				SpecialItem.getInst().loadItems();
+				// 载入 TLM 接口
+				TLM.getInst();
 			}
 		}.runTask(this);
 	}
@@ -227,6 +236,10 @@ public class Main extends JavaPlugin implements Listener {
 		PlayerDataManager.saveAllPlayers(false, true);
 		// 结束脚本
 		JavaShell.javaShellCancel();
+		// 注销 SpecialItem 接口
+		SpecialItem.getInst().unloadItems();
+		// 注销 TLM 接口
+		TabooLibraryModule.getInst().unloadModules();
 		
 		// 结束数据库储存方法
 		if (getStorageType() == StorageType.SQL) {

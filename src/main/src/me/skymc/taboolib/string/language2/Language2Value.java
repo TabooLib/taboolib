@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
@@ -38,7 +40,7 @@ public class Language2Value {
 	private LinkedHashMap<String, String> placeholder = new LinkedHashMap<>();
 	
 	@Getter
-	private boolean enablePlaceholderAPI;
+	private boolean enablePlaceholderAPI = false;
 	
 	/**
 	 * 构造方法
@@ -63,6 +65,14 @@ public class Language2Value {
 			// 获取类型
 			String type = languageValue.get(0).toLowerCase();
 			
+			// 是否有类型注释
+			boolean isType = true;
+			
+			// 是否启用PAPI
+			if (type.contains("[papi]")) {
+				enablePlaceholderAPI = true;
+			}
+			
 			// 判断类型
 			if (type.contains("[json]")) {
 				languageType = Language2Type.JSON;
@@ -75,18 +85,13 @@ public class Language2Value {
 			}
 			else {
 				languageType = Language2Type.TEXT;
+				isType = false;
 			}
 			
-			// 是否启用PAPI
-			if (type.contains("[papi]")) {
-				enablePlaceholderAPI = true;
+			// 是否需要删除类型注释
+			if (isType) {
+				languageValue.remove(0);
 			}
-			else {
-				enablePlaceholderAPI = false;
-			}
-
-			// 删除类型
-			languageValue.remove(0);
 		}
 		else {
 			// 设置文本
@@ -108,24 +113,18 @@ public class Language2Value {
 	public void send(Player player) {
 		// 标题类型
 		if (languageType == Language2Type.TITLE) {
-			// 识别文本
-			Language2Title title = new Language2Title(this);
 			// 发送文本
-			title.send(player);
+			new Language2Title(this).send(player);
 		}
 		// 动作栏类型
 		else if (languageType == Language2Type.ACTION) {
-			// 识别文本
-			Language2Action action = new Language2Action(this);
 			// 发送文本
-			action.send(player);
+			new Language2Action(this).send(player);
 		}
 		// JSON类型
 		else if (languageType == Language2Type.JSON) {
-			// 识别文本
-			Language2Json json = new Language2Json(this, player);
 			// 发送文本
-			json.send(player);
+			new Language2Json(this, player).send(player);
 		}
 		else {
 			// 遍历文本
@@ -183,6 +182,29 @@ public class Language2Value {
 					}
 				}
 			}
+		}
+	}
+	
+	/**
+	 * 获取文本
+	 * 
+	 * @return
+	 */
+	public String asString() {
+		// 标题类型
+		if (languageType == Language2Type.TITLE) {
+			return new Language2Title(this).getTitle();
+		}
+		// 动作栏类型
+		else if (languageType == Language2Type.ACTION) {
+			return new Language2Action(this).getText();
+		}
+		// JSON类型
+		else if (languageType == Language2Type.JSON) {
+			return new Language2Json(this, null).getText().toString();
+		}
+		else {
+			return languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : languageValue.get(0);
 		}
 	}
 	
