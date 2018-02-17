@@ -188,6 +188,10 @@ public class ItemUtils {
         return i;
     }
     
+    public static boolean isNull(ItemStack item) {
+    	return item == null || item.getType().equals(Material.AIR);
+    }
+    
     public static boolean isName(ItemStack i, String a) {
         if (!isNamed(i) || i.getItemMeta() == null || i.getItemMeta().getDisplayName() == null || !i.getItemMeta().getDisplayName().equals(a)) {
             return false;

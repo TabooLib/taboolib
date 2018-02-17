@@ -1,0 +1,35 @@
+# 时间检查器
+TimeCycle:
+  # 检查器名称
+  cycle_name:
+    # 检查器周期
+    # ---------- #
+    # 1d = 1天
+    # 1h = 1小时
+    # 1m = 1分钟
+    # 1s = 1秒钟
+    # 时间之间用 ";" 分隔, 例如 1小时30分钟 = "1h;30m"
+    # ---------- #
+    Cycle: '1d'
+      
+    # 更新配置
+    UpdateCommand:
+    - 'say 检查器 cycle_name 更新!'
+    
+    # 初始化配置
+    Initialise:
+      # 初始化时间
+      # 特殊时间
+      # - DAY_OF_WEEK  = 本周第几天 (最小：1)
+      # - DAY_OF_MONTH = 本月第几天 (最小：1)
+      InitialiseDate:
+      # 初始化时将小时设置为 0
+      - 'HOUR_OF_DAY=0'
+      # 初始化时将分钟设置为 0
+      - 'MINUTE=0'
+      # 初始化时将秒钟设置为 0
+      - 'SECOND=0'
+      
+      # 初始化命令
+      InitialiseCommand:
+      - 'say 检查器 cycle_name 初始化完成!'
