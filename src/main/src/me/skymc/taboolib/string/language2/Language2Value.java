@@ -218,7 +218,7 @@ public class Language2Value {
 			return new Language2Json(this, null).getText().toString();
 		}
 		else {
-			return languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : languageValue.get(0);
+			return languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null);
 		}
 	}
 	

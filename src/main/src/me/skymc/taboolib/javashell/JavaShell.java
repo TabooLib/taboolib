@@ -70,7 +70,6 @@ public class JavaShell {
 		
 		javaShellFolder = new File(Main.getInst().getDataFolder(), "JavaShells");
 		if (!javaShellFolder.exists()) {
-			Main.getInst().saveResource("JavaShells/lib/com.sun.tools.jar", true);
 			Main.getInst().saveResource("JavaShells/scripts/-testshell.java", true);
 		}
 		
@@ -87,6 +86,12 @@ public class JavaShell {
 		libFolder = new File(javaShellFolder, "lib");
 		if (!libFolder.exists()) {
 			libFolder.mkdir();
+		}
+		
+		File tools = new File(Main.getInst().getDataFolder(), "JavaShells/lib/com.sun.tools.jar");
+		if (!tools.exists()) {
+			MsgUtils.warn("&4JavaShell &c工具的必要依赖 &4com.sun.tools.jar &c不存在, 功能关闭!");
+			return;
 		}
 		
 		loadLibrary();
