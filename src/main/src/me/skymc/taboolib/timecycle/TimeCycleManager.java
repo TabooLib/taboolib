@@ -135,6 +135,8 @@ public class TimeCycleManager {
 		return 0L;
 	}
 	
+	
+	
 	public static void load() {
 		// ×¢²áµ÷¶ÈÆ÷
 		new BukkitRunnable() {

@@ -64,7 +64,7 @@ public class ModuleTimeCycle implements ITabooLibraryModule, Listener {
 						int type = (int) Calendar.class.getField(typeStr.split("=")[0]).get(Calendar.class);
 						date.set(type, NumberUtils.getInteger(typeStr.split("=")[1]));
 					} catch (Exception err) {
-						MsgUtils.warn("模块配置载入异常");
+						MsgUtils.warn("模块配置载入异常: &4日期类型错误");
 						MsgUtils.warn("模块: &4TimeCycle");
 						MsgUtils.warn("位于: &4" + typeStr);
 					}

@@ -21,10 +21,10 @@ public class Language2Command implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
 			sender.sendMessage("§f");
-			sender.sendMessage("§b§l----- §3§lTabooLib Commands §b§l-----");
+			sender.sendMessage("§b§l----- §3§lLanguage2 Commands §b§l-----");
 			sender.sendMessage("§f");
-			sender.sendMessage("§7 /language2 reload §f- §8重载语言库");
-			sender.sendMessage("§7 /language2 send [玩家] [语言] <变量> §f- §8发送语言提示");
+			sender.sendMessage("§f /language2 send §8[§7玩家§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示");
+			sender.sendMessage("§f /language2 reload §6- §e重载语言库");
 			sender.sendMessage("§f");
 		}
 		else if (args[0].equalsIgnoreCase("reload")) {
