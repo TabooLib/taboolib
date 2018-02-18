@@ -186,6 +186,20 @@ public class Language2Value {
 	}
 	
 	/**
+	 * 向指令发送者发送信息
+	 * 
+	 * @param sender
+	 */
+	public void send(CommandSender sender) {
+		if (sender instanceof Player) {
+			send((Player) sender);
+		}
+		else {
+			send(Bukkit.getPlayerExact(""));
+		}
+	}
+	
+	/**
 	 * 获取文本
 	 * 
 	 * @return
