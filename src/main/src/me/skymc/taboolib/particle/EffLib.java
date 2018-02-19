@@ -389,22 +389,22 @@ public enum EffLib {
 	/**
 	 * ¡˙œ¢
 	 */
-    DRAGON_BREATH("dragonbreath", 42, 9, new ParticleProperty[0]),
+    DRAGON_BREATH("dragonbreath", 42, 9),
     
     /**
      * ƒ©µÿ÷Ú
      */
-    END_ROD("endrod", 43, 9, new ParticleProperty[0]),
+    END_ROD("endrod", 43, 9),
     
     /**
      * …À∫¶
      */
-    DAMAGE_INDICATOR("damageIndicator", 44, 9, new ParticleProperty[0]),
+    DAMAGE_INDICATOR("damageIndicator", 44, 9),
     
     /**
      * ª”ø≥
      */
-    SWEEP_ATTACK("sweepAttack", 45, 9, new ParticleProperty[0]);
+    SWEEP_ATTACK("sweepAttack", 45, 9);
 
 	private static final Map<String, EffLib> NAME_MAP = new HashMap<String, EffLib>();
 	private static final Map<Integer, EffLib> ID_MAP = new HashMap<Integer, EffLib>();
@@ -1426,7 +1426,7 @@ public enum EffLib {
 				return;
 			}
 			try {
-				version = Integer.parseInt(Character.toString(PackageType.getServerVersion().charAt(3)));
+				version = Integer.valueOf(PackageType.getServerVersion().split("_")[1]);
 				if (version > 7) {
 					enumParticle = PackageType.MINECRAFT_SERVER.getClass("EnumParticle");
 				}
