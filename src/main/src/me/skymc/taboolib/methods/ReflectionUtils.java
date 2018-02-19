@@ -6,311 +6,601 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.bukkit.Bukkit;
 
 /**
- * 来自项目 ParticleEffect
+ * <b>ReflectionUtils</b>
+ * <p>
+ * This class provides useful methods which makes dealing with reflection much easier, especially when working with Bukkit
+ * <p>
+ * You are welcome to use it, modify it and redistribute it under the following conditions:
+ * <ul>
+ * <li>Don't claim this class as your own
+ * <li>Don't remove this disclaimer
+ * </ul>
+ * <p>
+ * <i>It would be nice if you provide credit to me if you use this class in a published project</i>
+ * 
+ * @author DarkBlade12
+ * @version 1.1
  */
 public final class ReflectionUtils {
-	
-	public static Object invokeMethodByClass(Object ownder, String methodName, Object... args) {
-		try {
-			Class<?> ownderClass = ownder.getClass();
-			Class<?>[] argsClass = new Class[args.length];
-			
-			for (int i = 0 ; i < args.length ; i++) {
-				argsClass[i] = args[i].getClass();
+	// Prevent accidental construction
+	private ReflectionUtils() {}
+
+	/**
+	 * Returns the constructor of a given class with the given parameter types
+	 * 
+	 * @param clazz Target class
+	 * @param parameterTypes Parameter types of the desired constructor
+	 * @return The constructor of the target class with the specified parameter types
+	 * @throws NoSuchMethodException If the desired constructor with the specified parameter types cannot be found
+	 * @see DataType
+	 * @see DataType#getPrimitive(Class[])
+	 * @see DataType#compare(Class[], Class[])
+	 */
+	public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... parameterTypes) throws NoSuchMethodException {
+		Class<?>[] primitiveTypes = DataType.getPrimitive(parameterTypes);
+		for (Constructor<?> constructor : clazz.getConstructors()) {
+			if (!DataType.compare(DataType.getPrimitive(constructor.getParameterTypes()), primitiveTypes)) {
+				continue;
 			}
-			
-			Method method = ownderClass.getMethod(methodName, argsClass);
-			return method.invoke(ownder, args);
+			return constructor;
 		}
-		catch (Exception e) {
-			return null;
+		throw new NoSuchMethodException("There is no such constructor in this class with the specified parameter types");
+	}
+
+	/**
+	 * Returns the constructor of a desired class with the given parameter types
+	 * 
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param parameterTypes Parameter types of the desired constructor
+	 * @return The constructor of the desired target class with the specified parameter types
+	 * @throws NoSuchMethodException If the desired constructor with the specified parameter types cannot be found
+	 * @throws ClassNotFoundException ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getClass(String, PackageType)
+	 * @see #getConstructor(Class, Class...)
+	 */
+	public static Constructor<?> getConstructor(String className, PackageType packageType, Class<?>... parameterTypes) throws NoSuchMethodException, ClassNotFoundException {
+		return getConstructor(packageType.getClass(className), parameterTypes);
+	}
+
+	/**
+	 * Returns an instance of a class with the given arguments
+	 * 
+	 * @param clazz Target class
+	 * @param arguments Arguments which are used to construct an object of the target class
+	 * @return The instance of the target class with the specified arguments
+	 * @throws InstantiationException If you cannot create an instance of the target class due to certain circumstances
+	 * @throws IllegalAccessException If the desired constructor cannot be accessed due to certain circumstances
+	 * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the constructor (this should not occur since it searches for a constructor with the types of the arguments)
+	 * @throws InvocationTargetException If the desired constructor cannot be invoked
+	 * @throws NoSuchMethodException If the desired constructor with the specified arguments cannot be found
+	 */
+	public static Object instantiateObject(Class<?> clazz, Object... arguments) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+		return getConstructor(clazz, DataType.getPrimitive(arguments)).newInstance(arguments);
+	}
+
+	/**
+	 * Returns an instance of a desired class with the given arguments
+	 * 
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param arguments Arguments which are used to construct an object of the desired target class
+	 * @return The instance of the desired target class with the specified arguments
+	 * @throws InstantiationException If you cannot create an instance of the desired target class due to certain circumstances
+	 * @throws IllegalAccessException If the desired constructor cannot be accessed due to certain circumstances
+	 * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the constructor (this should not occur since it searches for a constructor with the types of the arguments)
+	 * @throws InvocationTargetException If the desired constructor cannot be invoked
+	 * @throws NoSuchMethodException If the desired constructor with the specified arguments cannot be found
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getClass(String, PackageType)
+	 * @see #instantiateObject(Class, Object...)
+	 */
+	public static Object instantiateObject(String className, PackageType packageType, Object... arguments) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+		return instantiateObject(packageType.getClass(className), arguments);
+	}
+
+	/**
+	 * Returns a method of a class with the given parameter types
+	 * 
+	 * @param clazz Target class
+	 * @param methodName Name of the desired method
+	 * @param parameterTypes Parameter types of the desired method
+	 * @return The method of the target class with the specified name and parameter types
+	 * @throws NoSuchMethodException If the desired method of the target class with the specified name and parameter types cannot be found
+	 * @see DataType#getPrimitive(Class[])
+	 * @see DataType#compare(Class[], Class[])
+	 */
+	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
+		Class<?>[] primitiveTypes = DataType.getPrimitive(parameterTypes);
+		for (Method method : clazz.getMethods()) {
+			if (!method.getName().equals(methodName) || !DataType.compare(DataType.getPrimitive(method.getParameterTypes()), primitiveTypes)) {
+				continue;
+			}
+			return method;
+		}
+		throw new NoSuchMethodException("There is no such method in this class with the specified name and parameter types");
+	}
+
+	/**
+	 * Returns a method of a desired class with the given parameter types
+	 * 
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param methodName Name of the desired method
+	 * @param parameterTypes Parameter types of the desired method
+	 * @return The method of the desired target class with the specified name and parameter types
+	 * @throws NoSuchMethodException If the desired method of the desired target class with the specified name and parameter types cannot be found
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getClass(String, PackageType)
+	 * @see #getMethod(Class, String, Class...)
+	 */
+	public static Method getMethod(String className, PackageType packageType, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException, ClassNotFoundException {
+		return getMethod(packageType.getClass(className), methodName, parameterTypes);
+	}
+
+	/**
+	 * Invokes a method on an object with the given arguments
+	 * 
+	 * @param instance Target object
+	 * @param methodName Name of the desired method
+	 * @param arguments Arguments which are used to invoke the desired method
+	 * @return The result of invoking the desired method on the target object
+	 * @throws IllegalAccessException If the desired method cannot be accessed due to certain circumstances
+	 * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the method (this should not occur since it searches for a method with the types of the arguments)
+	 * @throws InvocationTargetException If the desired method cannot be invoked on the target object
+	 * @throws NoSuchMethodException If the desired method of the class of the target object with the specified name and arguments cannot be found
+	 * @see #getMethod(Class, String, Class...)
+	 * @see DataType#getPrimitive(Object[])
+	 */
+	public static Object invokeMethod(Object instance, String methodName, Object... arguments) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+		return getMethod(instance.getClass(), methodName, DataType.getPrimitive(arguments)).invoke(instance, arguments);
+	}
+
+	/**
+	 * Invokes a method of the target class on an object with the given arguments
+	 * 
+	 * @param instance Target object
+	 * @param clazz Target class
+	 * @param methodName Name of the desired method
+	 * @param arguments Arguments which are used to invoke the desired method
+	 * @return The result of invoking the desired method on the target object
+	 * @throws IllegalAccessException If the desired method cannot be accessed due to certain circumstances
+	 * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the method (this should not occur since it searches for a method with the types of the arguments)
+	 * @throws InvocationTargetException If the desired method cannot be invoked on the target object
+	 * @throws NoSuchMethodException If the desired method of the target class with the specified name and arguments cannot be found
+	 * @see #getMethod(Class, String, Class...)
+	 * @see DataType#getPrimitive(Object[])
+	 */
+	public static Object invokeMethod(Object instance, Class<?> clazz, String methodName, Object... arguments) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+		return getMethod(clazz, methodName, DataType.getPrimitive(arguments)).invoke(instance, arguments);
+	}
+
+	/**
+	 * Invokes a method of a desired class on an object with the given arguments
+	 * 
+	 * @param instance Target object
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param methodName Name of the desired method
+	 * @param arguments Arguments which are used to invoke the desired method
+	 * @return The result of invoking the desired method on the target object
+	 * @throws IllegalAccessException If the desired method cannot be accessed due to certain circumstances
+	 * @throws IllegalArgumentException If the types of the arguments do not match the parameter types of the method (this should not occur since it searches for a method with the types of the arguments)
+	 * @throws InvocationTargetException If the desired method cannot be invoked on the target object
+	 * @throws NoSuchMethodException If the desired method of the desired target class with the specified name and arguments cannot be found
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getClass(String, PackageType)
+	 * @see #invokeMethod(Object, Class, String, Object...)
+	 */
+	public static Object invokeMethod(Object instance, String className, PackageType packageType, String methodName, Object... arguments) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+		return invokeMethod(instance, packageType.getClass(className), methodName, arguments);
+	}
+
+	/**
+	 * Returns a field of the target class with the given name
+	 * 
+	 * @param clazz Target class
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @return The field of the target class with the specified name
+	 * @throws NoSuchFieldException If the desired field of the given class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 */
+	public static Field getField(Class<?> clazz, boolean declared, String fieldName) throws NoSuchFieldException, SecurityException {
+		Field field = declared ? clazz.getDeclaredField(fieldName) : clazz.getField(fieldName);
+		field.setAccessible(true);
+		return field;
+	}
+
+	/**
+	 * Returns a field of a desired class with the given name
+	 * 
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @return The field of the desired target class with the specified name
+	 * @throws NoSuchFieldException If the desired field of the desired class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getField(Class, boolean, String)
+	 */
+	public static Field getField(String className, PackageType packageType, boolean declared, String fieldName) throws NoSuchFieldException, SecurityException, ClassNotFoundException {
+		return getField(packageType.getClass(className), declared, fieldName);
+	}
+
+	/**
+	 * Returns the value of a field of the given class of an object
+	 * 
+	 * @param instance Target object
+	 * @param clazz Target class
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @return The value of field of the target object
+	 * @throws IllegalArgumentException If the target object does not feature the desired field
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the target class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @see #getField(Class, boolean, String)
+	 */
+	public static Object getValue(Object instance, Class<?> clazz, boolean declared, String fieldName) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		return getField(clazz, declared, fieldName).get(instance);
+	}
+
+	/**
+	 * Returns the value of a field of a desired class of an object
+	 * 
+	 * @param instance Target object
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @return The value of field of the target object
+	 * @throws IllegalArgumentException If the target object does not feature the desired field
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the desired class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #getValue(Object, Class, boolean, String)
+	 */
+	public static Object getValue(Object instance, String className, PackageType packageType, boolean declared, String fieldName) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, ClassNotFoundException {
+		return getValue(instance, packageType.getClass(className), declared, fieldName);
+	}
+
+	/**
+	 * Returns the value of a field with the given name of an object
+	 * 
+	 * @param instance Target object
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @return The value of field of the target object
+	 * @throws IllegalArgumentException If the target object does not feature the desired field (should not occur since it searches for a field with the given name in the class of the object)
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the target object cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @see #getValue(Object, Class, boolean, String)
+	 */
+	public static Object getValue(Object instance, boolean declared, String fieldName) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		return getValue(instance, instance.getClass(), declared, fieldName);
+	}
+
+	/**
+	 * Sets the value of a field of the given class of an object
+	 * 
+	 * @param instance Target object
+	 * @param clazz Target class
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @param value New value
+	 * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the target class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @see #getField(Class, boolean, String)
+	 */
+	public static void setValue(Object instance, Class<?> clazz, boolean declared, String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		getField(clazz, declared, fieldName).set(instance, value);
+	}
+
+	/**
+	 * Sets the value of a field of a desired class of an object
+	 * 
+	 * @param instance Target object
+	 * @param className Name of the desired target class
+	 * @param packageType Package where the desired target class is located
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @param value New value
+	 * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the desired class cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @throws ClassNotFoundException If the desired target class with the specified name and package cannot be found
+	 * @see #setValue(Object, Class, boolean, String, Object)
+	 */
+	public static void setValue(Object instance, String className, PackageType packageType, boolean declared, String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, ClassNotFoundException {
+		setValue(instance, packageType.getClass(className), declared, fieldName, value);
+	}
+
+	/**
+	 * Sets the value of a field with the given name of an object
+	 * 
+	 * @param instance Target object
+	 * @param declared Whether the desired field is declared or not
+	 * @param fieldName Name of the desired field
+	 * @param value New value
+	 * @throws IllegalArgumentException If the type of the value does not match the type of the desired field
+	 * @throws IllegalAccessException If the desired field cannot be accessed
+	 * @throws NoSuchFieldException If the desired field of the target object cannot be found
+	 * @throws SecurityException If the desired field cannot be made accessible
+	 * @see #setValue(Object, Class, boolean, String, Object)
+	 */
+	public static void setValue(Object instance, boolean declared, String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		setValue(instance, instance.getClass(), declared, fieldName, value);
+	}
+
+	/**
+	 * Represents an enumeration of dynamic packages of NMS and CraftBukkit
+	 * <p>
+	 * This class is part of the <b>ReflectionUtils</b> and follows the same usage conditions
+	 * 
+	 * @author DarkBlade12
+	 * @since 1.0
+	 */
+	public enum PackageType {
+		MINECRAFT_SERVER("net.minecraft.server." + getServerVersion()),
+		CRAFTBUKKIT("org.bukkit.craftbukkit." + getServerVersion()),
+		CRAFTBUKKIT_BLOCK(CRAFTBUKKIT, "block"),
+		CRAFTBUKKIT_CHUNKIO(CRAFTBUKKIT, "chunkio"),
+		CRAFTBUKKIT_COMMAND(CRAFTBUKKIT, "command"),
+		CRAFTBUKKIT_CONVERSATIONS(CRAFTBUKKIT, "conversations"),
+		CRAFTBUKKIT_ENCHANTMENS(CRAFTBUKKIT, "enchantments"),
+		CRAFTBUKKIT_ENTITY(CRAFTBUKKIT, "entity"),
+		CRAFTBUKKIT_EVENT(CRAFTBUKKIT, "event"),
+		CRAFTBUKKIT_GENERATOR(CRAFTBUKKIT, "generator"),
+		CRAFTBUKKIT_HELP(CRAFTBUKKIT, "help"),
+		CRAFTBUKKIT_INVENTORY(CRAFTBUKKIT, "inventory"),
+		CRAFTBUKKIT_MAP(CRAFTBUKKIT, "map"),
+		CRAFTBUKKIT_METADATA(CRAFTBUKKIT, "metadata"),
+		CRAFTBUKKIT_POTION(CRAFTBUKKIT, "potion"),
+		CRAFTBUKKIT_PROJECTILES(CRAFTBUKKIT, "projectiles"),
+		CRAFTBUKKIT_SCHEDULER(CRAFTBUKKIT, "scheduler"),
+		CRAFTBUKKIT_SCOREBOARD(CRAFTBUKKIT, "scoreboard"),
+		CRAFTBUKKIT_UPDATER(CRAFTBUKKIT, "updater"),
+		CRAFTBUKKIT_UTIL(CRAFTBUKKIT, "util");
+
+		private final String path;
+
+		/**
+		 * Construct a new package type
+		 * 
+		 * @param path Path of the package
+		 */
+		private PackageType(String path) {
+			this.path = path;
+		}
+
+		/**
+		 * Construct a new package type
+		 * 
+		 * @param parent Parent package of the package
+		 * @param path Path of the package
+		 */
+		private PackageType(PackageType parent, String path) {
+			this(parent + "." + path);
+		}
+
+		/**
+		 * Returns the path of this package type
+		 * 
+		 * @return The path
+		 */
+		public String getPath() {
+			return path;
+		}
+
+		/**
+		 * Returns the class with the given name
+		 * 
+		 * @param className Name of the desired class
+		 * @return The class with the specified name
+		 * @throws ClassNotFoundException If the desired class with the specified name and package cannot be found
+		 */
+		public Class<?> getClass(String className) throws ClassNotFoundException {
+			return Class.forName(this + "." + className);
+		}
+
+		// Override for convenience
+		@Override
+		public String toString() {
+			return path;
+		}
+
+		/**
+		 * Returns the version of your server
+		 * 
+		 * @return The server version
+		 */
+		public static String getServerVersion() {
+			return Bukkit.getServer().getClass().getPackage().getName().substring(23);
 		}
 	}
-	
-    public static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... array) {
-        final Class<?>[] primitive = DataType.getPrimitive(array);
-        Constructor<?>[] constructors = null;
-        for (int length = (constructors = clazz.getConstructors()).length, i = 0; i < length; ++i) {
-            final Constructor<?> constructor = constructors[i];
-            if (DataType.compare(DataType.getPrimitive(constructor.getParameterTypes()), primitive)) {
-                return (Constructor<?>)constructor;
-            }
-        }
-        try {
-			throw new NoSuchMethodException("There is no such constructor in this class with the specified parameter types");
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-		return null;
-    }
-    
-    public static Constructor<?> getConstructor(final String s, final PackageType packageType, final Class<?>... array) {
-        return getConstructor(packageType.getClass(s), array);
-    }
-    
-    public static Object instantiateObject(final Class<?> clazz, final Object... array) {
-        try {
-			return getConstructor(clazz, DataType.getPrimitive(array)).newInstance(array);
-		} catch (InstantiationException e) {
-			return null;
-		} catch (IllegalAccessException e) {
-			return null;
-		} catch (IllegalArgumentException e) {
-			return null;
-		} catch (InvocationTargetException e) {
-			return null;
-		}
-    }
-    
-    public static Object instantiateObject(final String s, final PackageType packageType, final Object... array) {
-        return instantiateObject(packageType.getClass(s), array);
-    }
-    
-    public static Method getMethod(final Class<?> clazz, final String s, final Class<?>... array) {
-        final Class<?>[] primitive = DataType.getPrimitive(array);
-        Method[] methods;
-        for (int length = (methods = clazz.getMethods()).length, i = 0; i < length; ++i) {
-            final Method method = methods[i];
-            if (method.getName().equals(s) && DataType.compare(DataType.getPrimitive(method.getParameterTypes()), primitive)) {
-                return method;
-            }
-        }
-        try {
-			throw new NoSuchMethodException("There is no such method in this class with the specified name and parameter types");
-		} catch (NoSuchMethodException e) {
-			return null;
-		}
-    }
-    
-    public static Method getMethod(final String s, final PackageType packageType, final String s2, final Class<?>... array) {
-        return getMethod(packageType.getClass(s), s2, array);
-    }
-    
-    public static Object invokeMethod(final Object o, final String s, final Object... array) {
-        try {
-			return getMethod(o.getClass(), s, DataType.getPrimitive(array)).invoke(o, array);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			return null;
-		}
-    }
-    
-    public static Object invokeMethod(final Object o, final Class<?> clazz, final String s, final Object... array) {
-        try {
-			return getMethod(clazz, s, DataType.getPrimitive(array)).invoke(o, array);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			return null;
-		}
-    }
-    
-    public static Object invokeMethod(final Object o, final String s, final PackageType packageType, final String s2, final Object... array) {
-        return invokeMethod(o, packageType.getClass(s), s2, array);
-    }
-    
-    public static Field getField(final Class<?> clazz, final boolean b, final String s) {
-        Field field;
-		try {
-			field = b ? clazz.getDeclaredField(s) : clazz.getField(s);
-		} catch (NoSuchFieldException | SecurityException e) {
-			return null;
-		}
-        field.setAccessible(true);
-        return field;
-    }
-    
-    public static Field getField(final String s, final PackageType packageType, final boolean b, final String s2) {
-        return getField(packageType.getClass(s), b, s2);
-    }
-    
-    public static Object getValue(final Object o, final Class<?> clazz, final boolean b, final String s) {
-        try {
-			return getField(clazz, b, s).get(o);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return null;
-		}
-    }
-    
-    public static Object getValue(final Object o, final String s, final PackageType packageType, final boolean b, final String s2) {
-        return getValue(o, packageType.getClass(s), b, s2);
-    }
-    
-    public static Object getValue(final Object o, final boolean b, final String s) {
-        return getValue(o, o.getClass(), b, s);
-    }
-    
-    public static void setValue(final Object o, final Class<?> clazz, final boolean b, final String s, final Object o2) {
-        try {
-			getField(clazz, b, s).set(o, o2);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			return;
-		}
-    }
-    
-    public static void setValue(final Object o, final String s, final PackageType packageType, final boolean b, final String s2, final Object o2) {
-        setValue(o, packageType.getClass(s), b, s2, o2);
-    }
-    
-    public static void setValue(final Object o, final boolean b, final String s, final Object o2) {
-        setValue(o, o.getClass(), b, s, o2);
-    }
-    
-    public enum DataType
-    {
-        BYTE((Class<?>)Byte.TYPE, (Class<?>)Byte.class), 
-        SHORT((Class<?>)Short.TYPE, (Class<?>)Short.class), 
-        INTEGER((Class<?>)Integer.TYPE, (Class<?>)Integer.class), 
-        LONG((Class<?>)Long.TYPE, (Class<?>)Long.class), 
-        CHARACTER((Class<?>)Character.TYPE, (Class<?>)Character.class), 
-        FLOAT((Class<?>)Float.TYPE, (Class<?>)Float.class), 
-        DOUBLE((Class<?>)Double.TYPE, (Class<?>)Double.class), 
-        BOOLEAN((Class<?>)Boolean.TYPE, (Class<?>)Boolean.class);
-        
-        private static final Map<Class<?>, DataType> CLASS_MAP;
-        private final Class<?> primitive;
-        private final Class<?> reference;
-        
-        static {
-            CLASS_MAP = new HashMap<Class<?>, DataType>();
-            DataType[] values;
-            for (int length = (values = values()).length, i = 0; i < length; ++i) {
-                final DataType dataType = values[i];
-                DataType.CLASS_MAP.put(dataType.primitive, dataType);
-                DataType.CLASS_MAP.put(dataType.reference, dataType);
-            }
-        }
-        
-        private DataType(final Class<?> primitive, final Class<?> reference) {
-            this.primitive = primitive;
-            this.reference = reference;
-        }
-        
-        public Class<?> getPrimitive() {
-            return this.primitive;
-        }
-        
-        public Class<?> getReference() {
-            return this.reference;
-        }
-        
-        public static DataType fromClass(final Class<?> clazz) {
-            return DataType.CLASS_MAP.get(clazz);
-        }
-        
-        public static Class<?> getPrimitive(final Class<?> clazz) {
-            final DataType fromClass = fromClass(clazz);
-            return (fromClass == null) ? clazz : fromClass.getPrimitive();
-        }
-        
-        public static Class<?> getReference(final Class<?> clazz) {
-            final DataType fromClass = fromClass(clazz);
-            return (fromClass == null) ? clazz : fromClass.getReference();
-        }
-        
-        public static Class<?>[] getPrimitive(final Class<?>[] array) {
-            final int n = (array == null) ? 0 : array.length;
-            final Class<?>[] array2 = new Class[n];
-            for (int i = 0; i < n; ++i) {
-                array2[i] = getPrimitive(array[i]);
-            }
-            return (Class<?>[])array2;
-        }
-        
-        public static Class<?>[] getReference(final Class<?>[] array) {
-            final int n = (array == null) ? 0 : array.length;
-            final Class[] array2 = new Class[n];
-            for (int i = 0; i < n; ++i) {
-                array2[i] = getReference(array[i]);
-            }
-            return (Class<?>[])array2;
-        }
-        
-        public static Class<?>[] getPrimitive(final Object[] array) {
-            final int n = (array == null) ? 0 : array.length;
-            final Class<?>[] array2 = new Class[n];
-            for (int i = 0; i < n; ++i) {
-                array2[i] = getPrimitive(array[i].getClass());
-            }
-            return (Class<?>[])array2;
-        }
-        
-        public static Class<?>[] getReference(final Object[] array) {
-            final int n = (array == null) ? 0 : array.length;
-            final Class<?>[] array2 = new Class[n];
-            for (int i = 0; i < n; ++i) {
-                array2[i] = getReference(array[i].getClass());
-            }
-            return (Class<?>[])array2;
-        }
-        
-        public static boolean compare(final Class<?>[] array, final Class<?>[] array2) {
-            if (array == null || array2 == null || array.length != array2.length) {
-                return false;
-            }
-            for (int i = 0; i < array.length; ++i) {
-                final Class<?> clazz = array[i];
-                final Class<?> clazz2 = array2[i];
-                if (!clazz.equals(clazz2) && !clazz.isAssignableFrom(clazz2)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-    
-    public enum PackageType
-    {
-        MINECRAFT_SERVER("MINECRAFT_SERVER", 0, "net.minecraft.server." + getServerVersion()), 
-        CRAFTBUKKIT("CRAFTBUKKIT", 1, "org.bukkit.craftbukkit." + getServerVersion()), 
-        CRAFTBUKKIT_BLOCK("CRAFTBUKKIT_BLOCK", 2, PackageType.CRAFTBUKKIT, "block"), 
-        CRAFTBUKKIT_CHUNKIO("CRAFTBUKKIT_CHUNKIO", 3, PackageType.CRAFTBUKKIT, "chunkio"), 
-        CRAFTBUKKIT_COMMAND("CRAFTBUKKIT_COMMAND", 4, PackageType.CRAFTBUKKIT, "command"), 
-        CRAFTBUKKIT_CONVERSATIONS("CRAFTBUKKIT_CONVERSATIONS", 5, PackageType.CRAFTBUKKIT, "conversations"), 
-        CRAFTBUKKIT_ENCHANTMENS("CRAFTBUKKIT_ENCHANTMENS", 6, PackageType.CRAFTBUKKIT, "enchantments"), 
-        CRAFTBUKKIT_ENTITY("CRAFTBUKKIT_ENTITY", 7, PackageType.CRAFTBUKKIT, "entity"), 
-        CRAFTBUKKIT_EVENT("CRAFTBUKKIT_EVENT", 8, PackageType.CRAFTBUKKIT, "event"), 
-        CRAFTBUKKIT_GENERATOR("CRAFTBUKKIT_GENERATOR", 9, PackageType.CRAFTBUKKIT, "generator"), 
-        CRAFTBUKKIT_HELP("CRAFTBUKKIT_HELP", 10, PackageType.CRAFTBUKKIT, "help"), 
-        CRAFTBUKKIT_INVENTORY("CRAFTBUKKIT_INVENTORY", 11, PackageType.CRAFTBUKKIT, "inventory"), 
-        CRAFTBUKKIT_MAP("CRAFTBUKKIT_MAP", 12, PackageType.CRAFTBUKKIT, "map"), 
-        CRAFTBUKKIT_METADATA("CRAFTBUKKIT_METADATA", 13, PackageType.CRAFTBUKKIT, "metadata"), 
-        CRAFTBUKKIT_POTION("CRAFTBUKKIT_POTION", 14, PackageType.CRAFTBUKKIT, "potion"), 
-        CRAFTBUKKIT_PROJECTILES("CRAFTBUKKIT_PROJECTILES", 15, PackageType.CRAFTBUKKIT, "projectiles"), 
-        CRAFTBUKKIT_SCHEDULER("CRAFTBUKKIT_SCHEDULER", 16, PackageType.CRAFTBUKKIT, "scheduler"), 
-        CRAFTBUKKIT_SCOREBOARD("CRAFTBUKKIT_SCOREBOARD", 17, PackageType.CRAFTBUKKIT, "scoreboard"), 
-        CRAFTBUKKIT_UPDATER("CRAFTBUKKIT_UPDATER", 18, PackageType.CRAFTBUKKIT, "updater"), 
-        CRAFTBUKKIT_UTIL("CRAFTBUKKIT_UTIL", 19, PackageType.CRAFTBUKKIT, "util");
-        
-        private final String path;
-        
-        private PackageType(final String s, final int n, final String path) {
-            this.path = path;
-        }
-        
-        private PackageType(final String s, final int n, final PackageType packageType, final String s2) {
-            this(s, n, packageType + "." + s2);
-        }
-        
-        public String getPath() {
-            return this.path;
-        }
-        
-        public Class<?> getClass(final String s) {
-            try {
-				return Class.forName(this + "." + s);
-			} catch (ClassNotFoundException e) {
-				return null;
+
+	/**
+	 * Represents an enumeration of Java data types with corresponding classes
+	 * <p>
+	 * This class is part of the <b>ReflectionUtils</b> and follows the same usage conditions
+	 * 
+	 * @author DarkBlade12
+	 * @since 1.0
+	 */
+	public enum DataType {
+		BYTE(byte.class, Byte.class),
+		SHORT(short.class, Short.class),
+		INTEGER(int.class, Integer.class),
+		LONG(long.class, Long.class),
+		CHARACTER(char.class, Character.class),
+		FLOAT(float.class, Float.class),
+		DOUBLE(double.class, Double.class),
+		BOOLEAN(boolean.class, Boolean.class);
+
+		private static final Map<Class<?>, DataType> CLASS_MAP = new HashMap<Class<?>, DataType>();
+		private final Class<?> primitive;
+		private final Class<?> reference;
+
+		// Initialize map for quick class lookup
+		static {
+			for (DataType type : values()) {
+				CLASS_MAP.put(type.primitive, type);
+				CLASS_MAP.put(type.reference, type);
 			}
-        }
-        
-        @Override
-        public String toString() {
-            return this.path;
-        }
-        
-        public static String getServerVersion() {
-            return Bukkit.getServer().getClass().getPackage().getName().substring(23);
-        }
-    }
+		}
+
+		/**
+		 * Construct a new data type
+		 * 
+		 * @param primitive Primitive class of this data type
+		 * @param reference Reference class of this data type
+		 */
+		private DataType(Class<?> primitive, Class<?> reference) {
+			this.primitive = primitive;
+			this.reference = reference;
+		}
+
+		/**
+		 * Returns the primitive class of this data type
+		 * 
+		 * @return The primitive class
+		 */
+		public Class<?> getPrimitive() {
+			return primitive;
+		}
+
+		/**
+		 * Returns the reference class of this data type
+		 * 
+		 * @return The reference class
+		 */
+		public Class<?> getReference() {
+			return reference;
+		}
+
+		/**
+		 * Returns the data type with the given primitive/reference class
+		 * 
+		 * @param clazz Primitive/Reference class of the data type
+		 * @return The data type
+		 */
+		public static DataType fromClass(Class<?> clazz) {
+			return CLASS_MAP.get(clazz);
+		}
+
+		/**
+		 * Returns the primitive class of the data type with the given reference class
+		 * 
+		 * @param clazz Reference class of the data type
+		 * @return The primitive class
+		 */
+		public static Class<?> getPrimitive(Class<?> clazz) {
+			DataType type = fromClass(clazz);
+			return type == null ? clazz : type.getPrimitive();
+		}
+
+		/**
+		 * Returns the reference class of the data type with the given primitive class
+		 * 
+		 * @param clazz Primitive class of the data type
+		 * @return The reference class
+		 */
+		public static Class<?> getReference(Class<?> clazz) {
+			DataType type = fromClass(clazz);
+			return type == null ? clazz : type.getReference();
+		}
+
+		/**
+		 * Returns the primitive class array of the given class array
+		 * 
+		 * @param classes Given class array
+		 * @return The primitive class array
+		 */
+		public static Class<?>[] getPrimitive(Class<?>[] classes) {
+			int length = classes == null ? 0 : classes.length;
+			Class<?>[] types = new Class<?>[length];
+			for (int index = 0; index < length; index++) {
+				types[index] = getPrimitive(classes[index]);
+			}
+			return types;
+		}
+
+		/**
+		 * Returns the reference class array of the given class array
+		 * 
+		 * @param classes Given class array
+		 * @return The reference class array
+		 */
+		public static Class<?>[] getReference(Class<?>[] classes) {
+			int length = classes == null ? 0 : classes.length;
+			Class<?>[] types = new Class<?>[length];
+			for (int index = 0; index < length; index++) {
+				types[index] = getReference(classes[index]);
+			}
+			return types;
+		}
+
+		/**
+		 * Returns the primitive class array of the given object array
+		 * 
+		 * @param object Given object array
+		 * @return The primitive class array
+		 */
+		public static Class<?>[] getPrimitive(Object[] objects) {
+			int length = objects == null ? 0 : objects.length;
+			Class<?>[] types = new Class<?>[length];
+			for (int index = 0; index < length; index++) {
+				types[index] = getPrimitive(objects[index].getClass());
+			}
+			return types;
+		}
+
+		/**
+		 * Returns the reference class array of the given object array
+		 * 
+		 * @param object Given object array
+		 * @return The reference class array
+		 */
+		public static Class<?>[] getReference(Object[] objects) {
+			int length = objects == null ? 0 : objects.length;
+			Class<?>[] types = new Class<?>[length];
+			for (int index = 0; index < length; index++) {
+				types[index] = getReference(objects[index].getClass());
+			}
+			return types;
+		}
+
+		/**
+		 * Compares two class arrays on equivalence
+		 * 
+		 * @param primary Primary class array
+		 * @param secondary Class array which is compared to the primary array
+		 * @return Whether these arrays are equal or not
+		 */
+		public static boolean compare(Class<?>[] primary, Class<?>[] secondary) {
+			if (primary == null || secondary == null || primary.length != secondary.length) {
+				return false;
+			}
+			for (int index = 0; index < primary.length; index++) {
+				Class<?> primaryClass = primary[index];
+				Class<?> secondaryClass = secondary[index];
+				if (primaryClass.equals(secondaryClass) || primaryClass.isAssignableFrom(secondaryClass)) {
+					continue;
+				}
+				return false;
+			}
+			return true;
+		}
+	}
 }
