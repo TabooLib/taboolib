@@ -46,7 +46,7 @@ public class HelpCommand extends SubCommand {
 		helps.put("§e", null);
 		helps.put("/taboolib importdata", "§4向数据库导入本地数据 §8(该操作将会清空数据库)");
 		
-		if (sender instanceof ConsoleCommandSender || TabooLib.getVerint() < 10800) {
+		if (sender instanceof ConsoleCommandSender || TabooLib.getVerint() < 10900) {
 			sender.sendMessage("§f");
 			sender.sendMessage("§b§l----- §3§lTaooLib Commands §b§l-----");
 			sender.sendMessage("§f");
