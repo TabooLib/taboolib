@@ -17,7 +17,7 @@ import me.skymc.tlm.module.ITabooLibraryModule;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÏÂÎç12:13:55
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸‹åˆ12:13:55
  */
 public class ModuleKits implements ITabooLibraryModule {
 	
@@ -34,28 +34,28 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * ÉèÖÃÍæ¼ÒÊÇ·ñÁìÈ¡Àñ°ü
+	 * è®¾ç½®ç©å®¶æ˜¯å¦é¢†å–ç¤¼åŒ…
 	 * 
-	 * @param player Íæ¼Ò
+	 * @param player ç©å®¶
 	 */
 	public void setPlayerReward(Player player, String kit, boolean reward) {
 		data.set(kit + "." + player.getName(), reward ? System.currentTimeMillis() : null);
 	}
 	
 	/**
-	 * Çå¿ÕÀñ°üÊı¾İ
+	 * æ¸…ç©ºç¤¼åŒ…æ•°æ®
 	 * 
-	 * @param kit Àñ°ü
+	 * @param kit ç¤¼åŒ…
 	 */
 	public void resetKit(String kit) {
 		data.set(kit, null);
 	}
 	
 	/**
-	 * Íæ¼ÒÊÇ·ñÁìÈ¡Àñ°ü
+	 * ç©å®¶æ˜¯å¦é¢†å–ç¤¼åŒ…
 	 * 
-	 * @param player Íæ¼Ò
-	 * @param kit Àñ°ü
+	 * @param player ç©å®¶
+	 * @param kit ç¤¼åŒ…
 	 * @return boolean
 	 */
 	public boolean isPlayerRewared(Player player, String kit) {
@@ -63,7 +63,7 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * Àñ°üÊÇ·ñÔÚÀäÈ´ÖĞ
+	 * ç¤¼åŒ…æ˜¯å¦åœ¨å†·å´ä¸­
 	 * 
 	 * @param player
 	 * @param kit
@@ -74,9 +74,9 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * Àñ°üÊÇ·ñ´æÔÚ
+	 * ç¤¼åŒ…æ˜¯å¦å­˜åœ¨
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return boolean
 	 */
 	public boolean contains(String kit) {
@@ -84,9 +84,9 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * »ñÈ¡Àñ°üÀäÈ´Ê±¼ä
+	 * è·å–ç¤¼åŒ…å†·å´æ—¶é—´
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return long
 	 */
 	public long getCooldown(String kit) {
@@ -94,9 +94,9 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * »ñÈ¡Àñ°ü¿Õ¼ä²»×ãÊ±µÄ´¦Àí·½Ê½
+	 * è·å–ç¤¼åŒ…ç©ºé—´ä¸è¶³æ—¶çš„å¤„ç†æ–¹å¼
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return boolean
 	 */
 	public Boolean isFullDrop(String kit) {
@@ -104,9 +104,9 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * Àñ°üÊÇ·ñÖ»ÄÜÁìÈ¡Ò»´Î
+	 * ç¤¼åŒ…æ˜¯å¦åªèƒ½é¢†å–ä¸€æ¬¡
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return boolean
 	 */
 	public boolean isDisposable(String kit) {
@@ -114,9 +114,9 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * »ñÈ¡Àñ°üÈ¨ÏŞ
+	 * è·å–ç¤¼åŒ…æƒé™
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return String
 	 */
 	public String getPermission(String kit) {
@@ -124,19 +124,19 @@ public class ModuleKits implements ITabooLibraryModule {
 	}
 	
 	/**
-	 * »ñÈ¡Àñ°üÈ¨ÏŞÌáÊ¾
+	 * è·å–ç¤¼åŒ…æƒé™æç¤º
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return String
 	 */
 	public String getPermissionMessage(String kit) {
-		return getConfig().getString("Kits." + kit + ".Permission-message").replace("&", "¡ì");
+		return getConfig().getString("Kits." + kit + ".Permission-message").replace("&", "Â§");
 	}
 	
 	/**
-	 * »ñÈ¡Àñ°üÎïÆ·
+	 * è·å–ç¤¼åŒ…ç‰©å“
 	 * 
-	 * @param kit Àñ°üÃû
+	 * @param kit ç¤¼åŒ…å
 	 * @return {@link List}
 	 */
 	public List<ItemStack> getItems(String kit) {
@@ -149,9 +149,9 @@ public class ModuleKits implements ITabooLibraryModule {
 					item.setAmount(NumberUtils.getInteger(itemStr.split(" ")[1]));
 					items.add(item);
 				} catch (Exception e) {
-					MsgUtils.warn("Ä£¿éÅäÖÃÔØÈëÒì³£: &4ÎïÆ·ÊıÁ¿´íÎó");
-					MsgUtils.warn("Ä£¿é: &4Kits");
-					MsgUtils.warn("Î»ÓÚ: &4" + itemStr);
+					MsgUtils.warn("æ¨¡å—é…ç½®è½½å…¥å¼‚å¸¸: &4ç‰©å“æ•°é‡é”™è¯¯");
+					MsgUtils.warn("æ¨¡å—: &4Kits");
+					MsgUtils.warn("ä½äº: &4" + itemStr);
 				}
 			}
 		}

@@ -48,12 +48,13 @@ public class ActionUtils {
             Object ab = getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { msg });
             Constructor<?> ac = null;
             Object abPacket = null;
-            // ï¿½ï¿½ï¿½ï¿½æ±¾ï¿½ï¿½ï¿½ï¿½ 1.11.0
+            // Èç¹û°æ±¾´óÓÚ 1.11.0
             if (TabooLib.getVerint() > 11100) {
             	Class<?> chatMessageType = getNMSClass("ChatMessageType");
             	ac = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), chatMessageType);
             	abPacket = ac.newInstance(ab, chatMessageType.getMethod("a", Byte.TYPE).invoke(null, (byte) 2));
             } else {
+            	ac = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), Byte.TYPE);
             	abPacket = ac.newInstance(ab, Byte.valueOf((byte) 2));
             }
             sendPacket(p, abPacket);
