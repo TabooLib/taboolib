@@ -88,6 +88,8 @@ public class Main extends JavaPlugin implements Listener {
     private static LogClient client;
     @Getter
     private static Language2 exampleLangauge2;
+    @Getter
+    private static boolean started;
     
     public static Random getRandom() {
 		return NumberUtils.getRand();
@@ -220,11 +222,21 @@ public class Main extends JavaPlugin implements Listener {
 				TLM.getInst();
 			}
 		}.runTask(this);
+		
+		// 启动
+		started = true;
 	}
 	
 	@Override
 	public void onDisable() {
 		disable = true;
+		
+		// 如果插件尚未启动完成
+		if (!started) {
+			MsgUtils.send("&c插件尚未启动完成, 已跳过卸载代码");
+			MsgUtils.send("&c插件作者: &4坏黑");
+			return;
+		}
 		
 		// 保存数据
 		Bukkit.getOnlinePlayers().forEach(x -> DataUtils.saveOnline(x.getName()));
