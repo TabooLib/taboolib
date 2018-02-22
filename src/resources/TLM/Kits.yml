@@ -28,3 +28,7 @@ Kits:
     # 空格左侧为物品名，右侧为物品数量
     Items:
     - 'UnlimitSword 1'
+    
+    # 礼包命令
+    Commands:
+    - 'say $player 领取了礼包 kit_name!'
