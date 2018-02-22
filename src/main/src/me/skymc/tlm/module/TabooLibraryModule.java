@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import me.skymc.taboolib.Main;
+import me.skymc.tlm.annotation.DisableConfig;
 
 /**
  * @author sky
@@ -60,7 +61,7 @@ public class TabooLibraryModule {
 	}
 	
 	public void reloadConfig(ITabooLibraryModule module, boolean isReload) {
-		if (module.getName() == null) {
+		if (module.getName() == null || module.getClass().getAnnotation(DisableConfig.class) != null) {
 			return;
 		}
 		File file = new File(Main.getInst().getDataFolder(), "TLM/" + module.getName() + ".yml");

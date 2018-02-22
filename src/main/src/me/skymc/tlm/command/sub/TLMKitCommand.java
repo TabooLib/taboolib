@@ -39,6 +39,19 @@ public class TLMKitCommand extends SubCommand {
 			return;
 		}
 		
+		else if (args[1].equalsIgnoreCase("list")) {
+			// 判断权限
+			if (!sender.hasPermission("taboolib.kit.list")) {
+				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-LIST").send(sender);
+				return;
+			}
+			else {
+				TLM.getInst().getLanguage().get("KIT-LIST")
+						.addPlaceholder("$kits", moduleKits.getConfig().getConfigurationSection("Kits").getKeys(false).toString())
+						.send(sender);
+			}
+		}
+		
 		else if (args[1].equalsIgnoreCase("reward")) {
 			// 判断权限
 			if (!sender.hasPermission("taboolib.kit.reward")) {
@@ -106,6 +119,11 @@ public class TLMKitCommand extends SubCommand {
 					// 掉落物品
 					player.getWorld().dropItem(player.getLocation(), item);
 				}
+			}
+			
+			// 执行命令
+			for (String command : moduleKits.getCommands(args[2])) {
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("$player", player.getName()));
 			}
 			
 			// 已领取

@@ -9,6 +9,8 @@ import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.tlm.module.TabooLibraryModule;
+import me.skymc.tlm.module.sub.ModuleCommandChanger;
+import me.skymc.tlm.module.sub.ModuleInventorySave;
 import me.skymc.tlm.module.sub.ModuleKits;
 import me.skymc.tlm.module.sub.ModuleTimeCycle;
 
@@ -39,6 +41,12 @@ public class TLM {
 		}
 		if (isEnableModule("Kits")) {
 			TabooLibraryModule.getInst().register(new ModuleKits());
+		}
+		if (isEnableModule("CommandChanger")) {
+			TabooLibraryModule.getInst().register(new ModuleCommandChanger());
+		}
+		if (isEnableModule("InventorySave")) {
+			TabooLibraryModule.getInst().register(new ModuleInventorySave());
 		}
 		
 		// ‘ÿ»Îƒ£øÈ

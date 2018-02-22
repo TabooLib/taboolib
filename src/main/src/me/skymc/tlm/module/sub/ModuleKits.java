@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Getter;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.MsgUtils;
@@ -156,5 +157,15 @@ public class ModuleKits implements ITabooLibraryModule {
 			}
 		}
 		return items;
+	}
+	
+	/**
+	 * 获取礼包命令
+	 * 
+	 * @param kit 礼包名
+	 * @return {@link List}
+	 */
+	public List<String> getCommands(String kit) {
+		return getConfig().contains("Kits." + kit + ".Commands") ? getConfig().getStringList("Kits." + kit + ".Commands") : new ArrayList<>();
 	}
 }
