@@ -1,5 +1,6 @@
 package me.skymc.taboolib.string.language2;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -197,6 +198,17 @@ public class Language2Value {
 		else {
 			send(Bukkit.getPlayerExact(""));
 		}
+	}
+	
+	/**
+	 * 全服公告
+	 */
+	public void broadcast() {
+		List<Player> players = new ArrayList<>();
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			players.add(player);
+		}
+		send(players);
 	}
 	
 	/**

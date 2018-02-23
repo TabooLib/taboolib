@@ -38,6 +38,7 @@ import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.javashell.JavaShell;
+import me.skymc.taboolib.listener.ListenerNetWork;
 import me.skymc.taboolib.listener.ListenerPlayerCommand;
 import me.skymc.taboolib.listener.ListenerPlayerQuit;
 import me.skymc.taboolib.listener.ListenerPlayerJump;
@@ -51,6 +52,7 @@ import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
+import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
@@ -223,6 +225,9 @@ public class Main extends JavaPlugin implements Listener {
 			}
 		}.runTask(this);
 		
+		// 更新检测
+		new UpdateTask();
+		
 		// 启动
 		started = true;
 	}
@@ -315,6 +320,11 @@ public class Main extends JavaPlugin implements Listener {
 		if (TabooLib.getVerint() > 10700) {
 			getServer().getPluginManager().registerEvents(new EntityUtils(), this);
 			getServer().getPluginManager().registerEvents(new SignUtils(), this);
+		}
+		
+		// 如果 YUM 插件存在
+		if (Bukkit.getPluginManager().getPlugin("YUM") != null) {
+			getServer().getPluginManager().registerEvents(new ListenerNetWork(), this);
 		}
 	}
 	
