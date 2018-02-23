@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import me.skymc.taboolib.client.LogClient;
+import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.methods.MethodsUtils;
 
 public class FileUtils {
@@ -78,7 +79,7 @@ public class FileUtils {
 			bos.close();
 			return new String(bos.toByteArray(), encode);
 		} catch (IOException e) {
-			e.printStackTrace();
+			MsgUtils.warn("输入流读取出错: &4" + e.getMessage());
 		}
 		return null;
 	}
@@ -101,7 +102,7 @@ public class FileUtils {
 			fin.close();
 			return new String(bos.toByteArray(), encode);
 		} catch (IOException e) {
-			e.printStackTrace();
+			MsgUtils.warn("文件读取出错: &4" + e.getMessage());
 		}
 		return null;
 	}
@@ -123,7 +124,7 @@ public class FileUtils {
 			bin.close();
 			return new String(bos.toByteArray(), conn.getContentEncoding() == null ? "UTF-8" : conn.getContentEncoding());
 		} catch (IOException e) {
-			e.printStackTrace();
+			MsgUtils.warn("网络访问出错: &4" + e.getMessage());
 		}
 		return null;
 	}

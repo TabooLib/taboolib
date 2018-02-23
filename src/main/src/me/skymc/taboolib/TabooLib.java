@@ -12,6 +12,20 @@ import net.md_5.bungee.api.ChatColor;
 public class TabooLib {
 	
 	/**
+	 * 获取插件版本
+	 * 
+	 * @return
+	 */
+	public static double getPluginVersion() {
+		try {
+			return Double.valueOf(Main.getInst().getDescription().getVersion());
+		} 
+		catch (Exception e) {
+			return 0D;
+		}
+	}
+	
+	/**
 	 * 获取 NMS 版本
 	 * 
 	 * @return
