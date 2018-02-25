@@ -9,7 +9,7 @@ import lombok.Getter;
 
 /**
  * @author sky
- * @since 2018å¹´2æœˆ22æ—¥ ä¸‹åˆ3:34:59
+ * @since 2018Äê2ÔÂ22ÈÕ ÏÂÎç3:34:59
  */
 public class TLMInventoryHolder implements InventoryHolder {
 	
@@ -19,6 +19,11 @@ public class TLMInventoryHolder implements InventoryHolder {
 	@Getter
 	private HashMap<String, Object> holderData = new HashMap<>();
 	
+	/**
+	 * ¹¹Ôì·½·¨
+	 * 
+	 * @param module Ä£¿éÃû
+	 */
 	public TLMInventoryHolder(String module) {
 		this.module = module;
 	}

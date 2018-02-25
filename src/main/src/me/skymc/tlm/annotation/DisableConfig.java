@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
  * @since 2018年2月22日 下午3:59:30
  */
 public @interface DisableConfig {
-
+	
 }

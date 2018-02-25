@@ -12,7 +12,7 @@ import me.skymc.tlm.command.sub.TLMReloadCommand;
 
 /**
  * @author sky
- * @since 2018å¹´2æœˆ18æ—¥ ä¸Šåˆ12:02:08
+ * @since 2018Äê2ÔÂ18ÈÕ ÉÏÎç12:02:08
  */
 public class TLMCommands implements CommandExecutor {
 
@@ -26,6 +26,7 @@ public class TLMCommands implements CommandExecutor {
 			}
 		}
 		
+		// ÖØÔØ
 		else if (args[0].equalsIgnoreCase("reload")) {
 			if (sender.hasPermission("taboolib.admin")) {
 				new TLMReloadCommand(sender, args);
@@ -34,6 +35,7 @@ public class TLMCommands implements CommandExecutor {
 			}
 		}
 		
+		// ÁĞ³ö
 		else if (args[0].equalsIgnoreCase("list")) {
 			if (sender.hasPermission("taboolib.admin")) {
 				new TLMListCommand(sender, args);
@@ -42,6 +44,7 @@ public class TLMCommands implements CommandExecutor {
 			}
 		}
 		
+		// InventorySave Ä£¿é
 		else if (args[0].equalsIgnoreCase("inv")) {
 			if (sender.hasPermission("taboolib.admin")) {
 				new TLMInvCommand(sender, args);
@@ -50,6 +53,7 @@ public class TLMCommands implements CommandExecutor {
 			}
 		}
 		
+		// Kit Ä£¿é
 		else if (args[0].equalsIgnoreCase("kit")) {
 			new TLMKitCommand(sender, args);
 		}
