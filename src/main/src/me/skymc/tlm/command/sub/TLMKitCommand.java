@@ -15,7 +15,7 @@ import me.skymc.tlm.module.sub.ModuleKits;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÏÂÎç2:53:58
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸‹åˆ2:53:58
  */
 public class TLMKitCommand extends SubCommand {
 
@@ -30,17 +30,17 @@ public class TLMKitCommand extends SubCommand {
 			return;
 		}
 
-		// »ñÈ¡Ä£¿é
+		// è·å–æ¨¡å—
 		ModuleKits moduleKits = (ModuleKits) TabooLibraryModule.getInst().valueOf("Kits");
 		
-		// ÅĞ¶ÏÃüÁî
+		// åˆ¤æ–­å‘½ä»¤
 		if (args.length == 1) {
 			TLM.getInst().getLanguage().get("KIT-EMPTY").send(sender);
 			return;
 		}
 		
 		else if (args[1].equalsIgnoreCase("list")) {
-			// ÅĞ¶ÏÈ¨ÏŞ
+			// åˆ¤æ–­æƒé™
 			if (!sender.hasPermission("taboolib.kit.list")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-LIST").send(sender);
 				return;
@@ -53,29 +53,29 @@ public class TLMKitCommand extends SubCommand {
 		}
 		
 		else if (args[1].equalsIgnoreCase("reward")) {
-			// ÅĞ¶ÏÈ¨ÏŞ
+			// åˆ¤æ–­æƒé™
 			if (!sender.hasPermission("taboolib.kit.reward")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-REWARD").send(sender);
 				return;
 			}
 			
-			// ¼ì²éÀñ°ü
+			// æ£€æŸ¥ç¤¼åŒ…
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("KIT-NAME").send(sender);
 				return;
 			}
 			
-			// Àñ°ü²»´æÔÚ
+			// ç¤¼åŒ…ä¸å­˜åœ¨
 			if (!moduleKits.contains(args[2])) {
 				TLM.getInst().getLanguage().get("KIT-NOTFOUND").addPlaceholder("$kit", args[2]).send(sender);
 				return;
 			}
 			
-			// »ñÈ¡Íæ¼Ò
+			// è·å–ç©å®¶
 			Player player;
 			if (args.length > 3) {
 				player = Bukkit.getPlayerExact(args[3]);
-				// Íæ¼Ò²»´æÔÚ
+				// ç©å®¶ä¸å­˜åœ¨
 				if (player == null) {
 					TLM.getInst().getLanguage().get("KIT-OFFLINE").addPlaceholder("$name", args[3]).send(sender);
 					return;
@@ -87,75 +87,75 @@ public class TLMKitCommand extends SubCommand {
 				return;
 			}
 			
-			// ÊÇ·ñÁìÈ¡
+			// æ˜¯å¦é¢†å–
 			if (moduleKits.isPlayerRewared(player, args[2])) {
-				// ÊÇ·ñÖ»ÄÜÁìÈ¡Ò»´Î
+				// æ˜¯å¦åªèƒ½é¢†å–ä¸€æ¬¡
 				if (moduleKits.isDisposable(args[2])) {
 					TLM.getInst().getLanguage().get("KIT-DISPOSABLE").addPlaceholder("$kit", args[2]).send(sender);
 					return;
 				}
-				// ÊÇ·ñÀäÈ´ÖĞ
+				// æ˜¯å¦å†·å´ä¸­
 				if (moduleKits.isPlayerCooldown(player, args[2])) {
 					TLM.getInst().getLanguage().get("KIT-COOLDOWN").addPlaceholder("$kit", args[2]).send(sender);
 					return;
 				}
 			}
 			
-			// ÊÇ·ñÓĞÈ¨ÏŞÁìÈ¡
+			// æ˜¯å¦æœ‰æƒé™é¢†å–
 			String permission = moduleKits.getPermission(args[2]);
 			if (permission != null && !player.hasPermission(permission)) {
-				// ÌáÊ¾ĞÅÏ¢
+				// æç¤ºä¿¡æ¯
 				player.sendMessage(moduleKits.getPermissionMessage(args[2]));
 				return;
 			}
 			
-			// ·¢ËÍÀñ°ü
+			// å‘é€ç¤¼åŒ…
 			List<ItemStack> items = moduleKits.getItems(args[2]);
 			for (ItemStack item : items) {
-				// ¸øÓèÎïÆ·
+				// ç»™äºˆç‰©å“
 				HashMap<Integer, ItemStack> result = player.getInventory().addItem(item);
-				// Èç¹û±³°ü¿Õ¼ä²»×ã
+				// å¦‚æœèƒŒåŒ…ç©ºé—´ä¸è¶³
 				if (result.size() > 0 && moduleKits.isFullDrop(args[2])) {
-					// µôÂäÎïÆ·
+					// æ‰è½ç‰©å“
 					player.getWorld().dropItem(player.getLocation(), item);
 				}
 			}
 			
-			// Ö´ĞĞÃüÁî
+			// æ‰§è¡Œå‘½ä»¤
 			for (String command : moduleKits.getCommands(args[2])) {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replace("$player", player.getName()));
 			}
 			
-			// ÒÑÁìÈ¡
+			// å·²é¢†å–
 			moduleKits.setPlayerReward(player, args[2], true);
 			
-			// ÌáÊ¾ĞÅÏ¢
+			// æç¤ºä¿¡æ¯
 			TLM.getInst().getLanguage().get("KIT-SUCCESS").addPlaceholder("$kit", args[2]).send(sender);
 		}
 		else if (args[1].equalsIgnoreCase("reset")) {
-			// ÅĞ¶ÏÈ¨ÏŞ
+			// åˆ¤æ–­æƒé™
 			if (!sender.hasPermission("taboolib.kit.reset")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-RESET").send(sender);
 				return;
 			}
 			
-			// ¼ì²éÀñ°ü
+			// æ£€æŸ¥ç¤¼åŒ…
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("KIT-NAME").send(sender);
 				return;
 			}
 			
-			// Àñ°ü²»´æÔÚ
+			// ç¤¼åŒ…ä¸å­˜åœ¨
 			if (!moduleKits.contains(args[2])) {
 				TLM.getInst().getLanguage().get("KIT-NOTFOUND").addPlaceholder("$kit", args[2]).send(sender);
 				return;
 			}
 			
-			// »ñÈ¡Íæ¼Ò
+			// è·å–ç©å®¶
 			Player player;
 			if (args.length > 3) {
 				player = Bukkit.getPlayerExact(args[3]);
-				// Íæ¼Ò²»´æÔÚ
+				// ç©å®¶ä¸å­˜åœ¨
 				if (player == null) {
 					TLM.getInst().getLanguage().get("KIT-OFFLINE").addPlaceholder("$name", args[3]).send(sender);
 					return;

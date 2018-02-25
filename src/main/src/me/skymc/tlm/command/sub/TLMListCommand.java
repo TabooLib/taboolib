@@ -8,7 +8,7 @@ import me.skymc.tlm.module.TabooLibraryModule;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÏÂÎç2:10:12
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸‹åˆ2:10:12
  */
 public class TLMListCommand extends SubCommand {
 
@@ -18,15 +18,15 @@ public class TLMListCommand extends SubCommand {
 	 */
 	public TLMListCommand(CommandSender sender, String[] args) {
 		super(sender, args);
-		sender.sendMessage("¡ìf");
-		sender.sendMessage("¡ìb¡ìl----- ¡ì3¡ìlTaooLibraryModule Modules ¡ìb¡ìl-----");
-		sender.sendMessage("¡ìf");
+		sender.sendMessage("Â§f");
+		sender.sendMessage("Â§bÂ§l----- Â§3Â§lTaooLibraryModule Modules Â§bÂ§l-----");
+		sender.sendMessage("Â§f");
 		
 		for (ITabooLibraryModule module : TabooLibraryModule.getInst().keySet()) {
-			sender.sendMessage("¡ìf - ¡ì8" + module.getName());
+			sender.sendMessage("Â§f - Â§8" + module.getName());
 		}
 		
-		sender.sendMessage("¡ìf");
+		sender.sendMessage("Â§f");
 	}
 
 }
