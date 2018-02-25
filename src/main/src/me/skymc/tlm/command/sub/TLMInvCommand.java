@@ -19,7 +19,7 @@ import me.skymc.tlm.module.sub.ModuleInventorySave;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÏÂÎç2:53:58
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸‹åˆ2:53:58
  */
 public class TLMInvCommand extends SubCommand {
 
@@ -34,52 +34,52 @@ public class TLMInvCommand extends SubCommand {
 			return;
 		}
 		
-		// »ñÈ¡Ä£¿é
+		// è·å–æ¨¡å—
 		ModuleInventorySave moduleInventorySave = (ModuleInventorySave) TabooLibraryModule.getInst().valueOf("InventorySave");
 		
-		// ÅĞ¶ÏÃüÁî
+		// åˆ¤æ–­å‘½ä»¤
 		if (args.length == 1) {
 			TLM.getInst().getLanguage().get("INV-EMPTY").send(sender);
 		}
 		
-		// ÁĞ³ö±³°ü
+		// åˆ—å‡ºèƒŒåŒ…
 		else if (args[1].equalsIgnoreCase("list")) {
 			TLM.getInst().getLanguage().get("INV-LIST").addPlaceholder("$name", moduleInventorySave.getInventorys().toString()).send(sender);
 		}
 		
-		// ²é¿´±³°ü
+		// æŸ¥çœ‹èƒŒåŒ…
 		else if (args[1].equalsIgnoreCase("info")) {
-			// Èç¹ûÊÇºóÌ¨
+			// å¦‚æœæ˜¯åå°
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
 				return;
 			}
 			
-			// ÅĞ¶Ï³¤¶È
+			// åˆ¤æ–­é•¿åº¦
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
 				return;
 			}
 			
-			// ÅĞ¶Ï±³°ü
+			// åˆ¤æ–­èƒŒåŒ…
 			if (!moduleInventorySave.getInventorys().contains(args[2])) {
 				TLM.getInst().getLanguage().get("INV-NOTFOUND").addPlaceholder("$name", args[2]).send(sender);
 				return;
 			}
 			
-			// »ñÈ¡Íæ¼Ò
+			// è·å–ç©å®¶
 			Player player = (Player) sender;
 			
-			// »ñÈ¡ÎïÆ·
+			// è·å–ç‰©å“
 			List<ItemStack> items = moduleInventorySave.getItems(args[2]);
 			
-			// ´ò¿ª½çÃæ
+			// æ‰“å¼€ç•Œé¢
 			Inventory inv = Bukkit.createInventory(new TLMInventoryHolder("InventorySave"), 54, TLM.getInst().getLanguage().get("INV-INFO-TITLE")
 					.addPlaceholder("$name", args[2])
 					.asString());
 			
-			// ÉèÖÃÎïÆ·
-			ItemStack barrier = ItemUtils.setName(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), "¡ìf"); 
+			// è®¾ç½®ç‰©å“
+			ItemStack barrier = ItemUtils.setName(new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 15), "Â§f"); 
 			
 			for (int i = 9 ; i < 18 ; i++) {
 				inv.setItem(i, barrier);
@@ -98,58 +98,58 @@ public class TLMInvCommand extends SubCommand {
 			inv.setItem(3, items.get(37));
 			inv.setItem(4, items.get(36));
 			
-			// ÅĞ¶Ï°æ±¾
+			// åˆ¤æ–­ç‰ˆæœ¬
 			if (items.size() == 41) {
 				inv.setItem(6, items.get(40));
 			}
 			
-			// ´ò¿ª±³°ü
+			// æ‰“å¼€èƒŒåŒ…
 			player.openInventory(inv);
 		}
 		
-		// ±£´æ±³°ü
+		// ä¿å­˜èƒŒåŒ…
 		else if (args[1].equalsIgnoreCase("save")) {
-			// Èç¹ûÊÇºóÌ¨
+			// å¦‚æœæ˜¯åå°
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
 				return;
 			}
 			
-			// ÅĞ¶Ï³¤¶È
+			// åˆ¤æ–­é•¿åº¦
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
 				return;
 			}
 			
-			// »ñÈ¡Íæ¼Ò
+			// è·å–ç©å®¶
 			Player player = (Player) sender;
 			
-			// ±£´æ±³°ü
+			// ä¿å­˜èƒŒåŒ…
 			moduleInventorySave.saveInventory(player, args[2]);
 			
-			// ÌáÊ¾ĞÅÏ¢
+			// æç¤ºä¿¡æ¯
 			TLM.getInst().getLanguage().get("INV-SAVE").addPlaceholder("$name", args[2]).send(player);
 		}
 		
-		// ¸²¸Ç±³°ü
+		// è¦†ç›–èƒŒåŒ…
 		else if (args[1].equalsIgnoreCase("paste")) {
-			// ÅĞ¶Ï³¤¶È
+			// åˆ¤æ–­é•¿åº¦
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
 				return;
 			}
 			
-			// ÅĞ¶Ï±³°ü
+			// åˆ¤æ–­èƒŒåŒ…
 			if (!moduleInventorySave.getInventorys().contains(args[2])) {
 				TLM.getInst().getLanguage().get("INV-NOTFOUND").addPlaceholder("$name", args[2]).send(sender);
 				return;
 			}
 			
-			// »ñÈ¡Íæ¼Ò
+			// è·å–ç©å®¶
 			Player player;
 			if (args.length > 3) {
 				player = Bukkit.getPlayerExact(args[3]);
-				// Íæ¼Ò²»´æÔÚ
+				// ç©å®¶ä¸å­˜åœ¨
 				if (player == null) {
 					TLM.getInst().getLanguage().get("INV-OFFLINE").addPlaceholder("$name", args[3]).send(sender);
 					return;
@@ -161,12 +161,12 @@ public class TLMInvCommand extends SubCommand {
 				return;
 			}
 			
-			// ¸²¸Ç±³°ü
+			// è¦†ç›–èƒŒåŒ…
 			moduleInventorySave.pasteInventory(player, args[2]);
 			
-			// Èç¹ûÊÇÍæ¼Ò
+			// å¦‚æœæ˜¯ç©å®¶
 			if (sender instanceof Player) {
-				// ÌáÊ¾ĞÅÏ¢
+				// æç¤ºä¿¡æ¯
 				TLM.getInst().getLanguage().get("INV-PASTE")
 					.addPlaceholder("$name", args[2])
 					.addPlaceholder("$player", player.getName())
@@ -174,24 +174,24 @@ public class TLMInvCommand extends SubCommand {
 			}
 		}
 		
-		// É¾³ı±³°ü
+		// åˆ é™¤èƒŒåŒ…
 		else if (args[1].equalsIgnoreCase("delete")) {
-			// ÅĞ¶Ï³¤¶È
+			// åˆ¤æ–­é•¿åº¦
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
 				return;
 			}
 			
-			// ÅĞ¶Ï±³°ü
+			// åˆ¤æ–­èƒŒåŒ…
 			if (!moduleInventorySave.getInventorys().contains(args[2])) {
 				TLM.getInst().getLanguage().get("INV-NOTFOUND").addPlaceholder("$name", args[2]).send(sender);
 				return;
 			}
 			
-			// É¾³ı
+			// åˆ é™¤
 			moduleInventorySave.deleteInventory(args[2]);
 			
-			// ÌáÊ¾ĞÅÏ¢
+			// æç¤ºä¿¡æ¯
 			TLM.getInst().getLanguage().get("KIT-DELETE").addPlaceholder("$name", args[2]).send(sender);
 		}
 		

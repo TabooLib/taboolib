@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 /**
  * @author sky
- * @since 2018Äê2ÔÂ22ÈÕ ÏÂÎç3:59:30
+ * @since 2018å¹´2æœˆ22æ—¥ ä¸‹åˆ3:59:30
  */
 public @interface DisableConfig {
 

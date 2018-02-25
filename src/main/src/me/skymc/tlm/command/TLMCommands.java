@@ -12,7 +12,7 @@ import me.skymc.tlm.command.sub.TLMReloadCommand;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÉÏÎç12:02:08
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸Šåˆ12:02:08
  */
 public class TLMCommands implements CommandExecutor {
 

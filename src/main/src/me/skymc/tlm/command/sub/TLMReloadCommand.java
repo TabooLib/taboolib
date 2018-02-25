@@ -10,7 +10,7 @@ import me.skymc.tlm.module.TabooLibraryModule;
 
 /**
  * @author sky
- * @since 2018Äê2ÔÂ18ÈÕ ÏÂÎç2:09:34
+ * @since 2018å¹´2æœˆ18æ—¥ ä¸‹åˆ2:09:34
  */
 public class TLMReloadCommand extends SubCommand {
 
@@ -21,27 +21,27 @@ public class TLMReloadCommand extends SubCommand {
 	public TLMReloadCommand(CommandSender sender, String[] args) {
 		super(sender, args);
 		if (args.length != 2) {
-			MsgUtils.send(sender, "&4²ÎÊı´íÎó¡£");
+			MsgUtils.send(sender, "&4å‚æ•°é”™è¯¯ã€‚");
 		}
 		
 		else if (args[1].equalsIgnoreCase("tlm")) {
 			TLM.getInst().reloadConfig();
-			MsgUtils.send(sender, "&fTLM &7ÅäÖÃÎÄ¼şÒÑÖØÔØ¡£");
+			MsgUtils.send(sender, "&fTLM &7é…ç½®æ–‡ä»¶å·²é‡è½½ã€‚");
 		}
 		
 		else if (args[1].equalsIgnoreCase("all")) {
 			TabooLibraryModule.getInst().reloadConfig();
-			MsgUtils.send(sender, "ËùÓĞÄ£¿éÅäÖÃÎÄ¼şÒÑÖØÔØ¡£");
+			MsgUtils.send(sender, "æ‰€æœ‰æ¨¡å—é…ç½®æ–‡ä»¶å·²é‡è½½ã€‚");
 		}
 		
 		else {
 			ITabooLibraryModule module = TabooLibraryModule.getInst().valueOf(args[1]);
 			if (module == null) {
-				MsgUtils.send(sender, "&4Ä£¿é &c" + args[1] + " &4²»´æÔÚ¡£");
+				MsgUtils.send(sender, "&4æ¨¡å— &c" + args[1] + " &4ä¸å­˜åœ¨ã€‚");
 			}
 			else {
 				TabooLibraryModule.getInst().reloadConfig(module, true);
-				MsgUtils.send(sender, "Ä£¿é &f" + args[1] + " &7µÄÅäÖÃÎÄ¼şÒÑÖØÔØ¡£");
+				MsgUtils.send(sender, "æ¨¡å— &f" + args[1] + " &7çš„é…ç½®æ–‡ä»¶å·²é‡è½½ã€‚");
 			}
 		}
 	}
