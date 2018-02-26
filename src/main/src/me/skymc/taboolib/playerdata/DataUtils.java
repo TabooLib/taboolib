@@ -32,7 +32,7 @@ public class DataUtils implements Listener {
 	}
 	
 	public static void saveAllCaches(Plugin plugin, boolean remove) {
-		if (!CACHE_DATA_PLUGIN.containsKey(plugin.getName())) {
+		if (plugin == null || !CACHE_DATA_PLUGIN.containsKey(plugin.getName())) {
 			return;
 		}
 		for (String fileName : CACHE_DATA_PLUGIN.get(plugin.getName()).keySet()) {
