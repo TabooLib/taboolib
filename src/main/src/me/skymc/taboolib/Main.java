@@ -207,8 +207,8 @@ public class Main extends JavaPlugin implements Listener {
 		MsgUtils.send("§7游戏版本: §f" + TabooLib.getVerint());
 		
 		// 文件保存
-		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> DataUtils.saveAllCaches(), 0, 20 * 120);
-		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 0, 20 * 60);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> DataUtils.saveAllCaches(), 20, 20 * 120);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
 		
 		// 插件联动
 		new BukkitRunnable() {
