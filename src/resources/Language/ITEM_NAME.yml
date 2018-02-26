@@ -264,22 +264,22 @@
 'QUARTZ_STAIRS:0': 石英楼梯
 'ACTIVATOR_RAIL:0': 激活铁轨
 'DROPPER:0': 投掷器
-'STAINED_CLAY:0': 白色陶瓦
-'STAINED_CLAY:1': 橙色陶瓦
-'STAINED_CLAY:2': 品红色陶瓦
-'STAINED_CLAY:3': 淡蓝色陶瓦
-'STAINED_CLAY:4': 黄色陶瓦
-'STAINED_CLAY:5': 黄绿色陶瓦
-'STAINED_CLAY:6': 粉红色陶瓦
-'STAINED_CLAY:7': 灰色陶瓦
-'STAINED_CLAY:8': 淡灰色陶瓦
-'STAINED_CLAY:9': 青色陶瓦
-'STAINED_CLAY:10': 紫色陶瓦
-'STAINED_CLAY:11': 蓝色陶瓦
-'STAINED_CLAY:12': 棕色陶瓦
-'STAINED_CLAY:13': 绿色陶瓦
-'STAINED_CLAY:14': 红色陶瓦
-'STAINED_CLAY:15': 黑色陶瓦
+'STAINED_CLAY:0': 白色粘土
+'STAINED_CLAY:1': 橙色粘土
+'STAINED_CLAY:2': 品红色粘土
+'STAINED_CLAY:3': 淡蓝色粘土
+'STAINED_CLAY:4': 黄色粘土
+'STAINED_CLAY:5': 黄绿色粘土
+'STAINED_CLAY:6': 粉红色粘土
+'STAINED_CLAY:7': 灰色粘土
+'STAINED_CLAY:8': 淡灰色粘土
+'STAINED_CLAY:9': 青色粘土
+'STAINED_CLAY:10': 紫色粘土
+'STAINED_CLAY:11': 蓝色粘土
+'STAINED_CLAY:12': 棕色粘土
+'STAINED_CLAY:13': 绿色粘土
+'STAINED_CLAY:14': 红色粘土
+'STAINED_CLAY:15': 黑色粘土
 'STAINED_GLASS_PANE:0': 白色染色玻璃板
 'STAINED_GLASS_PANE:1': 橙色染色玻璃板
 'STAINED_GLASS_PANE:2': 品红色染色玻璃板
@@ -342,7 +342,7 @@
 'CARPET:13': 绿色地毯
 'CARPET:14': 红色地毯
 'CARPET:15': 黑色地毯
-'HARD_CLAY:0': 陶瓦
+'HARD_CLAY:0': 粘土
 'COAL_BLOCK:0': 煤炭块
 'PACKED_ICE:0': 浮冰
 'DOUBLE_PLANT:0': 向日葵
@@ -469,6 +469,9 @@
 'BOW:0': 弓
 'ARROW:0': 箭
 'COAL:0': 煤炭
+# 2018-02-26 19:41:24 新增
+'COAL:1': 木炭
+# ---------------------- #
 'DIAMOND:0': 钻石
 'IRON_INGOT:0': 铁锭
 'GOLD_INGOT:0': 金锭
@@ -555,8 +558,33 @@
 'WATCH:0': 钟
 'GLOWSTONE_DUST:0': 荧石粉
 'RAW_FISH:0': 生鱼
+# 2018-02-26 19:35:37 新增
+'RAW_FISH:1': 生鲑鱼
+'RAW_FISH:2': 小丑鱼
+'RAW_FISH:3': 河豚
+# ---------------------- #
 'COOKED_FISH:0': 熟鱼
+# 2018-02-26 19:37:20 新增
+'COOKED_FISH:1': 熟鲑鱼
+# ---------------------- #
 'INK_SACK:0': 墨囊
+# 2018-02-26 19:38:31 新增
+'INK_SACK:1': 玫瑰红
+'INK_SACK:2': 仙人掌绿
+'INK_SACK:3': 可可豆
+'INK_SACK:4': 青金石
+'INK_SACK:5': 紫色染料
+'INK_SACK:6': 青色染料
+'INK_SACK:7': 淡灰色染料
+'INK_SACK:8': 灰色染料
+'INK_SACK:9': 粉红色染料
+'INK_SACK:10': 黄绿色染料
+'INK_SACK:11': 蒲公英黄
+'INK_SACK:12': 淡蓝色染料
+'INK_SACK:13': 品红色染料
+'INK_SACK:14': 橙色染料
+'INK_SACK:15': 骨粉
+# ---------------------- #
 'BONE:0': 骨头
 'SUGAR:0': 糖
 'CAKE:0': 蛋糕
@@ -588,7 +616,7 @@
 'CAULDRON_ITEM:0': 炼药锅
 'EYE_OF_ENDER:0': 末影之眼
 'SPECKLED_MELON:0': 闪烁的西瓜
-'MONSTER_EGG:0': 生成
+'MONSTER_EGG:0': 怪物蛋
 'EXP_BOTTLE:0': 附魔之瓶
 'FIREBALL:0': 火焰弹
 'BOOK_AND_QUILL:0': 书与笔
