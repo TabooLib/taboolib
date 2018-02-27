@@ -18,23 +18,27 @@ import me.skymc.taboolib.message.MsgUtils;
 public class CooldownUtils2 implements Listener {
 	
 	private static ConcurrentHashMap<String, CooldownPack2> packlist = new ConcurrentHashMap<>();
+	
+	public static ConcurrentHashMap<String, CooldownPack2> getCooldownPacks() {
+		return packlist;
+	}
 
 	public static void register(CooldownPack2 pack) {
 		packlist.put(pack.getPackName(), pack);
-		MsgUtils.send("注册冷却包: " + pack.getPackName() + ", 时间: " + pack.getPackSeconds() + " 秒 (匿名注册)");
+//		MsgUtils.send("注册冷却包: " + pack.getPackName() + ", 时间: " + pack.getPackSeconds() + " 秒 (匿名注册)");
 	}
 	
 	public static void register(CooldownPack2 pack, Plugin plugin) {
 		pack.setPlugin(plugin.getName());
 		
 		packlist.put(pack.getPackName(), pack);
-		MsgUtils.send("注册冷却包: " + pack.getPackName() + ", 时间: " + pack.getPackSeconds() + " 秒 (" + plugin.getName() + ")");
+//		MsgUtils.send("注册冷却包: " + pack.getPackName() + ", 时间: " + pack.getPackSeconds() + " 秒 (" + plugin.getName() + ")");
 	}
 	
 	public static void unregister(String name) {
 		packlist.remove(name);
 		
-		MsgUtils.send("注销冷却包: " + name + " (主动注销)");
+//		MsgUtils.send("注销冷却包: " + name + " (主动注销)");
 	}
 	
 	@EventHandler
@@ -52,7 +56,7 @@ public class CooldownUtils2 implements Listener {
 			if (pack.getPlugin().equals(e.getPlugin().getName())) {
 				packlist.remove(pack.getPackName());
 				
-				MsgUtils.send("注销冷却包: " + pack.getPackName() + " (自动注销)");
+//				MsgUtils.send("注销冷却包: " + pack.getPackName() + " (自动注销)");
 			}
 		}
 	}
