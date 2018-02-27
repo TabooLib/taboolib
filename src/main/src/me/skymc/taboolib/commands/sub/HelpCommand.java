@@ -40,7 +40,7 @@ public class HelpCommand extends SubCommand {
 		helps.put("/taboolib cycle info §8[§7名称§8]", "§e查询检查器信息");
 		helps.put("/taboolib cycle reset §8[§7名称§8]", "§e初始化时间检查器");
 		helps.put("/taboolib cycle update §8[§7名称§8]", "§e更新时间检查器");
-		helps.put("§d", null);
+		helps.put("§f", null);
 		helps.put("/taboolib shell load §8[§7名称§8]", "§e载入某个脚本");
 		helps.put("/taboolib shell unload §8[§7名称§8]", "§e卸载某个脚本");
 		helps.put("§e", null);

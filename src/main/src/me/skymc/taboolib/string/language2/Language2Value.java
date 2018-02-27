@@ -23,7 +23,7 @@ import me.skymc.taboolib.string.language2.type.Language2Title;
  * @author sky
  * @since 2018年2月13日 下午3:05:15
  */
-public class Language2Value {
+public class Language2Value extends Object {
 	
 	@Getter
 	private Language2 language;
@@ -271,5 +271,10 @@ public class Language2Value {
 			list.set(i, ChatColor.translateAlternateColorCodes('&', list.get(i)));
 		}
 		return list;
+	}
+	
+	@Override
+	public String toString() {
+		return asString();
 	}
 }
