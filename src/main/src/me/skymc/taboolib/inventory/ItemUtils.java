@@ -569,12 +569,15 @@ public class ItemUtils {
     	NBTList attr = nbt.getList("AttributeModifiers", NBTType.NBTTagCompound);
     	if (asAttribute(name) != null) {
 			try {
-				NBTListCompound _attr = attr.addCompound();
+				NBTListCompound _attr = null;
 				for (int i = 0 ; i < attr.size() ; i++) {
 					NBTListCompound nlc = attr.getCompound(i);
-					if (nlc.getString("AttributeName").equals("name")) {
+					if (nlc.getString("AttributeName").equals(asAttribute(name))) {
 						_attr = nlc;
 					}
+				}
+				if (_attr == null) {
+					_attr = attr.addCompound();
 				}
 				if (num.toString().contains("%")) {
 					_attr.setDouble("Amount", Double.valueOf(num.toString().replace("%", "")) / 100D);
