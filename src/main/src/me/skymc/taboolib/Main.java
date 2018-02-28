@@ -47,6 +47,7 @@ import me.skymc.taboolib.message.ChatCatcher;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.sign.SignUtils;
+import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
@@ -194,6 +195,8 @@ public class Main extends JavaPlugin implements Listener {
 		JavaShell.javaShellSetup();
 		// 载入语言文件
 		exampleLangauge2 = new Language2("Language2", this);
+		// 注册脚本
+		SkriptHandler.getInst();
 		
 		// 启动数据库储存方法
 		if (getStorageType() == StorageType.SQL) {
