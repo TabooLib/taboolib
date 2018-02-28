@@ -7,13 +7,14 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.skymc.taboocode.TabooCodeItem;
 import me.skymc.taboolib.inventory.ItemUtils;
 
 /**
  * @author sky
  * @since 2018-02-28 15:45:49
  */
-public class ExpressionItemCache extends SimpleExpression<ItemStack> {
+public class ExpressionTabooCodeItem extends SimpleExpression<ItemStack> {
 	
 	private Expression<String> name;
 
@@ -41,7 +42,7 @@ public class ExpressionItemCache extends SimpleExpression<ItemStack> {
 
 	@Override
 	protected ItemStack[] get(Event e) {
-		ItemStack item = ItemUtils.getCacheItem(name.getSingle(e));
+		ItemStack item = TabooCodeItem.getItem(name.getSingle(e), false);
 		return new ItemStack[] { item == null ? null : item.clone() };
 	}
 }
