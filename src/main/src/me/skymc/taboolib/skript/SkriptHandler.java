@@ -1,5 +1,6 @@
 package me.skymc.taboolib.skript;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,8 +18,10 @@ public class SkriptHandler {
 	private static SkriptHandler inst = null;
 	
 	private SkriptHandler() {
-		Skript.registerExpression(ExpressionItemCache.class, ItemStack.class, ExpressionType.SIMPLE, "taboolib itemcache %string%");
-		Skript.registerExpression(ExpressionTabooCodeItem.class, ItemStack.class, ExpressionType.SIMPLE, "taboocode itemcache %string%");
+		if (Bukkit.getPluginManager().getPlugin("Skript") != null) {
+			Skript.registerExpression(ExpressionItemCache.class, ItemStack.class, ExpressionType.SIMPLE, "taboolib itemcache %string%");
+			Skript.registerExpression(ExpressionTabooCodeItem.class, ItemStack.class, ExpressionType.SIMPLE, "taboocode itemcache %string%");
+		}
 	}
 	
 	public static SkriptHandler getInst() {
