@@ -3,6 +3,7 @@ COMMAND-HELP:
 - ''
 - '&b&l----- &3&lTaooLibraryModule Commands &b&l-----'
 - ''
+- '&f /tlm kit list &6- &e列出所有礼包'
 - '&f /tlm kit reward &8[&7名称] &8<&7名称&8> &6- &e领取礼包'
 - '&f /tlm kit reset &8[&7名称] &8<&7玩家&8> &6- &e刷新礼包'
 - ''
@@ -23,6 +24,9 @@ NOPERMISSION-LIST: '&8[&3&lTLM&8] &4你没有权限这么做'
 NOPERMISSION-RELOAD: '&8[&3&lTLM&8] &4你没有权限这么做'
 NOPERMISSION-KIT-REWARD: '&8[&3&lTLM&8] &4你没有权限这么做'
 NOPERMISSION-KIT-RESET: '&8[&3&lTLM&8] &4你没有权限这么做'
+
+# 3.60 新增
+NOPERMISSION-KIT-LIST: '&8[&3&lTLM&8] &4你没有权限这么做'
 NOPERMISSION-INV: '&8[&3&lTLM&8] &4你没有权限这么做'
 
 # 3.59 增加
@@ -44,6 +48,9 @@ KIT-PLACEHOLDER:
   3: '&a可领取'
   4: '&4冷却中'
   5: '&4无权限'
+
+# 3.60 新增
+KIT-LIST: '&8[&3&lTLM&8] &7当前礼包: &f$kits'
  
 # 3.60 增加
 INV-EMPTY: '&8[&3&lTLM&8] &4参数错误'

@@ -295,7 +295,7 @@ public class JSONFormatter {
 				Object entityplayer = NMSUtils.getHandle(player);
 				Object ppco = ppc.get(entityplayer);
 				sp.invoke(ppco, jf.getPacket());
-			}catch(Exception e){
+			} catch(Exception e){
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jf.toJSON());
 			}
 		}else{

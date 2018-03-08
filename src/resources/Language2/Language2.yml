@@ -10,12 +10,20 @@
 #   21: JSON 语言类型识别异常
 #   30: 大标题不兼容当前版本服务器
 #   31: 动作栏不兼容当前版本服务器
+#   40: 语言文件类型异常
 
 # 正常提示
 TEXT: '&f正常的提示'
 
+# 多行正常提示
+# 类型 [text] 可以省略不写
+TEXT-MULTI: 
+- '[text]'
+- '&f正常的提示 - 1'
+- '&f正常的提示 - 2'
+
 # JSON提示 + 占位符
-# 占位符注释可以追加到任何类型之后
+# 占位符注释需要追加到第一行类型末尾
 PAPI-TEXT:
 - '[json][papi]'
 - '&f变量提示, 玩家名称: %player_name%'
@@ -64,3 +72,21 @@ ACTION-TEXT:
 - '[action]'
 - '    text: 动作栏提示'
 - '    repeat: 10'
+
+# 多类型混合
+TITLE-ACTION-TEXT:
+- '[title]'
+- '    title: 大标题'
+- '    subtitle: 小标题'
+- '    stay: 10|40|10'
+- '[action]'
+- '    text: 动作栏提示'
+- '    repeat: 10'
+
+# 音效 + 文本提示
+SOUND-TEXT:
+- '[text]'
+- '单行文本 - 1'
+- '单行文本 - 2'
+- '[sound]'
+- 'BLOCK_ANVIL_USE-1-1'

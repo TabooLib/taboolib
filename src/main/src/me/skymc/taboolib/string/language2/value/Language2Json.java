@@ -1,4 +1,7 @@
-package me.skymc.taboolib.string.language2.type;
+package me.skymc.taboolib.string.language2.value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,13 +14,15 @@ import me.skymc.taboolib.jsonformatter.click.RunCommandEvent;
 import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.HoverEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
+import me.skymc.taboolib.string.language2.Language2Format;
+import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
 
 /**
  * @author sky
  * @since 2018年2月13日 下午4:11:33
  */
-public class Language2Json {
+public class Language2Json implements Language2Line {
 	
 	private static final String KEY_TEXT = "    text: ";
 	private static final String KEY_COMMAND = "    command: ";
@@ -35,24 +40,24 @@ public class Language2Json {
 	@Getter
 	private StringBuffer text = new StringBuffer();
 	
-	public Language2Json(Language2Value value, Player player) {
-		// 文本初始化
-		String current = ChatColor.DARK_RED + "[<ERROR-20: " + value.getLanguageKey() + ">]";
-		
+	public Language2Json(Language2Format format, List<String> list, Player player) {
 		// 首次检测
 		boolean isFirst = true;
 		boolean isBreak = false;
 		
 		// 变量初始化
-		this.value = value;
+		this.value = format.getLanguage2Value();
 		this.player = player;
 		
 		// 动作初始化
 		ClickEvent clickEvent = null;
 		HoverEvent hoverEvent = null;
 		
+		// 文本初始化
+		String current = ChatColor.DARK_RED + "[<ERROR-20: " + value.getLanguageKey() + ">]";
+		
 		// 遍历文本
-		for (String message : value.getLanguageValue()) {
+		for (String message : list) {
 			try {
 				// 如果是显示文本
 				if (message.startsWith(KEY_TEXT)) {
@@ -107,14 +112,14 @@ public class Language2Json {
 	 * @param player 玩家
 	 */
 	public void send(Player player) {
-		if (player != null) {
-			json.send(player);
-		}
-		else {
-			Bukkit.getConsoleSender().sendMessage(text.toString());
-		}
+		json.send(player);
 	}
 	
+	@Override
+	public void console() {
+		Bukkit.getConsoleSender().sendMessage(text.toString());
+	}
+
 	/**
 	 * 追加 JSON 内容
 	 * 

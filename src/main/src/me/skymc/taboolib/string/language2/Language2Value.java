@@ -2,22 +2,17 @@ package me.skymc.taboolib.string.language2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import lombok.Getter;
-import me.skymc.taboolib.string.language2.type.Language2Action;
-import me.skymc.taboolib.string.language2.type.Language2Json;
-import me.skymc.taboolib.string.language2.type.Language2Title;
+import me.skymc.taboolib.string.language2.value.Language2Text;
 
 /**
  * @author sky
@@ -33,9 +28,6 @@ public class Language2Value extends Object {
 	
 	@Getter
 	private List<String> languageValue;
-	
-	@Getter
-	private Language2Type languageType;
 	
 	@Getter
 	private LinkedHashMap<String, String> placeholder = new LinkedHashMap<>();
@@ -63,42 +55,16 @@ public class Language2Value extends Object {
 		if (language.getConfiguration().get(languageKey) instanceof List) {
 			// 设置文本
 			languageValue = asColored(language.getConfiguration().getStringList(languageKey));
-			// 获取类型
-			String type = languageValue.get(0).toLowerCase();
-			
-			// 是否有类型注释
-			boolean isType = true;
-			
+			// 追加结尾
+			languageValue.add("[return]");
 			// 是否启用PAPI
-			if (type.contains("[papi]")) {
+			if (languageValue.get(0).contains("[papi]")) {
 				enablePlaceholderAPI = true;
-			}
-			
-			// 判断类型
-			if (type.contains("[json]")) {
-				languageType = Language2Type.JSON;
-			}
-			else if (type.contains("[title]")) {
-				languageType = Language2Type.TITLE;
-			}
-			else if (type.contains("[action]")) {
-				languageType = Language2Type.ACTION;
-			}
-			else {
-				languageType = Language2Type.TEXT;
-				isType = false;
-			}
-			
-			// 是否需要删除类型注释
-			if (isType) {
-				languageValue.remove(0);
 			}
 		}
 		else {
 			// 设置文本
-			languageValue = Arrays.asList(ChatColor.translateAlternateColorCodes('&', language.getConfiguration().getString(languageKey)));
-			// 设置类型
-			languageType = Language2Type.TEXT;
+			languageValue = Arrays.asList(ChatColor.translateAlternateColorCodes('&', language.getConfiguration().getString(languageKey)), "[return]");
 		}
 		
 		// 初始化变量
@@ -112,33 +78,7 @@ public class Language2Value extends Object {
 	 * @param player
 	 */
 	public void send(Player player) {
-		// 标题类型
-		if (languageType == Language2Type.TITLE) {
-			// 发送文本
-			new Language2Title(this).send(player);
-		}
-		// 动作栏类型
-		else if (languageType == Language2Type.ACTION) {
-			// 发送文本
-			new Language2Action(this).send(player);
-		}
-		// JSON类型
-		else if (languageType == Language2Type.JSON) {
-			// 发送文本
-			new Language2Json(this, player).send(player);
-		}
-		else {
-			// 遍历文本
-			for (String message : languageValue) {
-				// 发送信息
-				if (player != null) {
-					player.sendMessage(setPlaceholder(message, player));
-				}
-				else {
-					Bukkit.getConsoleSender().sendMessage(setPlaceholder(message, player));
-				}
-			}
-		}
+		new Language2Format(player, this).send(player);
 	}
 	
 	/**
@@ -147,42 +87,8 @@ public class Language2Value extends Object {
 	 * @param players 玩家
 	 */
 	public void send(List<Player> players) {
-		// 标题类型
-		if (languageType == Language2Type.TITLE) {
-			// 识别文本
-			Language2Title title = new Language2Title(this);
-			// 发送文本
-			players.forEach(x -> title.send(x));
-		}
-		// 动作栏类型
-		else if (languageType == Language2Type.ACTION) {
-			// 识别文本
-			Language2Action action = new Language2Action(this);
-			// 发送文本
-			players.forEach(x -> action.send(x));
-		}
-		// JSON类型
-		else if (languageType == Language2Type.JSON) {
-			for (Player player : players) {
-				// 识别文本
-				Language2Json json = new Language2Json(this, player);
-				// 发送文本
-				json.send(player);
-			}
-		}
-		else {
-			for (Player player : players) {
-				// 遍历文本
-				for (String message : languageValue) {
-					// 发送信息
-					if (player != null) {
-						player.sendMessage(setPlaceholder(message, player));
-					}
-					else {
-						Bukkit.getConsoleSender().sendMessage(setPlaceholder(message, player));
-					}
-				}
-			}
+		for (Player player : players) {
+			send(player);
 		}
 	}
 	
@@ -196,7 +102,7 @@ public class Language2Value extends Object {
 			send((Player) sender);
 		}
 		else {
-			send(Bukkit.getPlayerExact(""));
+			console();
 		}
 	}
 	
@@ -204,11 +110,14 @@ public class Language2Value extends Object {
 	 * 全服公告
 	 */
 	public void broadcast() {
-		List<Player> players = new ArrayList<>();
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			players.add(player);
-		}
-		send(players);
+		send(new ArrayList<>(Bukkit.getOnlinePlayers()));
+	}
+	
+	/**
+	 * 发送到后台
+	 */
+	public void console() {
+		new Language2Format(null, this).console();
 	}
 	
 	/**
@@ -217,20 +126,29 @@ public class Language2Value extends Object {
 	 * @return
 	 */
 	public String asString() {
-		// 标题类型
-		if (languageType == Language2Type.TITLE) {
-			return new Language2Title(this).getTitle();
-		}
-		// 动作栏类型
-		else if (languageType == Language2Type.ACTION) {
-			return new Language2Action(this).getText();
-		}
-		// JSON类型
-		else if (languageType == Language2Type.JSON) {
-			return new Language2Json(this, null).getText().toString();
+		Language2Format format = new Language2Format(null, this);
+		if (format.getLanguage2Lines().get(0) instanceof Language2Text) {
+			Language2Text text = (Language2Text) format.getLanguage2Lines().get(0);
+			return text.getText().get(0);
 		}
 		else {
 			return languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null);
+		}
+	}
+	
+	/**
+	 * 获取文本集合
+	 * 
+	 * @return
+	 */
+	public List<String> asStringList() {
+		Language2Format format = new Language2Format(null, this);
+		if (format.getLanguage2Lines().get(0) instanceof Language2Text) {
+			Language2Text text = (Language2Text) format.getLanguage2Lines().get(0);
+			return text.getText();
+		}
+		else {
+			return Arrays.asList(languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null));
 		}
 	}
 	
