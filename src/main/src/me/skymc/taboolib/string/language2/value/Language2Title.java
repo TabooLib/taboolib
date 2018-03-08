@@ -1,6 +1,6 @@
-package me.skymc.taboolib.string.language2.type;
+package me.skymc.taboolib.string.language2.value;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -10,14 +10,15 @@ import org.bukkit.entity.Player;
 import lombok.Getter;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.display.TitleUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.string.language2.Language2Format;
+import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
 
 /**
  * @author sky
  * @since 2018年2月13日 下午3:58:07
  */
-public class Language2Title {
+public class Language2Title implements Language2Line {
 	
 	private static final String KEY_TITLE = "    title: ";
 	private static final String KEY_SUBTITLE = "    subtitle: ";
@@ -41,12 +42,11 @@ public class Language2Title {
 	@Getter
 	private Language2Value value;
 	
-	public Language2Title(Language2Value value) {
+	public Language2Title(Language2Format format, List<String> list) {
 		// 变量初始化
-		this.value = value;
-		
+		this.value = format.getLanguage2Value();
 		// 遍历文本
-		for (String message : value.getLanguageValue()) {
+		for (String message : list) {
 			try {
 				// 大标题
 				if (message.startsWith(KEY_TITLE)) {
@@ -72,22 +72,19 @@ public class Language2Title {
 		}
 	}
 	
-	/**
-	 * 发送给玩家
-	 * 
-	 * @param player 玩家
-	 */
+	@Override
 	public void send(Player player) {
 		// 检查版本
 		if (TabooLib.getVerint() < 10800) {
 			player.sendMessage(ChatColor.DARK_RED + "[<ERROR-31: " + value.getLanguageKey() + ">]");
 		}
-		// 检查玩家
-		else if (player != null) {
+		else {
 			TitleUtils.sendTitle(player, value.setPlaceholder(title, player), value.setPlaceholder(subtitle, player), fade1, stay, fade2);
 		}
-		else {
-			Bukkit.getConsoleSender().sendMessage(value.setPlaceholder(title, player) + ", " + value.setPlaceholder(subtitle, player));
-		}
+	}
+
+	@Override
+	public void console() {
+		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[<ERROR-40: " + value.getLanguageKey() + ">]");
 	}
 }

@@ -1,5 +1,6 @@
-package me.skymc.taboolib.string.language2.type;
+package me.skymc.taboolib.string.language2.value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -13,13 +14,15 @@ import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.display.ActionUtils;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.language2.Language2Format;
+import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
 
 /**
  * @author sky
  * @since 2018年2月13日 下午3:58:07
  */
-public class Language2Action {
+public class Language2Action implements Language2Line {
 	
 	private static final String KEY_TEXT = "    text: ";
 	private static final String KEY_STAY = "    repeat: ";
@@ -33,12 +36,11 @@ public class Language2Action {
 	@Getter
 	private Language2Value value;
 	
-	public Language2Action(Language2Value value) {
+	public Language2Action(Language2Format format, List<String> list) {
 		// 变量初始化
-		this.value = value;
-		
+		this.value = format.getLanguage2Value();
 		// 遍历文本
-		for (String message : value.getLanguageValue()) {
+		for (String message : list) {
 			try {
 				// 动作栏提示
 				if (message.startsWith(KEY_TEXT)) {
@@ -72,8 +74,7 @@ public class Language2Action {
 		if (TabooLib.getVerint() < 10800) {
 			player.sendMessage(ChatColor.DARK_RED + "[<ERROR-30: " + value.getLanguageKey() + ">]");
 		}
-		// 检查玩家
-		else if (player != null) {
+		else {
 			new BukkitRunnable() {
 				int times = 0;
 				
@@ -86,8 +87,10 @@ public class Language2Action {
 				}
 			}.runTaskTimer(Main.getInst(), 0, 20);
 		}
-		else {
-			Bukkit.getConsoleSender().sendMessage(value.setPlaceholder(text, player));
-		}
+	}
+
+	@Override
+	public void console() {
+		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[<ERROR-40: " + value.getLanguageKey() + ">]");
 	}
 }

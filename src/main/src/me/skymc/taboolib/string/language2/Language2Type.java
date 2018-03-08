@@ -25,5 +25,9 @@ public enum Language2Type {
 	 * 小标题
 	 */
 	ACTION,
-
+	
+	/**
+	 * 音效
+	 */
+	SOUND,
 }
