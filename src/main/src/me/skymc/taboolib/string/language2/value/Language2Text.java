@@ -43,7 +43,7 @@ public class Language2Text implements Language2Line {
 	@Override
 	public void console() {
 		for (String line : text) {
-			Bukkit.getConsoleSender().sendMessage(line);
+			Bukkit.getConsoleSender().sendMessage(value.setPlaceholder(line, null));
 		}
 	}
 }
