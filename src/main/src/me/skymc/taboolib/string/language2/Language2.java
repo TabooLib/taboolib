@@ -66,6 +66,21 @@ public class Language2 {
 	}
 	
 	/**
+	 * 获取语言文件
+	 * 
+	 * @param key 键
+	 * @param placeholder 替换变量，从 @$0 开始
+	 * @return {@link Language2Value}
+	 */
+	public Language2Value get(String key, String... placeholder) {
+		Language2Value value = new Language2Value(this, key);
+		for (int i = 0 ; i < placeholder.length ; i++) {
+			value.addPlaceholder("$" + i, placeholder[i]);
+		}
+		return value;
+	}
+	
+	/**
 	 * 重载语言文件
 	 */
 	public void reload() {

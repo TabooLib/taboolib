@@ -129,7 +129,7 @@ public class Language2Value extends Object {
 		Language2Format format = new Language2Format(null, this);
 		if (format.getLanguage2Lines().get(0) instanceof Language2Text) {
 			Language2Text text = (Language2Text) format.getLanguage2Lines().get(0);
-			return text.getText().get(0);
+			return setPlaceholder(text.getText().get(0), null);
 		}
 		else {
 			return languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null);
@@ -145,7 +145,7 @@ public class Language2Value extends Object {
 		Language2Format format = new Language2Format(null, this);
 		if (format.getLanguage2Lines().get(0) instanceof Language2Text) {
 			Language2Text text = (Language2Text) format.getLanguage2Lines().get(0);
-			return text.getText();
+			return setPlaceholder(text.getText(), null);
 		}
 		else {
 			return Arrays.asList(languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null));
@@ -164,6 +164,21 @@ public class Language2Value extends Object {
 			value = value.replace(entry.getKey(), entry.getValue());
 		}
 		return isEnablePlaceholderAPI() ? this.language.setPlaceholderAPI(player, value) : value;
+	}
+	
+	/**
+	 * 变量替换
+	 * 
+	 * @param list 替换集合
+	 * @param player 检测玩家
+	 * @return {@link List}
+	 */
+	public List<String> setPlaceholder(List<String> list, Player player) {
+		List<String> _list = new ArrayList<>(list);
+		for (int i = 0 ; i < _list.size() ; i++) {
+			_list.set(i, setPlaceholder(_list.get(i), player));
+		}
+		return _list;
 	}
 	
 	/**
