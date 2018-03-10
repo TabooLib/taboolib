@@ -79,7 +79,7 @@ public class Language2Title implements Language2Line {
 			player.sendMessage(ChatColor.DARK_RED + "[<ERROR-31: " + value.getLanguageKey() + ">]");
 		}
 		else {
-			TitleUtils.sendTitle(player, value.setPlaceholder(title, player), value.setPlaceholder(subtitle, player), fade1, stay, fade2);
+			TitleUtils.sendTitle(player, title, subtitle, fade1, stay, fade2);
 		}
 	}
 

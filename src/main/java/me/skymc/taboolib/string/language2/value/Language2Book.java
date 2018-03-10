@@ -139,17 +139,17 @@ public class Language2Book implements Language2Line {
 			// 遍历内容
 			for (String _option : entry.getValue()) {
 				if (_option.startsWith(KEY_TEXT)) {
-					builder.text(value.setPlaceholder(_option.substring(KEY_TEXT.length()), player));
+					builder.text(_option.substring(KEY_TEXT.length()));
 				}
 				else if (_option.startsWith(KEY_COMMAND)) {
-					builder.onClick(ClickAction.runCommand(value.setPlaceholder(_option.substring(KEY_COMMAND.length()), player)));
+					builder.onClick(ClickAction.runCommand(_option.substring(KEY_COMMAND.length())));
 				}
 				else if (_option.startsWith(KEY_SUGGEST)) {
-					builder.onClick(ClickAction.suggestCommand(value.setPlaceholder(_option.substring(KEY_SUGGEST.length()), player)));
+					builder.onClick(ClickAction.suggestCommand(_option.substring(KEY_SUGGEST.length())));
 				}
 				else if (_option.startsWith(KEY_URL)) {
 					try {
-						builder.onClick(ClickAction.openUrl(value.setPlaceholder(_option.substring(KEY_URL.length()), player)));
+						builder.onClick(ClickAction.openUrl(_option.substring(KEY_URL.length())));
 					}
 					catch (Exception e) {
 						builder.text("§4[<ERROR-52: " + value.getLanguageKey() + ">]");
@@ -159,7 +159,7 @@ public class Language2Book implements Language2Line {
 					builder.onClick(ClickAction.changePage(NumberUtils.getInteger(_option.substring(KEY_PAGE.length()))));
 				}
 				else if (_option.startsWith(KEY_SHOWTEXT)) {
-					builder.onHover(HoverAction.showText(value.setPlaceholder(_option.substring(KEY_SHOWTEXT.length()), player)));
+					builder.onHover(HoverAction.showText(_option.substring(KEY_SHOWTEXT.length())));
 				}
 				else if (_option.startsWith(KEY_SHOWITEM)) {
 					ItemStack item = ItemUtils.getCacheItem(_option.substring(KEY_SHOWITEM.length()));

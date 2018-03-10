@@ -68,7 +68,7 @@ public class Language2Json implements Language2Line {
 			try {
 				// 如果是显示文本
 				if (message.startsWith(KEY_TEXT)) {
-					hoverEvent = new ShowTextEvent(value.setPlaceholder(message.replace("||", "\n").substring(KEY_TEXT.length()), player));
+					hoverEvent = new ShowTextEvent(message.replace("||", "\n").substring(KEY_TEXT.length()));
 				}
 				// 显示物品
 				else if (message.startsWith(KEY_ITEM)) {
@@ -80,15 +80,15 @@ public class Language2Json implements Language2Line {
 				}
 				// 执行指令
 				else if (message.startsWith(KEY_COMMAND)) {
-					clickEvent = new RunCommandEvent(value.setPlaceholder(message.substring(KEY_COMMAND.length()), player));
+					clickEvent = new RunCommandEvent(message.substring(KEY_COMMAND.length()));
 				}
 				// 打印指令
 				else if (message.startsWith(KEY_SUGGEST)) {
-					clickEvent = new SuggestCommandEvent(value.setPlaceholder(message.substring(KEY_SUGGEST.length()), player));
+					clickEvent = new SuggestCommandEvent(message.substring(KEY_SUGGEST.length()));
 				}
 				// 打开连接
 				else if (message.startsWith(KEY_URL)) {
-					clickEvent = new OpenUrlEvent(value.setPlaceholder(message.substring(KEY_SUGGEST.length()), player));
+					clickEvent = new OpenUrlEvent(message.substring(KEY_SUGGEST.length()));
 				}
 				// 换行
 				else if (message.equals("[break]")) {
@@ -149,16 +149,16 @@ public class Language2Json implements Language2Line {
 	private void append(String current, ClickEvent clickEvent, HoverEvent hoverEvent) {
 		if (clickEvent == null && hoverEvent == null) {
 			// 纯文本
-			json.append(value.setPlaceholder(current, player));
+			json.append(current);
 		} else if (clickEvent != null && hoverEvent == null) {
 			// 纯点击
-			json.appendClick(value.setPlaceholder(current, player), clickEvent);
+			json.appendClick(current, clickEvent);
 		} else if (clickEvent == null && hoverEvent != null) {
 			// 纯显示
-			json.appendHover(value.setPlaceholder(current, player), hoverEvent);
+			json.appendHover(current, hoverEvent);
 		} else {
 			// 全部
-			json.appendHoverClick(value.setPlaceholder(current, player), hoverEvent, clickEvent);
+			json.appendHoverClick(current, hoverEvent, clickEvent);
 		}
 		// 追加显示文本
 		text.append(current);
