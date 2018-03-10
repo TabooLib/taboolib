@@ -1,0 +1,23 @@
+
+name: TabooLib
+
+authors: [坏黑]
+website: http://www.15imc.com/index.html
+
+main: me.skymc.taboolib.Main
+
+version: 3.76
+
+commands:
+  taboolib:
+    aliases: [tlib]
+    permission: taboolib.admin
+  language2:
+    aliases: [lang2]
+    permission: taboolib.admin
+  taboolibrarymodule:
+    aliases: [tlm]
+    
+depend: [Vault]
+softdepend: [PlaceholderAPI, Skript, TabooCode]
+loadbefore: [Skript]
