@@ -1,0 +1,10 @@
+# 语言文件
+Language: 'zh_CN'
+
+# 启用模块
+# 该配置需要重启服务器才会生效
+EnableModule:
+#- 'Kits'
+#- 'TimeCycle'
+#- 'CommandChanger'
+#- 'InventorySave'
