@@ -105,7 +105,9 @@ public class Language2Format implements Language2Line {
 	private void parseValue(Player player, List<String> list, Language2Type type) {
 		if (list.size() == 0) {
 			return;
-		}
+		}	
+		// 变量转换
+		list = language2Value.setPlaceholder(list, player);
 		
 		// 大标题
 		if (type == Language2Type.TITLE) {

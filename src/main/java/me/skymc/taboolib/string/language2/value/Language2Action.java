@@ -80,7 +80,7 @@ public class Language2Action implements Language2Line {
 				
 				@Override
 				public void run() {
-					ActionUtils.send(player, value.setPlaceholder(text, player));
+					ActionUtils.send(player, text);
 					if ((times += 1) >= repeat) {
 						cancel();
 					}

@@ -36,14 +36,14 @@ public class Language2Text implements Language2Line {
 	@Override
 	public void send(Player player) {
 		for (String line : text) {
-			player.sendMessage(value.setPlaceholder(line, player));
+			player.sendMessage(line);
 		}
 	}
 
 	@Override
 	public void console() {
 		for (String line : text) {
-			Bukkit.getConsoleSender().sendMessage(value.setPlaceholder(line, null));
+			Bukkit.getConsoleSender().sendMessage(line);
 		}
 	}
 }
