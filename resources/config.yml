@@ -35,7 +35,7 @@ DELETE-VARIABLE: false
 ENABLE-UUID: false
 
 # 是否隐藏保存数据的提示
-HIDE-NOTIFY: false
+HIDE-NOTIFY: true
 
 # 数据库信息
 MYSQL:

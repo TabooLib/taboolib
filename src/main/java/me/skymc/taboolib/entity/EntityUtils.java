@@ -16,17 +16,25 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 
-import me.skymc.taboolib.methods.MethodsUtils;
+import lombok.Getter;
+import me.skymc.taboolib.exception.PluginNotFoundException;
 
-public class EntityUtils implements Listener{
+public class EntityUtils implements Listener {
 	
-	public static Entity lastSpawned = null;
+	@Getter
+	private static Entity lastSpawnedEntity = null;
 	
 	@EventHandler
 	public void spawn(EntitySpawnEvent e) {
-		lastSpawned = e.getEntity();
+		lastSpawnedEntity = e.getEntity();
 	}
 	
+	/**
+	 * 根据 UUID 获取生物
+	 * 
+	 * @param u
+	 * @return
+	 */
 	public static Entity getEntityWithUUID(UUID u) {
 		for (World w : Bukkit.getWorlds()) {
 			for (Entity e : w.getLivingEntities()) {
@@ -38,6 +46,13 @@ public class EntityUtils implements Listener{
 		return null;
 	}
 	
+	/**
+	 * 根据 UUID 获取生物（单世界）
+	 * 
+	 * @param u
+	 * @param world
+	 * @return
+	 */
 	public static Entity getEntityWithUUID_World(UUID u, World world) {
 		for (Entity e : world.getLivingEntities()) {
 			if (e.getUniqueId().equals(u)) {
@@ -46,7 +61,7 @@ public class EntityUtils implements Listener{
 		}
 		return null;
 	}
-
+	
 	/**
 	 * 设置生物发光（ProcotolLib）
 	 * 
@@ -54,6 +69,14 @@ public class EntityUtils implements Listener{
 	 * @param entity
 	 */
 	public static void addGlow(Player player,Entity entity) {
+		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
+			try {
+				throw new PluginNotFoundException("缺少前置插件 ProtocolLib");
+			}
+			catch (Exception e) {
+				//
+			}
+		}
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher watcher = new WrappedDataWatcher();
@@ -75,6 +98,13 @@ public class EntityUtils implements Listener{
 	 * @param entity
 	 */
     public static void delGlow(Player player,Entity entity) {
+		if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
+			try {
+				throw new PluginNotFoundException("缺少前置插件 ProtocolLib");
+			} catch (Exception e) {
+				//
+			}
+		}
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getIntegers().write(0, entity.getEntityId());
         WrappedDataWatcher watcher = new WrappedDataWatcher();
