@@ -9,6 +9,7 @@ import java.nio.channels.FileChannel;
 
 import me.skymc.taboolib.methods.MethodsUtils;
 
+@Deprecated
 public class CopyUtils {
 	
 	public static long Copy(File file1, File file2) throws IOException {

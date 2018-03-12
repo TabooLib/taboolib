@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
 import java.util.List;
 
 import me.skymc.taboolib.message.MsgUtils;
@@ -34,6 +35,12 @@ public class FileUtils {
         return "[IP ERROR]";
     }  
 	
+	/**
+	 * 创建并获取文件
+	 * 
+	 * @param filePath
+	 * @return
+	 */
 	public static File file(String filePath) {
 		File file = new File(filePath);
 		if (!file.exists()) {
@@ -46,6 +53,13 @@ public class FileUtils {
 		return file;
 	}
 	
+	/**
+	 * 创建并获取文件
+	 * 
+	 * @param Path
+	 * @param filePath
+	 * @return
+	 */
 	public static File file(File Path, String filePath) {
 		File file = new File(Path, filePath);
 		if (!file.exists()) {
@@ -58,6 +72,96 @@ public class FileUtils {
 		return file;
 	}
 	
+	/**
+	 * 删除文件夹
+	 * 
+	 * @param file
+	 */
+	public void deleteAllFile(File file) {  
+	    if (!file.exists()) {
+	        return;  
+	    }
+	    if (file.isFile()) {  
+	    	file.delete();  
+	        return;  
+	    }  
+	    File[] files = file.listFiles();  
+	    for (int i = 0; i < files.length; i++) {  
+	    	deleteAllFile(files[i]);  
+	    }  
+	    file.delete();
+	} 
+	
+	/**
+	 * 复制文件夹
+	 * 
+     * @param file1 文件1
+     * @param file2 文件2
+	 * @throws Exception
+	 */
+    public void copyAllFile(String file1, String file2) throws Exception {
+        File _file1 = new File(file1);
+        File _file2 = new File(file2);
+        if (!_file2.exists()) {
+        	if (!_file1.isDirectory()) {
+        		_file2.createNewFile();
+        	} else {
+        		_file2.mkdirs();
+        	}
+        }
+        if (_file1.isDirectory()) {
+	        for (File file : _file1.listFiles()) {
+	            if (file.isDirectory()) {
+	                file.getName();
+	                copyAllFile(file.getAbsolutePath(), file2 + "/" + file.getName());
+	            } else {
+	            	fileChannelCopy(file, new File(file2 + "/" + file.getName()));
+	            }
+	        }
+        } else {
+        	fileChannelCopy(_file1, _file2);
+        }
+    }
+	
+    /**
+     * 复制文件（通道）
+     * 
+     * @param file1 文件1
+     * @param file2 文件2
+     */
+	public void fileChannelCopy(File file1, File file2) {  
+        FileInputStream fileIn = null;  
+        FileOutputStream fileOut = null;  
+        FileChannel channelIn = null;  
+        FileChannel channelOut = null;  
+        try {  
+            fileIn = new FileInputStream(file1);  
+            fileOut = new FileOutputStream(file2);  
+            channelIn = fileIn.getChannel();
+            channelOut = fileOut.getChannel();
+            channelIn.transferTo(0, channelIn.size(), channelOut);
+        } catch (Exception e) {  
+            //
+        } finally {  
+            try {  
+            	fileIn.close();  
+                channelIn.close();  
+                fileOut.close();  
+                channelOut.close();  
+            } catch (Exception e) {  
+                //
+            }  
+        }  
+    } 
+	
+	/**
+	 * 通过输入流读取文本
+	 * 
+	 * @param in
+	 * @param size
+	 * @param encode
+	 * @return
+	 */
 	public static String getStringFromInputStream(InputStream in, int size, String encode) {
 		try {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -77,6 +181,14 @@ public class FileUtils {
 		return null;
 	}
 	
+	/**
+	 * 通过文件读取文本
+	 * 
+	 * @param file
+	 * @param size
+	 * @param encode
+	 * @return
+	 */
 	public static String getStringFromFile(File file, int size, String encode) {
 		try {
 			FileInputStream fin = new FileInputStream(file);
@@ -100,6 +212,13 @@ public class FileUtils {
 		return null;
 	}
 	
+	/**
+	 * 通过 URL 读取文本
+	 * 
+	 * @param url
+	 * @param size
+	 * @return
+	 */
 	public static String getStringFromURL(String url, int size) {
 		try {
 			URLConnection conn = new URL(url).openConnection();
@@ -123,32 +242,12 @@ public class FileUtils {
 	}
 	
     /**
-     * Write a UTF8 file
-     *
-     * @param strs list of lines
-     * @param f file to write
-     *
+     * 下载文件
+     * 
+     * @param urlStr
+     * @param filename
+     * @param saveDir
      */
-    public FileUtils(List<String> strs, File f) throws IOException 
-    {
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(f), "UTF8"));
-        for(String s : strs) {
-            out.write(s+"\n");
-        }
-        out.flush();
-        out.close();
-    }
-
-    public FileUtils(String str, File f) throws IOException 
-    {
-        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(f), "UTF8"));
-        out.write(str);
-        out.flush();
-        out.close();
-    }
-    
     public static void download(String urlStr, String filename, File saveDir) {
 		try {
 			URL url = new URL(urlStr);
@@ -185,6 +284,12 @@ public class FileUtils {
 		}
 	}
 	
+    /**
+     * 读取字节
+     * 
+     * @param in
+     * @return
+     */
 	private static byte[] read(InputStream in) {
 		byte[] buffer = new byte[1024];
 		int len = 0;
