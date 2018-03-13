@@ -88,38 +88,36 @@ public class EntityTag {
 	 * 移除标签
 	 * 
 	 * @param key 键
-	 * @param value 值
 	 * @param entity 实体
 	 */
-	public void remove(String key, Object value, Entity entity) {
+	public Object remove(String key, Entity entity) {
 		if (contains(entity)) {
 			entityData.get(entity.getUniqueId()).remove(key);
 			if (entityData.get(entity.getUniqueId()).size() == 0) {
-				entityData.remove(entity.getUniqueId());
+				return entityData.remove(entity.getUniqueId());
 			}
 		}
+		return null;
 	}
 	
 	/**
 	 * 移除标签
 	 * 
 	 * @param key 键
-	 * @param value 值
 	 * @param entities 实体
 	 */
-	public void remove(String key, Object value, Entity... entities) {
-		for (Entity entity : entities) remove(key, value, entity);
+	public void remove(String key, Entity... entities) {
+		for (Entity entity : entities) remove(key, entity);
 	}
 	
 	/**
 	 * 移除标签
 	 * 
 	 * @param key 键
-	 * @param value 值
 	 * @param entities 实体
 	 */
-	public void remove(String key, Object value, List<Entity> entities) {
-		for (Entity entity : entities) remove(key, value, entity);
+	public void remove(String key, List<Entity> entities) {
+		for (Entity entity : entities) remove(key, entity);
 	}
 	
 	/**

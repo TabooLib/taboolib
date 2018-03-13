@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.tlm.annotation.DisableConfig;
@@ -70,6 +71,17 @@ public class ModuleInventorySave implements ITabooLibraryModule, Listener {
 	 * @param name 名称
 	 */
 	public void pasteInventory(Player player, String name) {
+		pasteInventory(player, name, "null");
+	}
+	
+	/**
+	 * 覆盖玩家背包
+	 * 
+	 * @param player 玩家
+	 * @param name 名称
+	 * @param module 模式
+	 */
+	public void pasteInventory(Player player, String name, String module) {
 		// 如果背包不存在
 		if (!conf.contains(name)) {
 			MsgUtils.warn("模块执行异常: &4背包不存在");
@@ -77,11 +89,25 @@ public class ModuleInventorySave implements ITabooLibraryModule, Listener {
 			MsgUtils.warn("位于: &4" + name);
 			return;
 		}
-		
+		// 异常物品
+		List<ItemStack> otherItem = new ArrayList<>();
 		// 设置物品
 		for (int i = 0 ; i < (TabooLib.getVerint() > 10800 ? 41 : 40) ; i++) {
 			try {
 				ItemStack item = (ItemStack) conf.get(name + "." + i);
+				// 如果原本有物品
+				if (!ItemUtils.isNull(player.getInventory().getItem(i))) {
+					// 跳过
+					if (module.equalsIgnoreCase("-b")) {
+						continue;
+					}
+					// 给予
+					else if (module.equalsIgnoreCase("-a")) {
+						otherItem.add(item);
+						continue;
+					}
+				}
+				// 覆盖
 				player.getInventory().setItem(i, item);
 			}
 			catch (Exception e) {
@@ -89,6 +115,10 @@ public class ModuleInventorySave implements ITabooLibraryModule, Listener {
 				MsgUtils.warn("模块: &4InventorySave");
 				MsgUtils.warn("位于: &4" + name + ":" + i);
 			}
+		}
+		// 循环异常物品
+		for (ItemStack item : otherItem) {
+			player.getInventory().addItem(item);
 		}
 	}
 	
