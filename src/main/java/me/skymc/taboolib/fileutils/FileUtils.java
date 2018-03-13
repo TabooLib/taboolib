@@ -112,7 +112,6 @@ public class FileUtils {
         if (_file1.isDirectory()) {
 	        for (File file : _file1.listFiles()) {
 	            if (file.isDirectory()) {
-	                file.getName();
 	                copyAllFile(file.getAbsolutePath(), file2 + "/" + file.getName());
 	            } else {
 	            	fileChannelCopy(file, new File(file2 + "/" + file.getName()));
