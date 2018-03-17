@@ -9,6 +9,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
+import me.skymc.taboocode.TabooCodeItem;
 
 /**
  * @author sky
@@ -17,8 +18,6 @@ import ch.njol.util.Kleenean;
 public class ExpressionTabooCodeItem extends SimpleExpression<ItemStack> {
 	
 	private Expression<String> name;
-	private Class<?> tabooCodeItem;
-	private Method getItem;
 
 	@Override
 	public Class<? extends ItemStack> getReturnType() {
@@ -34,13 +33,6 @@ public class ExpressionTabooCodeItem extends SimpleExpression<ItemStack> {
 	@Override
 	public boolean init(Expression<?>[] args, int arg1, Kleenean arg2, ParseResult arg3) {
 		name = (Expression<String>) args[0];
-		try {
-			tabooCodeItem = Class.forName("me.skymc.taboocode.TabooCodeItem");
-			getItem = tabooCodeItem.getMethod("getItem", String.class, Boolean.class);
-		}
-		catch (Exception e) {
-			//
-		}
 		return true;
 	}
 
@@ -52,7 +44,7 @@ public class ExpressionTabooCodeItem extends SimpleExpression<ItemStack> {
 	@Override
 	protected ItemStack[] get(Event e) {
 		try {
-			ItemStack item = (ItemStack) getItem.invoke(null, name.getSingle(e), false);
+			ItemStack item = TabooCodeItem.getItem(name.getSingle(e), false);
 			return new ItemStack[] { item == null ? null : item.clone() };
 		}
 		catch (Exception err) {

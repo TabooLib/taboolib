@@ -88,7 +88,7 @@ public class Language2Json implements Language2Line {
 				}
 				// 打开连接
 				else if (message.startsWith(KEY_URL)) {
-					clickEvent = new OpenUrlEvent(message.substring(KEY_SUGGEST.length()));
+					clickEvent = new OpenUrlEvent(message.substring(KEY_URL.length()));
 				}
 				// 换行
 				else if (message.equals("[break]")) {
