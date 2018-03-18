@@ -32,6 +32,7 @@ public class HelpCommand extends SubCommand {
 		helps.put("/taboolib potions", "§e查看所有药水");
 		helps.put("/taboolib flags", "§e查看所有标签");
 		helps.put("/taboolib slots", "§e查看所有部位");
+		helps.put("/taboolib sounds", "§e查看所有音效");
 		helps.put("§b", null);
 		helps.put("/taboolib getvariable §8[§7-s|a§8] §8[§7键§8]", "§e查看变量");
 		helps.put("/taboolib setvariable §8[§7-s|a§8] §8[§7键§8] §8[§7值§8]", "§e更改变量");

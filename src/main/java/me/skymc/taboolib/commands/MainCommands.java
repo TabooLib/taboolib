@@ -27,6 +27,7 @@ import me.skymc.taboolib.commands.sub.VariableSetCommand;
 import me.skymc.taboolib.commands.sub.cycle.CycleCommand;
 import me.skymc.taboolib.commands.sub.itemlist.ItemListCommand;
 import me.skymc.taboolib.commands.sub.shell.ShellCommand;
+import me.skymc.taboolib.commands.sub.sounds.SoundsCommand;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.MsgUtils;
 
@@ -83,6 +84,9 @@ public class MainCommands implements CommandExecutor{
 		}
 		else if (args[0].equalsIgnoreCase("cycle") || args[0].equalsIgnoreCase("c")) {
 			new CycleCommand(sender, args);
+		}
+		else if (args[0].equalsIgnoreCase("sounds")) {
+			new SoundsCommand(sender, args);
 		}
 		else {
 			MsgUtils.send(sender, "&4指令错误");
