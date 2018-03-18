@@ -18,6 +18,7 @@ import me.skymc.taboolib.client.LogClient;
 import me.skymc.taboolib.commands.MainCommands;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
+import me.skymc.taboolib.commands.sub.sounds.listener.SoundsLibraryPatch;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
@@ -307,6 +308,8 @@ public class Main extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new ListenerPluginDisable(), this);
 		getServer().getPluginManager().registerEvents(new PlayerDataManager(), this);
 		getServer().getPluginManager().registerEvents(new ItemLibraryPatch(), this);
+		getServer().getPluginManager().registerEvents(new SoundsLibraryPatch(), this);
+
 		
 		if (TabooLib.getVerint() > 10700) {
 			getServer().getPluginManager().registerEvents(new EntityUtils(), this);
