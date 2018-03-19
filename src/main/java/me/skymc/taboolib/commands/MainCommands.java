@@ -22,6 +22,9 @@ import me.skymc.taboolib.commands.sub.ItemCommand;
 import me.skymc.taboolib.commands.sub.PotionCommand;
 import me.skymc.taboolib.commands.sub.SaveCommand;
 import me.skymc.taboolib.commands.sub.SlotCommand;
+import me.skymc.taboolib.commands.sub.TagDeleteCommand;
+import me.skymc.taboolib.commands.sub.TagPrefixCommand;
+import me.skymc.taboolib.commands.sub.TagSuffixCommand;
 import me.skymc.taboolib.commands.sub.VariableGetCommand;
 import me.skymc.taboolib.commands.sub.VariableSetCommand;
 import me.skymc.taboolib.commands.sub.cycle.CycleCommand;
@@ -87,6 +90,15 @@ public class MainCommands implements CommandExecutor{
 		}
 		else if (args[0].equalsIgnoreCase("sounds")) {
 			new SoundsCommand(sender, args);
+		}
+		else if (args[0].equalsIgnoreCase("tagprefix")) {
+			new TagPrefixCommand(sender, args);
+		}
+		else if (args[0].equalsIgnoreCase("tagsuffix")) {
+			new TagSuffixCommand(sender, args);
+		}
+		else if (args[0].equalsIgnoreCase("tagdelete")) {
+			new TagDeleteCommand(sender, args);
 		}
 		else {
 			MsgUtils.send(sender, "&4指令错误");

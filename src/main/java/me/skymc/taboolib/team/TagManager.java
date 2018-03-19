@@ -97,6 +97,24 @@ public class TagManager implements Listener {
 	}
 	
 	/**
+	 * 删除该玩家的称号数据
+	 * 
+	 * @param player
+	 */
+	public void removeData(Player player) {
+		playerdata.remove(player.getName());
+		for (Player _player : Bukkit.getOnlinePlayers()) {
+			Scoreboard scoreboard = _player.getScoreboard();
+			if (scoreboard != null) {
+				Team team = scoreboard.getTeam(player.getName());
+				if (team != null) {
+					team.unregister();
+				}
+			}
+		}
+	}
+	
+	/**
 	 * 将该玩家的数据向服务器所有玩家更新
 	 * 
 	 * @param player 玩家
@@ -162,7 +180,7 @@ public class TagManager implements Listener {
 	
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		playerdata.remove(e.getPlayer().getName());
+		removeData(e.getPlayer());
 	}
 	
 	static class PlayerData {
