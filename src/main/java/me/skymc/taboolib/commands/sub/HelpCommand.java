@@ -44,6 +44,10 @@ public class HelpCommand extends SubCommand {
 		helps.put("§f", null);
 		helps.put("/taboolib shell load §8[§7名称§8]", "§e载入某个脚本");
 		helps.put("/taboolib shell unload §8[§7名称§8]", "§e卸载某个脚本");
+		helps.put("§g", null);
+		helps.put("/taboolib tagprefix §8[§7名称§8] §8[§7文本§8]", "§e设置玩家头顶前缀");
+		helps.put("/taboolib tagsuffix §8[§7名称§8] §8[§7文本§8]", "§e设置玩家头顶后缀");
+		helps.put("/taboolib tagdelete §8[§7名称§8]", "§e删除玩家称号数据");
 		helps.put("§e", null);
 		helps.put("/taboolib importdata", "§4向数据库导入本地数据 §8(该操作将会清空数据库)");
 		
