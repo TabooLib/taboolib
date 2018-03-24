@@ -9,11 +9,7 @@ public class MethodsUtils {
 	
 	public static boolean checkUser(String packagename, String current)
 	{
-		if (current.substring(0, 8).equals(packagename))
-		{
-			return true;
-		}
-		return false;
+		return current.substring(0, 8).equals(packagename);
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -23,22 +19,14 @@ public class MethodsUtils {
 		{
 			throw new Error("未经允许的方法调用");
 		}
-		
-    	Class<? extends Object> clazz = classname.getClass();
+
+		Class<?> clazz = classname.getClass();
 		Method method = null;
 		try {
 			method = clazz.getDeclaredMethod(methodname, classes);
 			method.setAccessible(true);
 			return new Object[] { method.invoke(classname, objects) };
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (SecurityException | InvocationTargetException | IllegalAccessException | NoSuchMethodException | IllegalArgumentException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -50,21 +38,15 @@ public class MethodsUtils {
 		{
 			throw new Error("未经允许的方法调用");
 		}
-		
-		Class<? extends Object> clazz = classname.getClass();
+
+		Class<?> clazz = classname.getClass();
 		Field field = null;
 		Object object = null;
 		try {
 			field = clazz.getDeclaredField(fieldname);
 			field.setAccessible(true);
 			object = field.get(classname);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException | SecurityException e) {
 			e.printStackTrace();
 		}
 		return object;

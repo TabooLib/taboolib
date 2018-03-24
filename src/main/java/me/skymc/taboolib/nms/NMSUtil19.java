@@ -1,12 +1,7 @@
 package me.skymc.taboolib.nms;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
@@ -24,12 +19,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -1139,8 +1129,7 @@ public class NMSUtil19 {
     }
 
     public static boolean hasMeta(ItemStack stack, String tag) {
-        if (NMSUtil19.isEmpty(stack)) return false;
-        return getNode(stack, tag) != null;
+        return !NMSUtil19.isEmpty(stack) && getNode(stack, tag) != null;
     }
 
     public static Object getTag(ItemStack itemStack) {
@@ -1474,7 +1463,7 @@ public class NMSUtil19 {
             Object tagObject = getTag(craft);
             if (tagObject == null) return false;
             unbreakableFlag = getMetaBoolean(tagObject, "Unbreakable");
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
         
@@ -1493,7 +1482,7 @@ public class NMSUtil19 {
             Object unbreakableFlag = null;
             unbreakableFlag = class_NBTTagByte_constructor.newInstance((byte) 1);
             class_NBTTagCompound_setMethod.invoke(tagObject, "Unbreakable", unbreakableFlag);
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }
@@ -1514,7 +1503,7 @@ public class NMSUtil19 {
             Object hideFlag = null;
             hideFlag = class_NBTTagByte_constructor.newInstance(flags);
             class_NBTTagCompound_setMethod.invoke(tagObject, "HideFlags", hideFlag);
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }

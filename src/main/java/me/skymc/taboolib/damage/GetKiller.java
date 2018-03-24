@@ -1,11 +1,8 @@
 package me.skymc.taboolib.damage;
 
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDeathEvent;
-
-import me.skymc.taboolib.methods.MethodsUtils;
 
 public class GetKiller {
 	

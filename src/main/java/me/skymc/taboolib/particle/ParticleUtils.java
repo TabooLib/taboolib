@@ -1,7 +1,8 @@
 package me.skymc.taboolib.particle;
 
-import org.bukkit.*;
 import org.bukkit.Color;
+import org.bukkit.Effect;
+import org.bukkit.Location;
 
 public class ParticleUtils {
 

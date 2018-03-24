@@ -3,8 +3,6 @@ package me.skymc.taboolib.other;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-import me.skymc.taboolib.methods.MethodsUtils;
-
 public class NumberUtils {
 	
 	private static Random rand = new Random();
@@ -25,7 +23,7 @@ public class NumberUtils {
 	
 	@Deprecated
     public static boolean getChance(int a) {
-        return getRandom() <= a ? true : false;
+        return getRandom() <= a;
     }
     
     public static int getRandomInteger(Number l, Number u) {

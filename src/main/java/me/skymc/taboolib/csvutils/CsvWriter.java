@@ -1,7 +1,7 @@
 package me.skymc.taboolib.csvutils;
 
-import java.nio.charset.*;
 import java.io.*;
+import java.nio.charset.Charset;
 
 public class CsvWriter
 {
@@ -202,14 +202,22 @@ public class CsvWriter
         }
         this.firstColumn = true;
     }
-    
-    public void writeRecord(final String[] array, final boolean b) throws IOException {
-        if (array != null && array.length > 0) {
-            for (int i = 0; i < array.length; ++i) {
-                this.write(array[i], b);
+
+    public static String replace(final String s, final String s2, final String s3) {
+        final int length = s2.length();
+        int i = s.indexOf(s2);
+        if (i > -1) {
+            final StringBuilder sb = new StringBuilder();
+            int n;
+            for (n = 0; i != -1; i = s.indexOf(s2, n)) {
+                sb.append(s.substring(n, i));
+                sb.append(s3);
+                n = i + length;
             }
-            this.endRecord();
+            sb.append(s.substring(n));
+            return sb.toString();
         }
+        return s;
     }
     
     public void writeRecord(final String[] array) throws IOException {
@@ -247,6 +255,25 @@ public class CsvWriter
             this.closed = true;
         }
     }
+
+    public void writeRecord(final String[] array, final boolean b) throws IOException {
+        if (array != null && array.length > 0) {
+            for (String anArray : array) {
+                this.write(anArray, b);
+            }
+            this.endRecord();
+        }
+    }
+
+    private void checkClosed() throws IOException {
+        if (this.closed) {
+            throw new IOException("This instance of the CsvWriter class has already been closed.");
+        }
+    }
+
+    protected void finalize() {
+        this.close(false);
+    }
     
     private void close(final boolean b) {
         if (!this.closed) {
@@ -257,38 +284,11 @@ public class CsvWriter
                 if (this.initialized) {
                     this.outputStream.close();
                 }
+            } catch (Exception ignored) {
             }
-            catch (Exception ex) {}
             this.outputStream = null;
             this.closed = true;
         }
-    }
-    
-    private void checkClosed() throws IOException {
-        if (this.closed) {
-            throw new IOException("This instance of the CsvWriter class has already been closed.");
-        }
-    }
-    
-    protected void finalize() {
-        this.close(false);
-    }
-    
-    public static String replace(final String s, final String s2, final String s3) {
-        final int length = s2.length();
-        int i = s.indexOf(s2);
-        if (i > -1) {
-            final StringBuffer sb = new StringBuffer();
-            int n;
-            for (n = 0; i != -1; i = s.indexOf(s2, n)) {
-                sb.append(s.substring(n, i));
-                sb.append(s3);
-                n = i + length;
-            }
-            sb.append(s.substring(n));
-            return sb.toString();
-        }
-        return s;
     }
     
     private class UserSettings

@@ -1,17 +1,11 @@
 package me.skymc.taboolib.string;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.plugin.Plugin;
 
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
 
 @Deprecated
 public class LanguageUtils {
@@ -27,7 +21,7 @@ public class LanguageUtils {
 		if (l.getLanguage().containsKey(key)) {
 			return l.getLanguage().get(key);
 		}
-		return Arrays.asList("");
+		return Collections.singletonList("");
 	}
 	
 	public static void saveLanguageFile(String name, Plugin plugin) {

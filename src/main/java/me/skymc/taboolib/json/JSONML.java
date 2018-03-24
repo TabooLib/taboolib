@@ -40,33 +40,37 @@ public class JSONML {
                         return token;
                     } else if (token == XML.BANG) {
                         c = x.next();
-                        if (c == '-') {
-                            if (x.next() == '-') {
-                                x.skipPast("-->");
-                            } else {
-                                x.back();
-                            }
-                        } else if (c == '[') {
-                            token = x.nextToken();
-                            if (token.equals("CDATA") && x.next() == '[') {
-                                if (ja != null) {
-                                    ja.put(x.nextCDATA());
+                        switch (c) {
+                            case '-':
+                                if (x.next() == '-') {
+                                    x.skipPast("-->");
+                                } else {
+                                    x.back();
                                 }
-                            } else {
-                                throw x.syntaxError("Expected 'CDATA['");
-                            }
-                        } else {
-                            i = 1;
-                            do {
-                                token = x.nextMeta();
-                                if (token == null) {
-                                    throw x.syntaxError("Missing '>' after '<!'.");
-                                } else if (token == XML.LT) {
-                                    i += 1;
-                                } else if (token == XML.GT) {
-                                    i -= 1;
+                                break;
+                            case '[':
+                                token = x.nextToken();
+                                if (token.equals("CDATA") && x.next() == '[') {
+                                    if (ja != null) {
+                                        ja.put(x.nextCDATA());
+                                    }
+                                } else {
+                                    throw x.syntaxError("Expected 'CDATA['");
                                 }
-                            } while (i > 0);
+                                break;
+                            default:
+                                i = 1;
+                                do {
+                                    token = x.nextMeta();
+                                    if (token == null) {
+                                        throw x.syntaxError("Missing '>' after '<!'.");
+                                    } else if (token == XML.LT) {
+                                        i += 1;
+                                    } else if (token == XML.GT) {
+                                        i -= 1;
+                                    }
+                                } while (i > 0);
+                                break;
                         }
                     } else if (token == XML.QUEST) {
                         x.skipPast("?>");
@@ -189,7 +193,7 @@ public class JSONML {
         Iterator     keys;
         int             length;
         Object         object;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         String       tagName;
         String       value;
         tagName = ja.getString(0);
@@ -247,7 +251,7 @@ public class JSONML {
     }
 
     public static String toString(JSONObject jo) throws JSONException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int          i;
         JSONArray    ja;
         String       key;

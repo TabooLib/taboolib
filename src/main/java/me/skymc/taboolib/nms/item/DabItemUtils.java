@@ -1,22 +1,21 @@
 package me.skymc.taboolib.nms.item;
 
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.json.JSONArray;
+import me.skymc.taboolib.json.JSONObject;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.nms.item.impl._164ItemUtils;
+import me.skymc.taboolib.nms.item.impl._1710ItemUtils;
+import me.skymc.taboolib.nms.item.impl._194ItemUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.json.JSONArray;
-import me.skymc.taboolib.json.JSONObject;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.nms.item.impl._194ItemUtils;
-import me.skymc.taboolib.nms.item.impl._164ItemUtils;
-import me.skymc.taboolib.nms.item.impl._1710ItemUtils;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 public class DabItemUtils {
 	
@@ -32,21 +31,21 @@ public class DabItemUtils {
 			inst.convertItemStackToJSON(is);
 			MsgUtils.send("载入 1.9.4 Spigot 物品工具成功!");
 			return inst;
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		try{
 			_1710ItemUtils inst = new _1710ItemUtils();
 			inst.convertItemStackToJSON(is);
 			MsgUtils.send("载入 1.7.10 Cauldron 物品工具成功!");
 			return inst;
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		try{
 			IDabItemUtils inst = new _164ItemUtils();
 			inst.convertItemStackToJSON(is);
 			MsgUtils.send("载入 1.6.4 Cauldron 物品工具成功!");
 			return inst;
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		MsgUtils.send("&4物品工具载入失败, 插件已关闭!");
 		Bukkit.getPluginManager().disablePlugin(Main.getInst());

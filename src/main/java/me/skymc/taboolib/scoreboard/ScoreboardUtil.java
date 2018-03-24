@@ -45,8 +45,7 @@ public class ScoreboardUtil
 
 	public static HashMap<String, Integer> cutRanked(HashMap<String, Integer> content)
 	{
-		HashMap<String, Integer> elements = new HashMap<>();
-		elements.putAll(content);
+		HashMap<String, Integer> elements = new HashMap<>(content);
 
 		while(elements.size() > 15)
 		{

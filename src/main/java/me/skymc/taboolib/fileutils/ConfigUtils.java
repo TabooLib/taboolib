@@ -1,21 +1,13 @@
 package me.skymc.taboolib.fileutils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.util.HashMap;
-
+import com.google.common.base.Charsets;
+import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import com.google.common.base.Charsets;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.*;
 
 public class ConfigUtils {
 	
@@ -47,8 +39,6 @@ public class ConfigUtils {
 	/**
 	 * 以 UTF-8 的格式载入配置文件
 	 * 
-	 * @param main
-	 * @param filename
 	 * @return
 	 */
 	public static FileConfiguration load(Plugin plugin, File file) {

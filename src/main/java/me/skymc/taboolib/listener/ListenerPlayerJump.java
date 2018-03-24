@@ -1,12 +1,10 @@
 package me.skymc.taboolib.listener;
 
-import java.util.HashMap;
+import me.skymc.taboolib.events.PlayerJumpEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,7 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import me.skymc.taboolib.events.PlayerJumpEvent;
+import java.util.HashMap;
 
 public class ListenerPlayerJump
   implements Listener
@@ -31,17 +29,16 @@ public class ListenerPlayerJump
     	{
     		if (!this.cooldown.containsKey(event.getPlayer()))
     		{
-    			this.cooldown.put(event.getPlayer(), Long.valueOf(System.currentTimeMillis() + 350L));
+                this.cooldown.put(event.getPlayer(), System.currentTimeMillis() + 350L);
     			PlayerJumpEvent evt = new PlayerJumpEvent(event.isCancelled(), event.getPlayer());
     			Bukkit.getPluginManager().callEvent(evt);
     			if (evt.isCancelled())
     			{
     				event.setCancelled(true);
     			}
-    		}
-    		else if (((Long)this.cooldown.get(event.getPlayer())).longValue() <= System.currentTimeMillis())
+            } else if (this.cooldown.get(event.getPlayer()) <= System.currentTimeMillis())
     		{
-    			this.cooldown.put(event.getPlayer(), Long.valueOf(System.currentTimeMillis() + 350L));
+                this.cooldown.put(event.getPlayer(), System.currentTimeMillis() + 350L);
     			PlayerJumpEvent evt = new PlayerJumpEvent(event.isCancelled(), event.getPlayer());
 
     			Bukkit.getPluginManager().callEvent(evt);

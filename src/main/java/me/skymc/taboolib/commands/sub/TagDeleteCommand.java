@@ -1,13 +1,11 @@
 package me.skymc.taboolib.commands.sub;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.team.TagManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * @author sky

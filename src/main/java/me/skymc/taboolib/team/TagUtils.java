@@ -1,13 +1,9 @@
 package me.skymc.taboolib.team;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
-
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.methods.MethodsUtils;
 
 /**
  * @author sky

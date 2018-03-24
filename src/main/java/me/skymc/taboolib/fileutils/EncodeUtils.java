@@ -1,13 +1,6 @@
 package me.skymc.taboolib.fileutils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
@@ -40,7 +33,6 @@ public class EncodeUtils {
 	/**
 	 * 把指定文件或目录转换成指定的编码
 	 * 
-	 * @param file 要转换的文件或目录
 	 * @param fromCharsetName 源文件的编码
 	 * @param toCharsetName 转换的编码
 	 * @param filter 文件名过滤器

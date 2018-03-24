@@ -6,13 +6,7 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JSONObject {
@@ -42,9 +36,9 @@ public class JSONObject {
 
     public JSONObject(JSONObject jo, String[] names) {
         this();
-        for (int i = 0; i < names.length; i += 1) {
+        for (String name : names) {
             try {
-                this.putOnce(names[i], jo.opt(names[i]));
+                this.putOnce(name, jo.opt(name));
             } catch (Exception ignore) {
             }
         }
@@ -97,9 +91,8 @@ public class JSONObject {
     public JSONObject(Map map) {
         this.map = new HashMap();
         if (map != null) {
-            Iterator i = map.entrySet().iterator();
-            while (i.hasNext()) {
-                Map.Entry e = (Map.Entry)i.next();
+            for (Object o : map.entrySet()) {
+                Map.Entry e = (Map.Entry) o;
                 Object value = e.getValue();
                 if (value != null) {
                     this.map.put(e.getKey(), wrap(value));
@@ -116,8 +109,7 @@ public class JSONObject {
     public JSONObject(Object object, String names[]) {
         this();
         Class c = object.getClass();
-        for (int i = 0; i < names.length; i += 1) {
-            String name = names[i];
+        for (String name : names) {
             try {
                 this.putOpt(name, c.getField(name).get(object));
             } catch (Exception ignore) {
@@ -329,22 +321,41 @@ public class JSONObject {
         return this.map.containsKey(key);
     }
 
-    public JSONObject increment(String key) throws JSONException {
-        Object value = this.opt(key);
-        if (value == null) {
-            this.put(key, 1);
-        } else if (value instanceof Integer) {
-            this.put(key, ((Integer)value).intValue() + 1);
-        } else if (value instanceof Long) {
-            this.put(key, ((Long)value).longValue() + 1);
-        } else if (value instanceof Double) {
-            this.put(key, ((Double)value).doubleValue() + 1);
-        } else if (value instanceof Float) {
-            this.put(key, ((Float)value).floatValue() + 1);
-        } else {
-            throw new JSONException("Unable to increment [" + quote(key) + "].");
+    public static Object stringToValue(String string) {
+        Double d;
+        if (string.equals("")) {
+            return string;
         }
-        return this;
+        if (string.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        }
+        if (string.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        }
+        if (string.equalsIgnoreCase("null")) {
+            return JSONObject.NULL;
+        }
+        char b = string.charAt(0);
+        if ((b >= '0' && b <= '9') || b == '.' || b == '-' || b == '+') {
+            try {
+                if (string.indexOf('.') > -1 ||
+                        string.indexOf('e') > -1 || string.indexOf('E') > -1) {
+                    d = Double.valueOf(string);
+                    if (!d.isInfinite() && !d.isNaN()) {
+                        return d;
+                    }
+                } else {
+                    Long myLong = new Long(string);
+                    if (myLong == myLong.intValue()) {
+                        return myLong.intValue();
+                    } else {
+                        return myLong;
+                    }
+                }
+            } catch (Exception ignore) {
+            }
+        }
+        return string;
     }
 
     public boolean isNull(String key) {
@@ -458,49 +469,39 @@ public class JSONObject {
         return NULL.equals(object) ? defaultValue : object.toString();
     }
 
-
-    private void populateMap(Object bean) {
-        Class klass = bean.getClass();
-        boolean includeSuperClass = klass.getClassLoader() != null;
-
-        Method[] methods = includeSuperClass
-                ? klass.getMethods()
-                : klass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i += 1) {
-            try {
-                Method method = methods[i];
-                if (Modifier.isPublic(method.getModifiers())) {
-                    String name = method.getName();
-                    String key = "";
-                    if (name.startsWith("get")) {
-                        if ("getClass".equals(name) ||
-                                "getDeclaringClass".equals(name)) {
-                            key = "";
-                        } else {
-                            key = name.substring(3);
-                        }
-                    } else if (name.startsWith("is")) {
-                        key = name.substring(2);
-                    }
-                    if (key.length() > 0 &&
-                            Character.isUpperCase(key.charAt(0)) &&
-                            method.getParameterTypes().length == 0) {
-                        if (key.length() == 1) {
-                            key = key.toLowerCase();
-                        } else if (!Character.isUpperCase(key.charAt(1))) {
-                            key = key.substring(0, 1).toLowerCase() +
-                                key.substring(1);
-                        }
-
-                        Object result = method.invoke(bean, (Object[])null);
-                        if (result != null) {
-                            this.map.put(key, wrap(result));
-                        }
-                    }
-                }
-            } catch (Exception ignore) {
-            }
+    public static String valueToString(Object value) throws JSONException {
+        if (value == null || value == null) {
+            return "null";
         }
+        if (value instanceof JSONString) {
+            Object object;
+            try {
+                object = ((JSONString) value).toJSONString();
+            } catch (Exception e) {
+                throw new JSONException(e);
+            }
+            if (object instanceof String) {
+                return (String) object;
+            }
+            throw new JSONException("Bad value from toJSONString: " + object);
+        }
+        if (value instanceof Number) {
+            return numberToString((Number) value);
+        }
+        if (value instanceof Boolean || value instanceof JSONObject ||
+                value instanceof JSONArray) {
+            return value.toString();
+        }
+        if (value instanceof Map) {
+            return new JSONObject((Map) value).toString();
+        }
+        if (value instanceof Collection) {
+            return new JSONArray((Collection) value).toString();
+        }
+        if (value.getClass().isArray()) {
+            return new JSONArray(value).toString();
+        }
+        return quote(value.toString());
     }
 
     public JSONObject put(String key, boolean value) throws JSONException {
@@ -635,41 +636,37 @@ public class JSONObject {
         return this.map.remove(key);
     }
 
-    public static Object stringToValue(String string) {
-        Double d;
-        if (string.equals("")) {
-            return string;
-        }
-        if (string.equalsIgnoreCase("true")) {
-            return Boolean.TRUE;
-        }
-        if (string.equalsIgnoreCase("false")) {
-            return Boolean.FALSE;
-        }
-        if (string.equalsIgnoreCase("null")) {
-            return JSONObject.NULL;
-        }
-        char b = string.charAt(0);
-        if ((b >= '0' && b <= '9') || b == '.' || b == '-' || b == '+') {
+    static Writer writeValue(Writer writer, Object value,
+                             int indentFactor, int indent) throws JSONException, IOException {
+        if (value == null || value == null) {
+            writer.write("null");
+        } else if (value instanceof JSONObject) {
+            ((JSONObject) value).write(writer, indentFactor, indent);
+        } else if (value instanceof JSONArray) {
+            ((JSONArray) value).write(writer, indentFactor, indent);
+        } else if (value instanceof Map) {
+            new JSONObject((Map) value).write(writer, indentFactor, indent);
+        } else if (value instanceof Collection) {
+            new JSONArray((Collection) value).write(writer, indentFactor,
+                    indent);
+        } else if (value.getClass().isArray()) {
+            new JSONArray(value).write(writer, indentFactor, indent);
+        } else if (value instanceof Number) {
+            writer.write(numberToString((Number) value));
+        } else if (value instanceof Boolean) {
+            writer.write(value.toString());
+        } else if (value instanceof JSONString) {
+            Object o;
             try {
-                if (string.indexOf('.') > -1 ||
-                        string.indexOf('e') > -1 || string.indexOf('E') > -1) {
-                    d = Double.valueOf(string);
-                    if (!d.isInfinite() && !d.isNaN()) {
-                        return d;
-                    }
-                } else {
-                    Long myLong = new Long(string);
-                    if (myLong.longValue() == myLong.intValue()) {
-                        return new Integer(myLong.intValue());
-                    } else {
-                        return myLong;
-                    }
-                }
-            }  catch (Exception ignore) {
+                o = ((JSONString) value).toJSONString();
+            } catch (Exception e) {
+                throw new JSONException(e);
             }
+            writer.write(o != null ? o.toString() : quote(value.toString()));
+        } else {
+            quote(value.toString(), writer);
         }
-        return string;
+        return writer;
     }
 
     public static void testValidity(Object o) throws JSONException {
@@ -714,39 +711,10 @@ public class JSONObject {
         }
     }
 
-    public static String valueToString(Object value) throws JSONException {
-        if (value == null || value.equals(null)) {
-            return "null";
+    static void indent(Writer writer, int indent) throws IOException {
+        for (int i = 0; i < indent; i += 1) {
+            writer.write(' ');
         }
-        if (value instanceof JSONString) {
-            Object object;
-            try {
-                object = ((JSONString)value).toJSONString();
-            } catch (Exception e) {
-                throw new JSONException(e);
-            }
-            if (object instanceof String) {
-                return (String)object;
-            }
-            throw new JSONException("Bad value from toJSONString: " + object);
-        }
-        if (value instanceof Number) {
-            return numberToString((Number) value);
-        }
-        if (value instanceof Boolean || value instanceof JSONObject ||
-                value instanceof JSONArray) {
-            return value.toString();
-        }
-        if (value instanceof Map) {
-            return new JSONObject((Map)value).toString();
-        }
-        if (value instanceof Collection) {
-            return new JSONArray((Collection)value).toString();
-        }
-        if (value.getClass().isArray()) {
-            return new JSONArray(value).toString();
-        }
-        return quote(value.toString());
     }
 
      public static Object wrap(Object object) {
@@ -794,43 +762,65 @@ public class JSONObject {
         return this.write(writer, 0, 0);
     }
 
-
-    static final Writer writeValue(Writer writer, Object value,
-            int indentFactor, int indent) throws JSONException, IOException {
-        if (value == null || value.equals(null)) {
-            writer.write("null");
-        } else if (value instanceof JSONObject) {
-            ((JSONObject) value).write(writer, indentFactor, indent);
-        } else if (value instanceof JSONArray) {
-            ((JSONArray) value).write(writer, indentFactor, indent);
-        } else if (value instanceof Map) {
-            new JSONObject((Map) value).write(writer, indentFactor, indent);
-        } else if (value instanceof Collection) {
-            new JSONArray((Collection) value).write(writer, indentFactor,
-                    indent);
-        } else if (value.getClass().isArray()) {
-            new JSONArray(value).write(writer, indentFactor, indent);
-        } else if (value instanceof Number) {
-            writer.write(numberToString((Number) value));
-        } else if (value instanceof Boolean) {
-            writer.write(value.toString());
-        } else if (value instanceof JSONString) {
-            Object o;
-            try {
-                o = ((JSONString) value).toJSONString();
-            } catch (Exception e) {
-                throw new JSONException(e);
-            }
-            writer.write(o != null ? o.toString() : quote(value.toString()));
+    public JSONObject increment(String key) throws JSONException {
+        Object value = this.opt(key);
+        if (value == null) {
+            this.put(key, 1);
+        } else if (value instanceof Integer) {
+            this.put(key, (Integer) value + 1);
+        } else if (value instanceof Long) {
+            this.put(key, (Long) value + 1);
+        } else if (value instanceof Double) {
+            this.put(key, (Double) value + 1);
+        } else if (value instanceof Float) {
+            this.put(key, (Float) value + 1);
         } else {
-            quote(value.toString(), writer);
+            throw new JSONException("Unable to increment [" + quote(key) + "].");
         }
-        return writer;
+        return this;
     }
 
-    static final void indent(Writer writer, int indent) throws IOException {
-        for (int i = 0; i < indent; i += 1) {
-            writer.write(' ');
+    private void populateMap(Object bean) {
+        Class klass = bean.getClass();
+        boolean includeSuperClass = klass.getClassLoader() != null;
+
+        Method[] methods = includeSuperClass
+                ? klass.getMethods()
+                : klass.getDeclaredMethods();
+        for (Method method1 : methods) {
+            try {
+                Method method = method1;
+                if (Modifier.isPublic(method.getModifiers())) {
+                    String name = method.getName();
+                    String key = "";
+                    if (name.startsWith("get")) {
+                        if ("getClass".equals(name) ||
+                                "getDeclaringClass".equals(name)) {
+                            key = "";
+                        } else {
+                            key = name.substring(3);
+                        }
+                    } else if (name.startsWith("is")) {
+                        key = name.substring(2);
+                    }
+                    if (key.length() > 0 &&
+                            Character.isUpperCase(key.charAt(0)) &&
+                            method.getParameterTypes().length == 0) {
+                        if (key.length() == 1) {
+                            key = key.toLowerCase();
+                        } else if (!Character.isUpperCase(key.charAt(1))) {
+                            key = key.substring(0, 1).toLowerCase() +
+                                    key.substring(1);
+                        }
+
+                        Object result = method.invoke(bean, (Object[]) null);
+                        if (result != null) {
+                            this.map.put(key, wrap(result));
+                        }
+                    }
+                }
+            } catch (Exception ignore) {
+            }
         }
     }
 

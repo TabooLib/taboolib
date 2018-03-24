@@ -1,13 +1,12 @@
 package me.skymc.taboolib.entity;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import me.skymc.taboolib.Main;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.skymc.taboolib.Main;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 伪 - MetaData
@@ -67,8 +66,7 @@ public class EntityTag {
 	 * 
 	 * @param key 键
 	 * @param value 值
-	 * @param entity 实体
-	 */
+     */
 	public void set(String key, Object value, Entity... entities) {
 		for (Entity entity : entities) set(key, value, entity);
 	}
@@ -78,8 +76,7 @@ public class EntityTag {
 	 * 
 	 * @param key 键
 	 * @param value 值
-	 * @param entity 实体
-	 */
+     */
 	public void set(String key, Object value, List<Entity> entities) {
 		for (Entity entity : entities) set(key, value, entity);
 	}
@@ -138,11 +135,8 @@ public class EntityTag {
 	 * @return boolean
 	 */
 	public boolean hasKey(String key, Entity entity) {
-		if (contains(entity)) {
-			return entityData.get(entity.getUniqueId()).containsKey(key);
-		}
-		return false;
-	}
+        return contains(entity) && entityData.get(entity.getUniqueId()).containsKey(key);
+    }
 	
 	/**
 	 * 获取数据
@@ -211,12 +205,9 @@ public class EntityTag {
 	 * @return boolean
 	 */
 	public boolean getBoolean(String key, Entity entity) {
-		Object object = get(key, entity);
-		if (object != null) {
-			return (boolean) object;
-		}
-		return false;
-	}
+        Object object = get(key, entity);
+        return object != null && (boolean) object;
+    }
 	
 	/**
 	 * 获取数据 
