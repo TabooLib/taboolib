@@ -1,13 +1,11 @@
 package me.skymc.taboolib.commands.sub;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
 import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class AttributesCommand extends SubCommand {
 

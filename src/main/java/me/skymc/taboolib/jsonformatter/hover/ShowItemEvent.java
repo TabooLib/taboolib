@@ -1,20 +1,17 @@
 package me.skymc.taboolib.jsonformatter.hover;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.json.JSONObject;
 import me.skymc.taboolib.nms.item.DabItemUtils;
-import me.skymc.taboolib.nms.item.IDabItemUtils;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ShowItemEvent extends HoverEvent{
 	
@@ -35,17 +32,17 @@ public class ShowItemEvent extends HoverEvent{
 			StringBuilder tag = new StringBuilder();
 			Object itemTag = getItemTag(is);
 			if (itemTag != null) {
-				tag.append(",tag:" + itemTag);
+                tag.append(",tag:").append(itemTag);
 			}
 			else {
 				ItemMeta im = is.getItemMeta();
 				List<String> lore = im.hasLore() ? im.getLore() : new ArrayList<>();
 				Map<Enchantment, Integer> enchants = is.getItemMeta().getEnchants();
-				tag.append(",tag:{display:{Name:" + (enchants.size() > 0 ? "§b§o" : "§f") + ItemUtils.getCustomName(is));
+                tag.append(",tag:{display:{Name:").append(enchants.size() > 0 ? "§b§o" : "§f").append(ItemUtils.getCustomName(is));
 				if (lore.size() > 0) {
 					tag.append(",Lore:[");
 					for (String s : lore){
-						tag.append("\"" + s + "\",");
+                        tag.append("\"").append(s).append("\",");
 					}
 					tag.delete(tag.length() - 1, tag.length());
 					tag.append("]");
@@ -57,7 +54,7 @@ public class ShowItemEvent extends HoverEvent{
 					}
 					tag.append("ench:[");
 					for (Entry<Enchantment, Integer> e : enchants.entrySet()) {
-						tag.append("{id:" + e.getKey().getId() + ",lvl:" + e.getValue() + "},");
+                        tag.append("{id:").append(e.getKey().getId()).append(",lvl:").append(e.getValue()).append("},");
 					}
 					tag.delete(tag.length() - 1, tag.length());
 					tag.append("]");

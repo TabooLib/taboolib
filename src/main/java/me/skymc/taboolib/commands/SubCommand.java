@@ -28,7 +28,7 @@ public abstract class SubCommand {
 	}
 	
 	public String getArgs(int size) {
-		StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 		for (int i = size ; i < args.length ; i++) {
 			sb.append(args[i]);
 			sb.append(" ");

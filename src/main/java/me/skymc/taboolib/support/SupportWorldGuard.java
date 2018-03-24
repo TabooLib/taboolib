@@ -1,12 +1,15 @@
 package me.skymc.taboolib.support;
 
-import com.sk89q.worldguard.bukkit.*;
-import org.bukkit.plugin.*;
-import com.sk89q.worldguard.protection.managers.*;
-import com.sk89q.worldguard.protection.regions.*;
-import java.util.*;
-import org.bukkit.entity.*;
-import org.bukkit.*;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import java.util.Collection;
 
 public class SupportWorldGuard
 {
@@ -34,7 +37,7 @@ public class SupportWorldGuard
     
     public final Collection<String> getRegionIDs(final World world) {
         final RegionManager regionManager = this.getRegionManager(world);
-        return (Collection<String>)regionManager.getRegions().keySet();
+        return regionManager.getRegions().keySet();
     }
     
     public final Collection<ProtectedRegion> getRegions(final World world) {

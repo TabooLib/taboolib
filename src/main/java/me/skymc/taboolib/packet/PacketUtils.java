@@ -1,12 +1,11 @@
 package me.skymc.taboolib.packet;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 public class PacketUtils {
 	
@@ -20,33 +19,35 @@ public class PacketUtils {
 		packet.getIntegers().write(0, entity.getEntityId());
 		WrappedDataWatcher watcher = new WrappedDataWatcher();
 		WrappedDataWatcher.Serializer serializer = WrappedDataWatcher.Registry.get(Byte.class);
-		if (status == EntityStatus.FIRE) {
-			watcher.setObject(0, serializer, (byte) 0x01);
-		}
-		else if (status == EntityStatus.CROUCHED) {
-			watcher.setObject(0, serializer, (byte) 0x02);
-		}
-		else if (status == EntityStatus.UNUSED1) {
-			watcher.setObject(0, serializer, (byte) 0x04);
-		}
-		else if (status == EntityStatus.SPRINTING) {
-			watcher.setObject(0, serializer, (byte) 0x08);
-		}
-		else if (status == EntityStatus.UNUSED2) {
-			watcher.setObject(0, serializer, (byte) 0x10);
-		}
-		else if (status == EntityStatus.INVISIBLE) {
-			watcher.setObject(0, serializer, (byte) 0x20);
-		}
-		else if (status == EntityStatus.GLOWING) {
-			watcher.setObject(0, serializer, (byte) 0x40);
-		}
-		else if (status == EntityStatus.ELYTRA) {
-			watcher.setObject(0, serializer, (byte) 0x80);
-		}
-		else {
-			watcher.setObject(0, serializer, (byte) 0x00);
-		}
+        switch (status) {
+            case FIRE:
+                watcher.setObject(0, serializer, (byte) 0x01);
+                break;
+            case CROUCHED:
+                watcher.setObject(0, serializer, (byte) 0x02);
+                break;
+            case UNUSED1:
+                watcher.setObject(0, serializer, (byte) 0x04);
+                break;
+            case SPRINTING:
+                watcher.setObject(0, serializer, (byte) 0x08);
+                break;
+            case UNUSED2:
+                watcher.setObject(0, serializer, (byte) 0x10);
+                break;
+            case INVISIBLE:
+                watcher.setObject(0, serializer, (byte) 0x20);
+                break;
+            case GLOWING:
+                watcher.setObject(0, serializer, (byte) 0x40);
+                break;
+            case ELYTRA:
+                watcher.setObject(0, serializer, (byte) 0x80);
+                break;
+            default:
+                watcher.setObject(0, serializer, (byte) 0x00);
+                break;
+        }
 		packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());
 		try {
 			for (Player player : players) {

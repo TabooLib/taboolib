@@ -1,20 +1,15 @@
 package me.skymc.taboolib.mysql.protect;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
+import org.bukkit.plugin.Plugin;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.bukkit.plugin.Plugin;
-
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
 
 public class MySQLConnection {
 	
@@ -69,25 +64,19 @@ public class MySQLConnection {
 		connect();
 		
 		// 断线检测
-		recheckThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while (!Main.isDisable()) {
-					try {
-						Thread.sleep(getReCheckSeconds() * 1000);
-						
-						if (connection == null) {
-							print("警告! 数据库尚未连接, 请检查配置文件后重启服务器! (" + (plugin.getName()) + ")");
-							continue;
-						}
-						else {
-							isExists("taboolib");
-						}
-					} catch (Exception e) {
-						print("数据库命令执行出错");
-						print("错误原因: " + e.getMessage());
+		recheckThread = new Thread(() -> {
+			while (!Main.isDisable()) {
+				try {
+					Thread.sleep(getReCheckSeconds() * 1000);
+
+					if (connection == null) {
+						print("警告! 数据库尚未连接, 请检查配置文件后重启服务器! (" + (plugin.getName()) + ")");
+					} else {
+						isExists("taboolib");
 					}
+				} catch (Exception e) {
+					print("数据库命令执行出错");
+					print("错误原因: " + e.getMessage());
 				}
 			}
 		});
@@ -266,7 +255,7 @@ public class MySQLConnection {
 	 */
 	public boolean intoValue(String name, Object... values) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0 ; i < values.length ; i++) {
+		for (Object value : values) {
 			sb.append("?, ");
 		}
 		PreparedStatement pstmt = null;
@@ -300,7 +289,7 @@ public class MySQLConnection {
 	public boolean createTable(String name, Column... columns) {
 		StringBuilder sb = new StringBuilder();
 		for (Column column : columns) {
-			sb.append(column.toString() + ", ");
+			sb.append(column.toString()).append(", ");
 		}
 		return execute("create table if not exists " + name + " (id int(1) not null primary key auto_increment, " + sb.substring(0, sb.length() - 2) + ")");
 	}
@@ -316,9 +305,9 @@ public class MySQLConnection {
 		StringBuilder sb = new StringBuilder();
 		for (String column : columns) {
 			if (!column.contains("/")) {
-				sb.append("`" + column + "` text, ");
+				sb.append("`").append(column).append("` text, ");
 			} else {
-				sb.append("`" + column.split("/")[0] + "` " + column.split("/")[1] + ", ");
+				sb.append("`").append(column.split("/")[0]).append("` ").append(column.split("/")[1]).append(", ");
 			}
 		}
 		return execute("create table if not exists " + name + " (id int(1) not null primary key auto_increment, " + sb.substring(0, sb.length() - 2) + ")");
@@ -749,25 +738,25 @@ public class MySQLConnection {
 			return false;
 		}
 	}
-	
-	public static enum ColumnInteger {
-		
-		TINYINT, SMALLINT, MEDIUMINT, INT, BIGINT;
+
+	public enum ColumnInteger {
+
+		TINYINT, SMALLINT, MEDIUMINT, INT, BIGINT
 	}
-	
-	public static enum ColumnFloat {
-		
-		FLOAT, DOUBLE;
+
+	public enum ColumnFloat {
+
+		FLOAT, DOUBLE
 	}
-	
-	public static enum ColumnChar {
-		
-		CHAR, VARCHAR;
+
+	public enum ColumnChar {
+
+		CHAR, VARCHAR
 	}
-	
-	public static enum ColumnString {
-		
-		TINYTEXT, TEXT, MEDIUMTEXT, LONGTEXT;
+
+	public enum ColumnString {
+
+		TINYTEXT, TEXT, MEDIUMTEXT, LONGTEXT
 	}
 	
 	public static class Column {

@@ -1,31 +1,34 @@
 package me.skymc.taboolib.plugin;
 
-import org.bukkit.*;
-import com.google.common.base.*;
-
+import com.google.common.base.Joiner;
 import me.skymc.taboolib.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.event.Event;
+import org.bukkit.plugin.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.Map.Entry;
-
-import org.bukkit.command.*;
-import java.net.*;
-import java.util.logging.*;
-import java.io.*;
-import org.bukkit.plugin.*;
-import org.bukkit.event.*;
-import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PluginUtils
 {
 	public static String consolidateStrings(final String[] args, final int start) {
-        String ret = args[start];
+        StringBuilder ret = new StringBuilder(args[start]);
         if (args.length > start + 1) {
             for (int i = start + 1; i < args.length; ++i) {
-                ret = ret + " " + args[i];
+                ret.append(" ").append(args[i]);
             }
         }
-        return ret;
+        return ret.toString();
     }
 	
     public static void enable(final Plugin plugin) {
@@ -83,7 +86,7 @@ public class PluginUtils
     }
     
     public static List<String> getPluginNames(final boolean fullName) {
-        final List<String> plugins = new ArrayList<String>();
+        final List<String> plugins = new ArrayList<>();
         for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             plugins.add(fullName ? plugin.getDescription().getFullName() : plugin.getName());
         }
@@ -99,7 +102,7 @@ public class PluginUtils
     }
     
     public static String getUsages(final Plugin plugin) {
-        final List<String> parsedCommands = new ArrayList<String>();
+        final List<String> parsedCommands = new ArrayList<>();
         final Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
         if (commands != null) {
             for (final Entry<String, Map<String, Object>> thisEntry : commands.entrySet()) {
@@ -116,9 +119,9 @@ public class PluginUtils
     
     @SuppressWarnings("unchecked")
 	public static List<String> findByCommand(final String command) {
-        final List<String> plugins = new ArrayList<String>();
+        final List<String> plugins = new ArrayList<>();
         for (final Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            final Map<String, Map<String, Object>> commands = (Map<String, Map<String, Object>>)plugin.getDescription().getCommands();
+            final Map<String, Map<String, Object>> commands = plugin.getDescription().getCommands();
             if (commands != null) {
                 for (final Map.Entry<String, Map<String, Object>> commandNext : commands.entrySet()) {
                     if (commandNext.getKey().equalsIgnoreCase(command)) {
@@ -156,7 +159,7 @@ public class PluginUtils
     }
     
     public static boolean isIgnored(final String plugin) {
-        return plugin.equalsIgnoreCase(Main.getInst().getName()) ? true : false;
+        return plugin.equalsIgnoreCase(Main.getInst().getName());
     }
     
     private static String load(final Plugin plugin) {
@@ -248,11 +251,7 @@ public class PluginUtils
                 final Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 knownCommandsField.setAccessible(true);
                 commands = (Map<String, Command>)knownCommandsField.get(commandMap);
-            }
-            catch (NoSuchFieldException e) {
-                return "failed";
-            }
-            catch (IllegalAccessException e2) {
+            } catch (NoSuchFieldException | IllegalAccessException e) {
                 return "failed";
             }
         }
@@ -265,13 +264,7 @@ public class PluginUtils
         }
         if (listeners != null && reloadlisteners) {
             for (final SortedSet<RegisteredListener> set : listeners.values()) {
-                final Iterator<RegisteredListener> it = set.iterator();
-                while (it.hasNext()) {
-                    final RegisteredListener value = it.next();
-                    if (value.getPlugin() == plugin) {
-                        it.remove();
-                    }
-                }
+                set.removeIf(value -> value.getPlugin() == plugin);
             }
         }
         if (commandMap != null) {
@@ -283,7 +276,7 @@ public class PluginUtils
                     if (c.getPlugin() != plugin) {
                         continue;
                     }
-                    c.unregister((CommandMap)commandMap);
+                    c.unregister(commandMap);
                     it2.remove();
                 }
             }

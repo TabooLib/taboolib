@@ -1,7 +1,6 @@
 package me.skymc.taboolib.sound;
 
 import org.bukkit.Sound;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class SoundPack {

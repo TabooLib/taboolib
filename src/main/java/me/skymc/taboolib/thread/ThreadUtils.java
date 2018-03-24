@@ -1,11 +1,11 @@
 package me.skymc.taboolib.thread;
 
-import java.util.*;
+import java.util.LinkedList;
 
 public class ThreadUtils {
 	
 	private static PoolWorker[] threads;
-	private static LinkedList<Runnable> queue = new LinkedList<>();
+	private static final LinkedList<Runnable> queue = new LinkedList<>();
 
 	/**
 	 * 构造方法
@@ -63,8 +63,7 @@ public class ThreadUtils {
 						// 等待任务
 						try {
 							queue.wait();
-						} 
-						catch (InterruptedException e) {
+						} catch (InterruptedException ignored) {
 							
 						}
 					}

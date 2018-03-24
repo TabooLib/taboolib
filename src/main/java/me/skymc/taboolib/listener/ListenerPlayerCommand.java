@@ -1,26 +1,17 @@
 package me.skymc.taboolib.listener;
 
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.database.PlayerDataManager;
+import me.skymc.taboolib.itemnbtapi.NBTItem;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.permission.PermissionUtils;
+import me.skymc.taboolib.playerdata.DataUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.database.PlayerDataManager;
-import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.itemnbtapi.NBTCompound;
-import me.skymc.taboolib.itemnbtapi.NBTItem;
-import me.skymc.taboolib.jsonformatter.JSONFormatter;
-import me.skymc.taboolib.jsonformatter.click.RunCommandEvent;
-import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
-import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.permission.PermissionUtils;
-import me.skymc.taboolib.playerdata.DataUtils;
 
 public class ListenerPlayerCommand implements Listener {
 	
@@ -30,7 +21,7 @@ public class ListenerPlayerCommand implements Listener {
 			if (TabooLib.getVerint() > 10700) {
 				e.setCancelled(true);
 			}
-			Bukkit.getScheduler().runTask(Main.getInst(), () -> DataUtils.saveAllCaches());
+            Bukkit.getScheduler().runTask(Main.getInst(), DataUtils::saveAllCaches);
 			Bukkit.getScheduler().runTask(Main.getInst(), () -> PlayerDataManager.saveAllCaches(true, false));
 		}
 	}

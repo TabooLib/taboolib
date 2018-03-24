@@ -1,19 +1,17 @@
 package me.skymc.taboolib.database;
 
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.Main.StorageType;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.playerdata.DataUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.Main.StorageType;
-import me.skymc.taboolib.playerdata.DataUtils;
 
 public class GlobalDataManager {
 	
@@ -92,7 +90,7 @@ public class GlobalDataManager {
 	 */
 	public static boolean contains(String name) {
 		if (Main.getStorageType() == StorageType.SQL) {
-			return getVariable(name, null) == null ? false : true;
+            return getVariable(name, null) != null;
 		}
 		else {
 			return data.contains(name.replace(":", "-"));
@@ -107,7 +105,7 @@ public class GlobalDataManager {
 	 */
 	public static boolean containsAsynchronous(String name) {
 		if (Main.getStorageType() == StorageType.SQL) {
-			return getVariableAsynchronous(name, null) == null ? false : true;
+            return getVariableAsynchronous(name, null) != null;
 		}
 		else {
 			return contains(name);
@@ -316,10 +314,6 @@ public class GlobalDataManager {
 				
 				@Override
 				public void run() {
-					/**
-					 * 根据正序排列获取所有变量
-					 * 新的变量会覆盖旧的变量
-					 */
 					LinkedList<HashMap<String, Object>> list = Main.getConnection().getValues(Main.getTablePrefix() + "_plugindata", "id", -1, false, "name", "variable", "upgrade");
 					// 循环变量
 					for (HashMap<String, Object> value : list) {

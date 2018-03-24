@@ -1,15 +1,11 @@
 package me.skymc.taboolib.inventory;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.skymc.taboolib.methods.MethodsUtils;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 public class InventoryUtil {
 	
@@ -62,27 +58,13 @@ public class InventoryUtil {
 		for (int i = 0; i < player.getInventory().getSize() && remove; i++) {
 			ItemStack _item = player.getInventory().getItem(i);
 			if (_item != null && _item.isSimilar(item)) {
-				/**
-				 * 如果循环到的物品数量 小于 需要的数量
-				 * 则 删除物品，减少需要的数量
-				 */
 				if (_item.getAmount() < requireAmount) {
 					player.getInventory().setItem(i, null);
 					requireAmount -= _item.getAmount();
-				}
-				/**
-				 * 如果循环到的物品数量 等于 需要的数量
-				 * 则 删除物品，直接结束
-				 */
-				else if (_item.getAmount() == requireAmount) {
+                } else if (_item.getAmount() == requireAmount) {
 					player.getInventory().setItem(i, null);
 					return true;
-				}
-				/**
-				 * 如果循环到的物品数量 大于 需要的数量
-				 * 则扣除 需要的数量
-				 */
-				else {
+                } else {
 					_item.setAmount(_item.getAmount() - requireAmount);
 					return true;
 				}
@@ -101,11 +83,8 @@ public class InventoryUtil {
 				}
 			}
 		}
-		if (inventoryAmount >= amount) {
-			return true;
-		}
-		return false;
-	}
+        return inventoryAmount >= amount;
+    }
 	
 	@Deprecated
 	public static boolean takeItem2(Inventory inv, ItemStack takeitem, Integer amount) {

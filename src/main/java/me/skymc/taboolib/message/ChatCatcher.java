@@ -1,17 +1,14 @@
 package me.skymc.taboolib.message;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import lombok.Getter;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class ChatCatcher implements Listener {
 	
@@ -66,13 +63,13 @@ public class ChatCatcher implements Listener {
 			playerdata.remove(player.getName());
 		}
 	}
-	
-	public abstract interface Catcher {
-		
-		public abstract Catcher before();
-		
-		public abstract boolean after(String message);
-		
-		public abstract void cancel();
+
+    public interface Catcher {
+
+        Catcher before();
+
+        boolean after(String message);
+
+        void cancel();
 	}
 }

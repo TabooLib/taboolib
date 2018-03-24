@@ -1,8 +1,5 @@
 package me.skymc.tlm;
 
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import lombok.Getter;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
@@ -13,6 +10,7 @@ import me.skymc.tlm.module.sub.ModuleCommandChanger;
 import me.skymc.tlm.module.sub.ModuleInventorySave;
 import me.skymc.tlm.module.sub.ModuleKits;
 import me.skymc.tlm.module.sub.ModuleTimeCycle;
+import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * @author sky
@@ -82,8 +80,7 @@ public class TLM {
 			language = new Language2(config.getString("Language"), Main.getInst());
 		} catch (Exception e) {
 			MsgUtils.warn("语言文件不存在: &4" + config.getString("Language"));
-			return;
-		}
+        }
 	}
 	
 	/**

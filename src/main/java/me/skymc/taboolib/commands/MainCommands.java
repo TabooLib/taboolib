@@ -1,38 +1,15 @@
 package me.skymc.taboolib.commands;
 
-import java.util.HashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.commands.sub.AttributesCommand;
-import me.skymc.taboolib.commands.sub.EnchantCommand;
-import me.skymc.taboolib.commands.sub.FlagCommand;
-import me.skymc.taboolib.commands.sub.HelpCommand;
-import me.skymc.taboolib.commands.sub.ImportCommand;
-import me.skymc.taboolib.commands.sub.InfoCommand;
-import me.skymc.taboolib.commands.sub.ItemCommand;
-import me.skymc.taboolib.commands.sub.PotionCommand;
-import me.skymc.taboolib.commands.sub.SaveCommand;
-import me.skymc.taboolib.commands.sub.SlotCommand;
-import me.skymc.taboolib.commands.sub.TagDeleteCommand;
-import me.skymc.taboolib.commands.sub.TagPrefixCommand;
-import me.skymc.taboolib.commands.sub.TagSuffixCommand;
-import me.skymc.taboolib.commands.sub.VariableGetCommand;
-import me.skymc.taboolib.commands.sub.VariableSetCommand;
+import me.skymc.taboolib.commands.sub.*;
 import me.skymc.taboolib.commands.sub.cycle.CycleCommand;
 import me.skymc.taboolib.commands.sub.itemlist.ItemListCommand;
 import me.skymc.taboolib.commands.sub.shell.ShellCommand;
 import me.skymc.taboolib.commands.sub.sounds.SoundsCommand;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 public class MainCommands implements CommandExecutor{
 

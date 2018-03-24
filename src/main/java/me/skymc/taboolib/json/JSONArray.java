@@ -6,7 +6,6 @@ import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -57,9 +56,8 @@ public class JSONArray {
     public JSONArray(Collection collection) {
         this.myArrayList = new ArrayList();
         if (collection != null) {
-            Iterator iter = collection.iterator();
-            while (iter.hasNext()) {
-                this.myArrayList.add(JSONObject.wrap(iter.next()));
+            for (Object aCollection : collection) {
+                this.myArrayList.add(JSONObject.wrap(aCollection));
             }
         }
     }
@@ -166,7 +164,7 @@ public class JSONArray {
 
     public String join(String separator) throws JSONException {
         int len = this.length();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < len; i += 1) {
             if (i > 0) {
@@ -267,7 +265,7 @@ public class JSONArray {
     }
 
     public JSONArray put(double value) throws JSONException {
-        Double d = new Double(value);
+        Double d = value;
         JSONObject.testValidity(d);
         this.put(d);
         return this;

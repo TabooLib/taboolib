@@ -9,7 +9,7 @@ public class FZ {
         byte[] array;
         for (int length = (array = bs).length, i = 0; i < length; ++i) {
             final byte b = array[i];
-            sb.append(String.valueOf(b) + "#");
+            sb.append(String.valueOf(b)).append("#");
         }
         return sb.toString();
     }
@@ -39,7 +39,7 @@ public class FZ {
             int i;
             final char c = (char)(i = charArray[j]);
             i *= power;
-            sb.append(String.valueOf(i) + "#");
+            sb.append(String.valueOf(i)).append("#");
         }
         return sb.toString();
     }

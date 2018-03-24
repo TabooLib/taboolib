@@ -1,13 +1,12 @@
 package me.skymc.taboolib.support;
 
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import me.clip.placeholderapi.external.EZPlaceholderHook;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.module.TabooLibraryModule;
 import me.skymc.tlm.module.sub.ModuleKits;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 public class SupportPlaceholder extends EZPlaceholderHook {
 	
@@ -21,7 +20,7 @@ public class SupportPlaceholder extends EZPlaceholderHook {
 			String[] value = args.split("_");
 			StringBuilder sb = new StringBuilder();
 			for (int i = 1; i < value.length ; i++) {
-				sb.append(value[i] + "_");
+                sb.append(value[i]).append("_");
 			}
 			return GlobalDataManager.getVariableAsynchronous(sb.substring(0, sb.length() - 1), "<none>");
 		}

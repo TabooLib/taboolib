@@ -1,10 +1,6 @@
 package me.skymc.taboolib.nms;
 
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -915,7 +911,7 @@ public class NMSUtil18 {
             // Testing Glow API based on ItemMetadata storage
             Object bukkitData = createNode(stack, "bukkit");
             class_NBTTagCompound_setBooleanMethod.invoke(bukkitData, "glow", true);
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }
@@ -939,7 +935,7 @@ public class NMSUtil18 {
             if (bukkitData != null) {
                 class_NBTTagCompound_setBooleanMethod.invoke(bukkitData, "glow", false);
             }
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }
@@ -960,7 +956,7 @@ public class NMSUtil18 {
                 unbreakableFlag = class_NBTTagByte_legacy_constructor.newInstance("", (byte) 1);
             }
             class_NBTTagCompound_setMethod.invoke(tagObject, "Unbreakable", unbreakableFlag);
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }
@@ -985,7 +981,7 @@ public class NMSUtil18 {
                 hideFlag = class_NBTTagByte_legacy_constructor.newInstance("", flags);
             }
             class_NBTTagCompound_setMethod.invoke(tagObject, "HideFlags", hideFlag);
-        } catch (Throwable ex) {
+        } catch (Throwable ignored) {
 
         }
     }

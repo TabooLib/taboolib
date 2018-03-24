@@ -1,15 +1,8 @@
 package me.skymc.taboolib.anvil.versions;
 
+import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-
-import me.skymc.taboolib.methods.MethodsUtils;
-import net.minecraft.server.v1_11_R1.BlockPosition;
-import net.minecraft.server.v1_11_R1.ChatMessage;
-import net.minecraft.server.v1_11_R1.ContainerAnvil;
-import net.minecraft.server.v1_11_R1.EntityHuman;
-import net.minecraft.server.v1_11_R1.EntityPlayer;
-import net.minecraft.server.v1_11_R1.PacketPlayOutOpenWindow;
 
 public class AnvilContainer_V1_11_R1 extends ContainerAnvil {
 
@@ -31,7 +24,7 @@ public class AnvilContainer_V1_11_R1 extends ContainerAnvil {
 		EntityPlayer player = ((CraftPlayer)p).getHandle();
 		AnvilContainer_V1_11_R1 container = new AnvilContainer_V1_11_R1(player);
 	    int c = player.nextContainerCounter();
-	    player.playerConnection.sendPacket(new PacketPlayOutOpenWindow(c, "minecraft:anvil", new ChatMessage("Repairing", new Object[0]), 0));
+        player.playerConnection.sendPacket(new PacketPlayOutOpenWindow(c, "minecraft:anvil", new ChatMessage("Repairing"), 0));
 	    player.activeContainer = container;
 	    player.activeContainer.windowId = c;
 	    player.activeContainer.addSlotListener(player);

@@ -1,14 +1,17 @@
 package me.skymc.taboolib.inventory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import org.bukkit.Bukkit;
+import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.itemnbtapi.NBTItem;
+import me.skymc.taboolib.itemnbtapi.NBTList;
+import me.skymc.taboolib.itemnbtapi.NBTListCompound;
+import me.skymc.taboolib.itemnbtapi.NBTType;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.Language;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,18 +28,10 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import lombok.Getter;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.itemnbtapi.NBTItem;
-import me.skymc.taboolib.itemnbtapi.NBTList;
-import me.skymc.taboolib.itemnbtapi.NBTListCompound;
-import me.skymc.taboolib.itemnbtapi.NBTType;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.string.Language;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ItemUtils {
 	
@@ -150,8 +145,7 @@ public class ItemUtils {
 	
 	@SuppressWarnings("deprecation")
     public static ItemStack item(int n, int a, int d) {
-        ItemStack item = new ItemStack(n, a, (short)d);
-        return item;
+        return new ItemStack(n, a, (short) d);
     }
     
     public static ItemStack setName(ItemStack i, String n) {
@@ -180,17 +174,11 @@ public class ItemUtils {
     }
     
     public static boolean isName(ItemStack i, String a) {
-        if (!isNamed(i) || i.getItemMeta() == null || i.getItemMeta().getDisplayName() == null || !i.getItemMeta().getDisplayName().equals(a)) {
-            return false;
-        }
-        return true;
+        return isNamed(i) && i.getItemMeta() != null && i.getItemMeta().getDisplayName() != null && i.getItemMeta().getDisplayName().equals(a);
     }
     
     public static boolean isNameAs(ItemStack i, String a) {
-        if (!isNamed(i) || !i.getItemMeta().getDisplayName().contains(a)) {
-            return false;
-        }
-        return true;
+        return isNamed(i) && i.getItemMeta().getDisplayName().contains(a);
     }
     
     public static String asString(String args, Player placeholderPlayer) {
@@ -259,27 +247,22 @@ public class ItemUtils {
     }
     
     public static String asAttribute(String name) {
-    	if (name.toLowerCase().equals("damage")) {
-    		return "generic.attackDamage";
-    	}
-    	else if (name.toLowerCase().equals("attackspeed")) {
-    		return "generic.attackSpeed";
-    	}
-    	else if (name.toLowerCase().equals("health")) {
-    		return "generic.maxHealth";
-    	}
-    	else if (name.toLowerCase().equals("speed")) {
-    		return "generic.movementSpeed";
-    	}
-    	else if (name.toLowerCase().equals("knockback")) {
-    		return "generic.knockbackResistance";
-    	}
-    	else if (name.toLowerCase().equals("armor")) {
-    		return "generic.armor";
-    	}
-    	else if (name.toLowerCase().equals("luck")) {
-    		return "generic.luck";
-    	}
+        switch (name.toLowerCase()) {
+            case "damage":
+                return "generic.attackDamage";
+            case "attackspeed":
+                return "generic.attackSpeed";
+            case "health":
+                return "generic.maxHealth";
+            case "speed":
+                return "generic.movementSpeed";
+            case "knockback":
+                return "generic.knockbackResistance";
+            case "armor":
+                return "generic.armor";
+            case "luck":
+                return "generic.luck";
+        }
     	return null;
     }
     
@@ -290,10 +273,7 @@ public class ItemUtils {
      * @param a 关键字
      */
     public static boolean hasLore(ItemStack i, String a) {
-        if (!isLored(i) || !i.getItemMeta().getLore().toString().contains(a)) {
-            return false;
-        }
-        return true;
+        return isLored(i) && i.getItemMeta().getLore().toString().contains(a);
     }
     
     /**
@@ -303,10 +283,7 @@ public class ItemUtils {
      * @return
      */
     public static boolean isLored(ItemStack i) {
-        if (i == null || i.getItemMeta() == null || i.getItemMeta().getLore() == null) {
-            return false;
-        }
-    	return true;
+        return i != null && i.getItemMeta() != null && i.getItemMeta().getLore() != null;
     }
     
     /**
@@ -316,10 +293,7 @@ public class ItemUtils {
      * @return
      */
     public static boolean isNamed(ItemStack i)  {
-        if (i == null || i.getItemMeta() == null || i.getItemMeta().getDisplayName() == null) {
-            return false;
-        }
-    	return true;
+        return i != null && i.getItemMeta() != null && i.getItemMeta().getDisplayName() != null;
     }
     
     /**

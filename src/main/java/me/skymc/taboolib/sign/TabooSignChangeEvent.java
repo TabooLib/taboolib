@@ -1,14 +1,9 @@
 package me.skymc.taboolib.sign;
 
-import java.util.UUID;
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import net.minecraft.server.v1_9_R2.BlockBanner;
 
 @Deprecated
 public class TabooSignChangeEvent
