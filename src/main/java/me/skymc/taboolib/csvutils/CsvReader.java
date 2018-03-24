@@ -1,9 +1,9 @@
 package me.skymc.taboolib.csvutils;
 
-import java.nio.charset.*;
-import java.text.*;
 import java.io.*;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.text.NumberFormat;
+import java.util.HashMap;
 
 public class CsvReader
 {
@@ -503,7 +503,6 @@ public class CsvReader
                                     this.close();
                                     throw new IOException("Maximum column length of 100,000 exceeded in column " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting column lengths greater than 100,000 characters to" + " avoid this error.");
                                 }
-                                continue;
                             }
                         } while (this.hasMoreData && this.startedColumn);
                     }
@@ -714,7 +713,6 @@ public class CsvReader
                                     this.close();
                                     throw new IOException("Maximum column length of 100,000 exceeded in column " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting column lengths greater than 100,000 characters to" + " avoid this error.");
                                 }
-                                continue;
                             }
                         } while (this.hasMoreData && this.startedColumn);
                     }
@@ -880,8 +878,8 @@ public class CsvReader
         }
         this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
     }
-    
-    public void endRecord() throws IOException {
+
+    public void endRecord() {
         this.hasReadNextLine = true;
         ++this.currentRecord;
     }
@@ -960,8 +958,8 @@ public class CsvReader
                 if (this.initialized) {
                     this.inputStream.close();
                 }
+            } catch (Exception ignored) {
             }
-            catch (Exception ex) {}
             this.inputStream = null;
             this.closed = true;
         }

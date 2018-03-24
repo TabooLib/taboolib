@@ -2,9 +2,6 @@ package me.skymc.taboolib.cooldown.seconds;
 
 import java.util.HashMap;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
 public class CooldownPack2 {
 	
 	private String plugin;

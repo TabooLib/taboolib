@@ -1,13 +1,12 @@
 package me.skymc.taboolib.fileutils;
 
+import me.skymc.taboolib.message.MsgUtils;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
-import java.util.List;
-
-import me.skymc.taboolib.message.MsgUtils;
 
 public class FileUtils {
 	
@@ -17,9 +16,9 @@ public class FileUtils {
             URL url = new URL("http://1212.ip138.com/ic.asp");  
             URLConnection con = url.openConnection();  
             ins = con.getInputStream();  
-            InputStreamReader isReader = new InputStreamReader(ins, "GB2312");  
-            BufferedReader bReader = new BufferedReader(isReader);  
-            StringBuffer webContent = new StringBuffer();  
+            InputStreamReader isReader = new InputStreamReader(ins, "GB2312");
+            BufferedReader bReader = new BufferedReader(isReader);
+            StringBuilder webContent = new StringBuilder();
             String str = null;  
             while ((str = bReader.readLine()) != null) {  
                 webContent.append(str);  
@@ -83,12 +82,12 @@ public class FileUtils {
 	    }
 	    if (file.isFile()) {  
 	    	file.delete();  
-	        return;  
-	    }  
-	    File[] files = file.listFiles();  
-	    for (int i = 0; i < files.length; i++) {  
-	    	deleteAllFile(files[i]);  
-	    }  
+	        return;
+        }
+        File[] files = file.listFiles();
+        for (File file1 : files) {
+            deleteAllFile(file1);
+        }
 	    file.delete();
 	} 
 	

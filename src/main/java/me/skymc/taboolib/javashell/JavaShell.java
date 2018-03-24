@@ -1,12 +1,10 @@
 package me.skymc.taboolib.javashell;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
-
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.javashell.utils.JarUtils;
+import me.skymc.taboolib.message.MsgUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -14,11 +12,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.javashell.utils.JarUtils;
-import me.skymc.taboolib.message.MsgUtils;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
 
 public class JavaShell {
 	
@@ -50,18 +48,10 @@ public class JavaShell {
 		File dataFolder = Main.getInst().getDataFolder();
 		File pluginsFolder = dataFolder.getParentFile();
 		File serverRoot = Bukkit.getWorldContainer();
-				
-		File[] rootJars = serverRoot.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith("jar");
-			}
-		}); 
-		
-		File[] pluginJars = pluginsFolder.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.toLowerCase().endsWith("jar");
-			}
-		});
+
+		File[] rootJars = serverRoot.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
+
+		File[] pluginJars = pluginsFolder.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
 
 		for (File file : (File[]) ArrayUtils.addAll(rootJars, pluginJars)) {
 			String path = file.getAbsolutePath();
@@ -123,7 +113,7 @@ public class JavaShell {
 		if (shells.containsKey(name)) {
 			Class<?> clazz = shells.get(name);
 			try {
-				Method disableMethod = clazz.getMethod(method, new Class[0]);
+				Method disableMethod = clazz.getMethod(method);
 				if (disableMethod != null) {
 					disableMethod.invoke(clazz.newInstance());
 				}

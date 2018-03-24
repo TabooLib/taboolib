@@ -1,15 +1,5 @@
 package me.skymc.taboolib;
 
-import java.io.File;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import lombok.Getter;
 import lombok.Setter;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
@@ -19,22 +9,22 @@ import me.skymc.taboolib.commands.MainCommands;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
 import me.skymc.taboolib.commands.sub.sounds.listener.SoundsLibraryPatch;
-import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.database.GlobalDataManager;
+import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.entity.EntityUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.javashell.JavaShell;
-import me.skymc.taboolib.listener.ListenerNetWork;
-import me.skymc.taboolib.listener.ListenerPlayerCommand;
-import me.skymc.taboolib.listener.ListenerPlayerQuit;
-import me.skymc.taboolib.listener.ListenerPlayerJump;
-import me.skymc.taboolib.listener.ListenerPluginDisable;
+import me.skymc.taboolib.listener.*;
 import me.skymc.taboolib.message.ChatCatcher;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
+import me.skymc.taboolib.nms.item.DabItemUtils;
+import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.permission.PermissionUtils;
+import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.sign.SignUtils;
 import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.string.StringUtils;
@@ -46,11 +36,16 @@ import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
-import me.skymc.taboolib.nms.item.DabItemUtils;
-import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.permission.PermissionUtils;
-import me.skymc.taboolib.playerdata.DataUtils;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
+import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class Main extends JavaPlugin implements Listener {
@@ -199,7 +194,7 @@ public class Main extends JavaPlugin implements Listener {
 		MsgUtils.send("§7游戏版本: §f" + TabooLib.getVerint());
 		
 		// 文件保存
-		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> DataUtils.saveAllCaches(), 20, 20 * 120);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, DataUtils::saveAllCaches, 20, 20 * 120);
 		Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
 		
 		// 插件联动
@@ -321,8 +316,8 @@ public class Main extends JavaPlugin implements Listener {
 			getServer().getPluginManager().registerEvents(new ListenerNetWork(), this);
 		}
 	}
-	
-	public static enum StorageType {
-		LOCAL, SQL;
+
+    public enum StorageType {
+        LOCAL, SQL
 	}
 }

@@ -1,26 +1,19 @@
 package me.skymc.taboolib.nms.item.impl;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-
+import me.skymc.taboolib.json.JSONArray;
+import me.skymc.taboolib.json.JSONObject;
+import me.skymc.taboolib.nms.NMSUtils;
+import me.skymc.taboolib.nms.item.IDabItemUtils;
+import me.skymc.taboolib.nms.nbt.NBTConstants;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import me.skymc.taboolib.json.*;
-import me.skymc.taboolib.nms.NMSUtils;
-import me.skymc.taboolib.nms.item.IDabItemUtils;
-import me.skymc.taboolib.nms.nbt.NBTConstants;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class _164ItemUtils implements IDabItemUtils{
 	
@@ -30,7 +23,7 @@ public class _164ItemUtils implements IDabItemUtils{
 		try{
 			Material m = Material.valueOf("BANNER");
 			if(m != null){ return true; }
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return false;
 	}
@@ -110,7 +103,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	public Object getRegistry(){
 		try{
 			return NMSUtils.getFieldSilent(ni, "REGISTRY", "field_150901_e").get(null);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -376,7 +369,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	
 	@SuppressWarnings({ "unchecked" })
 	public Map<String, Object> convertCompoundTagToValueMap(Object nbt) throws Exception{
-		Map<String, Object> ret = new HashMap<String, Object>();
+        Map<String, Object> ret = new HashMap<>();
 		Map<String, Object> map = (Map<String, Object>)getMap(nbt);
 		for(Entry<String, Object> e : map.entrySet()){
 			Object nbti = e.getValue();
@@ -390,7 +383,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	
 	@SuppressWarnings("unchecked")
 	public List<Object> convertListTagToValueList(Object nbttl) throws Exception{
-		List<Object> ret = new ArrayList<Object>();
+        List<Object> ret = new ArrayList<>();
 		List<Object> list = (List<Object>)nbtld.get(nbttl);
 		for(Object e : list){
 			Object data = getData(e);
@@ -402,7 +395,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public Object convertValueMapToCompoundTag(Map<String, Object> map) throws Exception{
-		Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
 		for(Entry<String, Object> e : map.entrySet()){
 			value.put(e.getKey(), createData(e.getValue()));
 		}
@@ -412,14 +405,14 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public Object convertValueListToListTag(List<Object> list) throws Exception{
-		List<Object> value = new ArrayList<Object>();
+        List<Object> value = new ArrayList<>();
 		for(Object e : list){
 			value.add(createData(e));
 		}
 		Object ret = getNewNBTTagList();
 		nbttcm.set(ret, value);
 		if(value.size() > 0){
-			nbtlt.set(ret, (byte)gti.invoke(value.get(0)));
+            nbtlt.set(ret, gti.invoke(value.get(0)));
 		}
 		return ret;
 	}
@@ -475,7 +468,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	@Deprecated
 	@SuppressWarnings("unchecked")
 	public Object convertJSONToCompoundTag(JSONObject jo, JSONObject helper) throws Exception{
-		Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
 		Iterator<String> it = jo.keys();
 		while(it.hasNext()){
 			String e = it.next();
@@ -488,7 +481,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	
 	@SuppressWarnings("unchecked")
 	public Object convertJSONToCompoundTag(JSONObject jo) throws Exception{
-		Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> value = new HashMap<>();
 		Iterator<String> it = jo.keys();
 		while(it.hasNext()){
 			String e = it.next();
@@ -509,7 +502,7 @@ public class _164ItemUtils implements IDabItemUtils{
 		Object ret = getNewNBTTagList();
 		nbtld.set(ret, value);
 		if(value.size() > 0){
-			nbtlt.set(ret, (byte)gti.invoke(value.get(0)));
+            nbtlt.set(ret, gti.invoke(value.get(0)));
 		}
 		return ret;
 	}
@@ -523,7 +516,7 @@ public class _164ItemUtils implements IDabItemUtils{
 		Object ret = getNewNBTTagList();
 		nbtld.set(ret, value);
 		if(value.size() > 0){
-			nbtlt.set(ret, (byte)gti.invoke(value.get(0)));
+            nbtlt.set(ret, gti.invoke(value.get(0)));
 		}
 		return ret;
 	}
@@ -742,7 +735,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	public Object createDataJSON(String key, JSONObject jo) throws Exception{
 		JSONArray j = jo.getJSONArray(key);
 		Object ret = null;
-		int i = (int)j.getInt(0);
+        int i = j.getInt(0);
 		switch(i){
 		case NBTConstants.TYPE_COMPOUND:
 			ret = convertJSONToCompoundTag(j.getJSONObject(1));
@@ -889,7 +882,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	public Object createDataJSON(int key, JSONArray jo) throws Exception{
 		JSONArray j = jo.getJSONArray(key);
 		Object ret = null;
-		int i = (int)j.getInt(0);
+        int i = j.getInt(0);
 		switch(i){
 		case NBTConstants.TYPE_COMPOUND:
 			ret = convertJSONToCompoundTag(j.getJSONObject(1));
@@ -970,7 +963,7 @@ public class _164ItemUtils implements IDabItemUtils{
 		case NBTConstants.TYPE_BYTE_ARRAY:
 			byte[] ba = (byte[])nbtbad.get(tag);
 			byte[] ba1 = (byte[])nbtbad.get(tag1);
-			return ba.equals(ba1);
+            return Arrays.equals(ba, ba1);
 		case NBTConstants.TYPE_STRING:
 			String st = (String)nbtstd.get(tag);
 			String st1 = (String)nbtstd.get(tag1);
@@ -983,7 +976,7 @@ public class _164ItemUtils implements IDabItemUtils{
 		case NBTConstants.TYPE_INT_ARRAY:
 			int[] ia = (int[])nbtiad.get(tag);
 			int[] ia1 = (int[])nbtiad.get(tag);
-			return ia.equals(ia1);
+            return Arrays.equals(ia, ia1);
 		}
 		return false;
 	}
@@ -1028,8 +1021,7 @@ public class _164ItemUtils implements IDabItemUtils{
 					cont = true;
 					break;
 				}
-				;
-			}
+            }
 			if(!cont)
 				return false;
 		}
@@ -1041,7 +1033,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public Map<Integer, Object> getAttributes(Object attribs) throws Exception{
-		Map<Integer, Object> r = new HashMap<Integer, Object>();
+        Map<Integer, Object> r = new HashMap<>();
 		for(int i = 0; i < getSize(attribs); i++){
 			Object compound = g.invoke(attribs, i);
 			Object attrib = a.invoke(null, compound);
@@ -1058,23 +1050,18 @@ public class _164ItemUtils implements IDabItemUtils{
 	public boolean compare(ItemStack is1, ItemStack is2){
 		if(is1.getType().equals(is2.getType())){
 			if(is1.getDurability() == is2.getDurability()){
-				try{
+                try {
 					Object nis1 = getNMSCopy(is1);
 					Object nis2 = getNMSCopy(is2);
 					Object tis1 = getTag(nis1);
 					Object tis2 = getTag(nis2);
-					if(tis1 != null && tis2 == null){
-						if(isEmpty(tis1))
-							return true;
-						return false;
+                    if (tis1 != null && tis2 == null) {
+                        return isEmpty(tis1);
 					}
-					if(tis1 == null && tis2 != null){
-						if(isEmpty(tis2))
-							return true;
-						return false;
+                    if (tis1 == null && tis2 != null) {
+                        return isEmpty(tis2);
 					}
-					if(tis1 == null && tis2 == null){ return true; }
-					return compareCompoundTag(tis1, tis2);
+                    return tis1 == null && tis2 == null || compareCompoundTag(tis1, tis2);
 				}catch(Exception e){
 					e.printStackTrace();
 				}
@@ -1095,7 +1082,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public void sortByMaterial(List<ItemStack> items){
-		Collections.sort(items, new MaterialComparator());
+        items.sort(new MaterialComparator());
 	}
 	
 	public class MaterialComparator implements Comparator<ItemStack>{
@@ -1106,7 +1093,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public void sortByName(List<ItemStack> items){
-		Collections.sort(items, new NameComparator());
+        items.sort(new NameComparator());
 	}
 	
 	public class NameComparator implements Comparator<ItemStack>{
@@ -1123,7 +1110,7 @@ public class _164ItemUtils implements IDabItemUtils{
 	}
 	
 	public void sortByAmount(List<ItemStack> items){
-		Collections.sort(items, new AmountComparator());
+        items.sort(new AmountComparator());
 	}
 	
 	public class AmountComparator implements Comparator<ItemStack>{

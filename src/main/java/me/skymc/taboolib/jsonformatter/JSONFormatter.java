@@ -1,27 +1,26 @@
 package me.skymc.taboolib.jsonformatter;
 
+import me.skymc.taboolib.json.JSONArray;
+import me.skymc.taboolib.json.JSONObject;
+import me.skymc.taboolib.jsonformatter.click.ClickEvent;
+import me.skymc.taboolib.jsonformatter.hover.HoverEvent;
+import me.skymc.taboolib.nms.NMSUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import me.skymc.taboolib.json.JSONArray;
-import me.skymc.taboolib.json.JSONObject;
-import me.skymc.taboolib.jsonformatter.click.ClickEvent;
-import me.skymc.taboolib.jsonformatter.hover.HoverEvent;
-import me.skymc.taboolib.nms.NMSUtils;
-
 public class JSONFormatter {
 	
 	private JSONArray		ja		= new JSONArray();
 	private Builder			builder	= new Builder();
 	private String			color	= "";
-	private List<JSONArray>	all		= new ArrayList<JSONArray>();
+    private List<JSONArray> all = new ArrayList<>();
 	private boolean			newline	= true;
 	
 	public JSONFormatter(){
@@ -102,7 +101,7 @@ public class JSONFormatter {
 	}
 	
 	public List<String> toJSONList(){
-		List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
 		try{
 			for(JSONArray ja : all){
 				JSONObject jo = new JSONObject();
@@ -133,7 +132,7 @@ public class JSONFormatter {
 	}
 	
 	public List<Object> toSerializedList(){
-		List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
 		try{
 			for(String s : toJSONList()){
 				list.add(a.invoke(null, s));
@@ -255,19 +254,19 @@ public class JSONFormatter {
 	public Object getPacket(){
 		try{
 			return ppocc.newInstance(toSerialized());
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
 	
 	public List<Object> getPacketList(){
-		List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
 		try{
 			for(Object o : toSerializedList()){
 				list.add(ppocc.newInstance(o));
 			}
 			return list;
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -382,7 +381,7 @@ public class JSONFormatter {
 		public JSONObject toString(String color){
 			return toString(color, new BuilderHelper(){
 				@Override
-				public void add(JSONObject jo) throws Exception{
+                public void add(JSONObject jo) {
 				}
 			});
 		}

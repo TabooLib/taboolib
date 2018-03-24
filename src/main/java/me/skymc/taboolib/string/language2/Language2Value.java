@@ -1,24 +1,20 @@
 package me.skymc.taboolib.string.language2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
+import lombok.Getter;
+import me.skymc.taboolib.string.language2.value.Language2Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import lombok.Getter;
-import me.skymc.taboolib.string.language2.value.Language2Text;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author sky
  * @since 2018年2月13日 下午3:05:15
  */
-public class Language2Value extends Object {
+public class Language2Value {
 	
 	@Getter
 	private Language2 language;
@@ -41,13 +37,13 @@ public class Language2Value extends Object {
 	public Language2Value(Language2 language, String languageKey) {
 		// 如果语言文件不存在
 		if (language == null || languageKey == null) {
-			languageValue = Arrays.asList(ChatColor.DARK_RED + "[<ERROR-0>]");
+			languageValue = Collections.singletonList(ChatColor.DARK_RED + "[<ERROR-0>]");
 			return;
 		}
 		
 		// 如果语言文本不存在
 		if (!language.getConfiguration().contains(languageKey)) {
-			languageValue = Arrays.asList(ChatColor.DARK_RED + "[<ERROR-1: " + languageKey + ">]");
+			languageValue = Collections.singletonList(ChatColor.DARK_RED + "[<ERROR-1: " + languageKey + ">]");
 			return;
 		}
 		
@@ -148,7 +144,7 @@ public class Language2Value extends Object {
 			return setPlaceholder(text.getText(), null);
 		}
 		else {
-			return Arrays.asList(languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null));
+			return Collections.singletonList(languageValue.size() == 0 ? ChatColor.DARK_RED + "[<ERROR-1>]" : setPlaceholder(languageValue.get(0), null));
 		}
 	}
 	

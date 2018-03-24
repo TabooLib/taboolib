@@ -1,10 +1,10 @@
 package me.skymc.taboolib.display;
 
-import java.lang.reflect.Constructor;
+import me.skymc.taboolib.TabooLib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import me.skymc.taboolib.TabooLib;
+import java.lang.reflect.Constructor;
 
 public class ActionUtils {
 	
@@ -12,9 +12,9 @@ public class ActionUtils {
     {
         try
         {
-            Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player, new Object[0]);
+            Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player);
             Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", new Class[] { getNMSClass("Packet") }).invoke(playerConnection, new Object[] { packet });
+            playerConnection.getClass().getMethod("sendPacket", new Class[]{getNMSClass("Packet")}).invoke(playerConnection, packet);
         }
         catch (Exception ex)
         {
@@ -43,7 +43,7 @@ public class ActionUtils {
         }
         try
         {
-            Object ab = getNMSClass("ChatComponentText").getConstructor(new Class[] { String.class }).newInstance(new Object[] { msg });
+            Object ab = getNMSClass("ChatComponentText").getConstructor(new Class[]{String.class}).newInstance(msg);
             Constructor<?> ac = null;
             Object abPacket = null;
             // 如果版本大于 1.11.0
@@ -53,7 +53,7 @@ public class ActionUtils {
             	abPacket = ac.newInstance(ab, chatMessageType.getMethod("a", Byte.TYPE).invoke(null, (byte) 2));
             } else {
             	ac = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), Byte.TYPE);
-            	abPacket = ac.newInstance(ab, Byte.valueOf((byte) 2));
+                abPacket = ac.newInstance(ab, (byte) 2);
             }
             sendPacket(p, abPacket);
         }

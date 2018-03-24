@@ -1,15 +1,13 @@
 package me.skymc.taboolib.update;
 
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.bukkit.scheduler.BukkitRunnable;
-
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author sky

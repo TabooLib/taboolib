@@ -1,24 +1,19 @@
 package me.skymc.taboolib.string;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import com.google.common.base.Charsets;
+import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.google.common.base.Charsets;
-
-import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
 
 public class Language {
 	
@@ -86,7 +81,7 @@ public class Language {
 	
 	public List<String> getList(String key) {
 		if (conf == null || conf.getString(key) == null) {
-			return Arrays.asList("§4[Language \"" + key + "\" Not Found]");
+			return Collections.singletonList("§4[Language \"" + key + "\" Not Found]");
 		}
 		List<String> list = conf.getStringList(key);
 		for (int i = 0 ; i < list.size() ; i++) {

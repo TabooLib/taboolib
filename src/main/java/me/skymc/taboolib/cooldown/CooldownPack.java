@@ -2,8 +2,6 @@ package me.skymc.taboolib.cooldown;
 
 import java.util.HashMap;
 
-import org.bukkit.plugin.Plugin;
-
 @Deprecated
 public class CooldownPack {
 	

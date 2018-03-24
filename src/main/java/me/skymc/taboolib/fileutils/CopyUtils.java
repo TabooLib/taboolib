@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-import me.skymc.taboolib.methods.MethodsUtils;
-
 @Deprecated
 public class CopyUtils {
 	

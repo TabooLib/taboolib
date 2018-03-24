@@ -1,12 +1,8 @@
 package me.skymc.taboolib.commands.sub.shell;
 
-import java.io.File;
-
-import org.bukkit.command.CommandSender;
-
 import me.skymc.taboolib.commands.SubCommand;
-import me.skymc.taboolib.javashell.JavaShell;
 import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.command.CommandSender;
 
 public class ShellCommand extends SubCommand {
 

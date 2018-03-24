@@ -1,19 +1,12 @@
 package me.skymc.taboolib.string.language2;
 
+import lombok.Getter;
+import me.skymc.taboolib.string.language2.value.*;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import lombok.Getter;
-import me.skymc.taboolib.string.language2.value.Language2Action;
-import me.skymc.taboolib.string.language2.value.Language2Book;
-import me.skymc.taboolib.string.language2.value.Language2Json;
-import me.skymc.taboolib.string.language2.value.Language2Sound;
-import me.skymc.taboolib.string.language2.value.Language2Text;
-import me.skymc.taboolib.string.language2.value.Language2Title;
 
 /**
  * @author sky
@@ -110,27 +103,29 @@ public class Language2Format implements Language2Line {
 		list = language2Value.setPlaceholder(list, player);
 		
 		// 大标题
-		if (type == Language2Type.TITLE) {
-			language2Lines.add(new Language2Title(this, list));
-		}
-		// 小标题
-		else if (type == Language2Type.ACTION) {
-			language2Lines.add(new Language2Action(this, list));
-		}
-		// JSON
-		else if (type == Language2Type.JSON) {
-			language2Lines.add(new Language2Json(this, list, player));
-		}
-		// 音效
-		else if (type == Language2Type.SOUND) {
-			language2Lines.add(new Language2Sound(this, list));
-		}
-		// 书本
-		else if (type == Language2Type.BOOK) {
-			language2Lines.add(new Language2Book(this, list, player));
-		}
-		else {
-			language2Lines.add(new Language2Text(this, list));
+        switch (type) {
+            case TITLE:
+                language2Lines.add(new Language2Title(this, list));
+                break;
+            // 小标题
+            case ACTION:
+                language2Lines.add(new Language2Action(this, list));
+                break;
+            // JSON
+            case JSON:
+                language2Lines.add(new Language2Json(this, list, player));
+                break;
+            // 音效
+            case SOUND:
+                language2Lines.add(new Language2Sound(this, list));
+                break;
+            // 书本
+            case BOOK:
+                language2Lines.add(new Language2Book(this, list, player));
+                break;
+            default:
+                language2Lines.add(new Language2Text(this, list));
+                break;
 		}
 		
 		// 清理数据

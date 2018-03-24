@@ -11,13 +11,13 @@ public class PatternUtils {
 	public static String doubleNumber3 = "((?:\\-|\\+)?\\d+(?:\\.\\d+)?)";
 	
 	public static String consolidateStrings(final String[] args, final int start) {
-		String ret = args[start];
+        StringBuilder ret = new StringBuilder(args[start]);
 		
 		if (args.length > start + 1) {
 			for (int i = start + 1; i < args.length; ++i) {
-				ret = ret + " " + args[i];
+                ret.append(" ").append(args[i]);
 			}
 		}
-		return ret;
+        return ret.toString();
 	}
 }
