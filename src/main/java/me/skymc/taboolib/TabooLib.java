@@ -1,13 +1,11 @@
 package me.skymc.taboolib;
 
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-
 import me.skymc.taboolib.playerdata.DataUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
+import java.util.UUID;
 
 public class TabooLib {
 	

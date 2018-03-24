@@ -1,22 +1,19 @@
 package me.skymc.taboolib.string.language2.value;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.Getter;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.display.ActionUtils;
+import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.language2.Language2Format;
+import me.skymc.taboolib.string.language2.Language2Line;
+import me.skymc.taboolib.string.language2.Language2Value;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import lombok.Getter;
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.display.ActionUtils;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.string.language2.Language2Format;
-import me.skymc.taboolib.string.language2.Language2Line;
-import me.skymc.taboolib.string.language2.Language2Value;
+import java.util.List;
 
 /**
  * @author sky

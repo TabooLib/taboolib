@@ -21,7 +21,7 @@ public class XMLTokener extends JSONTokener {
     public String nextCDATA() throws JSONException {
         char         c;
         int          i;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (;;) {
             c = next();
             if (end()) {
@@ -65,7 +65,7 @@ public class XMLTokener extends JSONTokener {
     }
 
     public Object nextEntity(char ampersand) throws JSONException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (;;) {
             char c = next();
             if (Character.isLetterOrDigit(c) || c == '#') {

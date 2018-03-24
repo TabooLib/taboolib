@@ -1,10 +1,8 @@
 package me.skymc.taboolib.other;
 
-import java.util.List;
-import java.util.Random;
-
-import me.skymc.taboolib.Main;
 import me.skymc.taboolib.object.WeightCategory;
+
+import java.util.List;
 
 public class WeightUtils {  
 	

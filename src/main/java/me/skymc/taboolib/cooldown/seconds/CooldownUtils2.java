@@ -1,19 +1,12 @@
 package me.skymc.taboolib.cooldown.seconds;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 
-import me.skymc.taboolib.message.MsgUtils;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CooldownUtils2 implements Listener {
 	

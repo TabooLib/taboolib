@@ -34,6 +34,6 @@ public enum SpecialItemResult {
 	/**
 	 * 移除一个鼠标物品
 	 */
-	REMOVE_ITEM_CURSOR_AMOUNT_1;
-	
+    REMOVE_ITEM_CURSOR_AMOUNT_1
+
 }

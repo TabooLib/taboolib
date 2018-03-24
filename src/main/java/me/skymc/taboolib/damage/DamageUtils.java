@@ -1,12 +1,11 @@
 package me.skymc.taboolib.damage;
 
-import java.lang.reflect.InvocationTargetException;
-
+import me.skymc.taboolib.TabooLib;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import me.skymc.taboolib.TabooLib;
+import java.lang.reflect.InvocationTargetException;
 
 public class DamageUtils {
 	
@@ -31,7 +30,7 @@ public class DamageUtils {
 		Object localObject1 = null;
 		try
 		{
-			localObject1 = paramLivingEntity1.getClass().getDeclaredMethod("getHandle", new Class[0]).invoke(paramLivingEntity1, new Object[0]);
+			localObject1 = paramLivingEntity1.getClass().getDeclaredMethod("getHandle", new Class[0]).invoke(paramLivingEntity1);
 		}
 		catch (IllegalAccessException|IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException localIllegalAccessException1)
 		{
@@ -41,7 +40,7 @@ public class DamageUtils {
 	    Object localObject2 = null;
 	    try
 	    {
-	    	localObject2 = paramLivingEntity2.getClass().getDeclaredMethod("getHandle", new Class[0]).invoke(paramLivingEntity2, new Object[0]);
+			localObject2 = paramLivingEntity2.getClass().getDeclaredMethod("getHandle", new Class[0]).invoke(paramLivingEntity2);
 	    }
 	    catch (IllegalAccessException|IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException localIllegalAccessException2)
 	    {
@@ -51,14 +50,12 @@ public class DamageUtils {
 	    try
 	    {
 	    	Class<?> DamageSource = nmsClass("DamageSource");
-	    	Object localObject3 = DamageSource.getDeclaredMethod("playerAttack", new Class[] { nmsClass("EntityHuman") }).invoke(DamageSource, new Object[] { localObject1 });
-      
-	    	localObject2.getClass().getDeclaredMethod("damageEntity", new Class[] { DamageSource, Float.TYPE }).invoke(localObject2, new Object[] { localObject3, Float.valueOf((float) paramDouble) });
-	    }
-	    catch (IllegalAccessException|IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException localIllegalAccessException3)
+			Object localObject3 = DamageSource.getDeclaredMethod("playerAttack", new Class[]{nmsClass("EntityHuman")}).invoke(DamageSource, localObject1);
+
+			localObject2.getClass().getDeclaredMethod("damageEntity", new Class[]{DamageSource, Float.TYPE}).invoke(localObject2, localObject3, (float) paramDouble);
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ignored)
 	    {
-	    	return;
-	    }
+		}
 	}
   
 	private static Class<?> nmsClass(String paramString)

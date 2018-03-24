@@ -1,12 +1,10 @@
 package me.skymc.taboolib.regen;
 
-import java.util.Iterator;
-import java.util.Map;
-
-import org.bukkit.Location;
-
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
+
+import java.util.Map;
 
 @Deprecated
 public class WorldGuardUtils {
@@ -17,15 +15,12 @@ public class WorldGuardUtils {
 		int z = (int) loc.getZ();
 		
 		Map<String, ProtectedRegion> regens = WorldGuardPlugin.inst().getRegionManager(loc.getWorld()).getRegions();
-		Iterator<String> i = regens.keySet().iterator();
-		while (i.hasNext())
-		{
-			ProtectedRegion regen = regens.get(i.next());
-			if (regen.contains(x, y, z))
-			{
-				return regen.getId();
-			}
-		}
+        for (String s : regens.keySet()) {
+            ProtectedRegion regen = regens.get(s);
+            if (regen.contains(x, y, z)) {
+                return regen.getId();
+            }
+        }
 		return null;
 	}
 }

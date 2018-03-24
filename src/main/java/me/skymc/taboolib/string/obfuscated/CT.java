@@ -3,10 +3,21 @@ package me.skymc.taboolib.string.obfuscated;
 import javax.xml.bind.DatatypeConverter;
 
 public class CT {
-	
-	public static enum CodeType {
-		BASE64,
-		BINARY;
+
+    public static String decode(CodeType type, String string) {
+        switch (type) {
+            case BASE64: {
+                return new String(DatatypeConverter.parseBase64Binary(string));
+            }
+            case BINARY: {
+                StringBuilder text = new StringBuilder();
+                for (String segment : string.split(" ")) {
+                    text.append(Character.toString((char) Integer.parseInt(segment, 2)));
+                }
+                return text.toString();
+            }
+        }
+        return "";
 	}
 	
 	public static String encode(CodeType type, String string) {
@@ -29,21 +40,10 @@ public class CT {
 		}
 		return "";
 	}
-	
-	public static String decode(CodeType type, String string) {
-		switch (type) {
-			case BASE64: {
-				return new String(DatatypeConverter.parseBase64Binary(string));
-			}
-			case BINARY: {
-				StringBuilder text = new StringBuilder();
-				for (String segment: string.split(" ")) {
-					text.append(new Character((char) Integer.parseInt(segment, 2)).toString());
-				}
-				return text.toString();
-			}
-		}
-		return "";
+
+    public enum CodeType {
+        BASE64,
+        BINARY
 	}
 
 }

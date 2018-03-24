@@ -1,16 +1,8 @@
 package me.skymc.taboolib.mysql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
-import com.mysql.jdbc.PreparedStatement;
 
 @Deprecated
 public class MysqlConnection {
@@ -56,8 +48,6 @@ public class MysqlConnection {
 						}
 						
 						Thread.sleep(30000);
-					} catch (SQLException e) {
-						e.printStackTrace();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -120,10 +110,10 @@ public class MysqlConnection {
 		
 		for (int i = 0 ; i < list.length ; i++) {
 			if (i + 1 < list.length) {
-				stringBuilder.append("`" + checkString(list[i]) + "` varchar(255), ");
+				stringBuilder.append("`").append(checkString(list[i])).append("` varchar(255), ");
 			}
 			else {
-				stringBuilder.append("`" + checkString(list[i]) + "` varchar(255)");
+				stringBuilder.append("`").append(checkString(list[i])).append("` varchar(255)");
 			}
 		}
 		String url = "CREATE TABLE IF NOT EXISTS `" + table + "` ( " + stringBuilder + " )";
@@ -150,12 +140,12 @@ public class MysqlConnection {
 		
 		for (int i = 0 ; i < list.length ; i++) {
 			if (i + 1 < list.length) {
-				listbuilder.append("`" + checkString(list[i]) + "`, ");
-				valuebuilder.append("'" + checkString(values[i]) + "', ");
+				listbuilder.append("`").append(checkString(list[i])).append("`, ");
+				valuebuilder.append("'").append(checkString(values[i])).append("', ");
 			}
 			else {
-				listbuilder.append("`" + checkString(list[i]) + "`");
-				valuebuilder.append("'" + checkString(values[i]) + "'");
+				listbuilder.append("`").append(checkString(list[i])).append("`");
+				valuebuilder.append("'").append(checkString(values[i])).append("'");
 			}
 		}
 		

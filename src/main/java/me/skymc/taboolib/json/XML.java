@@ -6,26 +6,26 @@ import java.util.Iterator;
 @SuppressWarnings({"rawtypes"})
 public class XML {
 
-    public static final Character AMP   = new Character('&');
+    public static final Character AMP = '&';
 
-    public static final Character APOS  = new Character('\'');
+    public static final Character APOS = '\'';
 
-    public static final Character BANG  = new Character('!');
+    public static final Character BANG = '!';
 
-    public static final Character EQ    = new Character('=');
+    public static final Character EQ = '=';
 
-    public static final Character GT    = new Character('>');
+    public static final Character GT = '>';
 
-    public static final Character LT    = new Character('<');
+    public static final Character LT = '<';
 
-    public static final Character QUEST = new Character('?');
+    public static final Character QUEST = '?';
 
-    public static final Character QUOT  = new Character('"');
+    public static final Character QUOT = '"';
 
-    public static final Character SLASH = new Character('/');
+    public static final Character SLASH = '/';
 
     public static String escape(String string) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0, length = string.length(); i < length; i++) {
             char c = string.charAt(i);
             switch (c) {
@@ -206,7 +206,7 @@ public class XML {
             return JSONObject.NULL;
         }
         if ("0".equals(string)) {
-            return new Integer(0);
+            return 0;
         }
         try {
             char initial = string.charAt(0);
@@ -223,8 +223,8 @@ public class XML {
                     return Double.valueOf(string);
                 } else if (string.indexOf('e') < 0 && string.indexOf('E') < 0) {
                     Long myLong = new Long(string);
-                    if (myLong.longValue() == myLong.intValue()) {
-                        return new Integer(myLong.intValue());
+                    if (myLong == myLong.intValue()) {
+                        return myLong.intValue();
                     } else {
                         return myLong;
                     }
@@ -250,7 +250,7 @@ public class XML {
 
     public static String toString(Object object, String tagName)
             throws JSONException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         int          i;
         JSONArray    ja;
         JSONObject   jo;

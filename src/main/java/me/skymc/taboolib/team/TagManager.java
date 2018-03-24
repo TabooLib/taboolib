@@ -1,7 +1,8 @@
 package me.skymc.taboolib.team;
 
-import java.util.HashMap;
-
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,9 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
+import java.util.HashMap;
 
 /**
  * @author sky
@@ -88,14 +87,9 @@ public class TagManager implements Listener {
 	 * @return {@link PlayerData}
 	 */
 	private PlayerData getPlayerData(Player player) {
-		PlayerData data = playerdata.get(player.getName());
-		if (data == null) {
-			data = new PlayerData(player.getName());
-			playerdata.put(player.getName(), data);
-		}
-		return data;
+		return playerdata.computeIfAbsent(player.getName(), k -> new PlayerData(player.getName()));
 	}
-	
+
 	/**
 	 * 删除该玩家的称号数据
 	 * 

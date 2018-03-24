@@ -3,11 +3,8 @@ package me.skymc.taboolib.skull;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.SkullType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import me.skymc.taboolib.methods.MethodsUtils;
 
 public class SkullUtils {
 	

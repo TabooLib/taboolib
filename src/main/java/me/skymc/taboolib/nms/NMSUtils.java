@@ -1,14 +1,11 @@
 package me.skymc.taboolib.nms;
 
+import org.bukkit.Bukkit;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
 
 public class NMSUtils {
 	
@@ -34,7 +31,7 @@ public class NMSUtils {
 		for(String s : strings){
 			try{
 				return getClassWithException(s);
-			}catch(Exception e){
+            } catch (Exception ignored) {
 			}
 		}
 		return null;
@@ -43,7 +40,7 @@ public class NMSUtils {
 	public static Class<?> getClassSilent(String name){
 		try{
 			return getClassWithException(name);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -64,7 +61,7 @@ public class NMSUtils {
 	public static Class<?> getNMSClassSilent(String className){
 		try{
 			return getNMSClassWithException(className);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -101,7 +98,7 @@ public class NMSUtils {
 	public static Class<?> getOBCClassSilent(String className){
 		try{
 			return getOBCClassWithException(className);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -175,7 +172,7 @@ public class NMSUtils {
 		for(String name : names){
 			try{
 				return getFieldWithException(clazz, name);
-			}catch(Exception e){
+            } catch (Exception ignored) {
 			}
 		}
 		return null;
@@ -184,7 +181,7 @@ public class NMSUtils {
 	public static Field getFieldSilent(Class<?> clazz, String name){
 		try{
 			return getFieldWithException(clazz, name);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -193,7 +190,7 @@ public class NMSUtils {
 		for(String name : names){
 			try{
 				return getFieldWithException(clazz, name);
-			}catch(Exception e){
+            } catch (Exception ignored) {
 			}
 		}
 		return null;
@@ -298,7 +295,7 @@ public class NMSUtils {
 	public static Method getMethodSilent(Class<?> clazz, String name, Class<?>... args){
 		try{
 			return getMethodWithException(clazz, name, args);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -331,7 +328,7 @@ public class NMSUtils {
 	public static Class<?> getInnerClassSilent(Class<?> c, String className){
 		try{
 			return getInnerClassWithException(c, className);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}
@@ -353,7 +350,7 @@ public class NMSUtils {
 	public static Constructor<?> getConstructorSilent(Class<?> clazz, Class<?>... args){
 		try{
 			return getConstructor(clazz, args);
-		}catch(Exception e){
+        } catch (Exception ignored) {
 		}
 		return null;
 	}

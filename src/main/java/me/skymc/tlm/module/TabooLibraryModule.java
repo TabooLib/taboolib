@@ -1,16 +1,15 @@
 package me.skymc.tlm.module;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Set;
-
+import me.skymc.taboolib.Main;
+import me.skymc.tlm.annotation.DisableConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
-import me.skymc.taboolib.Main;
-import me.skymc.tlm.annotation.DisableConfig;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * @author sky
@@ -53,7 +52,7 @@ public class TabooLibraryModule {
 	}
 	
 	public void unloadModules() {
-		TLM_MODULE.keySet().forEach(x -> x.onDisable());
+        TLM_MODULE.keySet().forEach(ITabooLibraryModule::onDisable);
 	}
 	
 	public void reloadConfig() {

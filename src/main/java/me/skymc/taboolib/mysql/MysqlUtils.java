@@ -1,15 +1,12 @@
 package me.skymc.taboolib.mysql;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.Plugin;
-
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MysqlUtils {
 	
