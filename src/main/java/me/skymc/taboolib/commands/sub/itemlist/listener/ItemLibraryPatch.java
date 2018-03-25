@@ -65,7 +65,7 @@ public class ItemLibraryPatch implements Listener {
 		if (page > 1) {
 			inventory.setItem(47, ItemUtils.setName(new ItemStack(Material.ARROW), "§f上一页"));
 		}
-		if (((int) Math.ceil(ItemUtils.getItemCaches().size() / 28D)) > page) {
+		if (((int) Math.ceil(map.size() / 28D)) > page) {
 			inventory.setItem(51, ItemUtils.setName(new ItemStack(Material.ARROW), "§f下一页"));
 		}
 		player.openInventory(inventory);
