@@ -78,7 +78,7 @@ public class SpecialItem implements Listener {
 	 */
 	public void cancel(String name) {
 		for (AbstractSpecialItem specialitem : ITEM_DATA) {
-			if (specialitem.getName() != null && specialitem.getName().equals(specialitem)) {
+			if (specialitem.getName() != null && specialitem.getName().equals(specialitem.getName())) {
 				specialitem.onDisable();
 				ITEM_DATA.remove(specialitem);
 			}
