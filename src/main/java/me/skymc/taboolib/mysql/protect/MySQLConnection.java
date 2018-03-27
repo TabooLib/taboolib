@@ -49,8 +49,8 @@ public class MySQLConnection {
 		}
 		
 		// 设置信息
-		this.plugin = plugin;
-		this.recheck = recheck;
+//		this.plugin = plugin;
+//		this.recheck = recheck;
 		
 		// 设置数据
 		this.url = url == null ? "localhost" : url;
@@ -581,11 +581,10 @@ public class MySQLConnection {
 		ResultSet resultSet = null;
 		try {
 			if (desc) {
-				pstmt = connection.prepareStatement("select * from `" + name + "` order by ? desc " + (size < 0 ? "" : " limit " + size));
+				pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + column + "` desc " + (size < 0 ? "" : " limit " + size));
 			} else {
-				pstmt = connection.prepareStatement("select * from `" + name + "` order by ? " + (size < 0 ? "" : " limit " + size));
+				pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + column + "` " + (size < 0 ? "" : " limit " + size));
 			}
-			pstmt.setString(1, column);
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
 				list.add(resultSet.getObject(column));
@@ -632,11 +631,10 @@ public class MySQLConnection {
 		ResultSet resultSet = null;
 		try {
 			if (desc) {
-				pstmt = connection.prepareStatement("select * from `" + name + "` order by ? desc " + (size < 0 ? "" : " limit " + size));
+				pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + sortColumn + "` desc" + (size < 0 ? "" : " limit " + size));
 			} else {
-				pstmt = connection.prepareStatement("select * from `" + name + "` order by ? " + (size < 0 ? "" : " limit " + size));
+				pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + sortColumn + "`" + (size < 0 ? "" : " limit " + size));
 			}
-			pstmt.setString(1, sortColumn);
 			resultSet = pstmt.executeQuery();
 			while (resultSet.next()) {
 				HashMap<String, Object> map = new HashMap<>();
