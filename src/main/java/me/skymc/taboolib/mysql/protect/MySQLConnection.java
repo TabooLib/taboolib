@@ -49,8 +49,8 @@ public class MySQLConnection {
 		}
 		
 		// 设置信息
-//		this.plugin = plugin;
-//		this.recheck = recheck;
+		this.plugin = plugin;
+		this.recheck = recheck;
 		
 		// 设置数据
 		this.url = url == null ? "localhost" : url;
