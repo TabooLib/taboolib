@@ -30,7 +30,7 @@ public class GlobalDataManager {
 			return obj != null ? obj.toString().equals("null") ? defaultVariable : obj.toString() : defaultVariable;
 		}
 		else {
-			return data.contains(name.replace(":", "-")) ? data.getString(name.replace(":", "-")) : defaultVariable;
+			return data.contains(name) ? data.getString(name) : defaultVariable;
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class GlobalDataManager {
 			Main.getConnection().intoValue(Main.getTablePrefix() + "_plugindata", name, variable == null ? "null" : variable, TabooLib.getServerUID());
 		}
 		else {
-			data.set(name.replace(":", "-"), variable);
+			data.set(name, variable);
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class GlobalDataManager {
             return getVariable(name, null) != null;
 		}
 		else {
-			return data.contains(name.replace(":", "-"));
+			return data.contains(name);
 		}
 	}
 	
