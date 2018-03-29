@@ -37,13 +37,13 @@ public class Language2Value {
 	public Language2Value(Language2 language, String languageKey) {
 		// 如果语言文件不存在
 		if (language == null || languageKey == null) {
-			languageValue = Collections.singletonList(ChatColor.DARK_RED + "[<ERROR-0>]");
+			languageValue = Arrays.asList(ChatColor.DARK_RED + "[<ERROR-0>]", "[return]");
 			return;
 		}
 		
 		// 如果语言文本不存在
 		if (!language.getConfiguration().contains(languageKey)) {
-			languageValue = Collections.singletonList(ChatColor.DARK_RED + "[<ERROR-1: " + languageKey + ">]");
+			languageValue = Arrays.asList(ChatColor.DARK_RED + "[<ERROR-1: " + languageKey + ">]", "[return]");
 			return;
 		}
 		

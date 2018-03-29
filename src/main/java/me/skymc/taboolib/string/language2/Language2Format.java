@@ -20,11 +20,6 @@ public class Language2Format implements Language2Line {
 	@Getter
 	private List<Language2Line> language2Lines = new ArrayList<>();
 	
-	/**
-	 * 构造方法
-	 * 
-	 * @param value 父类
-	 */
 	public Language2Format(Player player, Language2Value value) {
 		language2Value = value;
 		// 语言类型
@@ -61,6 +56,13 @@ public class Language2Format implements Language2Line {
 				parseValue(player, values, type);
 				// 更改类型
 				type = Language2Type.JSON;
+			}
+			// JSON2
+			else if (line.contains("[json2]")) {
+				// 递交数据
+				parseValue(player, values, type);
+				// 更改类型
+				type = Language2Type.JSON2;
 			}
 			// 音效
 			else if (line.contains("[sound]")) {
@@ -101,7 +103,6 @@ public class Language2Format implements Language2Line {
 		}	
 		// 变量转换
 		list = language2Value.setPlaceholder(list, player);
-		
 		// 大标题
         switch (type) {
             case TITLE:
@@ -115,6 +116,10 @@ public class Language2Format implements Language2Line {
             case JSON:
                 language2Lines.add(new Language2Json(this, list, player));
                 break;
+            // JSON2
+            case JSON2:
+                language2Lines.add(new Language2Json2(this, list, player));
+                break;
             // 音效
             case SOUND:
                 language2Lines.add(new Language2Sound(this, list));
@@ -127,7 +132,6 @@ public class Language2Format implements Language2Line {
                 language2Lines.add(new Language2Text(this, list));
                 break;
 		}
-		
 		// 清理数据
 		list.clear();
 	}
