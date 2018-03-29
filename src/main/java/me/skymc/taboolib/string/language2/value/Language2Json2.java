@@ -62,6 +62,7 @@ public class Language2Json2 implements Language2Line {
 		formatOptions(list);
 		// 遍历内容
 		int lineNumber = 0;
+		int lineNumberEnd = getLineNumberEnd(list);
 		for (String line : list) {
 			if (line.startsWith("@option")) {
 				break;
@@ -109,11 +110,21 @@ public class Language2Json2 implements Language2Line {
 				if (!find) {
 					json.append(line);
 				}
-				if (lineNumber + 1 < list.size()) {
+				if (++lineNumber < lineNumberEnd) {
 					json.newLine();
 				}
 			}
 		}
+	}
+	
+	private int getLineNumberEnd(List<String> list) {
+		int line = list.size();
+		for (int i = 0 ; i < list.size(); i++) {
+			if (list.get(i).startsWith("@option")) {
+				return i;
+			}
+		}
+		return line;
 	}
 	
 	private void formatOptions(List<String> list) {
@@ -167,29 +178,21 @@ public class Language2Json2 implements Language2Line {
 	private HashMap<String, List<String>> getOptions(List<String> list) {
 		HashMap<String, List<String>> options_source = new HashMap<>();
 		List<String> option = new ArrayList<>();
-		// 遍历
 		String optionName = null;
 		boolean start = false;
-		// 遍历所有代码
 		for (String line : list) {
 			if (line.startsWith(KEY_OPTION)) {
-				// 如果已经开始检测
 				if (start) {
-					// 返回源码
 					options_source.put(optionName, new ArrayList<>(option));
-					// 清除源码
 					option.clear();
 				}
-				// 标签
 				start = true;
-				// 当前设置名称
 				optionName = line.substring(KEY_OPTION.length());
 			}
 			else if (start) {
 				option.add(line);
 			}
 		}
-		// 返回最后设置
 		options_source.put(optionName, option);
 		return options_source;
 	}
