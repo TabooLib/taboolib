@@ -17,6 +17,11 @@ public enum Language2Type {
 	JSON,
 	
 	/**
+	 * JSON2 文本
+	 */
+	JSON2,
+	
+	/**
 	 * 大标题
 	 */
 	TITLE,

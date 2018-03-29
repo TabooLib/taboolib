@@ -14,6 +14,8 @@
 #   50: BOOK 语言类型指定 option 不存在
 #   51: BOOK 语言类型识别异常
 #   52: BOOK 语言类型 url 地址错误（http:// or https://）
+#   60: JSON2 语言类型指定 option 不存在
+#   61: JSON2 语言类型识别异常
 
 # 正常提示
 TEXT: '&f正常的提示'
@@ -112,3 +114,12 @@ BOOK-TEXT:
 - '    text: 测试'
 - '    command: 执行命令'
 - '    showtext: 显示文本'
+
+# JSON2
+JSON-NEW:
+- '[json2]'
+- '新 <@1> 内容 - 1'
+- '新 <@1> 内容 - 2'
+- '@option:1'
+- '    text: JSON'
+- '    showtext: 展示文本'
