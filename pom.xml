@@ -41,7 +41,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.ow2.asm</include>
+                                    <include>com.ilummc.eagletdl</include>
                                 </includes>
                             </artifactSet>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -59,9 +59,19 @@
     </repositories>
     <dependencies>
         <dependency>
+            <groupId>com.ilummc.eagletdl</groupId>
+            <artifactId>EagletCore</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>5.2</version>
+            <version>6.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
         </dependency>
         <dependency>
             <groupId>bukkit</groupId>
@@ -69,6 +79,11 @@
             <version>1</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/1_12_R1.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>bukkit</groupId>
@@ -106,13 +121,6 @@
             <systemPath>${basedir}/libs/com.sun.tools.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>lombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/lombok.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>placeholder</groupId>
             <artifactId>placeholder</artifactId>
             <version>1</version>
@@ -139,11 +147,6 @@
             <version>1</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/TabooCode5.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>wg</groupId>

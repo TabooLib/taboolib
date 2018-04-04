@@ -2,7 +2,7 @@ package com.ilummc.tlib;
 
 import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.annotations.ConfigNode;
-import com.ilummc.tlib.bean.BooleanProperty;
+import com.ilummc.tlib.bean.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -10,7 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ExampleMain extends JavaPlugin {
 
     @ConfigNode("enableUpdate")
-    private BooleanProperty update = new BooleanProperty(true);
+    private Property<Boolean> update = Property.of(false);
 
     @Override
     public void onEnable() {
