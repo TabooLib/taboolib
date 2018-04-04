@@ -1,5 +1,7 @@
 package me.skymc.taboolib;
 
+import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.annotations.Dependency;
 import lombok.Getter;
 import lombok.Setter;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
@@ -103,7 +105,9 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
     public void onLoad() {
     	inst = this; disable = false;
-    	
+
+        TLib.init();
+
     	// 启动监控
     	new Metrics(this);
     	
