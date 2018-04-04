@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logger {
 
-    String value() default "[{0}] {1}";
+    String value() default "[{0}|{1}] {1}";
 
     int level() default TLogger.INFO;
 
