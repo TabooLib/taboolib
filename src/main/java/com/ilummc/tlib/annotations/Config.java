@@ -11,7 +11,7 @@ public @interface Config {
 
     String name() default "config.yml";
 
-    boolean fromJar() default true;
+    boolean fromJar() default false;
 
     boolean saveOnExit() default false;
 

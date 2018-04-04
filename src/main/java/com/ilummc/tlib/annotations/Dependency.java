@@ -1,5 +1,7 @@
 package com.ilummc.tlib.annotations;
 
+import com.ilummc.tlib.dependency.TDependency;
+
 import java.lang.annotation.*;
 
 @Target(ElementType.TYPE)
@@ -11,6 +13,12 @@ public @interface Dependency {
 
     Type type();
 
-    String[] args();
+    String plugin() default "";
+
+    String maven() default "";
+
+    String mavenRepo() default TDependency.MAVEN_REPO;
+
+    String url() default "";
 
 }
