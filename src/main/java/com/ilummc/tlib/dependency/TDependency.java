@@ -55,7 +55,7 @@ public class TDependency {
                 .url(dl == null ? url + "/" + groupId.replace('.', '/') + "/" +
                         artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
                 .file(target)
-                .setThreads(8)
+                .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
                 .setOnStart(event -> lock.lock())
                 .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":",
                         new String[]{groupId, artifactId, version}) +

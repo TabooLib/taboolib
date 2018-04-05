@@ -1,10 +1,7 @@
 package com.ilummc.tlib.inject;
 
 import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.annotations.Dependencies;
-import com.ilummc.tlib.annotations.Dependency;
-import com.ilummc.tlib.annotations.Logger;
-import com.ilummc.tlib.annotations.PluginInstance;
+import com.ilummc.tlib.annotations.*;
 import com.ilummc.tlib.dependency.TDependency;
 import com.ilummc.tlib.util.TLogger;
 import org.bukkit.Bukkit;
@@ -31,12 +28,25 @@ public class DependencyInjector {
     }
 
     private static void injectConfig(Plugin plugin, Object o) {
-
+        for (Field field : o.getClass().getDeclaredFields()) {
+            try {
+                Config config;
+                if ((config = field.getType().getAnnotation(Config.class)) != null) {
+                    field.setAccessible(true);
+                    Object obj = TConfigInjector.loadConfig(plugin, field.getType());
+                    if (obj != null) {
+                        TLib.getTLib().getLogger().info("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件成功加载");
+                        field.set(o, obj);
+                    }
+                }
+            } catch (IllegalAccessException ignored) {
+            }
+        }
     }
 
     private static void injectLogger(Plugin plugin, Object o) {
-        try {
-            for (Field field : o.getClass().getDeclaredFields()) {
+        for (Field field : o.getClass().getDeclaredFields()) {
+            try {
                 Logger logger;
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
                     field.getType().asSubclass(TLogger.class);
@@ -45,8 +55,8 @@ public class DependencyInjector {
                         field.setAccessible(true);
                     field.set(o, tLogger);
                 }
+            } catch (Exception ignored) {
             }
-        } catch (Exception ignored) {
         }
     }
 
