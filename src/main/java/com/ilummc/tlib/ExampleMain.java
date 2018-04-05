@@ -1,7 +1,6 @@
 package com.ilummc.tlib;
 
 import com.ilummc.tlib.annotations.Config;
-import com.ilummc.tlib.annotations.ConfigNode;
 import com.ilummc.tlib.bean.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,7 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Config(name = "cfg.yml", charset = "GBK")
 public class ExampleMain extends JavaPlugin {
 
-    @ConfigNode("enableUpdate")
     private Property<Boolean> update = Property.of(false);
 
     @Override

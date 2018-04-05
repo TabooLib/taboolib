@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Modifier;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,12 +16,10 @@ public @interface Config {
 
     boolean saveOnExit() default false;
 
-    boolean readOnly() default true;
-
-    boolean fixUnicode() default true;
-
     String charset() default "UTF-8";
 
     boolean listenChanges() default false;
+
+    int excludeModifiers() default Modifier.STATIC | Modifier.TRANSIENT;
 
 }

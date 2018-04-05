@@ -1,5 +1,6 @@
 package com.ilummc.tlib;
 
+import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.annotations.Logger;
 import com.ilummc.tlib.inject.DependencyInjector;
@@ -20,7 +21,13 @@ public class TLib {
     @Logger("§3[§6TLib§3|{1}§3] §f{2}")
     private TLogger tLogger;
 
+    private TLibConfig config;
+
     private TLib() {
+    }
+
+    public TLibConfig getConfig() {
+        return config;
     }
 
     public TLogger getLogger() {
@@ -45,6 +52,16 @@ public class TLib {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
             tLib.getLogger().fatal("注入失败");
+        }
+    }
+
+    @Config(name = "tlib.yml")
+    public class TLibConfig {
+
+        private int downloadPoolSize = 4;
+
+        public int getDownloadPoolSize() {
+            return downloadPoolSize;
         }
     }
 
