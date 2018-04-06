@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class DependencyInjector {
@@ -24,7 +26,26 @@ public class DependencyInjector {
     }
 
     static void onDisable(Plugin plugin) {
+        ejectConfig(plugin, plugin);
+    }
 
+    public static void eject(Plugin plugin, Object o) {
+        ejectConfig(plugin, o);
+    }
+
+    private static void ejectConfig(Plugin plugin, Object o) {
+        for (Field field : o.getClass().getDeclaredFields()) {
+            Config config;
+            if ((config = field.getType().getAnnotation(Config.class)) != null) {
+                try {
+                    field.setAccessible(true);
+                    TConfigInjector.saveConfig(plugin, o);
+                    TLib.getTLib().getLogger().info("插件 " + plugin + " 的配置 " + config.name() + " 已保存");
+                } catch (IOException e) {
+                    TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置 " + config.name() + " 保存失败");
+                }
+            }
+        }
     }
 
     private static void injectConfig(Plugin plugin, Object o) {
@@ -37,6 +58,25 @@ public class DependencyInjector {
                     if (obj != null) {
                         TLib.getTLib().getLogger().info("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件成功加载");
                         field.set(o, obj);
+                        if (config.listenChanges()) {
+                            TLib.getTLib().getLogger().info("开始监听插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件");
+                            TLib.getTLib().getConfigWatcher().addOnListen(
+                                    new File(plugin.getDataFolder(), config.name()),
+                                    obj,
+                                    object -> {
+                                        try {
+                                            Object newObj = TConfigInjector.loadConfig(plugin, object.getClass());
+                                            for (Field f : newObj.getClass().getDeclaredFields()) {
+                                                f.setAccessible(true);
+                                                f.set(obj, f.get(newObj));
+                                            }
+                                            TLib.getTLib().getLogger().info("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件成功重载");
+                                        } catch (Exception ignored) {
+                                            TLib.getTLib().getLogger().warn("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件重载时发生错误");
+                                        }
+                                    }
+                            );
+                        }
                     }
                 }
             } catch (IllegalAccessException ignored) {

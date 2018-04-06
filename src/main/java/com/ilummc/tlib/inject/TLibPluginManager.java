@@ -1,5 +1,6 @@
 package com.ilummc.tlib.inject;
 
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
@@ -14,6 +15,8 @@ import java.util.Set;
 public class TLibPluginManager implements PluginManager {
 
     private final PluginManager instance;
+
+    private final Main main = (Main) Main.getInst();
 
     public TLibPluginManager() {
         instance = Bukkit.getPluginManager();
@@ -56,7 +59,10 @@ public class TLibPluginManager implements PluginManager {
 
     @Override
     public void disablePlugins() {
-        instance.disablePlugins();
+        for (Plugin plugin : getPlugins()) {
+            if (plugin != main) disablePlugin(plugin);
+        }
+        disablePlugin(main);
     }
 
     @Override

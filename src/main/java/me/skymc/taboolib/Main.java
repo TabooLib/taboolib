@@ -274,6 +274,8 @@ public class Main extends JavaPlugin implements Listener {
 		if (connection != null && connection.isConnection()) {
 			connection.closeConnection();
 		}
+
+		TLib.unload();
 		
 		// 关闭服务器
 		Bukkit.shutdown();

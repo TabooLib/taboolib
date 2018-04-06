@@ -10,6 +10,7 @@ import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.bean.Property;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -17,9 +18,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,7 +49,7 @@ public class TConfigInjector {
                     .create().fromJson(new Gson().toJson(new Yaml()
                             .dump(Files.toString(new File(plugin.getDataFolder(), config.name()), Charset.forName(config.charset())))), clazz);
         } catch (NullPointerException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解");
+            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解或文件不存在");
             return null;
         } catch (Exception e) {
             try {
@@ -62,28 +61,24 @@ public class TConfigInjector {
         }
     }
 
-    public static Map<String, Object> serialize(Plugin plugin, Class<?> clazz) {
+    public static Map<String, Object> serialize(Plugin plugin, Object object) {
         try {
-            Constructor constructor = clazz.getConstructor();
-            constructor.setAccessible(true);
-            Config config = clazz.getAnnotation(Config.class);
+            Config config = object.getClass().getAnnotation(Config.class);
             Validate.notNull(config);
-            return new Serializer(new LinkedHashMap<>(), constructor.newInstance(), config.excludeModifiers()).get();
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 序列化失败：没有无参构造方法");
+            return new Serializer(new LinkedHashMap<>(), object, config.excludeModifiers()).get();
         } catch (NullPointerException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 序列化失败：没有 @Config 注解");
+            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + object.getClass().getSimpleName() + " 序列化失败：没有 @Config 注解");
         } catch (Exception e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 序列化失败");
+            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + object.getClass().getSimpleName() + " 序列化失败");
         }
         return null;
     }
 
-    public static void saveConfig(Plugin plugin, Class<?> clazz) throws IOException, NullPointerException {
-        Object obj = serialize(plugin, clazz);
-        Validate.notNull(obj);
-        Config config = clazz.getAnnotation(Config.class);
+    public static void saveConfig(Plugin plugin, Object object) throws IOException, NullPointerException {
+        Config config = object.getClass().getAnnotation(Config.class);
         Validate.notNull(config);
+        Object obj = serialize(plugin, object);
+        Validate.notNull(obj);
         File target = new File(plugin.getDataFolder(), config.name());
         if (!target.exists()) target.createNewFile();
         DumperOptions options = new DumperOptions();
@@ -143,7 +138,8 @@ public class TConfigInjector {
                     return map;
                 } else if (o instanceof ConfigurationSerializable) {
                     Map map = new LinkedHashMap();
-                    map.put("==", o.getClass().getName());
+                    map.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
+                            ConfigurationSerialization.getAlias((Class<? extends ConfigurationSerializable>) o.getClass()));
                     map.putAll(((ConfigurationSerializable) o).serialize());
                     return map;
                 } else if (o instanceof Property) {
