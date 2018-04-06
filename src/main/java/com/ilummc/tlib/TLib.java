@@ -4,6 +4,7 @@ import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.annotations.Logger;
 import com.ilummc.tlib.inject.DependencyInjector;
+import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TLibPluginManager;
 import com.ilummc.tlib.util.TLogger;
 import me.skymc.taboolib.Main;
@@ -23,6 +24,8 @@ public class TLib {
 
     private TLibConfig config;
 
+    private TConfigWatcher configWatcher = new TConfigWatcher();
+
     private TLib() {
     }
 
@@ -32,6 +35,10 @@ public class TLib {
 
     public TLogger getLogger() {
         return tLogger;
+    }
+
+    public TConfigWatcher getConfigWatcher() {
+        return configWatcher;
     }
 
     public static TLib getTLib() {
@@ -55,8 +62,13 @@ public class TLib {
         }
     }
 
-    @Config(name = "tlib.yml")
-    public class TLibConfig {
+    public static void unload() {
+        tLib.getConfigWatcher().unregisterAll();
+        DependencyInjector.eject(Main.getInst(), tLib);
+    }
+
+    @Config(name = "tlib.yml", listenChanges = true)
+    public static class TLibConfig {
 
         private int downloadPoolSize = 4;
 
