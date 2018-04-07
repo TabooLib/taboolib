@@ -64,8 +64,6 @@ public class Main extends JavaPlugin implements Listener {
     @Getter
     private static File serverDataFolder;
     @Getter
-    private static File docsFolder;
-    @Getter
     private static StorageType storageType;
     @Getter
     private static boolean disable = false;
@@ -105,14 +103,12 @@ public class Main extends JavaPlugin implements Listener {
 	@Override
     public void onLoad() {
     	inst = this; disable = false;
-
-        TLib.init();
-
-    	// 启动监控
-    	new Metrics(this);
-    	
     	// 载入配置
 		saveDefaultConfig();
+
+		// 加载依赖
+        TLib.init();
+        
 		// 载入目录
 		setupDataFolder();
 		// 注册配置
@@ -218,6 +214,8 @@ public class Main extends JavaPlugin implements Listener {
 		
 		// 更新检测
 		new UpdateTask();
+    	// 启动监控
+    	new Metrics(this);
 		
 		// 启动
 		started = true;
@@ -286,15 +284,9 @@ public class Main extends JavaPlugin implements Listener {
 		if (!playerDataFolder.exists()) {
 			playerDataFolder.mkdirs();
 		}
-		
 		serverDataFolder = new File(getConfig().getString("DATAURL.SERVER-DATA"));
 		if (!serverDataFolder.exists()) {
 			serverDataFolder.mkdirs();
-		}
-		
-		docsFolder = new File(getDataFolder(), "Document");
-		if (!docsFolder.exists()) {
-			docsFolder.mkdirs();
 		}
 	}
 	

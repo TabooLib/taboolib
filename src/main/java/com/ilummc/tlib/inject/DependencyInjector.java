@@ -15,10 +15,10 @@ import java.lang.reflect.Field;
 public class DependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
-        injectLogger(plugin, o);
-        injectPluginInstance(plugin, o);
-        injectDependencies(plugin, o);
-        injectConfig(plugin, o);
+    	injectLogger(plugin, o);
+    	injectPluginInstance(plugin, o);
+    	injectDependencies(plugin, o);
+    	injectConfig(plugin, o);
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -41,7 +41,7 @@ public class DependencyInjector {
                     field.setAccessible(true);
                     TConfigInjector.saveConfig(plugin, o);
                     TLib.getTLib().getLogger().info("插件 " + plugin + " 的配置 " + config.name() + " 已保存");
-                } catch (IOException e) {
+                } catch (Exception e) {
                     TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置 " + config.name() + " 保存失败");
                 }
             }
@@ -85,9 +85,9 @@ public class DependencyInjector {
     }
 
     private static void injectLogger(Plugin plugin, Object o) {
-        for (Field field : o.getClass().getDeclaredFields()) {
-            try {
-                Logger logger;
+    	for (Field field : o.getClass().getDeclaredFields()) {
+    		try {
+    			Logger logger;
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
                     field.getType().asSubclass(TLogger.class);
                     TLogger tLogger = new TLogger(logger.value(), plugin, logger.level());
@@ -97,7 +97,7 @@ public class DependencyInjector {
                 }
             } catch (Exception ignored) {
             }
-        }
+		}
     }
 
     private static void injectPluginInstance(Plugin plugin, Object o) {
@@ -126,28 +126,33 @@ public class DependencyInjector {
     }
 
     private static void injectDependencies(Plugin plugin, Object o) {
-        Dependency[] dependencies = new Dependency[0];
-        {
+        Dependency[] dependencies = new Dependency[0]; {
             Dependencies d = o.getClass().getAnnotation(Dependencies.class);
-            if (d != null) dependencies = d.value();
+            if (d != null) {
+            	dependencies = d.value();
+            }
             Dependency d2 = o.getClass().getAnnotation(Dependency.class);
-            if (d2 != null) dependencies = new Dependency[]{d2};
+            if (d2 != null) {
+            	dependencies = new Dependency[]{d2};
+            }
         }
         if (dependencies.length != 0) {
             TLib.getTLib().getLogger().info("正在加载 " + plugin.getName() + " 插件所需的依赖");
             for (Dependency dependency : dependencies) {
-                if (dependency.type() == Dependency.Type.PLUGIN)
-                    if (TDependency.requestPlugin(dependency.plugin()))
+                if (dependency.type() == Dependency.Type.PLUGIN) {
+                    if (TDependency.requestPlugin(dependency.plugin())) {
                         TLib.getTLib().getLogger().info("  " + plugin.getName() + " 请求的插件 " + dependency.plugin() + " 加载成功。");
-                    else
+                    } else {
                         TLib.getTLib().getLogger().warn("  " + plugin.getName() + " 请求的插件 " + dependency.plugin() + " 加载失败。");
-                if (dependency.type() == Dependency.Type.LIBRARY)
-                    if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url()))
-                        TLib.getTLib().getLogger().info("  " + plugin.getName() + " 请求的库文件 " + String.join(":",
-                                dependency.maven()) + " 加载成功。");
-                    else
-                        TLib.getTLib().getLogger().warn("  " + plugin.getName() + " 请求的库文件 " + String.join(":",
-                                dependency.maven()) + " 加载失败。");
+                    }
+                }
+                if (dependency.type() == Dependency.Type.LIBRARY) {
+                    if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url())) {
+                        TLib.getTLib().getLogger().info("  " + plugin.getName() + " 请求的库文件 " + String.join(":", dependency.maven()) + " 加载成功。");
+                    } else {
+                        TLib.getTLib().getLogger().warn("  " + plugin.getName() + " 请求的库文件 " + String.join(":", dependency.maven()) + " 加载失败。");
+                    }
+                }
             }
             TLib.getTLib().getLogger().info("依赖加载完成");
         }

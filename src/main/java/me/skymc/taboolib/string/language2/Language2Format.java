@@ -2,6 +2,8 @@ package me.skymc.taboolib.string.language2;
 
 import lombok.Getter;
 import me.skymc.taboolib.string.language2.value.*;
+
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -100,40 +102,41 @@ public class Language2Format implements Language2Line {
 	private void parseValue(Player player, List<String> list, Language2Type type) {
 		if (list.size() == 0) {
 			return;
-		}	
+		}
 		// 变量转换
-		list = language2Value.setPlaceholder(list, player);
+		List<String> listPlaceholder = language2Value.setPlaceholder(list, player);
 		// 大标题
         switch (type) {
             case TITLE:
-                language2Lines.add(new Language2Title(this, list));
+                language2Lines.add(new Language2Title(this, listPlaceholder));
                 break;
             // 小标题
             case ACTION:
-                language2Lines.add(new Language2Action(this, list));
+                language2Lines.add(new Language2Action(this, listPlaceholder));
                 break;
             // JSON
             case JSON:
-                language2Lines.add(new Language2Json(this, list, player));
+                language2Lines.add(new Language2Json(this, listPlaceholder, player));
                 break;
             // JSON2
             case JSON2:
-                language2Lines.add(new Language2Json2(this, list, player));
+                language2Lines.add(new Language2Json2(this, listPlaceholder, player));
                 break;
             // 音效
             case SOUND:
-                language2Lines.add(new Language2Sound(this, list));
+                language2Lines.add(new Language2Sound(this, listPlaceholder));
                 break;
             // 书本
             case BOOK:
-                language2Lines.add(new Language2Book(this, list, player));
+                language2Lines.add(new Language2Book(this, listPlaceholder, player));
                 break;
             default:
-                language2Lines.add(new Language2Text(this, list));
+                language2Lines.add(new Language2Text(this, listPlaceholder));
                 break;
 		}
 		// 清理数据
 		list.clear();
+		listPlaceholder.clear();
 	}
 
 	@Override

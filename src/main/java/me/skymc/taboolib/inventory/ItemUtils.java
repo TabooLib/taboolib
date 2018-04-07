@@ -76,9 +76,13 @@ public class ItemUtils {
 	}
 	
 	public static void LoadLib() {
-		itemdir = YamlConfiguration.loadConfiguration(new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR")));
-		reloadItemName();
-		reloadItemCache();
+		try {
+			reloadItemName();
+			reloadItemCache();
+			itemdir = YamlConfiguration.loadConfiguration(new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR")));
+		} catch (Exception e) {
+			MsgUtils.warn("物品库载入失败: &4" + e.getMessage());
+		}
 	}
 	
 	public static void loadItemsFile(File file, boolean finalFile) {
@@ -135,7 +139,6 @@ public class ItemUtils {
 		return item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : itemlib.get(item.getType() + ":" + data) == null ? item.getType().toString() : itemlib.get(item.getType() + ":" + data);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static ItemStack getItemFromDir(String name) {
 		if (itemdir != null) {
 			return itemdir.getItemStack("item." + name);

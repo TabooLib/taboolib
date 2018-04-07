@@ -40,20 +40,30 @@ public class TDependency {
             if (file.exists()) {
                 TDependencyLoader.addToPath(Main.getInst(), file);
                 return true;
-            } else if (downloadMaven(repo, arr[0], arr[1], arr[2], file, url)) {
-                TDependencyLoader.addToPath(Main.getInst(), file);
-                return true;
-            } else return false;
+            } else {
+            	boolean downloadFinish = false;
+            	try {
+            		downloadFinish = downloadMaven(repo, arr[0], arr[1], arr[2], file, url);
+            	} catch (Exception ignored) {
+            	}
+            	if (downloadFinish) {
+            		TDependencyLoader.addToPath(Main.getInst(), file);
+            	}
+            	return downloadFinish;
+            }
         }
         return false;
     }
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
+    	if (Main.getInst().getConfig().getBoolean("OFFLINE-MODE")) {
+    		TLib.getTLib().getLogger().warn("已启用离线模式, 将不会下载第三方依赖库");
+    		return false;
+    	}
         ReentrantLock lock = new ReentrantLock();
         AtomicBoolean failed = new AtomicBoolean(false);
         EagletTask task = new EagletTask()
-                .url(dl == null ? url + "/" + groupId.replace('.', '/') + "/" +
-                        artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
+                .url(dl == null ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
                 .file(target)
                 .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
                 .setOnStart(event -> lock.lock())
