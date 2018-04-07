@@ -45,6 +45,7 @@ public class TDependency {
             	try {
             		downloadFinish = downloadMaven(repo, arr[0], arr[1], arr[2], file, url);
             	} catch (Exception ignored) {
+            		ignored.printStackTrace();
             	}
             	if (downloadFinish) {
             		TDependencyLoader.addToPath(Main.getInst(), file);
@@ -63,7 +64,7 @@ public class TDependency {
         ReentrantLock lock = new ReentrantLock();
         AtomicBoolean failed = new AtomicBoolean(false);
         EagletTask task = new EagletTask()
-                .url(dl == null ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
+                .url(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
                 .file(target)
                 .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
                 .setOnStart(event -> lock.lock())

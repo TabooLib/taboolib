@@ -9,16 +9,27 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 public class DependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
-    	injectLogger(plugin, o);
-    	injectPluginInstance(plugin, o);
-    	injectDependencies(plugin, o);
-    	injectConfig(plugin, o);
+    	try {
+    		injectConfig(plugin, o);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
+    	try {
+    		injectLogger(plugin, o);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
+    	try {
+    		injectPluginInstance(plugin, o);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
+    	try {
+    		injectDependencies(plugin, o);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -26,11 +37,17 @@ public class DependencyInjector {
     }
 
     static void onDisable(Plugin plugin) {
-        ejectConfig(plugin, plugin);
+    	try {
+    		ejectConfig(plugin, plugin);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
     }
 
     public static void eject(Plugin plugin, Object o) {
-        ejectConfig(plugin, o);
+    	try {
+    		ejectConfig(plugin, o);
+    	} catch (NoClassDefFoundError ignored) {
+    	}
     }
 
     private static void ejectConfig(Plugin plugin, Object o) {
@@ -79,7 +96,7 @@ public class DependencyInjector {
                         }
                     }
                 }
-            } catch (IllegalAccessException ignored) {
+            } catch (Exception ignored) {
             }
         }
     }
@@ -95,15 +112,15 @@ public class DependencyInjector {
                         field.setAccessible(true);
                     field.set(o, tLogger);
                 }
-            } catch (Exception ignored) {
-            }
+        	} catch (Exception ignored2) {
+        	}
 		}
     }
 
     private static void injectPluginInstance(Plugin plugin, Object o) {
-        try {
-            for (Field field : o.getClass().getDeclaredFields()) {
-                PluginInstance instance;
+    	for (Field field : o.getClass().getDeclaredFields()) {
+        	try {
+        		PluginInstance instance;
                 if ((instance = field.getAnnotation(PluginInstance.class)) != null) {
                     if (!field.isAccessible())
                         field.setAccessible(true);
@@ -120,8 +137,8 @@ public class DependencyInjector {
                     if (pl != null)
                         field.set(o, pl);
                 }
-            }
-        } catch (Exception ignored) {
+        	} catch (Exception ignored) {
+        	}
         }
     }
 
