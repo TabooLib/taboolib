@@ -89,7 +89,7 @@ public class TConfigInjector {
         Files.write(arr, target);
     }
 
-    private static final List<Class> primitiveType = Lists.newArrayList(Integer.class,
+    private static final List<Class<?>> primitiveType = Lists.newArrayList(Integer.class,
             Double.class, Float.class, Boolean.class, Short.class, Byte.class, Character.class, Long.class, String.class);
 
     private static class Serializer {
@@ -118,13 +118,13 @@ public class TConfigInjector {
             return map;
         }
 
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({"unchecked", "rawtypes"})
         private Object serialize(Object o) {
             try {
                 if (o.getClass().isPrimitive() || primitiveType.contains(o.getClass())) {
                     return o;
                 } else if (o.getClass().isArray()) {
-                    List list = new ArrayList();
+                    List list = new ArrayList<>();
                     int len = (int) o.getClass().getField("length").get(o);
                     for (int i = 0; i < len; i++) {
                         list.add(serialize(Array.get(o, i)));
@@ -133,11 +133,11 @@ public class TConfigInjector {
                 } else if (o instanceof Collection) {
                     return ((Collection) o).stream().map(this::serialize).collect(Collectors.toList());
                 } else if (o instanceof Map) {
-                    Map<String, Object> map = new LinkedHashMap<>();
+                    Map map = new LinkedHashMap<>();
                     ((Map) o).forEach((o1, o2) -> map.put((String) o1, serialize(o2)));
                     return map;
                 } else if (o instanceof ConfigurationSerializable) {
-                    Map map = new LinkedHashMap();
+                    Map map = new LinkedHashMap<>();
                     map.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY,
                             ConfigurationSerialization.getAlias((Class<? extends ConfigurationSerializable>) o.getClass()));
                     map.putAll(((ConfigurationSerializable) o).serialize());

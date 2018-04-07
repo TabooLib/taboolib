@@ -47,17 +47,17 @@ public class TLogger {
 
     public void warn(String msg) {
         if (level <= WARN)
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§6警告", msg));
+            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§6警告", "§6" + msg));
     }
 
     public void error(String msg) {
         if (level <= ERROR)
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§c错误", msg));
+            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§c错误", "§c" + msg));
     }
 
     public void fatal(String msg) {
         if (level <= FATAL)
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§4致命错误", msg));
+            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§4致命错误", "§4" + msg));
     }
 
 }

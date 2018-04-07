@@ -19,7 +19,7 @@ public class TLib {
 
     private static TLib tLib;
 
-    @Logger("§3[§6TLib§3|{1}§3] §f{2}")
+    @Logger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}")
     private TLogger tLogger;
 
     private TLibConfig config;
@@ -45,7 +45,6 @@ public class TLib {
         return tLib;
     }
 
-    @SuppressWarnings({"unchecked"})
     public static void init() {
         new File(Main.getInst().getDataFolder(), "/libs").mkdirs();
         tLib = new TLib();
