@@ -14,22 +14,22 @@ import java.lang.reflect.Field;
 public class DependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
-    	try {
-    		injectConfig(plugin, o);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
-    	try {
-    		injectLogger(plugin, o);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
-    	try {
-    		injectPluginInstance(plugin, o);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
-    	try {
-    		injectDependencies(plugin, o);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
+        try {
+            injectLogger(plugin, o);
+        } catch (NoClassDefFoundError ignored) {
+        }
+        try {
+            injectConfig(plugin, o);
+        } catch (NoClassDefFoundError ignored) {
+        }
+        try {
+            injectPluginInstance(plugin, o);
+        } catch (NoClassDefFoundError ignored) {
+        }
+        try {
+            injectDependencies(plugin, o);
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -37,17 +37,14 @@ public class DependencyInjector {
     }
 
     static void onDisable(Plugin plugin) {
-    	try {
-    		ejectConfig(plugin, plugin);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
+        eject(plugin, plugin);
     }
 
     public static void eject(Plugin plugin, Object o) {
-    	try {
-    		ejectConfig(plugin, o);
-    	} catch (NoClassDefFoundError ignored) {
-    	}
+        try {
+            ejectConfig(plugin, o);
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     private static void ejectConfig(Plugin plugin, Object o) {
@@ -56,10 +53,11 @@ public class DependencyInjector {
             if ((config = field.getType().getAnnotation(Config.class)) != null) {
                 try {
                     field.setAccessible(true);
-                    TConfigInjector.saveConfig(plugin, o);
+                    TConfigInjector.saveConfig(plugin, field.get(o));
                     TLib.getTLib().getLogger().info("插件 " + plugin + " 的配置 " + config.name() + " 已保存");
                 } catch (Exception e) {
                     TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置 " + config.name() + " 保存失败");
+                    e.printStackTrace();
                 }
             }
         }
@@ -102,9 +100,9 @@ public class DependencyInjector {
     }
 
     private static void injectLogger(Plugin plugin, Object o) {
-    	for (Field field : o.getClass().getDeclaredFields()) {
-    		try {
-    			Logger logger;
+        for (Field field : o.getClass().getDeclaredFields()) {
+            try {
+                Logger logger;
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
                     field.getType().asSubclass(TLogger.class);
                     TLogger tLogger = new TLogger(logger.value(), plugin, logger.level());
@@ -112,15 +110,15 @@ public class DependencyInjector {
                         field.setAccessible(true);
                     field.set(o, tLogger);
                 }
-        	} catch (Exception ignored2) {
-        	}
-		}
+            } catch (Exception ignored2) {
+            }
+        }
     }
 
     private static void injectPluginInstance(Plugin plugin, Object o) {
-    	for (Field field : o.getClass().getDeclaredFields()) {
-        	try {
-        		PluginInstance instance;
+        for (Field field : o.getClass().getDeclaredFields()) {
+            try {
+                PluginInstance instance;
                 if ((instance = field.getAnnotation(PluginInstance.class)) != null) {
                     if (!field.isAccessible())
                         field.setAccessible(true);
@@ -137,20 +135,21 @@ public class DependencyInjector {
                     if (pl != null)
                         field.set(o, pl);
                 }
-        	} catch (Exception ignored) {
-        	}
+            } catch (Exception ignored) {
+            }
         }
     }
 
     private static void injectDependencies(Plugin plugin, Object o) {
-        Dependency[] dependencies = new Dependency[0]; {
+        Dependency[] dependencies = new Dependency[0];
+        {
             Dependencies d = o.getClass().getAnnotation(Dependencies.class);
             if (d != null) {
-            	dependencies = d.value();
+                dependencies = d.value();
             }
             Dependency d2 = o.getClass().getAnnotation(Dependency.class);
             if (d2 != null) {
-            	dependencies = new Dependency[]{d2};
+                dependencies = new Dependency[]{d2};
             }
         }
         if (dependencies.length != 0) {

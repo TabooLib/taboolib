@@ -41,33 +41,31 @@ public class TDependency {
                 TDependencyLoader.addToPath(Main.getInst(), file);
                 return true;
             } else {
-            	boolean downloadFinish = false;
-            	try {
-            		downloadFinish = downloadMaven(repo, arr[0], arr[1], arr[2], file, url);
-            	} catch (Exception ignored) {
-            		ignored.printStackTrace();
-            	}
-            	if (downloadFinish) {
-            		TDependencyLoader.addToPath(Main.getInst(), file);
-            	}
-            	return downloadFinish;
+                if (downloadMaven(repo, arr[0], arr[1], arr[2], file, url)) {
+                    TDependencyLoader.addToPath(Main.getInst(), file);
+                    return true;
+                } else
+                    return false;
             }
         }
         return false;
     }
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
-    	if (Main.getInst().getConfig().getBoolean("OFFLINE-MODE")) {
-    		TLib.getTLib().getLogger().warn("已启用离线模式, 将不会下载第三方依赖库");
-    		return false;
-    	}
+        if (Main.getInst().getConfig().getBoolean("OFFLINE-MODE")) {
+            TLib.getTLib().getLogger().warn("已启用离线模式, 将不会下载第三方依赖库");
+            return false;
+        }
         ReentrantLock lock = new ReentrantLock();
         AtomicBoolean failed = new AtomicBoolean(false);
+        String link = dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl;
         EagletTask task = new EagletTask()
-                .url(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl)
+                .url(link)
                 .file(target)
                 .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
                 .setOnStart(event -> lock.lock())
+                .setOnError(event -> {
+                })
                 .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":",
                         new String[]{groupId, artifactId, version}) +
                         " 大小 " + ProgressEvent.format(event.getContentLength())))
@@ -78,6 +76,8 @@ public class TDependency {
                         TLib.getTLib().getLogger().info("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 完成");
                     } else {
                         failed.set(true);
+                        TLib.getTLib().getLogger().error("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 失败");
+                        TLib.getTLib().getLogger().error("  请手动下载 " + link + " 并重命名为 " + target.getName() + " 后放在 /TabooLib/libs 文件夹内");
                     }
                     lock.unlock();
                 });
