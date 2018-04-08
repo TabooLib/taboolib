@@ -31,7 +31,7 @@ public class TConfigInjector {
             Validate.notNull(config);
             File file = new File(plugin.getDataFolder(), config.name());
             if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
-            else saveConfig(plugin, clazz);
+            else saveConfig(plugin, clazz.newInstance());
             return unserialize(plugin, clazz);
         } catch (NullPointerException e) {
             TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解");

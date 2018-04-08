@@ -22,7 +22,7 @@ public class TLib {
     @Logger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}")
     private TLogger tLogger;
 
-    private TLibConfig config = new TLibConfig();
+    private TLibConfig config;
 
     private TConfigWatcher configWatcher = new TConfigWatcher();
 
