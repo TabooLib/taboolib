@@ -45,20 +45,25 @@ public class TLib {
         return tLib;
     }
 
-    public static void init() {
-        new File(Main.getInst().getDataFolder(), "/libs").mkdirs();
-        tLib = new TLib();
-        DependencyInjector.inject(Main.getInst(), tLib);
+    public static void injectPluginManager() {
         // 注入 PluginLoader 用于加载依赖
         try {
             Field field = Bukkit.getServer().getClass().getDeclaredField("pluginManager");
             field.setAccessible(true);
             field.set(Bukkit.getServer(), new TLibPluginManager());
-            tLib.getLogger().info("注入成功");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
-            tLib.getLogger().fatal("注入失败");
         }
+    }
+
+    public static void init() {
+        new File(Main.getInst().getDataFolder(), "/libs").mkdirs();
+        tLib = new TLib();
+        DependencyInjector.inject(Main.getInst(), tLib);
+        if (Bukkit.getPluginManager() instanceof TLibPluginManager)
+            tLib.getLogger().info("注入成功");
+        else
+            tLib.getLogger().fatal("注入失败");
     }
 
     public static void unload() {
