@@ -43,7 +43,7 @@ public class DependencyInjector {
     public static void eject(Plugin plugin, Object o) {
         try {
             ejectConfig(plugin, o);
-        } catch (NoClassDefFoundError ignored) {
+        } catch (Throwable ignored) {
         }
     }
 
