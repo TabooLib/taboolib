@@ -1,16 +1,13 @@
 package com.ilummc.tlib.util;
 
+import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.util.asm.AsmAnalyser;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -36,6 +33,11 @@ public class Ref {
 
     public static List<Field> getDeclaredFields(Class<?> clazz, int excludeModifiers, boolean cache) {
         try {
+
+            // 特殊判断
+            if (clazz == TLib.class)
+                return Arrays.asList(clazz.getDeclaredFields());
+
             Class.forName("org.objectweb.asm.ClassVisitor");
             List<Field> fields;
             if ((fields = cachedFields.get(clazz.getName())) != null) return fields;
@@ -44,6 +46,7 @@ public class Ref {
             classReader.accept(analyser, ClassReader.SKIP_DEBUG);
             fields = analyser.getFields().stream().map(name -> {
                 try {
+                    System.out.println(name);
                     return clazz.getDeclaredField(name);
                 } catch (Throwable ignored) {
                 }
