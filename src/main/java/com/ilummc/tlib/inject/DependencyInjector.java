@@ -3,6 +3,7 @@ package com.ilummc.tlib.inject;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.*;
 import com.ilummc.tlib.dependency.TDependency;
+import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.TLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -14,22 +15,10 @@ import java.lang.reflect.Field;
 public class DependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
-        try {
-            injectLogger(plugin, o);
-        } catch (NoClassDefFoundError ignored) {
-        }
-        try {
-            injectConfig(plugin, o);
-        } catch (NoClassDefFoundError ignored) {
-        }
-        try {
-            injectPluginInstance(plugin, o);
-        } catch (NoClassDefFoundError ignored) {
-        }
-        try {
-            injectDependencies(plugin, o);
-        } catch (NoClassDefFoundError ignored) {
-        }
+        injectLogger(plugin, o);
+        injectConfig(plugin, o);
+        injectPluginInstance(plugin, o);
+        injectDependencies(plugin, o);
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -48,7 +37,7 @@ public class DependencyInjector {
     }
 
     private static void ejectConfig(Plugin plugin, Object o) {
-        for (Field field : o.getClass().getDeclaredFields()) {
+        for (Field field : Ref.getDeclaredFields(o.getClass())) {
             Config config;
             if ((config = field.getType().getAnnotation(Config.class)) != null) {
                 try {
@@ -64,7 +53,7 @@ public class DependencyInjector {
     }
 
     private static void injectConfig(Plugin plugin, Object o) {
-        for (Field field : o.getClass().getDeclaredFields()) {
+        for (Field field : Ref.getDeclaredFields(o.getClass())) {
             try {
                 Config config;
                 if ((config = field.getType().getAnnotation(Config.class)) != null) {
@@ -100,7 +89,7 @@ public class DependencyInjector {
     }
 
     private static void injectLogger(Plugin plugin, Object o) {
-        for (Field field : o.getClass().getDeclaredFields()) {
+        for (Field field : Ref.getDeclaredFields(o.getClass())) {
             try {
                 Logger logger;
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
@@ -116,7 +105,7 @@ public class DependencyInjector {
     }
 
     private static void injectPluginInstance(Plugin plugin, Object o) {
-        for (Field field : o.getClass().getDeclaredFields()) {
+        for (Field field : Ref.getDeclaredFields(o.getClass())) {
             try {
                 PluginInstance instance;
                 if ((instance = field.getAnnotation(PluginInstance.class)) != null) {

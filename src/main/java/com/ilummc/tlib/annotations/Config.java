@@ -1,5 +1,7 @@
 package com.ilummc.tlib.annotations;
 
+import com.ilummc.tlib.util.Ref;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,6 +22,6 @@ public @interface Config {
 
     boolean listenChanges() default false;
 
-    int excludeModifiers() default Modifier.STATIC | Modifier.TRANSIENT;
+    int excludeModifiers() default Modifier.STATIC | Modifier.TRANSIENT | Ref.ACC_SYNTHETIC | Ref.ACC_BRIDGE;
 
 }
