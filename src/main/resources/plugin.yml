@@ -19,5 +19,5 @@ commands:
     aliases: [tlm]
     
 depend: [Vault]
-softdepend: [PlaceholderAPI, Skript, TabooCode]
+softdepend: [PlaceholderAPI, Skript, TabooCode, MassiveLag]
 loadbefore: [Skript]
