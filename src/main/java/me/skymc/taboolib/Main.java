@@ -51,21 +51,6 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class Main extends JavaPlugin implements Listener {
 
-    public Main() {
-        super();
-
-        inst = this;
-        disable = false;
-
-        TLib.injectPluginManager();
-
-        // 载入配置
-        saveDefaultConfig();
-
-        // 加载依赖
-        TLib.init();
-    }
-
     @Getter
     private static Plugin inst;
     @Getter
@@ -116,6 +101,17 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onLoad() {
+        inst = this;
+        disable = false;
+
+        TLib.injectPluginManager();
+
+        // 载入配置
+        saveDefaultConfig();
+
+        // 加载依赖
+        TLib.init();
+
         // 载入目录
         setupDataFolder();
         // 注册配置

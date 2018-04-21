@@ -14,7 +14,8 @@ import java.io.File;
 import java.lang.reflect.Field;
 
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.ow2.asm:asm:6.1.1")
-@Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.0.0")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.slf4j:slf4j-api:1.7.25")
 public class TLib {
 
     private static TLib tLib;

@@ -49,9 +49,7 @@ public class TLibPluginManager implements PluginManager {
 
     @Override
     public Plugin loadPlugin(File file) throws InvalidPluginException, InvalidDescriptionException, UnknownDependencyException {
-        Plugin plugin = instance.loadPlugin(file);
-        DependencyInjector.injectOnEnable(plugin);
-        return plugin;
+        return instance.loadPlugin(file);
     }
 
     @Override
@@ -94,6 +92,7 @@ public class TLibPluginManager implements PluginManager {
 
     @Override
     public void enablePlugin(Plugin plugin) {
+        DependencyInjector.injectOnEnable(plugin);
         instance.enablePlugin(plugin);
     }
 
