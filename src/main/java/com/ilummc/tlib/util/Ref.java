@@ -4,6 +4,7 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.util.asm.AsmAnalyser;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.Field;
@@ -46,16 +47,55 @@ public class Ref {
             classReader.accept(analyser, ClassReader.SKIP_DEBUG);
             fields = analyser.getFields().stream().map(name -> {
                 try {
-                    System.out.println(name);
                     return clazz.getDeclaredField(name);
                 } catch (Throwable ignored) {
+                    return null;
                 }
-                return null;
             }).filter(Objects::nonNull).collect(Collectors.toList());
             if (cache) cachedFields.putIfAbsent(clazz.getName(), fields);
             return fields;
         } catch (Exception e) {
             return Collections.emptyList();
+        }
+    }
+
+    public static Optional<Class<?>> getCallerClass(int depth) {
+        return Optional.ofNullable(CallerClass.impl.getCallerClass(depth + 1));
+    }
+
+    private static abstract class CallerClass {
+
+        private static CallerClass impl;
+
+        static {
+            try {
+                Class.forName("sun.reflect.Reflection");
+                impl = new ReflectionImpl();
+            } catch (ClassNotFoundException e) {
+                impl = new StackTraceImpl();
+            }
+        }
+
+        abstract Class<?> getCallerClass(int i);
+
+        private static class ReflectionImpl extends CallerClass {
+            @Override
+            Class<?> getCallerClass(int i) {
+                return Reflection.getCallerClass(i);
+            }
+        }
+
+        private static class StackTraceImpl extends CallerClass {
+
+            @Override
+            Class<?> getCallerClass(int i) {
+                StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+                try {
+                    return Class.forName(elements[i].getClassName());
+                } catch (ClassNotFoundException e) {
+                    return null;
+                }
+            }
         }
     }
 

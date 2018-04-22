@@ -18,6 +18,8 @@ public @interface Config {
 
     boolean saveOnExit() default false;
 
+    boolean readOnly() default true;
+
     String charset() default "UTF-8";
 
     boolean listenChanges() default false;
