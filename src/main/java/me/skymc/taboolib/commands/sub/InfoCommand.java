@@ -1,5 +1,9 @@
 package me.skymc.taboolib.commands.sub;
 
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
@@ -8,9 +12,6 @@ import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowItemEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
 import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class InfoCommand extends SubCommand {
 

@@ -1,11 +1,12 @@
 package me.skymc.taboolib.inventory;
 
-import me.skymc.taboolib.other.NumberUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import me.skymc.taboolib.other.NumberUtils;
 
 public class DropUtils {
 	

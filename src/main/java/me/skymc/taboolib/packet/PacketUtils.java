@@ -1,11 +1,12 @@
 package me.skymc.taboolib.packet;
 
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 
 public class PacketUtils {
 	

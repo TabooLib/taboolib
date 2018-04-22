@@ -1,6 +1,9 @@
 package me.skymc.taboolib.anvil;
 
-import me.skymc.taboolib.anvil.versions.AnvilContainer_V1_9_4;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,9 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import me.skymc.taboolib.anvil.versions.AnvilContainer_V1_9_4;
 
 public class AnvilContainerAPI implements Listener{
 	

@@ -1,12 +1,13 @@
 package me.skymc.taboolib.support;
 
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
 import me.clip.placeholderapi.external.EZPlaceholderHook;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.module.TabooLibraryModule;
 import me.skymc.tlm.module.sub.ModuleKits;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 public class SupportPlaceholder extends EZPlaceholderHook {
 	

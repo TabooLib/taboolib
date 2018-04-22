@@ -1,5 +1,13 @@
 package me.skymc.taboolib.string.language2.value;
 
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import lombok.Getter;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
@@ -13,13 +21,6 @@ import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
 import me.skymc.taboolib.string.language2.Language2Format;
 import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 /**
  * @author sky

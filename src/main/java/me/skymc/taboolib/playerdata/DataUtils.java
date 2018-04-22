@@ -1,10 +1,10 @@
 package me.skymc.taboolib.playerdata;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.database.PlayerDataManager;
-import me.skymc.taboolib.exception.PlayerOfflineException;
-import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,10 +14,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.database.PlayerDataManager;
+import me.skymc.taboolib.exception.PlayerOfflineException;
+import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.message.MsgUtils;
 
 public class DataUtils implements Listener {
 	

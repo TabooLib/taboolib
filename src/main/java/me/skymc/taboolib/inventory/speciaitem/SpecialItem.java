@@ -1,9 +1,8 @@
 package me.skymc.taboolib.inventory.speciaitem;
 
-import lombok.Getter;
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,8 +12,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import lombok.Getter;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.message.MsgUtils;
 
 /**
  * @author sky

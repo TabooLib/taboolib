@@ -1,13 +1,14 @@
 package me.skymc.taboolib.commands.sub.cycle;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
 import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
 import me.skymc.taboolib.timecycle.TimeCycle;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class CycleListCommand extends SubCommand {
 

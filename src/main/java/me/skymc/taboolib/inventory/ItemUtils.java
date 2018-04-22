@@ -1,17 +1,10 @@
 package me.skymc.taboolib.inventory;
 
-import lombok.Getter;
-import me.clip.placeholderapi.PlaceholderAPI;
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.itemnbtapi.NBTItem;
-import me.skymc.taboolib.itemnbtapi.NBTList;
-import me.skymc.taboolib.itemnbtapi.NBTListCompound;
-import me.skymc.taboolib.itemnbtapi.NBTType;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.string.Language;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -28,10 +21,18 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPI;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.itemnbtapi.NBTItem;
+import me.skymc.taboolib.itemnbtapi.NBTList;
+import me.skymc.taboolib.itemnbtapi.NBTListCompound;
+import me.skymc.taboolib.itemnbtapi.NBTType;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.Language;
 
 public class ItemUtils {
 	

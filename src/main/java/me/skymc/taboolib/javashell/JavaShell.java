@@ -1,10 +1,11 @@
 package me.skymc.taboolib.javashell;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.javashell.utils.JarUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.HashMap;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -12,11 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.HashMap;
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.javashell.utils.JarUtils;
+import me.skymc.taboolib.message.MsgUtils;
 
 public class JavaShell {
 	

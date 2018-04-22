@@ -1,15 +1,16 @@
 package me.skymc.tlm.module;
 
-import me.skymc.taboolib.Main;
-import me.skymc.tlm.annotation.DisableConfig;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Set;
+import me.skymc.taboolib.Main;
+import me.skymc.tlm.annotation.DisableConfig;
 
 /**
  * @author sky

@@ -1,11 +1,12 @@
 package me.skymc.taboolib.damage;
 
-import me.skymc.taboolib.TabooLib;
+import java.lang.reflect.InvocationTargetException;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
+import me.skymc.taboolib.TabooLib;
 
 public class DamageUtils {
 	

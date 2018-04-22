@@ -1,14 +1,15 @@
 package me.skymc.taboolib.string.language2.value;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import lombok.Getter;
 import me.skymc.taboolib.string.language2.Language2Format;
 import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author sky

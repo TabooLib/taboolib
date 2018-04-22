@@ -1,14 +1,15 @@
 package me.skymc.taboolib.javascript;
 
-import me.skymc.taboolib.Main;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+
+import me.skymc.taboolib.Main;
 
 public class JavaScriptUtils {
 	

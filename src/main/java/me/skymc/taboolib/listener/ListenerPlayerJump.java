@@ -1,6 +1,7 @@
 package me.skymc.taboolib.listener;
 
-import me.skymc.taboolib.events.PlayerJumpEvent;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -12,7 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
+import me.skymc.taboolib.events.PlayerJumpEvent;
 
 public class ListenerPlayerJump
   implements Listener

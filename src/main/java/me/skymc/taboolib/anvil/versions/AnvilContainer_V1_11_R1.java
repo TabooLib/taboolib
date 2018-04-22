@@ -1,8 +1,14 @@
 package me.skymc.taboolib.anvil.versions;
 
-import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.ChatMessage;
+import net.minecraft.server.v1_11_R1.ContainerAnvil;
+import net.minecraft.server.v1_11_R1.EntityHuman;
+import net.minecraft.server.v1_11_R1.EntityPlayer;
+import net.minecraft.server.v1_11_R1.PacketPlayOutOpenWindow;
 
 public class AnvilContainer_V1_11_R1 extends ContainerAnvil {
 

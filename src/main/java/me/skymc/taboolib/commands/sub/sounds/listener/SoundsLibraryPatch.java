@@ -1,7 +1,8 @@
 package me.skymc.taboolib.commands.sub.sounds.listener;
 
-import me.skymc.taboolib.inventory.InventoryUtil;
-import me.skymc.taboolib.inventory.ItemUtils;
+import java.util.Arrays;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,8 +15,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import me.skymc.taboolib.inventory.InventoryUtil;
+import me.skymc.taboolib.inventory.ItemUtils;
 
 /**
  * @author sky

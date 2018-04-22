@@ -1,14 +1,19 @@
 package me.skymc.taboolib.string.language2;
 
-import lombok.Getter;
-import me.skymc.taboolib.string.language2.value.Language2Text;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.Map.Entry;
+import lombok.Getter;
+import me.skymc.taboolib.string.language2.value.Language2Text;
 
 /**
  * @author sky

@@ -1,12 +1,9 @@
 package me.skymc.taboolib.database;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.Main.StorageType;
-import me.skymc.taboolib.events.PlayerLoadedEvent;
-import me.skymc.taboolib.exception.PlayerOfflineException;
-import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,9 +15,13 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.Main.StorageType;
+import me.skymc.taboolib.events.PlayerLoadedEvent;
+import me.skymc.taboolib.exception.PlayerOfflineException;
+import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.message.MsgUtils;
 
 public class PlayerDataManager implements Listener {
 	

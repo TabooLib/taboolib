@@ -1,8 +1,7 @@
 package me.skymc.taboolib.team;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +11,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.HashMap;
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
 
 /**
  * @author sky

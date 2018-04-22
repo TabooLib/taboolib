@@ -1,11 +1,11 @@
 package com.ilummc.tlib.annotations;
 
-import com.ilummc.tlib.util.TLogger;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.ilummc.tlib.util.TLogger;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

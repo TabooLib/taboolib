@@ -1,13 +1,14 @@
 package me.skymc.taboolib.update;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bukkit.scheduler.BukkitRunnable;
+
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author sky
@@ -23,19 +24,18 @@ public class UpdateTask {
 			
 			@Override
 			public void run() {
-				// 是否禁用
 				if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK")) {
 					return;
 				}
-				
 				String value = FileUtils.getStringFromURL("https://github.com/Bkm016/TabooLib/releases", 1024);
+				if (value == null) {
+					return;
+				}
 				Pattern pattern = Pattern.compile("<a href=\"/Bkm016/TabooLib/releases/tag/(\\S+)\">");
 				Matcher matcher = pattern.matcher(value);
 				if (matcher.find()) {
-					// 最新版本
 					double newVersion = Double.valueOf(matcher.group(1));
-					// 如果是最新版
-					if (TabooLib.getPluginVersion() == newVersion) {
+					if (TabooLib.getPluginVersion() >= newVersion) {
 						MsgUtils.send("插件已是最新版, 无需更新!");
 					}
 					else {

@@ -1,10 +1,11 @@
 package me.skymc.taboolib.display;
 
-import me.skymc.taboolib.TabooLib;
+import java.lang.reflect.Constructor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
+import me.skymc.taboolib.TabooLib;
 
 public class ActionUtils {
 	

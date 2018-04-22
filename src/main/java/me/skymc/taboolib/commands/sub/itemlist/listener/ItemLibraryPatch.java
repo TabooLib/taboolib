@@ -1,7 +1,10 @@
 package me.skymc.taboolib.commands.sub.itemlist.listener;
 
-import me.skymc.taboolib.inventory.InventoryUtil;
-import me.skymc.taboolib.inventory.ItemUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -13,10 +16,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import me.skymc.taboolib.inventory.InventoryUtil;
+import me.skymc.taboolib.inventory.ItemUtils;
 
 /**
  * @author sky

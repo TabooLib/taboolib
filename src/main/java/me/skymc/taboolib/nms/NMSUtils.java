@@ -1,11 +1,11 @@
 package me.skymc.taboolib.nms;
 
-import org.bukkit.Bukkit;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import org.bukkit.Bukkit;
 
 public class NMSUtils {
 	

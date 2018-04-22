@@ -1,16 +1,24 @@
 package com.ilummc.tlib.util;
 
-import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.util.asm.AsmAnalyser;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import sun.reflect.Reflection;
-
-import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import javax.annotation.concurrent.ThreadSafe;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+
+import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.util.asm.AsmAnalyser;
+
+import sun.reflect.Reflection;
 
 @ThreadSafe
 public class Ref {
@@ -62,7 +70,7 @@ public class Ref {
     public static Optional<Class<?>> getCallerClass(int depth) {
         return Optional.ofNullable(CallerClass.impl.getCallerClass(depth + 1));
     }
-
+    
     private static abstract class CallerClass {
 
         private static CallerClass impl;
@@ -79,7 +87,9 @@ public class Ref {
         abstract Class<?> getCallerClass(int i);
 
         private static class ReflectionImpl extends CallerClass {
-            @Override
+        	
+            @SuppressWarnings({ "deprecation", "restriction" })
+			@Override
             Class<?> getCallerClass(int i) {
                 return Reflection.getCallerClass(i);
             }

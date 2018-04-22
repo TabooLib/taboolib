@@ -1,14 +1,5 @@
 package me.skymc.taboolib.itemnbtapi;
 
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.itemnbtapi.utils.GsonWrapper;
-import me.skymc.taboolib.itemnbtapi.utils.MethodNames;
-import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -16,6 +7,16 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.Stack;
+
+import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
+
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.itemnbtapi.utils.GsonWrapper;
+import me.skymc.taboolib.itemnbtapi.utils.MethodNames;
+import me.skymc.taboolib.message.MsgUtils;
 
 // TODO: finish codestyle cleanup -sgdc3
 public class NBTReflectionUtil {

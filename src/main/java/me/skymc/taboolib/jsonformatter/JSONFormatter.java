@@ -1,19 +1,20 @@
 package me.skymc.taboolib.jsonformatter;
 
-import me.skymc.taboolib.json.JSONArray;
-import me.skymc.taboolib.json.JSONObject;
-import me.skymc.taboolib.jsonformatter.click.ClickEvent;
-import me.skymc.taboolib.jsonformatter.hover.HoverEvent;
-import me.skymc.taboolib.nms.NMSUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import me.skymc.taboolib.json.JSONArray;
+import me.skymc.taboolib.json.JSONObject;
+import me.skymc.taboolib.jsonformatter.click.ClickEvent;
+import me.skymc.taboolib.jsonformatter.hover.HoverEvent;
+import me.skymc.taboolib.nms.NMSUtils;
 
 public class JSONFormatter {
 	

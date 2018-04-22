@@ -21,6 +21,9 @@ DEBUG: false
 # 离线模式下将不会下载依赖
 OFFLINE-MODE: false
 
+# 下载依赖时启用的线程数
+DOWNLOAD-POOL-SIZE: 4
+
 # 是否启用更新检测
 UPDATE-CHECK: true
 
@@ -62,4 +65,4 @@ MYSQL:
 PluginData:
   # 检查更新间隔（单位：秒）
   # 检查变量是否被其他服务器更新
-  CHECK-DELAY: 30
+  CHECK-DELAY: 5

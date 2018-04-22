@@ -1,12 +1,13 @@
 package me.skymc.taboolib.fileutils;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.other.DateUtils;
-import org.bukkit.plugin.Plugin;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+
+import org.bukkit.plugin.Plugin;
+
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.other.DateUtils;
 
 @Deprecated
 public class LogUtils {

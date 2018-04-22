@@ -1,12 +1,13 @@
 package com.ilummc.tlib.dependency;
 
+import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.ilummc.eagletdl.EagletTask;
 import com.ilummc.eagletdl.ProgressEvent;
 import com.ilummc.tlib.TLib;
-import me.skymc.taboolib.Main;
 
-import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
+import me.skymc.taboolib.Main;
 
 public class TDependency {
 
@@ -43,8 +44,9 @@ public class TDependency {
                 if (downloadMaven(repo, arr[0], arr[1], arr[2], file, url)) {
                     TDependencyLoader.addToPath(Main.getInst(), file);
                     return true;
-                } else
+                } else {
                     return false;
+                }
             }
         }
         return false;
@@ -60,14 +62,10 @@ public class TDependency {
         new EagletTask()
                 .url(link)
                 .file(target)
-                .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
-                .setOnError(event -> {
-                })
-                .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":",
-                        new String[]{groupId, artifactId, version}) +
-                        " 大小 " + ProgressEvent.format(event.getContentLength())))
-                .setOnProgress(event -> TLib.getTLib().getLogger().info("    下载速度 " + event.getSpeedFormatted()
-                        + " 进度 " + event.getPercentageFormatted()))
+                .setThreads(getDownloadPoolSize())
+                .setOnError(event -> {})
+                .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 大小 " + ProgressEvent.format(event.getContentLength())))
+                .setOnProgress(event -> TLib.getTLib().getLogger().info("    下载速度 " + event.getSpeedFormatted() + " 进度 " + event.getPercentageFormatted()))
                 .setOnComplete(event -> {
                     if (event.isSuccess()) {
                         TLib.getTLib().getLogger().info("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 完成");
@@ -79,5 +77,8 @@ public class TDependency {
                 }).start().waitUntil();
         return !failed.get();
     }
-
+    
+    private static int getDownloadPoolSize() {
+    	return Main.getInst().getConfig().contains("DOWNLOAD-POOL-SIZE") ? Main.getInst().getConfig().getInt("DOWNLOAD-POOL-SIZE") : 4;
+    }
 }
