@@ -1,5 +1,6 @@
 package com.ilummc.tlib.inject;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -9,6 +10,7 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.bean.Property;
 import org.apache.commons.lang3.Validate;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
@@ -17,13 +19,42 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class TConfigInjector {
+
+    public static void fixUnicode(YamlConfiguration configuration) {
+        try {
+            Field field = YamlConfiguration.class.getDeclaredField("yamlOptions");
+            field.setAccessible(true);
+            field.set(configuration, NoUnicodeDumperOption.INSTANCE);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static final class NoUnicodeDumperOption extends DumperOptions {
+
+        private static final NoUnicodeDumperOption INSTANCE = new NoUnicodeDumperOption();
+
+        @Override
+        public void setAllowUnicode(boolean allowUnicode) {
+            super.setAllowUnicode(false);
+        }
+
+        @Override
+        public boolean isAllowUnicode() {
+            return false;
+        }
+
+        @Override
+        public void setLineBreak(LineBreak lineBreak) {
+            super.setLineBreak(LineBreak.getPlatformLineBreak());
+        }
+    }
 
     public static Object loadConfig(Plugin plugin, Class<?> clazz) {
         try {
@@ -32,7 +63,9 @@ public class TConfigInjector {
             File file = new File(plugin.getDataFolder(), config.name());
             if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
             else saveConfig(plugin, clazz.newInstance());
-            return unserialize(plugin, clazz);
+            Object obj = unserialize(plugin, clazz);
+            if (!config.readOnly()) saveConfig(plugin, obj);
+            return obj;
         } catch (NullPointerException e) {
             TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解");
         } catch (Exception e) {
@@ -83,6 +116,7 @@ public class TConfigInjector {
         if (!target.exists()) target.createNewFile();
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setAllowUnicode(false);
         Yaml yaml = new Yaml(options);
         String str = yaml.dump(obj);
         byte[] arr = str.getBytes(config.charset());
@@ -124,12 +158,7 @@ public class TConfigInjector {
                 if (o.getClass().isPrimitive() || primitiveType.contains(o.getClass())) {
                     return o;
                 } else if (o.getClass().isArray()) {
-                    List list = new ArrayList<>();
-                    int len = (int) o.getClass().getField("length").get(o);
-                    for (int i = 0; i < len; i++) {
-                        list.add(serialize(Array.get(o, i)));
-                    }
-                    return list;
+                    return ImmutableList.copyOf(((Object[]) o));
                 } else if (o instanceof Collection) {
                     return ((Collection) o).stream().map(this::serialize).collect(Collectors.toList());
                 } else if (o instanceof Map) {

@@ -3,6 +3,7 @@ package com.ilummc.tlib.inject;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.*;
 import com.ilummc.tlib.dependency.TDependency;
+import com.ilummc.tlib.resources.LocaleLoader;
 import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.TLogger;
 import org.bukkit.Bukkit;
@@ -15,10 +16,11 @@ import java.lang.reflect.Field;
 public class DependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
+        injectDependencies(plugin, o);
         injectLogger(plugin, o);
         injectConfig(plugin, o);
         injectPluginInstance(plugin, o);
-        injectDependencies(plugin, o);
+        LocaleLoader.load(plugin, true);
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -39,7 +41,7 @@ public class DependencyInjector {
     private static void ejectConfig(Plugin plugin, Object o) {
         for (Field field : Ref.getDeclaredFields(o.getClass())) {
             Config config;
-            if ((config = field.getType().getAnnotation(Config.class)) != null) {
+            if ((config = field.getType().getAnnotation(Config.class)) != null && config.saveOnExit()) {
                 try {
                     field.setAccessible(true);
                     TConfigInjector.saveConfig(plugin, field.get(o));

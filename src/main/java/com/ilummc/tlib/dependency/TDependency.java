@@ -7,7 +7,6 @@ import me.skymc.taboolib.Main;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class TDependency {
 
@@ -56,14 +55,12 @@ public class TDependency {
             TLib.getTLib().getLogger().warn("已启用离线模式, 将不会下载第三方依赖库");
             return false;
         }
-        ReentrantLock lock = new ReentrantLock();
         AtomicBoolean failed = new AtomicBoolean(false);
         String link = dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl;
-        EagletTask task = new EagletTask()
+        new EagletTask()
                 .url(link)
                 .file(target)
                 .setThreads(TLib.getTLib().getConfig().getDownloadPoolSize())
-                .setOnStart(event -> lock.lock())
                 .setOnError(event -> {
                 })
                 .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":",
@@ -79,12 +76,7 @@ public class TDependency {
                         TLib.getTLib().getLogger().error("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 失败");
                         TLib.getTLib().getLogger().error("  请手动下载 " + link + " 并重命名为 " + target.getName() + " 后放在 /TabooLib/libs 文件夹内");
                     }
-                    lock.unlock();
-                });
-        task.start();
-        while (lock.tryLock()) lock.unlock();
-        lock.lock();
-        lock.unlock();
+                }).start().waitUntil();
         return !failed.get();
     }
 
