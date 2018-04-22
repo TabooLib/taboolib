@@ -71,7 +71,7 @@ public class TLocaleLoader {
                     saveResource(inputStream, file);
                 }
                 TLib.getTLib().getLogger().info("尝试加载 " + lang + ".yml 作为语言文件");
-                FileConfiguration configuration = ConfigUtils.load(plugin, file);
+                YamlConfiguration configuration = ConfigUtils.loadYaml(plugin, file);
                 TLocaleInstance localeInstance = new TLocaleInstance();
                 localeInstance.load(configuration);
                 map.put(plugin.getName(), localeInstance);
