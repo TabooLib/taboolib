@@ -47,7 +47,7 @@ class TLocaleInstance {
     	return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asString();
     }
 
-    void load(FileConfiguration configuration) {
+    void load(YamlConfiguration configuration) {
         configuration.getKeys(false).forEach(s -> {
             Object object = configuration.get(s);
             if (object instanceof ConfigurationSection) {

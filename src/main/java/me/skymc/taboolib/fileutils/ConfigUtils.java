@@ -50,8 +50,11 @@ public class ConfigUtils {
 	 * @return
 	 */
 	public static FileConfiguration load(Plugin plugin, File file) {
+		return loadYaml(plugin, file);
+	}
+	
+	public static YamlConfiguration loadYaml(Plugin plugin, File file) {
 		YamlConfiguration yaml = new YamlConfiguration();
-		
 		try {
 			yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
 		} catch (Exception e) {

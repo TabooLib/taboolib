@@ -32,7 +32,7 @@ import com.ilummc.tlib.bean.Property;
 
 public class TConfigInjector {
 
-    public static void fixUnicode(FileConfiguration configuration) {
+    public static void fixUnicode(YamlConfiguration configuration) {
         try {
             Field field = YamlConfiguration.class.getDeclaredField("yamlOptions");
             field.setAccessible(true);

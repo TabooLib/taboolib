@@ -23,31 +23,32 @@ import net.minecraft.server.v1_11_R1.EntityEvoker.e;
  * @since 2018-04-22
  */
 
-@Immutable
 @SerializableAs("TITLE")
-@Data
 public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable {
 	
-	private String title;
-	private String subtitle;
-	private int fadein;
-	private int fadeout;
-	private int stay;
+	private final String title;
+	private final String subtitle;
+	private final int fadein;
+	private final int fadeout;
+	private final int stay;
 	
 	private boolean usePlaceholder;
 	
-	private TLocaleTitle(boolean usePlaceholder) {
+	private TLocaleTitle(String title, String subString, int fadein, int fadeout, int stay, boolean usePlaceholder) {
+		this.title = title;
+		this.subtitle = subString;
+		this.fadein = fadein;
+		this.fadeout = fadeout;
+		this.stay = stay;
 		this.usePlaceholder = usePlaceholder;
 	}
 
 	@Override
 	public void sendTo(CommandSender sender, String... args) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public String asString(String... args) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -66,16 +67,15 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
 	public static TLocaleTitle valueOf(Map<String, Object> map) {
 		TLocaleTitle title;
 		try {
-            title = new TLocaleTitle((boolean) map.getOrDefault("papi", TLib.getTLib().getConfig().isEnablePlaceholderHookByDefault()));
-            title.setTitle((String) map.getOrDefault("title", ""));
-            title.setSubtitle((String) map.getOrDefault("subtitle", ""));
-            title.setFadein((int) map.getOrDefault("fadein", 10));
-            title.setFadeout((int) map.getOrDefault("fadeout", 10));
-            title.setStay((int) map.getOrDefault("stay", 10));
+            title = new TLocaleTitle(
+            		(String) map.getOrDefault("title", ""), 
+            		(String) map.getOrDefault("subtitle", ""),
+            		(int) map.getOrDefault("fadein", 10),
+            		(int) map.getOrDefault("fadeout", 10),
+            		(int) map.getOrDefault("stay", 20),
+            		(boolean) map.getOrDefault("papi", TLib.getTLib().getConfig().isEnablePlaceholderHookByDefault()));
 		} catch (Exception e) {
-			title = new TLocaleTitle(false);
-			title.setTitle("§4Load failed!");
-			title.setSubtitle("§c" + e.getMessage());
+			title = new TLocaleTitle("§4Load failed!", "§c" + e.getMessage(), 10, 20, 10, false);
 		}
 		return title;
 	}
