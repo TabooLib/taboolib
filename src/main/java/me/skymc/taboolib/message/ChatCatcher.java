@@ -1,14 +1,15 @@
 package me.skymc.taboolib.message;
 
-import lombok.Getter;
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import lombok.Getter;
 
 public class ChatCatcher implements Listener {
 	

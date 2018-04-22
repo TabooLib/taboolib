@@ -1,5 +1,25 @@
 package com.ilummc.tlib.inject;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.Validate;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -9,24 +29,10 @@ import com.google.gson.annotations.SerializedName;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.bean.Property;
-import org.apache.commons.lang3.Validate;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.plugin.Plugin;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class TConfigInjector {
 
-    public static void fixUnicode(YamlConfiguration configuration) {
+    public static void fixUnicode(FileConfiguration configuration) {
         try {
             Field field = YamlConfiguration.class.getDeclaredField("yamlOptions");
             field.setAccessible(true);

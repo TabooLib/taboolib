@@ -1,19 +1,21 @@
 package me.skymc.taboolib.string;
 
-import com.google.common.base.Charsets;
-import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+
+import com.google.common.base.Charsets;
+
+import me.skymc.taboolib.message.MsgUtils;
 
 public class Language {
 	

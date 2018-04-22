@@ -1,5 +1,18 @@
 package me.skymc.taboolib.string.language2.value;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import lombok.Getter;
 import me.skymc.taboolib.bookformatter.BookFormatter;
 import me.skymc.taboolib.bookformatter.action.ClickAction;
@@ -12,18 +25,6 @@ import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.string.language2.Language2Format;
 import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author sky

@@ -1,8 +1,8 @@
 package me.skymc.taboolib.other;
 
-import me.skymc.taboolib.object.WeightCategory;
-
 import java.util.List;
+
+import me.skymc.taboolib.object.WeightCategory;
 
 public class WeightUtils {  
 	

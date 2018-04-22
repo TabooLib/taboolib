@@ -1,11 +1,11 @@
 package com.ilummc.tlib.util.asm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AsmAnalyser extends ClassVisitor implements Opcodes {
 

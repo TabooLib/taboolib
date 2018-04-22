@@ -1,13 +1,21 @@
 package me.skymc.taboolib.fileutils;
 
-import com.google.common.base.Charsets;
-import me.skymc.taboolib.message.MsgUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import java.io.*;
+import com.google.common.base.Charsets;
+import com.ilummc.tlib.TLib;
+
+import me.skymc.taboolib.message.MsgUtils;
 
 public class ConfigUtils {
 	
@@ -43,12 +51,13 @@ public class ConfigUtils {
 	 */
 	public static FileConfiguration load(Plugin plugin, File file) {
 		YamlConfiguration yaml = new YamlConfiguration();
+		
 		try {
 			yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
-		} catch (FileNotFoundException e) {
-			MsgUtils.warn("配置文件载入失败!");
-			MsgUtils.warn("插件: &4" + plugin.getName());
-			MsgUtils.warn("文件: &4" + file.getName());
+		} catch (Exception e) {
+			TLib.getTLib().getLogger().error("配置文件载入失败!");
+			TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
+			TLib.getTLib().getLogger().error("文件: &4" + file);
 		}
 		return yaml;
 	}

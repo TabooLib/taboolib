@@ -1,17 +1,18 @@
 package me.skymc.taboolib.commands.sub;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
 import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 public class HelpCommand extends SubCommand {
 	

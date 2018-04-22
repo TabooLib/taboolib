@@ -1,8 +1,8 @@
 package me.skymc.taboolib.display;
 
-import org.bukkit.entity.Player;
-
 import java.lang.reflect.Constructor;
+
+import org.bukkit.entity.Player;
 
 public class TitleUtils {
     

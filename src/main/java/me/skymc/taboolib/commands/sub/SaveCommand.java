@@ -11,8 +11,8 @@ import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.ChatCatcher;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.message.ChatCatcher.Catcher;
+import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 
 public class SaveCommand extends SubCommand {

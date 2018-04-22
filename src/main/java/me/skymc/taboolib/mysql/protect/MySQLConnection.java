@@ -1,15 +1,20 @@
 package me.skymc.taboolib.mysql.protect;
 
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
-import org.bukkit.plugin.Plugin;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.bukkit.plugin.Plugin;
+
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
 
 public class MySQLConnection {
 	

@@ -1,9 +1,10 @@
 package com.ilummc.tlib;
 
-import com.ilummc.tlib.annotations.Config;
-import com.ilummc.tlib.bean.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.ilummc.tlib.annotations.Config;
+import com.ilummc.tlib.bean.Property;
 
 @Config(name = "cfg.yml", charset = "GBK")
 public class ExampleMain extends JavaPlugin {

@@ -1,11 +1,12 @@
 package com.ilummc.tlib.inject;
 
-import com.ilummc.tlib.TLib;
-import org.apache.commons.lang3.tuple.Triple;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -13,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
+import org.apache.commons.lang3.tuple.Triple;
 
 public class TConfigWatcher {
 

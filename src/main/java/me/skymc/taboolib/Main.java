@@ -1,6 +1,17 @@
 package me.skymc.taboolib;
 
+import java.io.File;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import com.ilummc.tlib.TLib;
+
 import lombok.Getter;
 import lombok.Setter;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
@@ -8,6 +19,7 @@ import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.client.LogClient;
 import me.skymc.taboolib.commands.MainCommands;
 import me.skymc.taboolib.commands.language.Language2Command;
+import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
 import me.skymc.taboolib.commands.sub.sounds.listener.SoundsLibraryPatch;
 import me.skymc.taboolib.database.GlobalDataManager;
@@ -18,7 +30,11 @@ import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.javashell.JavaShell;
-import me.skymc.taboolib.listener.*;
+import me.skymc.taboolib.listener.ListenerNetWork;
+import me.skymc.taboolib.listener.ListenerPlayerCommand;
+import me.skymc.taboolib.listener.ListenerPlayerJump;
+import me.skymc.taboolib.listener.ListenerPlayerQuit;
+import me.skymc.taboolib.listener.ListenerPluginDisable;
 import me.skymc.taboolib.message.ChatCatcher;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
@@ -38,15 +54,6 @@ import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.io.File;
-import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class Main extends JavaPlugin implements Listener {
@@ -162,6 +169,7 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("taboolib").setExecutor(new MainCommands());
         getCommand("language2").setExecutor(new Language2Command());
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
+        getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
 
         // 注册监听
         registerListener();

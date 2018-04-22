@@ -1,17 +1,18 @@
 package me.skymc.taboolib.jsonformatter.hover;
 
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.json.JSONObject;
-import me.skymc.taboolib.nms.item.DabItemUtils;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.json.JSONObject;
+import me.skymc.taboolib.nms.item.DabItemUtils;
 
 public class ShowItemEvent extends HoverEvent{
 	

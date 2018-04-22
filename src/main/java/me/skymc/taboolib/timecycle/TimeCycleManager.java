@@ -1,15 +1,16 @@
 package me.skymc.taboolib.timecycle;
 
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.database.GlobalDataManager;
-import me.skymc.taboolib.message.MsgUtils;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.database.GlobalDataManager;
+import me.skymc.taboolib.message.MsgUtils;
 
 public class TimeCycleManager {
 	

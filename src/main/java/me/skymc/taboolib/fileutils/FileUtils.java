@@ -1,12 +1,21 @@
 package me.skymc.taboolib.fileutils;
 
-import me.skymc.taboolib.message.MsgUtils;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+
+import ch.njol.util.Closeable;
+import me.skymc.taboolib.message.MsgUtils;
 
 public class FileUtils {
 	
@@ -282,13 +291,7 @@ public class FileUtils {
 		}
 	}
 	
-    /**
-     * 读取字节
-     * 
-     * @param in
-     * @return
-     */
-	private static byte[] read(InputStream in) {
+	public static byte[] read(InputStream in) {
 		byte[] buffer = new byte[1024];
 		int len = 0;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -296,11 +299,18 @@ public class FileUtils {
 			while((len = in.read(buffer)) != -1) {
 				bos.write(buffer, 0, len);
 			}
-			bos.close();
 		}
-		catch (Exception e) {
-			e.printStackTrace();
+		catch (Exception ignored) {
 		}
 		return bos.toByteArray();
+	}
+	
+	public static void close(Closeable closeable) {
+		try {
+			if (closeable != null) {
+				closeable.close();
+			}
+		} catch (Exception ignored) {
+		}
 	}
 }

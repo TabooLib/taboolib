@@ -1,9 +1,12 @@
 package me.skymc.taboolib.javashell.utils;
 
-import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.Bukkit;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -11,6 +14,10 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.bukkit.Bukkit;
+
+import me.skymc.taboolib.message.MsgUtils;
 
 public class JarUtils {
 
