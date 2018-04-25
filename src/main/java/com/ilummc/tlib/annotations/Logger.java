@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.ilummc.tlib.util.TLogger;
+import com.ilummc.tlib.logger.TLogger;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

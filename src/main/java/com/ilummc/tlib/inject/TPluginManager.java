@@ -1,9 +1,18 @@
 package com.ilummc.tlib.inject;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,16 +26,57 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.UnknownDependencyException;
 
+import com.ilummc.tlib.TLib;
+
 import me.skymc.taboolib.Main;
 
+@SuppressWarnings("unused")
 public class TPluginManager implements PluginManager {
 
     private final PluginManager instance;
-
     private final Main main = (Main) Main.getInst();
+    private static File updateDirectory = null;
+    private Server server;
+    private Map<Pattern, PluginLoader> fileAssociations = new HashMap<>();
+    private List<Plugin> plugins = new ArrayList<>();
+	private Map<String, Plugin> lookupNames = new HashMap<>();
+    private SimpleCommandMap commandMap;
+    private Map<String, Permission> permissions = new HashMap<>();
+    private Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<>();
+    private Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<>();
+    private Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<>();
+    private boolean useTimings = false;
 
     public TPluginManager() {
         instance = Bukkit.getPluginManager();
+        // clone all Field in SimplePluginManager
+        cloneField("updateDirectory");
+        cloneField("server");
+        cloneField("fileAssociations");
+        cloneField("plugins");
+        cloneField("lookupNames");
+        cloneField("commandMap");
+        cloneField("permissions");
+        cloneField("defaultPerms");
+        cloneField("permSubs");
+        cloneField("defSubs");
+        cloneField("useTimings");
+    }
+    
+    private void cloneField(String bukkitName) {
+    	try {
+    		Field bukkitField = instance.getClass().getDeclaredField(bukkitName);
+    		Field thisFiled = this.getClass().getDeclaredField(bukkitName);
+    		if (bukkitField == null || thisFiled == null) {
+    			TLib.getTLib().getLogger().warn("拷贝 " + bukkitName + " 对象失败");
+    			return;
+    		}
+    		bukkitField.setAccessible(true);
+    		thisFiled.setAccessible(true);
+    		thisFiled.set(this, bukkitField.get(instance));
+    	} catch (Exception ignored) {
+    		TLib.getTLib().getLogger().error("拷贝 " + bukkitName + " 对象出错");
+		}
     }
 
     @Override

@@ -5,24 +5,26 @@ import java.util.Map;
 
 import javax.annotation.concurrent.Immutable;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.entity.Player;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocaleSendable;
+import com.ilummc.tlib.util.Strings;
 
-import lombok.Data;
-import lombok.Getter;
-import net.minecraft.server.v1_11_R1.EntityEvoker.e;
+import me.skymc.taboolib.display.TitleUtils;
 
 /**
  * @author Bkm016
  * @since 2018-04-22
  */
 
+@Immutable
 @SerializableAs("TITLE")
 public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable {
 	
@@ -45,11 +47,16 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
 
 	@Override
 	public void sendTo(CommandSender sender, String... args) {
+		if (sender instanceof Player) {
+			TitleUtils.sendTitle((Player) sender, replaceText(sender, title), replaceText(sender, subtitle), fadein, stay, fadeout);
+		} else {
+			TLib.getTLib().getLogger().error("该语言类型只能发送给玩家");
+		}
 	}
 
 	@Override
 	public String asString(String... args) {
-		return null;
+		return Strings.replaceWithOrder(title, args);
 	}
 	
 	@Override
@@ -79,5 +86,8 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
 		}
 		return title;
 	}
-
+	
+    private String replaceText(CommandSender sender, String s) {
+        return ChatColor.translateAlternateColorCodes('&', usePlaceholder ? PlaceholderHook.replace(sender, s) : s);
+    }
 }
