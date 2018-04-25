@@ -14,9 +14,9 @@ import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.annotations.Logger;
 import com.ilummc.tlib.annotations.PluginInstance;
 import com.ilummc.tlib.dependency.TDependency;
+import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.Ref;
-import com.ilummc.tlib.util.TLogger;
 
 public class TDependencyInjector {
 

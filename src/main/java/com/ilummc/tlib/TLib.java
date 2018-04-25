@@ -12,8 +12,8 @@ import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.inject.TPluginManager;
+import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocaleLoader;
-import com.ilummc.tlib.util.TLogger;
 
 import lombok.Getter;
 import me.skymc.taboolib.Main;
