@@ -38,7 +38,7 @@ public class TLocaleLoader {
     }
 
     static String asString(Plugin plugin, String path) {
-    	return Optional.ofNullable(map.get(plugin.getName())).get().asString(path);
+    	return map.get(plugin.getName()).asString(path);
     }
 
     public static void init() {
