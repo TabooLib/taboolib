@@ -24,17 +24,20 @@ public class PlayerJumpEvent
     return this.player;
   }
   
-  public boolean isCancelled()
+  @Override
+public boolean isCancelled()
   {
     return this.isCancelled;
   }
   
-  public void setCancelled(boolean e)
+  @Override
+public void setCancelled(boolean e)
   {
     this.isCancelled = e;
   }
   
-  public HandlerList getHandlers()
+  @Override
+public HandlerList getHandlers()
   {
     return handlers;
   }

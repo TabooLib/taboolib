@@ -40,7 +40,8 @@ public class TabooSignChangeEvent
 	  return this.uuid;
   }
 
-  public HandlerList getHandlers()
+  @Override
+public HandlerList getHandlers()
   {
 	  return handlers;
   }

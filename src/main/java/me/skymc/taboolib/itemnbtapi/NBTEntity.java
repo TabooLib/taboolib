@@ -11,11 +11,13 @@ public class NBTEntity extends NBTCompound {
         ent = entity;
     }
 
-    protected Object getCompound() {
+    @Override
+	protected Object getCompound() {
         return NBTReflectionUtil.getEntityNBTTagCompound(NBTReflectionUtil.getNMSEntity(ent));
     }
 
-    protected void setCompound(Object compound) {
+    @Override
+	protected void setCompound(Object compound) {
         NBTReflectionUtil.setEntityNBTTag(compound, NBTReflectionUtil.getNMSEntity(ent));
     }
 

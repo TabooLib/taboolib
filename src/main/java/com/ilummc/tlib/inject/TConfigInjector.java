@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.Validate;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -169,7 +168,7 @@ public class TConfigInjector {
                     return ((Collection) o).stream().map(this::serialize).collect(Collectors.toList());
                 } else if (o instanceof Map) {
                     Map map = new LinkedHashMap<>();
-                    ((Map) o).forEach((o1, o2) -> map.put((String) o1, serialize(o2)));
+                    ((Map) o).forEach((o1, o2) -> map.put(o1, serialize(o2)));
                     return map;
                 } else if (o instanceof ConfigurationSerializable) {
                     Map map = new LinkedHashMap<>();

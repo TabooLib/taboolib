@@ -24,11 +24,13 @@ public class NBTContainer extends NBTCompound{
         }
     }
 
-    protected Object getCompound() {
+    @Override
+	protected Object getCompound() {
         return nbt;
     }
 
-    protected void setCompound(Object tag) {
+    @Override
+	protected void setCompound(Object tag) {
         nbt = tag;
     }
 

@@ -52,8 +52,7 @@ public class NMSUtils {
 	public static Class<?> getNMSClass(String className){
 		try{
 			return getNMSClassWithException(className);
-		}catch(Exception e){
-			e.printStackTrace();
+		}catch(Exception ignored){
 		}
 		return null;
 	}
@@ -89,8 +88,7 @@ public class NMSUtils {
 	public static Class<?> getOBCClass(String className){
 		try{
 			return getOBCClassWithException(className);
-		}catch(Exception e){
-			e.printStackTrace();
+		}catch(Exception ignored){
 		}
 		return null;
 	}
@@ -106,8 +104,7 @@ public class NMSUtils {
 	public static Object getHandle(Object obj){
 		try{
 			return getMethodWithException(obj.getClass(), "getHandle").invoke(obj);
-		}catch(Exception e){
-			e.printStackTrace();
+		}catch(Exception ignored){
 			return null;
 		}
 	}

@@ -17,6 +17,7 @@ public class DefaultEvent extends Event {
 		return this.player;
 	}
   
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

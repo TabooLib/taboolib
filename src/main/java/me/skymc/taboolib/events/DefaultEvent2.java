@@ -21,7 +21,8 @@ public class DefaultEvent2 extends PlayerEvent
         return DefaultEvent2.handlers;
     }
     
-    public HandlerList getHandlers() {
+    @Override
+	public HandlerList getHandlers() {
         return DefaultEvent2.handlers;
     }
     
@@ -34,11 +35,13 @@ public class DefaultEvent2 extends PlayerEvent
             this.cancelled = false;
         }
         
-        public boolean isCancelled() {
+        @Override
+		public boolean isCancelled() {
             return this.cancelled;
         }
         
-        public void setCancelled(final boolean cancelled) {
+        @Override
+		public void setCancelled(final boolean cancelled) {
             this.cancelled = cancelled;
         }
     }

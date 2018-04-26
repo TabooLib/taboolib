@@ -1,14 +1,8 @@
 package com.ilummc.tlib.resources;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
@@ -16,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
@@ -24,6 +17,7 @@ import org.bukkit.plugin.Plugin;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.inject.TConfigInjector;
 import com.ilummc.tlib.resources.type.TLocaleText;
+import com.ilummc.tlib.resources.type.TLocaleTitle;
 
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
@@ -43,6 +37,7 @@ public class TLocaleLoader {
 
     public static void init() {
         ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
+        ConfigurationSerialization.registerClass(TLocaleTitle.class, "TITLE");
     }
 
     public static void load(Plugin plugin, boolean ignoreLoaded) {

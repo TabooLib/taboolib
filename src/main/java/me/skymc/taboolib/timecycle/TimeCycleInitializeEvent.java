@@ -33,6 +33,7 @@ public class TimeCycleInitializeEvent extends Event {
 		return this.cycle;
 	}
   
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

@@ -4,17 +4,12 @@ import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.google.common.base.Strings;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.util.Ref;
 
 import me.skymc.taboolib.Main;
-import me.skymc.taboolib.TabooLib;
 
 public final class TLocale {
 

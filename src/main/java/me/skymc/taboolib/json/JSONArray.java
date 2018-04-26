@@ -354,7 +354,8 @@ public class JSONArray {
         return jo;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         try {
             return '[' + this.join(",") + ']';
         } catch (Exception e) {
