@@ -17,6 +17,7 @@ public class AnvilContainer_V1_9_4 extends ContainerAnvil {
 		super(player.inventory, player.world, new BlockPosition(0, 0, 0), player);
 	}
 	
+	@Override
 	public boolean a(EntityHuman player)
 	{
 		return true;
@@ -25,6 +26,7 @@ public class AnvilContainer_V1_9_4 extends ContainerAnvil {
 	/** 
 	 * @deprecated 方法已过期，已有新的方法
 	 */
+	@Deprecated
 	public static void openAnvil(Player p)
 	{
 		EntityPlayer player = ((CraftPlayer)p).getHandle();

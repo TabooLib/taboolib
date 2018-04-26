@@ -11,7 +11,6 @@ import javax.annotation.concurrent.ThreadSafe;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.google.common.collect.ImmutableList;

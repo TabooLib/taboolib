@@ -804,6 +804,7 @@ public class MySQLConnection {
 			this.type = type;
 		}
 		
+		@Override
 		public String toString() {
 			if (type instanceof ColumnInteger || type instanceof ColumnChar) {
 				return "`" + name + "` " + type.toString().toLowerCase() + "(" + a + ")"; 

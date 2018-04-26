@@ -17,6 +17,7 @@ public class TimeCycleEvent extends Event {
 		return this.cycle;
 	}
   
+	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}

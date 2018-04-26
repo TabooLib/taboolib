@@ -129,6 +129,7 @@ public class Language2Json implements Language2Line {
 	 * 
 	 * @param player 玩家
 	 */
+	@Override
 	public void send(Player player) {
 		json.send(player);
 	}

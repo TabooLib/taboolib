@@ -285,6 +285,7 @@ public class MysqlConnection {
 	 * 
 	 *  @see Example: SQL_ClearTable("tablename");
 	 */
+	@Deprecated
 	public void SQL_ClearTable(String table) {
 		if (!isConnection()) {
 			return;

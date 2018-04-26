@@ -35,6 +35,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return false;
 	}
 	
+	@Override
 	public boolean hasBanner(){
 		return banner;
 	}
@@ -42,24 +43,28 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Class<?>	nmis	= NMSUtils.getNMSClassSilent("ItemStack"), cis = NMSUtils.getOBCClass("inventory.CraftItemStack");
 	public Method	nmscopy	= NMSUtils.getMethodSilent(cis, "asNMSCopy", ItemStack.class);
 	
+	@Override
 	public Object getNMSCopy(ItemStack is) throws Exception{
 		return nmscopy.invoke(null, is);
 	}
 	
 	public Method hastag = NMSUtils.getMethodSilent(nmis, "hasTag");
 	
+	@Override
 	public boolean hasTag(Object is) throws Exception{
 		return (boolean)hastag.invoke(is);
 	}
 	
 	public Method acm = NMSUtils.getMethodSilent(cis, "asCraftMirror", nmis);
 	
+	@Override
 	public ItemStack asCraftMirror(Object nis) throws Exception{
 		return (ItemStack)acm.invoke(null, nis);
 	}
 	
 	public Method abc = NMSUtils.getMethodSilent(cis, "asBukkitCopy", nmis);
 	
+	@Override
 	public ItemStack asBukkitCopy(Object nmis) throws Exception{
 		return (ItemStack)abc.invoke(null, nmis);
 	}
@@ -68,6 +73,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Method	gn	= NMSUtils.getMethodSilent(nmis, "getName");
 	
+	@Override
 	public String getName(ItemStack is){
 		try{
 			return (String)gn.invoke(getNMSCopy(is));
@@ -78,10 +84,12 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Method gi = NMSUtils.getMethodSilent(nmis, "getItem"), ia = getA();
 	
+	@Override
 	public Object getItem(Object nis) throws Exception{
 		return gi.invoke(nis);
 	}
 	
+	@Override
 	public Method getA(){
 		Method m = NMSUtils.getMethodSilent(ni, "a", nmis);
 		if(m == null){
@@ -90,6 +98,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return m;
 	}
 	
+	@Override
 	public String getRawName(ItemStack is){
 		try{
 			Object nis = getNMSCopy(is);
@@ -101,6 +110,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Method gin = NMSUtils.getMethodSilent(ni, "getName");
 	
+	@Override
 	public String getItemName(ItemStack is){
 		try{
 			return (String)gin.invoke(gi.invoke(getNMSCopy(is)));
@@ -111,6 +121,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Object registry = getRegistry();
 	
+	@Override
 	public Object getRegistry(){
 		try{
 			return NMSUtils.getFieldSilent(ni, "REGISTRY").get(null);
@@ -122,6 +133,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Class<?>	nmrs	= NMSUtils.getNMSClassSilent("RegistrySimple");
 	public Field	nmrsc	= NMSUtils.getField(nmrs, "c");
 	
+	@Override
 	public String getMinecraftName(ItemStack is){
 		String name = getItemName(is);
 		try{
@@ -140,22 +152,26 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Class<?>	nbttc	= NMSUtils.getNMSClassSilent("NBTTagCompound");
 	public Field	tag		= NMSUtils.getField(nmis, "tag");
 	
+	@Override
 	public Object getTag(Object is) throws Exception{
 		return tag.get(is);
 	}
 	
+	@Override
 	public void setTag(Object is, Object tag1) throws Exception{
 		tag.set(is, tag1);
 	}
 	
 	public Method nbtcie = NMSUtils.getMethodSilent(nbttc, "isEmpty");
 	
+	@Override
 	public boolean isEmpty(Object tag) throws Exception{
 		return (boolean)nbtcie.invoke(tag);
 	}
 	
 	public Field nbttcm = NMSUtils.getField(nbttc, "map");
 	
+	@Override
 	public Object getMap(Object tag) throws Exception{
 		return nbttcm.get(tag);
 	}
@@ -168,32 +184,39 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Method	nbttcsl		= NMSUtils.getMethodSilent(nbttc, "setLong", String.class, long.class);
 	public Method	nbttcss1	= NMSUtils.getMethodSilent(nbttc, "setShort", String.class, short.class);
 	
+	@Override
 	public void set(Object tag, String key, Object value) throws Exception{
 		nbttcs.invoke(tag, key, value);
 	}
 	
+	@Override
 	public void setString(Object tag, String key, String value) throws Exception{
 		nbttcss.invoke(tag, key, value);
 	}
 	
+	@Override
 	public void setShort(Object tag, String key, short value) throws Exception{
 		nbttcss1.invoke(tag, key, value);
 	}
 	
+	@Override
 	public void setInt(Object tag, String key, int i) throws Exception{
 		nbttcsi.invoke(tag, key, i);
 	}
 	
+	@Override
 	public void setDouble(Object tag, String key, double d) throws Exception{
 		nbttcsd.invoke(tag, key, d);
 	}
 	
+	@Override
 	public void setLong(Object tag, String key, long l) throws Exception{
 		nbttcsl.invoke(tag, key, l);
 	}
 	
 	public Method nbttchk = NMSUtils.getMethodSilent(nbttc, "hasKey", String.class);
 	
+	@Override
 	public boolean hasKey(Object tag, String key) throws Exception{
 		return (boolean)nbttchk.invoke(tag, key);
 	}
@@ -205,38 +228,46 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Method	nbttcgl		= NMSUtils.getMethodSilent(nbttc, "getLong", String.class);
 	public Method	nbttcgs1	= NMSUtils.getMethodSilent(nbttc, "getShort", String.class);
 	
+	@Override
 	public Object get(Object tag, String key) throws Exception{
 		return nbttcg.invoke(tag, key);
 	}
 	
+	@Override
 	public String getString(Object tag, String key) throws Exception{
 		return (String)nbttcgs.invoke(tag, key);
 	}
 	
+	@Override
 	public int getInt(Object tag, String key) throws Exception{
 		return (int)nbttcgi.invoke(tag, key);
 	}
 	
+	@Override
 	public double getDouble(Object tag, String key) throws Exception{
 		return (double)nbttcgd.invoke(tag, key);
 	}
 	
+	@Override
 	public long getLong(Object tag, String key) throws Exception{
 		return (long)nbttcgl.invoke(tag, key);
 	}
 	
+	@Override
 	public short getShort(Object tag, String key) throws Exception{
 		return (short)nbttcgs1.invoke(tag, key);
 	}
 	
 	public Constructor<?> nbttcc = NMSUtils.getConstructorSilent(nbttc);
 	
+	@Override
 	public Object getNewNBTTagCompound() throws Exception{
 		return nbttcc.newInstance();
 	}
 	
 	public Method hkot = NMSUtils.getMethodSilent(nbttc, "hasKeyOfType", String.class, int.class);
 	
+	@Override
 	public boolean hasAttributeModifiersKey(Object tag) throws Exception{
 		return (boolean)hkot.invoke(tag, "AttributeModifiers", 9);
 	}
@@ -248,38 +279,46 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Method			nbttla	= NMSUtils.getMethodSilent(nbttl, "add", nbtb);
 	public Constructor<?>	nbttlc	= NMSUtils.getConstructorSilent(nbttl);
 	
+	@Override
 	public Object getList(Object tag) throws Exception{
 		return gl.invoke(tag, "AttributeModifiers", 9);
 	}
 	
+	@Override
 	public Object getList(Object tag, String name, int id) throws Exception{
 		return gl.invoke(tag, name, id);
 	}
 	
+	@Override
 	public boolean getUnbreakable(Object tag) throws Exception{
 		return (boolean)gb.invoke(tag, "Unbreakable");
 	}
 	
+	@Override
 	public void setUnbreakable(Object tag, boolean value) throws Exception{
 		sb.invoke(tag, "Unbreakable", value);
 	}
 	
+	@Override
 	public Object getNewNBTTagList() throws Exception{
 		return nbttlc.newInstance();
 	}
 	
+	@Override
 	public void addToList(Object taglist, Object nbt) throws Exception{
 		nbttla.invoke(taglist, nbt);
 	}
 	
 	public Method gs = NMSUtils.getMethodSilent(nbttl, "size");
 	
+	@Override
 	public int getSize(Object list) throws Exception{
 		return (int)gs.invoke(list);
 	}
 	
 	public Method g = NMSUtils.getMethodSilent(nbttl, "get", int.class);
 	
+	@Override
 	public Object get(Object tlist, int i) throws Exception{
 		return g.invoke(tlist, i);
 	}
@@ -321,16 +360,19 @@ public class _194ItemUtils implements IDabItemUtils{
 	public Field			nbtsd	= NMSUtils.getField(nbts, "data");
 	public Field			nbtstd	= NMSUtils.getField(nbtst, "data");
 	
+	@Override
 	public Object getNewNBTTagByte(byte value) throws Exception{
 		return nbtbc.newInstance(value);
 	}
 	
+	@Override
 	public Object getNewNBTTagByteArray(byte[] value) throws Exception{
 		return nbtbac.newInstance(value);
 	}
 	
+	@Override
 	public Object getData(Object nbt) throws Exception{
-		int i = (int)((byte)gti.invoke(nbt));
+		int i = ((byte)gti.invoke(nbt));
 		switch(i){
 		case NBTConstants.TYPE_BYTE:
 			return nbtbd.get(nbt);
@@ -358,6 +400,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return null;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Object createData(Object value) throws Exception{
 		if(value.getClass().equals(byte.class)){ return nbtbc.newInstance(value); }
@@ -374,6 +417,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return null;
 	}
 	
+	@Override
 	@SuppressWarnings({ "unchecked" })
 	public Map<String, Object> convertCompoundTagToValueMap(Object nbt) throws Exception{
 		Map<String, Object> ret = new HashMap<>();
@@ -388,6 +432,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Object> convertListTagToValueList(Object nbttl) throws Exception{
 		List<Object> ret = new ArrayList<>();
@@ -401,6 +446,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public Object convertValueMapToCompoundTag(Map<String, Object> map) throws Exception{
 		Map<String, Object> value = new HashMap<>();
 		for(Entry<String, Object> e : map.entrySet()){
@@ -411,6 +457,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public Object convertValueListToListTag(List<Object> list) throws Exception{
 		List<Object> value = new ArrayList<>();
 		for(Object e : list){
@@ -424,6 +471,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void convertListTagToJSON(Object nbttl, JSONArray ja, JSONArray helper) throws Exception{
@@ -436,6 +484,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void convertListTagToJSON(Object nbttl, JSONArray ja) throws Exception{
 		List<Object> list = (List<Object>)nbtld.get(nbttl);
@@ -447,6 +496,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void convertCompoundTagToJSON(Object nbt, JSONObject jo, JSONObject helper) throws Exception{
@@ -460,6 +510,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void convertCompoundTagToJSON(Object nbt, JSONObject jo) throws Exception{
 		Map<String, Object> map = (Map<String, Object>)getMap(nbt);
@@ -472,6 +523,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public Object convertJSONToCompoundTag(JSONObject jo, JSONObject helper) throws Exception{
@@ -486,6 +538,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public Object convertJSONToCompoundTag(JSONObject jo) throws Exception{
 		Map<String, Object> value = new HashMap<>();
@@ -499,6 +552,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Deprecated
 	public Object convertJSONToListTag(JSONArray ja, JSONArray helper) throws Exception{
@@ -514,6 +568,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object convertJSONToListTag(JSONArray ja) throws Exception{
 		List value = new ArrayList();
@@ -528,9 +583,10 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@Deprecated
 	public Object getDataJSON(String key, Object nbt, JSONObject jo, JSONObject helper) throws Exception{
-		int i = (int)((byte)gti.invoke(nbt));
+		int i = ((byte)gti.invoke(nbt));
 		Object ret = null;
 		Object help = i;
 		switch(i){
@@ -583,8 +639,9 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public JSONArray getDataJSON(Object nbt) throws Exception{
-		int i = (int)((byte)gti.invoke(nbt));
+		int i = ((byte)gti.invoke(nbt));
 		Object ret = null;
 		switch(i){
 		case NBTConstants.TYPE_BYTE:
@@ -631,9 +688,10 @@ public class _194ItemUtils implements IDabItemUtils{
 		return new JSONArray(new Object[]{ i, ret });
 	}
 	
+	@Override
 	@Deprecated
 	public Object getDataJSON(Object nbt, JSONArray ja, JSONArray helper) throws Exception{
-		int i = (int)((byte)gti.invoke(nbt));
+		int i = ((byte)gti.invoke(nbt));
 		Object ret = null;
 		Object help = i;
 		switch(i){
@@ -685,6 +743,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	@Deprecated
 	public Object createDataJSON(String key, JSONObject jo, JSONObject helper) throws Exception{
 		Object help = helper.get(key);
@@ -741,6 +800,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public Object createDataJSON(String key, JSONObject jo) throws Exception{
 		JSONArray j = jo.getJSONArray(key);
 		Object ret = null;
@@ -792,6 +852,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public byte getByte(Object o){
 		if(o.getClass().equals(Integer.class)){ return (byte)(int)o; }
 		if(o.getClass().equals(Short.class)){ return (byte)(short)o; }
@@ -799,40 +860,46 @@ public class _194ItemUtils implements IDabItemUtils{
 		return (byte)o;
 	}
 	
+	@Override
 	public short getShort(Object o){
 		if(o.getClass().equals(Integer.class)){ return (short)(int)o; }
-		if(o.getClass().equals(Byte.class)){ return (short)(byte)o; }
+		if(o.getClass().equals(Byte.class)){ return (byte)o; }
 		if(o.getClass().equals(Integer.class)){ return (short)(int)o; }
 		return (short)o;
 	}
 	
+	@Override
 	public int getInt(Object o){
-		if(o.getClass().equals(Short.class)){ return (int)(short)o; }
-		if(o.getClass().equals(Byte.class)){ return (int)(byte)o; }
+		if(o.getClass().equals(Short.class)){ return (short)o; }
+		if(o.getClass().equals(Byte.class)){ return (byte)o; }
 		return (int)o;
 	}
 	
+	@Override
 	public double getDouble(Object o){
-		if(o.getClass().equals(Float.class)){ return (double)(float)o; }
-		if(o.getClass().equals(Long.class)){ return (double)(long)o; }
-		if(o.getClass().equals(Integer.class)){ return (double)(int)o; }
+		if(o.getClass().equals(Float.class)){ return (float)o; }
+		if(o.getClass().equals(Long.class)){ return (long)o; }
+		if(o.getClass().equals(Integer.class)){ return (int)o; }
 		return (double)o;
 	}
 	
+	@Override
 	public float getFloat(Object o){
 		if(o.getClass().equals(Double.class)){ return (float)(double)o; }
-		if(o.getClass().equals(Long.class)){ return (float)(long)o; }
-		if(o.getClass().equals(Integer.class)){ return (float)(int)o; }
+		if(o.getClass().equals(Long.class)){ return (long)o; }
+		if(o.getClass().equals(Integer.class)){ return (int)o; }
 		return (float)o;
 	}
 	
+	@Override
 	public long getLong(Object o){
 		if(o.getClass().equals(Float.class)){ return (long)(float)o; }
 		if(o.getClass().equals(Double.class)){ return (long)(double)o; }
-		if(o.getClass().equals(Integer.class)){ return (long)(int)o; }
+		if(o.getClass().equals(Integer.class)){ return (int)o; }
 		return (long)o;
 	}
 	
+	@Override
 	@Deprecated
 	public Object createDataJSON(int key, JSONArray jo, JSONArray helper) throws Exception{
 		Object help = helper.get(key);
@@ -889,6 +956,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public Object createDataJSON(int key, JSONArray jo) throws Exception{
 		JSONArray j = jo.getJSONArray(key);
 		Object ret = null;
@@ -940,9 +1008,10 @@ public class _194ItemUtils implements IDabItemUtils{
 		return ret;
 	}
 	
+	@Override
 	public boolean compareBaseTag(Object tag, Object tag1) throws Exception{
-		int i = (int)((byte)gti.invoke(tag));
-		int i1 = (int)((byte)gti.invoke(tag1));
+		int i = ((byte)gti.invoke(tag));
+		int i1 = ((byte)gti.invoke(tag1));
 		if(i != i1)
 			return false;
 		switch(i){
@@ -991,6 +1060,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return false;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean compareCompoundTag(Object tag, Object tag1) throws Exception{
 		Map<String, Object> map = (Map<String, Object>)getMap(tag);
@@ -1008,6 +1078,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return true;
 	}
 	
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public boolean compareListTag(Object tag, Object tag1) throws Exception{
 		List list = (List)nbtld.get(tag);
@@ -1038,6 +1109,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return copy.isEmpty() && copy1.isEmpty();
 	}
 	
+	@Override
 	public boolean compare(ItemStack is1, ItemStack is2){
 		if(is1.getType().equals(is2.getType())){
 			if(is1.getDurability() == is2.getDurability()){
@@ -1061,10 +1133,12 @@ public class _194ItemUtils implements IDabItemUtils{
 		return false;
 	}
 	
+	@Override
 	public boolean canMerge(ItemStack add, ItemStack to){
 		return compare(add, to);
 	}
 	
+	@Override
 	public boolean isModified(ItemStack is){
 		ItemStack is1 = is.clone();
 		is1.setAmount(1);
@@ -1072,6 +1146,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return !is1.equals(is2);
 	}
 	
+	@Override
 	public void sortByMaterial(List<ItemStack> items){
 		items.sort(new MaterialComparator());
 	}
@@ -1083,6 +1158,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	public void sortByName(List<ItemStack> items){
 		items.sort(new NameComparator());
 	}
@@ -1100,6 +1176,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	public void sortByAmount(List<ItemStack> items){
 		items.sort(new AmountComparator());
 	}
@@ -1119,6 +1196,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
+	@Override
 	public ItemStack convertJSONToItemStack(JSONObject jo) throws Exception{
 		Material material = Material.valueOf(jo.getString("material"));
 		int amount = jo.getInt("amount");
@@ -1134,6 +1212,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		return is;
 	}
 	
+	@Override
 	public JSONObject convertItemStackToJSON(ItemStack is) throws Exception{
 		JSONObject jo = new JSONObject();
 		jo.put("material", is.getType().name());

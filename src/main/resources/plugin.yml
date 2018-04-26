@@ -15,9 +15,11 @@ commands:
   language2:
     aliases: [lang2]
     permission: taboolib.admin
+  tabooliblocale:
+    aliases: [taboolocale, tlocale]
+    permission: taboolib.admin
   taboolibrarymodule:
     aliases: [tlm]
     
 depend: [Vault]
 softdepend: [PlaceholderAPI, Skript, TabooCode, MassiveLag]
-loadbefore: [Skript]

@@ -19,15 +19,18 @@ public class JSONObject {
 
      private static final class Null {
 
-        protected final Object clone() {
+        @Override
+		protected final Object clone() {
             return this;
         }
 
-        public boolean equals(Object object) {
+        @Override
+		public boolean equals(Object object) {
             return object == null || object == this;
         }
 
-        public String toString() {
+        @Override
+		public String toString() {
             return "null";
         }
     }
@@ -702,7 +705,8 @@ public class JSONObject {
         return ja;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         try {
             return this.toString(0);
         } catch (Exception e) {

@@ -2,65 +2,51 @@ package me.skymc.taboolib.display;
 
 import java.lang.reflect.Constructor;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.nms.NMSUtils;
 
+/**
+ * @author Bkm016
+ * @since 2018-04-26
+ */
 public class ActionUtils {
 	
-    private static void sendPacket(Player player, Object packet)
-    {
-        try
-        {
-            Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", new Class[]{getNMSClass("Packet")}).invoke(playerConnection, packet);
+	private static Class<?> Packet = NMSUtils.getNMSClass("Packet");
+	private static Class<?> ChatComponentText = NMSUtils.getNMSClass("ChatComponentText");
+	private static Class<?> ChatMessageType = NMSUtils.getNMSClass("ChatMessageType");
+	private static Class<?> PacketPlayOutChat = NMSUtils.getNMSClass("PacketPlayOutChat");
+	private static Class<?> IChatBaseComponent = NMSUtils.getNMSClass("IChatBaseComponent");
+	
+    public static void send(Player player, String action) {
+        if (player == null) {
+            return;
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static Class<?> getNMSClass(String class_name)
-    {
-        String version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        try
-        {
-            return Class.forName("net.minecraft.server." + version + "." + class_name);
-        }
-        catch (ClassNotFoundException ex)
-        {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-    
-    public static void send(Player p, String msg)
-    {
-        if (msg == null) {
-            msg = "";
-        }
-        try
-        {
-            Object ab = getNMSClass("ChatComponentText").getConstructor(new Class[]{String.class}).newInstance(msg);
+        try {
+            Object ab = ChatComponentText.getConstructor(String.class).newInstance(action);
             Constructor<?> ac = null;
             Object abPacket = null;
-            // 如果版本大于 1.11.0
             if (TabooLib.getVerint() > 11100) {
-            	Class<?> chatMessageType = getNMSClass("ChatMessageType");
-            	ac = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), chatMessageType);
-            	abPacket = ac.newInstance(ab, chatMessageType.getMethod("a", Byte.TYPE).invoke(null, (byte) 2));
+            	ac = PacketPlayOutChat.getConstructor(IChatBaseComponent, ChatMessageType);
+            	abPacket = ac.newInstance(ab, ChatMessageType.getMethod("a", Byte.TYPE).invoke(null, (byte) 2));
             } else {
-            	ac = getNMSClass("PacketPlayOutChat").getConstructor(getNMSClass("IChatBaseComponent"), Byte.TYPE);
+            	ac = PacketPlayOutChat.getConstructor(IChatBaseComponent, Byte.TYPE);
                 abPacket = ac.newInstance(ab, (byte) 2);
             }
-            sendPacket(p, abPacket);
+            sendPacket(player, abPacket);
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
+        catch (Exception ignored) {
+        }
+    }
+    
+    private static void sendPacket(Player player, Object packet) {
+        try {
+            Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player);
+            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
+            playerConnection.getClass().getMethod("sendPacket", Packet).invoke(playerConnection, packet);
+        }
+        catch (Exception ignored) {
         }
     }
 }

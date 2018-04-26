@@ -979,7 +979,8 @@ public class CsvReader
         }
     }
     
-    protected void finalize() {
+    @Override
+	protected void finalize() {
         this.close(false);
     }
     

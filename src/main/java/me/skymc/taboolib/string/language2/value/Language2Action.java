@@ -67,6 +67,7 @@ public class Language2Action implements Language2Line {
 	 * 
 	 * @param player 玩家
 	 */
+	@Override
 	public void send(Player player) {
 		// 检查版本
 		if (TabooLib.getVerint() < 10800) {
