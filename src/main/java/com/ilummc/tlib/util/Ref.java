@@ -1,24 +1,17 @@
 package com.ilummc.tlib.util;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import javax.annotation.concurrent.ThreadSafe;
-
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-
+import com.google.gson.annotations.SerializedName;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.util.asm.AsmAnalyser;
-
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import sun.reflect.Reflection;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @ThreadSafe
 public class Ref {
@@ -70,7 +63,20 @@ public class Ref {
     public static Optional<Class<?>> getCallerClass(int depth) {
         return Optional.ofNullable(CallerClass.impl.getCallerClass(depth + 1));
     }
-    
+
+    public static String getSerializedName(Field field) {
+        return field.isAnnotationPresent(SerializedName.class) ? field.getAnnotation(SerializedName.class).value() : field.getName();
+    }
+
+    public static Optional<Field> getFieldBySerializedName(Class<?> clazz, String name) {
+        for (Field field : Ref.getDeclaredFields(clazz, 0, false)) {
+            if (field.isAnnotationPresent(SerializedName.class))
+                if (field.getAnnotation(SerializedName.class).value().equals(name)) return Optional.of(field);
+                else if (field.getName().equals(name)) return Optional.of(field);
+        }
+        return Optional.empty();
+    }
+
     private static abstract class CallerClass {
 
         private static CallerClass impl;
@@ -87,9 +93,9 @@ public class Ref {
         abstract Class<?> getCallerClass(int i);
 
         private static class ReflectionImpl extends CallerClass {
-        	
-            @SuppressWarnings({ "deprecation", "restriction" })
-			@Override
+
+            @SuppressWarnings({"deprecation", "restriction"})
+            @Override
             Class<?> getCallerClass(int i) {
                 return Reflection.getCallerClass(i);
             }

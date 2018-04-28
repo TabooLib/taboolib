@@ -1,68 +1,183 @@
 package me.skymc.taboolib.fileutils;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.Maps;
+import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.util.Ref;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
-
-import com.google.common.base.Charsets;
-import com.ilummc.tlib.TLib;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class ConfigUtils {
-	
-	public static FileConfiguration decodeYAML(String args) {
-		return YamlConfiguration.loadConfiguration(new StringReader(Base64Coder.decodeString(args)));
-	}
-	
-	public static String encodeYAML(FileConfiguration file) {
-		return Base64Coder.encodeLines(file.saveToString().getBytes()).replaceAll("\\s+", "");
-	}
-	
-	/**
-	 * 以 UTF-8 的格式释放配置文件并载入
-	 * 
-	 * 录入时间：2018年2月10日21:28:30
-	 * 录入版本：3.49
-	 * 
-	 * @param plugin
-	 * @return
-	 */
-	public static FileConfiguration saveDefaultConfig(Plugin plugin, String name) {
-		File file = new File(plugin.getDataFolder(), name);
-		if (!file.exists()) {
-			plugin.saveResource(name, true);
-		}
-		return load(plugin, file);
-	}
-	
-	/**
-	 * 以 UTF-8 的格式载入配置文件
-	 * 
-	 * @return
-	 */
-	public static FileConfiguration load(Plugin plugin, File file) {
-		return loadYaml(plugin, file);
-	}
-	
-	public static YamlConfiguration loadYaml(Plugin plugin, File file) {
-		YamlConfiguration yaml = new YamlConfiguration();
-		try {
-			yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
-		} catch (Exception e) {
-			TLib.getTLib().getLogger().error("配置文件载入失败!");
-			TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
-			TLib.getTLib().getLogger().error("文件: &4" + file);
-		}
-		return yaml;
-	}
-	
-	@Deprecated
-	public static FileConfiguration load(Plugin plugin, String file) {
-		return load(plugin, FileUtils.file(file));
-	}
+
+    private static final Yaml YAML;
+
+    static {
+        DumperOptions options = new DumperOptions();
+        options.setAllowUnicode(false);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        YAML = new Yaml(options);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Map<String, Object> yamlToMap(String yamlText) {
+        return YAML.loadAs(yamlText, LinkedHashMap.class);
+    }
+
+    public static MemoryConfiguration objToConf(Object object) {
+        return mapToConf(objToMap(object));
+    }
+
+    public static MemoryConfiguration objToConf(Object object, int excludedModifiers) {
+        return mapToConf(objToMap(object, excludedModifiers));
+    }
+
+    public static <T> Object confToObj(MemoryConfiguration configuration, Class<T> clazz) {
+        try {
+            return mapToObj(configuration.getValues(false), clazz.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    public static <T> Object confToObj(MemoryConfiguration configuration, T obj) {
+        return mapToObj(configuration.getValues(false), obj);
+    }
+
+    public static String mapToYaml(Map<String, Object> map) {
+        String dump = YAML.dump(map);
+        if (dump.equals("{}\n")) {
+            dump = "";
+        }
+        return dump;
+    }
+
+    public static MemoryConfiguration mapToConf(Map<String, Object> map) {
+        MemoryConfiguration configuration = new MemoryConfiguration();
+        convertMapsToSections(map, configuration);
+        return configuration;
+    }
+
+    public static Map<String, Object> confToMap(MemoryConfiguration configuration) {
+        return configuration.getValues(false);
+    }
+
+    /**
+     * 将会在该类无默认构造方法时返回 null
+     */
+    public static <T> T mapToObj(Map<String, Object> map, Class<T> clazz) {
+        try {
+            return mapToObj(map, clazz.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    public static <T> T mapToObj(Map<String, Object> map, T obj) {
+        Class<?> clazz = obj.getClass();
+        map.forEach((string, value) -> Ref.getFieldBySerializedName(clazz, string).ifPresent(field -> {
+            if (!field.isAccessible())
+                field.setAccessible(true);
+            try {
+                field.set(obj, value);
+            } catch (IllegalAccessException ignored) {
+            }
+        }));
+        return obj;
+    }
+
+    public static Map<String, Object> objToMap(Object object) {
+        return objToMap(object, Modifier.TRANSIENT & Modifier.STATIC & Ref.ACC_SYNTHETIC);
+    }
+
+    public static Map<String, Object> objToMap(Object object, int excludedModifiers) {
+        Map<String, Object> map = Maps.newHashMap();
+        for (Field field : Ref.getDeclaredFields(object.getClass(), excludedModifiers, false)) {
+            try {
+                if (!field.isAccessible()) field.setAccessible(true);
+                map.put(Ref.getSerializedName(field), field.get(object));
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+        return map;
+    }
+
+    private static void convertMapsToSections(Map<?, ?> input, ConfigurationSection section) {
+        for (Object o : input.entrySet()) {
+            Map.Entry<?, ?> entry = (Map.Entry) o;
+            String key = entry.getKey().toString();
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                convertMapsToSections((Map) value, section.createSection(key));
+            } else {
+                section.set(key, value);
+            }
+        }
+    }
+
+    public static FileConfiguration decodeYAML(String args) {
+        return YamlConfiguration.loadConfiguration(new StringReader(Base64Coder.decodeString(args)));
+    }
+
+    public static String encodeYAML(FileConfiguration file) {
+        return Base64Coder.encodeLines(file.saveToString().getBytes()).replaceAll("\\s+", "");
+    }
+
+    /**
+     * 以 UTF-8 的格式释放配置文件并载入
+     * <p>
+     * 录入时间：2018年2月10日21:28:30
+     * 录入版本：3.49
+     *
+     * @param plugin
+     * @return
+     */
+    public static FileConfiguration saveDefaultConfig(Plugin plugin, String name) {
+        File file = new File(plugin.getDataFolder(), name);
+        if (!file.exists()) {
+            plugin.saveResource(name, true);
+        }
+        return load(plugin, file);
+    }
+
+    /**
+     * 以 UTF-8 的格式载入配置文件
+     *
+     * @return
+     */
+    public static FileConfiguration load(Plugin plugin, File file) {
+        return loadYaml(plugin, file);
+    }
+
+    public static YamlConfiguration loadYaml(Plugin plugin, File file) {
+        YamlConfiguration yaml = new YamlConfiguration();
+        try {
+            yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
+        } catch (Exception e) {
+            TLib.getTLib().getLogger().error("配置文件载入失败!");
+            TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
+            TLib.getTLib().getLogger().error("文件: &4" + file);
+        }
+        return yaml;
+    }
+
+
+    @Deprecated
+    public static FileConfiguration load(Plugin plugin, String file) {
+        return load(plugin, FileUtils.file(file));
+    }
 }
