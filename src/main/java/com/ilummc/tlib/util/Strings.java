@@ -10,7 +10,7 @@ public class Strings {
      * @return 替换好的字符串
      */
     public static String replaceWithOrder(String template, String... args) {
-        if (args.length == 0) return template;
+        if (args.length == 0 || template.length() == 0) return template;
         char[] arr = template.toCharArray();
         StringBuilder stringBuilder = new StringBuilder(template.length());
         for (int i = 0; i < arr.length; i++) {

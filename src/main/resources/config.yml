@@ -24,6 +24,17 @@ OFFLINE-MODE: false
 # 下载依赖时启用的线程数
 DOWNLOAD-POOL-SIZE: 4
 
+# 语言文件相关设置
+LOCALE:
+  # 加载语言文件的顺序
+  PRIORITY:
+  - zh_CN
+  - en_US
+  # 默认是否启用语言文件中 PlaceholderAPI 的替换功能
+  # 关闭可提升性能
+  # 如果需要开启仍然可以在语言文件中加入 papi: true
+  USE_PAPI: false
+
 # 是否启用更新检测
 UPDATE-CHECK: true
 
