@@ -1,22 +1,18 @@
 package com.ilummc.tlib.inject;
 
-import java.io.File;
-import java.lang.reflect.Field;
-
+import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.annotations.*;
+import com.ilummc.tlib.dependency.TDependency;
+import com.ilummc.tlib.logger.TLogger;
+import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.resources.TLocaleLoader;
+import com.ilummc.tlib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.annotations.Config;
-import com.ilummc.tlib.annotations.Dependencies;
-import com.ilummc.tlib.annotations.Dependency;
-import com.ilummc.tlib.annotations.Logger;
-import com.ilummc.tlib.annotations.PluginInstance;
-import com.ilummc.tlib.dependency.TDependency;
-import com.ilummc.tlib.logger.TLogger;
-import com.ilummc.tlib.resources.TLocaleLoader;
-import com.ilummc.tlib.util.Ref;
+import java.io.File;
+import java.lang.reflect.Field;
 
 public class TDependencyInjector {
 
@@ -50,9 +46,9 @@ public class TDependencyInjector {
                 try {
                     field.setAccessible(true);
                     TConfigInjector.saveConfig(plugin, field.get(o));
-                    TLib.getTLib().getLogger().info("插件 " + plugin + " 的配置 " + config.name() + " 已保存");
+                    TLocale.Logger.info("CONFIG.SAVE-SUCCESS", plugin.toString(), config.name());
                 } catch (Exception e) {
-                    TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置 " + config.name() + " 保存失败");
+                    TLocale.Logger.warn("CONFIG.SAVE-FAIL", plugin.toString(), config.name());
                     e.printStackTrace();
                 }
             }
@@ -67,10 +63,10 @@ public class TDependencyInjector {
                     field.setAccessible(true);
                     Object obj = TConfigInjector.loadConfig(plugin, field.getType());
                     if (obj != null) {
-                        TLib.getTLib().getLogger().info("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件成功加载");
+                        TLocale.Logger.info("CONFIG.LOAD-SUCCESS", plugin.toString(), config.name());
                         field.set(o, obj);
                         if (config.listenChanges()) {
-                            TLib.getTLib().getLogger().info("开始监听插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件");
+                            TLocale.Logger.info("CONFIG.LISTEN-START", plugin.toString(), config.name());
                             TLib.getTLib().getConfigWatcher().addOnListen(
                                     new File(plugin.getDataFolder(), config.name()),
                                     obj,
@@ -81,9 +77,9 @@ public class TDependencyInjector {
                                                 f.setAccessible(true);
                                                 f.set(obj, f.get(newObj));
                                             }
-                                            TLib.getTLib().getLogger().info("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件成功重载");
+                                            TLocale.Logger.info("CONFIG.RELOAD-SUCCESS", plugin.toString(), config.name());
                                         } catch (Exception ignored) {
-                                            TLib.getTLib().getLogger().warn("插件 " + plugin.getName() + " 的 " + config.name() + " 配置文件重载时发生错误");
+                                            TLocale.Logger.warn("CONFIG.RELOAD-FAIL", plugin.toString(), config.name());
                                         }
                                     }
                             );
@@ -105,6 +101,7 @@ public class TDependencyInjector {
                     if (!field.isAccessible())
                         field.setAccessible(true);
                     field.set(o, tLogger);
+                    TLoggerManager.setDefaultLogger(plugin, tLogger);
                 }
             } catch (Exception ignored2) {
             }
@@ -122,7 +119,7 @@ public class TDependencyInjector {
                     Plugin pl;
                     if ((pl = Bukkit.getPluginManager().getPlugin(instance.value())) == null) {
                         if (!TDependency.requestPlugin(instance.value())) {
-                            TLib.getTLib().getLogger().warn(plugin.getName() + " 所需的依赖插件 " + instance.value() + " 自动加载失败");
+                            TLocale.Logger.warn("PLUGIN-AUTOLOAD-FAIL", plugin.getName(), instance.value());
                             return;
                         } else {
                             pl = Bukkit.getPluginManager().getPlugin(instance.value());
@@ -149,24 +146,24 @@ public class TDependencyInjector {
             }
         }
         if (dependencies.length != 0) {
-            TLib.getTLib().getLogger().info("正在加载 " + plugin.getName() + " 插件所需的依赖");
+            TLocale.Logger.info("DEPENDENCY.LOADING-START", plugin.getName());
             for (Dependency dependency : dependencies) {
                 if (dependency.type() == Dependency.Type.PLUGIN) {
                     if (TDependency.requestPlugin(dependency.plugin())) {
-                        TLib.getTLib().getLogger().info("  " + plugin.getName() + " 请求的插件 " + dependency.plugin() + " 加载成功。");
+                        TLocale.Logger.info("DEPENDENCY.PLUGIN-LOAD-SUCCESS", plugin.getName(), dependency.plugin());
                     } else {
-                        TLib.getTLib().getLogger().warn("  " + plugin.getName() + " 请求的插件 " + dependency.plugin() + " 加载失败。");
+                        TLocale.Logger.warn("DEPENDENCY.PLUGIN-LOAD-FAIL", plugin.getName(), dependency.plugin());
                     }
                 }
                 if (dependency.type() == Dependency.Type.LIBRARY) {
                     if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url())) {
-                        TLib.getTLib().getLogger().info("  " + plugin.getName() + " 请求的库文件 " + String.join(":", dependency.maven()) + " 加载成功。");
+                        TLocale.Logger.info("DEPENDENCY.LIBRARY-LOAD-SUCCESS", plugin.getName(), String.join(":", dependency.maven()));
                     } else {
-                        TLib.getTLib().getLogger().warn("  " + plugin.getName() + " 请求的库文件 " + String.join(":", dependency.maven()) + " 加载失败。");
+                        TLocale.Logger.warn("DEPENDENCY.LIBRARY-LOAD-FAIL", plugin.getName(), String.join(":", dependency.maven()));
                     }
                 }
             }
-            TLib.getTLib().getLogger().info("依赖加载完成");
+            TLocale.Logger.info("DEPENDENCY.LOAD-COMPLETE");
         }
     }
 

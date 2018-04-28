@@ -1,13 +1,12 @@
 package com.ilummc.tlib.dependency;
 
-import java.io.File;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.ilummc.eagletdl.EagletTask;
 import com.ilummc.eagletdl.ProgressEvent;
-import com.ilummc.tlib.TLib;
-
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
+
+import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TDependency {
 
@@ -54,7 +53,7 @@ public class TDependency {
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
         if (Main.getInst().getConfig().getBoolean("OFFLINE-MODE")) {
-            TLib.getTLib().getLogger().warn("已启用离线模式, 将不会下载第三方依赖库");
+            TLocale.Logger.warn("DEPENDENCY.OFFLINE-DEPENDENCY-WARN");
             return false;
         }
         AtomicBoolean failed = new AtomicBoolean(false);
@@ -63,22 +62,26 @@ public class TDependency {
                 .url(link)
                 .file(target)
                 .setThreads(getDownloadPoolSize())
-                .setOnError(event -> {})
-                .setOnConnected(event -> TLib.getTLib().getLogger().info("  正在下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 大小 " + ProgressEvent.format(event.getContentLength())))
-                .setOnProgress(event -> TLib.getTLib().getLogger().info("    下载速度 " + event.getSpeedFormatted() + " 进度 " + event.getPercentageFormatted()))
+                .setOnError(event -> {
+                })
+                .setOnConnected(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-CONNECTED",
+                        String.join(":", new String[]{groupId, artifactId, version}), ProgressEvent.format(event.getContentLength())))
+                .setOnProgress(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-PROGRESS",
+                        event.getSpeedFormatted(), event.getPercentageFormatted()))
                 .setOnComplete(event -> {
                     if (event.isSuccess()) {
-                        TLib.getTLib().getLogger().info("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 完成");
+                        TLocale.Logger.info("DEPENDENCY.DOWNLOAD-SUCCESS",
+                                String.join(":", new String[]{groupId, artifactId, version}));
                     } else {
                         failed.set(true);
-                        TLib.getTLib().getLogger().error("  下载 " + String.join(":", new String[]{groupId, artifactId, version}) + " 失败");
-                        TLib.getTLib().getLogger().error("  请手动下载 " + link + " 并重命名为 " + target.getName() + " 后放在 /TabooLib/libs 文件夹内");
+                        TLocale.Logger.error("DEPENDENCY.DOWNLOAD-FAILED",
+                                String.join(":", new String[]{groupId, artifactId, version}), link, target.getName());
                     }
                 }).start().waitUntil();
         return !failed.get();
     }
-    
+
     private static int getDownloadPoolSize() {
-    	return Main.getInst().getConfig().contains("DOWNLOAD-POOL-SIZE") ? Main.getInst().getConfig().getInt("DOWNLOAD-POOL-SIZE") : 4;
+        return Main.getInst().getConfig().getInt("DOWNLOAD-POOL-SIZE", 4);
     }
 }

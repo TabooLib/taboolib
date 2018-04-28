@@ -22,7 +22,7 @@ public class Ref {
     public static final int ACC_SYNTHETIC = 0x1000;
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
-        return getDeclaredFields(clazz, 0, false);
+        return getDeclaredFields(clazz, 0, true);
     }
 
     public static List<Field> getDeclaredFields(String clazz, int excludeModifiers, boolean cache) {
@@ -40,7 +40,6 @@ public class Ref {
             if (clazz == TLib.class)
                 return Arrays.asList(clazz.getDeclaredFields());
 
-            Class.forName("org.objectweb.asm.ClassVisitor");
             List<Field> fields;
             if ((fields = cachedFields.get(clazz.getName())) != null) return fields;
             ClassReader classReader = new ClassReader(clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class"));
@@ -55,8 +54,15 @@ public class Ref {
             }).filter(Objects::nonNull).collect(Collectors.toList());
             if (cache) cachedFields.putIfAbsent(clazz.getName(), fields);
             return fields;
-        } catch (Exception e) {
-            return Collections.emptyList();
+        } catch (Exception | Error e) {
+            try {
+                List<Field> list = Arrays.stream(clazz.getDeclaredFields())
+                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                cachedFields.putIfAbsent(clazz.getName(), list);
+                return list;
+            } catch (Error err) {
+                return Collections.emptyList();
+            }
         }
     }
 

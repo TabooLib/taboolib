@@ -1,7 +1,7 @@
 package me.skymc.taboolib.fileutils;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.util.Ref;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,11 +14,10 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -164,15 +163,17 @@ public class ConfigUtils {
     }
 
     public static YamlConfiguration loadYaml(Plugin plugin, File file) {
-        YamlConfiguration yaml = new YamlConfiguration();
+        YamlConfiguration configuration = new YamlConfiguration();
         try {
-            yaml = YamlConfiguration.loadConfiguration(new InputStreamReader(new FileInputStream(file), Charsets.UTF_8));
+            String yaml = Files.toString(file, Charset.forName("utf-8"));
+            configuration.loadFromString(yaml);
+            return configuration;
         } catch (Exception e) {
             TLib.getTLib().getLogger().error("配置文件载入失败!");
             TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
             TLib.getTLib().getLogger().error("文件: &4" + file);
         }
-        return yaml;
+        return configuration;
     }
 
 

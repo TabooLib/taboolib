@@ -6,7 +6,6 @@ import com.ilummc.tlib.resources.type.TLocaleTitle;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,8 +13,6 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -35,8 +32,8 @@ public class TLocaleLoader {
         }
     }
 
-    static String asString(Plugin plugin, String path) {
-        return map.get(plugin.getName()).asString(path);
+    static String asString(Plugin plugin, String path, String... args) {
+        return map.get(plugin.getName()).asString(path, args);
     }
 
     public static void init() {
@@ -46,11 +43,11 @@ public class TLocaleLoader {
 
     public static void load(Plugin plugin, boolean ignoreLoaded) {
         try {
-            if ((!ignoreLoaded || !map.containsKey(plugin.getName())) && plugin == Main.getInst() || plugin.getDescription().getDepend().contains("TabooLib") || plugin.getDescription().getSoftDepend().contains("TabooLib")) {
+            if ((!ignoreLoaded || !map.containsKey(plugin.getName())) && (plugin == Main.getInst() || plugin.getDescription().getDepend().contains("TabooLib") || plugin.getDescription().getSoftDepend().contains("TabooLib"))) {
                 InputStream inputStream = null;
                 File file = null;
                 String lang = null;
-                for (String s : TLib.getTLib().getConfig().getLocale()) {
+                for (String s : Main.getInst().getConfig().getStringList("LOCALE.PRIORITY")) {
                     lang = s;
                     file = new File(plugin.getDataFolder(), "/lang/" + s + ".yml");
                     if (file.exists()) {
@@ -67,10 +64,10 @@ public class TLocaleLoader {
                 if (!file.exists()) {
                     file.getParentFile().mkdirs();
                     file.createNewFile();
-                    saveResource(inputStream, file);
+                    plugin.saveResource("lang/" + lang + ".yml", true);
                 }
                 TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("TRY-LOADING-LANG"), plugin.getName(), lang));
-                synchronized (TLocaleLoader.class) {
+                {
                     YamlConfiguration configuration = ConfigUtils.loadYaml(plugin, file);
                     TLocaleInstance localeInstance = new TLocaleInstance(plugin);
                     localeInstance.load(configuration);
@@ -84,19 +81,15 @@ public class TLocaleLoader {
                     TLocaleInstance localeInstance = new TLocaleInstance(plugin);
                     localeInstance.load(configuration);
                     map.put(plugin.getName(), localeInstance);
-                    TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"), plugin.getName(), finalLang));
+                    TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"),
+                            plugin.getName(), finalLang, String.valueOf(localeInstance.size())));
                 });
                 TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"), plugin.getName(), lang));
             }
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("ERROR-LOADING-LANG"), plugin.getName(), e.toString()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("ERROR-LOADING-LANG"),
+                    plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString()));
         }
     }
 
-    private static void saveResource(InputStream inputStream, File file) throws IOException {
-        byte[] data = FileUtils.read(inputStream);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(data);
-        }
-    }
 }

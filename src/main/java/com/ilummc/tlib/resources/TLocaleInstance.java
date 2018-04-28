@@ -3,6 +3,7 @@ package com.ilummc.tlib.resources;
 import com.google.common.collect.ImmutableList;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.resources.type.TLocaleText;
+import com.ilummc.tlib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,28 +38,36 @@ class TLocaleInstance {
                 }
             });
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error("语言文件发送失败: " + path);
-            TLib.getTLib().getLogger().error("原因: " + e.getMessage());
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SEND-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("LOCALE-ERROR-REASON"), e.getMessage()));
         }
     }
 
-    String asString(String path) {
-        return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asString();
+    String asString(String path, String... args) {
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asString(args);
     }
 
     void load(YamlConfiguration configuration) {
-        configuration.getKeys(false).forEach(s -> {
+        configuration.getKeys(true).forEach(s -> {
             Object object = configuration.get(s);
-            if (object instanceof ConfigurationSection) {
-                loadRecursively(s, (ConfigurationSection) object);
-            } else if (object instanceof TLocaleSendable) {
+            if (object instanceof TLocaleSendable) {
                 map.put(s, Collections.singletonList((TLocaleSendable) object));
             } else if (object instanceof List && !((List) object).isEmpty()) {
                 map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList()));
-            } else {
-                map.put(s, Collections.singletonList(TLocaleText.of(String.valueOf(object))));
+            } else if (!(object instanceof ConfigurationSection)) {
+                String str = String.valueOf(object);
+                map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str)));
             }
         });
+    }
+
+    int size() {
+        return map.size();
+    }
+
+    @Override
+    public String toString() {
+        return map.toString();
     }
 
     private static final Function<Object, TLocaleSendable> TO_SENDABLE = o -> {
@@ -72,20 +81,5 @@ class TLocaleInstance {
     };
 
     private final Map<String, List<TLocaleSendable>> map = new HashMap<>();
-
-    private void loadRecursively(String path, ConfigurationSection section) {
-        section.getKeys(false).forEach(s -> {
-            Object object = section.get(path + "." + s);
-            if (object instanceof ConfigurationSection) {
-                loadRecursively(path + "." + s, (ConfigurationSection) object);
-            } else if (object instanceof TLocaleSendable) {
-                map.put(path + "." + s, Collections.singletonList((TLocaleSendable) object));
-            } else if (object instanceof List && !((List) object).isEmpty()) {
-                map.put(path + "." + s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList()));
-            } else {
-                map.put(path + "." + s, Collections.singletonList(TLocaleText.of(String.valueOf(object))));
-            }
-        });
-    }
 
 }

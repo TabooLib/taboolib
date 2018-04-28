@@ -1,8 +1,8 @@
 package com.ilummc.tlib.inject;
 
 import com.google.common.io.Files;
-import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.Config;
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -59,9 +59,9 @@ public class TConfigInjector {
             if (!config.readOnly()) saveConfig(plugin, obj);
             return obj;
         } catch (NullPointerException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解");
+            TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), clazz.getSimpleName());
         } catch (Exception e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败");
+            TLocale.Logger.warn("CONFIG.LOAD-FAIL", plugin.toString(), clazz.getSimpleName());
         }
         return null;
     }
@@ -75,13 +75,13 @@ public class TConfigInjector {
                             ConfigUtils.yamlToMap(
                                     Files.toString(new File(plugin.getDataFolder(), config.name()), Charset.forName(config.charset())))), clazz);
         } catch (NullPointerException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败：没有 @Config 注解或文件不存在");
+            TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-FILE", plugin.toString(), clazz.getSimpleName());
             return null;
         } catch (Exception e) {
             try {
                 return clazz.newInstance();
             } catch (InstantiationException | IllegalAccessException e1) {
-                TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + clazz.getSimpleName() + " 加载失败");
+                TLocale.Logger.warn("CONFIG.LOAD-FAIL", plugin.toString(), clazz.getSimpleName());
                 return null;
             }
         }
@@ -93,9 +93,9 @@ public class TConfigInjector {
             Validate.notNull(config);
             return ConfigUtils.objToConf(object).getValues(false);
         } catch (NullPointerException e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + object.getClass().getSimpleName() + " 序列化失败：没有 @Config 注解");
+            TLocale.Logger.warn("CONFIG.SAVE-FAIL-NO-ANNOTATION", plugin.toString(), object.getClass().getSimpleName());
         } catch (Exception e) {
-            TLib.getTLib().getLogger().warn("插件 " + plugin + " 的配置类 " + object.getClass().getSimpleName() + " 序列化失败");
+            TLocale.Logger.warn("CONFIG.SAVE-FAIL", plugin.toString(), object.getClass().getSimpleName());
         }
         return null;
     }

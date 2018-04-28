@@ -1,15 +1,7 @@
 package com.ilummc.tlib.inject;
 
-import java.io.File;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
+import com.ilummc.tlib.resources.TLocale;
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.SimpleCommandMap;
@@ -18,17 +10,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
-import org.bukkit.plugin.EventExecutor;
-import org.bukkit.plugin.InvalidDescriptionException;
-import org.bukkit.plugin.InvalidPluginException;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.UnknownDependencyException;
+import org.bukkit.plugin.*;
 
-import com.ilummc.tlib.TLib;
-
-import me.skymc.taboolib.Main;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public class TPluginManager implements PluginManager {
@@ -68,14 +55,14 @@ public class TPluginManager implements PluginManager {
     		Field bukkitField = instance.getClass().getDeclaredField(bukkitName);
     		Field thisFiled = this.getClass().getDeclaredField(bukkitName);
     		if (bukkitField == null || thisFiled == null) {
-    			TLib.getTLib().getLogger().warn("拷贝 " + bukkitName + " 对象失败");
+                TLocale.Logger.warn("MISC.FIELD-COPY-FAILED", bukkitName);
     			return;
     		}
     		bukkitField.setAccessible(true);
     		thisFiled.setAccessible(true);
     		thisFiled.set(this, bukkitField.get(instance));
-    	} catch (Exception ignored) {
-    		TLib.getTLib().getLogger().error("拷贝 " + bukkitName + " 对象出错");
+        } catch (Exception e) {
+            TLocale.Logger.error("MISC.FIELD-COPY-ERROR", bukkitName, e.toString());
 		}
     }
 

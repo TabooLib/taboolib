@@ -1,19 +1,17 @@
 package com.ilummc.tlib.logger;
 
+import com.ilummc.tlib.util.Strings;
+import lombok.Getter;
+import lombok.Setter;
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
-import com.ilummc.tlib.util.Strings;
-
-import lombok.Getter;
-import lombok.Setter;
-import me.skymc.taboolib.Main;
-
 public class TLogger {
-	
+
     public static final int VERBOSE = 0, FINEST = 1, FINE = 2, INFO = 3, WARN = 4, ERROR = 5, FATAL = 6;
-    
+
     @Getter
     private static TLogger globalLogger = new TLogger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}", Main.getInst(), TLogger.FINE);
     @Getter
@@ -64,4 +62,9 @@ public class TLogger {
         if (level <= FATAL)
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§4致命错误", "§4" + ChatColor.translateAlternateColorCodes('&', msg)));
     }
+
+    public static TLogger getUnformatted(Plugin plugin) {
+        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", plugin, TLogger.FINE);
+    }
+
 }

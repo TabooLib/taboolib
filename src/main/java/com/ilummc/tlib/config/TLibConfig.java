@@ -9,12 +9,6 @@ import com.ilummc.tlib.annotations.Config;
 @Config(name = "tlib.yml", listenChanges = true, readOnly = false)
 public class TLibConfig {
 
-    private String[] locale = {"zh_CN", "en_US"};
-
-    public String[] getLocale() {
-        return locale;
-    }
-
     private boolean enablePlaceholderHookByDefault = false;
 
     public boolean isEnablePlaceholderHookByDefault() {
