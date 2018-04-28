@@ -1,4 +1,6 @@
 # TabooLib
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FBkm016%2FTabooLib.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FBkm016%2FTabooLib?ref=badge_shield)
+
 > 开发工具库
 
 ---
@@ -9,3 +11,7 @@
 ---
 暂时停更，等待 dev 分支测试完成后合并。（2018-4-7）  
 感谢海螺（@IzzelAliz）大佬的指导和更新。
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FBkm016%2FTabooLib.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FBkm016%2FTabooLib?ref=badge_large)
