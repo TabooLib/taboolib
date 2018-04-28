@@ -1,0 +1,5 @@
+LANG-LOAD-FAIL: '语言文件加载失败'
+TRY-LOADING-LANG: '插件 {0} 尝试加载 {1} .yml 作为语言文件'
+SUCCESS-LOADING-LANG: '成功加载 {0} 插件的 {1} 语言文件'
+ERROR-LOADING-LANG: '加载 {0} 插件的语言文件时发生异常：{1}'
+RELOADING-LANG: '正在重新载入 {0} 插件的语言文件'

@@ -6,6 +6,7 @@
       <w>sendable</w>
       <w>unserialize</w>
       <w>unserializer</w>
+      <w>yaml</w>
     </words>
   </dictionary>
 </component>

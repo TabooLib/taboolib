@@ -1,6 +1,7 @@
 package com.ilummc.tlib;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ import com.ilummc.tlib.resources.TLocaleLoader;
 
 import lombok.Getter;
 import me.skymc.taboolib.Main;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.ow2.asm:asm:6.1.1")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0")
@@ -38,11 +40,15 @@ public class TLib {
     @Getter
     private File libsFolder;
 
+    @Getter
+    private YamlConfiguration internalLang;
+
     private TLib() {
     	libsFolder =  new File(Main.getInst().getDataFolder(), "/libs");
     	if (!libsFolder.exists()) {
     		libsFolder.mkdirs();
     	}
+    	internalLang = YamlConfiguration.loadConfiguration(new InputStreamReader(TLib.class.getResourceAsStream("/internalLang.yml")));
     }
 
     public static void init() {
