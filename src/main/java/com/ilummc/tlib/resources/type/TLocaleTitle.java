@@ -58,7 +58,7 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
 	public String asString(String... args) {
 		return Strings.replaceWithOrder(title, args);
 	}
-	
+
 	@Override
 	public Map<String, Object> serialize() {
 		HashMap<String, Object> map = Maps.newHashMap();

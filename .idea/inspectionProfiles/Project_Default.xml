@@ -32,5 +32,10 @@
       <option name="IGNORE_POINT_TO_ITSELF" value="false" />
       <option name="myAdditionalJavadocTags" value="author,author" />
     </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="true" level="233" enabled_by_default="true">
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
   </profile>
 </component>
