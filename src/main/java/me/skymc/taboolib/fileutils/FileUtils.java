@@ -1,21 +1,13 @@
 package me.skymc.taboolib.fileutils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import ch.njol.util.Closeable;
+import me.skymc.taboolib.message.MsgUtils;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
-
-import ch.njol.util.Closeable;
-import me.skymc.taboolib.message.MsgUtils;
 
 public class FileUtils {
 	
@@ -246,6 +238,11 @@ public class FileUtils {
 			MsgUtils.warn("网络访问出错: &4" + e.getMessage());
 		}
 		return null;
+	}
+
+	public static String getStringFromURL(String url, String def) {
+		String s = getStringFromURL(url, 1024);
+		return s == null ? def : s;
 	}
 	
     /**

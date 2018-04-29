@@ -1,20 +1,20 @@
 package me.skymc.taboolib.update;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.bukkit.scheduler.BukkitRunnable;
-
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  * @author sky
  * @since 2018年2月23日 下午10:39:14
  */
 public class UpdateTask {
+
+	private static final String API = "https://api.github.com/repos/Bkm016/TabooLib/releases/latest";
 	
 	/**
 	 * 检测更新
@@ -27,14 +27,10 @@ public class UpdateTask {
 				if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK")) {
 					return;
 				}
-				String value = FileUtils.getStringFromURL("https://github.com/Bkm016/TabooLib/releases", 1024);
-				if (value == null) {
-					return;
-				}
-				Pattern pattern = Pattern.compile("<a href=\"/Bkm016/TabooLib/releases/tag/(\\S+)\">");
-				Matcher matcher = pattern.matcher(value);
-				if (matcher.find()) {
-					double newVersion = Double.valueOf(matcher.group(1));
+				String value = FileUtils.getStringFromURL(API, "{}");
+				JsonObject json = new JsonParser().parse(value).getAsJsonObject();
+				if (json.entrySet().size() > 0) {
+					double newVersion = Double.parseDouble(json.get("tag_name").getAsString());
 					if (TabooLib.getPluginVersion() >= newVersion) {
 						MsgUtils.send("插件已是最新版, 无需更新!");
 					}
