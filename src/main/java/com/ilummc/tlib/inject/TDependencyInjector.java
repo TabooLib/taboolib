@@ -72,11 +72,7 @@ public class TDependencyInjector {
                                     obj,
                                     object -> {
                                         try {
-                                            Object newObj = TConfigInjector.loadConfig(plugin, object.getClass());
-                                            for (Field f : newObj.getClass().getDeclaredFields()) {
-                                                f.setAccessible(true);
-                                                f.set(obj, f.get(newObj));
-                                            }
+                                            TConfigInjector.reloadConfig(plugin, object);
                                             TLocale.Logger.info("CONFIG.RELOAD-SUCCESS", plugin.toString(), config.name());
                                         } catch (Exception ignored) {
                                             TLocale.Logger.warn("CONFIG.RELOAD-FAIL", plugin.toString(), config.name());

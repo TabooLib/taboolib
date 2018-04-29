@@ -66,6 +66,21 @@ public class TConfigInjector {
         return null;
     }
 
+    public static void reloadConfig(Plugin plugin, Object object) {
+        try {
+            Config config = object.getClass().getAnnotation(Config.class);
+            Validate.notNull(config);
+            File file = new File(plugin.getDataFolder(), config.name());
+            Map<String, Object> map = ConfigUtils.confToMap(ConfigUtils.loadYaml(plugin, file));
+            Object obj = ConfigUtils.mapToObj(map, object);
+            if (!config.readOnly()) saveConfig(plugin, obj);
+        } catch (NullPointerException e) {
+            TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), object.getClass().getSimpleName());
+        } catch (Exception e) {
+            TLocale.Logger.warn("CONFIG.LOAD-FAIL", plugin.toString(), object.getClass().getSimpleName());
+        }
+    }
+
     public static Object unserialize(Plugin plugin, Class<?> clazz) {
         try {
             Config config = clazz.getAnnotation(Config.class);

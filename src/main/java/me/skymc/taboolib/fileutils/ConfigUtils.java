@@ -3,6 +3,7 @@ package me.skymc.taboolib.fileutils;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.bean.Property;
 import com.ilummc.tlib.util.Ref;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -86,13 +87,20 @@ public class ConfigUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T mapToObj(Map<String, Object> map, T obj) {
         Class<?> clazz = obj.getClass();
         map.forEach((string, value) -> Ref.getFieldBySerializedName(clazz, string).ifPresent(field -> {
             if (!field.isAccessible())
                 field.setAccessible(true);
             try {
-                field.set(obj, value);
+                if (Property.class.isAssignableFrom(field.getType())) {
+                    Property<Object> property = (Property) field.get(obj);
+                    if (property != null) property.set(value);
+                    else field.set(obj, Property.of(value));
+                } else {
+                    field.set(obj, value);
+                }
             } catch (IllegalAccessException ignored) {
             }
         }));
@@ -108,7 +116,9 @@ public class ConfigUtils {
         for (Field field : Ref.getDeclaredFields(object.getClass(), excludedModifiers, false)) {
             try {
                 if (!field.isAccessible()) field.setAccessible(true);
-                map.put(Ref.getSerializedName(field), field.get(object));
+                Object obj = field.get(object);
+                if (obj instanceof Property) obj = ((Property) obj).get();
+                map.put(Ref.getSerializedName(field), obj);
             } catch (IllegalAccessException ignored) {
             }
         }

@@ -72,6 +72,8 @@ public class TLocaleLoader {
                     TLocaleInstance localeInstance = new TLocaleInstance(plugin);
                     localeInstance.load(configuration);
                     map.put(plugin.getName(), localeInstance);
+                    TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"),
+                            plugin.getName(), lang, String.valueOf(localeInstance.size())));
                 }
                 File finalFile = file;
                 String finalLang = lang;
@@ -84,7 +86,6 @@ public class TLocaleLoader {
                     TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"),
                             plugin.getName(), finalLang, String.valueOf(localeInstance.size())));
                 });
-                TLib.getTLib().getLogger().info(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SUCCESS-LOADING-LANG"), plugin.getName(), lang));
             }
         } catch (Exception e) {
             TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("ERROR-LOADING-LANG"),
