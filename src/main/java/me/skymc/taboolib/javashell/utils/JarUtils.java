@@ -1,12 +1,9 @@
 package me.skymc.taboolib.javashell.utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.Bukkit;
+
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -14,10 +11,6 @@ import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import org.bukkit.Bukkit;
-
-import me.skymc.taboolib.message.MsgUtils;
 
 public class JarUtils {
 
@@ -65,6 +58,7 @@ public class JarUtils {
 		}
 	}
 
+	@Deprecated
 	public static URL getJarUrl(final File file) throws IOException {
 		return new URL("jar:" + file.toURI().toURL().toExternalForm() + "!/");
 	}
@@ -88,13 +82,14 @@ public class JarUtils {
 		}
 	}
 
-    public static void addClassPath(final URL url) {
+	@Deprecated
+	public static void addClassPath(final URL url) {
 		final URLClassLoader sysloader = (URLClassLoader) Bukkit.class.getClassLoader();
 		final Class<URLClassLoader> sysclass = URLClassLoader.class;
 		try {
-            final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
+			final Method method = sysclass.getDeclaredMethod("addURL", URL.class);
 			method.setAccessible(true);
-            method.invoke(sysloader, url);
+			method.invoke(sysloader, url);
 		} catch (Throwable t) {
 			MsgUtils.warn("无法添加添加 &4" + url + "&c 到运行库");
 			MsgUtils.warn(t.getMessage());

@@ -37,9 +37,10 @@ class TLocaleInstance {
                     Bukkit.getScheduler().runTask(plugin, () -> sendable.sendTo(sender, args));
                 }
             });
-        } catch (Exception e) {
+        } catch (Exception | Error e) {
             TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SEND-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("LOCALE-ERROR-REASON"), e.toString()));
+            e.printStackTrace();
         }
     }
 

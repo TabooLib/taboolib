@@ -17,7 +17,6 @@ public abstract class ActionBar {
             instance = (ActionBar) AsmClassTransformer.builder().from(Impl_1_8.class).fromVersion("v1_8_R3")
                     .toVersion(Bukkit.getServer().getClass().getName().split("\\.")[3]).build().transform();
         }
-        System.out.println(instance.getClass());
     }
 
     public static void sendActionBar(Player player, String text) {

@@ -1,6 +1,8 @@
 package com.ilummc.tlib.resources;
 
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.resources.type.TLocaleActionBar;
+import com.ilummc.tlib.resources.type.TLocaleJson;
 import com.ilummc.tlib.resources.type.TLocaleText;
 import com.ilummc.tlib.resources.type.TLocaleTitle;
 import com.ilummc.tlib.util.Strings;
@@ -39,6 +41,8 @@ public class TLocaleLoader {
     public static void init() {
         ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
         ConfigurationSerialization.registerClass(TLocaleTitle.class, "TITLE");
+        ConfigurationSerialization.registerClass(TLocaleJson.class, "JSON");
+        ConfigurationSerialization.registerClass(TLocaleActionBar.class, "ACTION");
     }
 
     public static void load(Plugin plugin, boolean ignoreLoaded) {

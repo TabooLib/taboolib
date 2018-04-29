@@ -1,11 +1,11 @@
 package com.ilummc.tlib.resources.type;
 
 import com.google.common.collect.Maps;
-import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleSendable;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.Main;
 import me.skymc.taboolib.display.TitleUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -52,7 +52,7 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
                     (int) map.getOrDefault("fadein", 10),
                     (int) map.getOrDefault("fadeout", 10),
                     (int) map.getOrDefault("stay", 20),
-                    (boolean) map.getOrDefault("papi", TLib.getTLib().getConfig().isEnablePlaceholderHookByDefault()));
+                    (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false)));
         } catch (Exception e) {
             title = new TLocaleTitle("§4Load failed!", "§c" + e.getMessage(), 10, 20, 10, false);
         }
