@@ -28,10 +28,6 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         this.toVer = toVer;
     }
 
-    public static Builder builder() {
-        return new Builder().toVersion(Bukkit.getServer().getClass().getName().split("\\.")[3]);
-    }
-
     public Object transform() {
         try {
             ClassReader classReader = new ClassReader(from.getResourceAsStream("/" + from.getName().replace('.', '/') + ".class"));
@@ -51,10 +47,8 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         }
     }
 
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        super.visit(version, access, newClassName.replace('.', '/'), replace(signature),
-                prevName, replace(interfaces));
+    public static Builder builder() {
+        return new Builder().toVersion(Bukkit.getServer().getClass().getName().split("\\.")[3]);
     }
 
     @Override
@@ -90,31 +84,10 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         } else return null;
     }
 
-    public static class Builder {
-
-        private Class<?> from;
-
-        private String fromVersion, toVersion;
-
-        public Builder from(Class<?> clazz) {
-            this.from = clazz;
-            return this;
-        }
-
-        public Builder fromVersion(String ver) {
-            fromVersion = ver;
-            return this;
-        }
-
-        public Builder toVersion(String ver) {
-            toVersion = ver;
-            return this;
-        }
-
-        public AsmClassTransformer build() {
-            return new AsmClassTransformer(from, fromVersion, toVersion, new ClassWriter(ClassWriter.COMPUTE_MAXS));
-        }
-
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, newClassName.replace('.', '/'), replace(signature),
+                replace(superName), replace(interfaces));
     }
 
     private class AsmMethodTransformer extends MethodVisitor {
@@ -149,5 +122,32 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
             super.visitLocalVariable(name, replace(descriptor), replace(signature), start, end, index);
         }
+    }
+
+    public static class Builder {
+
+        private Class<?> from;
+
+        private String fromVersion, toVersion;
+
+        public Builder from(Class<?> clazz) {
+            this.from = clazz;
+            return this;
+        }
+
+        public Builder fromVersion(String ver) {
+            fromVersion = ver;
+            return this;
+        }
+
+        public Builder toVersion(String ver) {
+            toVersion = ver;
+            return this;
+        }
+
+        public AsmClassTransformer build() {
+            return new AsmClassTransformer(from, fromVersion, toVersion, new ClassWriter(ClassWriter.COMPUTE_MAXS));
+        }
+
     }
 }
