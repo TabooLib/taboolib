@@ -1,6 +1,16 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="AliControlFlowStatementWithoutBraces" enabled="false" level="BLOCKER" enabled_by_default="false" />
+    <inspection_tool class="AliDeprecation" enabled="false" level="CRITICAL" enabled_by_default="false" />
+    <inspection_tool class="AlibabaAbstractClassShouldStartWithAbstractNaming" enabled="false" level="CRITICAL" enabled_by_default="false" />
+    <inspection_tool class="AlibabaAbstractMethodOrInterfaceMethodMustUseJavadoc" enabled="false" level="MAJOR" enabled_by_default="false" />
+    <inspection_tool class="AlibabaAvoidComplexCondition" enabled="false" level="MAJOR" enabled_by_default="false" />
+    <inspection_tool class="AlibabaClassMustHaveAuthor" enabled="false" level="MAJOR" enabled_by_default="false" />
+    <inspection_tool class="AlibabaClassNamingShouldBeCamel" enabled="false" level="MAJOR" enabled_by_default="false" />
+    <inspection_tool class="AlibabaConstantFieldShouldBeUpperCase" enabled="false" level="CRITICAL" enabled_by_default="false" />
+    <inspection_tool class="AlibabaEnumConstantsMustHaveComment" enabled="false" level="CRITICAL" enabled_by_default="false" />
+    <inspection_tool class="AlibabaUndefineMagicConstant" enabled="false" level="MAJOR" enabled_by_default="false" />
     <inspection_tool class="JavaDoc" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="TOP_LEVEL_CLASS_OPTIONS">
         <value>
@@ -30,7 +40,7 @@
       <option name="IGNORE_JAVADOC_PERIOD" value="true" />
       <option name="IGNORE_DUPLICATED_THROWS" value="false" />
       <option name="IGNORE_POINT_TO_ITSELF" value="false" />
-      <option name="myAdditionalJavadocTags" value="author,author" />
+      <option name="myAdditionalJavadocTags" value="author,author,date" />
     </inspection_tool>
     <inspection_tool class="SpellCheckingInspection" enabled="true" level="233" enabled_by_default="true">
       <option name="processCode" value="true" />

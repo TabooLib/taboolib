@@ -63,6 +63,7 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                     String text = split.length > 1 ? split[0] : "";
                     String node = split.length > 1 ? split[1] : split[0];
                     if (section.containsKey(node)) {
+                        @SuppressWarnings("unchecked")
                         Map<String, Object> arg = (Map<String, Object>) section.get(node);
                         text = (String) arg.getOrDefault("text", text);
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
@@ -83,6 +84,7 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                                         baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.valueOf(value)).create()));
                                     }
                                     break;
+                                default:
                             }
                         });
                         builder.addAll(Arrays.asList(component));
