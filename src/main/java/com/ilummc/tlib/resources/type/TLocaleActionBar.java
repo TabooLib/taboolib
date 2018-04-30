@@ -22,7 +22,7 @@ public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializa
 
     private final boolean papi;
 
-    public TLocaleActionBar(String text, boolean papi) {
+    private TLocaleActionBar(String text, boolean papi) {
         this.text = text;
         this.papi = papi;
     }

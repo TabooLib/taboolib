@@ -44,7 +44,7 @@ public class TLocaleText implements TLocaleSendable, ConfigurationSerializable {
         if (map.containsKey("text")) {
             Object object = map.get("text");
             Object objPapi = map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
-            boolean papi = objPapi instanceof Boolean ? (boolean) objPapi : objPapi instanceof String && objPapi.equals("true");
+            boolean papi = objPapi instanceof Boolean ? (boolean) objPapi : objPapi instanceof String && "true".equals(objPapi);
             if (object instanceof List) {
                 return new TLocaleText(((List<String>) object).stream()
                         .map(s -> ChatColor.translateAlternateColorCodes('&', s))
