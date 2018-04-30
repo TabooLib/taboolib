@@ -1,6 +1,8 @@
 # TabooLib
 > 开发工具库
 
+[TabooLib 文档](https://bkm016.github.io/TabooLib/#/)
+
 ---
 **3.56** 版本开始 `com.sun.tools.jar` 不再和插件一起发布。  
 
