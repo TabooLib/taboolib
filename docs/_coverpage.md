@@ -4,7 +4,7 @@
 
 * TLocale 语言文本 API
 * 自动依赖下载
-* 注释 * N
+* Annotation Development
 
 [GitHub](https://github.com/Bkm016/TabooLib/)
 [开始](#目录)

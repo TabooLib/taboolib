@@ -6,6 +6,7 @@ import com.ilummc.tlib.nms.ActionBar;
 import com.ilummc.tlib.resources.TLocaleSendable;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -28,7 +29,7 @@ public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializa
     }
 
     public static TLocaleActionBar valueOf(Map<String, Object> map) {
-        String text = String.valueOf(map.getOrDefault("text", "Empty Action bar message."));
+        String text = ChatColor.translateAlternateColorCodes('&', String.valueOf(map.getOrDefault("text", "Empty Action bar message.")));
         boolean papi = (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
         return new TLocaleActionBar(text, papi);
     }
