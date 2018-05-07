@@ -4,6 +4,8 @@ package me.skymc.taboolib.commands.internal;
  * @Author sky
  * @Since 2018-05-07 21:36
  */
-public class InternalMainCommand {
+public interface InternalCommand {
+
+    String getCommandTitle();
 
 }

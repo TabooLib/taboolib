@@ -18,6 +18,9 @@ commands:
   tabooliblocale:
     aliases: [taboolocale, tlocale]
     permission: taboolib.admin
+  taboolibplugin:
+    aliases: [tabooplugin, tplugin]
+    permission: taboolib.admin
   taboolibrarymodule:
     aliases: [tlm]
     

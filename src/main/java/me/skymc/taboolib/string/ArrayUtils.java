@@ -1,7 +1,10 @@
 package me.skymc.taboolib.string;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Bkm016
@@ -9,12 +12,9 @@ import java.util.List;
  */
 public class ArrayUtils {
 	
-	@SuppressWarnings("unchecked")
 	public static <T> List<T> asList(T... args) {
 		List<T> list = new ArrayList<>();
-		for (T value : args) {
-			list.add(value);
-		}
+		Collections.addAll(list, args);
 		return list;
 	}
 	
@@ -39,11 +39,6 @@ public class ArrayUtils {
 	}
 	
 	public static String arrayJoin(String[] args, int start) {
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i = start ; i < args.length ; i++) {
-			stringBuilder.append(args[i]);
-			stringBuilder.append(" ");
-		}
-		return stringBuilder.toString().trim();
+		return IntStream.range(start, args.length).mapToObj(i -> args[i] + " ").collect(Collectors.joining()).trim();
 	}
 }

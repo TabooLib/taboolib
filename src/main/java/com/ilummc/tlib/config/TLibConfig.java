@@ -2,6 +2,9 @@ package com.ilummc.tlib.config;
 
 import com.ilummc.tlib.annotations.TConfig;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author sky
  * @since 2018-04-22 14:31:11
@@ -9,28 +12,48 @@ import com.ilummc.tlib.annotations.TConfig;
 @TConfig(name = "tlib.yml", listenChanges = true)
 public class TLibConfig {
 
-    @Getter
     private String dataSourceClassName;
 
-    @Getter
     private String jdbcUrl = "jdbc:h2:file:~/plugins/TabooLib/h2";
 
-    @Getter
     private String driverClassName;
 
-    @Getter
     private String username = "";
 
-    @Getter
     private String password = "";
 
-    @Getter
     private int maximumPoolSize = 4;
 
-    @Getter
     private Map<String, Object> settings = new HashMap<String, Object>() {{
         put("cachePrepStmts", true);
         put("useServerPrepStmts", true);
     }};
 
+    public String getDataSourceClassName() {
+        return dataSourceClassName;
+    }
+
+    public String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    public String getDriverClassName() {
+        return driverClassName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getMaximumPoolSize() {
+        return maximumPoolSize;
+    }
+
+    public Map<String, Object> getSettings() {
+        return settings;
+    }
 }

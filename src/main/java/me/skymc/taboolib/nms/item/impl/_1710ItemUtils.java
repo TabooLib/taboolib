@@ -105,7 +105,7 @@ public class _1710ItemUtils implements IDabItemUtils{
 		}
 	}
 	
-	public Method gin = NMSUtils.getMethodSilent(ni, "getName");
+	public Method gin = NMSUtils.getMethodSilent(ni, "getLabel");
 	
 	@Override
 	public String getItemName(ItemStack is){
