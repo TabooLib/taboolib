@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -344,8 +345,7 @@ public class GlobalDataManager {
 							// 移除
 							variables.remove(name);
 							// 提示
-							MsgUtils.warn("变量出现异常: &4" + name);
-							MsgUtils.warn("原因: &4" + e.getMessage());
+							TLocale.Logger.error("GLOBAL-DATAMANAGER.ERROR-CHECK-VARIABLE", String.valueOf(name), e.toString());
 						}
 					}
 				}
@@ -410,8 +410,8 @@ public class GlobalDataManager {
 			// 载入数据
 			loadVariables(false);
 			// 提示信息
-			MsgUtils.send("从数据库中获取 &f" + variables.size() + " &7个变量, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
-			
+            TLocale.Logger.info("GLOBAL-DATAMANAGER.SUCCESS-LOADED-VARIABLE", String.valueOf(variables.size()), String.valueOf(System.currentTimeMillis() - time));
+
 			// 检查更新
 			new BukkitRunnable() {
 				

@@ -5,38 +5,27 @@ import java.util.Random;
 
 public class NumberUtils {
 
-    private static Random rand = new Random();
+    private static Random random = new Random();
     private static DecimalFormat doubleFormat = new DecimalFormat("#.##");
 
-    public static Random getRand() {
-        return rand;
+    public static Random getRandom() {
+        return random;
     }
 
     public static Double format(Double num) {
         return Double.valueOf(doubleFormat.format(num));
     }
 
-    @Deprecated
-    public static int getRandom() {
-        return rand.nextInt(100);
+    public static int getRandomInteger(Number num1, Number num2) {
+        int min = Math.min(num1.intValue(), num2.intValue());
+        int max = Math.max(num1.intValue(), num2.intValue());
+        return (int) (random.nextDouble() * (max - min) + min);
     }
 
-    @Deprecated
-    public static boolean getChance(int a) {
-        return getRandom() <= a;
-    }
-
-    public static int getRandomInteger(Number l, Number u) {
-        Integer ll = Math.min(l.intValue(), u.intValue());
-        Integer uu = Math.max(l.intValue(), u.intValue());
-        return rand.nextInt(uu) % (uu - ll + 1) + ll;
-    }
-
-    public static double getRandomDouble(Number l, Number u) {
-        double ll = Math.min(l.doubleValue(), u.doubleValue());
-        double uu = Math.max(l.doubleValue(), u.doubleValue());
-        double d = ll + rand.nextDouble() * (uu - ll);
-        return Double.valueOf(doubleFormat.format(d));
+    public static double getRandomDouble(Number num1, Number num2) {
+        double min = Math.min(num1.doubleValue(), num2.doubleValue());
+        double max = Math.max(num1.doubleValue(), num2.doubleValue());
+        return random.nextDouble() * (max - min) + min;
     }
 
     public static int getInteger(String s) {
@@ -61,5 +50,15 @@ public class NumberUtils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Deprecated
+    public static Random getRand() {
+        return random;
+    }
+
+    @Deprecated
+    public static boolean getChance(int a) {
+        return getRandom().nextInt(100) <= a;
     }
 }

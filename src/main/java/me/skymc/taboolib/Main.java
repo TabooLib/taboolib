@@ -114,7 +114,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static Random getRandom() {
-        return NumberUtils.getRand();
+        return NumberUtils.getRandom();
     }
 
     public static String getTablePrefix() {

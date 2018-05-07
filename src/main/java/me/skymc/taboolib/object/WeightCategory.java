@@ -1,5 +1,6 @@
 package me.skymc.taboolib.object;
 
+@Deprecated
 public class WeightCategory {
 
     private String category;

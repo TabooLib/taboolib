@@ -2,6 +2,7 @@ package me.skymc.taboolib.commands.sub.cycle;
 
 import java.util.concurrent.TimeUnit;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.command.CommandSender;
 
 import me.skymc.taboolib.commands.SubCommand;
@@ -15,25 +16,21 @@ public class CycleInfoCommand extends SubCommand {
 	public CycleInfoCommand(CommandSender sender, String[] args) {
 		super(sender, args);
 		if (args.length < 3) {
-			MsgUtils.send(sender, "&c请输入正确的检查器名称");
+			TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
 			return;
 		}
 		
 		TimeCycle cycle = TimeCycleManager.getTimeCycle(args[2]);
 		if (cycle == null) {
-			MsgUtils.send(sender, "&c检查器 &4" + args[2] + " &c不存在");
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.INVALID-CYCLE", args[2]);
 			return;
 		}
-		
-		sender.sendMessage("§f");
-		sender.sendMessage("§b§l----- §3§lTimeCycle Info §b§l-----");
-		sender.sendMessage("§f");
-		sender.sendMessage(" §f- §7注册周期: §f" + asString(cycle.getCycle() / 1000L));
-		sender.sendMessage(" §f- §7注册插件: §f" + cycle.getPlugin().getName());
-		sender.sendMessage("§f");
-		sender.sendMessage(" §f- §7上次刷新时间: §f" + DateUtils.CH_ALL.format(TimeCycleManager.getBeforeTimeline(cycle.getName())));
-		sender.sendMessage(" §f- §7下次刷新时间: §f" + DateUtils.CH_ALL.format(TimeCycleManager.getAfterTimeline(cycle.getName())));
-		sender.sendMessage("§f");
+
+        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.CYCLE-INFO",
+                asString(cycle.getCycle() / 1000L),
+                cycle.getPlugin().getName(),
+                DateUtils.CH_ALL.format(TimeCycleManager.getBeforeTimeline(cycle.getName())),
+                DateUtils.CH_ALL.format(TimeCycleManager.getAfterTimeline(cycle.getName())));
 	}
 	
 	public String asString(long seconds) {
@@ -48,5 +45,4 @@ public class CycleInfoCommand extends SubCommand {
 	public boolean command() {
 		return true;
 	}
-
 }

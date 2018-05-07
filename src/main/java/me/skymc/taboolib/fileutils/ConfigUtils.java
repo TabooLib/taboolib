@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.bean.Property;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Ref;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -179,9 +180,7 @@ public class ConfigUtils {
             configuration.loadFromString(yaml);
             return configuration;
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error("配置文件载入失败!");
-            TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
-            TLib.getTLib().getLogger().error("文件: &4" + file);
+            TLocale.Logger.error("FILE-UTILS.FALL-LOAD-CONFIGURATION", plugin.getName(), file.getName());
         }
         return configuration;
     }

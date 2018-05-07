@@ -18,7 +18,7 @@ public class MainCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.HELP");
+            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.HELP", label);
         } else if (args[0].equalsIgnoreCase("save")) {
             new SaveCommand(sender, args);
         } else if (args[0].equalsIgnoreCase("enchants")) {

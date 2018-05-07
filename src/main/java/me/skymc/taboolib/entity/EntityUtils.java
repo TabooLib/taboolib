@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.exception.PluginNotFoundException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -71,7 +72,7 @@ public class EntityUtils implements Listener {
     public static void addGlow(Player player, Entity entity) {
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
             try {
-                throw new PluginNotFoundException("缺少前置插件 ProtocolLib");
+                throw new PluginNotFoundException(TLocale.asString("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB"));
             } catch (Exception e) {
                 //
             }
@@ -99,7 +100,7 @@ public class EntityUtils implements Listener {
     public static void delGlow(Player player, Entity entity) {
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
             try {
-                throw new PluginNotFoundException("缺少前置插件 ProtocolLib");
+                throw new PluginNotFoundException(TLocale.asString("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB"));
             } catch (Exception e) {
                 //
             }
