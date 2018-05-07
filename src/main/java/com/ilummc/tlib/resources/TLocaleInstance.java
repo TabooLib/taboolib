@@ -2,6 +2,7 @@ package com.ilummc.tlib.resources;
 
 import com.google.common.collect.ImmutableList;
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.type.TLocaleText;
 import com.ilummc.tlib.util.Strings;
 import org.bukkit.Bukkit;
@@ -22,13 +23,36 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 class TLocaleInstance {
 
+    private final Map<String, List<TLocaleSendable>> map = new HashMap<>();
     private final Plugin plugin;
+    private int updateNodes;
 
     TLocaleInstance(Plugin plugin) {
         this.plugin = plugin;
     }
 
-    void sendTo(String path, CommandSender sender, String... args) {
+    @Override
+    public String toString() {
+        return map.toString();
+    }
+
+    public int size() {
+        return map.size();
+    }
+
+    public Map<String, List<TLocaleSendable>> getMap() {
+        return map;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public int getUpdateNodes() {
+        return updateNodes;
+    }
+
+    public void sendTo(String path, CommandSender sender, String... args) {
         try {
             map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).forEach(sendable -> {
                 if (Bukkit.isPrimaryThread()) {
@@ -38,37 +62,37 @@ class TLocaleInstance {
                 }
             });
         } catch (Exception | Error e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("SEND-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("LOCALE-ERROR-REASON"), e.toString()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("SEND-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.toString()));
             e.printStackTrace();
         }
     }
 
-    String asString(String path, String... args) {
+    public String asString(String path, String... args) {
         return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asString(args);
     }
 
-    void load(YamlConfiguration configuration) {
+    public List<String> asStringList(String path, String... args) {
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asStringList(args);
+    }
+
+    public void load(YamlConfiguration configuration) {
+        updateNodes = 0;
         configuration.getKeys(true).forEach(s -> {
+            boolean isCover = false;
             Object object = configuration.get(s);
             if (object instanceof TLocaleSendable) {
-                map.put(s, Collections.singletonList((TLocaleSendable) object));
+                isCover = map.put(s, Collections.singletonList((TLocaleSendable) object)) != null;
             } else if (object instanceof List && !((List) object).isEmpty()) {
-                map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList()));
+                isCover = map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList())) != null;
             } else if (!(object instanceof ConfigurationSection)) {
                 String str = String.valueOf(object);
-                map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str)));
+                isCover = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str))) != null;
+            }
+            if (isCover) {
+                updateNodes++;
             }
         });
-    }
-
-    int size() {
-        return map.size();
-    }
-
-    @Override
-    public String toString() {
-        return map.toString();
     }
 
     private static final Function<Object, TLocaleSendable> TO_SENDABLE = o -> {
@@ -80,7 +104,4 @@ class TLocaleInstance {
             return TLocaleText.of(String.valueOf(o));
         }
     };
-
-    private final Map<String, List<TLocaleSendable>> map = new HashMap<>();
-
 }

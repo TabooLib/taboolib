@@ -1,7 +1,7 @@
 package com.ilummc.tlib.inject;
 
 import com.google.common.io.Files;
-import com.ilummc.tlib.annotations.Config;
+import com.ilummc.tlib.annotations.TConfig;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import org.apache.commons.lang3.Validate;
@@ -50,7 +50,7 @@ public class TConfigInjector {
 
     public static Object loadConfig(Plugin plugin, Class<?> clazz) {
         try {
-            Config config = clazz.getAnnotation(Config.class);
+            TConfig config = clazz.getAnnotation(TConfig.class);
             Validate.notNull(config);
             File file = new File(plugin.getDataFolder(), config.name());
             if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
@@ -68,7 +68,7 @@ public class TConfigInjector {
 
     public static void reloadConfig(Plugin plugin, Object object) {
         try {
-            Config config = object.getClass().getAnnotation(Config.class);
+            TConfig config = object.getClass().getAnnotation(TConfig.class);
             Validate.notNull(config);
             File file = new File(plugin.getDataFolder(), config.name());
             Map<String, Object> map = ConfigUtils.confToMap(ConfigUtils.loadYaml(plugin, file));
@@ -83,7 +83,7 @@ public class TConfigInjector {
 
     public static Object unserialize(Plugin plugin, Class<?> clazz) {
         try {
-            Config config = clazz.getAnnotation(Config.class);
+            TConfig config = clazz.getAnnotation(TConfig.class);
             Validate.notNull(config);
             return ConfigUtils.confToObj(
                     ConfigUtils.mapToConf(
@@ -104,7 +104,7 @@ public class TConfigInjector {
 
     public static Map<String, Object> serialize(Plugin plugin, Object object) {
         try {
-            Config config = object.getClass().getAnnotation(Config.class);
+            TConfig config = object.getClass().getAnnotation(TConfig.class);
             Validate.notNull(config);
             return ConfigUtils.objToConf(object).getValues(false);
         } catch (NullPointerException e) {
@@ -116,7 +116,7 @@ public class TConfigInjector {
     }
 
     public static void saveConfig(Plugin plugin, Object object) throws IOException, NullPointerException {
-        Config config = object.getClass().getAnnotation(Config.class);
+        TConfig config = object.getClass().getAnnotation(TConfig.class);
         Validate.notNull(config);
         Object obj = serialize(plugin, object);
         Validate.notNull(obj);

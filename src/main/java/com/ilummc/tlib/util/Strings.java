@@ -24,5 +24,4 @@ public class Strings {
         }
         return stringBuilder.toString();
     }
-
 }

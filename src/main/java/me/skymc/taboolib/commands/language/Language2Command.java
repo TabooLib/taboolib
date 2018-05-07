@@ -30,7 +30,7 @@ public class Language2Command implements CommandExecutor {
 		else if (args[0].equalsIgnoreCase("reload")) {
 			MsgUtils.send(sender, "§7重载中..");
 			long time = System.currentTimeMillis();
-			Main.getExampleLangauge2().reload();
+			Main.getExampleLanguage2().reload();
 			MsgUtils.send(sender, "§7重载完成! 耗时: &f" + (System.currentTimeMillis() - time) + "ms");
 		}
 		else if (args[0].equalsIgnoreCase("send")) {
@@ -42,7 +42,7 @@ public class Language2Command implements CommandExecutor {
 				long time = System.currentTimeMillis();
 				
 				// 获取语言文件
-				Language2Value value = Main.getExampleLangauge2().get(args[2]);
+				Language2Value value = Main.getExampleLanguage2().get(args[2]);
 				// 如果有变量参数
 				if (args.length > 3) {
 					int i = 0;

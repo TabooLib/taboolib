@@ -36,12 +36,12 @@ public class NBTFile extends NBTCompound {
     }
 
     @Override
-	protected Object getCompound() {
+    protected Object getCompound() {
         return nbt;
     }
 
     @Override
-	protected void setCompound(Object compound) {
+    protected void setCompound(Object compound) {
         nbt = compound;
     }
 

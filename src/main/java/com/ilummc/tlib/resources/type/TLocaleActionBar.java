@@ -20,7 +20,6 @@ import java.util.Map;
 public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializable {
 
     private final String text;
-
     private final boolean papi;
 
     private TLocaleActionBar(String text, boolean papi) {
@@ -54,8 +53,9 @@ public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializa
     public Map<String, Object> serialize() {
         Map<String, Object> map = Maps.newHashMap();
         map.put("text", text);
-        if (papi)
+        if (papi) {
             map.put("papi", true);
+        }
         return map;
     }
 

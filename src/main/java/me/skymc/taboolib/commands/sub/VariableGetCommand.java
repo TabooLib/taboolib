@@ -1,5 +1,6 @@
 package me.skymc.taboolib.commands.sub;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.command.CommandSender;
 
 import me.skymc.taboolib.commands.SubCommand;
@@ -12,10 +13,13 @@ public class VariableGetCommand extends SubCommand {
 		super(sender, args);
 		
 		if (args.length < 3) {
-			MsgUtils.send(sender, "&4请输入正确的指令 ");
+			TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
+			return;
 		}
-		else if (!(args[1].equals("-a") || args[1].equals("-s"))) {
-			MsgUtils.send(sender, "&4请输入正确的读取方式");
+
+		if (!(args[1].equals("-a") || args[1].equals("-s"))) {
+			TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-ERROR-TYPE");
+			return;
 		}
 		
 		Long time = System.currentTimeMillis();
@@ -27,14 +31,8 @@ public class VariableGetCommand extends SubCommand {
 		else if (args[1].equals("-a")) {
 			value = GlobalDataManager.getVariableAsynchronous(args[2], null);
 		}
-		
-		if (value == null) {
-			MsgUtils.send(sender, "读取完成, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
-			MsgUtils.send(sender, "变量 &f" + args[2] + " &7不存在");
-		}
-		else {
-			MsgUtils.send(sender, "读取完成, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
-			MsgUtils.send(sender, "变量 &f" + args[2] + " &7的值为 &f" + value);
-		}
+
+		TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
+		TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-RESULT", value == null ? "null" : value);
 	}
 }

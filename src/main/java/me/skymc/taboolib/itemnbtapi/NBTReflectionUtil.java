@@ -1,5 +1,14 @@
 package me.skymc.taboolib.itemnbtapi;
 
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.itemnbtapi.utils.GsonWrapper;
+import me.skymc.taboolib.itemnbtapi.utils.MethodNames;
+import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -8,28 +17,18 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.Stack;
 
-import org.bukkit.Bukkit;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Entity;
-import org.bukkit.inventory.ItemStack;
-
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.itemnbtapi.utils.GsonWrapper;
-import me.skymc.taboolib.itemnbtapi.utils.MethodNames;
-import me.skymc.taboolib.message.MsgUtils;
-
 // TODO: finish codestyle cleanup -sgdc3
 public class NBTReflectionUtil {
 
     private static final String version = TabooLib.getVersion();
-    
+
     @SuppressWarnings("rawtypes")
     private static Class getCraftItemStack() {
 
         try {
             return Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
         } catch (Exception ex) {
-        	MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -39,7 +38,7 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("org.bukkit.craftbukkit." + version + ".entity.CraftEntity");
         } catch (Exception ex) {
-        	MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -49,7 +48,7 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("net.minecraft.server." + version + ".NBTBase");
         } catch (Exception ex) {
-        	MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -59,19 +58,19 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("net.minecraft.server." + version + ".NBTTagString");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     protected static Class getNMSItemStack() {
         try {
             return Class.forName("net.minecraft.server." + version + ".ItemStack");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -81,8 +80,8 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -92,19 +91,19 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("net.minecraft.server." + version + ".NBTCompressedStreamTools");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
-    
+
     @SuppressWarnings("rawtypes")
     protected static Class getMojangsonParser() {
         try {
             return Class.forName("net.minecraft.server." + version + ".MojangsonParser");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -114,8 +113,8 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("net.minecraft.server." + version + ".TileEntity");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -125,8 +124,8 @@ public class NBTReflectionUtil {
         try {
             return Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -138,8 +137,8 @@ public class NBTReflectionUtil {
             Class c = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
             return c.newInstance();
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -151,8 +150,8 @@ public class NBTReflectionUtil {
             Class clazz = Class.forName("net.minecraft.server." + version + ".BlockPosition");
             return clazz.getConstructor(int.class, int.class, int.class).newInstance(x, y, z);
         } catch (Exception ex) {
-            
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
             return null;
         }
     }
@@ -164,7 +163,7 @@ public class NBTReflectionUtil {
             method.invoke(NMSItem, NBTTag);
             return NMSItem;
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -178,7 +177,7 @@ public class NBTReflectionUtil {
             method = clazz.getMethod("asNMSCopy", ItemStack.class);
             return method.invoke(clazz, item);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -192,7 +191,7 @@ public class NBTReflectionUtil {
             method = clazz.getMethod("getHandle");
             return method.invoke(getCraftEntity().cast(entity));
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -206,11 +205,11 @@ public class NBTReflectionUtil {
             method = cis.getMethod("parse", String.class);
             return method.invoke(null, json);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
-    
+
     @SuppressWarnings({"unchecked"})
     public static Object readNBTFile(FileInputStream stream) {
         @SuppressWarnings("rawtypes")
@@ -220,7 +219,7 @@ public class NBTReflectionUtil {
             method = clazz.getMethod("a", InputStream.class);
             return method.invoke(clazz, stream);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -234,7 +233,7 @@ public class NBTReflectionUtil {
             method = clazz.getMethod("a", getNBTTagCompound(), OutputStream.class);
             return method.invoke(clazz, nbt, stream);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -249,7 +248,7 @@ public class NBTReflectionUtil {
             Object answer = method.invoke(clazz, item);
             return (ItemStack) answer;
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -263,11 +262,11 @@ public class NBTReflectionUtil {
             method = clazz.getMethod("getTag");
             return method.invoke(nmsitem);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
-    
+
     @SuppressWarnings({"unchecked"})
     public static Object convertNBTCompoundtoNMSItem(NBTCompound nbtcompound) {
         @SuppressWarnings("rawtypes")
@@ -275,11 +274,11 @@ public class NBTReflectionUtil {
         try {
             return clazz.getConstructor(getNBTTagCompound()).newInstance(nbtcompound.getCompound());
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
-    
+
     @SuppressWarnings({"unchecked"})
     public static NBTContainer convertNMSItemtoNBTCompound(Object nmsitem) {
         @SuppressWarnings("rawtypes")
@@ -290,7 +289,7 @@ public class NBTReflectionUtil {
             Object answer = method.invoke(nmsitem, getNewNBTTag());
             return new NBTContainer(answer);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -308,7 +307,7 @@ public class NBTReflectionUtil {
                 answer = nbt;
             return answer;
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -320,7 +319,7 @@ public class NBTReflectionUtil {
             method.invoke(NMSItem, NBTTag);
             return NMSItem;
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -339,7 +338,7 @@ public class NBTReflectionUtil {
                 answer = tag;
             return answer;
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -354,7 +353,7 @@ public class NBTReflectionUtil {
             method = getTileEntity().getMethod("a", getNBTTagCompound());
             method.invoke(o, comp);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
     }
 
@@ -368,7 +367,7 @@ public class NBTReflectionUtil {
             method = c.getMethod("getCompound", String.class);
             return method.invoke(compound, name);
         } catch (Exception e) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
         }
         return null;
     }
@@ -390,7 +389,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, name, getNBTTagCompound().newInstance());
             comp.setCompound(nbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -416,7 +415,7 @@ public class NBTReflectionUtil {
         }
         return nbttag;
     }
-    
+
     public static void addOtherNBTCompound(NBTCompound comp, NBTCompound nbtcompound) {
         Object rootnbttag = comp.getCompound();
         if (rootnbttag == null) {
@@ -430,7 +429,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, nbtcompound.getCompound());
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -451,7 +450,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, text);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -467,7 +466,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getString", String.class);
             return (String) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -484,7 +483,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("get", String.class);
             return method.invoke(workingtag, key).toString();
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -506,7 +505,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, i);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -522,7 +521,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getInt", String.class);
             return (Integer) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -544,7 +543,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, b);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -560,7 +559,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getByteArray", String.class);
             return (byte[]) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -582,7 +581,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, i);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -598,7 +597,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getIntArray", String.class);
             return (int[]) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -620,7 +619,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, f);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -636,7 +635,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getFloat", String.class);
             return (Float) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -658,7 +657,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, f);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -674,7 +673,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getLong", String.class);
             return (Long) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -696,7 +695,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, f);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -712,7 +711,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getShort", String.class);
             return (Short) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -734,7 +733,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, f);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -750,7 +749,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getByte", String.class);
             return (Byte) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -772,7 +771,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, d);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -788,7 +787,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getDouble", String.class);
             return (Double) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -805,7 +804,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod(MethodNames.getTypeMethodName(), String.class);
             return (byte) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return 0;
     }
@@ -827,7 +826,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, d);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -843,7 +842,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getBoolean", String.class);
             return (Boolean) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -868,7 +867,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key, val);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -884,7 +883,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("getList", String.class, int.class);
             return new NBTList(comp, key, type, method.invoke(workingtag, key, type.getId()));
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -894,7 +893,7 @@ public class NBTReflectionUtil {
             String json = GsonWrapper.getString(value);
             setString(comp, key, json);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -919,7 +918,7 @@ public class NBTReflectionUtil {
             method.invoke(workingtag, key);
             comp.setCompound(rootnbttag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -935,7 +934,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("hasKey", String.class);
             return (Boolean) method.invoke(workingtag, key);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -953,7 +952,7 @@ public class NBTReflectionUtil {
             method = workingtag.getClass().getMethod("c");
             return (Set<String>) method.invoke(workingtag);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
