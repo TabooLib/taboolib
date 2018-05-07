@@ -9,13 +9,28 @@ import com.ilummc.tlib.annotations.TConfig;
 @TConfig(name = "tlib.yml", listenChanges = true)
 public class TLibConfig {
 
-    private boolean enablePlaceholderHookByDefault = false;
+    @Getter
+    private String dataSourceClassName;
 
-    public void setEnablePlaceholderHookByDefault(boolean enablePlaceholderHookByDefault) {
-        this.enablePlaceholderHookByDefault = enablePlaceholderHookByDefault;
-    }
+    @Getter
+    private String jdbcUrl = "jdbc:h2:file:~/plugins/TabooLib/h2";
 
-    public boolean isEnablePlaceholderHookByDefault() {
-        return enablePlaceholderHookByDefault;
-    }
+    @Getter
+    private String driverClassName;
+
+    @Getter
+    private String username = "";
+
+    @Getter
+    private String password = "";
+
+    @Getter
+    private int maximumPoolSize = 4;
+
+    @Getter
+    private Map<String, Object> settings = new HashMap<String, Object>() {{
+        put("cachePrepStmts", true);
+        put("useServerPrepStmts", true);
+    }};
+
 }
