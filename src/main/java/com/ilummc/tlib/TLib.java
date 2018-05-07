@@ -3,6 +3,7 @@ package com.ilummc.tlib;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.config.TLibConfig;
+import com.ilummc.tlib.db.Pool;
 import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
@@ -24,6 +25,16 @@ import java.nio.charset.Charset;
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.ow2.asm:asm:6.1.1")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.slf4j:slf4j-api:1.7.25")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.javalite:activejdbc:2.0")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.javalite:javalite-common:2.0")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.javalite:app-config:2.0")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.codehaus.jackson:jackson-mapper-asl:1.9.13")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.codehaus.jackson:jackson-core-asl:1.9.13")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "jaxen:jaxen:1.1.6")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "dom4j:dom4j:1.6.1")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "xml-apis:xml-apis:1.0.b2")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "org.ehcache:ehcache:3.5.2")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "com.h2database:h2:1.4.197")
 public class TLib {
 
     private static TLib tLib;
@@ -60,10 +71,20 @@ public class TLib {
         TLoggerFilter.init();
         TLocaleLoader.init();
         PlaceholderHook.init();
+        TLocaleLoader.load(Main.getInst(), false);
         TDependencyInjector.inject(Main.getInst(), tLib);
+
+        // init database
+        try {
+            Pool.init();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void unload() {
+        Pool.unload();
         tLib.getConfigWatcher().unregisterAll();
         TDependencyInjector.eject(Main.getInst(), tLib);
     }
