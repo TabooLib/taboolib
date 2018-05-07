@@ -56,7 +56,7 @@ public class TConfigInjector {
             if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
             else saveConfig(plugin, clazz.newInstance());
             Object obj = unserialize(plugin, clazz);
-            if (!config.readOnly()) saveConfig(plugin, obj);
+            if (config.readOnly()) saveConfig(plugin, obj);
             return obj;
         } catch (NullPointerException e) {
             TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), clazz.getSimpleName());
@@ -73,7 +73,7 @@ public class TConfigInjector {
             File file = new File(plugin.getDataFolder(), config.name());
             Map<String, Object> map = ConfigUtils.confToMap(ConfigUtils.loadYaml(plugin, file));
             Object obj = ConfigUtils.mapToObj(map, object);
-            if (!config.readOnly()) saveConfig(plugin, obj);
+            if (config.readOnly()) saveConfig(plugin, obj);
         } catch (NullPointerException e) {
             TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), object.getClass().getSimpleName());
         } catch (Exception e) {
