@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class TLocaleText implements TLocaleSendable, ConfigurationSerializable {
 
     private final Object text;
-
     private final boolean usePlaceholder;
 
     private TLocaleText(Object text, boolean usePlaceholder) {
@@ -78,9 +77,19 @@ public class TLocaleText implements TLocaleSendable, ConfigurationSerializable {
         return Strings.replaceWithOrder(objectToString(text), args);
     }
 
+    @Override
+    public List<String> asStringList(String... args) {
+        if (text instanceof String) {
+            return Collections.singletonList(((String) text));
+        } else {
+            return ((List<String>) text);
+        }
+    }
+
     private String objectToString(Object text) {
-        if (text instanceof String) return ((String) text);
-        else {
+        if (text instanceof String) {
+            return ((String) text);
+        } else {
             StringJoiner joiner = new StringJoiner("\n");
             ((List<String>) text).forEach(joiner::add);
             return joiner.toString();

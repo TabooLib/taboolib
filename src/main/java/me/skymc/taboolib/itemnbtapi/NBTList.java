@@ -1,9 +1,9 @@
 package me.skymc.taboolib.itemnbtapi;
 
-import java.lang.reflect.Method;
-
 import me.skymc.taboolib.itemnbtapi.utils.MethodNames;
 import me.skymc.taboolib.message.MsgUtils;
+
+import java.lang.reflect.Method;
 
 public class NBTList {
 
@@ -37,7 +37,7 @@ public class NBTList {
             method.invoke(listObject, compound);
             return new NBTListCompound(this, compound);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -52,7 +52,7 @@ public class NBTList {
             Object compound = method.invoke(listObject, id);
             return new NBTListCompound(this, compound);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -66,7 +66,7 @@ public class NBTList {
             Method method = listObject.getClass().getMethod("getString", int.class);
             return (String) method.invoke(listObject, i);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return null;
     }
@@ -82,7 +82,7 @@ public class NBTList {
             method.invoke(listObject, NBTReflectionUtil.getNBTTagString().getConstructor(String.class).newInstance(s));
             save();
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -97,7 +97,7 @@ public class NBTList {
             method.invoke(listObject, i, NBTReflectionUtil.getNBTTagString().getConstructor(String.class).newInstance(s));
             save();
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class NBTList {
             method.invoke(listObject, i);
             save();
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
     }
 
@@ -116,7 +116,7 @@ public class NBTList {
             Method method = listObject.getClass().getMethod("size");
             return (int) method.invoke(listObject);
         } catch (Exception ex) {
-             MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
+            MsgUtils.warn("NBT 操作出现异常: §7" + ex.getMessage());
         }
         return -1;
     }

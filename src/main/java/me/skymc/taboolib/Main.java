@@ -1,11 +1,8 @@
 package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
-import lombok.Getter;
-import lombok.Setter;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
-import me.skymc.taboolib.client.LogClient;
 import me.skymc.taboolib.commands.MainCommands;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
@@ -52,31 +49,69 @@ import java.util.Random;
 @SuppressWarnings("deprecation")
 public class Main extends JavaPlugin implements Listener {
 
-    @Getter
     private static Plugin inst;
-    @Getter
-    private static String prefix = "§8[§3§lTabooLib§8] §7";
-    @Getter
-    @Setter
+
     private static Economy Economy;
-    @Getter
+
     private static File playerDataFolder;
-    @Getter
+
     private static File serverDataFolder;
-    @Getter
+
     private static StorageType storageType;
-    @Getter
+
     private static boolean disable = false;
-    @Getter
+
     private static MySQLConnection connection = null;
-    @Getter
-    private FileConfiguration config = null;
-    @Getter
-    private static LogClient client;
-    @Getter
-    private static Language2 exampleLangauge2;
-    @Getter
+
+    private static Language2 exampleLanguage2;
+
     private static boolean started;
+
+    private FileConfiguration config = null;
+
+    public static Plugin getInst() {
+        return inst;
+    }
+
+    public static String getPrefix() {
+        return "§8[§3§lTabooLib§8] §7";
+    }
+
+    public static net.milkbowl.vault.economy.Economy getEconomy() {
+        return Economy;
+    }
+
+    public static void setEconomy(net.milkbowl.vault.economy.Economy economy) {
+        Economy = economy;
+    }
+
+    public static File getPlayerDataFolder() {
+        return playerDataFolder;
+    }
+
+    public static File getServerDataFolder() {
+        return serverDataFolder;
+    }
+
+    public static StorageType getStorageType() {
+        return storageType;
+    }
+
+    public static boolean isDisable() {
+        return disable;
+    }
+
+    public static MySQLConnection getConnection() {
+        return connection;
+    }
+
+    public static Language2 getExampleLanguage2() {
+        return exampleLanguage2;
+    }
+
+    public static boolean isStarted() {
+        return started;
+    }
 
     public static Random getRandom() {
         return NumberUtils.getRand();
@@ -84,6 +119,11 @@ public class Main extends JavaPlugin implements Listener {
 
     public static String getTablePrefix() {
         return inst.getConfig().getString("MYSQL.PREFIX");
+    }
+
+    @Override
+    public FileConfiguration getConfig() {
+        return config;
     }
 
     @Override
@@ -179,7 +219,7 @@ public class Main extends JavaPlugin implements Listener {
         // 启动脚本
         JavaShell.javaShellSetup();
         // 载入语言文件
-        exampleLangauge2 = new Language2("Language2", this);
+        exampleLanguage2 = new Language2("Language2", this);
         // 注册脚本
         SkriptHandler.getInst();
 
@@ -304,13 +344,11 @@ public class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new ItemLibraryPatch(), this);
         getServer().getPluginManager().registerEvents(new SoundsLibraryPatch(), this);
 
-
         if (TabooLib.getVerint() > 10700) {
             getServer().getPluginManager().registerEvents(new EntityUtils(), this);
             getServer().getPluginManager().registerEvents(new SignUtils(), this);
         }
 
-        // 如果 YUM 插件存在
         if (Bukkit.getPluginManager().getPlugin("YUM") != null) {
             getServer().getPluginManager().registerEvents(new ListenerNetWork(), this);
         }

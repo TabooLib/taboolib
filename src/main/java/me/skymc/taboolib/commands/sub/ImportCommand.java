@@ -1,7 +1,9 @@
 package me.skymc.taboolib.commands.sub;
 
 import java.io.File;
+import java.util.Objects;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,28 +20,34 @@ public class ImportCommand extends SubCommand {
 		super(sender, args);
 		
 		if (isPlayer()) {
-			MsgUtils.warn("改命令只能由控制台输入");
+			TLocale.sendTo(sender, "COMMANDS.GLOBAL.ONLY-PLAYER");
+			return;
 		}
-		else if (Main.getStorageType() == StorageType.LOCAL) {
-			MsgUtils.warn("只有启用数据库储存时才能这么做");
+
+		if (Main.getStorageType() == StorageType.LOCAL) {
+			TLocale.Logger.warn("COMMANDS.GLOBAL.ONLY-STORAGE-SQL");
+			return;
 		}
-		else {
-			MsgUtils.send("正在清空数据库...");
-			Main.getConnection().truncateTable(Main.getTablePrefix() + "_playerdata");
-			
-			MsgUtils.send("开始导入玩家数据...");
-			int size = Main.getPlayerDataFolder().listFiles().length;
-			int loop = 1;
-			
-			for (File file : Main.getPlayerDataFolder().listFiles()) {
-				FileConfiguration conf = YamlConfiguration.loadConfiguration(file);
-				Main.getConnection().intoValue(Main.getTablePrefix() + "_playerdata", file.getName().replace(".yml", ""), ConfigUtils.encodeYAML(conf));
-				
-				MsgUtils.send("导入玩家: &f" + file.getName().replace(".yml", "") + " &7进度: &f" + loop + "/" + size);
-				loop++;
-			}
-			MsgUtils.send("导入完成!");
+
+		TLocale.sendTo(sender, "COMMANDS.TABOOLIB.IMPORTDATA.CLEARING");
+		Main.getConnection().truncateTable(Main.getTablePrefix() + "_playerdata");
+
+		if (!Main.getPlayerDataFolder().exists()) {
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.IMPORTDATA.EMPTYDATA");
+			return;
 		}
+
+		int size = Objects.requireNonNull(Main.getPlayerDataFolder().listFiles()).length;
+		TLocale.sendTo(sender, "COMMANDS.TABOOLIB.IMPORTDATA.IMPORTING-START", String.valueOf(size));
+
+		int loop = 1;
+		for (File file : Objects.requireNonNull(Main.getPlayerDataFolder().listFiles())) {
+			Main.getConnection().intoValue(Main.getTablePrefix() + "_playerdata", file.getName().replace(".yml", ""), ConfigUtils.encodeYAML(YamlConfiguration.loadConfiguration(file)));
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.IMPORTDATA.IMPORTING-PROGRESS", file.getName().replace(".yml", ""), String.valueOf(loop), String.valueOf(size));
+			loop++;
+		}
+
+		TLocale.sendTo(sender, "COMMANDS.TABOOLIB.IMPORTDATA.SUCCESS");
 	}
 
 }

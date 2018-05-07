@@ -10,7 +10,7 @@ import com.ilummc.tlib.util.Ref;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Config {
+public @interface TConfig {
 
     String name() default "config.yml";
 

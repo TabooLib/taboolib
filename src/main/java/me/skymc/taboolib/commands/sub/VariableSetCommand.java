@@ -1,5 +1,6 @@
 package me.skymc.taboolib.commands.sub;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.command.CommandSender;
 
 import me.skymc.taboolib.commands.SubCommand;
@@ -12,10 +13,13 @@ public class VariableSetCommand extends SubCommand {
 		super(sender, args);
 		
 		if (args.length < 4) {
-			MsgUtils.send(sender, "&4请输入正确的指令 ");
+			TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
+			return;
 		}
-		else if (!(args[1].equals("-a") || args[1].equals("-s"))) {
-			MsgUtils.send(sender, "&4请输入正确的写入方式");
+
+		if (!(args[1].equals("-a") || args[1].equals("-s"))) {
+            TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-ERROR-TYPE");
+			return;
 		}
 		
 		Long time = System.currentTimeMillis();
@@ -27,8 +31,8 @@ public class VariableSetCommand extends SubCommand {
 		else if (args[1].equals("-a")) {
 			GlobalDataManager.setVariableAsynchronous(args[2], value);
 		}
-		
-		MsgUtils.send(sender, "写入完成, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
+
+        TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
 		setReturn(true);
 	}
 }
