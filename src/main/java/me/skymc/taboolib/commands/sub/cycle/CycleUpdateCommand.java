@@ -1,5 +1,6 @@
 package me.skymc.taboolib.commands.sub.cycle;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -17,13 +18,13 @@ public class CycleUpdateCommand extends SubCommand {
 	public CycleUpdateCommand(CommandSender sender, String[] args) {
 		super(sender, args);
 		if (args.length < 3) {
-			MsgUtils.send(sender, "&c请输入正确的检查器名称");
+			TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
 			return;
 		}
 		
 		TimeCycle cycle = TimeCycleManager.getTimeCycle(args[2]);
 		if (cycle == null) {
-			MsgUtils.send(sender, "&c检查器 &4" + args[2] + " &c不存在");
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.INVALID-CYCLE", args[2]);
 			return;
 		}
 		
@@ -36,7 +37,7 @@ public class CycleUpdateCommand extends SubCommand {
 				// 触发器
 				Bukkit.getPluginManager().callEvent(new TimeCycleEvent(cycle));
 				// 提示
-				MsgUtils.send(sender, "检查器 &f" + args[2] + " &7已更新");
+				TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.CYCLE-UPDATE", args[2]);
 			}
 		}.runTaskAsynchronously(Main.getInst());
 	}

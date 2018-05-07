@@ -11,7 +11,7 @@ DEPENDENCY:
   DOWNLOAD-SUCCESS: '  下载 {0} 完成'
   DOWNLOAD-FAILED:
     - '  下载 {0} 失败'
-    - '  请手动下载 {1} 并重命名为 {2} 后放在 /TabooLib/libs 文件夹内'
+    - '  请手动下载 {1} 并重命名为 {2} 后放在 /{0}/libs 文件夹内'
   PLUGIN-AUTOLOAD-FAIL: '{0} 所依赖的插件 {1} 尝试自动加载失败，请尝试手动下载'
   PLUGIN-LOAD-SUCCESS: '  {0} 请求的插件 {1} 加载成功'
   PLUGIN-LOAD-FAIL: '  {0} 请求的插件 {1} 加载失败'
@@ -38,6 +38,38 @@ LOCALE:
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
+  
+COOLDOWNPACK:
+  PACK-REGISTER: '注册冷却包: {0}, 时间: {1} 秒 ({2})'
+  PACK-REGISTER-ANONYMOUS: '注册冷却包: {0}, 时间: {1} 秒 (匿名注册)'
+  PACK-UNREGISTER: '注销冷却包: {0} (主动注销)'
+  PACK-UNREGISTER-AUTO: '注销冷却包: {0} (自动注销)'
+ 
+GLOBAL-DATAMANAGER:
+  ERROR-CHECK-VARIABLE: '&4变量 &c{0} &4载入异常: &c{1}'
+  SUCCESS-LOADED-VARIABLE: '&7从数据库中获取 &f{0} &7个变量, 耗时: &f{1} &7(ms)'
+  
+PLAYER-DATAMANAGER:
+  ERROR-STORAGE-SQL: '不允许在储存模式为数据库的情况下获取离线玩家数据'
+  ERROR-PLAYER-DATA: '&4玩家 &c{0} &4的数据载入出现异常: &c{1}'
+  SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条玩家数据, 耗时: &f{1} &7(ms)'
+  
+ENTITY-UTILS:
+  NOTFOUND-PROTOCOLLIB: '缺少前置插件 ProtocolLib'
+ 
+FILE-UTILS:
+  FALL-LOAD-CONFIGURATION: '&4配置文件载入失败!, 插件: &c{0}&4, 文件: &c{1}'
+  
+ITEM-UTILS:
+  FALL-LOAD-ITEMS: '物品库载入失败: &4{0}'
+  FALL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
+  FALL-LOAD-ENCHANT: '&c{0} &4不是一个有效的附魔名称, 输入 &c/tlib enchants&4 查看所有附魔'
+  FALL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
+  FALL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
+  FALL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
+  SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
+  SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
+  EMPTY-ITEM: '空'
 
 COMMANDS:
   GLOBAL:
@@ -55,35 +87,35 @@ COMMANDS:
     - ''
     - '§b§l----- §3§lTaooLib Commands §b§l-----'
     - ''
-    - '&f /taboolib save §8[§7名称§8] &6- §e保存手中物品'
-    - '&f /taboolib item §8[§7名称§8] §8<§7玩家§8> §8<§7数量§8> &6- §e给予玩家物品'
-    - '&f /taboolib iteminfo &6- §e查看物品信息'
-    - '&f /taboolib itemlist &6- §e查看所有物品'
-    - '&f /taboolib itemreload &6- §e重载物品缓存'
+    - '&f /{0} save §8[§7名称§8] &6- §e保存手中物品'
+    - '&f /{0} item §8[§7名称§8] §8<§7玩家§8> §8<§7数量§8> &6- §e给予玩家物品'
+    - '&f /{0} iteminfo &6- §e查看物品信息'
+    - '&f /{0} itemlist &6- §e查看所有物品'
+    - '&f /{0} itemreload &6- §e重载物品缓存'
     - ''
-    - '&f /taboolib attributes &6- §e查看所有属性'
-    - '&f /taboolib enchants &6- §e查看所有附魔'
-    - '&f /taboolib potions &6- §e查看所有药水'
-    - '&f /taboolib flags &6- §e查看所有标签'
-    - '&f /taboolib slots &6- §e查看所有部位'
-    - '&f /taboolib sounds &6- §e查看所有音效'
+    - '&f /{0} attributes &6- §e查看所有属性'
+    - '&f /{0} enchants &6- §e查看所有附魔'
+    - '&f /{0} potions &6- §e查看所有药水'
+    - '&f /{0} flags &6- §e查看所有标签'
+    - '&f /{0} slots &6- §e查看所有部位'
+    - '&f /{0} sounds &6- §e查看所有音效'
     - ''
-    - '&f /taboolib getvariable §8[§7-s|a§8] §8[§7键§8] &6- §e查看变量'
-    - '&f /taboolib setvariable §8[§7-s|a§8] §8[§7键§8] §8[§7值§8] &6- §e更改变量'
+    - '&f /{0} getvariable §8[§7-s|a§8] §8[§7键§8] &6- §e查看变量'
+    - '&f /{0} setvariable §8[§7-s|a§8] §8[§7键§8] §8[§7值§8] &6- §e更改变量'
     - ''
-    - '&f /taboolib cycle list &6- §e列出所有时间检查器'
-    - '&f /taboolib cycle info §8[§7名称§8] &6- §e查询检查器信息'
-    - '&f /taboolib cycle reset §8[§7名称§8] &6- §e初始化时间检查器'
-    - '&f /taboolib cycle update §8[§7名称§8] &6- §e更新时间检查器'
+    - '&f /{0} cycle list &6- §e列出所有时间检查器'
+    - '&f /{0} cycle info §8[§7名称§8] &6- §e查询检查器信息'
+    - '&f /{0} cycle reset §8[§7名称§8] &6- §e初始化时间检查器'
+    - '&f /{0} cycle update §8[§7名称§8] &6- §e更新时间检查器'
     - ''
-    - '&f /taboolib shell load §8[§7名称§8] &6- §e载入某个脚本'
-    - '&f /taboolib shell unload §8[§7名称§8] &6- §e卸载某个脚本'
+    - '&f /{0} shell load §8[§7名称§8] &6- §e载入某个脚本'
+    - '&f /{0} shell unload §8[§7名称§8] &6- §e卸载某个脚本'
     - ''
-    - '&f /taboolib tagprefix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶前缀'
-    - '&f /taboolib tagsuffix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶后缀'
-    - '&f /taboolib tagdelete §8[§7名称§8] &6- §e删除玩家称号数据'
+    - '&f /{0} tagprefix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶前缀'
+    - '&f /{0} tagsuffix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶后缀'
+    - '&f /{0} tagdelete §8[§7名称§8] &6- §e删除玩家称号数据'
     - ''
-    - '&f /taboolib importdata &6- §4向数据库导入本地数据 §8(该操作将会清空数据库)'
+    - '&f /{0} importdata &6- §4向数据库导入本地数据 §8(该操作将会清空数据库)'
     - ''
     SAVE:
       INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
@@ -116,6 +148,11 @@ COMMANDS:
       INVALID-SHELL: '&8[&3&lTabooLib&8] &4脚本 &c{0} &4不存在'
       SUCCESS-LOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已载入'
       SUCCESS-UNLOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已卸载'
+    PLAYERTAG:
+      INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
+      SUCCESS-PREFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的前缀为 &f{1}'
+      SUCCESS-SUFFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的后缀为 &f{1}'
+      SUCCESS-DELETE: '&8[&3&lTabooLib&8] &7删除玩家 &f{0} &7的称号数据'
     INFO:
       INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
       ITEM-INFO:
@@ -171,6 +208,32 @@ COMMANDS:
             sound:
               hover: 点击复制音效
               suggest: '{0}'
+    TIMECYCLE:
+      INVALID-CYCLE: '&8[&3&lTabooLib&8] &4检查器 &c{0} &4不存在'
+      CYCLE-UPDATE: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7已更新'
+      CYCLE-RESET: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7初始化完成'
+      CYCLE-INFO:
+      - ''
+      - '§b§l----- §3§lTimeCycle Info §b§l-----'
+      - ''
+      - ' §f- §7注册周期: §f{0}'
+      - ' §f- §7注册插件: §f{1}'
+      - ' §f- §7上次刷新时间: §f{2}'
+      - ' §f- §7下次刷新时间: §f{3}'
+      LIST:
+        HEAD:
+        - ''
+        - '§b§l----- §3§lTimeCycle List §b§l-----'
+        - ''
+        BODY:
+        - ==: JSON
+          text: ' §7- §f{0} <&8(点击复制)@copy>'
+          args:
+            copy:
+              hover: '§f点击复制'
+              suggest: '{0}'
+        FOOT:
+        - ''
     ATTRIBUTES:
       HEAD:
       - ''
@@ -240,12 +303,25 @@ COMMANDS:
             hover: '§f点击复制'
             suggest: '{0}'
       FOOT:
-      - ''   
+      - ''
   LANGUAGE2:
+    INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
+    SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
     HELP:
     - ''
     - '§b§l----- §3§lLanguage2 Commands §b§l-----'
     - ''
-    - '§f /language2 send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
-    - '§f /language2 reload §6- §e重载语言库'
+    - '§f /{0} send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
+    - '§f /{0} reload §6- §e重载语言库'
+    - ''
+  TLOCALE:
+    INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
+    SUCCESS-RELOAD: '&8[&3&lTabooLib&8] &7重载完成'
+    SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
+    HELP:
+    - ''
+    - '§b§l----- §3§lTabooLibLoacle Commands §b§l-----'
+    - ''
+    - '§f /{0} send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
+    - '§f /{0} reload §6- §e重载语言库'
     - ''
