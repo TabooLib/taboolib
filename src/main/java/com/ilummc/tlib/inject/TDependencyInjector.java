@@ -22,6 +22,8 @@ public class TDependencyInjector {
         injectConfig(plugin, o);
         injectPluginInstance(plugin, o);
         TLocaleLoader.load(plugin, true);
+        if (o != TLib.getTLib())
+            injectDatabase(plugin, o);
     }
 
     static void injectOnEnable(Plugin plugin) {
@@ -53,6 +55,10 @@ public class TDependencyInjector {
                 }
             }
         }
+    }
+
+    private static void injectDatabase(Plugin plugin, Object o) {
+
     }
 
     private static void injectConfig(Plugin plugin, Object o) {

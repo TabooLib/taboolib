@@ -67,7 +67,7 @@ public class ConfigUtils {
     }
 
     public static MemoryConfiguration mapToConf(Map<String, Object> map) {
-        MemoryConfiguration configuration = new MemoryConfiguration();
+        YamlConfiguration configuration = new YamlConfiguration();
         convertMapsToSections(map, configuration);
         return configuration;
     }
@@ -111,13 +111,24 @@ public class ConfigUtils {
         return objToMap(object, Modifier.TRANSIENT & Modifier.STATIC & Ref.ACC_SYNTHETIC);
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<String, Object> objToMap(Object object, int excludedModifiers) {
         Map<String, Object> map = Maps.newHashMap();
+        if (object instanceof Map) {
+            ((Map<String, ?>) object).forEach((k, v) -> map.put(k, objToMap(v, excludedModifiers)));
+            return map;
+        }
+        if (object instanceof ConfigurationSection) {
+            map.putAll(objToMap(((ConfigurationSection) object).getValues(false), excludedModifiers));
+            return map;
+        }
         for (Field field : Ref.getDeclaredFields(object.getClass(), excludedModifiers, false)) {
             try {
                 if (!field.isAccessible()) field.setAccessible(true);
                 Object obj = field.get(object);
                 if (obj instanceof Property) obj = ((Property) obj).get();
+                if (obj instanceof ConfigurationSection)
+                    obj = objToMap(((ConfigurationSection) obj).getValues(false), excludedModifiers);
                 map.put(Ref.getSerializedName(field), obj);
             } catch (IllegalAccessException ignored) {
             }

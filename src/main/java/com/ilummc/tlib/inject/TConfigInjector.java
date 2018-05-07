@@ -1,6 +1,8 @@
 package com.ilummc.tlib.inject;
 
 import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ilummc.tlib.annotations.Config;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.fileutils.ConfigUtils;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.Map;
 
 public class TConfigInjector {
@@ -55,7 +58,8 @@ public class TConfigInjector {
             File file = new File(plugin.getDataFolder(), config.name());
             if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
             else saveConfig(plugin, clazz.newInstance());
-            Object obj = unserialize(plugin, clazz);
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+            Object obj = gson.fromJson(gson.toJson(new Yaml().load(Files.toString(file, Charset.forName(config.charset())))), clazz);
             if (!config.readOnly()) saveConfig(plugin, obj);
             return obj;
         } catch (NullPointerException e) {
@@ -106,7 +110,7 @@ public class TConfigInjector {
         try {
             Config config = object.getClass().getAnnotation(Config.class);
             Validate.notNull(config);
-            return ConfigUtils.objToConf(object).getValues(false);
+            return ConfigUtils.objToMap(ConfigUtils.objToConf(object).getValues(false), config.excludeModifiers());
         } catch (NullPointerException e) {
             TLocale.Logger.warn("CONFIG.SAVE-FAIL-NO-ANNOTATION", plugin.toString(), object.getClass().getSimpleName());
         } catch (Exception e) {
@@ -118,16 +122,12 @@ public class TConfigInjector {
     public static void saveConfig(Plugin plugin, Object object) throws IOException, NullPointerException {
         Config config = object.getClass().getAnnotation(Config.class);
         Validate.notNull(config);
-        Object obj = serialize(plugin, object);
-        Validate.notNull(obj);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        Map map = gson.fromJson(gson.toJson(object), HashMap.class);
+        YamlConfiguration configuration = (YamlConfiguration) ConfigUtils.mapToConf(map);
         File target = new File(plugin.getDataFolder(), config.name());
         if (!target.exists()) target.createNewFile();
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setAllowUnicode(false);
-        Yaml yaml = new Yaml(options);
-        String str = yaml.dump(obj);
-        byte[] arr = str.getBytes(config.charset());
+        byte[] arr = configuration.saveToString().getBytes(config.charset());
         Files.write(arr, target);
     }
 
