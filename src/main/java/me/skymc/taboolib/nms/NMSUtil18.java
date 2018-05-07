@@ -24,16 +24,16 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 @Deprecated
 public class NMSUtil18 {
-	
+
     protected static boolean failed = false;
 
     protected static String versionPrefix = "";
 
     protected final static int NBT_TYPE_COMPOUND = 10;
-    protected final static int NBT_TYPE_INT_ARRAY= 11;
+    protected final static int NBT_TYPE_INT_ARRAY = 11;
     protected final static int NBT_TYPE_DOUBLE = 6;
     protected final static int NBT_TYPE_FLOAT = 5;
     protected final static int NBT_TYPE_STRING = 8;
@@ -225,8 +225,7 @@ public class NMSUtil18 {
     protected static Field class_EntityArrow_damageField;
     protected static Field class_CraftWorld_environmentField;
 
-    static
-    {
+    static {
         // Find classes Bukkit hides from us. :-D
         // Much thanks to @DPOHVAR for sharing the PowerNBT code that powers the reflection approach.
         String className = Bukkit.getServer().getClass().getName();
@@ -254,7 +253,7 @@ public class NMSUtil18 {
             class_Packet = fixBukkitClass("net.minecraft.server.Packet");
             class_World = fixBukkitClass("net.minecraft.server.World");
             class_WorldServer = fixBukkitClass("net.minecraft.server.WorldServer");
-            class_EnumSkyBlock = (Class<Enum>)fixBukkitClass("net.minecraft.server.EnumSkyBlock");
+            class_EnumSkyBlock = (Class<Enum>) fixBukkitClass("net.minecraft.server.EnumSkyBlock");
             class_EntityPainting = fixBukkitClass("net.minecraft.server.EntityPainting");
             class_EntityCreature = fixBukkitClass("net.minecraft.server.EntityCreature");
             class_EntityItemFrame = fixBukkitClass("net.minecraft.server.EntityItemFrame");
@@ -442,7 +441,7 @@ public class NMSUtil18 {
             class_EntityDamageSource_setThornsMethod = class_EntityDamageSource.getMethod("v");
 
             class_BlockPosition = fixBukkitClass("net.minecraft.server.BlockPosition");
-            class_EnumDirection = (Class<Enum>)fixBukkitClass("net.minecraft.server.EnumDirection");
+            class_EnumDirection = (Class<Enum>) fixBukkitClass("net.minecraft.server.EnumDirection");
             class_BlockPositionConstructor = class_BlockPosition.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE);
             class_EntityPaintingConstructor = class_EntityPainting.getConstructor(class_World, class_BlockPosition, class_EnumDirection);
             class_EntityItemFrameConstructor = class_EntityItemFrame.getConstructor(class_World, class_BlockPosition, class_EnumDirection);
@@ -476,12 +475,10 @@ public class NMSUtil18 {
             } catch (Throwable ex) {
                 class_EntityArrow_lifeField = null;
             }
-            if (class_EntityArrow_lifeField != null)
-            {
+            if (class_EntityArrow_lifeField != null) {
                 class_EntityArrow_lifeField.setAccessible(true);
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             failed = true;
             ex.printStackTrace();
         }
@@ -580,7 +577,7 @@ public class NMSUtil18 {
         Object chunkHandle = getHandle(chunk);
         boolean done = false;
         try {
-            done = (Boolean)class_Chunk_doneField.get(chunkHandle);
+            done = (Boolean) class_Chunk_doneField.get(chunkHandle);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -607,11 +604,11 @@ public class NMSUtil18 {
         return handle;
     }
 
-    protected static void sendPacket(Server server, Location source, Collection<? extends Player> players, Object packet) throws Exception  {
+    protected static void sendPacket(Server server, Location source, Collection<? extends Player> players, Object packet) throws Exception {
         players = ((players != null && players.size() > 0) ? players : server.getOnlinePlayers());
 
         int viewDistance = Bukkit.getServer().getViewDistance() * 16;
-        int viewDistanceSquared =  viewDistance * viewDistance;
+        int viewDistanceSquared = viewDistance * viewDistance;
         World sourceWorld = source.getWorld();
         for (Player player : players) {
             Location location = player.getLocation();
@@ -629,37 +626,35 @@ public class NMSUtil18 {
         Method sendPacketMethod = connection.getClass().getMethod("sendPacket", class_Packet);
         sendPacketMethod.invoke(connection, packet);
     }
-    
-    public static int getFacing(BlockFace direction)
-    {
+
+    public static int getFacing(BlockFace direction) {
         int dir;
         switch (direction) {
-        case SOUTH:
-        default:
-            dir = 0;
-            break;
-        case WEST:
-            dir = 1;
-            break;
-        case NORTH:
-            dir = 2;
-            break;
-        case EAST:
-            dir = 3;
-            break;
+            case SOUTH:
+            default:
+                dir = 0;
+                break;
+            case WEST:
+                dir = 1;
+                break;
+            case NORTH:
+                dir = 2;
+                break;
+            case EAST:
+                dir = 3;
+                break;
         }
-        
+
         return dir;
     }
 
-    public static org.bukkit.entity.Entity getBukkitEntity(Object entity)
-    {
+    public static org.bukkit.entity.Entity getBukkitEntity(Object entity) {
         if (entity == null) return null;
         try {
             Method getMethod = entity.getClass().getMethod("getBukkitEntity");
             Object bukkitEntity = getMethod.invoke(entity);
             if (!(bukkitEntity instanceof org.bukkit.entity.Entity)) return null;
-            return (org.bukkit.entity.Entity)bukkitEntity;
+            return (org.bukkit.entity.Entity) bukkitEntity;
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -692,7 +687,7 @@ public class NMSUtil18 {
 
         try {
             Object craft = getNMSCopy(stack);
-            stack = (ItemStack)class_CraftItemStack_mirrorMethod.invoke(null, craft);
+            stack = (ItemStack) class_CraftItemStack_mirrorMethod.invoke(null, craft);
         } catch (Throwable ex) {
             stack = null;
         }
@@ -751,7 +746,7 @@ public class NMSUtil18 {
         if (nbtBase == null) return false;
         Boolean result = false;
         try {
-            result = (Boolean)class_NBTTagCompound_hasKeyMethod.invoke(nbtBase, tag);
+            result = (Boolean) class_NBTTagCompound_hasKeyMethod.invoke(nbtBase, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -808,7 +803,7 @@ public class NMSUtil18 {
         if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
         String meta = null;
         try {
-            meta = (String)class_NBTTagCompound_getStringMethod.invoke(node, tag);
+            meta = (String) class_NBTTagCompound_getStringMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -819,7 +814,7 @@ public class NMSUtil18 {
         if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
         Byte meta = null;
         try {
-            meta = (Byte)class_NBTTagCompound_getByteMethod.invoke(node, tag);
+            meta = (Byte) class_NBTTagCompound_getByteMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -830,7 +825,7 @@ public class NMSUtil18 {
         if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
         Integer meta = null;
         try {
-            meta = (Integer)class_NBTTagCompound_getIntMethod.invoke(node, tag);
+            meta = (Integer) class_NBTTagCompound_getIntMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -838,7 +833,7 @@ public class NMSUtil18 {
     }
 
     public static void setMeta(Object node, String tag, String value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) return;
         try {
             if (value == null || value.length() == 0) {
                 class_NBTTagCompound_removeMethod.invoke(node, tag);
@@ -851,7 +846,7 @@ public class NMSUtil18 {
     }
 
     public static void removeMeta(Object node, String tag) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) return;
         try {
             class_NBTTagCompound_removeMethod.invoke(node, tag);
         } catch (Throwable ex) {
@@ -881,7 +876,7 @@ public class NMSUtil18 {
             if (craft == null) return null;
             Object tagObject = getTag(craft);
             if (tagObject == null) return null;
-            meta = (String)class_NBTTagCompound_getStringMethod.invoke(tagObject, tag);
+            meta = (String) class_NBTTagCompound_getStringMethod.invoke(tagObject, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1000,7 +995,7 @@ public class NMSUtil18 {
 
             Object explosion = class_World_explodeMethod.invoke(worldHandle, entityHandle, x, y, z, power, setFire, breakBlocks);
             Field cancelledField = explosion.getClass().getDeclaredField("wasCanceled");
-            result = (Boolean)cancelledField.get(explosion);
+            result = (Boolean) cancelledField.get(explosion);
         } catch (Throwable ex) {
             ex.printStackTrace();
             result = false;
@@ -1087,7 +1082,7 @@ public class NMSUtil18 {
         ItemStack item = null;
         try {
             Object nmsStack = class_ItemStack_createStackMethod.invoke(null, itemTag);
-            item = (ItemStack)class_CraftItemStack_mirrorMethod.invoke(null, nmsStack);
+            item = (ItemStack) class_CraftItemStack_mirrorMethod.invoke(null, nmsStack);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1097,7 +1092,7 @@ public class NMSUtil18 {
     public static ItemStack[] getItems(Object rootTag, String tagName) {
         try {
             Object itemList = class_NBTTagCompound_getListMethod.invoke(rootTag, tagName, NBT_TYPE_COMPOUND);
-            Integer size = (Integer)class_NBTTagList_sizeMethod.invoke(itemList);
+            Integer size = (Integer) class_NBTTagList_sizeMethod.invoke(itemList);
             ItemStack[] items = new ItemStack[size];
             for (int i = 0; i < size; i++) {
                 try {
@@ -1154,7 +1149,7 @@ public class NMSUtil18 {
                 class_TileEntity_saveMethod.invoke(tileEntity, entityData);
                 Object itemList = class_NBTTagCompound_getListMethod.invoke(entityData, "Items", NBT_TYPE_COMPOUND);
                 if (itemList != null) {
-                    List items = (List)class_NBTTagList_list.get(itemList);
+                    List items = (List) class_NBTTagList_list.get(itemList);
                     items.clear();
                     class_TileEntity_loadMethod.invoke(tileEntity, entityData);
                     class_TileEntity_updateMethod.invoke(tileEntity);
@@ -1188,9 +1183,9 @@ public class NMSUtil18 {
     public static Vector getPosition(Object entityData, String tag) {
         try {
             Object posList = class_NBTTagCompound_getListMethod.invoke(entityData, tag, NBT_TYPE_DOUBLE);
-            Double x = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 0);
-            Double y = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 1);
-            Double z = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 2);
+            Double x = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 0);
+            Double y = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 1);
+            Double z = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 2);
             if (x != null && y != null && z != null) {
                 return new Vector(x, y, z);
             }
@@ -1203,7 +1198,7 @@ public class NMSUtil18 {
     public static Entity getEntity(World world, UUID uuid) {
         try {
             Object worldHandle = getHandle(world);
-            final Map<UUID, Entity> entityMap = (Map<UUID, Entity>)class_WorldServer_entitiesByUUIDField.get(worldHandle);
+            final Map<UUID, Entity> entityMap = (Map<UUID, Entity>) class_WorldServer_entitiesByUUIDField.get(worldHandle);
             if (entityMap != null) {
                 Object nmsEntity = entityMap.get(uuid);
                 if (nmsEntity != null) {

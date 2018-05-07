@@ -94,11 +94,6 @@
             <version>6.1.1</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
-        </dependency>
-        <dependency>
             <groupId>bukkit</groupId>
             <artifactId>bukkit1_12</artifactId>
             <version>1</version>

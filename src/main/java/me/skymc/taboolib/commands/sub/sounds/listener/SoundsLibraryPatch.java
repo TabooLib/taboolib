@@ -1,8 +1,11 @@
 package me.skymc.taboolib.commands.sub.sounds.listener;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
+import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.resources.type.TLocaleJson;
+import me.skymc.taboolib.inventory.InventoryUtil;
+import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.jsonformatter.JSONFormatter;
+import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,95 +18,105 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import me.skymc.taboolib.inventory.InventoryUtil;
-import me.skymc.taboolib.inventory.ItemUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author sky
  * @since 2018年2月4日 下午4:35:00
  */
 public class SoundsLibraryPatch implements Listener {
-	
-	/**
-	 * 打开物品库界面
-	 *
-	 * @param player
-	 * @param page
-	 */
-	public static void openInventory(Player player, int page) {
-		SoundLibraryHolder holder = new SoundLibraryHolder(page);
-		Inventory inventory = Bukkit.createInventory(holder, 54, "音效库 " + page);
 
-		int loop = 0;
-		for (Sound sound : Arrays.asList(Sound.values())) {
-			if (loop >= (page - 1) * 28) {
-				if (loop < page * 28) {
-					int slot = InventoryUtil.SLOT_OF_CENTENTS.get(loop - ((page - 1) * 28));
-					ItemStack item = new ItemStack(Material.MAP);
-					{
-						ItemMeta meta = item.getItemMeta();
-						meta.setDisplayName("§f" + sound.name());
-						meta.setLore(Arrays.asList("", "§f左键: §71 音调", "§f左键: §72 音调"));
-						item.setItemMeta(meta);
-						inventory.setItem(slot, item);
-					}
-					holder.SOUNDS_DATA.put(slot, sound);
-				} else {
-					break;
-				}
-			}
-			loop++;
-		}
+    public static void openInventory(Player player, int page, String search) {
+        if (page < 1) {
+            page = 1;
+        }
 
-		if (page > 1) {
-			inventory.setItem(47, ItemUtils.setName(new ItemStack(Material.ARROW), "§f上一页"));
-		}
-		if (((int) Math.ceil(Sound.values().length / 28D)) > page) {
-			inventory.setItem(51, ItemUtils.setName(new ItemStack(Material.ARROW), "§f下一页"));
-		}
-		player.openInventory(inventory);
-	}
+        SoundLibraryHolder holder = new SoundLibraryHolder(page, search);
+        Inventory inventory = Bukkit.createInventory(holder, 54, TLocale.asString("COMMANDS.TABOOLIB.SOUNDS.MENU.TITLE", String.valueOf(page)));
+        List<Sound> soundFilter = Arrays.stream(Sound.values()).filter(sound -> search == null || sound.name().contains(search.toUpperCase())).collect(Collectors.toList());
 
-	@EventHandler
-	public void inventoryClick(InventoryClickEvent e) {
-		if (e.getInventory().getHolder() instanceof SoundLibraryHolder) {
-			e.setCancelled(true);
+        int loop = 0;
+        for (Sound sound : soundFilter) {
+            if (loop >= (page - 1) * 28) {
+                if (loop < page * 28) {
+                    int slot = InventoryUtil.SLOT_OF_CENTENTS.get(loop - ((page - 1) * 28));
+                    inventory.setItem(slot, getSoundItem(sound.name()));
+                    holder.SOUNDS_DATA.put(slot, sound);
+                } else {
+                    break;
+                }
+            }
+            loop++;
+        }
 
-			if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR) || e.getRawSlot() >= e.getInventory().getSize()) {
-				return;
-			}
+        if (page > 1) {
+            inventory.setItem(47, ItemUtils.setName(new ItemStack(Material.ARROW), TLocale.asString("COMMANDS.TABOOLIB.SOUNDS.MENU.BACK")));
+        }
+        if (((int) Math.ceil(Sound.values().length / 28D)) > page) {
+            inventory.setItem(51, ItemUtils.setName(new ItemStack(Material.ARROW), TLocale.asString("COMMANDS.TABOOLIB.SOUNDS.MENU.NEXT")));
+        }
 
-			switch (e.getRawSlot()) {
-				case 47:
-					openInventory((Player) e.getWhoClicked(), ((SoundLibraryHolder) e.getInventory().getHolder()).PAGE - 1);
-					break;
-				case 51:
-					openInventory((Player) e.getWhoClicked(), ((SoundLibraryHolder) e.getInventory().getHolder()).PAGE + 1);
-					break;
-				default:
-					Sound sound = ((SoundLibraryHolder) e.getInventory().getHolder()).SOUNDS_DATA.get(e.getRawSlot());
-					if (e.getClick().isLeftClick()) {
-						((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 1f);
-					} else {
-						((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 2f);
-					}
-					break;
-			}
-		}
-	}
-	
-	public static class SoundLibraryHolder implements InventoryHolder {
+        if (!(player.getOpenInventory().getTopInventory().getHolder() instanceof SoundLibraryHolder)) {
+            TLocale.sendTo(player, "COMMANDS.TABOOLIB.SOUNDS.RESULT.SEARCH", (search == null ? "*" : search), String.valueOf(soundFilter.size()));
+        }
+        player.openInventory(inventory);
+    }
 
-		public final int PAGE;
-		public final HashMap<Integer, Sound> SOUNDS_DATA = new HashMap<>();
-			
-		public SoundLibraryHolder(int page) {
-			this.PAGE = page;
-		}
-			
-		@Override
-		public Inventory getInventory() {
-			return null;
-		}
-	}
+    @EventHandler
+    public void inventoryClick(InventoryClickEvent e) {
+        if (e.getInventory().getHolder() instanceof SoundLibraryHolder) {
+            e.setCancelled(true);
+
+            if (e.getCurrentItem() == null || e.getCurrentItem().getType().equals(Material.AIR) || e.getRawSlot() >= e.getInventory().getSize()) {
+                return;
+            }
+
+            SoundLibraryHolder soundLibraryHolder = ((SoundLibraryHolder) e.getInventory().getHolder());
+            int i = e.getRawSlot();
+            if (i == 47) {
+                openInventory((Player) e.getWhoClicked(), soundLibraryHolder.PAGE - 1, soundLibraryHolder.SEARCH);
+            } else if (i == 51) {
+                openInventory((Player) e.getWhoClicked(), soundLibraryHolder.PAGE + 1, soundLibraryHolder.SEARCH);
+            } else {
+                Sound sound = soundLibraryHolder.SOUNDS_DATA.get(e.getRawSlot());
+                if (e.getClick().isLeftClick()) {
+                    ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 1f);
+                } else if (e.getClick().isRightClick()) {
+                    ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 2f);
+                } else if (e.getClick().isCreativeAction()) {
+                    TLocale.sendTo(e.getWhoClicked(), "COMMANDS.TABOOLIB.SOUNDS.RESULT.COPY", sound.name());
+                }
+            }
+        }
+    }
+
+    private static ItemStack getSoundItem(String sound) {
+        ItemStack item = new ItemStack(Material.MAP);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§f§n" + sound);
+        meta.setLore(TLocale.asStringList("COMMANDS.TABOOLIB.SOUNDS.MENU.LORE"));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    public static class SoundLibraryHolder implements InventoryHolder {
+
+        public final int PAGE;
+        public final String SEARCH;
+        public final HashMap<Integer, Sound> SOUNDS_DATA = new HashMap<>();
+
+        public SoundLibraryHolder(int page, String search) {
+            this.PAGE = page;
+            this.SEARCH = search;
+        }
+
+        @Override
+        public Inventory getInventory() {
+            return null;
+        }
+    }
 }

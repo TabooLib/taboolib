@@ -54,7 +54,7 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
                     (int) map.getOrDefault("stay", 20),
                     (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false)));
         } catch (Exception e) {
-            title = new TLocaleTitle("§4Load failed!", "§c" + e.getMessage(), 10, 20, 10, false);
+            title = new TLocaleTitle("Empty Title message.", e.getMessage(), 10, 20, 10, false);
         }
         return title;
     }

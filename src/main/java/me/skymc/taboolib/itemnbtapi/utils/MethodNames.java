@@ -11,7 +11,7 @@ public class MethodNames {
     public static String getEntityNbtSetterMethodName() {
         return "a";
     }
-    
+
     public static String getTileDataMethodName() {
         if (TabooLib.getVerint() <= 10800) {
             return "b";

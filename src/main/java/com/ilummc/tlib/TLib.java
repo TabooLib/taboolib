@@ -12,7 +12,6 @@ import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.IO;
-import lombok.Getter;
 import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -38,23 +37,12 @@ import java.nio.charset.Charset;
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.h2database:h2:1.4.197")
 public class TLib {
 
-    @Getter
     private static TLib tLib;
-
-    @Getter
+    private static YamlConfiguration internalLanguage;
     private TLogger logger = new TLogger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}", Main.getInst(), TLogger.FINE);
-
-    @Getter
-    private TLibConfig config = new TLibConfig();
-
-    @Getter
+    private TLibConfig config;
     private TConfigWatcher configWatcher = new TConfigWatcher();
-
-    @Getter
     private File libsFolder;
-
-    @Getter
-    private YamlConfiguration internalLang;
 
     private TLib() {
         libsFolder = new File(Main.getInst().getDataFolder(), "/libs");
@@ -62,11 +50,19 @@ public class TLib {
             libsFolder.mkdirs();
         }
         try {
-            String yamlText = new String(IO.readFully(TLib.class.getResourceAsStream("/internalLang.yml")), Charset.forName("utf-8"));
-            internalLang = new YamlConfiguration();
-            internalLang.loadFromString(yamlText);
+            String yamlText = new String(IO.readFully(TLib.class.getResourceAsStream("/lang/internal.yml")), Charset.forName("utf-8"));
+            internalLanguage = new YamlConfiguration();
+            internalLanguage.loadFromString(yamlText);
         } catch (IOException | InvalidConfigurationException ignored) {
         }
+    }
+
+    public static TLib getTLib() {
+        return tLib;
+    }
+
+    public static YamlConfiguration getInternalLanguage() {
+        return internalLanguage;
     }
 
     public static void init() {
@@ -105,5 +101,21 @@ public class TLib {
         } else {
             TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
         }
+    }
+
+    public TLogger getLogger() {
+        return logger;
+    }
+
+    public TLibConfig getConfig() {
+        return config;
+    }
+
+    public TConfigWatcher getConfigWatcher() {
+        return configWatcher;
+    }
+
+    public File getLibsFolder() {
+        return libsFolder;
     }
 }

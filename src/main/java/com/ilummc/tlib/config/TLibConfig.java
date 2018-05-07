@@ -1,16 +1,12 @@
 package com.ilummc.tlib.config;
 
-import com.ilummc.tlib.annotations.Config;
-import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.ilummc.tlib.annotations.TConfig;
 
 /**
  * @author sky
  * @since 2018-04-22 14:31:11
  */
-@Config(name = "tlib.yml", listenChanges = true, readOnly = false)
+@TConfig(name = "tlib.yml", listenChanges = true)
 public class TLibConfig {
 
     @Getter

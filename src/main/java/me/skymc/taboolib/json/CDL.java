@@ -10,52 +10,49 @@ public class CDL {
             c = x.next();
         } while (c == ' ' || c == '\t');
         switch (c) {
-        case 0:
-            return null;
-        case '"':
-        case '\'':
-            q = c;
-            sb = new StringBuffer();
-            for (;;) {
-                c = x.next();
-                if (c == q) {
-                    break;
+            case 0:
+                return null;
+            case '"':
+            case '\'':
+                q = c;
+                sb = new StringBuffer();
+                for (; ; ) {
+                    c = x.next();
+                    if (c == q) {
+                        break;
+                    }
+                    if (c == 0 || c == '\n' || c == '\r') {
+                        throw x.syntaxError("Missing close quote '" + q + "'.");
+                    }
+                    sb.append(c);
                 }
-                if (c == 0 || c == '\n' || c == '\r') {
-                    throw x.syntaxError("Missing close quote '" + q + "'.");
-                }
-                sb.append(c);
-            }
-            return sb.toString();
-        case ',':
-            x.back();
-            return "";
-        default:
-            x.back();
-            return x.nextTo(',');
+                return sb.toString();
+            case ',':
+                x.back();
+                return "";
+            default:
+                x.back();
+                return x.nextTo(',');
         }
     }
 
     public static JSONArray rowToJSONArray(JSONTokener x) throws JSONException {
         JSONArray ja = new JSONArray();
-        for (;;) {
+        for (; ; ) {
             String value = getValue(x);
             char c = x.next();
-            if (value == null || 
+            if (value == null ||
                     (ja.length() == 0 && value.length() == 0 && c != ',')) {
                 return null;
             }
             ja.put(value);
-            for (;;) {                
-                if (c == ',') {
-                    break;
-                }
+            while (c != ',') {
                 if (c != ' ') {
                     if (c == '\n' || c == '\r' || c == 0) {
                         return ja;
                     }
                     throw x.syntaxError("Bad character '" + c + "' (" +
-                            (int)c + ").");
+                            (int) c + ").");
                 }
                 c = x.next();
             }
@@ -65,7 +62,7 @@ public class CDL {
     public static JSONObject rowToJSONObject(JSONArray names, JSONTokener x)
             throws JSONException {
         JSONArray ja = rowToJSONArray(x);
-        return ja != null ? ja.toJSONObject(names) :  null;
+        return ja != null ? ja.toJSONObject(names) : null;
     }
 
     public static String rowToString(JSONArray ja) {
@@ -77,8 +74,8 @@ public class CDL {
             Object object = ja.opt(i);
             if (object != null) {
                 String string = object.toString();
-                if (string.length() > 0 && (string.indexOf(',') >= 0 || 
-                        string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0 || 
+                if (string.length() > 0 && (string.indexOf(',') >= 0 ||
+                        string.indexOf('\n') >= 0 || string.indexOf('\r') >= 0 ||
                         string.indexOf(0) >= 0 || string.charAt(0) == '"')) {
                     sb.append('"');
                     int length = string.length();
@@ -117,7 +114,7 @@ public class CDL {
             return null;
         }
         JSONArray ja = new JSONArray();
-        for (;;) {
+        for (; ; ) {
             JSONObject jo = rowToJSONObject(names, x);
             if (jo == null) {
                 break;

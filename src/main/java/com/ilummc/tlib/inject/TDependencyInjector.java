@@ -3,10 +3,10 @@ package com.ilummc.tlib.inject;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.*;
 import com.ilummc.tlib.dependency.TDependency;
-import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.Ref;
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -17,17 +17,17 @@ import java.lang.reflect.Field;
 public class TDependencyInjector {
 
     public static void inject(Plugin plugin, Object o) {
+        TLocaleLoader.load(plugin, true);
         injectDependencies(plugin, o);
         injectLogger(plugin, o);
         injectConfig(plugin, o);
         injectPluginInstance(plugin, o);
-        TLocaleLoader.load(plugin, true);
-        if (o != TLib.getTLib())
-            injectDatabase(plugin, o);
     }
 
     static void injectOnEnable(Plugin plugin) {
-        inject(plugin, plugin);
+        if (!plugin.equals(Main.getInst())) {
+            inject(plugin, plugin);
+        }
     }
 
     static void onDisable(Plugin plugin) {
@@ -43,8 +43,8 @@ public class TDependencyInjector {
 
     private static void ejectConfig(Plugin plugin, Object o) {
         for (Field field : Ref.getDeclaredFields(o.getClass())) {
-            Config config;
-            if ((config = field.getType().getAnnotation(Config.class)) != null && config.saveOnExit()) {
+            TConfig config;
+            if ((config = field.getType().getAnnotation(TConfig.class)) != null && config.saveOnExit()) {
                 try {
                     field.setAccessible(true);
                     TConfigInjector.saveConfig(plugin, field.get(o));
@@ -57,15 +57,11 @@ public class TDependencyInjector {
         }
     }
 
-    private static void injectDatabase(Plugin plugin, Object o) {
-
-    }
-
     private static void injectConfig(Plugin plugin, Object o) {
         for (Field field : Ref.getDeclaredFields(o.getClass())) {
             try {
-                Config config;
-                if ((config = field.getType().getAnnotation(Config.class)) != null) {
+                TConfig config;
+                if ((config = field.getType().getAnnotation(TConfig.class)) != null) {
                     field.setAccessible(true);
                     Object obj = TConfigInjector.loadConfig(plugin, field.getType());
                     if (obj != null) {
@@ -98,8 +94,8 @@ public class TDependencyInjector {
             try {
                 Logger logger;
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
-                    field.getType().asSubclass(TLogger.class);
-                    TLogger tLogger = new TLogger(logger.value(), plugin, logger.level());
+                    field.getType().asSubclass(com.ilummc.tlib.logger.TLogger.class);
+                    com.ilummc.tlib.logger.TLogger tLogger = new com.ilummc.tlib.logger.TLogger(logger.value(), plugin, logger.level());
                     if (!field.isAccessible())
                         field.setAccessible(true);
                     field.set(o, tLogger);

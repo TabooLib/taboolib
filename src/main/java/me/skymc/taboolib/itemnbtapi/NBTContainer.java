@@ -1,6 +1,6 @@
 package me.skymc.taboolib.itemnbtapi;
 
-public class NBTContainer extends NBTCompound{
+public class NBTContainer extends NBTCompound {
 
     private Object nbt;
 
@@ -8,29 +8,29 @@ public class NBTContainer extends NBTCompound{
         super(null, null);
         nbt = NBTReflectionUtil.getNewNBTTag();
     }
-    
-    protected NBTContainer(Object nbt){
+
+    protected NBTContainer(Object nbt) {
         super(null, null);
         this.nbt = nbt;
     }
 
     public NBTContainer(String nbtString) throws IllegalArgumentException {
         super(null, null);
-        try{
+        try {
             nbt = NBTReflectionUtil.parseNBT(nbtString);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             throw new IllegalArgumentException("Malformed Json: " + ex.getMessage());
         }
     }
 
     @Override
-	protected Object getCompound() {
+    protected Object getCompound() {
         return nbt;
     }
 
     @Override
-	protected void setCompound(Object tag) {
+    protected void setCompound(Object tag) {
         nbt = tag;
     }
 

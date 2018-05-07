@@ -30,8 +30,8 @@ public class _1710ItemUtils implements IDabItemUtils{
 	public boolean getBanner(){
 		try{
 			Material m = Material.valueOf("BANNER");
-			if(m != null){ return true; }
-        } catch (Exception ignored) {
+			return true;
+		} catch (Exception ignored) {
 		}
 		return false;
 	}
