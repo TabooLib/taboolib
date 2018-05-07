@@ -70,6 +70,10 @@ public class Ref {
         return Optional.ofNullable(CallerClass.impl.getCallerClass(depth + 1));
     }
 
+    public static Class<?> getCallerClassNotOptional(int depth) {
+        return CallerClass.impl.getCallerClass(depth);
+    }
+
     public static String getSerializedName(Field field) {
         return field.isAnnotationPresent(SerializedName.class) ? field.getAnnotation(SerializedName.class).value() : field.getName();
     }

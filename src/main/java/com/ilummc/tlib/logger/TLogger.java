@@ -1,8 +1,6 @@
 package com.ilummc.tlib.logger;
 
 import com.ilummc.tlib.util.Strings;
-import lombok.Getter;
-import lombok.Setter;
 import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,15 +10,30 @@ public class TLogger {
 
     public static final int VERBOSE = 0, FINEST = 1, FINE = 2, INFO = 3, WARN = 4, ERROR = 5, FATAL = 6;
 
-    @Getter
     private static TLogger globalLogger = new TLogger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}", Main.getInst(), TLogger.FINE);
-    @Getter
     private final String pattern;
-    @Getter
     private Plugin plugin;
-    @Getter
-    @Setter
     private int level;
+
+    public static TLogger getGlobalLogger() {
+        return globalLogger;
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public TLogger(String pattern, Plugin plugin, int level) {
         this.pattern = pattern;

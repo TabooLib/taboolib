@@ -1,6 +1,7 @@
 package me.skymc.taboolib.itemnbtapi;
 
 public enum NBTType {
+
     NBTTagEnd(0),
     NBTTagByte(1),
     NBTTagShort(2),

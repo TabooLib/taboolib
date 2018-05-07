@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 public class JSONWriter {
-	
+
     private static final int maxdepth = 200;
 
     private boolean comma;
@@ -60,8 +60,8 @@ public class JSONWriter {
     private JSONWriter end(char mode, char c) throws JSONException {
         if (this.mode != mode) {
             throw new JSONException(mode == 'a'
-                ? "Misplaced endArray."
-                : "Misplaced endObject.");
+                    ? "Misplaced endArray."
+                    : "Misplaced endObject.");
         }
         this.pop(mode);
         try {
@@ -127,10 +127,10 @@ public class JSONWriter {
         }
         this.top -= 1;
         this.mode = this.top == 0
-            ? 'd'
-            : this.stack[this.top - 1] == null
-            ? 'a'
-            : 'k';
+                ? 'd'
+                : this.stack[this.top - 1] == null
+                ? 'a'
+                : 'k';
     }
 
     private void push(JSONObject jo) throws JSONException {

@@ -8,7 +8,9 @@ import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocaleSendable;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.jsonformatter.JSONFormatter;
 import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -37,25 +39,17 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
     }
 
     public static TLocaleJson valueOf(Map<String, Object> map) {
-        Object textObj = map.getOrDefault("text", "Empty Node");
-        List<String> textList = textObj instanceof String ? Lists.newArrayList(ChatColor.translateAlternateColorCodes('&', (String) textObj)) :
-                (textObj instanceof List && !((List) textObj).isEmpty()) ?
-                        ((List<?>) textObj).stream().map(Object::toString)
-                                .map(s -> ChatColor.translateAlternateColorCodes('&', s))
-                                .collect(Collectors.toList()) : Lists.newArrayList(String.valueOf(textObj));
         boolean papi = (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
+        List<String> textList = getTextList(map.getOrDefault("text", "Empty Node"));
         Object argsObj = map.get("args");
         if (argsObj instanceof Map) {
             Map<String, Object> section = new HashMap<>(((Map<?, ?>) argsObj).size());
             ((Map<?, ?>) argsObj).forEach((k, v) -> section.put(String.valueOf(k), v));
             List<BaseComponent[]> collect = textList.stream().map(s -> {
-                String[] template = pattern.split(s);
                 int index = 0;
+                String[] template = pattern.split(s);
                 Matcher matcher = pattern.matcher(s);
-                List<BaseComponent> builder;
-                if (template.length > index) {
-                    builder = new ArrayList<>(Arrays.asList(TextComponent.fromLegacyText(template[index++])));
-                } else builder = new ArrayList<>();
+                List<BaseComponent> builder = template.length > index ? new ArrayList<>(Arrays.asList(TextComponent.fromLegacyText(template[index++]))) : new ArrayList<>();
                 while (matcher.find()) {
                     String replace = matcher.group();
                     if (replace.length() <= 2) continue;
@@ -64,35 +58,22 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                     String text = split.length > 1 ? split[0] : "";
                     String node = split.length > 1 ? split[1] : split[0];
                     if (section.containsKey(node)) {
-                        @SuppressWarnings("unchecked")
                         Map<String, Object> arg = (Map<String, Object>) section.get(node);
                         text = ChatColor.translateAlternateColorCodes('&', String.valueOf(arg.getOrDefault("text", text)));
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
                         arg.forEach((key, value) -> {
-                            switch (key) {
-                                case "suggest":
-                                    for (BaseComponent baseComponent : component) {
-                                        baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value)));
-                                    }
-                                    break;
-                                case "command":
-                                    for (BaseComponent baseComponent : component) {
-                                        baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value)));
-                                    }
-                                    break;
-                                case "hover":
-                                    for (BaseComponent baseComponent : component) {
-                                        baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-                                                new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', String.valueOf(value))).create()));
-                                    }
-                                    break;
-                                default:
+                            if ("suggest".equalsIgnoreCase(key)) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value))));
+                            } else if ("command".equalsIgnoreCase(key) || "commands".equalsIgnoreCase(key)) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value))));
+                            } else if ("hover".equalsIgnoreCase(key)) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', String.valueOf(value))).create())));
                             }
                         });
                         builder.addAll(Arrays.asList(component));
                     } else {
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(text)));
-                        TLib.getTLib().getLogger().warn(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("MISSING-ARGUMENT"), node));
+                        TLib.getTLib().getLogger().warn(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("MISSING-ARGUMENT"), node));
                     }
                     if (index < template.length) {
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(template[index++])));
@@ -105,10 +86,19 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
         return new TLocaleJson(textList.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()), papi, map);
     }
 
+    private static List<String> getTextList(Object textObj) {
+        if (textObj instanceof List) {
+            return ((List<?>) textObj).stream().map(Object::toString).map(s -> ChatColor.translateAlternateColorCodes('&', s)).collect(Collectors.toList());
+        } else if (textObj instanceof String) {
+            return Lists.newArrayList(ChatColor.translateAlternateColorCodes('&', (String) textObj));
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     @Override
     public void sendTo(CommandSender sender, String... args) {
-        if (sender instanceof Player)
-            components.forEach(comp -> ((Player) sender).spigot().sendMessage(replace(comp, sender, args)));
+        components.forEach(comp -> sendRawMessage(sender, replace(comp, sender, args)));
     }
 
     @Override
@@ -119,6 +109,14 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
     @Override
     public Map<String, Object> serialize() {
         return Maps.newHashMap(map);
+    }
+
+    private void sendRawMessage(CommandSender sender, BaseComponent[] components) {
+        if (sender instanceof Player) {
+            JSONFormatter.sendRawMessage((Player) sender, ComponentSerializer.toString(components));
+        } else {
+            sender.sendMessage(TextComponent.toLegacyText(components));
+        }
     }
 
     private BaseComponent[] replace(BaseComponent[] component, CommandSender sender, String... args) {
@@ -142,8 +140,9 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
             HoverEvent hoverEvent = new HoverEvent(component.getHoverEvent().getAction(), replace(component.getHoverEvent().getValue(), sender, args));
             component.setHoverEvent(hoverEvent);
         }
-        if (component.getExtra() != null)
+        if (component.getExtra() != null) {
             component.setExtra(replace(component.getExtra(), sender, args));
+        }
         if (component instanceof TextComponent) {
             ((TextComponent) component).setText(replace(sender, ((TextComponent) component).getText(), args));
         }

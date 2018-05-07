@@ -1,7 +1,6 @@
 package me.skymc.taboolib.itemnbtapi.utils;
 
 import com.google.gson.Gson;
-
 import me.skymc.taboolib.message.MsgUtils;
 
 public class GsonWrapper {

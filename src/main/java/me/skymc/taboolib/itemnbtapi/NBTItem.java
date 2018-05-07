@@ -12,12 +12,12 @@ public class NBTItem extends NBTCompound {
     }
 
     @Override
-	protected Object getCompound() {
+    protected Object getCompound() {
         return NBTReflectionUtil.getItemRootNBTTagCompound(NBTReflectionUtil.getNMSItemStack(bukkitItem));
     }
 
     @Override
-	protected void setCompound(Object compound) {
+    protected void setCompound(Object compound) {
         bukkitItem = NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.setNBTTag(compound, NBTReflectionUtil.getNMSItemStack(bukkitItem)));
     }
 
@@ -28,12 +28,12 @@ public class NBTItem extends NBTCompound {
     protected void setItem(ItemStack item) {
         bukkitItem = item;
     }
-    
-    public static NBTContainer convertItemtoNBT(ItemStack item){
+
+    public static NBTContainer convertItemtoNBT(ItemStack item) {
         return NBTReflectionUtil.convertNMSItemtoNBTCompound(NBTReflectionUtil.getNMSItemStack(item));
     }
-    
-    public static ItemStack convertNBTtoItem(NBTCompound comp){
+
+    public static ItemStack convertNBTtoItem(NBTCompound comp) {
         return NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.convertNBTCompoundtoNMSItem(comp));
     }
 

@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
 
 public class TLocale {
 
@@ -17,23 +19,16 @@ public class TLocale {
         throw new AssertionError();
     }
 
-    private static JavaPlugin getCallerPlugin(Class<?> callerClass) {
-        try {
-            Field pluginField = callerClass.getClassLoader().getClass().getDeclaredField("plugin");
-            pluginField.setAccessible(true);
-            return (JavaPlugin) pluginField.get(callerClass.getClassLoader());
-        } catch (Exception ignored) {
-            TLib.getTLib().getLogger().error("无效的语言文件发送形式: &4" + callerClass.getName());
-        }
-        return (JavaPlugin) Main.getInst();
+    static String asString(String path, Class<?> callerClass, String... args) {
+        return TLocaleLoader.asString(getCallerPlugin(callerClass), path, args);
+    }
+
+    static List<String> asStringList(String path, Class<?> callerClass, String... args) {
+        return TLocaleLoader.asStringList(getCallerPlugin(callerClass), path, args);
     }
 
     private static void sendTo(String path, CommandSender sender, String[] args, Class<?> callerClass) {
         TLocaleLoader.sendTo(getCallerPlugin(callerClass), path, sender, args);
-    }
-
-    static String asString(String path, Class<?> callerClass, String... args) {
-        return TLocaleLoader.asString(getCallerPlugin(callerClass), path, args);
     }
 
     public static void sendToConsole(String path, String... args) {
@@ -50,16 +45,37 @@ public class TLocale {
 
     public static String asString(String path, String... args) {
         try {
-            return asString(path, Ref.getCallerClass(3).get(), args);
+            return asString(path, Ref.getCallerClassNotOptional(3), args);
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("FETCH-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLang().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return "§4<" + path + "§4>";
+        }
+    }
+
+    public static List<String> asStringList(String path, String... args) {
+        try {
+            return asStringList(path, Ref.getCallerClassNotOptional(3), args);
+        } catch (Exception e) {
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            return Collections.singletonList("§4<" + path + "§4>");
         }
     }
 
     public static void reload() {
         Ref.getCallerClass(3).ifPresent(clazz -> TLocaleLoader.load(getCallerPlugin(clazz), false));
+    }
+
+    private static JavaPlugin getCallerPlugin(Class<?> callerClass) {
+        try {
+            Field pluginField = callerClass.getClassLoader().getClass().getDeclaredField("plugin");
+            pluginField.setAccessible(true);
+            return (JavaPlugin) pluginField.get(callerClass.getClassLoader());
+        } catch (Exception ignored) {
+            TLib.getTLib().getLogger().error("无效的语言文件发送形式: &4" + callerClass.getName());
+        }
+        return (JavaPlugin) Main.getInst();
     }
 
     public static final class Logger extends TLocale {

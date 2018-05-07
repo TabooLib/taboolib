@@ -1,8 +1,6 @@
 package me.skymc.taboolib.javashell;
 
 import com.ilummc.tlib.dependency.TDependencyLoader;
-import lombok.Getter;
-import lombok.Setter;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.message.MsgUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -16,33 +14,71 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class JavaShell {
 
-    @Getter
-    @Setter
     private static String paths = "";
 
-    @Getter
-    @Setter
     private static File javaShellFolder;
 
-    @Getter
-    @Setter
     private static File scriptFolder;
 
-    @Getter
-    @Setter
     private static File cacheFolder;
 
-    @Getter
-    @Setter
     private static File libFolder;
 
-    @Getter
-    @Setter
     private static HashMap<String, Class<?>> shells = new HashMap<>();
+
+    public static String getPaths() {
+        return paths;
+    }
+
+    public static void setPaths(String paths) {
+        JavaShell.paths = paths;
+    }
+
+    public static File getJavaShellFolder() {
+        return javaShellFolder;
+    }
+
+    public static void setJavaShellFolder(File javaShellFolder) {
+        JavaShell.javaShellFolder = javaShellFolder;
+    }
+
+    public static File getScriptFolder() {
+        return scriptFolder;
+    }
+
+    public static void setScriptFolder(File scriptFolder) {
+        JavaShell.scriptFolder = scriptFolder;
+    }
+
+    public static File getCacheFolder() {
+        return cacheFolder;
+    }
+
+    public static void setCacheFolder(File cacheFolder) {
+        JavaShell.cacheFolder = cacheFolder;
+    }
+
+    public static File getLibFolder() {
+        return libFolder;
+    }
+
+    public static void setLibFolder(File libFolder) {
+        JavaShell.libFolder = libFolder;
+    }
+
+    public static HashMap<String, Class<?>> getShells() {
+        return shells;
+    }
+
+    public static void setShells(HashMap<String, Class<?>> shells) {
+        JavaShell.shells = shells;
+    }
 
     public static void javaShellSetup() {
         File dataFolder = Main.getInst().getDataFolder();
@@ -50,7 +86,6 @@ public class JavaShell {
         File serverRoot = Bukkit.getWorldContainer();
 
         File[] rootJars = serverRoot.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
-
         File[] pluginJars = pluginsFolder.listFiles((dir, name) -> name.toLowerCase().endsWith("jar"));
 
         for (File file : (File[]) ArrayUtils.addAll(rootJars, pluginJars)) {
@@ -85,27 +120,23 @@ public class JavaShell {
         }
 
         loadLibrary();
+
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 long time = System.currentTimeMillis();
-                for (File file : scriptFolder.listFiles()) {
-                    if (!file.getName().startsWith("-")) {
-                        reloadShell(file.getName());
-                    }
-                }
+                Arrays.stream(Objects.requireNonNull(scriptFolder.listFiles())).filter(file -> !file.getName().startsWith("-")).map(File::getName).forEach(JavaShell::reloadShell);
                 MsgUtils.send("载入 " + shells.size() + " 个脚本, 耗时 &f" + (System.currentTimeMillis() - time) + "ms");
             }
         }.runTask(Main.getInst());
     }
 
     public static void javaShellCancel() {
-        for (File cacheFile : cacheFolder.listFiles()) {
-            cacheFile.delete();
-        }
-        for (String name : shells.keySet()) {
-            invokeMethod(name, "onDisable");
+        try {
+            Arrays.stream(Objects.requireNonNull(cacheFolder.listFiles())).forEach(File::delete);
+            shells.keySet().forEach(name -> invokeMethod(name, "onDisable"));
+        } catch (Exception ignored) {
         }
     }
 
@@ -117,8 +148,7 @@ public class JavaShell {
                 if (disableMethod != null) {
                     disableMethod.invoke(clazz.newInstance());
                 }
-            } catch (Exception e) {
-                //
+            } catch (Exception ignored) {
             }
         }
     }
@@ -128,15 +158,10 @@ public class JavaShell {
         Class<?> clazz = shells.remove(shell);
         try {
             if (clazz.newInstance() instanceof Listener) {
-                for (RegisteredListener listener : HandlerList.getRegisteredListeners(Main.getInst())) {
-                    if (listener.getListener().getClass().getName().equals(clazz.getName())) {
-                        HandlerList.unregisterAll(listener.getListener());
-                    }
-                }
+                HandlerList.getRegisteredListeners(Main.getInst()).stream().filter(listener -> listener.getListener().getClass().getName().equals(clazz.getName())).map(RegisteredListener::getListener).forEach(HandlerList::unregisterAll);
                 MsgUtils.send("已为脚本 &f" + shell + " &7注销监听器");
             }
-        } catch (Exception e) {
-            //
+        } catch (Exception ignored) {
         }
     }
 
@@ -189,13 +214,6 @@ public class JavaShell {
     }
 
     private static void loadLibrary() {
-        for (File jar : libFolder.listFiles()) {
-            try {
-                TDependencyLoader.addToPath(Main.getInst(), jar);
-                MsgUtils.send("成功载入 &f" + jar.getName() + " &7到运行库");
-            } catch (Exception e) {
-                //
-            }
-        }
+        Arrays.stream(Objects.requireNonNull(libFolder.listFiles())).forEach(jar -> TDependencyLoader.addToPath(Main.getInst(), jar));
     }
 }
