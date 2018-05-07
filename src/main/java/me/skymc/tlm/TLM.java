@@ -1,8 +1,8 @@
 package me.skymc.tlm;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.tlm.module.TabooLibraryModule;
 import me.skymc.tlm.module.sub.ModuleCommandChanger;
@@ -54,9 +54,8 @@ public class TLM {
 
         // 载入模块
         TabooLibraryModule.getInst().loadModules();
-
         // 提示
-        MsgUtils.send("载入 &f" + TabooLibraryModule.getInst().getSize() + " &7个 &fTLM &7模块");
+        TLocale.Logger.info("TABOOLIB-MODULE.SUCCESS-LOADED", String.valueOf(TabooLibraryModule.getInst().getSize()));
     }
 
     /**
@@ -80,12 +79,7 @@ public class TLM {
      */
     public void reloadConfig() {
         config = ConfigUtils.saveDefaultConfig(Main.getInst(), "module.yml");
-        // 载入语言文件
-        try {
-            language = new Language2(config.getString("Language"), Main.getInst());
-        } catch (Exception e) {
-            MsgUtils.warn("语言文件不存在: &4" + config.getString("Language"));
-        }
+        language = new Language2(config.getString("Language"), Main.getInst());
     }
 
     /**
@@ -96,5 +90,13 @@ public class TLM {
      */
     public boolean isEnableModule(String name) {
         return config.getStringList("EnableModule").contains(name);
+    }
+
+    public void loadedFall(String moduleName, String result, String location) {
+        TLocale.Logger.error("TABOOLIB-MODULE.FALL-LOADED", moduleName, result, location);
+    }
+
+    public void runtimeFall(String moduleName, String result, String location) {
+        TLocale.Logger.error("TABOOLIB-MODULE.FALL-RUNTIME", moduleName, result, location);
     }
 }

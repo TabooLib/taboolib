@@ -4,8 +4,10 @@ import com.ilummc.tlib.TLib;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.MainCommands;
+import me.skymc.taboolib.commands.internal.InternalCommandExecutor;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
+import me.skymc.taboolib.commands.plugin.TabooLibPluginCommand;
 import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
 import me.skymc.taboolib.commands.sub.sounds.listener.SoundsLibraryPatch;
 import me.skymc.taboolib.database.GlobalDataManager;
@@ -203,6 +205,7 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("language2").setExecutor(new Language2Command());
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
         getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
+        InternalCommandExecutor.createCommandExecutor("taboolibplugin", new TabooLibPluginCommand());
 
         // 注册监听
         registerListener();

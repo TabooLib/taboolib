@@ -71,7 +71,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Class<?>	ni	= NMSUtils.getNMSClassSilent("Item");
 	
-	public Method	gn	= NMSUtils.getMethodSilent(nmis, "getName");
+	public Method	gn	= NMSUtils.getMethodSilent(nmis, "getLabel");
 	
 	@Override
 	public String getName(ItemStack is){
@@ -108,7 +108,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
-	public Method gin = NMSUtils.getMethodSilent(ni, "getName");
+	public Method gin = NMSUtils.getMethodSilent(ni, "getLabel");
 	
 	@Override
 	public String getItemName(ItemStack is){
