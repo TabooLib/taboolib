@@ -109,7 +109,7 @@ public class JSONObject {
         this.populateMap(bean);
     }
 
-    public JSONObject(Object object, String names[]) {
+    public JSONObject(Object object, String[] names) {
         this();
         Class c = object.getClass();
         for (String name : names) {
@@ -210,11 +210,11 @@ public class JSONObject {
         Object object = this.get(key);
         if (object.equals(Boolean.FALSE) ||
                 (object instanceof String &&
-                        ((String) object).equalsIgnoreCase("false"))) {
+                        "false".equalsIgnoreCase((String) object))) {
             return false;
         } else if (object.equals(Boolean.TRUE) ||
                 (object instanceof String &&
-                        ((String) object).equalsIgnoreCase("true"))) {
+                        "true".equalsIgnoreCase((String) object))) {
             return true;
         }
         throw new JSONException("JSONObject[" + quote(key) +
@@ -322,16 +322,16 @@ public class JSONObject {
 
     public static Object stringToValue(String string) {
         Double d;
-        if (string.equals("")) {
+        if ("".equals(string)) {
             return string;
         }
-        if (string.equalsIgnoreCase("true")) {
+        if ("true".equalsIgnoreCase(string)) {
             return Boolean.TRUE;
         }
-        if (string.equalsIgnoreCase("false")) {
+        if ("false".equalsIgnoreCase(string)) {
             return Boolean.FALSE;
         }
-        if (string.equalsIgnoreCase("null")) {
+        if ("null".equalsIgnoreCase(string)) {
             return JSONObject.NULL;
         }
         char b = string.charAt(0);

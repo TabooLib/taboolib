@@ -47,8 +47,8 @@ public class TLocale {
         try {
             return asString(path, Ref.getCallerClassNotOptional(3), args);
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return "§4<" + path + "§4>";
         }
     }
@@ -57,8 +57,8 @@ public class TLocale {
         try {
             return asStringList(path, Ref.getCallerClassNotOptional(3), args);
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return Collections.singletonList("§4<" + path + "§4>");
         }
     }

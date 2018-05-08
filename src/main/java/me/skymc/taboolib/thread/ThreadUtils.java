@@ -2,6 +2,9 @@ package me.skymc.taboolib.thread;
 
 import java.util.LinkedList;
 
+/**
+ * @author sky
+ */
 public class ThreadUtils {
 
     private static PoolWorker[] threads;

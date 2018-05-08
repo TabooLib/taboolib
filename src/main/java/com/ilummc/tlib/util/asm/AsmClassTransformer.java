@@ -68,11 +68,13 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
     }
 
     private String replace(String text) {
-        if (text != null)
+        if (text != null) {
             return text.replace("net/minecraft/server/" + fromVer, "net/minecraft/server/" + toVer)
                     .replace("org/bukkit/craftbukkit/" + fromVer, "org/bukkit/craftbukkit/" + toVer)
                     .replace(prevName, newClassName.replace('.', '/'));
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     private String[] replace(String[] text) {
@@ -81,7 +83,9 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
                 text[i] = replace(text[i]);
             }
             return text;
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -103,9 +107,11 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
 
         @Override
         public void visitLdcInsn(Object value) {
-            if (value instanceof String)
+            if (value instanceof String) {
                 super.visitLdcInsn(replace((String) value));
-            else super.visitLdcInsn(value);
+            } else {
+                super.visitLdcInsn(value);
+            }
         }
 
         @Override

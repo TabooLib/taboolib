@@ -32,7 +32,7 @@ public class Cookie {
         while (x.more()) {
             name = unescape(x.nextTo("=;"));
             if (x.next() != '=') {
-                if (name.equals("secure")) {
+                if ("secure".equals(name)) {
                     value = Boolean.TRUE;
                 } else {
                     throw x.syntaxError("Missing '=' in cookie parameter.");

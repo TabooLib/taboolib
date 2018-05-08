@@ -496,7 +496,7 @@ public class ItemUtils {
                             _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                             _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                             _attr.setString("Name", asAttribute(name));
-                            if (!hand.equals("all")) {
+                            if (!"all".equals(hand)) {
                                 _attr.setString("Slot", hand);
                             }
                         } catch (Exception ignored) {
@@ -535,7 +535,7 @@ public class ItemUtils {
                 _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                 _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                 _attr.setString("Name", asAttribute(name));
-                if (!hand.equals("all")) {
+                if (!"all".equals(hand)) {
                     _attr.setString("Slot", hand);
                 }
             } catch (NumberFormatException ignored) {

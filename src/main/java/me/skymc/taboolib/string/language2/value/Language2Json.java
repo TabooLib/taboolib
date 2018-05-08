@@ -100,7 +100,7 @@ public class Language2Json implements Language2Line {
                     clickEvent = new OpenUrlEvent(message.substring(KEY_URL.length()));
                 }
                 // 换行
-                else if (message.equals("[break]")) {
+                else if ("[break]".equals(message)) {
                     append(current, clickEvent, hoverEvent);
                     // 删除动作
                     clickEvent = null;

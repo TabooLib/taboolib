@@ -50,10 +50,11 @@ public interface ClickAction {
      * @return a new ClickAction
      */
     static ClickAction openUrl(String url) {
-        if (url.startsWith("http://") || url.startsWith("https://"))
+        if (url.startsWith("http://") || url.startsWith("https://")) {
             return new SimpleClickAction(ClickEvent.Action.OPEN_URL, url);
-        else
+        } else {
             throw new IllegalArgumentException("Invalid url: \"" + url + "\", it should start with http:// or https://");
+        }
     }
 
     /**

@@ -42,38 +42,45 @@ public class TLogger {
     }
 
     public void verbose(String msg) {
-        if (level <= VERBOSE)
+        if (level <= VERBOSE) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§f全部", ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void finest(String msg) {
-        if (level <= FINEST)
+        if (level <= FINEST) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§e良好", ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void fine(String msg) {
-        if (level <= FINE)
+        if (level <= FINE) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§a正常", ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void info(String msg) {
-        if (level <= INFO)
+        if (level <= INFO) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§b信息", ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void warn(String msg) {
-        if (level <= WARN)
+        if (level <= WARN) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§6警告", "§6" + ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void error(String msg) {
-        if (level <= ERROR)
+        if (level <= ERROR) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§c错误", "§c" + ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public void fatal(String msg) {
-        if (level <= FATAL)
+        if (level <= FATAL) {
             Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§4致命错误", "§4" + ChatColor.translateAlternateColorCodes('&', msg)));
+        }
     }
 
     public static TLogger getUnformatted(Plugin plugin) {

@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 /**
  * The NMS helper for all the Book-API
  */
+@SuppressWarnings({"ALL", "AliControlFlowStatementWithoutBraces"})
 public final class BookReflection {
 
     private static final String version;
@@ -66,8 +67,10 @@ public final class BookReflection {
             craftMetaBookField = craftMetaBookClass.getDeclaredField("pages");
             craftMetaBookField.setAccessible(true);
             Class<?> chatSerializer = getNmsClass("IChatBaseComponent$ChatSerializer", false);
-            if (chatSerializer == null)
+            //noinspection AliControlFlowStatementWithoutBraces
+            if (chatSerializer == null) {
                 chatSerializer = getNmsClass("ChatSerializer");
+            }
 
             chatSerializerA = chatSerializer.getDeclaredMethod("a", String.class);
 
@@ -281,12 +284,15 @@ public final class BookReflection {
         return craftItemStackAsNMSCopy.invoke(null, item);
     }
 
+    @SuppressWarnings("AliControlFlowStatementWithoutBraces")
     public static Class<?> getNmsClass(String className, boolean log) {
         try {
             return Class.forName("net.minecraft.server." + version + "." + className);
         } catch (ClassNotFoundException e) {
-            if (log)
+            //noinspection AliControlFlowStatementWithoutBraces
+            if (log) {
                 e.printStackTrace();
+            }
             return null;
         }
     }

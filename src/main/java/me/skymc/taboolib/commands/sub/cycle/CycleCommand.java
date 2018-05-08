@@ -9,13 +9,13 @@ public class CycleCommand extends SubCommand {
     public CycleCommand(CommandSender sender, String[] args) {
         super(sender, args);
         if (args.length > 1) {
-            if (args[1].equalsIgnoreCase("list")) {
+            if ("list".equalsIgnoreCase(args[1])) {
                 new CycleListCommand(sender, args);
-            } else if (args[1].equalsIgnoreCase("info")) {
+            } else if ("info".equalsIgnoreCase(args[1])) {
                 new CycleInfoCommand(sender, args);
-            } else if (args[1].equalsIgnoreCase("reset")) {
+            } else if ("reset".equalsIgnoreCase(args[1])) {
                 new CycleResetCommand(sender, args);
-            } else if (args[1].equalsIgnoreCase("update")) {
+            } else if ("update".equalsIgnoreCase(args[1])) {
                 new CycleUpdateCommand(sender, args);
             }
         } else {

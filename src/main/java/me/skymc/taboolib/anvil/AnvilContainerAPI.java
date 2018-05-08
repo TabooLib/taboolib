@@ -88,7 +88,7 @@ public class AnvilContainerAPI implements Listener {
 
     @EventHandler
     public void example(PlayerCommandPreprocessEvent e) {
-        if (e.getMessage().equals("/anvilexample")) {
+        if ("/anvilexample".equals(e.getMessage())) {
             if (e.getPlayer().hasPermission("taboolib.admin")) {
                 e.setCancelled(true);
                 AnvilContainerAPI.send(e.getPlayer(), "EXAMPLE", "在这里输入文本", null);
@@ -98,7 +98,7 @@ public class AnvilContainerAPI implements Listener {
 
     @EventHandler
     public void example2(AnvilContainerAPIEvent e) {
-        if (e.type.equals("EXAMPLE")) {
+        if ("EXAMPLE".equals(e.type)) {
             e.event.getWhoClicked().sendMessage(e.string);
         }
     }

@@ -42,8 +42,9 @@ public class JSONFormatter {
     }
 
     public JSONFormatter append(JSONFormatter json) {
-        if (json.ja.length() == 0)
+        if (json.ja.length() == 0) {
             return this;
+        }
         try {
             if (newline && json.newline) {
                 all.addAll(json.all);
@@ -76,8 +77,9 @@ public class JSONFormatter {
     }
 
     public JSONFormatter newLine(int amount) {
-        for (int i = 0; i < amount; i++)
+        for (int i = 0; i < amount; i++) {
             newLine();
+        }
         return this;
     }
 
@@ -104,8 +106,9 @@ public class JSONFormatter {
     public String toJSON() {
         JSONObject jo = new JSONObject();
         try {
-            if (ja.length() > 0)
+            if (ja.length() > 0) {
                 jo.put("extra", ja);
+            }
             jo.put("text", "");
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,14 +121,16 @@ public class JSONFormatter {
         try {
             for (JSONArray ja : all) {
                 JSONObject jo = new JSONObject();
-                if (ja.length() > 0)
+                if (ja.length() > 0) {
                     jo.put("extra", ja);
+                }
                 jo.put("text", "");
                 list.add(jo.toString());
             }
             JSONObject jo = new JSONObject();
-            if (ja.length() > 0)
+            if (ja.length() > 0) {
                 jo.put("extra", ja);
+            }
             jo.put("text", "");
             list.add(jo.toString());
             return list;
@@ -163,10 +168,12 @@ public class JSONFormatter {
     }
 
     private void add(Object jo) {
-        if (ja == null)
+        if (ja == null) {
             ja = new JSONArray();
-        if (jo != null)
+        }
+        if (jo != null) {
             ja.put(jo);
+        }
     }
 
     private JSONFormatter append(String text, BuilderMaker bm) {
@@ -297,8 +304,9 @@ public class JSONFormatter {
 
     private static boolean check(Object... o) {
         for (Object a : o) {
-            if (a == null)
+            if (a == null) {
                 return false;
+            }
         }
         return true;
     }
@@ -369,24 +377,32 @@ public class JSONFormatter {
 
         private JSONObject toString(String color, BuilderHelper bh) {
             String string = sb.toString();
-            if (!changed)
+            if (!changed) {
                 return null;
-            if (string.length() == 0)
+            }
+            if (string.length() == 0) {
                 return null;
+            }
             JSONObject jo = new JSONObject();
             try {
-                if (!color.equals(""))
+                if (!"".equals(color)) {
                     jo.put("color", color);
-                if (bold)
+                }
+                if (bold) {
                     jo.put("bold", true);
-                if (italic)
+                }
+                if (italic) {
                     jo.put("italic", true);
-                if (magic)
+                }
+                if (magic) {
                     jo.put("obfuscated", true);
-                if (strikethrough)
+                }
+                if (strikethrough) {
                     jo.put("strikethrough", true);
-                if (underline)
+                }
+                if (underline) {
                     jo.put("underlined", true);
+                }
                 bh.add(jo);
                 jo.put("text", string);
             } catch (Exception e) {
@@ -407,8 +423,9 @@ public class JSONFormatter {
             return toString(color, new BuilderHelper() {
                 @Override
                 public void add(JSONObject jo) throws Exception {
-                    if (event.getEvent().length() > 1)
+                    if (event.getEvent().length() > 1) {
                         jo.put("hoverEvent", event.getEvent());
+                    }
                 }
             });
         }
@@ -417,8 +434,9 @@ public class JSONFormatter {
             return toString(color, new BuilderHelper() {
                 @Override
                 public void add(JSONObject jo) throws Exception {
-                    if (event.getEvent().length() > 1)
+                    if (event.getEvent().length() > 1) {
                         jo.put("clickEvent", event.getEvent());
+                    }
                 }
             });
         }
@@ -427,10 +445,12 @@ public class JSONFormatter {
             return toString(color, new BuilderHelper() {
                 @Override
                 public void add(JSONObject jo) throws Exception {
-                    if (hevent.getEvent().length() > 1)
+                    if (hevent.getEvent().length() > 1) {
                         jo.put("hoverEvent", hevent.getEvent());
-                    if (cevent.getEvent().length() > 1)
+                    }
+                    if (cevent.getEvent().length() > 1) {
                         jo.put("clickEvent", cevent.getEvent());
+                    }
                 }
             });
         }

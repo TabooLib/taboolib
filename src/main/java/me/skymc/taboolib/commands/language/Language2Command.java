@@ -20,9 +20,9 @@ public class Language2Command implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 0) {
             TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.HELP", label);
-        } else if (args[0].equalsIgnoreCase("reload")) {
+        } else if ("reload".equalsIgnoreCase(args[0])) {
             reload(sender);
-        } else if (args[0].equalsIgnoreCase("send")) {
+        } else if ("send".equalsIgnoreCase(args[0])) {
             send(sender, args);
         }
         return true;
@@ -35,7 +35,7 @@ public class Language2Command implements CommandExecutor {
             long time = System.currentTimeMillis();
             Language2Value value = getLanguage2Value(args);
 
-            if (args[1].equalsIgnoreCase("ALL")) {
+            if ("ALL".equalsIgnoreCase(args[1])) {
                 value.broadcast();
             } else {
                 Player player = Bukkit.getPlayerExact(args[1]);
