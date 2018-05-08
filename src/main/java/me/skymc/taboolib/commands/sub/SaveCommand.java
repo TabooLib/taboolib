@@ -62,7 +62,7 @@ public class SaveCommand extends SubCommand {
                 @SuppressWarnings("deprecation")
                 @Override
                 public boolean after(String message) {
-                    if (message.equalsIgnoreCase("yes")) {
+                    if ("yes".equalsIgnoreCase(message)) {
                         saveItem(args[1], ((Player) sender).getItemInHand());
                         TLocale.sendTo(sender, "COMMANDS.TABOOLIB.SAVE.SUCCESS", args[1]);
                     } else {

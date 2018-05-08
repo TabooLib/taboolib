@@ -303,8 +303,9 @@ public class NBTReflectionUtil {
             method = c.getMethod(MethodNames.getEntityNbtGetterMethodName(), getNBTTagCompound());
             Object nbt = getNBTTagCompound().newInstance();
             Object answer = method.invoke(nmsitem, nbt);
-            if (answer == null)
+            if (answer == null) {
                 answer = nbt;
+            }
             return answer;
         } catch (Exception e) {
             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
@@ -334,8 +335,9 @@ public class NBTReflectionUtil {
             method = getTileEntity().getMethod(MethodNames.getTileDataMethodName(), getNBTTagCompound());
             Object tag = getNBTTagCompound().newInstance();
             Object answer = method.invoke(o, tag);
-            if (answer == null)
+            if (answer == null) {
                 answer = tag;
+            }
             return answer;
         } catch (Exception e) {
             MsgUtils.warn("NBT 操作出现异常: §7" + e.getMessage());
@@ -381,7 +383,9 @@ public class NBTReflectionUtil {
         if (nbttag == null) {
             nbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(nbttag, comp);
         Method method;
         try {
@@ -421,7 +425,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -442,7 +448,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -459,7 +467,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -476,7 +486,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -497,7 +509,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -514,7 +528,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -535,7 +551,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -552,7 +570,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -573,7 +593,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -590,7 +612,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -611,7 +635,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -628,7 +654,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -649,7 +677,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -666,7 +696,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -687,7 +719,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -704,7 +738,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -725,7 +761,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -742,7 +780,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -763,7 +803,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -780,7 +822,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -797,7 +841,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return 0;
+        if (!valideCompound(comp)) {
+            return 0;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -818,7 +864,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -835,7 +883,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -876,7 +926,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -910,7 +962,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return;
+        if (!valideCompound(comp)) {
+            return;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -927,7 +981,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {
@@ -945,7 +1001,9 @@ public class NBTReflectionUtil {
         if (rootnbttag == null) {
             rootnbttag = getNewNBTTag();
         }
-        if (!valideCompound(comp)) return null;
+        if (!valideCompound(comp)) {
+            return null;
+        }
         Object workingtag = gettoCompount(rootnbttag, comp);
         Method method;
         try {

@@ -120,28 +120,30 @@ public class PluginUtils {
                         } else {
                             Iterator attributeIterator = ((Map) commandNext.getValue()).entrySet().iterator();
 
-                            while (true) while (true) {
-                                Entry attributeNext;
-                                if (!attributeIterator.hasNext()) {
-                                    continue label55;
-                                }
-
-                                attributeNext = (Entry) attributeIterator.next();
-                                while (!attributeNext.getKey().equals("aliases")) {
+                            while (true) {
+                                while (true) {
+                                    Entry attributeNext;
                                     if (!attributeIterator.hasNext()) {
                                         continue label55;
                                     }
 
                                     attributeNext = (Entry) attributeIterator.next();
-                                }
+                                    while (!"aliases".equals(attributeNext.getKey())) {
+                                        if (!attributeIterator.hasNext()) {
+                                            continue label55;
+                                        }
 
-                                Object aliases = attributeNext.getValue();
-                                if (aliases instanceof String) {
-                                    if (((String) aliases).equalsIgnoreCase(command)) {
-                                        plugins.add(plugin.getName());
+                                        attributeNext = (Entry) attributeIterator.next();
                                     }
-                                } else {
-                                    ((List<String>) aliases).stream().filter(str -> str.equalsIgnoreCase(command)).map(str -> plugin.getName()).forEach(plugins::add);
+
+                                    Object aliases = attributeNext.getValue();
+                                    if (aliases instanceof String) {
+                                        if (((String) aliases).equalsIgnoreCase(command)) {
+                                            plugins.add(plugin.getName());
+                                        }
+                                    } else {
+                                        ((List<String>) aliases).stream().filter(str -> str.equalsIgnoreCase(command)).map(str -> plugin.getName()).forEach(plugins::add);
+                                    }
                                 }
                             }
                         }

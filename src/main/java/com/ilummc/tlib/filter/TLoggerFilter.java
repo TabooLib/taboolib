@@ -1,10 +1,10 @@
 package com.ilummc.tlib.filter;
 
+import org.bukkit.Bukkit;
+
 import java.util.Arrays;
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;
-
-import org.bukkit.Bukkit;
 
 /**
  * @author Bkm016
@@ -25,6 +25,9 @@ public class TLoggerFilter implements Filter {
 					System.out.println(Arrays.asList(e.getParameters()));
 				}
 			}
+			return false;
+		}
+		else if (e.getMessage().contains("Enabled plugin with unregistered PluginClassLoader")) {
 			return false;
 		}
 		return true;

@@ -142,7 +142,7 @@ public class NMSUtils {
     }
 
     public static Field getFieldWithException(Class<?> clazz, String name) throws Exception {
-        for (Field field : clazz.getDeclaredFields())
+        for (Field field : clazz.getDeclaredFields()) {
             if (field.getName().equals(name)) {
                 field.setAccessible(true);
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -152,7 +152,8 @@ public class NMSUtils {
                 modifiersField.setInt(field, modifiers);
                 return field;
             }
-        for (Field field : clazz.getFields())
+        }
+        for (Field field : clazz.getFields()) {
             if (field.getName().equals(name)) {
                 field.setAccessible(true);
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -162,6 +163,7 @@ public class NMSUtils {
                 modifiersField.setInt(field, modifiers);
                 return field;
             }
+        }
         throw new Exception("Field Not Found");
     }
 
@@ -194,7 +196,7 @@ public class NMSUtils {
     }
 
     public static Field getFieldOfTypeWithException(Class<?> clazz, Class<?> type, String name) throws Exception {
-        for (Field field : clazz.getDeclaredFields())
+        for (Field field : clazz.getDeclaredFields()) {
             if (field.getName().equals(name) && field.getType().equals(type)) {
                 field.setAccessible(true);
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -204,7 +206,8 @@ public class NMSUtils {
                 modifiersField.setInt(field, modifiers);
                 return field;
             }
-        for (Field field : clazz.getFields())
+        }
+        for (Field field : clazz.getFields()) {
             if (field.getName().equals(name) && field.getType().equals(type)) {
                 field.setAccessible(true);
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
@@ -214,6 +217,7 @@ public class NMSUtils {
                 modifiersField.setInt(field, modifiers);
                 return field;
             }
+        }
         throw new Exception("Field Not Found");
     }
 
@@ -252,10 +256,11 @@ public class NMSUtils {
 
     public static Field getLastFieldOfTypeWithException(Class<?> clazz, Class<?> type) throws Exception {
         Field field = null;
-        for (Field f : clazz.getDeclaredFields())
+        for (Field f : clazz.getDeclaredFields()) {
             if (f.getType().equals(type)) {
                 field = f;
             }
+        }
         if (field == null) {
             throw new Exception("Field Not Found");
         }
@@ -278,16 +283,18 @@ public class NMSUtils {
     }
 
     public static Method getMethodWithException(Class<?> clazz, String name, Class<?>... args) throws Exception {
-        for (Method m : clazz.getDeclaredMethods())
+        for (Method m : clazz.getDeclaredMethods()) {
             if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || ClassListEqual(args, m.getParameterTypes()))) {
                 m.setAccessible(true);
                 return m;
             }
-        for (Method m : clazz.getMethods())
+        }
+        for (Method m : clazz.getMethods()) {
             if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || ClassListEqual(args, m.getParameterTypes()))) {
                 m.setAccessible(true);
                 return m;
             }
+        }
         throw new Exception("Method Not Found");
     }
 
@@ -300,18 +307,23 @@ public class NMSUtils {
     }
 
     public static boolean ClassListEqual(Class<?>[] l1, Class<?>[] l2) {
-        if (l1.length != l2.length)
+        if (l1.length != l2.length) {
             return false;
-        for (int i = 0; i < l1.length; i++)
-            if (l1[i] != l2[i])
+        }
+        for (int i = 0; i < l1.length; i++) {
+            if (l1[i] != l2[i]) {
                 return false;
+            }
+        }
         return true;
     }
 
     public static Class<?> getInnerClassWithException(Class<?> c, String className) throws Exception {
-        for (Class<?> cl : c.getDeclaredClasses())
-            if (cl.getSimpleName().equals(className))
+        for (Class<?> cl : c.getDeclaredClasses()) {
+            if (cl.getSimpleName().equals(className)) {
                 return cl;
+            }
+        }
         throw new Exception("Inner Class Not Found");
     }
 
@@ -333,16 +345,18 @@ public class NMSUtils {
     }
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... args) throws Exception {
-        for (Constructor<?> c : clazz.getDeclaredConstructors())
+        for (Constructor<?> c : clazz.getDeclaredConstructors()) {
             if (args.length == 0 && c.getParameterTypes().length == 0 || ClassListEqual(args, c.getParameterTypes())) {
                 c.setAccessible(true);
                 return c;
             }
-        for (Constructor<?> c : clazz.getConstructors())
+        }
+        for (Constructor<?> c : clazz.getConstructors()) {
             if (args.length == 0 && c.getParameterTypes().length == 0 || ClassListEqual(args, c.getParameterTypes())) {
                 c.setAccessible(true);
                 return c;
             }
+        }
         throw new Exception("Constructor Not Found");
     }
 

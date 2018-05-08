@@ -55,10 +55,17 @@ public class TConfigInjector {
             TConfig config = clazz.getAnnotation(TConfig.class);
             Validate.notNull(config);
             File file = new File(plugin.getDataFolder(), config.name());
-            if (!file.exists()) if (config.fromJar()) plugin.saveResource(config.name(), true);
-            else saveConfig(plugin, clazz.newInstance());
+            if (!file.exists()) {
+                if (config.fromJar()) {
+                    plugin.saveResource(config.name(), true);
+                } else {
+                    saveConfig(plugin, clazz.newInstance());
+                }
+            }
             Object obj = unserialize(plugin, clazz);
-            if (config.readOnly()) saveConfig(plugin, obj);
+            if (config.readOnly()) {
+                saveConfig(plugin, obj);
+            }
             return obj;
         } catch (NullPointerException e) {
             TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), clazz.getSimpleName());
@@ -75,7 +82,9 @@ public class TConfigInjector {
             File file = new File(plugin.getDataFolder(), config.name());
             Map<String, Object> map = ConfigUtils.confToMap(ConfigUtils.loadYaml(plugin, file));
             Object obj = ConfigUtils.mapToObj(map, object);
-            if (config.readOnly()) saveConfig(plugin, obj);
+            if (config.readOnly()) {
+                saveConfig(plugin, obj);
+            }
         } catch (NullPointerException e) {
             TLocale.Logger.warn("CONFIG.LOAD-FAIL-NO-ANNOTATION", plugin.toString(), object.getClass().getSimpleName());
         } catch (Exception e) {
@@ -124,7 +133,9 @@ public class TConfigInjector {
         Map map = gson.fromJson(gson.toJson(object), HashMap.class);
         YamlConfiguration configuration = (YamlConfiguration) ConfigUtils.mapToConf(map);
         File target = new File(plugin.getDataFolder(), config.name());
-        if (!target.exists()) target.createNewFile();
+        if (!target.exists()) {
+            target.createNewFile();
+        }
         byte[] arr = configuration.saveToString().getBytes(config.charset());
         Files.write(arr, target);
     }

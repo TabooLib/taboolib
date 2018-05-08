@@ -141,6 +141,7 @@ public class TabooLibPluginCommand extends InternalCommandExecutor {
                 } else if (PluginUtils.isIgnored(plugin)) {
                     TLocale.sendTo(sender, "COMMANDS.TPLUGIN.RELOAD.INVALID-PLUGIN-IGNORED", name);
                 } else {
+                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.RELOAD.TRY-RELOAD");
                     PluginUtils.reload(plugin);
                 }
             }

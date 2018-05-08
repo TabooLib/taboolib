@@ -68,7 +68,9 @@ public class EntityTag {
      * @param value 值
      */
     public void set(String key, Object value, Entity... entities) {
-        for (Entity entity : entities) set(key, value, entity);
+        for (Entity entity : entities) {
+            set(key, value, entity);
+        }
     }
 
     /**
@@ -78,7 +80,9 @@ public class EntityTag {
      * @param value 值
      */
     public void set(String key, Object value, List<Entity> entities) {
-        for (Entity entity : entities) set(key, value, entity);
+        for (Entity entity : entities) {
+            set(key, value, entity);
+        }
     }
 
     /**
@@ -104,7 +108,9 @@ public class EntityTag {
      * @param entities 实体
      */
     public void remove(String key, Entity... entities) {
-        for (Entity entity : entities) remove(key, entity);
+        for (Entity entity : entities) {
+            remove(key, entity);
+        }
     }
 
     /**
@@ -114,7 +120,9 @@ public class EntityTag {
      * @param entities 实体
      */
     public void remove(String key, List<Entity> entities) {
-        for (Entity entity : entities) remove(key, entity);
+        for (Entity entity : entities) {
+            remove(key, entity);
+        }
     }
 
     /**

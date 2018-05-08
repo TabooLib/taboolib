@@ -61,7 +61,7 @@ public class ConfigUtils {
 
     public static String mapToYaml(Map<String, Object> map) {
         String dump = YAML.dump(map);
-        if (dump.equals("{}\n")) {
+        if ("{}\n".equals(dump)) {
             dump = "";
         }
         return dump;
@@ -92,13 +92,17 @@ public class ConfigUtils {
     public static <T> T mapToObj(Map<String, Object> map, T obj) {
         Class<?> clazz = obj.getClass();
         map.forEach((string, value) -> Ref.getFieldBySerializedName(clazz, string).ifPresent(field -> {
-            if (!field.isAccessible())
+            if (!field.isAccessible()) {
                 field.setAccessible(true);
+            }
             try {
                 if (Property.class.isAssignableFrom(field.getType())) {
                     Property<Object> property = (Property) field.get(obj);
-                    if (property != null) property.set(value);
-                    else field.set(obj, Property.of(value));
+                    if (property != null) {
+                        property.set(value);
+                    } else {
+                        field.set(obj, Property.of(value));
+                    }
                 } else {
                     field.set(obj, value);
                 }
@@ -125,11 +129,16 @@ public class ConfigUtils {
         }
         for (Field field : Ref.getDeclaredFields(object.getClass(), excludedModifiers, false)) {
             try {
-                if (!field.isAccessible()) field.setAccessible(true);
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
                 Object obj = field.get(object);
-                if (obj instanceof Property) obj = ((Property) obj).get();
-                if (obj instanceof ConfigurationSection)
+                if (obj instanceof Property) {
+                    obj = ((Property) obj).get();
+                }
+                if (obj instanceof ConfigurationSection) {
                     obj = objToMap(((ConfigurationSection) obj).getValues(false), excludedModifiers);
+                }
                 map.put(Ref.getSerializedName(field), obj);
             } catch (IllegalAccessException ignored) {
             }

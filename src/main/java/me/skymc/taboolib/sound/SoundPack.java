@@ -61,6 +61,7 @@ public class SoundPack {
         }
     }
 
+    @Override
     public String toString() {
         return sound.name() + "-" + a + "-" + b;
     }

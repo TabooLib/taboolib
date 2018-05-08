@@ -1,7 +1,6 @@
 package me.skymc.taboolib.commands.locale;
 
 import com.ilummc.tlib.resources.TLocale;
-import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,9 +21,9 @@ public class TabooLibLocaleCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command arg1, String label, String[] args) {
         if (args.length == 0) {
             TLocale.sendTo(sender, "COMMANDS.TLOCALE.HELP", label);
-        } else if (args[0].equalsIgnoreCase("send")) {
+        } else if ("send".equalsIgnoreCase(args[0])) {
             send(sender, args);
-        } else if (args[0].equalsIgnoreCase("reload")) {
+        } else if ("reload".equalsIgnoreCase(args[0])) {
             reload(sender);
         } else {
             TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
@@ -40,7 +39,7 @@ public class TabooLibLocaleCommand implements CommandExecutor {
 
         long time = System.currentTimeMillis();
         List<Player> target = new ArrayList<>();
-        if (args[1].equalsIgnoreCase("all")) {
+        if ("all".equalsIgnoreCase(args[1])) {
             target.addAll(Bukkit.getOnlinePlayers());
         } else {
             Player player = Bukkit.getPlayerExact(args[1]);

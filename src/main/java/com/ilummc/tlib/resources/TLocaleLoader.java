@@ -37,10 +37,12 @@ public class TLocaleLoader {
     }
 
     public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
-        if (Bukkit.isPrimaryThread())
+        if (Bukkit.isPrimaryThread()) {
             Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
-        else synchronized (TLocaleLoader.class) {
-            Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
+        } else {
+            synchronized (TLocaleLoader.class) {
+                Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
+            }
         }
     }
 

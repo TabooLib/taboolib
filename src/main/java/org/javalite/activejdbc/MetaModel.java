@@ -64,8 +64,9 @@ public class MetaModel implements Serializable {
     }
 
     static Map<Class, String> getTableNamesMap() {
-        if (shardingTableNamesTL.get() == null)
+        if (shardingTableNamesTL.get() == null) {
             shardingTableNamesTL.set(new HashMap<>());
+        }
         return shardingTableNamesTL.get();
     }
 
@@ -274,8 +275,9 @@ public class MetaModel implements Serializable {
      * @return all attribute names.
      */
     protected Set<String> getAttributeNames() {
-        if (columnMetadata == null || columnMetadata.isEmpty())
+        if (columnMetadata == null || columnMetadata.isEmpty()) {
             throw new InitException("Failed to find table: " + getTableName());
+        }
         return Collections.unmodifiableSet(columnMetadata.keySet());
     }
 
@@ -378,7 +380,9 @@ public class MetaModel implements Serializable {
     protected boolean hasAssociation(Class<? extends Model> targetClass, Class<? extends Association> associationClass) {
         for (Association association : associations) {
             if (association.getTargetClass().equals(targetClass) &&
-                    association.getClass().equals(associationClass)) return true;
+                    association.getClass().equals(associationClass)) {
+                return true;
+            }
         }
         return false;
     }
@@ -471,8 +475,9 @@ public class MetaModel implements Serializable {
      * @return Provides column metadata map, keyed by attribute names.
      */
     public Map<String, ColumnMetadata> getColumnMetadata() {
-        if (columnMetadata == null || columnMetadata.isEmpty())
+        if (columnMetadata == null || columnMetadata.isEmpty()) {
             throw new InitException("Failed to find table: " + getTableName());
+        }
         return Collections.unmodifiableMap(columnMetadata);
     }
 

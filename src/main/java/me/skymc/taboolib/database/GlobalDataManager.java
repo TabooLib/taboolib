@@ -29,7 +29,7 @@ public class GlobalDataManager {
 	public static String getVariable(String name, String defaultVariable) {
 		if (Main.getStorageType() == StorageType.SQL) {
 			Object obj = Main.getConnection().getValueLast(Main.getTablePrefix() + "_plugindata", "name", name, "variable");
-			return obj != null ? obj.toString().equals("null") ? defaultVariable : obj.toString() : defaultVariable;
+			return obj != null ? "null".equals(obj.toString()) ? defaultVariable : obj.toString() : defaultVariable;
 		}
 		else {
 			return data.contains(name) ? data.getString(name) : defaultVariable;
@@ -46,7 +46,7 @@ public class GlobalDataManager {
 	public static String getVariableAsynchronous(String name, String defaultVariable) {
 		if (Main.getStorageType() == StorageType.SQL) {
 			SQLVariable variable = SQLMethod.getSQLVariable(name);
-			return variable == null ? defaultVariable : variable.getVariable().equals("null") ? defaultVariable : variable.getVariable();
+			return variable == null ? defaultVariable : "null".equals(variable.getVariable()) ? defaultVariable : variable.getVariable();
 		}
 		else {
 			return getVariable(name, defaultVariable);
@@ -138,7 +138,7 @@ public class GlobalDataManager {
 		if (Main.getStorageType() == StorageType.SQL) {
 			LinkedList<HashMap<String, Object>> list = Main.getConnection().getValues(Main.getTablePrefix() + "_plugindata", "id", -1, false, "name", "variable");
 			for (HashMap<String, Object> _map : list) {
-				if (!_map.get("variable").toString().equals("null")) {
+				if (!"null".equals(_map.get("variable").toString())) {
 					map.put(_map.get("name").toString(), _map.get("variable").toString());
 				}
 			}
@@ -160,7 +160,7 @@ public class GlobalDataManager {
 		if (Main.getStorageType() == StorageType.SQL) {
 			HashMap<String, String> map = new HashMap<>();
 			for (SQLVariable variable : SQLMethod.getSQLVariables()) {
-				if (!variable.getVariable().equals("null")) {
+				if (!"null".equals(variable.getVariable())) {
 					map.put(variable.getName(), variable.getVariable());
 				}
 			}
@@ -287,7 +287,7 @@ public class GlobalDataManager {
 				public void run() {
 					LinkedList<HashMap<String, Object>> list = Main.getConnection().getValues(Main.getTablePrefix() + "_plugindata", "id", -1, false, "name", "variable", "upgrade");
 					for (HashMap<String, Object> _map : list) {
-						if (!_map.get("variable").toString().equals("null")) {
+						if (!"null".equals(_map.get("variable").toString())) {
 							variables.put(_map.get("name").toString(), new SQLVariable(_map.get("name").toString(), _map.get("variable").toString(), _map.get("upgrade").toString()));
 						}
 					}
@@ -326,7 +326,7 @@ public class GlobalDataManager {
 								// 如果变量不是由本服更新
 								if (!value.get("upgrade").equals(variables.get(name).getUpgradeUID())) {
 									// 如果变量是空
-									if (value.get("variable").equals("null")) {
+									if ("null".equals(value.get("variable"))) {
 										// 删除变量
 										variables.remove(name);
 									}
@@ -337,7 +337,7 @@ public class GlobalDataManager {
 								}
 							}
 							// 如果变量存在则下载到本地
-							else if (!value.get("variable").equals("null")) {
+							else if (!"null".equals(value.get("variable"))) {
 								variables.put(value.get("name").toString(), new SQLVariable(value.get("name").toString(), value.get("variable").toString(), value.get("upgrade").toString()));
 							}
 						}

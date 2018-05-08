@@ -104,7 +104,9 @@ public class TPluginManager implements PluginManager {
     @Override
     public void disablePlugins() {
         for (Plugin plugin : getPlugins()) {
-            if (plugin != main) disablePlugin(plugin);
+            if (plugin != main) {
+                disablePlugin(plugin);
+            }
         }
         disablePlugin(main);
     }

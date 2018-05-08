@@ -3,7 +3,6 @@ package me.skymc.tlm.module.sub;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.annotation.DisableConfig;
@@ -96,11 +95,11 @@ public class ModuleInventorySave implements ITabooLibraryModule, Listener {
                 // 如果原本有物品
                 if (!ItemUtils.isNull(player.getInventory().getItem(i))) {
                     // 跳过
-                    if (module.equalsIgnoreCase("-b")) {
+                    if ("-b".equalsIgnoreCase(module)) {
                         continue;
                     }
                     // 给予
-                    else if (module.equalsIgnoreCase("-a")) {
+                    else if ("-a".equalsIgnoreCase(module)) {
                         otherItem.add(item);
                         continue;
                     }

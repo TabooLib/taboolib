@@ -90,6 +90,16 @@ UPDATETASK:
   - '&7 开源地址: &fhttps://github.com/Bkm016/TabooLib/'
   - '&8####################################################'
   
+MYSQL-CONNECTION:
+  FALL-NOTFOUND-DRIVE: '&7驱动器获取失败, 无法连接到数据库'
+  FALL-NOTFOUND-CONNECTION: '&7警告! 数据库尚未连接, 请检查配置文件后重启服务器! ({0})'
+  FALL-COMMAND-NORMAL: '&4数据库命令执行出错, 错误原因: &c{0}'
+  FALL-COMMAND-DETAIL: '&4数据库命令执行出错, 错误代码: &c{0}&4, 错误原因: &c{1}'
+  SUCCESS-REGISTERED: '&7已向书库注册插件 &f{0}&7 的数据库连接'
+  SUCCESS-REGISTERED-LISTENER: '&7启动数据库连接监控'
+  NOTIFY-CONNECTING: '&7正在连接数据库, 地址: &f{0}'
+  NOTIFY-CONNECTED: '数据库连接成功 ({0}ms)'
+  
 TABOOLIB-MODULE:
   SUCCESS-LOADED: '&7载入 &f{0} &7个 &fTLM &7模块'
   FALL-LOADED: '&4模块载入异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
@@ -404,6 +414,7 @@ COMMANDS:
         0: '名称'
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
+      TRY-RELOAD: '&8[&3&lTabooLib&8] &7尝试重载插件...'
 
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'

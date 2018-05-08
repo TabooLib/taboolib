@@ -22,6 +22,7 @@ public class InternalArgument {
         this.required = required;
     }
 
+    @Override
     public String toString() {
         return required ? "§7[§8" + name + "§7]" : "§7<§8" + name + "§7>";
     }
