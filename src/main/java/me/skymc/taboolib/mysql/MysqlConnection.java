@@ -3,7 +3,7 @@ package me.skymc.taboolib.mysql;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
 
 @Deprecated
 public class MysqlConnection {
@@ -103,7 +103,7 @@ public class MysqlConnection {
             return;
         }
 
-        StringBuilder stringBuilder = new StringBuilder("");
+        StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 0; i < list.length; i++) {
             if (i + 1 < list.length) {
@@ -130,8 +130,8 @@ public class MysqlConnection {
             return;
         }
 
-        StringBuilder listbuilder = new StringBuilder("");
-        StringBuilder valuebuilder = new StringBuilder("");
+        StringBuilder listbuilder = new StringBuilder();
+        StringBuilder valuebuilder = new StringBuilder();
 
         for (int i = 0; i < list.length; i++) {
             if (i + 1 < list.length) {

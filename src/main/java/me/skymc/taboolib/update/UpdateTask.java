@@ -6,7 +6,6 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**

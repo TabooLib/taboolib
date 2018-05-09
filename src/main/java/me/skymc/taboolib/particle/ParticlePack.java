@@ -1,8 +1,7 @@
 package me.skymc.taboolib.particle;
 
-import org.bukkit.Location;
-
 import me.skymc.taboolib.TabooLib;
+import org.bukkit.Location;
 
 public class ParticlePack {
 	

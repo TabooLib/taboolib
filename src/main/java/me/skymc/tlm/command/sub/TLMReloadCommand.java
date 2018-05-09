@@ -1,12 +1,11 @@
 package me.skymc.tlm.command.sub;
 
-import org.bukkit.command.CommandSender;
-
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.module.ITabooLibraryModule;
 import me.skymc.tlm.module.TabooLibraryModule;
+import org.bukkit.command.CommandSender;
 
 /**
  * @author sky

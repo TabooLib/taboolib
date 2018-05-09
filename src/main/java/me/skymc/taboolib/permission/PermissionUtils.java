@@ -1,10 +1,9 @@
 package me.skymc.taboolib.permission;
 
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
-
 import me.skymc.taboolib.Main;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class PermissionUtils {
 	

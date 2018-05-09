@@ -27,9 +27,6 @@ public class TLoggerFilter implements Filter {
 			}
 			return false;
 		}
-		else if (e.getMessage().contains("Enabled plugin with unregistered PluginClassLoader")) {
-			return false;
-		}
-		return true;
-	}
+		else return !e.getMessage().contains("Enabled plugin with unregistered PluginClassLoader");
+    }
 }

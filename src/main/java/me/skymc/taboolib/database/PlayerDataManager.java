@@ -7,7 +7,6 @@ import me.skymc.taboolib.events.PlayerLoadedEvent;
 import me.skymc.taboolib.exception.PlayerOfflineException;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;

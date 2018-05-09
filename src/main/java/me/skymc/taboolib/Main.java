@@ -3,13 +3,13 @@ package me.skymc.taboolib;
 import com.ilummc.tlib.TLib;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
-import me.skymc.taboolib.commands.MainCommands;
-import me.skymc.taboolib.commands.internal.InternalCommandExecutor;
+import me.skymc.taboolib.commands.TabooLibMainCommand;
+import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
-import me.skymc.taboolib.commands.plugin.TabooLibPluginCommand;
-import me.skymc.taboolib.commands.sub.itemlist.listener.ItemLibraryPatch;
-import me.skymc.taboolib.commands.sub.sounds.listener.SoundsLibraryPatch;
+import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
+import me.skymc.taboolib.commands.taboolib.listener.ListenerItemListCommand;
+import me.skymc.taboolib.commands.taboolib.listener.ListenerSoundsCommand;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
@@ -31,6 +31,7 @@ import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
+import me.skymc.taboolib.team.TagAPI;
 import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
 import me.skymc.taboolib.update.UpdateTask;
@@ -201,11 +202,11 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         // 注册指令
-        getCommand("taboolib").setExecutor(new MainCommands());
         getCommand("language2").setExecutor(new Language2Command());
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
         getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
-        InternalCommandExecutor.createCommandExecutor("taboolibplugin", new TabooLibPluginCommand());
+        BaseMainCommand.createCommandExecutor("taboolib", new TabooLibMainCommand());
+        BaseMainCommand.createCommandExecutor("taboolibplugin", new TabooLibPluginMainCommand());
 
         // 注册监听
         registerListener();
@@ -225,6 +226,8 @@ public class Main extends JavaPlugin implements Listener {
         exampleLanguage2 = new Language2("Language2", this);
         // 注册脚本
         SkriptHandler.getInst();
+        // 注册昵称
+        TagAPI.inst();
 
         // 启动数据库储存方法
         if (getStorageType() == StorageType.SQL) {
@@ -344,8 +347,8 @@ public class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(new AnvilContainerAPI(), this);
         getServer().getPluginManager().registerEvents(new ListenerPluginDisable(), this);
         getServer().getPluginManager().registerEvents(new PlayerDataManager(), this);
-        getServer().getPluginManager().registerEvents(new ItemLibraryPatch(), this);
-        getServer().getPluginManager().registerEvents(new SoundsLibraryPatch(), this);
+        getServer().getPluginManager().registerEvents(new ListenerItemListCommand(), this);
+        getServer().getPluginManager().registerEvents(new ListenerSoundsCommand(), this);
 
         if (TabooLib.getVerint() > 10700) {
             getServer().getPluginManager().registerEvents(new EntityUtils(), this);

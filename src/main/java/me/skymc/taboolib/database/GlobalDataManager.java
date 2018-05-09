@@ -1,19 +1,17 @@
 package me.skymc.taboolib.database;
 
+import com.ilummc.tlib.resources.TLocale;
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.Main.StorageType;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.playerdata.DataUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.ilummc.tlib.resources.TLocale;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.Main.StorageType;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.playerdata.DataUtils;
 
 public class GlobalDataManager {
 	

@@ -5,14 +5,9 @@
 
 package com.ilummc.tlib.bungee.chat;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.ilummc.tlib.bungee.api.chat.*;
+import com.google.gson.*;
+import com.ilummc.tlib.bungee.api.chat.BaseComponent;
+import com.ilummc.tlib.bungee.api.chat.TextComponent;
 
 import java.lang.reflect.Type;
 import java.util.List;

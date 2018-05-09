@@ -1,7 +1,6 @@
 package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
-import me.skymc.taboolib.message.MsgUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;

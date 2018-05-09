@@ -1,11 +1,10 @@
 package me.skymc.taboolib.listener;
 
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.message.MsgUtils;
 import pw.yumc.Yum.events.PluginNetworkEvent;
 
 /**

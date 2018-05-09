@@ -1,8 +1,8 @@
 package me.skymc.taboolib.itemnbtapi;
 
-import java.util.Set;
-
 import me.skymc.taboolib.TabooLib;
+
+import java.util.Set;
 
 public class NBTCompound {
 
