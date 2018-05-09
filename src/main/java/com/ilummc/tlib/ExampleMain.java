@@ -14,10 +14,11 @@ public class ExampleMain extends JavaPlugin {
     public void onEnable() {
         update.addListener(((oldVal, newVal) -> {
             Bukkit.getLogger().info("配置项 enableUpdate 的值由 " + oldVal + " 变为了 " + newVal);
-            if (newVal)
+            if (newVal) {
                 Updater.start();
-            else
+            } else {
                 Updater.stop();
+            }
         }));
     }
 

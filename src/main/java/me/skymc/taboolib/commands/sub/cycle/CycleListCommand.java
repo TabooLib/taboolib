@@ -1,5 +1,6 @@
 package me.skymc.taboolib.commands.sub.cycle;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,29 +10,20 @@ import me.skymc.taboolib.jsonformatter.click.SuggestCommandEvent;
 import me.skymc.taboolib.jsonformatter.hover.ShowTextEvent;
 import me.skymc.taboolib.timecycle.TimeCycle;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
+import org.bukkit.inventory.ItemFlag;
+
+import java.util.Arrays;
 
 public class CycleListCommand extends SubCommand {
 
 	public CycleListCommand(CommandSender sender, String[] args) {
 		super(sender, args);
-		
-		sender.sendMessage("§f");
-		sender.sendMessage("§b§l----- §3§lTimeCycle List §b§l-----");
-		sender.sendMessage("§f");
-		
-		for (TimeCycle cycle : TimeCycleManager.getTimeCycles()) {
-			if (isPlayer()) {
-				JSONFormatter json = new JSONFormatter();
-				json.append(" §7- §f" + cycle.getName());
-				json.appendHoverClick(" §8(点击复制)", new ShowTextEvent("§f点击复制"), new SuggestCommandEvent(cycle.getName()));
-				json.send((Player) sender);
-			}
-			else {
-				sender.sendMessage(" §7- §f" + cycle.getName());
-			}
-		}
-		
-		sender.sendMessage("§f");
+
+		TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.LIST.HEAD");
+
+        TimeCycleManager.getTimeCycles().forEach(cycle -> TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.LIST.BODY", cycle.getName()));
+
+		TLocale.sendTo(sender, "COMMANDS.TABOOLIB.TIMECYCLE.LIST.FOOT");
 	}
 	
 	@Override

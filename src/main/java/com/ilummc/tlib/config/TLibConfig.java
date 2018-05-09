@@ -20,6 +20,15 @@ public class TLibConfig {
 
     private String username = "";
 
+    private String password = "";
+
+    private int maximumPoolSize = 4;
+
+    private Map<String, Object> settings = new HashMap<String, Object>() {{
+        put("cachePrepStmts", true);
+        put("useServerPrepStmts", true);
+    }};
+
     public String getDataSourceClassName() {
         return dataSourceClassName;
     }
@@ -47,14 +56,4 @@ public class TLibConfig {
     public Map<String, Object> getSettings() {
         return settings;
     }
-
-    private String password = "";
-
-    private int maximumPoolSize = 4;
-
-    private Map<String, Object> settings = new HashMap<String, Object>() {{
-        put("cachePrepStmts", true);
-        put("useServerPrepStmts", true);
-    }};
-
 }

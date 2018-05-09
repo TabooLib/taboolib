@@ -54,7 +54,7 @@ public class MsgUtils {
     @Deprecated
     public static String noPe() {
         String s = Main.getInst().getConfig().getString("NO-PERMISSION-MESSAGE").replaceAll("&", "§");
-        if (s.equals("")) {
+        if ("".equals(s)) {
             s = "§cCONFIG ERROR §8(NO-PERMISSION-MESSAGE)";
         }
         return s;
@@ -63,7 +63,7 @@ public class MsgUtils {
     @Deprecated
     public static String noClaim(String a) {
         String s = Main.getInst().getConfig().getString("NO-CLAIM-MESSAGE").replaceAll("&", "§").replaceAll("%s%", a);
-        if (s.equals("")) {
+        if ("".equals(s)) {
             s = "§cCONFIG ERROR §8(NO-CLAIM-MESSAGE)";
         }
         return s;

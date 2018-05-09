@@ -9,8 +9,10 @@ public class Strings {
      * @param args     替换的参数
      * @return 替换好的字符串
      */
-    public static String replaceWithOrder(String template, String... args) {
-        if (args.length == 0 || template.length() == 0) return template;
+    public static String replaceWithOrder(String template, Object... args) {
+        if (args.length == 0 || template.length() == 0) {
+            return template;
+        }
         char[] arr = template.toCharArray();
         StringBuilder stringBuilder = new StringBuilder(template.length());
         for (int i = 0; i < arr.length; i++) {
@@ -19,8 +21,9 @@ public class Strings {
                     && arr[Math.min(i + 2, arr.length - 1)] == '}') {
                 stringBuilder.append(args[arr[i + 1] - '0']);
                 i += 2;
-            } else
+            } else {
                 stringBuilder.append(arr[i]);
+            }
         }
         return stringBuilder.toString();
     }

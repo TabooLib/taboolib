@@ -7,30 +7,29 @@ import org.bukkit.command.CommandSender;
 
 public class VariableSetCommand extends SubCommand {
 
-	public VariableSetCommand(CommandSender sender, String[] args) {
-		super(sender, args);
-		
-		if (args.length < 4) {
+    public VariableSetCommand(CommandSender sender, String[] args) {
+        super(sender, args);
+
+        if (args.length < 4) {
             TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
             return;
         }
 
-        if (!(args[1].equals("-a") || args[1].equals("-s"))) {
+        if (!("-a".equals(args[1]) || "-s".equals(args[1]))) {
             TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-ERROR-TYPE");
             return;
-		}
-		
-		Long time = System.currentTimeMillis();
-		String value = getArgs(3);
-		
-		if (args[1].equals("-s")) {
-			GlobalDataManager.setVariable(args[2], value);
-		}
-		else if (args[1].equals("-a")) {
-			GlobalDataManager.setVariableAsynchronous(args[2], value);
-		}
+        }
+
+        Long time = System.currentTimeMillis();
+        String value = getArgs(3);
+
+        if ("-s".equals(args[1])) {
+            GlobalDataManager.setVariable(args[2], value);
+        } else if ("-a".equals(args[1])) {
+            GlobalDataManager.setVariableAsynchronous(args[2], value);
+        }
 
         TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
-		setReturn(true);
-	}
+        setReturn(true);
+    }
 }

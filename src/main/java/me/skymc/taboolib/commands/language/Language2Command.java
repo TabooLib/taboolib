@@ -1,7 +1,7 @@
 package me.skymc.taboolib.commands.language;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.string.language2.Language2Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,64 +16,57 @@ import org.bukkit.entity.Player;
  */
 public class Language2Command implements CommandExecutor {
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (args.length == 0) {
-			sender.sendMessage("§f");
-			sender.sendMessage("§b§l----- §3§lLanguage2 Commands §b§l-----");
-			sender.sendMessage("§f");
-			sender.sendMessage("§f /language2 send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示");
-			sender.sendMessage("§f /language2 reload §6- §e重载语言库");
-			sender.sendMessage("§f");
-		}
-		else if (args[0].equalsIgnoreCase("reload")) {
-			MsgUtils.send(sender, "§7重载中..");
-			long time = System.currentTimeMillis();
-            Main.getExampleLanguage2().reload();
-			MsgUtils.send(sender, "§7重载完成! 耗时: &f" + (System.currentTimeMillis() - time) + "ms");
-		}
-		else if (args[0].equalsIgnoreCase("send")) {
-			if (args.length < 3) {
-				MsgUtils.send(sender, "§4参数错误");
-			}
-			else {
-				// 时间
-				long time = System.currentTimeMillis();
-				
-				// 获取语言文件
-                Language2Value value = Main.getExampleLanguage2().get(args[2]);
-				// 如果有变量参数
-				if (args.length > 3) {
-					int i = 0;
-					for (String variable : args[3].split("\\|")) {
-						value.addPlaceholder("$" + i, variable);
-						i++;
-					}
-				}
-				
-				// 如果是公告
-				if (args[1].equals("ALL")) {
-					// 发送信息
-					value.broadcast();
-				}
-				else {
-					// 获取玩家
-					Player player = Bukkit.getPlayerExact(args[1]);
-					if (player == null) {
-						MsgUtils.send(sender, "§4玩家不在线");
-					}
-					else {
-						// 发送信息
-						value.send(player);
-					}
-				}
-				
-				// 如果发送者是玩家
-				if (sender instanceof Player && ((Player) sender).getItemInHand().getType().equals(Material.COMMAND)) {
-					MsgUtils.send(sender, "§7信息已发送, 本次计算耗时: &f" + (System.currentTimeMillis() - time) + "ms");
-				}
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (args.length == 0) {
+            TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.HELP", label);
+        } else if ("reload".equalsIgnoreCase(args[0])) {
+            reload(sender);
+        } else if ("send".equalsIgnoreCase(args[0])) {
+            send(sender, args);
+        }
+        return true;
+    }
+
+    private void send(CommandSender sender, String[] args) {
+        if (args.length < 3) {
+            TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
+        } else {
+            long time = System.currentTimeMillis();
+            Language2Value value = getLanguage2Value(args);
+
+            if ("ALL".equalsIgnoreCase(args[1])) {
+                value.broadcast();
+            } else {
+                Player player = Bukkit.getPlayerExact(args[1]);
+                if (player == null) {
+                    TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.INVALID-PLAYER", args[1]);
+                } else {
+                    value.send(player);
+                }
+            }
+
+            if (sender instanceof Player && ((Player) sender).getItemInHand().getType().equals(Material.COMMAND)) {
+                TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.SUCCESS-SEND", String.valueOf(System.currentTimeMillis() - time));
+            }
+        }
+    }
+
+    private Language2Value getLanguage2Value(String[] args) {
+        Language2Value value = Main.getExampleLanguage2().get(args[2]);
+        if (args.length > 3) {
+            int i = 0;
+            for (String variable : args[3].split("\\|")) {
+                value.addPlaceholder("$" + i++, variable);
+            }
+        }
+        return value;
+    }
+
+    private void reload(CommandSender sender) {
+        TLocale.sendTo(sender, "COMMANDS.RELOAD.LOADING");
+        long time = System.currentTimeMillis();
+        Main.getExampleLanguage2().reload();
+        TLocale.sendTo(sender, "COMMANDS.RELOAD.SUCCESS-ELAPSED-TIME", String.valueOf(System.currentTimeMillis() - time));
+    }
 }

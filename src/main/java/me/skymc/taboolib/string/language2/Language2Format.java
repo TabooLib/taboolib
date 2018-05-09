@@ -142,15 +142,11 @@ public class Language2Format implements Language2Line {
 
     @Override
     public void send(Player player) {
-        for (Language2Line line : language2Lines) {
-            line.send(player);
-        }
+        language2Lines.forEach(line -> line.send(player));
     }
 
     @Override
     public void console() {
-        for (Language2Line line : language2Lines) {
-            line.console();
-        }
+        language2Lines.forEach(Language2Line::console);
     }
 }

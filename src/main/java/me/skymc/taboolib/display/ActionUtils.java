@@ -10,8 +10,9 @@ import org.bukkit.entity.Player;
 public class ActionUtils {
 
     public static void send(Player player, String action) {
-        if (player == null)
+        if (player == null) {
             return;
+        }
         try {
             ActionBar.sendActionBar(player, action);
         } catch (Throwable ignored) {

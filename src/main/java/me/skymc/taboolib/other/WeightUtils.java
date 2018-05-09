@@ -4,6 +4,7 @@ import me.skymc.taboolib.object.WeightCategory;
 
 import java.util.List;
 
+@Deprecated
 public class WeightUtils {
 
     public static String getStringByWeight(List<WeightCategory> categorys) {
@@ -17,7 +18,7 @@ public class WeightUtils {
             return null;
         }
 
-        Integer n = NumberUtils.getRand().nextInt(weightSum);
+        Integer n = NumberUtils.getRandom().nextInt(weightSum);
         Integer m = 0;
 
         for (WeightCategory wc : categorys) {

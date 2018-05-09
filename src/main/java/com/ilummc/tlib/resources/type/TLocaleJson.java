@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.bungee.api.chat.*;
+import com.ilummc.tlib.bungee.chat.ComponentSerializer;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocaleSendable;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
-import net.md_5.bungee.api.chat.*;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -52,7 +52,9 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                 List<BaseComponent> builder = template.length > index ? new ArrayList<>(Arrays.asList(TextComponent.fromLegacyText(template[index++]))) : new ArrayList<>();
                 while (matcher.find()) {
                     String replace = matcher.group();
-                    if (replace.length() <= 2) continue;
+                    if (replace.length() <= 2) {
+                        continue;
+                    }
                     replace = replace.substring(1, replace.length() - 1);
                     String[] split = replace.split("@");
                     String text = split.length > 1 ? split[0] : "";

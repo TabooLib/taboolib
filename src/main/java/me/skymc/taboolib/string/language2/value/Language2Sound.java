@@ -23,10 +23,7 @@ public class Language2Sound implements Language2Line {
 
     public Language2Sound(Language2Format format, List<String> list) {
         this.value = format.getLanguage2Value();
-        // 遍历文本
-        for (String line : list) {
-            sounds.add(new SoundPack(line));
-        }
+        list.forEach(line -> sounds.add(new SoundPack(line)));
     }
 
     public List<SoundPack> getSounds() {
@@ -39,9 +36,7 @@ public class Language2Sound implements Language2Line {
 
     @Override
     public void send(Player player) {
-        for (SoundPack sound : sounds) {
-            sound.play(player);
-        }
+        sounds.forEach(sound -> sound.play(player));
     }
 
     @Override

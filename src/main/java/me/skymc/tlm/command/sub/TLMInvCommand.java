@@ -43,12 +43,12 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 列出背包
-		else if (args[1].equalsIgnoreCase("list")) {
+		else if ("list".equalsIgnoreCase(args[1])) {
 			TLM.getInst().getLanguage().get("INV-LIST").addPlaceholder("$name", moduleInventorySave.getInventorys().toString()).send(sender);
 		}
 		
 		// 查看背包
-		else if (args[1].equalsIgnoreCase("info")) {
+		else if ("info".equalsIgnoreCase(args[1])) {
 			// 如果是后台
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
@@ -108,7 +108,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 保存背包
-		else if (args[1].equalsIgnoreCase("save")) {
+		else if ("save".equalsIgnoreCase(args[1])) {
 			// 如果是后台
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
@@ -132,7 +132,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 覆盖背包
-		else if (args[1].equalsIgnoreCase("paste")) {
+		else if ("paste".equalsIgnoreCase(args[1])) {
 			// 判断长度
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
@@ -175,7 +175,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 删除背包
-		else if (args[1].equalsIgnoreCase("delete")) {
+		else if ("delete".equalsIgnoreCase(args[1])) {
 			// 判断长度
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);

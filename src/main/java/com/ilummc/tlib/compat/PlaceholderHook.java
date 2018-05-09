@@ -11,9 +11,11 @@ public abstract class PlaceholderHook {
     private static PlaceholderHook impl;
 
     public static void init() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             impl = new PlaceholderImpl();
-        else impl = new AbstractImpl();
+        } else {
+            impl = new AbstractImpl();
+        }
     }
 
     public static String replace(CommandSender sender, String text) {

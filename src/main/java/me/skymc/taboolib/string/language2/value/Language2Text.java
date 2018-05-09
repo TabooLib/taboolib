@@ -19,12 +19,6 @@ public class Language2Text implements Language2Line {
 
     private Language2Value value;
 
-    public Language2Text(Language2Format format, List<String> list) {
-        this.value = format.getLanguage2Value();
-        // 遍历文本
-        text.addAll(list);
-    }
-
     public List<String> getText() {
         return text;
     }
@@ -33,17 +27,18 @@ public class Language2Text implements Language2Line {
         return value;
     }
 
+    public Language2Text(Language2Format format, List<String> list) {
+        this.value = format.getLanguage2Value();
+        text.addAll(list);
+    }
+
     @Override
     public void send(Player player) {
-        for (String line : text) {
-            player.sendMessage(line);
-        }
+        text.forEach(player::sendMessage);
     }
 
     @Override
     public void console() {
-        for (String line : text) {
-            Bukkit.getConsoleSender().sendMessage(line);
-        }
+        text.forEach(line -> Bukkit.getConsoleSender().sendMessage(line));
     }
 }

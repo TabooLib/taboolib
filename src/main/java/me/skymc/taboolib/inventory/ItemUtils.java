@@ -1,5 +1,6 @@
 package me.skymc.taboolib.inventory;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
@@ -100,7 +101,7 @@ public class ItemUtils {
             reloadItemCache();
             itemdir = YamlConfiguration.loadConfiguration(new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR")));
         } catch (Exception e) {
-            MsgUtils.warn("物品库载入失败: &4" + e.getMessage());
+            TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ITEMS", e.toString());
         }
     }
 
@@ -108,7 +109,7 @@ public class ItemUtils {
         FileConfiguration conf = ConfigUtils.load(Main.getInst(), file);
         for (String name : conf.getConfigurationSection("").getKeys(false)) {
             if (isExists(name)) {
-                MsgUtils.warn("无法载入载入物品 &4" + name + "&c, 因为它已经存在了");
+                TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ITEMS", name);
             } else if (finalFile) {
                 itemCachesFinal.put(name, loadItem(conf, name));
             } else {
@@ -127,19 +128,15 @@ public class ItemUtils {
             finalItemsFolder.mkdir();
         }
         // 检查固定物品库中的物品
-        for (File file : Objects.requireNonNull(finalItemsFolder.listFiles())) {
-            loadItemsFile(file, true);
-        }
-        MsgUtils.send("载入 " + (itemCaches.size() + itemCachesFinal.size()) + " 项缓存物品");
+        Arrays.stream(Objects.requireNonNull(finalItemsFolder.listFiles())).forEach(file -> loadItemsFile(file, true));
+        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
     }
 
     public static void reloadItemName() {
         FileConfiguration conf = new Language("ITEM_NAME", Main.getInst(), true).getConfiguration();
         itemlib.clear();
-        for (String a : conf.getConfigurationSection("").getKeys(false)) {
-            itemlib.put(a, conf.getString(a));
-        }
-        MsgUtils.send("载入 " + itemlib.size() + " 项物品名称");
+        conf.getConfigurationSection("").getKeys(false).forEach(a -> itemlib.put(a, conf.getString(a)));
+        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemlib.size()));
     }
 
     public static File getItemCacheFile() {
@@ -152,7 +149,7 @@ public class ItemUtils {
 
     public static String getCustomName(ItemStack item) {
         if (item == null || item.getType().equals(Material.AIR)) {
-            return "空";
+            return TLocale.asString("ITEM-UTILS.EMPTY-ITEM");
         }
         int data = item.getType().getMaxDurability() == 0 ? item.getDurability() : 0;
         return item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : itemlib.get(item.getType() + ":" + data) == null ? item.getType().toString() : itemlib.get(item.getType() + ":" + data);
@@ -427,8 +424,7 @@ public class ItemUtils {
                 if (enchant != null) {
                     meta.addEnchant(enchant, section.getInt("enchants." + preEnchant), true);
                 } else {
-                    MsgUtils.warn("&8" + preEnchant + " &c不是一个有效的附魔名称");
-                    MsgUtils.warn("&c输入 &4/taboolib enchants&c 查看所有附魔");
+                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ENCHANTS", preEnchant);
                 }
             }
         }
@@ -439,8 +435,7 @@ public class ItemUtils {
                 if (flag != null) {
                     meta.addItemFlags(flag);
                 } else {
-                    MsgUtils.warn("&8" + preFlag + " &c不是一个有效的标签名称");
-                    MsgUtils.warn("&c输入 &4/taboolib flags&c 查看所有标签");
+                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-FLAG", preFlag);
                 }
             }
         }
@@ -459,8 +454,7 @@ public class ItemUtils {
                             NumberUtils.getInteger(section.getString("potions." + prePotionName).split("-")[0]),
                             NumberUtils.getInteger(section.getString("potions." + prePotionName).split("-")[1]) - 1), true);
                 } else {
-                    MsgUtils.warn("&8" + prePotionName + " &c不是一个有效的药水名称");
-                    MsgUtils.warn("&c输入 &4/taboolib potions&c 查看所有药水");
+                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", prePotionName);
                 }
             }
         }
@@ -502,18 +496,16 @@ public class ItemUtils {
                                 _attr.setInteger("Operation", 0);
                             }
                             _attr.setString("AttributeName", asAttribute(name));
-                            _attr.setInteger("UUIDMost", NumberUtils.getRand().nextInt(Integer.MAX_VALUE));
-                            _attr.setInteger("UUIDLeast", NumberUtils.getRand().nextInt(Integer.MAX_VALUE));
+                            _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
+                            _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                             _attr.setString("Name", asAttribute(name));
-                            if (!hand.equals("all")) {
+                            if (!"all".equals(hand)) {
                                 _attr.setString("Slot", hand);
                             }
-                        } catch (Exception e) {
-                            MsgUtils.warn("&8" + name + " &c属性载入失败: &8" + e.getMessage());
+                        } catch (Exception ignored) {
                         }
                     } else {
-                        MsgUtils.warn("&8" + name + " &c不是一个有效的属性名称");
-                        MsgUtils.warn("&c输入 &4/taboolib attributes&c 查看所有属性");
+                        TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", name);
                     }
                 }
             }
@@ -543,18 +535,16 @@ public class ItemUtils {
                     _attr.setInteger("Operation", 0);
                 }
                 _attr.setString("AttributeName", asAttribute(name));
-                _attr.setInteger("UUIDMost", NumberUtils.getRand().nextInt(Integer.MAX_VALUE));
-                _attr.setInteger("UUIDLeast", NumberUtils.getRand().nextInt(Integer.MAX_VALUE));
+                _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
+                _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
                 _attr.setString("Name", asAttribute(name));
-                if (!hand.equals("all")) {
+                if (!"all".equals(hand)) {
                     _attr.setString("Slot", hand);
                 }
-            } catch (Exception e) {
-                MsgUtils.warn("&8" + name + " &c属性载入失败: &8" + e.getMessage());
+            } catch (NumberFormatException ignored) {
             }
         } else {
-            MsgUtils.warn("&8" + name + " &c不是一个有效的属性名称");
-            MsgUtils.warn("&c输入 &4/taboolib attributes&c 查看所有属性");
+            TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", name);
         }
         return nbt;
     }

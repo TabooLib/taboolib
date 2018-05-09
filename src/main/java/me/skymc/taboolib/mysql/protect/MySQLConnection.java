@@ -1,14 +1,20 @@
 package me.skymc.taboolib.mysql.protect;
 
+import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import org.bukkit.plugin.Plugin;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
+/**
+ * @author sky
+ */
 public class MySQLConnection {
 
     private String url;
@@ -30,7 +36,7 @@ public class MySQLConnection {
     public MySQLConnection(String url, String user, String port, String password, String database, int recheck, Plugin plugin) {
         // 检查驱动
         if (!loadDriverMySQL()) {
-            print("驱动器获取失败, 无法连接到数据库");
+            TLocale.Logger.error("MYSQL-CONNECTION.FALL-NOTFOUND-DRIVE");
             return;
         }
 
@@ -44,7 +50,7 @@ public class MySQLConnection {
         this.port = port == null ? "3306" : port;
         this.password = password == null ? "" : password;
         this.database = database == null ? "test" : database;
-        this.connectionUrl = "jdbc:mysql://" + this.url + ":" + this.port + "/" + this.database + "?characterEncoding=utf-8&useSSL=false";
+        this.connectionUrl = Strings.replaceWithOrder("jdbc:mysql://{0}:{1}/{2}?characterEncoding=utf-8&useSSL=false", this.url, this.port, this.database);
 
         // 连接数据库
         connect();
@@ -56,13 +62,12 @@ public class MySQLConnection {
                     Thread.sleep(getReCheckSeconds() * 1000);
 
                     if (connection == null) {
-                        print("警告! 数据库尚未连接, 请检查配置文件后重启服务器! (" + (plugin.getName()) + ")");
+                        TLocale.Logger.error("MYSQL-CONNECTION.FALL-NOTFOUND-CONNECTION", plugin.getName());
                     } else {
                         isExists("taboolib");
                     }
                 } catch (Exception e) {
-                    print("数据库命令执行出错");
-                    print("错误原因: " + e.getMessage());
+                    TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-NORMAL", e.toString());
                 }
             }
         });
@@ -70,7 +75,7 @@ public class MySQLConnection {
         // 启动检测
         if (isConnection()) {
             recheckThread.start();
-            print("启动数据库连接监控");
+            TLocale.Logger.info("MYSQL-CONNECTION.SUCCESS-REGISTERED-LISTENER");
         }
     }
 
@@ -149,13 +154,11 @@ public class MySQLConnection {
     public void closeConnection() {
         try {
             connection.close();
-        } catch (Exception e) {
-            //
+        } catch (Exception ignored) {
         }
         try {
             recheckThread.stop();
-        } catch (Exception e) {
-            //
+        } catch (Exception ignored) {
         }
     }
 
@@ -166,8 +169,8 @@ public class MySQLConnection {
     /**
      * 2018年1月17日 新增, TabooLib 版本 3.25
      */
-    public void truncateTable(String name) {
-        execute("truncate table " + name);
+    public boolean truncateTable(String name) {
+        return execute("truncate table " + name);
     }
 
     public boolean clearTable(String name) {
@@ -175,35 +178,33 @@ public class MySQLConnection {
     }
 
     public boolean renameTable(String name, String newName) {
-        return execute("rename table `" + name + "` to `" + newName + "`");
+        return execute(Strings.replaceWithOrder("rename table `{0}` to `{1}`", name, newName));
     }
 
     public boolean deleteColumn(String name, String column) {
-        return execute("alter table `" + name + "` drop `" + column + "`");
+        return execute(Strings.replaceWithOrder("alter table `{0}` drop `{1}`", name, column));
     }
 
     public void addColumn(String name, Column... columns) {
-        for (Column column : columns) {
-            execute("alter table " + name + " add " + column.toString());
-        }
+        Arrays.stream(columns).map(column -> Strings.replaceWithOrder("alter table {0} add {1}", name, column.toString())).forEach(this::execute);
     }
 
     public boolean addColumn(String name, String column) {
         if (!column.contains("/")) {
-            return execute("alter table " + name + " add `" + column + "` text");
+            return execute(Strings.replaceWithOrder("alter table {0} add `{1}` text", name, column));
         }
-        return execute("alter table " + name + " add `" + column.split("/")[0] + "` " + column.split("/")[1]);
+        return execute(Strings.replaceWithOrder("alter table {0} add `{1}` {2}", name, column.split("/")[0], column.split("/")[1]));
     }
 
     public boolean editColumn(String name, String oldColumn, Column newColumn) {
-        return execute("alter table " + name + " change `" + oldColumn + "` " + newColumn.toString());
+        return execute(Strings.replaceWithOrder("alter table {0} change `{1}` {2}", name, oldColumn, newColumn.toString()));
     }
 
     public boolean editColumn(String name, String oldColumn, String newColumn) {
         if (!newColumn.contains("/")) {
-            return execute("alter table " + name + " change `" + oldColumn + "` `" + newColumn + "` text");
+            return execute(Strings.replaceWithOrder("alter table {0} change `{1}` `{2}` text", name, oldColumn, newColumn));
         }
-        return execute("alter table " + name + " change `" + oldColumn + "` `" + newColumn.split("/")[0] + "` " + newColumn.split("/")[1]);
+        return execute(Strings.replaceWithOrder("alter table {0} change `{1}` `{2}` {3}", name, oldColumn, newColumn.split("/")[0], newColumn.split("/")[1]));
     }
 
     /**
@@ -215,21 +216,15 @@ public class MySQLConnection {
      * @return boolean
      */
     public boolean deleteValue(String name, String column, Object columnValue) {
-        PreparedStatement pstmt = null;
-        ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
-            pstmt = connection.prepareStatement("delete from `" + name + "` where `" + column + "` = ?");
-            pstmt.setObject(1, columnValue);
-            pstmt.executeUpdate();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("delete from `{0}` where `{1}` = ?", name, column));
+            preparedStatement.setObject(1, columnValue);
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(null, pstmt);
+            freeResult(null, preparedStatement);
         }
         return false;
     }
@@ -260,26 +255,20 @@ public class MySQLConnection {
      * @return boolean
      */
     public boolean setValue(String name, String column, Object columnValue, String valueColumn, Object value, boolean append) {
-        PreparedStatement pstmt = null;
-        ResultSet resultSet = null;
+        PreparedStatement preparedStatement = null;
         try {
             if (append) {
-                pstmt = connection.prepareStatement("update `" + name + "` set `" + valueColumn + "` = `" + valueColumn + "` + ? where `" + column + "` = ?");
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("update `{0}` set `{1}` = `{2}` + ? where `{3}` = ?", name, valueColumn, valueColumn, column));
             } else {
-                pstmt = connection.prepareStatement("update `" + name + "` set `" + valueColumn + "` = ? where `" + column + "` = ?");
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("update `{0}` set `{1}` = ? where `{2}` = ?", name, valueColumn, column));
             }
-            pstmt.setObject(1, value);
-            pstmt.setObject(2, columnValue);
-            pstmt.executeUpdate();
+            preparedStatement.setObject(1, value);
+            preparedStatement.setObject(2, columnValue);
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(null, preparedStatement);
         }
         return false;
     }
@@ -293,26 +282,19 @@ public class MySQLConnection {
      */
     public boolean intoValue(String name, Object... values) {
         StringBuilder sb = new StringBuilder();
-        for (Object value : values) {
-            sb.append("?, ");
-        }
-        PreparedStatement pstmt = null;
+        Arrays.stream(values).map(value -> "?, ").forEach(sb::append);
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("insert into `" + name + "` values(null, " + sb.substring(0, sb.length() - 2) + ")");
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("insert into `{0}` values(null, {1})", name, sb.substring(0, sb.length() - 2)));
             for (int i = 0; i < values.length; i++) {
-                pstmt.setObject(i + 1, values[i]);
+                preparedStatement.setObject(i + 1, values[i]);
             }
-            pstmt.executeUpdate();
+            preparedStatement.executeUpdate();
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(null, preparedStatement);
         }
         return false;
     }
@@ -326,10 +308,8 @@ public class MySQLConnection {
      */
     public boolean createTable(String name, Column... columns) {
         StringBuilder sb = new StringBuilder();
-        for (Column column : columns) {
-            sb.append(column.toString()).append(", ");
-        }
-        return execute("create table if not exists " + name + " (id int(1) not null primary key auto_increment, " + sb.substring(0, sb.length() - 2) + ")");
+        Arrays.stream(columns).forEach(column -> sb.append(column.toString()).append(", "));
+        return execute(Strings.replaceWithOrder("create table if not exists {0} (id int(1) not null primary key auto_increment, {1})", name, sb.substring(0, sb.length() - 2)));
     }
 
     /**
@@ -348,7 +328,7 @@ public class MySQLConnection {
                 sb.append("`").append(column.split("/")[0]).append("` ").append(column.split("/")[1]).append(", ");
             }
         }
-        return execute("create table if not exists " + name + " (id int(1) not null primary key auto_increment, " + sb.substring(0, sb.length() - 2) + ")");
+        return execute(Strings.replaceWithOrder("create table if not exists {0} (id int(1) not null primary key auto_increment, {1})", name, sb.substring(0, sb.length() - 2)));
     }
 
     /**
@@ -358,24 +338,19 @@ public class MySQLConnection {
      * @return boolean
      */
     public boolean isExists(String name) {
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select table_name FROM information_schema.TABLES where table_name = ?");
-            pstmt.setString(1, name);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement("select table_name FROM information_schema.TABLES where table_name = ?");
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 return true;
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return false;
     }
@@ -389,24 +364,19 @@ public class MySQLConnection {
      * @return boolean
      */
     public boolean isExists(String name, String column, Object columnValue) {
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select * from `" + name + "` where `" + column + "` = ?");
-            pstmt.setObject(1, columnValue);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` where `{1}` = ?", name, column));
+            preparedStatement.setObject(1, columnValue);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 return true;
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return false;
     }
@@ -430,24 +400,19 @@ public class MySQLConnection {
      */
     public List<String> getColumns(String name, boolean primary) {
         List<String> list = new ArrayList<>();
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select column_name from information_schema.COLUMNS where table_name = ?");
-            pstmt.setString(1, name);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement("select column_name from information_schema.COLUMNS where table_name = ?");
+            preparedStatement.setString(1, name);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 list.add(resultSet.getString(1));
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         // 是否获取主键
         if (!primary) {
@@ -466,24 +431,19 @@ public class MySQLConnection {
      * @return Object
      */
     public Object getValue(String name, String column, Object columnValue, String valueColumn) {
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select * from `" + name + "` where `" + column + "` = ? limit 1");
-            pstmt.setObject(1, columnValue);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` where `{1}` = ? limit 1", name, column));
+            preparedStatement.setObject(1, columnValue);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 return resultSet.getObject(valueColumn);
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return null;
     }
@@ -498,24 +458,19 @@ public class MySQLConnection {
      * @return Object
      */
     public Object getValueLast(String name, String column, Object columnValue, String valueColumn) {
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select * from `" + name + "` where `" + column + "` = ? order by id desc limit 1");
-            pstmt.setObject(1, columnValue);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` where `{1}` = ? order by id desc limit 1", name, column));
+            preparedStatement.setObject(1, columnValue);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 return resultSet.getObject(valueColumn);
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return null;
     }
@@ -531,12 +486,12 @@ public class MySQLConnection {
      */
     public HashMap<String, Object> getValueLast(String name, String column, Object columnValue, String... valueColumn) {
         HashMap<String, Object> map = new HashMap<>();
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select * from `" + name + "` where `" + column + "` = ? order by id desc limit 1");
-            pstmt.setObject(1, columnValue);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` where `{1}` = ? order by id desc limit 1", name, column));
+            preparedStatement.setObject(1, columnValue);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 for (String _column : valueColumn) {
                     map.put(_column, resultSet.getObject(_column));
@@ -544,14 +499,9 @@ public class MySQLConnection {
                 break;
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return map;
     }
@@ -567,12 +517,12 @@ public class MySQLConnection {
      */
     public HashMap<String, Object> getValue(String name, String column, Object columnValue, String... valueColumn) {
         HashMap<String, Object> map = new HashMap<>();
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
-            pstmt = connection.prepareStatement("select * from `" + name + "` where `" + column + "` = ? limit 1");
-            pstmt.setObject(1, columnValue);
-            resultSet = pstmt.executeQuery();
+            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` where `{1}` = ? limit 1", name, column));
+            preparedStatement.setObject(1, columnValue);
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 for (String _column : valueColumn) {
                     map.put(_column, resultSet.getObject(_column));
@@ -580,14 +530,9 @@ public class MySQLConnection {
                 break;
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return map;
     }
@@ -615,27 +560,22 @@ public class MySQLConnection {
      */
     public List<Object> getValues(String name, String column, int size, boolean desc) {
         List<Object> list = new LinkedList<>();
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             if (desc) {
-                pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + column + "` desc " + (size < 0 ? "" : " limit " + size));
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` order by `{1}` desc {2}", name, column, size < 0 ? "" : " limit " + size));
             } else {
-                pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + column + "` " + (size < 0 ? "" : " limit " + size));
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` order by `{1}` {2}", name, column, size < 0 ? "" : " limit " + size));
             }
-            resultSet = pstmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 list.add(resultSet.getObject(column));
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return list;
     }
@@ -665,15 +605,15 @@ public class MySQLConnection {
      */
     public LinkedList<HashMap<String, Object>> getValues(String name, String sortColumn, int size, boolean desc, String... valueColumn) {
         LinkedList<HashMap<String, Object>> list = new LinkedList<>();
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         try {
             if (desc) {
-                pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + sortColumn + "` desc" + (size < 0 ? "" : " limit " + size));
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` order by `{1}` desc{2}", name, sortColumn, size < 0 ? "" : " limit " + size));
             } else {
-                pstmt = connection.prepareStatement("select * from `" + name + "` order by `" + sortColumn + "`" + (size < 0 ? "" : " limit " + size));
+                preparedStatement = connection.prepareStatement(Strings.replaceWithOrder("select * from `{0}` order by `{1}`{2}", name, sortColumn, size < 0 ? "" : " limit " + size));
             }
-            resultSet = pstmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 HashMap<String, Object> map = new HashMap<>();
                 for (String _column : valueColumn) {
@@ -682,56 +622,36 @@ public class MySQLConnection {
                 list.add(map);
             }
         } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            // 重新连接
-            if (fallReconnection && e.getMessage().contains("closed")) {
-                connect();
-            }
+            printException(e);
         } finally {
-            freeResult(resultSet, pstmt);
+            freeResult(resultSet, preparedStatement);
         }
         return list;
     }
 
     public boolean execute(String sql) {
-        PreparedStatement pstmt = null;
+        PreparedStatement preparedStatement = null;
         try {
-            pstmt = connection.prepareStatement(sql);
-            pstmt.execute();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.execute();
             return true;
-        } catch (Exception e) {
-            print("数据库命令执行出错");
-            print("错误原因: " + e.getMessage());
-            print("错误命令: " + sql);
-            // 重连
-            if (e.getMessage().contains("closed")) {
-                connect();
-            }
+        } catch (SQLException e) {
+            printExceptionDetail(e);
             return false;
         } finally {
-            try {
-                if (pstmt != null) {
-                    pstmt.close();
-                }
-            } catch (Exception e) {
-                //
-            }
+            freeResult(null, preparedStatement);
         }
     }
 
     public boolean connect() {
+        TLocale.Logger.info("MYSQL-CONNECTION.NOTIFY-CONNECTING", connectionUrl);
         try {
-            print("正在连接数据库");
-            print("地址: " + connectionUrl);
             long time = System.currentTimeMillis();
             connection = DriverManager.getConnection(connectionUrl, this.user, this.password);
-            print("数据库连接成功 (" + (System.currentTimeMillis() - time) + "ms)");
+            TLocale.Logger.info("MYSQL-CONNECTION.NOTIFY-CONNECTED", String.valueOf(System.currentTimeMillis() - time));
             return true;
         } catch (SQLException e) {
-            print("数据库连接失败");
-            print("错误原因: " + e.getMessage());
-            print("错误代码: " + e.getErrorCode());
+            printExceptionDetail(e);
             return false;
         }
     }
@@ -740,26 +660,19 @@ public class MySQLConnection {
         System.out.println("[TabooLib - MySQL] " + message);
     }
 
-    /**
-     * 释放结果集
-     *
-     * @param resultSet 不知道叫什么
-     * @param pstmt     不知道叫什么
-     */
-    private void freeResult(ResultSet resultSet, PreparedStatement pstmt) {
-        try {
-            if (resultSet != null) {
-                resultSet.close();
-            }
-        } catch (Exception e) {
-            //
-        }
-        try {
-            if (pstmt != null) {
-                pstmt.close();
-            }
-        } catch (Exception e) {
-            //
+    private void printException(Exception e) {
+        TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-NORMAL", e.toString());
+        reconnection(e);
+    }
+
+    private void printExceptionDetail(SQLException e) {
+        TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-DETAIL", String.valueOf(e.getErrorCode()), e.toString());
+        reconnection(e);
+    }
+
+    private void reconnection(Exception e) {
+        if (fallReconnection && e.getMessage().contains("closed")) {
+            connect();
         }
     }
 
@@ -769,6 +682,21 @@ public class MySQLConnection {
             return true;
         } catch (ClassNotFoundException e) {
             return false;
+        }
+    }
+
+    private void freeResult(ResultSet resultSet, PreparedStatement preparedStatement) {
+        try {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+        } catch (Exception ignored) {
         }
     }
 
@@ -837,11 +765,11 @@ public class MySQLConnection {
         @Override
         public String toString() {
             if (type instanceof ColumnInteger || type instanceof ColumnChar) {
-                return "`" + name + "` " + type.toString().toLowerCase() + "(" + a + ")";
+                return Strings.replaceWithOrder("`{0}` {1}({2})", name, type.toString().toLowerCase(), a);
             } else if (type instanceof ColumnFloat) {
-                return "`" + name + "` " + type.toString().toLowerCase() + "(" + a + "," + b + ")";
+                return Strings.replaceWithOrder("`{0}` {1}({2},{3})", name, type.toString().toLowerCase(), a, b);
             } else {
-                return "`" + name + "` " + type.toString().toLowerCase();
+                return Strings.replaceWithOrder("`{0}` {1}", name, type.toString().toLowerCase());
             }
         }
     }

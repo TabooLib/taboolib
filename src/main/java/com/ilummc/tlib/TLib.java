@@ -3,6 +3,7 @@ package com.ilummc.tlib;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.config.TLibConfig;
+import com.ilummc.tlib.db.Pool;
 import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
@@ -72,20 +73,21 @@ public class TLib {
         TLocaleLoader.load(Main.getInst(), false);
         TDependencyInjector.inject(Main.getInst(), tLib);
 
-        // init database 暫不啟用
-        /*
         try {
             Pool.init();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }*/
+        } catch (Throwable ignored) {
+        }
 
     }
 
     public static void unload() {
-        /* Pool.unload(); */
+        try {
+            Pool.unload();
+        } catch (Throwable ignored) {
+        }
         tLib.getConfigWatcher().unregisterAll();
         TDependencyInjector.eject(Main.getInst(), tLib);
+
     }
 
     public static void injectPluginManager() {

@@ -15,45 +15,45 @@ public class MainCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.HELP");
-        } else if (args[0].equalsIgnoreCase("save")) {
+        if (args.length == 0 || "help".equalsIgnoreCase(args[0])) {
+            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.HELP", label);
+        } else if ("save".equalsIgnoreCase(args[0])) {
             new SaveCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("enchants")) {
+        } else if ("enchants".equalsIgnoreCase(args[0])) {
             new EnchantCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("potions")) {
+        } else if ("potions".equalsIgnoreCase(args[0])) {
             new PotionCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("flags")) {
+        } else if ("flags".equalsIgnoreCase(args[0])) {
             new FlagCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("attributes")) {
+        } else if ("attributes".equalsIgnoreCase(args[0])) {
             new AttributesCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("slots")) {
+        } else if ("slots".equalsIgnoreCase(args[0])) {
             new SlotCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("importdata")) {
+        } else if ("importdata".equalsIgnoreCase(args[0])) {
             new ImportCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("iteminfo")) {
+        } else if ("iteminfo".equalsIgnoreCase(args[0])) {
             new InfoCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("itemlist")) {
+        } else if ("itemlist".equalsIgnoreCase(args[0])) {
             new ItemListCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("item") || args[0].equalsIgnoreCase("i")) {
+        } else if ("item".equalsIgnoreCase(args[0]) || "i".equalsIgnoreCase(args[0])) {
             new ItemCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("setvariable")) {
+        } else if ("setvariable".equalsIgnoreCase(args[0])) {
             new VariableSetCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("getvariable")) {
+        } else if ("getvariable".equalsIgnoreCase(args[0])) {
             new VariableGetCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("shell") || args[0].equalsIgnoreCase("s")) {
+        } else if ("shell".equalsIgnoreCase(args[0]) || "s".equalsIgnoreCase(args[0])) {
             new ShellCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("cycle") || args[0].equalsIgnoreCase("c")) {
+        } else if ("cycle".equalsIgnoreCase(args[0]) || "c".equalsIgnoreCase(args[0])) {
             new CycleCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("sounds")) {
+        } else if ("sounds".equalsIgnoreCase(args[0])) {
             new SoundsCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("tagprefix")) {
+        } else if ("tagprefix".equalsIgnoreCase(args[0])) {
             new TagPrefixCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("tagsuffix")) {
+        } else if ("tagsuffix".equalsIgnoreCase(args[0])) {
             new TagSuffixCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("tagdelete")) {
+        } else if ("tagdelete".equalsIgnoreCase(args[0])) {
             new TagDeleteCommand(sender, args);
-        } else if (args[0].equalsIgnoreCase("itemreload") || args[0].equalsIgnoreCase("ireload")) {
+        } else if ("itemreload".equalsIgnoreCase(args[0]) || "ireload".equalsIgnoreCase(args[0])) {
             ItemUtils.reloadItemCache();
             ItemUtils.reloadItemName();
             TLocale.sendTo(sender, "COMMANDS.RELOAD.SUCCESS-NORMAL");

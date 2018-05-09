@@ -47,7 +47,9 @@ public class LocationUtils {
 
     @Deprecated
     public static Block findBlockByLocation(Location l) {
-        while (l.getY() < 255 && l.getBlock().getType() != Material.AIR) l.add(0, 1, 0);
+        while (l.getY() < 255 && l.getBlock().getType() != Material.AIR) {
+            l.add(0, 1, 0);
+        }
         return l.getY() < 255 && l.getBlock().getType() == Material.AIR ? l.getBlock() : null;
     }
 
