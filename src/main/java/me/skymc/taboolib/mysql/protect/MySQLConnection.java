@@ -5,11 +5,7 @@ import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import org.bukkit.plugin.Plugin;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**

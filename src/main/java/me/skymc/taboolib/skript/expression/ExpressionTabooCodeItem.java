@@ -1,13 +1,12 @@
 package me.skymc.taboolib.skript.expression;
 
-import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
-
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import me.skymc.taboocode.TabooCodeItem;
+import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @author sky

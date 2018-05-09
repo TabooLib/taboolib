@@ -5,7 +5,7 @@
 
 package com.ilummc.tlib.bungee.api.chat;
 
-import com.ilummc.tlib.bungee.api.*;
+import com.ilummc.tlib.bungee.api.ChatColor;
 
 import java.beans.ConstructorProperties;
 import java.util.ArrayList;

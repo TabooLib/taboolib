@@ -1,8 +1,8 @@
 package me.skymc.taboolib.enchantment;
 
-import java.lang.reflect.Field;
-
 import org.bukkit.enchantments.Enchantment;
+
+import java.lang.reflect.Field;
 
 public class EnchantmentUtils {
 	

@@ -2,7 +2,6 @@ package me.skymc.taboolib.fileutils;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.bean.Property;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Ref;

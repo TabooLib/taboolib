@@ -1,12 +1,11 @@
 package me.skymc.taboolib.bookformatter.builder;
 
-import java.util.List;
-
+import me.skymc.taboolib.bookformatter.BookReflection;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import me.skymc.taboolib.bookformatter.BookReflection;
-import net.md_5.bungee.api.chat.BaseComponent;
+import java.util.List;
 
 /**
  * @author sky

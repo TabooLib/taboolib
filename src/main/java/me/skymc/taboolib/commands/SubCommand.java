@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Deprecated
 public abstract class SubCommand {
 
     public CommandSender sender;

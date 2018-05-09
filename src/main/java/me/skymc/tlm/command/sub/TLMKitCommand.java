@@ -1,17 +1,16 @@
 package me.skymc.tlm.command.sub;
 
-import java.util.HashMap;
-import java.util.List;
-
+import me.skymc.taboolib.commands.SubCommand;
+import me.skymc.tlm.TLM;
+import me.skymc.tlm.module.TabooLibraryModule;
+import me.skymc.tlm.module.sub.ModuleKits;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import me.skymc.taboolib.commands.SubCommand;
-import me.skymc.tlm.TLM;
-import me.skymc.tlm.module.TabooLibraryModule;
-import me.skymc.tlm.module.sub.ModuleKits;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author sky

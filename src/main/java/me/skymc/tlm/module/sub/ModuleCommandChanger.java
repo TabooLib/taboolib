@@ -1,11 +1,10 @@
 package me.skymc.tlm.module.sub;
 
+import me.skymc.tlm.module.ITabooLibraryModule;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
-
-import me.skymc.tlm.module.ITabooLibraryModule;
 
 /**
  * @author sky

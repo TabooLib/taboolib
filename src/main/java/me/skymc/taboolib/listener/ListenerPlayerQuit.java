@@ -1,11 +1,10 @@
 package me.skymc.taboolib.listener;
 
+import me.skymc.taboolib.playerdata.DataUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import me.skymc.taboolib.playerdata.DataUtils;
 
 public class ListenerPlayerQuit implements Listener{
 	

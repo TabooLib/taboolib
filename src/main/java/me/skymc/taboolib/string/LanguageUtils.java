@@ -1,12 +1,11 @@
 package me.skymc.taboolib.string;
 
+import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-
-import org.bukkit.plugin.Plugin;
-
-import me.skymc.taboolib.message.MsgUtils;
 
 @Deprecated
 public class LanguageUtils {

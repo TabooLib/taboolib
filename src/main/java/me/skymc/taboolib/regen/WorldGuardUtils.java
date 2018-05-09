@@ -1,11 +1,10 @@
 package me.skymc.taboolib.regen;
 
-import java.util.Map;
-
-import org.bukkit.Location;
-
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
+
+import java.util.Map;
 
 @Deprecated
 public class WorldGuardUtils {

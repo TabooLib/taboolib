@@ -9,7 +9,6 @@ import me.skymc.taboolib.itemnbtapi.NBTItem;
 import me.skymc.taboolib.itemnbtapi.NBTList;
 import me.skymc.taboolib.itemnbtapi.NBTListCompound;
 import me.skymc.taboolib.itemnbtapi.NBTType;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.string.Language;
 import org.bukkit.Color;
@@ -29,10 +28,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class ItemUtils {
@@ -128,7 +127,7 @@ public class ItemUtils {
             finalItemsFolder.mkdir();
         }
         // 检查固定物品库中的物品
-        Arrays.stream(Objects.requireNonNull(finalItemsFolder.listFiles())).forEach(file -> loadItemsFile(file, true));
+        Arrays.stream(finalItemsFolder.listFiles()).forEach(file -> loadItemsFile(file, true));
         TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
     }
 
@@ -274,8 +273,9 @@ public class ItemUtils {
                 return "generic.armor";
             case "luck":
                 return "generic.luck";
+            default:
+                return null;
         }
-        return null;
     }
 
     /**

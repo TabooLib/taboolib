@@ -121,6 +121,7 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] §7指令 §f{0} §7不存在'
     - '&8[&3&lTabooLib&8] §7你可能想要:'
     - '&8[&3&lTabooLib&8] §7{1}'
+    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的命令 &f{1} &7注册 &f{2} &7条子命令'
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
     INSUFFICIENT: '&8[&3&lTabooLib&8] &4参数不足'
@@ -129,41 +130,11 @@ COMMANDS:
     SUCCESS-NORMAL: '&8[&3&lTabooLib&8] &7重载成功'
     SUCCESS-ELAPSED-TIME: '&8[&3&lTabooLib&8] &7重载成功, 耗时: &f{0} ms'
   TABOOLIB:
-    HELP:
-    - ''
-    - '§b§l----- §3§lTaooLib Commands §b§l-----'
-    - ''
-    - '&f /{0} save §8[§7名称§8] &6- §e保存手中物品'
-    - '&f /{0} item §8[§7名称§8] §8<§7玩家§8> §8<§7数量§8> &6- §e给予玩家物品'
-    - '&f /{0} iteminfo &6- §e查看物品信息'
-    - '&f /{0} itemlist &6- §e查看所有物品'
-    - '&f /{0} itemreload &6- §e重载物品缓存'
-    - ''
-    - '&f /{0} attributes &6- §e查看所有属性'
-    - '&f /{0} enchants &6- §e查看所有附魔'
-    - '&f /{0} potions &6- §e查看所有药水'
-    - '&f /{0} flags &6- §e查看所有标签'
-    - '&f /{0} slots &6- §e查看所有部位'
-    - '&f /{0} sounds &6- §e查看所有音效'
-    - ''
-    - '&f /{0} getvariable §8[§7-s|a§8] §8[§7键§8] &6- §e查看变量'
-    - '&f /{0} setvariable §8[§7-s|a§8] §8[§7键§8] §8[§7值§8] &6- §e更改变量'
-    - ''
-    - '&f /{0} cycle list &6- §e列出所有时间检查器'
-    - '&f /{0} cycle info §8[§7名称§8] &6- §e查询检查器信息'
-    - '&f /{0} cycle reset §8[§7名称§8] &6- §e初始化时间检查器'
-    - '&f /{0} cycle update §8[§7名称§8] &6- §e更新时间检查器'
-    - ''
-    - '&f /{0} shell load §8[§7名称§8] &6- §e载入某个脚本'
-    - '&f /{0} shell unload §8[§7名称§8] &6- §e卸载某个脚本'
-    - ''
-    - '&f /{0} tagprefix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶前缀'
-    - '&f /{0} tagsuffix §8[§7名称§8] §8[§7文本§8] &6- §e设置玩家头顶后缀'
-    - '&f /{0} tagdelete §8[§7名称§8] &6- §e删除玩家称号数据'
-    - ''
-    - '&f /{0} importdata &6- §4向数据库导入本地数据 §8(该操作将会清空数据库)'
-    - ''
+    COMMAND-TITLE: '§b§l----- §3§lTabooLib Commands §b§l-----'
     SAVE:
+      DESCRIPTION: '载入插件'
+      ARGUMENTS:
+        0: '名称'
       INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
       INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
       INVALID-ITEM-FINAL-EXISTS: '&8[&3&lTabooLib&8] &4该名称所对应的物品保存于固定物品库中, 无法覆盖'
@@ -172,34 +143,81 @@ COMMANDS:
       GUIDE-QUIT: '&8[&3&lTabooLib&8] &7退出引导'
       SUCCESS: '&8[&3&lTabooLib&8] &7物品 &f{0} &7已替换'
     ITEM:
+      DESCRIPTION: '给予玩家物品'
+      ARGUMENTS:
+        0: '名称'
+        1: '玩家'
+        2: '数量'
       INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
       INVALID-ITEM: '&8[&3&lTabooLib&8] &4物品 &c{0} &4不存在'
       INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
       INVALID-NUMBER: '&8[&3&lTabooLib&8] &4数量必须大于0'
       SUCCESS: '&8[&3&lTabooLib&8] &7物品已发送至玩家 &f{0} &7的背包中'
+    ITEMRELOAD:
+      DESCRIPTION: '重载物品缓存'
+      SUCCESS-RELOAD: '&8[&3&lTabooLib&8] &7重载成功'
     VARIABLE:
+      DESCRIPTION:
+        GET: '查看变量'
+        SET: '设置变量'
+      ARGUMENTS:
+        GET:
+          0: '-s|-a'
+          1: '键'
+        SET:
+          0: '-s|-a'
+          1: '键'
+          2: '值'
       WRITE-ERROR-TYPE: '&8[&3&lTabooLib&8] &4请输入正确的写入方式: &c-s&4、&c-a'
       WRITE-SUCCESS: '&8[&3&lTabooLib&8] &7写入完成, 耗时: &f{0} &7(ms)'
       READ-ERROR-TYPE: '&8[&3&lTabooLib&8] &4请输入正确的写入方式: &c-s&4、&c-a'
       READ-RESULT: '&8[&3&lTabooLib&8] &7变量 &f{0} &7的值为: &f{1}'
       READ-SUCCESS: '&8[&3&lTabooLib&8] &7写入完成, 耗时: &f{0} &7(ms)'
     IMPORTDATA:
+      DESCRIPTION: '§4向数据库导入本地数据 §8(该操作将会清空数据库)'
       CLEARING: '&8[&3&lTabooLib&8] &7正在清空数据库...'
       EMPTYDATA: '&8[&3&lTabooLib&8] &4没有玩家数据可以导入'
       IMPORTING-START: '&8[&3&lTabooLib&8] &7开始导入 &f{0} &7项玩家数据'
       IMPORTING-PROGRESS: '&8[&3&lTabooLib&8] &7导入玩家数据: &f{0} &7进度: &f{1}/{2}'
       SUCCESS: '&8[&3&lTabooLib&8] &7导入完成'
     JAVASHELL:
+      DESCRIPTION:
+        LOAD: '载入脚本'
+        UNLOAD: '卸载脚本'
+      ARGUMENTS:
+        LOAD:
+          0: '名称'
+        UNLOAD:
+          0: '名称'
       INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
       INVALID-SHELL: '&8[&3&lTabooLib&8] &4脚本 &c{0} &4不存在'
       SUCCESS-LOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已载入'
       SUCCESS-UNLOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已卸载'
     PLAYERTAG:
+      DESCRIPTION:
+        DISPLAY: '设置玩家展示名称'
+        PREFIX: '设置玩家头顶前缀'
+        SUFFIX: '设置玩家头顶后缀'
+        DELETE: '删除玩家称号数据'
+      ARGUMENTS:
+        DISPLAY:
+          0: '玩家'
+          1: '文本'
+        PREFIX:
+          0: '玩家'
+          1: '文本'
+        SUFFIX:
+          0: '玩家'
+          1: '文本'
+        DELETE:
+          0: '玩家'
       INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
+      SUCCESS-DISPLAY-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的名称为 &f{1}'
       SUCCESS-PREFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的前缀为 &f{1}'
       SUCCESS-SUFFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的后缀为 &f{1}'
       SUCCESS-DELETE: '&8[&3&lTabooLib&8] &7删除玩家 &f{0} &7的称号数据'
     INFO:
+      DESCRIPTION: '查看物品信息'
       INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
       ITEM-INFO:
       - ==: JSON
@@ -225,6 +243,7 @@ COMMANDS:
           nbt:
             hover: '{3}'
     ITEMLIST:
+      DESCRIPTION: '查看所有物品'
       MENU:
         TITLE: '物品库 {0}'
         NEXT: '§f上一页'
@@ -234,6 +253,7 @@ COMMANDS:
         - '§f§m                  '
         - '§f序列号: §8{0}'
     SOUNDS:
+      DESCRIPTION: '查看所有音效'
       MENU:
         TITLE: '音效库 {0}'
         NEXT: '§f上一页'
@@ -255,6 +275,18 @@ COMMANDS:
               hover: 点击复制音效
               suggest: '{0}'
     TIMECYCLE:
+      DESCRIPTION:
+        LIST: '列出所有时间检查器'
+        INFO: '查询检查器信息'
+        RESET: '初始化时间检查器'
+        UPDATE: '更新时间检查器'
+      ARGUMENTS:
+        INFO:
+          0: '名称'
+        RESET:
+          0: '名称'
+        UPDATE:
+          0: '名称'
       INVALID-CYCLE: '&8[&3&lTabooLib&8] &4检查器 &c{0} &4不存在'
       CYCLE-UPDATE: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7已更新'
       CYCLE-RESET: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7初始化完成'
@@ -281,6 +313,7 @@ COMMANDS:
         FOOT:
         - ''
     ATTRIBUTES:
+      DESCRIPTION: '查看所有属性'
       HEAD:
       - ''
       - '§b§l----- §3§lItemStack Attributes §b§l-----'
@@ -295,6 +328,7 @@ COMMANDS:
       FOOT:
       - ''    
     ENCHANTS:
+      DESCRIPTION: '查看所有附魔'
       HEAD:
       - ''
       - '§b§l----- §3§lItemStack Enchantments §b§l-----'
@@ -309,6 +343,7 @@ COMMANDS:
       FOOT:
       - ''
     POTIONS:
+      DESCRIPTION: '查看所有药水'
       HEAD:
       - ''
       - '§b§l----- §3§lItemStack PotionEffects §b§l-----'
@@ -323,6 +358,7 @@ COMMANDS:
       FOOT:
       - ''
     FLAGS:
+      DESCRIPTION: '查看所有标签'
       HEAD:
       - ''
       - '§b§l----- §3§lItemStack Flags §b§l-----'
@@ -337,6 +373,7 @@ COMMANDS:
       FOOT:
       - ''  
     SLOTS:
+      DESCRIPTION: '查看所有部位'
       HEAD:
       - ''
       - '§b§l----- §3§lItemStack Slots §b§l-----'

@@ -356,7 +356,7 @@ public class JSONFormatter {
 
     private class Builder {
 
-        private StringBuilder sb = new StringBuilder("");
+        private StringBuilder sb = new StringBuilder();
         private boolean bold = false, italic = false, magic = false, strikethrough = false, underline = false, changed = false;
 
         public Builder() {
