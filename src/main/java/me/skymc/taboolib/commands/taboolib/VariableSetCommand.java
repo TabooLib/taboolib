@@ -11,12 +11,12 @@ public class VariableSetCommand extends SubCommand {
         super(sender, args);
 
         if (args.length < 4) {
-            TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
+            TLocale.sendTo(sender, "COMMANDS.PARAMETER.INSUFFICIENT");
             return;
         }
 
         if (!("-a".equals(args[1]) || "-s".equals(args[1]))) {
-            TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-ERROR-TYPE");
+            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.VARIABLE.WRITE-ERROR-TYPE");
             return;
         }
 
@@ -29,7 +29,7 @@ public class VariableSetCommand extends SubCommand {
             GlobalDataManager.setVariableAsynchronous(args[2], value);
         }
 
-        TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
+        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.VARIABLE.WRITE-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
         setReturn(true);
     }
 }
