@@ -3,7 +3,6 @@ package me.skymc.taboolib.commands.sub;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.other.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

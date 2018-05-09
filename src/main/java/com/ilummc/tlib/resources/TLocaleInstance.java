@@ -2,7 +2,6 @@ package com.ilummc.tlib.resources;
 
 import com.google.common.collect.ImmutableList;
 import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.type.TLocaleText;
 import com.ilummc.tlib.util.Strings;
 import org.bukkit.Bukkit;
@@ -62,8 +61,8 @@ class TLocaleInstance {
                 }
             });
         } catch (Exception | Error e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("SEND-LOCALE-ERROR"), path));
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.toString()));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("SEND-LOCALE-ERROR"), path));
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.toString()));
             e.printStackTrace();
         }
     }

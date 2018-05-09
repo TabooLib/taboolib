@@ -1,15 +1,14 @@
 package me.skymc.taboolib.commands.language;
 
+import me.skymc.taboolib.Main;
+import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.string.language2.Language2Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import me.skymc.taboolib.Main;
-import me.skymc.taboolib.message.MsgUtils;
-import me.skymc.taboolib.string.language2.Language2Value;
 
 /**
  * @author sky
@@ -30,7 +29,7 @@ public class Language2Command implements CommandExecutor {
 		else if (args[0].equalsIgnoreCase("reload")) {
 			MsgUtils.send(sender, "§7重载中..");
 			long time = System.currentTimeMillis();
-			Main.getExampleLanguage2().reload();
+            Main.getExampleLanguage2().reload();
 			MsgUtils.send(sender, "§7重载完成! 耗时: &f" + (System.currentTimeMillis() - time) + "ms");
 		}
 		else if (args[0].equalsIgnoreCase("send")) {
@@ -42,7 +41,7 @@ public class Language2Command implements CommandExecutor {
 				long time = System.currentTimeMillis();
 				
 				// 获取语言文件
-				Language2Value value = Main.getExampleLanguage2().get(args[2]);
+                Language2Value value = Main.getExampleLanguage2().get(args[2]);
 				// 如果有变量参数
 				if (args.length > 3) {
 					int i = 0;

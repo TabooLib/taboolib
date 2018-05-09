@@ -23,58 +23,6 @@ public class MySQLConnection {
     private int recheck = 10;
     private Thread recheckThread;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public String getConnectionUrl() {
-        return connectionUrl;
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
-    }
-
-    public boolean isFallReconnection() {
-        return fallReconnection;
-    }
-
-    public void setPlugin(Plugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public void setFallReconnection(boolean fallReconnection) {
-        this.fallReconnection = fallReconnection;
-    }
-
-    public int getRecheck() {
-        return recheck;
-    }
-
-    public Thread getRecheckThread() {
-        return recheckThread;
-    }
-
     public MySQLConnection(String url, String user, String port, String password, String database) {
         this(url, user, port, password, database, 10, Main.getInst());
     }
@@ -126,12 +74,64 @@ public class MySQLConnection {
         }
     }
 
-    public void setReCheckSeconds(int s) {
-        this.recheck = s;
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public String getConnectionUrl() {
+        return connectionUrl;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public void setPlugin(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public boolean isFallReconnection() {
+        return fallReconnection;
+    }
+
+    public void setFallReconnection(boolean fallReconnection) {
+        this.fallReconnection = fallReconnection;
+    }
+
+    public int getRecheck() {
+        return recheck;
+    }
+
+    public Thread getRecheckThread() {
+        return recheckThread;
     }
 
     public int getReCheckSeconds() {
         return recheck;
+    }
+
+    public void setReCheckSeconds(int s) {
+        this.recheck = s;
     }
 
     public boolean isConnection() {

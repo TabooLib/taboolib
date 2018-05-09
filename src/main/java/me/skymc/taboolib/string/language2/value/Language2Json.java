@@ -40,22 +40,6 @@ public class Language2Json implements Language2Line {
 
     private StringBuffer text = new StringBuffer();
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
-    public JSONFormatter getJson() {
-        return json;
-    }
-
-    public StringBuffer getText() {
-        return text;
-    }
-
     public Language2Json(Language2Format format, List<String> list, Player player) {
         // 首次检测
         boolean isFirst = true;
@@ -131,6 +115,22 @@ public class Language2Json implements Language2Line {
         }
         // 追加
         append(current, clickEvent, hoverEvent);
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Language2Value getValue() {
+        return value;
+    }
+
+    public JSONFormatter getJson() {
+        return json;
+    }
+
+    public StringBuffer getText() {
+        return text;
     }
 
     /**

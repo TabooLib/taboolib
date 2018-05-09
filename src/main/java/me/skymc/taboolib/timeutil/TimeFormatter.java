@@ -14,6 +14,14 @@ public class TimeFormatter {
     private long seconds;
     private long milliseconds;
 
+    public TimeFormatter(long millisecond) {
+        days = TimeUnit.MILLISECONDS.toDays(millisecond);
+        hours = TimeUnit.MILLISECONDS.toHours(millisecond) - days * 24L;
+        minutes = TimeUnit.MILLISECONDS.toMinutes(millisecond) - TimeUnit.MILLISECONDS.toHours(millisecond) * 60L;
+        seconds = TimeUnit.MILLISECONDS.toSeconds(millisecond) - TimeUnit.MILLISECONDS.toMinutes(millisecond) * 60L;
+        milliseconds = TimeUnit.MILLISECONDS.toMillis(millisecond) - TimeUnit.MILLISECONDS.toSeconds(millisecond) * 1000L;
+    }
+
     public long getDays() {
         return days;
     }
@@ -52,14 +60,6 @@ public class TimeFormatter {
 
     public void setMilliseconds(long milliseconds) {
         this.milliseconds = milliseconds;
-    }
-
-    public TimeFormatter(long millisecond) {
-        days = TimeUnit.MILLISECONDS.toDays(millisecond);
-        hours = TimeUnit.MILLISECONDS.toHours(millisecond) - days * 24L;
-        minutes = TimeUnit.MILLISECONDS.toMinutes(millisecond) - TimeUnit.MILLISECONDS.toHours(millisecond) * 60L;
-        seconds = TimeUnit.MILLISECONDS.toSeconds(millisecond) - TimeUnit.MILLISECONDS.toMinutes(millisecond) * 60L;
-        milliseconds = TimeUnit.MILLISECONDS.toMillis(millisecond) - TimeUnit.MILLISECONDS.toSeconds(millisecond) * 1000L;
     }
 
     public long toMilliseconds() {

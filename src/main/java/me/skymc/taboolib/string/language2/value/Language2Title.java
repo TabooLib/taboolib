@@ -33,30 +33,6 @@ public class Language2Title implements Language2Line {
 
     private Language2Value value;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getSubtitle() {
-        return subtitle;
-    }
-
-    public int getFade1() {
-        return fade1;
-    }
-
-    public int getFade2() {
-        return fade2;
-    }
-
-    public int getStay() {
-        return stay;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
     public Language2Title(Language2Format format, List<String> list) {
         // 变量初始化
         this.value = format.getLanguage2Value();
@@ -84,6 +60,30 @@ public class Language2Title implements Language2Line {
                 subtitle = ChatColor.DARK_RED + "[<ERROR-10: " + value.getLanguageKey() + ">]";
             }
         }
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public int getFade1() {
+        return fade1;
+    }
+
+    public int getFade2() {
+        return fade2;
+    }
+
+    public int getStay() {
+        return stay;
+    }
+
+    public Language2Value getValue() {
+        return value;
     }
 
     @Override

@@ -38,12 +38,12 @@ public class CustomBookOpenEvent extends Event implements Cancellable {
         return hand;
     }
 
-    public ItemStack getBook() {
-        return book;
-    }
-
     public void setHand(Hand hand) {
         this.hand = hand;
+    }
+
+    public ItemStack getBook() {
+        return book;
     }
 
     public void setBook(ItemStack book) {

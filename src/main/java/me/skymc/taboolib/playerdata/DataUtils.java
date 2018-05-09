@@ -93,16 +93,6 @@ public class DataUtils implements Listener {
         return conf;
     }
 
-    @EventHandler
-    public void disable(PluginDisableEvent e) {
-        if (e.getPlugin().equals(Main.getInst())) {
-            return;
-        }
-        if (CACHE_DATA_PLUGIN.containsKey(e.getPlugin().getName())) {
-            saveAllCaches(e.getPlugin(), true);
-        }
-    }
-
     @Deprecated
     public static FileConfiguration getPlayerData(String name) {
         try {
@@ -148,5 +138,15 @@ public class DataUtils implements Listener {
 
     public static void saveOnline(String p) {
         getPlayerData(p).set("TabooLib.Offline", System.currentTimeMillis());
+    }
+
+    @EventHandler
+    public void disable(PluginDisableEvent e) {
+        if (e.getPlugin().equals(Main.getInst())) {
+            return;
+        }
+        if (CACHE_DATA_PLUGIN.containsKey(e.getPlugin().getName())) {
+            saveAllCaches(e.getPlugin(), true);
+        }
     }
 }

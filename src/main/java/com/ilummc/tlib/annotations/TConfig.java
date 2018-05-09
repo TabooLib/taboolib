@@ -1,12 +1,12 @@
 package com.ilummc.tlib.annotations;
 
+import com.ilummc.tlib.util.Ref;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Modifier;
-
-import com.ilummc.tlib.util.Ref;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

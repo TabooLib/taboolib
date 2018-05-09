@@ -23,14 +23,6 @@ public class TLM {
 
     private Language2 language;
 
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public Language2 getLanguage() {
-        return language;
-    }
-
     /**
      * 构造方法
      */
@@ -73,6 +65,14 @@ public class TLM {
             }
         }
         return inst;
+    }
+
+    public FileConfiguration getConfig() {
+        return config;
+    }
+
+    public Language2 getLanguage() {
+        return language;
     }
 
     /**

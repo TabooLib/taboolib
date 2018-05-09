@@ -9,21 +9,6 @@ import net.md_5.bungee.api.chat.ClickEvent;
 public interface ClickAction {
 
     /**
-     * Get the Chat-Component action
-     *
-     * @return the Chat-Component action
-     */
-    ClickEvent.Action action();
-
-    /**
-     * The value paired to the action
-     *
-     * @return the value paired tot the action
-     */
-    String value();
-
-
-    /**
      * Creates a command action: when the player clicks, the command passed as parameter gets executed with the clicker as sender
      *
      * @param command the command to be executed
@@ -65,6 +50,20 @@ public interface ClickAction {
     static ClickAction changePage(int page) {
         return new SimpleClickAction(ClickEvent.Action.CHANGE_PAGE, Integer.toString(page));
     }
+
+    /**
+     * Get the Chat-Component action
+     *
+     * @return the Chat-Component action
+     */
+    ClickEvent.Action action();
+
+    /**
+     * The value paired to the action
+     *
+     * @return the value paired tot the action
+     */
+    String value();
 
     class SimpleClickAction implements ClickAction {
 

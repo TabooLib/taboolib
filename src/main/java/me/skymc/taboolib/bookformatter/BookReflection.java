@@ -234,30 +234,6 @@ public final class BookReflection {
     }
 
     /**
-     * An error thrown when this NMS-helper class doesn't support the running MC version
-     */
-    public static class UnsupportedVersionException extends RuntimeException {
-        /**
-         * serialVersionUID
-         */
-        private static final long serialVersionUID = 6835583513394319946L;
-
-        /**
-         * The current running version
-         */
-        private final String version = BookReflection.version;
-
-        public String getVersion() {
-            return version;
-        }
-
-        public UnsupportedVersionException(Exception e) {
-            super("Error while executing reflections, submit to developers the following log (version: " + BookReflection.version + ")", e);
-        }
-    }
-
-
-    /**
      * Gets the EntityPlayer handled by the argument
      *
      * @param player the Player handler
@@ -291,17 +267,39 @@ public final class BookReflection {
         }
     }
 
-    public static Class<?> getNmsClass(String className) {
-        return getNmsClass(className, true);
-    }
-
-
     private static Class<?> getCraftClass(String path) {
         try {
             return Class.forName("org.bukkit.craftbukkit." + version + "." + path);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static Class<?> getNmsClass(String className) {
+        return getNmsClass(className, true);
+    }
+
+    /**
+     * An error thrown when this NMS-helper class doesn't support the running MC version
+     */
+    public static class UnsupportedVersionException extends RuntimeException {
+        /**
+         * serialVersionUID
+         */
+        private static final long serialVersionUID = 6835583513394319946L;
+
+        /**
+         * The current running version
+         */
+        private final String version = BookReflection.version;
+
+        public UnsupportedVersionException(Exception e) {
+            super("Error while executing reflections, submit to developers the following log (version: " + BookReflection.version + ")", e);
+        }
+
+        public String getVersion() {
+            return version;
         }
     }
 }

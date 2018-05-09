@@ -22,6 +22,16 @@ public class Language2 {
     private Plugin plugin;
     private String languageName;
 
+    public Language2(Plugin plugin) {
+        this("zh_CN", plugin);
+    }
+
+    public Language2(String languageName, Plugin plugin) {
+        this.languageName = languageName;
+        this.plugin = plugin;
+        reload(languageName);
+    }
+
     public FileConfiguration getConfiguration() {
         return configuration;
     }
@@ -40,16 +50,6 @@ public class Language2 {
 
     public String getLanguageName() {
         return languageName;
-    }
-
-    public Language2(Plugin plugin) {
-        this("zh_CN", plugin);
-    }
-
-    public Language2(String languageName, Plugin plugin) {
-        this.languageName = languageName;
-        this.plugin = plugin;
-        reload(languageName);
     }
 
     public Language2Value get(String key) {

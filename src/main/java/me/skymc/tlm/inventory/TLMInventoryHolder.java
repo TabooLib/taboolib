@@ -15,14 +15,6 @@ public class TLMInventoryHolder implements InventoryHolder {
 
     private HashMap<String, Object> holderData = new HashMap<>();
 
-    public String getModule() {
-        return module;
-    }
-
-    public HashMap<String, Object> getHolderData() {
-        return holderData;
-    }
-
     /**
      * 构造方法
      *
@@ -30,6 +22,14 @@ public class TLMInventoryHolder implements InventoryHolder {
      */
     public TLMInventoryHolder(String module) {
         this.module = module;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public HashMap<String, Object> getHolderData() {
+        return holderData;
     }
 
     @Override

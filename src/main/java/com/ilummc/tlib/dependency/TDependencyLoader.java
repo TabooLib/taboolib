@@ -1,14 +1,13 @@
 package com.ilummc.tlib.dependency;
 
+import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
-import me.skymc.taboolib.message.MsgUtils;
-import org.bukkit.plugin.Plugin;
 
 public class TDependencyLoader {
 

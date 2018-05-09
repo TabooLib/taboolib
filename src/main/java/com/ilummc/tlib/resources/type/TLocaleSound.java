@@ -28,6 +28,17 @@ public class TLocaleSound implements TLocaleSendable, ConfigurationSerializable 
         this.soundPacks = soundPacks;
     }
 
+    public static TLocaleSound valueOf(Map<String, Object> map) {
+        List<SoundPack> soundPacks = new ArrayList<>();
+        Object sounds = map.containsKey("sounds") ? map.get("sounds") : map.getOrDefault("sound", "");
+        if (sounds instanceof List) {
+            soundPacks = ((List<String>) sounds).stream().map(SoundPack::new).collect(Collectors.toList());
+        } else {
+            soundPacks.add(new SoundPack(sounds.toString()));
+        }
+        return new TLocaleSound(soundPacks);
+    }
+
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
@@ -54,16 +65,5 @@ public class TLocaleSound implements TLocaleSendable, ConfigurationSerializable 
             map.put("sounds", soundPacks.stream().map(SoundPack::toString).collect(Collectors.toList()));
         }
         return map;
-    }
-
-    public static TLocaleSound valueOf(Map<String, Object> map) {
-        List<SoundPack> soundPacks = new ArrayList<>();
-        Object sounds = map.containsKey("sounds") ? map.get("sounds") : map.getOrDefault("sound", "");
-        if (sounds instanceof List) {
-            soundPacks = ((List<String>) sounds).stream().map(SoundPack::new).collect(Collectors.toList());
-        } else {
-            soundPacks.add(new SoundPack(sounds.toString()));
-        }
-        return new TLocaleSound(soundPacks);
     }
 }

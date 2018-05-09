@@ -47,6 +47,10 @@ public final class BookAchievement {
         achievements.put(OVERPOWERED, "overpowered");
     }
 
+    private BookAchievement() {
+
+    }
+
     /**
      * Gets the json id from the bukkit achievement passed as argument
      *
@@ -55,9 +59,5 @@ public final class BookAchievement {
      */
     public static String toId(Achievement achievement) {
         return achievements.get(achievement);
-    }
-
-    private BookAchievement() {
-
     }
 }

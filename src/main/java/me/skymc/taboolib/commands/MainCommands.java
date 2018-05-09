@@ -11,8 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.lang.reflect.Parameter;
-
 public class MainCommands implements CommandExecutor {
 
     @Override

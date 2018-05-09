@@ -16,6 +16,10 @@ public class PlayerJumpEvent extends Event implements Cancellable {
         this.player = player;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Player getPlayer() {
         return this.player;
     }
@@ -32,10 +36,6 @@ public class PlayerJumpEvent extends Event implements Cancellable {
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 }
