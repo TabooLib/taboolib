@@ -107,8 +107,9 @@ public class PageBuilder {
      */
     public static PageBuilder of(BaseComponent... text) {
         PageBuilder res = new PageBuilder();
-        for(BaseComponent b : text)
+        for(BaseComponent b : text) {
             res.add(b);
+        }
         return res;
     }
 }

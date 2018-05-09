@@ -64,7 +64,7 @@ public class _194ItemUtils implements IDabItemUtils{
 	
 	public Class<?>	ni	= NMSUtils.getNMSClassSilent("Item");
 	
-	public Method	gn	= NMSUtils.getMethodSilent(nmis, "getName");
+	public Method	gn	= NMSUtils.getMethodSilent(nmis, "getLabel");
 	
 	@Override
 	public String getName(ItemStack is){
@@ -101,7 +101,7 @@ public class _194ItemUtils implements IDabItemUtils{
 		}
 	}
 	
-	public Method gin = NMSUtils.getMethodSilent(ni, "getName");
+	public Method gin = NMSUtils.getMethodSilent(ni, "getLabel");
 	
 	@Override
 	public String getItemName(ItemStack is){
@@ -676,8 +676,9 @@ public class _194ItemUtils implements IDabItemUtils{
 			ret = nbtiad.get(nbt);
 			break;
 		}
-		if(ret == null)
-			return null;
+		if(ret == null) {
+            return null;
+        }
 		return new JSONArray(new Object[]{ i, ret });
 	}
 	
@@ -1005,8 +1006,9 @@ public class _194ItemUtils implements IDabItemUtils{
 	public boolean compareBaseTag(Object tag, Object tag1) throws Exception{
 		int i = ((byte)gti.invoke(tag));
 		int i1 = ((byte)gti.invoke(tag1));
-		if(i != i1)
-			return false;
+		if(i != i1) {
+            return false;
+        }
 		switch(i){
 		case NBTConstants.TYPE_BYTE:
 			Byte b = (byte)nbtbd.get(tag);
@@ -1058,15 +1060,18 @@ public class _194ItemUtils implements IDabItemUtils{
 	public boolean compareCompoundTag(Object tag, Object tag1) throws Exception{
 		Map<String, Object> map = (Map<String, Object>)getMap(tag);
 		Map<String, Object> map1 = (Map<String, Object>)getMap(tag1);
-		if(map.size() != map1.size())
-			return false;
-		if(!map.keySet().containsAll(map1.keySet()))
-			return false;
+		if(map.size() != map1.size()) {
+            return false;
+        }
+		if(!map.keySet().containsAll(map1.keySet())) {
+            return false;
+        }
 		for(Entry<String, Object> e : map.entrySet()){
 			Object o = e.getValue();
 			Object o1 = map1.get(e.getKey());
-			if(!compareBaseTag(o, o1))
-				return false;
+			if(!compareBaseTag(o, o1)) {
+                return false;
+            }
 		}
 		return true;
 	}
@@ -1076,10 +1081,12 @@ public class _194ItemUtils implements IDabItemUtils{
 	public boolean compareListTag(Object tag, Object tag1) throws Exception{
 		List list = (List)nbtld.get(tag);
 		List list1 = (List)nbtld.get(tag1);
-		if(list.size() != list1.size())
-			return false;
-		if(list.isEmpty() && list1.isEmpty())
-			return true;
+		if(list.size() != list1.size()) {
+            return false;
+        }
+		if(list.isEmpty() && list1.isEmpty()) {
+            return true;
+        }
 		List copy = new ArrayList(list);
 		List copy1 = new ArrayList(list1);
 		Iterator it = copy.iterator();
@@ -1096,8 +1103,9 @@ public class _194ItemUtils implements IDabItemUtils{
 					break;
 				}
 			}
-			if(!cont)
-				return false;
+			if(!cont) {
+                return false;
+            }
 		}
 		return copy.isEmpty() && copy1.isEmpty();
 	}
@@ -1196,8 +1204,9 @@ public class _194ItemUtils implements IDabItemUtils{
 		int durability = jo.getInt("durability");
 		ItemStack is = new ItemStack(material, amount, (short)durability);
 		JSONObject jo1 = jo.getJSONObject("tag");
-		if(jo1.length() == 0)
-			return is;
+		if(jo1.length() == 0) {
+            return is;
+        }
 		Object tag = convertJSONToCompoundTag(jo1);
 		Object nmis = getNMSCopy(is);
 		setTag(nmis, tag);

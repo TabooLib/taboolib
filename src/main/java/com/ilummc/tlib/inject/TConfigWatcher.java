@@ -1,5 +1,6 @@
 package com.ilummc.tlib.inject;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.tuple.Triple;
 
 import java.io.File;
@@ -10,12 +11,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * @author lzzelAliz
+ */
 public class TConfigWatcher {
 
-    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1, new BasicThreadFactory.Builder().namingPattern("tconfig-watcher-schedule-pool-%d").daemon(true).build());
 
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 
@@ -24,8 +29,9 @@ public class TConfigWatcher {
             WatchKey key;
             while ((key = service.poll()) != null) {
                 for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                    if (triple.getLeft().getName().equals(Objects.toString(watchEvent.context())))
+                    if (triple.getLeft().getName().equals(Objects.toString(watchEvent.context()))) {
                         triple.getRight().accept(triple.getMiddle());
+                    }
                 }
                 key.reset();
             }

@@ -1,5 +1,6 @@
 package me.skymc.taboolib.playerdata;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.exception.PlayerOfflineException;
@@ -49,7 +50,7 @@ public class DataUtils implements Listener {
             saveAllCaches(getFixedPlugin(plugin), remove);
         }
         if (!Main.getInst().getConfig().getBoolean("HIDE-NOTIFY")) {
-            MsgUtils.send("保存 &f" + DataUtils.CACHE_DATA_PLUGIN.size() + " &7条插件数据, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
+            TLocale.Logger.info("DATA-UTILS.SUCCESS-SAVE-DATA", String.valueOf(DataUtils.CACHE_DATA_PLUGIN.size()), String.valueOf(System.currentTimeMillis() - time));
         }
     }
 
@@ -57,7 +58,7 @@ public class DataUtils implements Listener {
         try {
             conf.save(file);
         } catch (IOException e) {
-            MsgUtils.warn("文件 &4" + file.getName() + "&c 保存失败, 原因: &4" + e.getMessage());
+            TLocale.Logger.error("DATA-UTILS.FALL-SAVE-FILE", file.getName(), e.toString());
         }
     }
 

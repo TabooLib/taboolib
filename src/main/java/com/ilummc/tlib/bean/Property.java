@@ -16,10 +16,11 @@ public class Property<T> {
 
     public void set(T value) {
         if (value != this.value) {
-            if (consumers != null)
+            if (consumers != null) {
                 for (BiConsumer<T, T> consumer : consumers) {
                     consumer.accept(this.value, value);
                 }
+            }
             this.value = value;
         }
     }
@@ -29,8 +30,9 @@ public class Property<T> {
     }
 
     public void addListener(BiConsumer<T, T> consumer) {
-        if (consumers == null)
+        if (consumers == null) {
             consumers = new ArrayList<>();
+        }
         consumers.add(consumer);
     }
 

@@ -17,7 +17,7 @@ public class TLMCommands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command arg1, String arg2, String[] args) {
-        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+        if (args.length == 0 || "help".equalsIgnoreCase(args[0])) {
             if (sender.hasPermission("taboolib.admin")) {
                 TLM.getInst().getLanguage().get("COMMAND-HELP").send(sender);
             } else {
@@ -26,7 +26,7 @@ public class TLMCommands implements CommandExecutor {
         }
 
         // 重载
-        else if (args[0].equalsIgnoreCase("reload")) {
+        else if ("reload".equalsIgnoreCase(args[0])) {
             if (sender.hasPermission("taboolib.admin")) {
                 new TLMReloadCommand(sender, args);
             } else {
@@ -35,7 +35,7 @@ public class TLMCommands implements CommandExecutor {
         }
 
         // 列出
-        else if (args[0].equalsIgnoreCase("list")) {
+        else if ("list".equalsIgnoreCase(args[0])) {
             if (sender.hasPermission("taboolib.admin")) {
                 new TLMListCommand(sender, args);
             } else {
@@ -44,7 +44,7 @@ public class TLMCommands implements CommandExecutor {
         }
 
         // InventorySave 模块
-        else if (args[0].equalsIgnoreCase("inv")) {
+        else if ("inv".equalsIgnoreCase(args[0])) {
             if (sender.hasPermission("taboolib.admin")) {
                 new TLMInvCommand(sender, args);
             } else {
@@ -53,7 +53,7 @@ public class TLMCommands implements CommandExecutor {
         }
 
         // Kit 模块
-        else if (args[0].equalsIgnoreCase("kit")) {
+        else if ("kit".equalsIgnoreCase(args[0])) {
             new TLMKitCommand(sender, args);
         } else {
             TLM.getInst().getLanguage().get("COMMAND-ERROR").send(sender);

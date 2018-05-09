@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 /**
  * @author sky
@@ -96,9 +97,7 @@ public class Language2Value {
      * @param players 玩家
      */
     public void send(List<Player> players) {
-        for (Player player : players) {
-            send(player);
-        }
+        players.forEach(this::send);
     }
 
     /**
@@ -206,9 +205,7 @@ public class Language2Value {
      * @return
      */
     public List<String> asColored(List<String> list) {
-        for (int i = 0; i < list.size(); i++) {
-            list.set(i, ChatColor.translateAlternateColorCodes('&', list.get(i)));
-        }
+        IntStream.range(0, list.size()).forEach(i -> list.set(i, ChatColor.translateAlternateColorCodes('&', list.get(i))));
         return list;
     }
 

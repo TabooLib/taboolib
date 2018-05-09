@@ -96,8 +96,9 @@ public class TDependencyInjector {
                 if ((logger = field.getAnnotation(Logger.class)) != null) {
                     field.getType().asSubclass(com.ilummc.tlib.logger.TLogger.class);
                     com.ilummc.tlib.logger.TLogger tLogger = new com.ilummc.tlib.logger.TLogger(logger.value(), plugin, logger.level());
-                    if (!field.isAccessible())
+                    if (!field.isAccessible()) {
                         field.setAccessible(true);
+                    }
                     field.set(o, tLogger);
                     TLoggerManager.setDefaultLogger(plugin, tLogger);
                 }
@@ -111,8 +112,9 @@ public class TDependencyInjector {
             try {
                 PluginInstance instance;
                 if ((instance = field.getAnnotation(PluginInstance.class)) != null) {
-                    if (!field.isAccessible())
+                    if (!field.isAccessible()) {
                         field.setAccessible(true);
+                    }
                     field.getType().asSubclass(JavaPlugin.class);
                     Plugin pl;
                     if ((pl = Bukkit.getPluginManager().getPlugin(instance.value())) == null) {
@@ -123,8 +125,9 @@ public class TDependencyInjector {
                             pl = Bukkit.getPluginManager().getPlugin(instance.value());
                         }
                     }
-                    if (pl != null)
+                    if (pl != null) {
                         field.set(o, pl);
+                    }
                 }
             } catch (Exception ignored) {
             }

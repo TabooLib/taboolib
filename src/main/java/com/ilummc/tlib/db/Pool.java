@@ -55,7 +55,9 @@ public final class Pool extends ThreadPoolExecutor {
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
-        if (t != null) Base.close();
+        if (t != null) {
+            Base.close();
+        }
     }
 
 }

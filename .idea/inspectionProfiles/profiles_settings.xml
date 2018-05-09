@@ -1,5 +1,8 @@
 <component name="InspectionProjectProfileManager">
   <settings>
+    <option name="PROJECT_PROFILE" value="TabooLib Inspections" />
+    <option name="USE_PROJECT_PROFILE" value="false" />
+    <version value="1.0" />
     <info color="525229">
       <option name="EFFECT_COLOR" value="659c6b" />
       <option name="EFFECT_TYPE" value="2" />

@@ -1,5 +1,6 @@
 package me.skymc.taboolib.string.language2;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import org.bukkit.Bukkit;
@@ -74,10 +75,7 @@ public class Language2 {
         languageFile = new File(languageFolder, languageName);
         if (!languageFile.exists()) {
             if (plugin.getResource("Language2/" + languageName) == null) {
-                try {
-                    throw new FileNotFoundException("语言文件 " + languageName + " 不存在");
-                } catch (Exception ignored) {
-                }
+                TLocale.Logger.error("LANGUAGE2.FALL-NOTFOUND-FILE", languageName);
             } else {
                 plugin.saveResource("Language2/" + languageName, true);
             }

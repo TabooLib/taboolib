@@ -37,11 +37,14 @@ public class Ref {
         try {
 
             // 特殊判断
-            if (clazz == TLib.class)
+            if (clazz == TLib.class) {
                 return Arrays.asList(clazz.getDeclaredFields());
+            }
 
             List<Field> fields;
-            if ((fields = cachedFields.get(clazz.getName())) != null) return fields;
+            if ((fields = cachedFields.get(clazz.getName())) != null) {
+                return fields;
+            }
             ClassReader classReader = new ClassReader(clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class"));
             AsmAnalyser analyser = new AsmAnalyser(new ClassWriter(ClassWriter.COMPUTE_MAXS), excludeModifiers);
             classReader.accept(analyser, ClassReader.SKIP_DEBUG);
@@ -52,7 +55,9 @@ public class Ref {
                     return null;
                 }
             }).filter(Objects::nonNull).collect(Collectors.toList());
-            if (cache) cachedFields.putIfAbsent(clazz.getName(), fields);
+            if (cache) {
+                cachedFields.putIfAbsent(clazz.getName(), fields);
+            }
             return fields;
         } catch (Exception | Error e) {
             try {
@@ -80,9 +85,13 @@ public class Ref {
 
     public static Optional<Field> getFieldBySerializedName(Class<?> clazz, String name) {
         for (Field field : Ref.getDeclaredFields(clazz, 0, false)) {
-            if (field.isAnnotationPresent(SerializedName.class))
-                if (field.getAnnotation(SerializedName.class).value().equals(name)) return Optional.of(field);
-                else if (field.getName().equals(name)) return Optional.of(field);
+            if (field.isAnnotationPresent(SerializedName.class)) {
+                if (field.getAnnotation(SerializedName.class).value().equals(name)) {
+                    return Optional.of(field);
+                } else if (field.getName().equals(name)) {
+                    return Optional.of(field);
+                }
+            }
         }
         return Optional.empty();
     }

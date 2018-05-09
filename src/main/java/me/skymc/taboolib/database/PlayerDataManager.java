@@ -1,5 +1,6 @@
 package me.skymc.taboolib.database;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.Main.StorageType;
 import me.skymc.taboolib.events.PlayerLoadedEvent;
@@ -79,7 +80,7 @@ public class PlayerDataManager implements Listener {
             return PLAYER_DATA.get(username);
         } else if (offline) {
             if (Main.getStorageType() == StorageType.SQL) {
-                throw new PlayerOfflineException("不允许在储存模式为数据库的情况下获取离线玩家数据");
+                throw new PlayerOfflineException(TLocale.asString("PLAYER-DATAMANAGER.ERROR-STORAGE-SQL"));
             }
             return loadPlayerData(username);
         }
@@ -111,7 +112,7 @@ public class PlayerDataManager implements Listener {
                     // 创建空数据
                     PLAYER_DATA.put(username, new YamlConfiguration());
                     // 反馈信息
-                    MsgUtils.warn("玩家 &4" + username + " &c的数据载入出现异常: &4" + e.getMessage());
+                    TLocale.Logger.error("PLAYER-DATAMANAGER.ERROR-PLAYER-DATA", username, e.toString());
                 }
             } else {
                 // 创建空数据
@@ -185,7 +186,7 @@ public class PlayerDataManager implements Listener {
                 }
                 // 提示
                 if (!Main.getInst().getConfig().getBoolean("HIDE-NOTIFY")) {
-                    MsgUtils.send("保存 &f" + PLAYER_DATA.size() + " &7条玩家数据, 耗时: &f" + (System.currentTimeMillis() - time) + " &7(ms)");
+                    TLocale.Logger.info("PLAYER-DATAMANAGER.SUCCESS-SAVE-DATA", String.valueOf(PLAYER_DATA.size()), String.valueOf(System.currentTimeMillis() - time));
                 }
             }
         };

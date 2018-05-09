@@ -11,7 +11,7 @@ public class JSONWriter {
 
     protected char mode;
 
-    private final JSONObject stack[];
+    private final JSONObject[] stack;
 
     private int top;
 

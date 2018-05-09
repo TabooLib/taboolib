@@ -1,5 +1,6 @@
 package me.skymc.taboolib.commands.sub;
 
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,20 +16,16 @@ import me.skymc.taboolib.team.TagManager;
  */
 public class TagPrefixCommand extends SubCommand {
 
-	/**
-	 * @param sender
-	 * @param args
-	 */
 	public TagPrefixCommand(CommandSender sender, String[] args) {
 		super(sender, args);
 		if (args.length < 3) {
-			MsgUtils.send(sender, "参数错误");
+			TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
 			return;
 		}
 		
 		Player player = Bukkit.getPlayerExact(args[1]);
 		if (player == null) {
-			MsgUtils.send(sender, "玩家 &f" + args[1] + " &7不在线");
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.INVALID-PLAYER", args[1]);
 			return;
 		}
 		
@@ -39,7 +36,7 @@ public class TagPrefixCommand extends SubCommand {
 		
 		TagManager.getInst().setPrefix(player, value);
 		if (sender instanceof Player) {
-			MsgUtils.send(sender, "设置玩家 &f" + args[1] + " &7的前缀为 &f" + value);
+			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.SUCCESS-PREFIX-SET", args[1], value);
 		}
 	}
 

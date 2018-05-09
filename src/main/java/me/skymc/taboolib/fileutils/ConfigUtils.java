@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.bean.Property;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Ref;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -60,7 +61,7 @@ public class ConfigUtils {
 
     public static String mapToYaml(Map<String, Object> map) {
         String dump = YAML.dump(map);
-        if (dump.equals("{}\n")) {
+        if ("{}\n".equals(dump)) {
             dump = "";
         }
         return dump;
@@ -91,13 +92,17 @@ public class ConfigUtils {
     public static <T> T mapToObj(Map<String, Object> map, T obj) {
         Class<?> clazz = obj.getClass();
         map.forEach((string, value) -> Ref.getFieldBySerializedName(clazz, string).ifPresent(field -> {
-            if (!field.isAccessible())
+            if (!field.isAccessible()) {
                 field.setAccessible(true);
+            }
             try {
                 if (Property.class.isAssignableFrom(field.getType())) {
                     Property<Object> property = (Property) field.get(obj);
-                    if (property != null) property.set(value);
-                    else field.set(obj, Property.of(value));
+                    if (property != null) {
+                        property.set(value);
+                    } else {
+                        field.set(obj, Property.of(value));
+                    }
                 } else {
                     field.set(obj, value);
                 }
@@ -124,11 +129,16 @@ public class ConfigUtils {
         }
         for (Field field : Ref.getDeclaredFields(object.getClass(), excludedModifiers, false)) {
             try {
-                if (!field.isAccessible()) field.setAccessible(true);
+                if (!field.isAccessible()) {
+                    field.setAccessible(true);
+                }
                 Object obj = field.get(object);
-                if (obj instanceof Property) obj = ((Property) obj).get();
-                if (obj instanceof ConfigurationSection)
+                if (obj instanceof Property) {
+                    obj = ((Property) obj).get();
+                }
+                if (obj instanceof ConfigurationSection) {
                     obj = objToMap(((ConfigurationSection) obj).getValues(false), excludedModifiers);
+                }
                 map.put(Ref.getSerializedName(field), obj);
             } catch (IllegalAccessException ignored) {
             }
@@ -190,9 +200,7 @@ public class ConfigUtils {
             configuration.loadFromString(yaml);
             return configuration;
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error("配置文件载入失败!");
-            TLib.getTLib().getLogger().error("插件: &4" + plugin.getName());
-            TLib.getTLib().getLogger().error("文件: &4" + file);
+            TLocale.Logger.error("FILE-UTILS.FALL-LOAD-CONFIGURATION", plugin.getName(), file.getName());
         }
         return configuration;
     }

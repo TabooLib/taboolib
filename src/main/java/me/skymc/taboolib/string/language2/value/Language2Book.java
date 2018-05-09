@@ -62,7 +62,7 @@ public class Language2Book implements Language2Line {
         // 遍历内容
         for (String line : list) {
             // 翻页
-            if (line.equals("[page]")) {
+            if ("[page]".equals(line)) {
                 book.addPages(page.build());
                 page = new PageBuilder();
             }

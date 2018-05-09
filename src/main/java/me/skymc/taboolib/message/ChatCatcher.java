@@ -38,7 +38,7 @@ public class ChatCatcher implements Listener {
         if (playerdata.containsKey(e.getPlayer().getName()) && playerdata.get(e.getPlayer().getName()).size() > 0) {
             e.setCancelled(true);
 
-            if (e.getMessage().equalsIgnoreCase("quit()")) {
+            if ("quit()".equalsIgnoreCase(e.getMessage())) {
                 // 退出引导
                 playerdata.get(e.getPlayer().getName()).removeFirst().cancel();
                 // 清理数据

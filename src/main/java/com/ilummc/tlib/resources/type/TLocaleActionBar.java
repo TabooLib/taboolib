@@ -35,8 +35,9 @@ public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializa
 
     @Override
     public void sendTo(CommandSender sender, String... args) {
-        if (sender instanceof Player)
+        if (sender instanceof Player) {
             ActionBar.sendActionBar(((Player) sender), replace(sender, text, args));
+        }
     }
 
     private String replace(CommandSender sender, String text, String[] args) {

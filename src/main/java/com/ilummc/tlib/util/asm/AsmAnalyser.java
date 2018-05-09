@@ -20,8 +20,9 @@ public class AsmAnalyser extends ClassVisitor implements Opcodes {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        if ((access & excludeModifier) == 0)
+        if ((access & excludeModifier) == 0) {
             fields.add(name);
+        }
         return super.visitField(access, name, descriptor, signature, value);
     }
 
