@@ -14,12 +14,12 @@ public class VariableGetCommand extends SubCommand {
         super(sender, args);
 
         if (args.length < 3) {
-            TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
+            TLocale.sendTo(sender, "COMMANDS.PARAMETER.INSUFFICIENT");
             return;
         }
 
         if (!("-a".equals(args[1]) || "-s".equals(args[1]))) {
-            TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-ERROR-TYPE");
+            TLocale.sendTo(sender, "COMMANDS.TABOOLIB.VARIABLE.READ-ERROR-TYPE");
             return;
         }
 
@@ -32,7 +32,7 @@ public class VariableGetCommand extends SubCommand {
             value = GlobalDataManager.getVariableAsynchronous(args[2], null);
         }
 
-        TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
-        TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.READ-RESULT", value == null ? "null" : value);
+        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.VARIABLE.READ-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
+        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.VARIABLE.READ-RESULT", value == null ? "null" : value);
     }
 }

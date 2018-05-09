@@ -119,7 +119,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return args.length == 1 ? subCommands.stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().startsWith(args[0]))).map(ISubCommand::getLabel).collect(Collectors.toList()) : null;
+        return args.length == 1 ? subCommands.stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList()) : null;
     }
 
     @Override
