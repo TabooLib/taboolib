@@ -72,87 +72,6 @@ public class FileUtils {
     }
 
     /**
-     * 删除文件夹
-     *
-     * @param file
-     */
-    public void deleteAllFile(File file) {
-        if (!file.exists()) {
-            return;
-        }
-        if (file.isFile()) {
-            file.delete();
-            return;
-        }
-        File[] files = file.listFiles();
-        for (File file1 : files) {
-            deleteAllFile(file1);
-        }
-        file.delete();
-    }
-
-    /**
-     * 复制文件夹
-     *
-     * @param file1 文件1
-     * @param file2 文件2
-     * @throws Exception
-     */
-    public void copyAllFile(String file1, String file2) throws Exception {
-        File _file1 = new File(file1);
-        File _file2 = new File(file2);
-        if (!_file2.exists()) {
-            if (!_file1.isDirectory()) {
-                _file2.createNewFile();
-            } else {
-                _file2.mkdirs();
-            }
-        }
-        if (_file1.isDirectory()) {
-            for (File file : _file1.listFiles()) {
-                if (file.isDirectory()) {
-                    copyAllFile(file.getAbsolutePath(), file2 + "/" + file.getName());
-                } else {
-                    fileChannelCopy(file, new File(file2 + "/" + file.getName()));
-                }
-            }
-        } else {
-            fileChannelCopy(_file1, _file2);
-        }
-    }
-
-    /**
-     * 复制文件（通道）
-     *
-     * @param file1 文件1
-     * @param file2 文件2
-     */
-    public void fileChannelCopy(File file1, File file2) {
-        FileInputStream fileIn = null;
-        FileOutputStream fileOut = null;
-        FileChannel channelIn = null;
-        FileChannel channelOut = null;
-        try {
-            fileIn = new FileInputStream(file1);
-            fileOut = new FileOutputStream(file2);
-            channelIn = fileIn.getChannel();
-            channelOut = fileOut.getChannel();
-            channelIn.transferTo(0, channelIn.size(), channelOut);
-        } catch (Exception e) {
-            //
-        } finally {
-            try {
-                fileIn.close();
-                channelIn.close();
-                fileOut.close();
-                channelOut.close();
-            } catch (Exception e) {
-                //
-            }
-        }
-    }
-
-    /**
      * 通过输入流读取文本
      *
      * @param in
@@ -305,6 +224,87 @@ public class FileUtils {
                 closeable.close();
             }
         } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 删除文件夹
+     *
+     * @param file
+     */
+    public void deleteAllFile(File file) {
+        if (!file.exists()) {
+            return;
+        }
+        if (file.isFile()) {
+            file.delete();
+            return;
+        }
+        File[] files = file.listFiles();
+        for (File file1 : files) {
+            deleteAllFile(file1);
+        }
+        file.delete();
+    }
+
+    /**
+     * 复制文件夹
+     *
+     * @param file1 文件1
+     * @param file2 文件2
+     * @throws Exception
+     */
+    public void copyAllFile(String file1, String file2) throws Exception {
+        File _file1 = new File(file1);
+        File _file2 = new File(file2);
+        if (!_file2.exists()) {
+            if (!_file1.isDirectory()) {
+                _file2.createNewFile();
+            } else {
+                _file2.mkdirs();
+            }
+        }
+        if (_file1.isDirectory()) {
+            for (File file : _file1.listFiles()) {
+                if (file.isDirectory()) {
+                    copyAllFile(file.getAbsolutePath(), file2 + "/" + file.getName());
+                } else {
+                    fileChannelCopy(file, new File(file2 + "/" + file.getName()));
+                }
+            }
+        } else {
+            fileChannelCopy(_file1, _file2);
+        }
+    }
+
+    /**
+     * 复制文件（通道）
+     *
+     * @param file1 文件1
+     * @param file2 文件2
+     */
+    public void fileChannelCopy(File file1, File file2) {
+        FileInputStream fileIn = null;
+        FileOutputStream fileOut = null;
+        FileChannel channelIn = null;
+        FileChannel channelOut = null;
+        try {
+            fileIn = new FileInputStream(file1);
+            fileOut = new FileOutputStream(file2);
+            channelIn = fileIn.getChannel();
+            channelOut = fileOut.getChannel();
+            channelIn.transferTo(0, channelIn.size(), channelOut);
+        } catch (Exception e) {
+            //
+        } finally {
+            try {
+                fileIn.close();
+                channelIn.close();
+                fileOut.close();
+                channelOut.close();
+            } catch (Exception e) {
+                //
+            }
         }
     }
 }

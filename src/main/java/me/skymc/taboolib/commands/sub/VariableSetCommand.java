@@ -1,11 +1,9 @@
 package me.skymc.taboolib.commands.sub;
 
 import com.ilummc.tlib.resources.TLocale;
-import org.bukkit.command.CommandSender;
-
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.database.GlobalDataManager;
-import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.command.CommandSender;
 
 public class VariableSetCommand extends SubCommand {
 
@@ -13,13 +11,13 @@ public class VariableSetCommand extends SubCommand {
 		super(sender, args);
 		
 		if (args.length < 4) {
-			TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
-			return;
-		}
+            TLocale.sendTo(sender, "COAMMNDS.PARAMETER.INSUFFICIENT");
+            return;
+        }
 
-		if (!(args[1].equals("-a") || args[1].equals("-s"))) {
+        if (!(args[1].equals("-a") || args[1].equals("-s"))) {
             TLocale.sendTo(sender, "COAMMNDS.TABOOLIB.VARIABLE.WRITE-ERROR-TYPE");
-			return;
+            return;
 		}
 		
 		Long time = System.currentTimeMillis();

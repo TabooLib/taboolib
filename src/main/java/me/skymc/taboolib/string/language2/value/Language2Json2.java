@@ -48,22 +48,6 @@ public class Language2Json2 implements Language2Line {
 
     private JSONFormatter json = new JSONFormatter();
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
-    public HashMap<String, JSONFormatter> getOptions() {
-        return options;
-    }
-
-    public JSONFormatter getJson() {
-        return json;
-    }
-
     public Language2Json2(Language2Format format, List<String> list, Player player) {
         // 变量
         this.player = player;
@@ -126,6 +110,22 @@ public class Language2Json2 implements Language2Line {
                 }
             }
         }
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Language2Value getValue() {
+        return value;
+    }
+
+    public HashMap<String, JSONFormatter> getOptions() {
+        return options;
+    }
+
+    public JSONFormatter getJson() {
+        return json;
     }
 
     private int getLineNumberEnd(List<String> list) {

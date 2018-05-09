@@ -29,18 +29,6 @@ public class Language2Action implements Language2Line {
 
     private Language2Value value;
 
-    public String getText() {
-        return text;
-    }
-
-    public int getRepeat() {
-        return repeat;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
     public Language2Action(Language2Format format, List<String> list) {
         // 变量初始化
         this.value = format.getLanguage2Value();
@@ -66,6 +54,18 @@ public class Language2Action implements Language2Line {
             repeat = 1;
             text = ChatColor.DARK_RED + "[<ERROR-12: " + value.getLanguageKey() + ">]";
         }
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public int getRepeat() {
+        return repeat;
+    }
+
+    public Language2Value getValue() {
+        return value;
     }
 
     /**

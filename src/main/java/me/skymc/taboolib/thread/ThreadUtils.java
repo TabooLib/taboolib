@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 public class ThreadUtils {
 
-    private static PoolWorker[] threads;
     private static final LinkedList<Runnable> queue = new LinkedList<>();
+    private static PoolWorker[] threads;
 
     /**
      * 构造方法

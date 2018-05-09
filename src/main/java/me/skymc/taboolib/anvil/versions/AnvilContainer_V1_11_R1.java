@@ -10,11 +10,6 @@ public class AnvilContainer_V1_11_R1 extends ContainerAnvil {
         super(player.inventory, player.world, new BlockPosition(0, 0, 0), player);
     }
 
-    @Override
-    public boolean a(EntityHuman player) {
-        return true;
-    }
-
     /**
      * @deprecated 方法已过期，已有新的方法
      */
@@ -27,6 +22,11 @@ public class AnvilContainer_V1_11_R1 extends ContainerAnvil {
         player.activeContainer = container;
         player.activeContainer.windowId = c;
         player.activeContainer.addSlotListener(player);
+    }
+
+    @Override
+    public boolean a(EntityHuman player) {
+        return true;
     }
 
 }

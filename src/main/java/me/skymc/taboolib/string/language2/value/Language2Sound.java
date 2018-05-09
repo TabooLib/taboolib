@@ -21,20 +21,20 @@ public class Language2Sound implements Language2Line {
 
     private Language2Value value;
 
-    public List<SoundPack> getSounds() {
-        return sounds;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
     public Language2Sound(Language2Format format, List<String> list) {
         this.value = format.getLanguage2Value();
         // 遍历文本
         for (String line : list) {
             sounds.add(new SoundPack(line));
         }
+    }
+
+    public List<SoundPack> getSounds() {
+        return sounds;
+    }
+
+    public Language2Value getValue() {
+        return value;
     }
 
     @Override

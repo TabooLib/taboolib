@@ -39,6 +39,10 @@ MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
 
+DATABASE:
+  CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
+  CONNECTION-ERROR: '连接到数据库错误：{0}'
+
 COMMANDS:
   GLOBAL:
     ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
@@ -249,6 +253,3 @@ COMMANDS:
     - '§f /language2 send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
     - '§f /language2 reload §6- §e重载语言库'
     - ''
-DATABASE:
-  CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
-  CONNECTION-ERROR: '连接到数据库错误：{0}'

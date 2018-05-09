@@ -3,7 +3,6 @@ package com.ilummc.tlib;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.config.TLibConfig;
-import com.ilummc.tlib.db.Pool;
 import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
@@ -22,7 +21,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
-@Dependency(type = Dependency.Type.LIBRARY, maven = "org.ow2.asm:asm:6.1.1")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.slf4j:slf4j-api:1.7.25")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.javalite:activejdbc:2.0")
@@ -74,17 +72,18 @@ public class TLib {
         TLocaleLoader.load(Main.getInst(), false);
         TDependencyInjector.inject(Main.getInst(), tLib);
 
-        // init database
+        // init database 暫不啟用
+        /*
         try {
             Pool.init();
         } catch (Throwable e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
     public static void unload() {
-        Pool.unload();
+        /* Pool.unload(); */
         tLib.getConfigWatcher().unregisterAll();
         TDependencyInjector.eject(Main.getInst(), tLib);
     }

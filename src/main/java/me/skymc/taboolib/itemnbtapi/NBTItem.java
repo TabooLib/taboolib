@@ -11,14 +11,12 @@ public class NBTItem extends NBTCompound {
         bukkitItem = item.clone();
     }
 
-    @Override
-    protected Object getCompound() {
-        return NBTReflectionUtil.getItemRootNBTTagCompound(NBTReflectionUtil.getNMSItemStack(bukkitItem));
+    public static NBTContainer convertItemtoNBT(ItemStack item) {
+        return NBTReflectionUtil.convertNMSItemtoNBTCompound(NBTReflectionUtil.getNMSItemStack(item));
     }
 
-    @Override
-    protected void setCompound(Object compound) {
-        bukkitItem = NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.setNBTTag(compound, NBTReflectionUtil.getNMSItemStack(bukkitItem)));
+    public static ItemStack convertNBTtoItem(NBTCompound comp) {
+        return NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.convertNBTCompoundtoNMSItem(comp));
     }
 
     public ItemStack getItem() {
@@ -29,12 +27,14 @@ public class NBTItem extends NBTCompound {
         bukkitItem = item;
     }
 
-    public static NBTContainer convertItemtoNBT(ItemStack item) {
-        return NBTReflectionUtil.convertNMSItemtoNBTCompound(NBTReflectionUtil.getNMSItemStack(item));
+    @Override
+    protected Object getCompound() {
+        return NBTReflectionUtil.getItemRootNBTTagCompound(NBTReflectionUtil.getNMSItemStack(bukkitItem));
     }
 
-    public static ItemStack convertNBTtoItem(NBTCompound comp) {
-        return NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.convertNBTCompoundtoNMSItem(comp));
+    @Override
+    protected void setCompound(Object compound) {
+        bukkitItem = NBTReflectionUtil.getBukkitItemStack(NBTReflectionUtil.setNBTTag(compound, NBTReflectionUtil.getNMSItemStack(bukkitItem)));
     }
 
 }

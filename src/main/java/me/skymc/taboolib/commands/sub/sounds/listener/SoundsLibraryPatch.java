@@ -1,11 +1,8 @@
 package me.skymc.taboolib.commands.sub.sounds.listener;
 
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.resources.type.TLocaleJson;
 import me.skymc.taboolib.inventory.InventoryUtil;
 import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.taboolib.jsonformatter.JSONFormatter;
-import me.skymc.taboolib.message.MsgUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,7 +15,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +62,15 @@ public class SoundsLibraryPatch implements Listener {
         player.openInventory(inventory);
     }
 
+    private static ItemStack getSoundItem(String sound) {
+        ItemStack item = new ItemStack(Material.MAP);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§f§n" + sound);
+        meta.setLore(TLocale.asStringList("COMMANDS.TABOOLIB.SOUNDS.MENU.LORE"));
+        item.setItemMeta(meta);
+        return item;
+    }
+
     @EventHandler
     public void inventoryClick(InventoryClickEvent e) {
         if (e.getInventory().getHolder() instanceof SoundLibraryHolder) {
@@ -92,15 +97,6 @@ public class SoundsLibraryPatch implements Listener {
                 }
             }
         }
-    }
-
-    private static ItemStack getSoundItem(String sound) {
-        ItemStack item = new ItemStack(Material.MAP);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§f§n" + sound);
-        meta.setLore(TLocale.asStringList("COMMANDS.TABOOLIB.SOUNDS.MENU.LORE"));
-        item.setItemMeta(meta);
-        return item;
     }
 
     public static class SoundLibraryHolder implements InventoryHolder {

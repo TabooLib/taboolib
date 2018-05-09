@@ -19,21 +19,6 @@ import java.util.UUID;
 public interface HoverAction {
 
     /**
-     * Get the Chat-Component action
-     *
-     * @return the Chat-Component action
-     */
-    HoverEvent.Action action();
-
-    /**
-     * The value paired to the action
-     *
-     * @return the value paired tot the action
-     */
-    BaseComponent[] value();
-
-
-    /**
      * Creates a show_text action: when the component is hovered the text used as parameter will be displayed
      *
      * @param text the text to display
@@ -138,6 +123,20 @@ public interface HoverAction {
     static HoverAction showStatistic(String statisticId) {
         return new SimpleHoverAction(HoverEvent.Action.SHOW_ACHIEVEMENT, new TextComponent("statistic." + statisticId));
     }
+
+    /**
+     * Get the Chat-Component action
+     *
+     * @return the Chat-Component action
+     */
+    HoverEvent.Action action();
+
+    /**
+     * The value paired to the action
+     *
+     * @return the value paired tot the action
+     */
+    BaseComponent[] value();
 
     class SimpleHoverAction implements HoverAction {
         private final HoverEvent.Action action;

@@ -121,6 +121,27 @@ public class CsvWriter {
         this.userSettings.ForceQualifier = forceQualifier;
     }
 
+    public static String replace(final String s, final String s2, final String s3) {
+        final int length = s2.length();
+        int i = s.indexOf(s2);
+        if (i > -1) {
+            final StringBuilder sb = new StringBuilder();
+            int n;
+            for (n = 0; i != -1; i = s.indexOf(s2, n)) {
+                sb.append(s, n, i);
+                sb.append(s3);
+                n = i + length;
+            }
+            sb.append(s.substring(n));
+            return sb.toString();
+        }
+        return s;
+    }
+
+    public void write(final String s) throws IOException {
+        this.write(s, false);
+    }
+
     public void write(String s, final boolean b) throws IOException {
         this.checkClosed();
         this.checkInit();
@@ -181,10 +202,6 @@ public class CsvWriter {
         this.firstColumn = false;
     }
 
-    public void write(final String s) throws IOException {
-        this.write(s, false);
-    }
-
     public void writeComment(final String s) throws IOException {
         this.checkClosed();
         this.checkInit();
@@ -196,23 +213,6 @@ public class CsvWriter {
             this.outputStream.write(this.systemRecordDelimiter);
         }
         this.firstColumn = true;
-    }
-
-    public static String replace(final String s, final String s2, final String s3) {
-        final int length = s2.length();
-        int i = s.indexOf(s2);
-        if (i > -1) {
-            final StringBuilder sb = new StringBuilder();
-            int n;
-            for (n = 0; i != -1; i = s.indexOf(s2, n)) {
-                sb.append(s.substring(n, i));
-                sb.append(s3);
-                n = i + length;
-            }
-            sb.append(s.substring(n));
-            return sb.toString();
-        }
-        return s;
     }
 
     public void writeRecord(final String[] array) throws IOException {

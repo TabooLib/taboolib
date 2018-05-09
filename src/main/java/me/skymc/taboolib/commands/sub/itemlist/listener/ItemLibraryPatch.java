@@ -62,6 +62,16 @@ public class ItemLibraryPatch implements Listener {
         player.openInventory(inventory);
     }
 
+    private static ItemStack getItem(HashMap<String, ItemStack> map, String name) {
+        ItemStack item = map.get(name).clone();
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+        lore.addAll(TLocale.asStringList("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     @EventHandler
     public void inventoryClick(InventoryClickEvent e) {
         if (e.getInventory().getHolder() instanceof ItemLibraryHolder) {
@@ -80,16 +90,6 @@ public class ItemLibraryPatch implements Listener {
                 e.getWhoClicked().getInventory().addItem(ItemUtils.getCacheItem(((ItemLibraryHolder) e.getInventory().getHolder()).ITEMS_DATA.get(e.getRawSlot())));
             }
         }
-    }
-
-    private static ItemStack getItem(HashMap<String, ItemStack> map, String name) {
-        ItemStack item = map.get(name).clone();
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-        lore.addAll(TLocale.asStringList("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
     }
 
     public static class ItemLibraryHolder implements InventoryHolder {

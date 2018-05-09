@@ -19,18 +19,18 @@ public class Language2Text implements Language2Line {
 
     private Language2Value value;
 
+    public Language2Text(Language2Format format, List<String> list) {
+        this.value = format.getLanguage2Value();
+        // 遍历文本
+        text.addAll(list);
+    }
+
     public List<String> getText() {
         return text;
     }
 
     public Language2Value getValue() {
         return value;
-    }
-
-    public Language2Text(Language2Format format, List<String> list) {
-        this.value = format.getLanguage2Value();
-        // 遍历文本
-        text.addAll(list);
     }
 
     @Override

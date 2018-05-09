@@ -20,7 +20,7 @@ public class TimeCycle {
 
         long time = System.currentTimeMillis() - millisHour - millisMinute;
     }
-	
+
     public Plugin getPlugin() {
         return plugin;
     }

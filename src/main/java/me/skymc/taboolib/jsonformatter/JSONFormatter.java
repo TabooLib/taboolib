@@ -17,6 +17,29 @@ import java.util.List;
 
 public class JSONFormatter {
 
+    private static Class<?> cs = NMSUtils.getNMSClassSilent("ChatSerializer", "IChatBaseComponent");
+    private static Class<?> icbc = NMSUtils.getNMSClassSilent("IChatBaseComponent");
+    private static Class<?> ppoc = NMSUtils.getNMSClassSilent("PacketPlayOutChat");
+    private static Class<?> pc = NMSUtils.getNMSClassSilent("PlayerConnection");
+    private static Class<?> p = NMSUtils.getNMSClassSilent("Packet");
+    private static Class<?> ep = NMSUtils.getNMSClassSilent("EntityPlayer");
+    private static Method a = NMSUtils.getMethodSilent(cs, "a", String.class), sp = NMSUtils.getMethodSilent(pc, "sendPacket", p);
+    private static Field ppc = NMSUtils.getFieldSilent(ep, "playerConnection");
+    private static Constructor<?> ppocc = NMSUtils.getConstructorSilent(ppoc, icbc);
+    private static boolean b = check(cs, icbc, ppoc, pc, p, ep, a, sp, ppc, ppocc);
+    private List<JSONArray> all = new ArrayList<>();
+    private JSONArray ja = new JSONArray();
+    private Builder builder = new Builder();
+    private String color = "";
+    private boolean newline = true;
+
+    public JSONFormatter() {
+    }
+
+    public JSONFormatter(boolean newline) {
+        this.newline = newline;
+    }
+
     public static void sendRawMessage(Player player, String message) {
         try {
             Object entityplayer = NMSUtils.getHandle(player);
@@ -28,17 +51,55 @@ public class JSONFormatter {
         }
     }
 
-    private JSONArray ja = new JSONArray();
-    private Builder builder = new Builder();
-    private String color = "";
-    private List<JSONArray> all = new ArrayList<>();
-    private boolean newline = true;
-
-    public JSONFormatter() {
+    private static boolean check(Object... o) {
+        for (Object a : o) {
+            if (a == null)
+                return false;
+        }
+        return true;
     }
 
-    public JSONFormatter(boolean newline) {
-        this.newline = newline;
+    private static void send(Player player, JSONFormatter jf) {
+        if (!jf.newline) {
+            send1(player, jf);
+        } else if (b) {
+            try {
+                Object entityplayer = NMSUtils.getHandle(player);
+                Object ppco = ppc.get(entityplayer);
+                sp.invoke(ppco, jf.getPacket());
+            } catch (Exception e) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jf.toJSON());
+            }
+        } else {
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jf.toJSON());
+        }
+    }
+
+    private static void send1(Player player, JSONFormatter jf) {
+        if (b) {
+            try {
+                Object entityplayer = NMSUtils.getHandle(player);
+                Object ppco = ppc.get(entityplayer);
+                List<Object> packets = jf.getPacketList();
+                List<String> jsons = null;
+                for (int i = 0; i < packets.size(); i++) {
+                    try {
+                        sp.invoke(ppco, packets.get(i));
+                    } catch (Exception e) {
+                        if (jsons == null) {
+                            jsons = jf.toJSONList();
+                        }
+                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jsons.get(i));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            for (String json : jf.toJSONList()) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + json);
+            }
+        }
     }
 
     public JSONFormatter append(JSONFormatter json) {
@@ -284,71 +345,9 @@ public class JSONFormatter {
         return null;
     }
 
-    private static Class<?> cs = NMSUtils.getNMSClassSilent("ChatSerializer", "IChatBaseComponent");
-    private static Class<?> icbc = NMSUtils.getNMSClassSilent("IChatBaseComponent");
-    private static Class<?> ppoc = NMSUtils.getNMSClassSilent("PacketPlayOutChat");
-    private static Class<?> pc = NMSUtils.getNMSClassSilent("PlayerConnection");
-    private static Class<?> p = NMSUtils.getNMSClassSilent("Packet");
-    private static Class<?> ep = NMSUtils.getNMSClassSilent("EntityPlayer");
-    private static Method a = NMSUtils.getMethodSilent(cs, "a", String.class), sp = NMSUtils.getMethodSilent(pc, "sendPacket", p);
-    private static Field ppc = NMSUtils.getFieldSilent(ep, "playerConnection");
-    private static Constructor<?> ppocc = NMSUtils.getConstructorSilent(ppoc, icbc);
-    private static boolean b = check(cs, icbc, ppoc, pc, p, ep, a, sp, ppc, ppocc);
-
-    private static boolean check(Object... o) {
-        for (Object a : o) {
-            if (a == null)
-                return false;
-        }
-        return true;
-    }
-
-    private static void send(Player player, JSONFormatter jf) {
-        if (!jf.newline) {
-            send1(player, jf);
-        } else if (b) {
-            try {
-                Object entityplayer = NMSUtils.getHandle(player);
-                Object ppco = ppc.get(entityplayer);
-                sp.invoke(ppco, jf.getPacket());
-            } catch (Exception e) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jf.toJSON());
-            }
-        } else {
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jf.toJSON());
-        }
-    }
-
-    private static void send1(Player player, JSONFormatter jf) {
-        if (b) {
-            try {
-                Object entityplayer = NMSUtils.getHandle(player);
-                Object ppco = ppc.get(entityplayer);
-                List<Object> packets = jf.getPacketList();
-                List<String> jsons = null;
-                for (int i = 0; i < packets.size(); i++) {
-                    try {
-                        sp.invoke(ppco, packets.get(i));
-                    } catch (Exception e) {
-                        if (jsons == null) {
-                            jsons = jf.toJSONList();
-                        }
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + jsons.get(i));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            for (String json : jf.toJSONList()) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + json);
-            }
-        }
-    }
-
     private class Builder {
 
-        private StringBuilder sb = new StringBuilder("");
+        private StringBuilder sb = new StringBuilder();
         private boolean bold = false, italic = false, magic = false, strikethrough = false, underline = false, changed = false;
 
         public Builder() {

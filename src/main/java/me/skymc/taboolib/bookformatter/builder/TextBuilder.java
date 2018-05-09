@@ -17,6 +17,23 @@ public class TextBuilder {
     private ClickAction onClick = null;
     private HoverAction onHover = null;
 
+    public TextBuilder() {
+    }
+
+    public TextBuilder(String text) {
+        this.text = text;
+    }
+
+    /**
+     * Creates a new TextBuilder with the parameter as his initial text
+     *
+     * @param text initial text
+     * @return a new TextBuilder with the parameter as his initial text
+     */
+    public static TextBuilder of(String text) {
+        return new TextBuilder(text);
+    }
+
     public String getText() {
         return text;
     }
@@ -41,13 +58,6 @@ public class TextBuilder {
         this.onHover = onHover;
     }
 
-    public TextBuilder() {
-    }
-
-    public TextBuilder(String text) {
-        this.text = text;
-    }
-
     /**
      * Creates the component representing the built text
      *
@@ -62,15 +72,5 @@ public class TextBuilder {
             res.setHoverEvent(new HoverEvent(onHover.action(), onHover.value()));
         }
         return res;
-    }
-
-    /**
-     * Creates a new TextBuilder with the parameter as his initial text
-     *
-     * @param text initial text
-     * @return a new TextBuilder with the parameter as his initial text
-     */
-    public static TextBuilder of(String text) {
-        return new TextBuilder(text);
     }
 }

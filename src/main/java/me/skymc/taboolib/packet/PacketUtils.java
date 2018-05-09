@@ -9,10 +9,6 @@ import org.bukkit.entity.Player;
 
 public class PacketUtils {
 
-    public enum EntityStatus {
-        FIRE, CROUCHED, UNUSED1, UNUSED2, SPRINTING, INVISIBLE, GLOWING, ELYTRA
-    }
-
     public static void sendPacketEntityStatus(Entity entity, EntityStatus status, Player... players) {
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getIntegers().write(0, entity.getEntityId());
@@ -71,5 +67,9 @@ public class PacketUtils {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public enum EntityStatus {
+        FIRE, CROUCHED, UNUSED1, UNUSED2, SPRINTING, INVISIBLE, GLOWING, ELYTRA
     }
 }

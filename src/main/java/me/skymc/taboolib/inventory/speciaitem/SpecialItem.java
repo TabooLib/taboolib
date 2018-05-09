@@ -27,10 +27,6 @@ public class SpecialItem implements Listener {
 
     private boolean isLoaded;
 
-    public boolean isLoaded() {
-        return isLoaded;
-    }
-
     /**
      * 构造方法
      */
@@ -54,6 +50,10 @@ public class SpecialItem implements Listener {
             }
         }
         return specialItem;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
     }
 
     /**

@@ -16,14 +16,6 @@ public class Language2Format implements Language2Line {
     private Language2Value language2Value;
     private List<Language2Line> language2Lines = new ArrayList<>();
 
-    public Language2Value getLanguage2Value() {
-        return language2Value;
-    }
-
-    public List<Language2Line> getLanguage2Lines() {
-        return language2Lines;
-    }
-
     public Language2Format(Player player, Language2Value value) {
         language2Value = value;
         // 语言类型
@@ -91,6 +83,14 @@ public class Language2Format implements Language2Line {
                 values.add(line);
             }
         }
+    }
+
+    public Language2Value getLanguage2Value() {
+        return language2Value;
+    }
+
+    public List<Language2Line> getLanguage2Lines() {
+        return language2Lines;
     }
 
     /**

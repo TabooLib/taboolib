@@ -24,11 +24,6 @@ public class EntityUtils implements Listener {
         return lastSpawnedEntity;
     }
 
-    @EventHandler
-    public void spawn(EntitySpawnEvent e) {
-        lastSpawnedEntity = e.getEntity();
-    }
-
     /**
      * 根据 UUID 获取生物
      *
@@ -116,6 +111,11 @@ public class EntityUtils implements Listener {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    @EventHandler
+    public void spawn(EntitySpawnEvent e) {
+        lastSpawnedEntity = e.getEntity();
     }
 
 }

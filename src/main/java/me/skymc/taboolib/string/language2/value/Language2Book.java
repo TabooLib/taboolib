@@ -48,26 +48,6 @@ public class Language2Book implements Language2Line {
 
     private BookBuilder book;
 
-    public static Pattern getPattern() {
-        return pattern;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public Language2Value getValue() {
-        return value;
-    }
-
-    public HashMap<String, TextBuilder> getOptions() {
-        return options;
-    }
-
-    public BookBuilder getBook() {
-        return book;
-    }
-
     public Language2Book(Language2Format format, List<String> list, Player player) {
         // 变量
         this.player = player;
@@ -139,6 +119,26 @@ public class Language2Book implements Language2Line {
         }
         // 结尾
         book.addPages(page.build());
+    }
+
+    public static Pattern getPattern() {
+        return pattern;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Language2Value getValue() {
+        return value;
+    }
+
+    public HashMap<String, TextBuilder> getOptions() {
+        return options;
+    }
+
+    public BookBuilder getBook() {
+        return book;
     }
 
     private void formatOptions(List<String> list) {

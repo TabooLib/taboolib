@@ -73,7 +73,7 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                         builder.addAll(Arrays.asList(component));
                     } else {
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(text)));
-                        TLib.getTLib().getLogger().warn(Strings.replaceWithOrder(TLib.getTLib().getInternalLanguage().getString("MISSING-ARGUMENT"), node));
+                        TLib.getTLib().getLogger().warn(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("MISSING-ARGUMENT"), node));
                     }
                     if (index < template.length) {
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(template[index++])));

@@ -22,10 +22,6 @@ public class TagManager implements Listener {
 
     private HashMap<String, PlayerData> playerdata = new HashMap<>();
 
-    public HashMap<String, PlayerData> getPlayerdata() {
-        return playerdata;
-    }
-
     private TagManager() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInst());
     }
@@ -37,6 +33,10 @@ public class TagManager implements Listener {
             }
         }
         return inst;
+    }
+
+    public HashMap<String, PlayerData> getPlayerdata() {
+        return playerdata;
     }
 
     /**
@@ -184,6 +184,12 @@ public class TagManager implements Listener {
         private String prefix;
         private String suffix;
 
+        public PlayerData(String name) {
+            this.name = name;
+            this.prefix = "";
+            this.suffix = "";
+        }
+
         public String getName() {
             return name;
         }
@@ -192,22 +198,16 @@ public class TagManager implements Listener {
             return prefix;
         }
 
-        public String getSuffix() {
-            return suffix;
-        }
-
         public void setPrefix(String prefix) {
             this.prefix = prefix;
         }
 
-        public void setSuffix(String suffix) {
-            this.suffix = suffix;
+        public String getSuffix() {
+            return suffix;
         }
 
-        public PlayerData(String name) {
-            this.name = name;
-            this.prefix = "";
-            this.suffix = "";
+        public void setSuffix(String suffix) {
+            this.suffix = suffix;
         }
     }
 }

@@ -25,26 +25,6 @@ public class Language2Value {
 
     private boolean enablePlaceholderAPI = false;
 
-    public Language2 getLanguage() {
-        return language;
-    }
-
-    public String getLanguageKey() {
-        return languageKey;
-    }
-
-    public List<String> getLanguageValue() {
-        return languageValue;
-    }
-
-    public LinkedHashMap<String, String> getPlaceholder() {
-        return placeholder;
-    }
-
-    public boolean isEnablePlaceholderAPI() {
-        return enablePlaceholderAPI;
-    }
-
     /**
      * 构造方法
      */
@@ -79,6 +59,26 @@ public class Language2Value {
         // 初始化变量
         this.language = language;
         this.languageKey = languageKey;
+    }
+
+    public Language2 getLanguage() {
+        return language;
+    }
+
+    public String getLanguageKey() {
+        return languageKey;
+    }
+
+    public List<String> getLanguageValue() {
+        return languageValue;
+    }
+
+    public LinkedHashMap<String, String> getPlaceholder() {
+        return placeholder;
+    }
+
+    public boolean isEnablePlaceholderAPI() {
+        return enablePlaceholderAPI;
     }
 
     /**

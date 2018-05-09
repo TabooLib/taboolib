@@ -26,10 +26,6 @@ public class PlayerDataManager implements Listener {
 
     private static final ConcurrentHashMap<String, FileConfiguration> PLAYER_DATA = new ConcurrentHashMap<>();
 
-    public enum UsernameType {
-        UUID, USERNAME
-    }
-
     /**
      * 获取用户储存方式
      *
@@ -256,5 +252,9 @@ public class PlayerDataManager implements Listener {
                 }
             }.runTaskAsynchronously(Main.getInst());
         }
+    }
+
+    public enum UsernameType {
+        UUID, USERNAME
     }
 }
