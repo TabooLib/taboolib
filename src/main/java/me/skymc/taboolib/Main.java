@@ -38,7 +38,6 @@ import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -49,12 +48,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.Random;
 
-@SuppressWarnings("deprecation")
+/**
+ * @author sky
+ */
 public class Main extends JavaPlugin implements Listener {
 
     private static Plugin inst;
 
-    private static Economy Economy;
+    private static net.milkbowl.vault.economy.Economy Economy;
 
     private static File playerDataFolder;
 

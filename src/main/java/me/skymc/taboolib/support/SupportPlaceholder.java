@@ -8,6 +8,9 @@ import me.skymc.tlm.module.sub.ModuleKits;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * @author sky
+ */
 public class SupportPlaceholder extends EZPlaceholderHook {
 
     public SupportPlaceholder(Plugin plugin, String identifier) {

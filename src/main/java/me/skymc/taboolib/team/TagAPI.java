@@ -132,7 +132,7 @@ public class TagAPI implements Listener {
             builtUUID.append(sent.getId());
         }
 
-        AsyncPlayerReceiveNameTagEvent newEvent = new AsyncPlayerReceiveNameTagEvent(destinationPlayer, namedPlayer, oldEvent.getTag(), UUID.fromString(builtUUID.toString()));
+        AsyncPlayerReceiveNameTagEvent newEvent = new AsyncPlayerReceiveNameTagEvent(destinationPlayer, namedPlayer, getPlayerDisplayName(namedPlayer), UUID.fromString(builtUUID.toString()));
         Bukkit.getServer().getPluginManager().callEvent(newEvent);
 
         return new WrappedGameProfile(newEvent.getUUID(), newEvent.getTag().substring(0, Math.min(newEvent.getTag().length(), 16)));

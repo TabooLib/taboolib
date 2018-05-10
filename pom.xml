@@ -6,7 +6,7 @@
 
     <groupId>me.skymc</groupId>
     <artifactId>TabooLib</artifactId>
-    <version>3.832</version>
+    <version>4.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,8 +57,8 @@
     </build>
     <repositories>
         <repository>
-            <id>vault</id>
-            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+            <id>placeholderapi</id>
+            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -94,16 +94,16 @@
             <version>6.1.1</version>
         </dependency>
         <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.8.4</version>
+        </dependency>
+        <dependency>
             <groupId>bukkit</groupId>
             <artifactId>bukkit1_12</artifactId>
             <version>1</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/1_12_R1.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>bukkit</groupId>
@@ -113,53 +113,11 @@
             <systemPath>${basedir}/libs/1_8_R3.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>bukkit</groupId>
-            <artifactId>bukkit1_9</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/1_9_R3.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>bukkit</groupId>
-            <artifactId>bukkit1_10</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/1_10_R1.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>bukkit</groupId>
-            <artifactId>bukkit1_11</artifactId>
-            <scope>system</scope>
-            <version>1</version>
-            <systemPath>${basedir}/libs/1_11_R1.jar</systemPath>
-        </dependency>
-        <dependency>
             <groupId>com.sun.tools</groupId>
             <artifactId>jshell</artifactId>
             <version>1</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/com.sun.tools.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>placeholder</groupId>
-            <artifactId>placeholder</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/PlaceholderAPI.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>plib</groupId>
-            <artifactId>plib</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/ProtocolLib.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>sk</groupId>
-            <artifactId>sk</artifactId>
-            <version>1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/Skript.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>taboocode</groupId>
@@ -169,6 +127,20 @@
             <systemPath>${basedir}/libs/TabooCode5.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>yum</groupId>
+            <artifactId>yum</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/Yum.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>plib</groupId>
+            <artifactId>plib</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/ProtocolLib.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>wg</groupId>
             <artifactId>wg</artifactId>
             <version>1</version>
@@ -176,11 +148,18 @@
             <systemPath>${basedir}/libs/WorldGuard.jar</systemPath>
         </dependency>
         <dependency>
-            <groupId>yum</groupId>
-            <artifactId>yum</artifactId>
+            <groupId>sk</groupId>
+            <artifactId>sk</artifactId>
             <version>1</version>
             <scope>system</scope>
-            <systemPath>${basedir}/libs/Yum.jar</systemPath>
+            <systemPath>${basedir}/libs/Skript.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>vault</groupId>
+            <artifactId>vault</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/Vault.jar</systemPath>
         </dependency>
     </dependencies>
 
