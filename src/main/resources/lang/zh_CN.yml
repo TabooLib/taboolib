@@ -77,7 +77,14 @@ LANGUAGE2:
   FALL-NOTFOUND-FILE: '语言文件 {0} 不存在'
   
 TIMECYCLE:
-  FALL-CYCLE-EXISTS: '注册周期管理器 §8{0}§c 失败, 原因: &4名称重复'
+  FALL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
+  
+ANVIL-CONTAINER:
+  NAME-EXAMPLE: '在这里输入文本'
+  LORE-NORMAL:
+  - ''
+  - '&7在上方文本框内输入信息'
+  - '&7随后点击右侧输出物品'
   
 UPDATETASK:
   VERSION-LATEST: '插件已是最新版, 无需更新!'
@@ -110,17 +117,17 @@ COMMANDS:
     ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
     ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4只有启用数据库储存时才能这么做'
   INTERNAL:
-    ONLY-PLAYER: '&8[&3&lTabooLib&8] §7指令 §f{0} §7只能由 §f{1} §7执行'
+    ONLY-PLAYER: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
     TYPE-PLAYER: 玩家
     TYPE-CONSOLE: 控制台
     ERROR-USAGE:
-    - '&8[&3&lTabooLib&8] §7指令 §f{0} §7参数不足'
-    - '&8[&3&lTabooLib&8] §7正确用法:'
-    - '&8[&3&lTabooLib&8] §7{1}'
+    - '&8[&3&lTabooLib&8] &7指令 &f{0} &7参数不足'
+    - '&8[&3&lTabooLib&8] &7正确用法:'
+    - '&8[&3&lTabooLib&8] &7{1}'
     ERROR-COMMAND:
-    - '&8[&3&lTabooLib&8] §7指令 §f{0} §7不存在'
-    - '&8[&3&lTabooLib&8] §7你可能想要:'
-    - '&8[&3&lTabooLib&8] §7{1}'
+    - '&8[&3&lTabooLib&8] &7指令 &f{0} &7不存在'
+    - '&8[&3&lTabooLib&8] &7你可能想要:'
+    - '&8[&3&lTabooLib&8] &7{1}'
     COMMAND-REGISTER: '&7自动为插件 &f{0} &7的命令 &f{1} &7注册 &f{2} &7条子命令'
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
@@ -130,7 +137,7 @@ COMMANDS:
     SUCCESS-NORMAL: '&8[&3&lTabooLib&8] &7重载成功'
     SUCCESS-ELAPSED-TIME: '&8[&3&lTabooLib&8] &7重载成功, 耗时: &f{0} ms'
   TABOOLIB:
-    COMMAND-TITLE: '§b§l----- §3§lTabooLib Commands §b§l-----'
+    COMMAND-TITLE: '&b&l----- &3&lTabooLib Commands &b&l-----'
     SAVE:
       DESCRIPTION: '载入插件'
       ARGUMENTS:
@@ -174,7 +181,7 @@ COMMANDS:
       READ-RESULT: '&8[&3&lTabooLib&8] &7变量 &f{0} &7的值为: &f{1}'
       READ-SUCCESS: '&8[&3&lTabooLib&8] &7写入完成, 耗时: &f{0} &7(ms)'
     IMPORTDATA:
-      DESCRIPTION: '§4向数据库导入本地数据 §8(该操作将会清空数据库)'
+      DESCRIPTION: '&4向数据库导入本地数据 &8(该操作将会清空数据库)'
       CLEARING: '&8[&3&lTabooLib&8] &7正在清空数据库...'
       EMPTYDATA: '&8[&3&lTabooLib&8] &4没有玩家数据可以导入'
       IMPORTING-START: '&8[&3&lTabooLib&8] &7开始导入 &f{0} &7项玩家数据'
@@ -223,22 +230,22 @@ COMMANDS:
       - ==: JSON
         text:
         - ''
-        - '§b§l----- §3§lItemStack Info §b§l-----'
+        - '&b&l----- &3&lItemStack Info &b&l-----'
         - ''
-        - '§7 - 物品材质: §f<{0}@type>'
-        - '§7 - 物品名称: §f<{1}@name>'
-        - '§7 - 物品序号: §f<{2}@id>'
-        - '§7 - 物品数据: §f<NBT@nbt>'
+        - '&7 - 物品材质: &f<{0}@type>'
+        - '&7 - 物品名称: &f<{1}@name>'
+        - '&7 - 物品序号: &f<{2}@id>'
+        - '&7 - 物品数据: &f<NBT@nbt>'
         - ''
         args:
           type:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{0}'
           name:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{1}'
           id:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{2}'
           nbt:
             hover: '{3}'
@@ -246,27 +253,27 @@ COMMANDS:
       DESCRIPTION: '查看所有物品'
       MENU:
         TITLE: '物品库 {0}'
-        NEXT: '§f上一页'
-        BACK: '§f下一页'
+        NEXT: '&f上一页'
+        BACK: '&f下一页'
         LORE:
         - ''
-        - '§f§m                  '
-        - '§f序列号: §8{0}'
+        - '&f&m                  '
+        - '&f序列号: &8{0}'
     SOUNDS:
       DESCRIPTION: '查看所有音效'
       MENU:
         TITLE: '音效库 {0}'
-        NEXT: '§f上一页'
-        BACK: '§f下一页'
+        NEXT: '&f上一页'
+        BACK: '&f下一页'
         LORE:
         - ''
-        - '§f左键: §71 音调'
-        - '§f右键: §72 音调'
-        - '§f中键: §7复制名称'
+        - '&f左键: &71 音调'
+        - '&f右键: &72 音调'
+        - '&f中键: &7复制名称'
       RESULT:
         SEARCH:
-        - '§7查询名称: §f{0}'
-        - '§7查询结果: §f{1}'
+        - '&7查询名称: &f{0}'
+        - '&7查询结果: &f{1}'
         COPY:
         - ==: JSON
           text: '&7点击复制: <&f&n{0}@sound>'
@@ -292,23 +299,23 @@ COMMANDS:
       CYCLE-RESET: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7初始化完成'
       CYCLE-INFO:
       - ''
-      - '§b§l----- §3§lTimeCycle Info §b§l-----'
+      - '&b&l----- &3&lTimeCycle Info &b&l-----'
       - ''
-      - ' §f- §7注册周期: §f{0}'
-      - ' §f- §7注册插件: §f{1}'
-      - ' §f- §7上次刷新时间: §f{2}'
-      - ' §f- §7下次刷新时间: §f{3}'
+      - ' &f- &7注册周期: &f{0}'
+      - ' &f- &7注册插件: &f{1}'
+      - ' &f- &7上次刷新时间: &f{2}'
+      - ' &f- &7下次刷新时间: &f{3}'
       LIST:
         HEAD:
         - ''
-        - '§b§l----- §3§lTimeCycle List §b§l-----'
+        - '&b&l----- &3&lTimeCycle List &b&l-----'
         - ''
         BODY:
         - ==: JSON
-          text: ' §7- §f{0} <&8(点击复制)@copy>'
+          text: ' &7- &f{0} <&8(点击复制)@copy>'
           args:
             copy:
-              hover: '§f点击复制'
+              hover: '&f点击复制'
               suggest: '{0}'
         FOOT:
         - ''
@@ -316,14 +323,14 @@ COMMANDS:
       DESCRIPTION: '查看所有属性'
       HEAD:
       - ''
-      - '§b§l----- §3§lItemStack Attributes §b§l-----'
+      - '&b&l----- &3&lItemStack Attributes &b&l-----'
       - ''
       BODY:
       - ==: JSON
-        text: ' §7- §f{0} <&8(点击复制)@copy>'
+        text: ' &7- &f{0} <&8(点击复制)@copy>'
         args:
           copy:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{0}'
       FOOT:
       - ''    
@@ -331,14 +338,14 @@ COMMANDS:
       DESCRIPTION: '查看所有附魔'
       HEAD:
       - ''
-      - '§b§l----- §3§lItemStack Enchantments §b§l-----'
+      - '&b&l----- &3&lItemStack Enchantments &b&l-----'
       - ''
       BODY:
       - ==: JSON
-        text: ' §7- §f{0}. {1} <&8(点击复制)@copy>'
+        text: ' &7- &f{0}. {1} <&8(点击复制)@copy>'
         args:
           copy:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{1}'
       FOOT:
       - ''
@@ -346,14 +353,14 @@ COMMANDS:
       DESCRIPTION: '查看所有药水'
       HEAD:
       - ''
-      - '§b§l----- §3§lItemStack PotionEffects §b§l-----'
+      - '&b&l----- &3&lItemStack PotionEffects &b&l-----'
       - ''
       BODY:
       - ==: JSON
-        text: ' §7- §f{0}. {1} <&8(点击复制)@copy>'
+        text: ' &7- &f{0}. {1} <&8(点击复制)@copy>'
         args:
           copy:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{1}'
       FOOT:
       - ''
@@ -361,14 +368,14 @@ COMMANDS:
       DESCRIPTION: '查看所有标签'
       HEAD:
       - ''
-      - '§b§l----- §3§lItemStack Flags §b§l-----'
+      - '&b&l----- &3&lItemStack Flags &b&l-----'
       - ''
       BODY:
       - ==: JSON
-        text: ' §7- §f{0} <&8(点击复制)@copy>'
+        text: ' &7- &f{0} <&8(点击复制)@copy>'
         args:
           copy:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{0}'
       FOOT:
       - ''  
@@ -376,14 +383,14 @@ COMMANDS:
       DESCRIPTION: '查看所有部位'
       HEAD:
       - ''
-      - '§b§l----- §3§lItemStack Slots §b§l-----'
+      - '&b&l----- &3&lItemStack Slots &b&l-----'
       - ''
       BODY:
       - ==: JSON
-        text: ' §7- §f{0} <&8(点击复制)@copy>'
+        text: ' &7- &f{0} <&8(点击复制)@copy>'
         args:
           copy:
-            hover: '§f点击复制'
+            hover: '&f点击复制'
             suggest: '{0}'
       FOOT:
       - ''
@@ -392,10 +399,10 @@ COMMANDS:
     SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
     HELP:
     - ''
-    - '§b§l----- §3§lLanguage2 Commands §b§l-----'
+    - '&b&l----- &3&lLanguage2 Commands &b&l-----'
     - ''
-    - '§f /{0} send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
-    - '§f /{0} reload §6- §e重载语言库'
+    - '&f /{0} send &8[&7玩家/ALL&8] &8[&7语言&8] &8<&7变量&8> &6- &e发送语言提示'
+    - '&f /{0} reload &6- &e重载语言库'
     - ''
   TLOCALE:
     INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
@@ -403,13 +410,13 @@ COMMANDS:
     SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
     HELP:
     - ''
-    - '§b§l----- §3§lTabooLibLoacle Commands §b§l-----'
+    - '&b&l----- &3&lTabooLibLoacle Commands &b&l-----'
     - ''
-    - '§f /{0} send §8[§7玩家/ALL§8] §8[§7语言§8] §8<§7变量§8> §6- §e发送语言提示'
-    - '§f /{0} reload §6- §e重载语言库'
+    - '&f /{0} send &8[&7玩家/ALL&8] &8[&7语言&8] &8<&7变量&8> &6- &e发送语言提示'
+    - '&f /{0} reload &6- &e重载语言库'
     - ''
   TPLUGIN:
-    COMMAND-TITLE: '§e§l----- §6§lTabooLibPlugin Commands §b§l-----'
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibPlugin Commands &b&l-----'
     LIST:
       DESCRIPTION: '列出插件'
       LIST-PLUGIN: 

@@ -1,6 +1,6 @@
 package me.skymc.taboolib.anvil;
 
-import me.skymc.taboolib.anvil.versions.AnvilContainer_V1_9_4;
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author sky
+ */
 public class AnvilContainerAPI implements Listener {
 
     public static List<String> list = new ArrayList<>();
@@ -29,14 +32,12 @@ public class AnvilContainerAPI implements Listener {
     public static void send(Player p, String type, String str, List<String> lorelist) {
         isOpen.put(p.getName(), type);
 
-        AnvilContainer_V1_9_4.openAnvil(p);
+        AnvilContainer.openAnvil(p);
         ItemMeta meta = item.getItemMeta();
 
         list.clear();
         if (lorelist == null) {
-            list.add("");
-            list.add("§7在上方文本框内输入信息");
-            list.add("§7随后点击右侧输出物品");
+            list.addAll(TLocale.asStringList("ANVIL-CONTAINER.LORE-NORMAL"));
         } else {
             list = lorelist;
         }
@@ -91,7 +92,7 @@ public class AnvilContainerAPI implements Listener {
         if ("/anvilexample".equals(e.getMessage())) {
             if (e.getPlayer().hasPermission("taboolib.admin")) {
                 e.setCancelled(true);
-                AnvilContainerAPI.send(e.getPlayer(), "EXAMPLE", "在这里输入文本", null);
+                AnvilContainerAPI.send(e.getPlayer(), "EXAMPLE", TLocale.asString("ANVIL-CONTAINER.NAME-EXAMPLE"), null);
             }
         }
     }

@@ -72,7 +72,7 @@ public class TLocaleLoader {
      */
     public static void load(Plugin plugin, boolean isCover) {
         try {
-            if ((isCover || !isLocaleLoaded(plugin)) && (plugin.equals(Main.getInst()) || isDependWithTabooLib(plugin))) {
+            if (isLoadLocale(plugin, isCover)) {
                 // 获取文件
                 File localeFile = getLocaleFile(plugin);
                 if (localeFile == null) {
@@ -97,6 +97,10 @@ public class TLocaleLoader {
         } catch (Exception e) {
             errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
         }
+    }
+
+    private static boolean isLoadLocale(Plugin plugin, boolean isCover) {
+        return (isCover || !isLocaleLoaded(plugin)) && (plugin.equals(Main.getInst()) || isDependWithTabooLib(plugin));
     }
 
     private static void infoLogger(String path, String... args) {

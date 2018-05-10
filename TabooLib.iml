@@ -10,6 +10,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/ProtocolLib.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: org.javalite:activejdbc:2.0" level="project" />
@@ -21,6 +30,7 @@
     <orderEntry type="library" name="Maven: com.h2database:h2:1.4.197" level="project" />
     <orderEntry type="library" name="Maven: com.ilummc.eagletdl:EagletCore:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.ow2.asm:asm:6.1.1" level="project" />
+    <orderEntry type="library" name="Maven: me.clip:placeholderapi:2.8.4" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: bukkit:bukkit1_12:1">
         <CLASSES>
@@ -30,48 +40,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Maven: net.milkbowl.vault:VaultAPI:1.6" level="project" />
-    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.9-R0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
-    <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:17.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.2.4" level="project" />
-    <orderEntry type="library" name="Maven: org.avaje:ebean:2.8.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.persistence:persistence-api:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.15" level="project" />
     <orderEntry type="module-library">
       <library name="Maven: bukkit:bukkit1_8:1">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/1_8_R3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: bukkit:bukkit1_9:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/1_9_R3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: bukkit:bukkit1_10:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/1_10_R1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: bukkit:bukkit1_11:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/1_11_R1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -87,9 +59,18 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: placeholder:placeholder:1">
+      <library name="Maven: taboocode:taboocode:1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/PlaceholderAPI.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/TabooCode5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: yum:yum:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/Yum.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -105,24 +86,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: sk:sk:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/Skript.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="Maven: taboocode:taboocode:1">
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/TabooCode5.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="Maven: wg:wg:1">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/libs/WorldGuard.jar!/" />
@@ -132,9 +95,18 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="Maven: yum:yum:1">
+      <library name="Maven: sk:sk:1">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/libs/Yum.jar!/" />
+          <root url="jar://$MODULE_DIR$/libs/Skript.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="Maven: vault:vault:1">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/Vault.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
