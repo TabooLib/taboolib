@@ -1,85 +1,66 @@
 package me.skymc.taboolib.display;
 
+import me.skymc.taboolib.nms.NMSUtils;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Constructor;
 
+/**
+ * @author Bkm016
+ * @since 2018-04-26
+ */
 public class TitleUtils {
-    
-    private static void sendPacket(Player player, Object packet)
-    {
-        try
-        {
-            Object handle = player.getClass().getMethod("getHandle", new Class[0]).invoke(player);
-            Object playerConnection = handle.getClass().getField("playerConnection").get(handle);
-            playerConnection.getClass().getMethod("sendPacket", new Class[]{getNMSClass("Packet")}).invoke(playerConnection, packet);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    private static Class<?> getNMSClass(String class_name)
-    {
-        String version = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
-        try
-        {
-            return Class.forName("net.minecraft.server." + version + "." + class_name);
-        }
-        catch (ClassNotFoundException ex)
-        {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-    
+
+    private static Class<?> Packet = NMSUtils.getNMSClass("Packet");
+    private static Class<?> PacketPlayOutTitle = NMSUtils.getNMSClass("PacketPlayOutTitle");
+    private static Class<?> IChatBaseComponent = NMSUtils.getNMSClass("IChatBaseComponent");
+    private static Class<?> EnumTitleAction = PacketPlayOutTitle.getDeclaredClasses()[0];
+
     public static void sendTitle(Player p, String title, String subtitle, int fadein, int stay, int fadeout) {
-    	sendTitle(p, title, fadein, stay, fadeout, subtitle, fadein, stay, fadeout);
+        sendTitle(p, title, fadein, stay, fadeout, subtitle, fadein, stay, fadeout);
     }
-    
-    public static void sendTitle(Player p, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst)
-    {
-        if (title == null) {
-            title = "";
+
+    public static void sendTitle(Player p, String title, int fadeint, int stayt, int fadeoutt, String subtitle, int fadeinst, int stayst, int fadeoutst) {
+        if (p == null) {
+            return;
         }
-        if (subtitle == null) {
-            subtitle = "";
-        }
-        try
-        {
-            if (title != null)
-            {
-                Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
-                Object chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
-                Constructor<?> subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
-                Object titlePacket = subtitleConstructor.newInstance(e, chatTitle, fadeint, stayt, fadeoutt);
+        try {
+            if (title != null) {
+                Object times = EnumTitleAction.getField("TIMES").get(null);
+                Object chatTitle = IChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + title + "\"}");
+                Constructor<?> subtitleConstructor = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                Object titlePacket = subtitleConstructor.newInstance(times, chatTitle, fadeint, stayt, fadeoutt);
                 sendPacket(p, titlePacket);
-                
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TITLE").get(null);
-                chatTitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"));
-                titlePacket = subtitleConstructor.newInstance(e, chatTitle);
+
+                times = EnumTitleAction.getField("TITLE").get(null);
+                chatTitle = IChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + title + "\"}");
+                subtitleConstructor = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent);
+                titlePacket = subtitleConstructor.newInstance(times, chatTitle);
                 sendPacket(p, titlePacket);
             }
-            if (subtitle != null)
-            {
-                Object e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("TIMES").get(null);
-                Object chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + title + "\"}");
-                Constructor<?> subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
-                Object subtitlePacket = subtitleConstructor.newInstance(e, chatSubtitle, fadeinst, stayst, fadeoutst);
+            if (subtitle != null) {
+                Object times = EnumTitleAction.getField("TIMES").get(null);
+                Object chatSubtitle = IChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + title + "\"}");
+                Constructor<?> subtitleConstructor = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                Object subtitlePacket = subtitleConstructor.newInstance(times, chatSubtitle, fadeinst, stayst, fadeoutst);
                 sendPacket(p, subtitlePacket);
-                
-                e = getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0].getField("SUBTITLE").get(null);
-                chatSubtitle = getNMSClass("IChatBaseComponent").getDeclaredClasses()[0].getMethod("a", new Class[]{String.class}).invoke(null, "{\"text\":\"" + subtitle + "\"}");
-                subtitleConstructor = getNMSClass("PacketPlayOutTitle").getConstructor(getNMSClass("PacketPlayOutTitle").getDeclaredClasses()[0], getNMSClass("IChatBaseComponent"), Integer.TYPE, Integer.TYPE, Integer.TYPE);
-                subtitlePacket = subtitleConstructor.newInstance(e, chatSubtitle, fadeinst, stayst, fadeoutst);
+
+                times = EnumTitleAction.getField("SUBTITLE").get(null);
+                chatSubtitle = IChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class).invoke(null, "{\"text\":\"" + subtitle + "\"}");
+                subtitleConstructor = PacketPlayOutTitle.getConstructor(EnumTitleAction, IChatBaseComponent, Integer.TYPE, Integer.TYPE, Integer.TYPE);
+                subtitlePacket = subtitleConstructor.newInstance(times, chatSubtitle, fadeinst, stayst, fadeoutst);
                 sendPacket(p, subtitlePacket);
             }
+        } catch (Exception ignored) {
         }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
+    }
+
+    private static void sendPacket(Player player, Object packet) {
+        try {
+            Object handle = player.getClass().getDeclaredMethod("getHandle").invoke(player);
+            Object playerConnection = handle.getClass().getDeclaredField("playerConnection").get(handle);
+            playerConnection.getClass().getDeclaredMethod("sendPacket", Packet).invoke(playerConnection, packet);
+        } catch (Exception ignored) {
         }
     }
 }

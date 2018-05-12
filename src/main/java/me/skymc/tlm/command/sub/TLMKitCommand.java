@@ -37,7 +37,7 @@ public class TLMKitCommand extends SubCommand {
 			TLM.getInst().getLanguage().get("KIT-EMPTY").send(sender);
         }
 		
-		else if (args[1].equalsIgnoreCase("list")) {
+		else if ("list".equalsIgnoreCase(args[1])) {
 			// 判断权限
 			if (!sender.hasPermission("taboolib.kit.list")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-LIST").send(sender);
@@ -49,7 +49,7 @@ public class TLMKitCommand extends SubCommand {
 			}
 		}
 		
-		else if (args[1].equalsIgnoreCase("reward")) {
+		else if ("reward".equalsIgnoreCase(args[1])) {
 			// 判断权限
 			if (!sender.hasPermission("taboolib.kit.reward")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-REWARD").send(sender);
@@ -129,7 +129,7 @@ public class TLMKitCommand extends SubCommand {
 			// 提示信息
 			TLM.getInst().getLanguage().get("KIT-SUCCESS").addPlaceholder("$kit", args[2]).send(sender);
 		}
-		else if (args[1].equalsIgnoreCase("reset")) {
+		else if ("reset".equalsIgnoreCase(args[1])) {
 			// 判断权限
 			if (!sender.hasPermission("taboolib.kit.reset")) {
 				TLM.getInst().getLanguage().get("NOPERMISSION-KIT-RESET").send(sender);

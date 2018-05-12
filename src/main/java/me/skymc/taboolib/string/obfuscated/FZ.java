@@ -4,7 +4,7 @@ package me.skymc.taboolib.string.obfuscated;
 public class FZ {
 	
     public static String toByte(final String string) {
-        final StringBuilder sb = new StringBuilder("");
+        final StringBuilder sb = new StringBuilder();
         final byte[] bs = string.getBytes();
         byte[] array;
         for (int length = (array = bs).length, i = 0; i < length; ++i) {
@@ -33,7 +33,7 @@ public class FZ {
     }
     
     public static String load(final String string, final int power) {
-        final StringBuilder sb = new StringBuilder("");
+        final StringBuilder sb = new StringBuilder();
         char[] charArray;
         for (int length = (charArray = string.toCharArray()).length, j = 0; j < length; ++j) {
             int i;
@@ -46,7 +46,7 @@ public class FZ {
     
     public static String load2(final String string, final int power) {
         final String[] value = string.split("#");
-        final StringBuilder sb = new StringBuilder("");
+        final StringBuilder sb = new StringBuilder();
         String[] array;
         for (int length = (array = value).length, j = 0; j < length; ++j) {
             final String c = array[j];

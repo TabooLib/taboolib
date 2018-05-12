@@ -2,7 +2,6 @@ package me.skymc.taboolib.bookformatter;
 
 import me.skymc.taboolib.bookformatter.builder.BookBuilder;
 import me.skymc.taboolib.events.CustomBookOpenEvent;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

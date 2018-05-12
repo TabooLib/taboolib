@@ -1,6 +1,5 @@
 package me.skymc.taboolib.inventory.speciaitem;
 
-import lombok.Getter;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.message.MsgUtils;
@@ -21,131 +20,136 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @since 2018年2月17日 下午8:34:12
  */
 public class SpecialItem implements Listener {
-	
-	private static SpecialItem specialItem = null;
-	
-	private final List<AbstractSpecialItem> ITEM_DATA = new CopyOnWriteArrayList<>();
-	
-	@Getter
-	private boolean isLoaded;
-	
-	/**
-	 * 构造方法
-	 */
-	private SpecialItem() {
-		
-	}
-	
-	/**
-	 * 获取工具对象
-	 * 
-	 * @return {@link SpecialItem}
-	 */
-	public static SpecialItem getInst() {
-		if (specialItem == null) {
-			synchronized (SpecialItem.class) {
-				if (specialItem == null) {
-					specialItem = new SpecialItem();
-					// 注册监听器
-					Bukkit.getPluginManager().registerEvents(specialItem, Main.getInst());
-				}
-			}
-		}
-		return specialItem;
-	}
-	
-	/**
-	 * 注册接口
-	 * 
-	 * @param item 接口对象
-	 */
-	public void register(AbstractSpecialItem item) {
-		if (contains(item.getName())) {
-			MsgUtils.warn("特殊物品接口已存在, 检查名称 &4" + item.getName() + " &c是否重复");
-		} 
-		else {
-			ITEM_DATA.add(item);
-			if (isLoaded) {
-				item.onEnable();
-			}
-		}
-	}
-	
-	/**
-	 * 注销接口
-	 * 
-	 * @param name 注册名称
-	 */
-	public void cancel(String name) {
-		for (AbstractSpecialItem specialitem : ITEM_DATA) {
-			if (specialitem.getName() != null && specialitem.getName().equals(specialitem.getName())) {
-				specialitem.onDisable();
-				ITEM_DATA.remove(specialitem);
-			}
-		}
-	}
-	
-	/**
-	 * 注销接口
-	 * 
-	 * @param plugin 注册插件
-	 */
-	public void cancel(Plugin plugin) {
-		for (AbstractSpecialItem specialitem : ITEM_DATA) {
-			if (specialitem.getPlugin() != null && specialitem.getPlugin().equals(plugin)) {
-				specialitem.onDisable();
-				ITEM_DATA.remove(specialitem);
-			}
-		}
-	}
-	
-	/**
-	 * 判断名称是否存在
-	 * 
-	 * @param name 注册名称
-	 * @return boolean
-	 */
-	public boolean contains(String name) {
-		for (AbstractSpecialItem specialitem : ITEM_DATA) {
-			if (specialitem.getName().equals(name)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 * 载入所有已注册接口
-	 */
-	public void loadItems() {
+
+    private static SpecialItem specialItem = null;
+
+    private final List<AbstractSpecialItem> ITEM_DATA = new CopyOnWriteArrayList<>();
+
+    private boolean isLoaded;
+
+    /**
+     * 构造方法
+     */
+    private SpecialItem() {
+
+    }
+
+    /**
+     * 获取工具对象
+     *
+     * @return {@link SpecialItem}
+     */
+    public static SpecialItem getInst() {
+        if (specialItem == null) {
+            synchronized (SpecialItem.class) {
+                if (specialItem == null) {
+                    specialItem = new SpecialItem();
+                    // 注册监听器
+                    Bukkit.getPluginManager().registerEvents(specialItem, Main.getInst());
+                }
+            }
+        }
+        return specialItem;
+    }
+
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+
+    /**
+     * 注册接口
+     *
+     * @param item 接口对象
+     */
+    public void register(AbstractSpecialItem item) {
+        if (contains(item.getName())) {
+            MsgUtils.warn("特殊物品接口已存在, 检查名称 &4" + item.getName() + " &c是否重复");
+        } else {
+            ITEM_DATA.add(item);
+            if (isLoaded) {
+                item.onEnable();
+            }
+        }
+    }
+
+    /**
+     * 注销接口
+     *
+     * @param name 注册名称
+     */
+    public void cancel(String name) {
+        for (AbstractSpecialItem specialitem : ITEM_DATA) {
+            if (specialitem.getName() != null && specialitem.getName().equals(specialitem.getName())) {
+                specialitem.onDisable();
+                ITEM_DATA.remove(specialitem);
+            }
+        }
+    }
+
+    /**
+     * 注销接口
+     *
+     * @param plugin 注册插件
+     */
+    public void cancel(Plugin plugin) {
+        for (AbstractSpecialItem specialitem : ITEM_DATA) {
+            if (specialitem.getPlugin() != null && specialitem.getPlugin().equals(plugin)) {
+                specialitem.onDisable();
+                ITEM_DATA.remove(specialitem);
+            }
+        }
+    }
+
+    /**
+     * 判断名称是否存在
+     *
+     * @param name 注册名称
+     * @return boolean
+     */
+    public boolean contains(String name) {
+        for (AbstractSpecialItem specialitem : ITEM_DATA) {
+            if (specialitem.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 载入所有已注册接口
+     */
+    public void loadItems() {
         ITEM_DATA.forEach(AbstractSpecialItem::onEnable);
-		isLoaded = true;
-	}
-	
-	/**
-	 * 注销所有已注册接口
-	 */
-	public void unloadItems() {
+        isLoaded = true;
+    }
+
+    /**
+     * 注销所有已注册接口
+     */
+    public void unloadItems() {
         ITEM_DATA.forEach(AbstractSpecialItem::onDisable);
-		ITEM_DATA.clear();
-	}
-	
-	@EventHandler
-	public void onDisable(PluginDisableEvent e) {
-		cancel(e.getPlugin());
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void click(InventoryClickEvent e) {
-		if (e.isCancelled()) {
-			return;
-		}
-		if (ItemUtils.isNull(e.getCurrentItem()) || ItemUtils.isNull(e.getCursor())) {
-			return;
-		}
-		Player player = (Player) e.getWhoClicked();
-		for (AbstractSpecialItem specialitem : ITEM_DATA) {
-			for (SpecialItemResult result : specialitem.isCorrectClick(player, e.getCurrentItem(), e.getCursor())) {
+        ITEM_DATA.clear();
+    }
+
+    @EventHandler
+    public void onDisable(PluginDisableEvent e) {
+        cancel(e.getPlugin());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void click(InventoryClickEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+        if (ItemUtils.isNull(e.getCurrentItem()) || ItemUtils.isNull(e.getCursor())) {
+            return;
+        }
+        Player player = (Player) e.getWhoClicked();
+        for (AbstractSpecialItem specialItem : ITEM_DATA) {
+            for (SpecialItemResult result : specialItem.isCorrectClick(player, e.getCurrentItem(), e.getCursor())) {
+                if (result == null) {
+                    break;
+                }
                 switch (result) {
                     case CANCEL:
                         e.setCancelled(true);
@@ -172,8 +176,8 @@ public class SpecialItem implements Listener {
                             e.getWhoClicked().setItemOnCursor(null);
                         }
                         break;
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 }

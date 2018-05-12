@@ -3,8 +3,8 @@ package me.skymc.taboolib.csvutils;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class CsvWriter
-{
+public class CsvWriter {
+
     private Writer outputStream;
     private String fileName;
     private boolean firstColumn;
@@ -16,7 +16,7 @@ public class CsvWriter
     private String systemRecordDelimiter;
     public static final int ESCAPE_MODE_DOUBLED = 1;
     public static final int ESCAPE_MODE_BACKSLASH = 2;
-    
+
     public CsvWriter(final String fileName, final char delimiter, final Charset charset) {
         this.outputStream = null;
         this.fileName = null;
@@ -37,11 +37,11 @@ public class CsvWriter
         this.userSettings.Delimiter = delimiter;
         this.charset = charset;
     }
-    
+
     public CsvWriter(final String s) {
         this(s, ',', Charset.forName("ISO-8859-1"));
     }
-    
+
     public CsvWriter(final Writer outputStream, final char delimiter) {
         this.outputStream = null;
         this.fileName = null;
@@ -59,68 +59,68 @@ public class CsvWriter
         this.userSettings.Delimiter = delimiter;
         this.initialized = true;
     }
-    
+
     public CsvWriter(final OutputStream outputStream, final char c, final Charset charset) {
         this(new OutputStreamWriter(outputStream, charset), c);
     }
-    
+
     public char getDelimiter() {
         return this.userSettings.Delimiter;
     }
-    
+
     public void setDelimiter(final char delimiter) {
         this.userSettings.Delimiter = delimiter;
     }
-    
+
     public char getRecordDelimiter() {
         return this.userSettings.RecordDelimiter;
     }
-    
+
     public void setRecordDelimiter(final char recordDelimiter) {
         this.useCustomRecordDelimiter = true;
         this.userSettings.RecordDelimiter = recordDelimiter;
     }
-    
+
     public char getTextQualifier() {
         return this.userSettings.TextQualifier;
     }
-    
+
     public void setTextQualifier(final char textQualifier) {
         this.userSettings.TextQualifier = textQualifier;
     }
-    
+
     public boolean getUseTextQualifier() {
         return this.userSettings.UseTextQualifier;
     }
-    
+
     public void setUseTextQualifier(final boolean useTextQualifier) {
         this.userSettings.UseTextQualifier = useTextQualifier;
     }
-    
+
     public int getEscapeMode() {
         return this.userSettings.EscapeMode;
     }
-    
+
     public void setEscapeMode(final int escapeMode) {
         this.userSettings.EscapeMode = escapeMode;
     }
-    
+
     public void setComment(final char comment) {
         this.userSettings.Comment = comment;
     }
-    
+
     public char getComment() {
         return this.userSettings.Comment;
     }
-    
+
     public boolean getForceQualifier() {
         return this.userSettings.ForceQualifier;
     }
-    
+
     public void setForceQualifier(final boolean forceQualifier) {
         this.userSettings.ForceQualifier = forceQualifier;
     }
-    
+
     public void write(String s, final boolean b) throws IOException {
         this.checkClosed();
         this.checkInit();
@@ -154,26 +154,22 @@ public class CsvWriter
             if (this.userSettings.EscapeMode == 2) {
                 s = replace(s, "\\", "\\\\");
                 s = replace(s, "" + this.userSettings.TextQualifier, "\\" + this.userSettings.TextQualifier);
-            }
-            else {
+            } else {
                 s = replace(s, "" + this.userSettings.TextQualifier, "" + this.userSettings.TextQualifier + this.userSettings.TextQualifier);
             }
-        }
-        else if (this.userSettings.EscapeMode == 2) {
+        } else if (this.userSettings.EscapeMode == 2) {
             s = replace(s, "\\", "\\\\");
             s = replace(s, "" + this.userSettings.Delimiter, "\\" + this.userSettings.Delimiter);
             if (this.useCustomRecordDelimiter) {
                 s = replace(s, "" + this.userSettings.RecordDelimiter, "\\" + this.userSettings.RecordDelimiter);
-            }
-            else {
+            } else {
                 s = replace(s, "\r", "\\\r");
                 s = replace(s, "\n", "\\\n");
             }
             if (this.firstColumn && s.length() > 0 && s.charAt(0) == this.userSettings.Comment) {
                 if (s.length() > 1) {
                     s = "\\" + this.userSettings.Comment + s.substring(1);
-                }
-                else {
+                } else {
                     s = "\\" + this.userSettings.Comment;
                 }
             }
@@ -184,11 +180,11 @@ public class CsvWriter
         }
         this.firstColumn = false;
     }
-    
+
     public void write(final String s) throws IOException {
         this.write(s, false);
     }
-    
+
     public void writeComment(final String s) throws IOException {
         this.checkClosed();
         this.checkInit();
@@ -196,8 +192,7 @@ public class CsvWriter
         this.outputStream.write(s);
         if (this.useCustomRecordDelimiter) {
             this.outputStream.write(this.userSettings.RecordDelimiter);
-        }
-        else {
+        } else {
             this.outputStream.write(this.systemRecordDelimiter);
         }
         this.firstColumn = true;
@@ -210,7 +205,7 @@ public class CsvWriter
             final StringBuilder sb = new StringBuilder();
             int n;
             for (n = 0; i != -1; i = s.indexOf(s2, n)) {
-                sb.append(s.substring(n, i));
+                sb.append(s, n, i);
                 sb.append(s3);
                 n = i + length;
             }
@@ -219,23 +214,22 @@ public class CsvWriter
         }
         return s;
     }
-    
+
     public void writeRecord(final String[] array) throws IOException {
         this.writeRecord(array, false);
     }
-    
+
     public void endRecord() throws IOException {
         this.checkClosed();
         this.checkInit();
         if (this.useCustomRecordDelimiter) {
             this.outputStream.write(this.userSettings.RecordDelimiter);
-        }
-        else {
+        } else {
             this.outputStream.write(this.systemRecordDelimiter);
         }
         this.firstColumn = true;
     }
-    
+
     private void checkInit() throws IOException {
         if (!this.initialized) {
             if (this.fileName != null) {
@@ -244,11 +238,11 @@ public class CsvWriter
             this.initialized = true;
         }
     }
-    
+
     public void flush() throws IOException {
         this.outputStream.flush();
     }
-    
+
     public void close() {
         if (!this.closed) {
             this.close(true);
@@ -271,10 +265,11 @@ public class CsvWriter
         }
     }
 
+    @Override
     protected void finalize() {
         this.close(false);
     }
-    
+
     private void close(final boolean b) {
         if (!this.closed) {
             if (b) {
@@ -290,9 +285,8 @@ public class CsvWriter
             this.closed = true;
         }
     }
-    
-    private class UserSettings
-    {
+
+    private class UserSettings {
         public char TextQualifier;
         public boolean UseTextQualifier;
         public char Delimiter;
@@ -300,7 +294,7 @@ public class CsvWriter
         public char Comment;
         public int EscapeMode;
         public boolean ForceQualifier;
-        
+
         public UserSettings() {
             this.TextQualifier = '\"';
             this.UseTextQualifier = true;
@@ -311,9 +305,8 @@ public class CsvWriter
             this.ForceQualifier = false;
         }
     }
-    
-    private class Letters
-    {
+
+    private class Letters {
         public static final char LF = '\n';
         public static final char CR = '\r';
         public static final char QUOTE = '\"';
