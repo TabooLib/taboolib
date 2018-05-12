@@ -24,7 +24,6 @@ class TLocaleInstance {
 
     private final Map<String, List<TLocaleSendable>> map = new HashMap<>();
     private final Plugin plugin;
-    private int updateNodes;
 
     TLocaleInstance(Plugin plugin) {
         this.plugin = plugin;
@@ -45,10 +44,6 @@ class TLocaleInstance {
 
     public Plugin getPlugin() {
         return plugin;
-    }
-
-    public int getUpdateNodes() {
-        return updateNodes;
     }
 
     public void sendTo(String path, CommandSender sender, String... args) {
@@ -75,32 +70,34 @@ class TLocaleInstance {
         return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asStringList(args);
     }
 
-    public void load(YamlConfiguration configuration) {
-        updateNodes = 0;
-        configuration.getKeys(true).forEach(s -> {
-            boolean isCover = false;
-            Object object = configuration.get(s);
-            if (object instanceof TLocaleSendable) {
-                isCover = map.put(s, Collections.singletonList((TLocaleSendable) object)) != null;
-            } else if (object instanceof List && !((List) object).isEmpty()) {
-                isCover = map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList())) != null;
-            } else if (!(object instanceof ConfigurationSection)) {
-                String str = String.valueOf(object);
-                isCover = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str))) != null;
-            }
-            if (isCover) {
-                updateNodes++;
-            }
-        });
-    }
-
     private static final Function<Object, TLocaleSendable> TO_SENDABLE = o -> {
         if (o instanceof TLocaleSendable) {
             return ((TLocaleSendable) o);
-        } else if (o instanceof String) {
-            return TLocaleText.of(((String) o));
+        } else if (o instanceof String || (o instanceof List && isListString(((List) o)))) {
+            return TLocaleText.of(o);
         } else {
             return TLocaleText.of(String.valueOf(o));
         }
     };
+
+    private static boolean isListString(List list) {
+        for (Object o : list) {
+            if (!(o instanceof String)) return false;
+        }
+        return true;
+    }
+
+    public void load(YamlConfiguration configuration) {
+        configuration.getKeys(true).forEach(s -> {
+            Object object = configuration.get(s);
+            if (object instanceof TLocaleSendable) {
+                map.put(s, Collections.singletonList((TLocaleSendable) object));
+            } else if (object instanceof List && !((List) object).isEmpty()) {
+                map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList()));
+            } else if (!(object instanceof ConfigurationSection)) {
+                String str = String.valueOf(object);
+                map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str)));
+            }
+        });
+    }
 }

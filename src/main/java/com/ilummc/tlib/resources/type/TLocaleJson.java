@@ -40,28 +40,41 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
 
     public static TLocaleJson valueOf(Map<String, Object> map) {
         boolean papi = (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
+
+        // text 里面的东西
         List<String> textList = getTextList(map.getOrDefault("text", "Empty Node"));
+
+        // 分析 args 并替换
         Object argsObj = map.get("args");
         if (argsObj instanceof Map) {
             Map<String, Object> section = new HashMap<>(((Map<?, ?>) argsObj).size());
+
+            // valueOf(k) 是因为这个键可能加载为一个 Integer 导致 contains(String) 返回 false
             ((Map<?, ?>) argsObj).forEach((k, v) -> section.put(String.valueOf(k), v));
             List<BaseComponent[]> collect = textList.stream().map(s -> {
                 int index = 0;
                 String[] template = pattern.split(s);
                 Matcher matcher = pattern.matcher(s);
+                // 有可能开头和结尾是替换文本，所以做个特判
                 List<BaseComponent> builder = template.length > index ? new ArrayList<>(Arrays.asList(TextComponent.fromLegacyText(template[index++]))) : new ArrayList<>();
                 while (matcher.find()) {
                     String replace = matcher.group();
+                    // 假的 <@>
                     if (replace.length() <= 2) {
                         continue;
                     }
+                    // 真的 <@xxx>
                     replace = replace.substring(1, replace.length() - 1);
                     String[] split = replace.split("@");
+                    // @ 前面的字符串
                     String text = split.length > 1 ? split[0] : "";
+                    // @ 后面的节点名
                     String node = split.length > 1 ? split[1] : split[0];
+                    // 如果 args 有这个 xxx
                     if (section.containsKey(node)) {
                         Map<String, Object> arg = (Map<String, Object>) section.get(node);
                         text = ChatColor.translateAlternateColorCodes('&', String.valueOf(arg.getOrDefault("text", text)));
+                        // 可能有很多个 BaseComponent，于是为每个 component 单独设置各种事件
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
                         arg.forEach((key, value) -> {
                             if ("suggest".equalsIgnoreCase(key)) {
@@ -72,11 +85,14 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', String.valueOf(value))).create())));
                             }
                         });
+                        // 添加到原来的 list 里面
                         builder.addAll(Arrays.asList(component));
                     } else {
+                        // 这个参数节点并没有找到，于是随便放点字符串进去
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(text)));
                         TLib.getTLib().getLogger().warn(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("MISSING-ARGUMENT"), node));
                     }
+                    // 有可能一开头就是 <@xxx>，然后 split 出来就少了一些，于是直接加上
                     if (index < template.length) {
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(template[index++])));
                     }
