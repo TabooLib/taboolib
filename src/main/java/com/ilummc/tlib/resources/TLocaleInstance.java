@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,9 +22,8 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 class TLocaleInstance {
 
-    private final Map<String, List<TLocaleSerialize>> map = new ConcurrentHashMap<>();
+    private final Map<String, List<TLocaleSerialize>> map = new HashMap<>();
     private final Plugin plugin;
-    private final AtomicInteger updateNodes = new AtomicInteger();
 
     TLocaleInstance(Plugin plugin) {
         this.plugin = plugin;
@@ -47,10 +44,6 @@ class TLocaleInstance {
 
     public Plugin getPlugin() {
         return plugin;
-    }
-
-    public int getUpdateNodes() {
-        return updateNodes.get();
     }
 
     public void sendTo(String path, CommandSender sender, String... args) {
@@ -77,34 +70,30 @@ class TLocaleInstance {
         return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).get(0).asStringList(args);
     }
 
+    private static boolean isListString(List list) {
+        for (Object o : list) {
+            if (!(o instanceof String)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void load(YamlConfiguration configuration) {
-        updateNodes.set(0);
         configuration.getKeys(true).forEach(s -> {
-            boolean isCover = false;
             Object object = configuration.get(s);
             if (object instanceof TLocaleSerialize) {
-                isCover = map.put(s, Collections.singletonList((TLocaleSerialize) object)) != null;
+                map.put(s, Collections.singletonList((TLocaleSerialize) object));
             } else if (object instanceof List && !((List) object).isEmpty()) {
-                isCover = map.put(s, ((List<?>) object).stream().map(TO_SERIALIZE).collect(Collectors.toList())) != null;
+                if (isListString((List) object)) {
+                    map.put(s, Collections.singletonList(TLocaleText.of(object)));
+                } else {
+                    map.put(s, ((List<?>) object).stream().map(o -> o instanceof TLocaleSerialize ? (TLocaleSerialize) o : TLocaleText.of(String.valueOf(o))).collect(Collectors.toList()));
+                }
             } else if (!(object instanceof ConfigurationSection)) {
                 String str = String.valueOf(object);
-                isCover = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSerialize.getEmpty() : TLocaleText.of(str))) != null;
-            }
-            if (isCover) {
-                updateNodes.getAndIncrement();
+                map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSerialize.getEmpty() : TLocaleText.of(str)));
             }
         });
     }
-
-    private static final Function<Object, TLocaleSerialize> TO_SERIALIZE = o -> {
-        if (o instanceof TLocaleSerialize) {
-            return ((TLocaleSerialize) o);
-        } else if (o instanceof List) {
-            return TLocaleText.of(((List) o));
-        } else if (o instanceof String) {
-            return TLocaleText.of(((String) o));
-        } else {
-            return TLocaleText.of(String.valueOf(o));
-        }
-    };
 }
