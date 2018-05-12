@@ -19,7 +19,8 @@ import java.util.function.Consumer;
  */
 public class TConfigWatcher {
 
-    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1, new BasicThreadFactory.Builder().namingPattern("tconfig-watcher-schedule-pool-%d").daemon(true).build());
+    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1,
+            new BasicThreadFactory.Builder().namingPattern("TConfigWatcherService-%d").build());
 
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 
@@ -54,7 +55,16 @@ public class TConfigWatcher {
 
     public void removeListener(File file) {
         synchronized (map) {
-            map.entrySet().removeIf(entry -> entry.getValue().getLeft().equals(file));
+            map.entrySet().removeIf(entry -> {
+                if (entry.getValue().getLeft().equals(file)) {
+                    try {
+                        entry.getKey().close();
+                    } catch (IOException ignored) {
+                    }
+                    return true;
+                }
+                return false;
+            });
         }
     }
 

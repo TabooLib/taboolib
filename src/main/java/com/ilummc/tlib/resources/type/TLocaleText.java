@@ -38,8 +38,8 @@ public class TLocaleText extends TLocaleSerialize {
         return new TLocaleText(TLocale.Translate.setColored(s), TLocale.Translate.isPlaceholderUseDefault());
     }
 
-    public static TLocaleText of(List<String> s) {
-        return new TLocaleText(TLocale.Translate.setColored(s), TLocale.Translate.isPlaceholderUseDefault());
+    public static TLocaleText of(Object o) {
+        return o instanceof String ? of(((String) o)) : new TLocaleText(o, false);
     }
 
     public static TLocaleText valueOf(Map<String, Object> map) {
@@ -71,7 +71,7 @@ public class TLocaleText extends TLocaleSerialize {
     @Override
     public List<String> asStringList(String... args) {
         if (text instanceof List) {
-            return ((List<String>) text).stream().map(x -> "list: " + Strings.replaceWithOrder(TLocale.Translate.setColored(x), args)).collect(Collectors.toList());
+            return ((List<String>) text).stream().map(x -> Strings.replaceWithOrder(TLocale.Translate.setColored(x), args)).collect(Collectors.toList());
         } else {
             return Collections.singletonList(asString(args));
         }
