@@ -1,12 +1,11 @@
 package me.skymc.tlm.command.sub;
 
-import org.bukkit.command.CommandSender;
-
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.module.ITabooLibraryModule;
 import me.skymc.tlm.module.TabooLibraryModule;
+import org.bukkit.command.CommandSender;
 
 /**
  * @author sky
@@ -24,12 +23,12 @@ public class TLMReloadCommand extends SubCommand {
 			MsgUtils.send(sender, "&4参数错误。");
 		}
 		
-		else if (args[1].equalsIgnoreCase("tlm")) {
+		else if ("tlm".equalsIgnoreCase(args[1])) {
 			TLM.getInst().reloadConfig();
 			MsgUtils.send(sender, "&fTLM &7配置文件已重载。");
 		}
 		
-		else if (args[1].equalsIgnoreCase("all")) {
+		else if ("all".equalsIgnoreCase(args[1])) {
 			TabooLibraryModule.getInst().reloadConfig();
 			MsgUtils.send(sender, "所有模块配置文件已重载。");
 		}

@@ -5,8 +5,8 @@ import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.HashMap;
 
-public class CsvReader
-{
+public class CsvReader {
+
     private Reader inputStream;
     private String fileName;
     private UserSettings userSettings;
@@ -30,7 +30,7 @@ public class CsvReader
     private boolean closed;
     public static final int ESCAPE_MODE_DOUBLED = 1;
     public static final int ESCAPE_MODE_BACKSLASH = 2;
-    
+
     public CsvReader(final String fileName, final char delimiter, final Charset charset) throws FileNotFoundException {
         this.inputStream = null;
         this.fileName = null;
@@ -67,15 +67,15 @@ public class CsvReader
         this.charset = charset;
         this.isQualified = new boolean[this.values.length];
     }
-    
+
     public CsvReader(final String s, final char c) throws FileNotFoundException {
         this(s, c, Charset.forName("ISO-8859-1"));
     }
-    
+
     public CsvReader(final String s) throws FileNotFoundException {
         this(s, ',');
     }
-    
+
     public CsvReader(final Reader inputStream, final char delimiter) {
         this.inputStream = null;
         this.fileName = null;
@@ -106,132 +106,132 @@ public class CsvReader
         this.initialized = true;
         this.isQualified = new boolean[this.values.length];
     }
-    
+
     public CsvReader(final Reader reader) {
         this(reader, ',');
     }
-    
+
     public CsvReader(final InputStream inputStream, final char c, final Charset charset) {
         this(new InputStreamReader(inputStream, charset), c);
     }
-    
+
     public CsvReader(final InputStream inputStream, final Charset charset) {
         this(new InputStreamReader(inputStream, charset));
     }
-    
+
     public boolean getCaptureRawRecord() {
         return this.userSettings.CaptureRawRecord;
     }
-    
+
     public void setCaptureRawRecord(final boolean captureRawRecord) {
         this.userSettings.CaptureRawRecord = captureRawRecord;
     }
-    
+
     public String getRawRecord() {
         return this.rawRecord;
     }
-    
+
     public boolean getTrimWhitespace() {
         return this.userSettings.TrimWhitespace;
     }
-    
+
     public void setTrimWhitespace(final boolean trimWhitespace) {
         this.userSettings.TrimWhitespace = trimWhitespace;
     }
-    
+
     public char getDelimiter() {
         return this.userSettings.Delimiter;
     }
-    
+
     public void setDelimiter(final char delimiter) {
         this.userSettings.Delimiter = delimiter;
     }
-    
+
     public char getRecordDelimiter() {
         return this.userSettings.RecordDelimiter;
     }
-    
+
     public void setRecordDelimiter(final char recordDelimiter) {
         this.useCustomRecordDelimiter = true;
         this.userSettings.RecordDelimiter = recordDelimiter;
     }
-    
+
     public char getTextQualifier() {
         return this.userSettings.TextQualifier;
     }
-    
+
     public void setTextQualifier(final char textQualifier) {
         this.userSettings.TextQualifier = textQualifier;
     }
-    
+
     public boolean getUseTextQualifier() {
         return this.userSettings.UseTextQualifier;
     }
-    
+
     public void setUseTextQualifier(final boolean useTextQualifier) {
         this.userSettings.UseTextQualifier = useTextQualifier;
     }
-    
+
     public char getComment() {
         return this.userSettings.Comment;
     }
-    
+
     public void setComment(final char comment) {
         this.userSettings.Comment = comment;
     }
-    
+
     public boolean getUseComments() {
         return this.userSettings.UseComments;
     }
-    
+
     public void setUseComments(final boolean useComments) {
         this.userSettings.UseComments = useComments;
     }
-    
+
     public int getEscapeMode() {
         return this.userSettings.EscapeMode;
     }
-    
+
     public void setEscapeMode(final int escapeMode) throws IllegalArgumentException {
         if (escapeMode != 1 && escapeMode != 2) {
             throw new IllegalArgumentException("Parameter escapeMode must be a valid value.");
         }
         this.userSettings.EscapeMode = escapeMode;
     }
-    
+
     public boolean getSkipEmptyRecords() {
         return this.userSettings.SkipEmptyRecords;
     }
-    
+
     public void setSkipEmptyRecords(final boolean skipEmptyRecords) {
         this.userSettings.SkipEmptyRecords = skipEmptyRecords;
     }
-    
+
     public boolean getSafetySwitch() {
         return this.userSettings.SafetySwitch;
     }
-    
+
     public void setSafetySwitch(final boolean safetySwitch) {
         this.userSettings.SafetySwitch = safetySwitch;
     }
-    
+
     public int getColumnCount() {
         return this.columnsCount;
     }
-    
+
     public long getCurrentRecord() {
         return this.currentRecord - 1L;
     }
-    
+
     // TODO 2017-11-29 18:38:13 UPDATED
     public long setCurrentRecord(long currentRecord) {
         return this.currentRecord = currentRecord;
     }
-    
+
     public int getHeaderCount() {
         return this.headersHolder.Length;
     }
-    
+
     public String[] getHeaders() throws IOException {
         this.checkClosed();
         if (this.headersHolder.Headers == null) {
@@ -241,28 +241,26 @@ public class CsvReader
         System.arraycopy(this.headersHolder.Headers, 0, array, 0, this.headersHolder.Length);
         return array;
     }
-    
-    public void setHeaders(final String[] headers) {
-        this.headersHolder.Headers = headers;
-        this.headersHolder.IndexByName.clear();
-        if (headers != null) {
-            this.headersHolder.Length = headers.length;
+
+    private static char hexToDec(final char c) {
+        char c2;
+        if (c >= 'a') {
+            c2 = (char) (c - 'a' + '\n');
+        } else if (c >= 'A') {
+            c2 = (char) (c - 'A' + '\n');
+        } else {
+            c2 = (char) (c - '0');
         }
-        else {
-            this.headersHolder.Length = 0;
-        }
-        for (int i = 0; i < this.headersHolder.Length; ++i) {
-            this.headersHolder.IndexByName.put(headers[i], i);
-        }
+        return c2;
     }
-    
+
     public String[] getValues() throws IOException {
         this.checkClosed();
         final String[] array = new String[this.columnsCount];
         System.arraycopy(this.values, 0, array, 0, this.columnsCount);
         return array;
     }
-    
+
     public String get(final int n) throws IOException {
         this.checkClosed();
         if (n > -1 && n < this.columnsCount) {
@@ -270,19 +268,32 @@ public class CsvReader
         }
         return "";
     }
-    
+
     public String get(final String s) throws IOException {
         this.checkClosed();
         return this.get(this.getIndex(s));
     }
-    
+
     public static CsvReader parse(final String s) {
         if (s == null) {
             throw new IllegalArgumentException("Parameter data can not be null.");
         }
         return new CsvReader(new StringReader(s));
     }
-    
+
+    public void setHeaders(final String[] headers) {
+        this.headersHolder.Headers = headers;
+        this.headersHolder.IndexByName.clear();
+        if (headers != null) {
+            this.headersHolder.Length = headers.length;
+        } else {
+            this.headersHolder.Length = 0;
+        }
+        for (int i = 0; i < this.headersHolder.Length; ++i) {
+            this.headersHolder.IndexByName.put(headers[i], i);
+        }
+    }
+
     public boolean readRecord() throws IOException {
         this.checkClosed();
         this.columnsCount = 0;
@@ -293,8 +304,7 @@ public class CsvReader
             do {
                 if (this.dataBuffer.Position == this.dataBuffer.Count) {
                     this.checkDataLength();
-                }
-                else {
+                } else {
                     this.startedWithQualifier = false;
                     char c = this.dataBuffer.Buffer[this.dataBuffer.Position];
                     if (this.userSettings.UseTextQualifier && c == this.userSettings.TextQualifier) {
@@ -318,24 +328,21 @@ public class CsvReader
                         do {
                             if (this.dataBuffer.Position == this.dataBuffer.Count) {
                                 this.checkDataLength();
-                            }
-                            else {
+                            } else {
                                 final char lastLetter = this.dataBuffer.Buffer[this.dataBuffer.Position];
                                 if (n2 != 0) {
                                     this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                     if (lastLetter == this.userSettings.Delimiter) {
                                         this.endColumn();
-                                    }
-                                    else if ((!this.useCustomRecordDelimiter && (lastLetter == '\r' || lastLetter == '\n')) || (this.useCustomRecordDelimiter && lastLetter == this.userSettings.RecordDelimiter)) {
+                                    } else if ((!this.useCustomRecordDelimiter && (lastLetter == '\r' || lastLetter == '\n')) || (this.useCustomRecordDelimiter && lastLetter == this.userSettings.RecordDelimiter)) {
                                         this.endColumn();
                                         this.endRecord();
                                     }
-                                }
-                                else if (n4 != 0) {
+                                } else if (n4 != 0) {
                                     ++n6;
                                     switch (n5) {
                                         case 1: {
-                                            c2 = (char)((char)(c2 * '\u0010') + hexToDec(lastLetter));
+                                            c2 = (char) ((char) (c2 * '\u0010') + hexToDec(lastLetter));
                                             if (n6 == 4) {
                                                 n4 = 0;
                                                 break;
@@ -343,7 +350,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 2: {
-                                            c2 = (char)((char)(c2 * '\b') + (char)(lastLetter - '0'));
+                                            c2 = (char) ((char) (c2 * '\b') + (char) (lastLetter - '0'));
                                             if (n6 == 3) {
                                                 n4 = 0;
                                                 break;
@@ -351,7 +358,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 3: {
-                                            c2 = (char)((char)(c2 * '\n') + (char)(lastLetter - '0'));
+                                            c2 = (char) ((char) (c2 * '\n') + (char) (lastLetter - '0'));
                                             if (n6 == 3) {
                                                 n4 = 0;
                                                 break;
@@ -359,7 +366,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 4: {
-                                            c2 = (char)((char)(c2 * '\u0010') + hexToDec(lastLetter));
+                                            c2 = (char) ((char) (c2 * '\u0010') + hexToDec(lastLetter));
                                             if (n6 == 2) {
                                                 n4 = 0;
                                                 break;
@@ -369,25 +376,21 @@ public class CsvReader
                                     }
                                     if (n4 == 0) {
                                         this.appendLetter(c2);
-                                    }
-                                    else {
+                                    } else {
                                         this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                     }
-                                }
-                                else if (lastLetter == this.userSettings.TextQualifier) {
+                                } else if (lastLetter == this.userSettings.TextQualifier) {
                                     if (n3 != 0) {
                                         n3 = 0;
                                         n = 0;
-                                    }
-                                    else {
+                                    } else {
                                         this.updateCurrentValue();
                                         if (this.userSettings.EscapeMode == 1) {
                                             n3 = 1;
                                         }
                                         n = 1;
                                     }
-                                }
-                                else if (this.userSettings.EscapeMode == 2 && n3 != 0) {
+                                } else if (this.userSettings.EscapeMode == 2 && n3 != 0) {
                                     switch (lastLetter) {
                                         case 'n': {
                                             this.appendLetter('\n');
@@ -432,7 +435,7 @@ public class CsvReader
                                             n5 = 2;
                                             n4 = 1;
                                             n6 = 1;
-                                            c2 = (char)(lastLetter - '0');
+                                            c2 = (char) (lastLetter - '0');
                                             this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                             break;
                                         }
@@ -474,20 +477,16 @@ public class CsvReader
                                         }
                                     }
                                     n3 = 0;
-                                }
-                                else if (lastLetter == textQualifier) {
+                                } else if (lastLetter == textQualifier) {
                                     this.updateCurrentValue();
                                     n3 = 1;
-                                }
-                                else if (n != 0) {
+                                } else if (n != 0) {
                                     if (lastLetter == this.userSettings.Delimiter) {
                                         this.endColumn();
-                                    }
-                                    else if ((!this.useCustomRecordDelimiter && (lastLetter == '\r' || lastLetter == '\n')) || (this.useCustomRecordDelimiter && lastLetter == this.userSettings.RecordDelimiter)) {
+                                    } else if ((!this.useCustomRecordDelimiter && (lastLetter == '\r' || lastLetter == '\n')) || (this.useCustomRecordDelimiter && lastLetter == this.userSettings.RecordDelimiter)) {
                                         this.endColumn();
                                         this.endRecord();
-                                    }
-                                    else {
+                                    } else {
                                         this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                         n2 = 1;
                                     }
@@ -505,40 +504,32 @@ public class CsvReader
                                 }
                             }
                         } while (this.hasMoreData && this.startedColumn);
-                    }
-                    else if (c == this.userSettings.Delimiter) {
+                    } else if (c == this.userSettings.Delimiter) {
                         this.lastLetter = c;
                         this.endColumn();
-                    }
-                    else if (this.useCustomRecordDelimiter && c == this.userSettings.RecordDelimiter) {
+                    } else if (this.useCustomRecordDelimiter && c == this.userSettings.RecordDelimiter) {
                         if (this.startedColumn || this.columnsCount > 0 || !this.userSettings.SkipEmptyRecords) {
                             this.endColumn();
                             this.endRecord();
-                        }
-                        else {
+                        } else {
                             this.dataBuffer.LineStart = this.dataBuffer.Position + 1;
                         }
                         this.lastLetter = c;
-                    }
-                    else if (!this.useCustomRecordDelimiter && (c == '\r' || c == '\n')) {
+                    } else if (!this.useCustomRecordDelimiter && (c == '\r' || c == '\n')) {
                         if (this.startedColumn || this.columnsCount > 0 || (!this.userSettings.SkipEmptyRecords && (c == '\r' || this.lastLetter != '\r'))) {
                             this.endColumn();
                             this.endRecord();
-                        }
-                        else {
+                        } else {
                             this.dataBuffer.LineStart = this.dataBuffer.Position + 1;
                         }
                         this.lastLetter = c;
-                    }
-                    else if (this.userSettings.UseComments && this.columnsCount == 0 && c == this.userSettings.Comment) {
+                    } else if (this.userSettings.UseComments && this.columnsCount == 0 && c == this.userSettings.Comment) {
                         this.lastLetter = c;
                         this.skipLine();
-                    }
-                    else if (this.userSettings.TrimWhitespace && (c == ' ' || c == '\t')) {
+                    } else if (this.userSettings.TrimWhitespace && (c == ' ' || c == '\t')) {
                         this.startedColumn = true;
                         this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
-                    }
-                    else {
+                    } else {
                         this.startedColumn = true;
                         this.dataBuffer.ColumnStart = this.dataBuffer.Position;
                         int n7 = 0;
@@ -550,25 +541,22 @@ public class CsvReader
                         do {
                             if (n11 == 0 && this.dataBuffer.Position == this.dataBuffer.Count) {
                                 this.checkDataLength();
-                            }
-                            else {
+                            } else {
                                 if (n11 == 0) {
                                     c = this.dataBuffer.Buffer[this.dataBuffer.Position];
                                 }
                                 if (!this.userSettings.UseTextQualifier && this.userSettings.EscapeMode == 2 && c == '\\') {
                                     if (n7 != 0) {
                                         n7 = 0;
-                                    }
-                                    else {
+                                    } else {
                                         this.updateCurrentValue();
                                         n7 = 1;
                                     }
-                                }
-                                else if (n8 != 0) {
+                                } else if (n8 != 0) {
                                     ++n10;
                                     switch (n9) {
                                         case 1: {
-                                            c3 = (char)((char)(c3 * '\u0010') + hexToDec(c));
+                                            c3 = (char) ((char) (c3 * '\u0010') + hexToDec(c));
                                             if (n10 == 4) {
                                                 n8 = 0;
                                                 break;
@@ -576,7 +564,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 2: {
-                                            c3 = (char)((char)(c3 * '\b') + (char)(c - '0'));
+                                            c3 = (char) ((char) (c3 * '\b') + (char) (c - '0'));
                                             if (n10 == 3) {
                                                 n8 = 0;
                                                 break;
@@ -584,7 +572,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 3: {
-                                            c3 = (char)((char)(c3 * '\n') + (char)(c - '0'));
+                                            c3 = (char) ((char) (c3 * '\n') + (char) (c - '0'));
                                             if (n10 == 3) {
                                                 n8 = 0;
                                                 break;
@@ -592,7 +580,7 @@ public class CsvReader
                                             break;
                                         }
                                         case 4: {
-                                            c3 = (char)((char)(c3 * '\u0010') + hexToDec(c));
+                                            c3 = (char) ((char) (c3 * '\u0010') + hexToDec(c));
                                             if (n10 == 2) {
                                                 n8 = 0;
                                                 break;
@@ -602,12 +590,10 @@ public class CsvReader
                                     }
                                     if (n8 == 0) {
                                         this.appendLetter(c3);
-                                    }
-                                    else {
+                                    } else {
                                         this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                     }
-                                }
-                                else if (this.userSettings.EscapeMode == 2 && n7 != 0) {
+                                } else if (this.userSettings.EscapeMode == 2 && n7 != 0) {
                                     switch (c) {
                                         case 'n': {
                                             this.appendLetter('\n');
@@ -652,7 +638,7 @@ public class CsvReader
                                             n9 = 2;
                                             n8 = 1;
                                             n10 = 1;
-                                            c3 = (char)(c - '0');
+                                            c3 = (char) (c - '0');
                                             this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
                                             break;
                                         }
@@ -694,11 +680,9 @@ public class CsvReader
                                         }
                                     }
                                     n7 = 0;
-                                }
-                                else if (c == this.userSettings.Delimiter) {
+                                } else if (c == this.userSettings.Delimiter) {
                                     this.endColumn();
-                                }
-                                else if ((!this.useCustomRecordDelimiter && (c == '\r' || c == '\n')) || (this.useCustomRecordDelimiter && c == this.userSettings.RecordDelimiter)) {
+                                } else if ((!this.useCustomRecordDelimiter && (c == '\r' || c == '\n')) || (this.useCustomRecordDelimiter && c == this.userSettings.RecordDelimiter)) {
                                     this.endColumn();
                                     this.endRecord();
                                 }
@@ -732,21 +716,47 @@ public class CsvReader
             if (this.hasMoreData) {
                 if (this.rawBuffer.Position == 0) {
                     this.rawRecord = new String(this.dataBuffer.Buffer, this.dataBuffer.LineStart, this.dataBuffer.Position - this.dataBuffer.LineStart - 1);
-                }
-                else {
+                } else {
                     this.rawRecord = new String(this.rawBuffer.Buffer, 0, this.rawBuffer.Position) + new String(this.dataBuffer.Buffer, this.dataBuffer.LineStart, this.dataBuffer.Position - this.dataBuffer.LineStart - 1);
                 }
-            }
-            else {
+            } else {
                 this.rawRecord = new String(this.rawBuffer.Buffer, 0, this.rawBuffer.Position);
             }
-        }
-        else {
+        } else {
             this.rawRecord = "";
         }
         return this.hasReadNextLine;
     }
-    
+
+    public boolean readHeaders() throws IOException {
+        final boolean record = this.readRecord();
+        this.headersHolder.Length = this.columnsCount;
+        this.headersHolder.Headers = new String[this.columnsCount];
+        for (int i = 0; i < this.headersHolder.Length; ++i) {
+            final String value = this.get(i);
+            this.headersHolder.Headers[i] = value;
+            this.headersHolder.IndexByName.put(value, i);
+        }
+        if (record) {
+            --this.currentRecord;
+        }
+        this.columnsCount = 0;
+        return record;
+    }
+
+    public String getHeader(final int n) throws IOException {
+        this.checkClosed();
+        if (n > -1 && n < this.headersHolder.Length) {
+            return this.headersHolder.Headers[n];
+        }
+        return "";
+    }
+
+    public boolean isQualified(final int n) throws IOException {
+        this.checkClosed();
+        return n < this.columnsCount && n > -1 && this.isQualified[n];
+    }
+
     private void checkDataLength() throws IOException {
         if (!this.initialized) {
             if (this.fileName != null) {
@@ -768,8 +778,7 @@ public class CsvReader
         }
         try {
             this.dataBuffer.Count = this.inputStream.read(this.dataBuffer.Buffer, 0, this.dataBuffer.Buffer.length);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             this.close();
             throw ex;
         }
@@ -780,36 +789,57 @@ public class CsvReader
         this.dataBuffer.LineStart = 0;
         this.dataBuffer.ColumnStart = 0;
     }
-    
-    public boolean readHeaders() throws IOException {
-        final boolean record = this.readRecord();
-        this.headersHolder.Length = this.columnsCount;
-        this.headersHolder.Headers = new String[this.columnsCount];
-        for (int i = 0; i < this.headersHolder.Length; ++i) {
-            final String value = this.get(i);
-            this.headersHolder.Headers[i] = value;
-            this.headersHolder.IndexByName.put(value, i);
+
+    private void appendLetter(final char c) {
+        if (this.columnBuffer.Position == this.columnBuffer.Buffer.length) {
+            final char[] buffer = new char[this.columnBuffer.Buffer.length * 2];
+            System.arraycopy(this.columnBuffer.Buffer, 0, buffer, 0, this.columnBuffer.Position);
+            this.columnBuffer.Buffer = buffer;
         }
-        if (record) {
-            --this.currentRecord;
+        this.columnBuffer.Buffer[this.columnBuffer.Position++] = c;
+        this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
+    }
+
+    private void updateCurrentValue() {
+        if (this.startedColumn && this.dataBuffer.ColumnStart < this.dataBuffer.Position) {
+            if (this.columnBuffer.Buffer.length - this.columnBuffer.Position < this.dataBuffer.Position - this.dataBuffer.ColumnStart) {
+                final char[] buffer = new char[this.columnBuffer.Buffer.length + Math.max(this.dataBuffer.Position - this.dataBuffer.ColumnStart, this.columnBuffer.Buffer.length)];
+                System.arraycopy(this.columnBuffer.Buffer, 0, buffer, 0, this.columnBuffer.Position);
+                this.columnBuffer.Buffer = buffer;
+            }
+            System.arraycopy(this.dataBuffer.Buffer, this.dataBuffer.ColumnStart, this.columnBuffer.Buffer, this.columnBuffer.Position, this.dataBuffer.Position - this.dataBuffer.ColumnStart);
+            final ColumnBuffer columnBuffer = this.columnBuffer;
+            columnBuffer.Position += this.dataBuffer.Position - this.dataBuffer.ColumnStart;
         }
-        this.columnsCount = 0;
+        this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
+    }
+
+    public void endRecord() {
+        this.hasReadNextLine = true;
+        ++this.currentRecord;
+    }
+
+    public int getIndex(final String s) throws IOException {
+        this.checkClosed();
+        final Integer value = this.headersHolder.IndexByName.get(s);
+        if (value != null) {
+            return value;
+        }
+        return -1;
+    }
+
+    public boolean skipRecord() throws IOException {
+        this.checkClosed();
+        boolean record = false;
+        if (this.hasMoreData) {
+            record = this.readRecord();
+            if (record) {
+                --this.currentRecord;
+            }
+        }
         return record;
     }
-    
-    public String getHeader(final int n) throws IOException {
-        this.checkClosed();
-        if (n > -1 && n < this.headersHolder.Length) {
-            return this.headersHolder.Headers[n];
-        }
-        return "";
-    }
-    
-    public boolean isQualified(final int n) throws IOException {
-        this.checkClosed();
-        return n < this.columnsCount && n > -1 && this.isQualified[n];
-    }
-    
+
     public void endColumn() throws IOException {
         String s = "";
         if (this.startedColumn) {
@@ -823,8 +853,7 @@ public class CsvReader
                     }
                     s = new String(this.dataBuffer.Buffer, this.dataBuffer.ColumnStart, n - this.dataBuffer.ColumnStart + 1);
                 }
-            }
-            else {
+            } else {
                 this.updateCurrentValue();
                 int n2 = this.columnBuffer.Position - 1;
                 if (this.userSettings.TrimWhitespace && !this.startedWithQualifier) {
@@ -854,96 +883,14 @@ public class CsvReader
         this.isQualified[this.columnsCount] = this.startedWithQualifier;
         ++this.columnsCount;
     }
-    
-    private void appendLetter(final char c) {
-        if (this.columnBuffer.Position == this.columnBuffer.Buffer.length) {
-            final char[] buffer = new char[this.columnBuffer.Buffer.length * 2];
-            System.arraycopy(this.columnBuffer.Buffer, 0, buffer, 0, this.columnBuffer.Position);
-            this.columnBuffer.Buffer = buffer;
-        }
-        this.columnBuffer.Buffer[this.columnBuffer.Position++] = c;
-        this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
-    }
-    
-    private void updateCurrentValue() {
-        if (this.startedColumn && this.dataBuffer.ColumnStart < this.dataBuffer.Position) {
-            if (this.columnBuffer.Buffer.length - this.columnBuffer.Position < this.dataBuffer.Position - this.dataBuffer.ColumnStart) {
-                final char[] buffer = new char[this.columnBuffer.Buffer.length + Math.max(this.dataBuffer.Position - this.dataBuffer.ColumnStart, this.columnBuffer.Buffer.length)];
-                System.arraycopy(this.columnBuffer.Buffer, 0, buffer, 0, this.columnBuffer.Position);
-                this.columnBuffer.Buffer = buffer;
-            }
-            System.arraycopy(this.dataBuffer.Buffer, this.dataBuffer.ColumnStart, this.columnBuffer.Buffer, this.columnBuffer.Position, this.dataBuffer.Position - this.dataBuffer.ColumnStart);
-            final ColumnBuffer columnBuffer = this.columnBuffer;
-            columnBuffer.Position += this.dataBuffer.Position - this.dataBuffer.ColumnStart;
-        }
-        this.dataBuffer.ColumnStart = this.dataBuffer.Position + 1;
-    }
 
-    public void endRecord() {
-        this.hasReadNextLine = true;
-        ++this.currentRecord;
-    }
-    
-    public int getIndex(final String s) throws IOException {
-        this.checkClosed();
-        final Integer value = this.headersHolder.IndexByName.get(s);
-        if (value != null) {
-            return value;
-        }
-        return -1;
-    }
-    
-    public boolean skipRecord() throws IOException {
-        this.checkClosed();
-        boolean record = false;
-        if (this.hasMoreData) {
-            record = this.readRecord();
-            if (record) {
-                --this.currentRecord;
-            }
-        }
-        return record;
-    }
-    
-    public boolean skipLine() throws IOException {
-        this.checkClosed();
-        this.columnsCount = 0;
-        boolean b = false;
-        if (this.hasMoreData) {
-            boolean b2 = false;
-            do {
-                if (this.dataBuffer.Position == this.dataBuffer.Count) {
-                    this.checkDataLength();
-                }
-                else {
-                    b = true;
-                    final char lastLetter = this.dataBuffer.Buffer[this.dataBuffer.Position];
-                    if (lastLetter == '\r' || lastLetter == '\n') {
-                        b2 = true;
-                    }
-                    this.lastLetter = lastLetter;
-                    if (b2) {
-                        continue;
-                    }
-                    final DataBuffer dataBuffer = this.dataBuffer;
-                    ++dataBuffer.Position;
-                }
-            } while (this.hasMoreData && !b2);
-            this.columnBuffer.Position = 0;
-            this.dataBuffer.LineStart = this.dataBuffer.Position + 1;
-        }
-        this.rawBuffer.Position = 0;
-        this.rawRecord = "";
-        return b;
-    }
-    
     public void close() {
         if (!this.closed) {
             this.close(true);
             this.closed = true;
         }
     }
-    
+
     private void close(final boolean b) {
         if (!this.closed) {
             if (b) {
@@ -964,54 +911,69 @@ public class CsvReader
             this.closed = true;
         }
     }
-    
+
     private void checkClosed() throws IOException {
         if (this.closed) {
             throw new IOException("This instance of the CsvReader class has already been closed.");
         }
     }
-    
+
+    public boolean skipLine() throws IOException {
+        this.checkClosed();
+        this.columnsCount = 0;
+        boolean b = false;
+        if (this.hasMoreData) {
+            boolean b2 = false;
+            do {
+                if (this.dataBuffer.Position == this.dataBuffer.Count) {
+                    this.checkDataLength();
+                } else {
+                    b = true;
+                    final char lastLetter = this.dataBuffer.Buffer[this.dataBuffer.Position];
+                    if (lastLetter == '\r' || lastLetter == '\n') {
+                        b2 = true;
+                    }
+                    this.lastLetter = lastLetter;
+                    if (b2) {
+                        continue;
+                    }
+                    final DataBuffer dataBuffer = this.dataBuffer;
+                    ++dataBuffer.Position;
+                }
+            } while (this.hasMoreData && !b2);
+            this.columnBuffer.Position = 0;
+            this.dataBuffer.LineStart = this.dataBuffer.Position + 1;
+        }
+        this.rawBuffer.Position = 0;
+        this.rawRecord = "";
+        return b;
+    }
+
+    @Override
     protected void finalize() {
         this.close(false);
     }
-    
-    private static char hexToDec(final char c) {
-        char c2;
-        if (c >= 'a') {
-            c2 = (char)(c - 'a' + '\n');
-        }
-        else if (c >= 'A') {
-            c2 = (char)(c - 'A' + '\n');
-        }
-        else {
-            c2 = (char)(c - '0');
-        }
-        return c2;
-    }
-    
-    private class StaticSettings
-    {
+
+    private class StaticSettings {
         public static final int MAX_BUFFER_SIZE = 1024;
         public static final int MAX_FILE_BUFFER_SIZE = 4096;
         public static final int INITIAL_COLUMN_COUNT = 10;
         public static final int INITIAL_COLUMN_BUFFER_SIZE = 50;
     }
-    
-    private class HeadersHolder
-    {
+
+    private class HeadersHolder {
         public String[] Headers;
         public int Length;
         public HashMap<String, Integer> IndexByName;
-        
+
         public HeadersHolder() {
             this.Headers = null;
             this.Length = 0;
             this.IndexByName = new HashMap<>();
         }
     }
-    
-    private class UserSettings
-    {
+
+    private class UserSettings {
         public boolean CaseSensitive;
         public char TextQualifier;
         public boolean TrimWhitespace;
@@ -1024,7 +986,7 @@ public class CsvReader
         public boolean SafetySwitch;
         public boolean SkipEmptyRecords;
         public boolean CaptureRawRecord;
-        
+
         public UserSettings() {
             this.CaseSensitive = true;
             this.TextQualifier = '\"';
@@ -1040,9 +1002,8 @@ public class CsvReader
             this.CaptureRawRecord = true;
         }
     }
-    
-    private class Letters
-    {
+
+    private class Letters {
         public static final char LF = '\n';
         public static final char CR = '\r';
         public static final char QUOTE = '\"';
@@ -1058,37 +1019,34 @@ public class CsvReader
         public static final char VERTICAL_TAB = '\u000b';
         public static final char ALERT = '\u0007';
     }
-    
-    private class RawRecordBuffer
-    {
+
+    private class RawRecordBuffer {
         public char[] Buffer;
         public int Position;
-        
+
         public RawRecordBuffer() {
             this.Buffer = new char[500];
             this.Position = 0;
         }
     }
-    
-    private class ColumnBuffer
-    {
+
+    private class ColumnBuffer {
         public char[] Buffer;
         public int Position;
-        
+
         public ColumnBuffer() {
             this.Buffer = new char[50];
             this.Position = 0;
         }
     }
-    
-    private class DataBuffer
-    {
+
+    private class DataBuffer {
         public char[] Buffer;
         public int Position;
         public int Count;
         public int ColumnStart;
         public int LineStart;
-        
+
         public DataBuffer() {
             this.Buffer = new char[1024];
             this.Position = 0;
@@ -1097,9 +1055,8 @@ public class CsvReader
             this.LineStart = 0;
         }
     }
-    
-    private class ComplexEscape
-    {
+
+    private class ComplexEscape {
         private static final int UNICODE = 1;
         private static final int OCTAL = 2;
         private static final int DECIMAL = 3;

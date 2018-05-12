@@ -3,16 +3,16 @@ package me.skymc.taboolib.json;
 public class Cookie {
 
     public static String escape(String string) {
-        char         c;
-        String       s = string.trim();
+        char c;
+        String s = string.trim();
         StringBuilder sb = new StringBuilder();
-        int          length = s.length();
+        int length = s.length();
         for (int i = 0; i < length; i += 1) {
             c = s.charAt(i);
             if (c < ' ' || c == '+' || c == '%' || c == '=' || c == ';') {
                 sb.append('%');
-                sb.append(Character.forDigit((char)((c >>> 4) & 0x0f), 16));
-                sb.append(Character.forDigit((char)(c & 0x0f), 16));
+                sb.append(Character.forDigit((char) ((c >>> 4) & 0x0f), 16));
+                sb.append(Character.forDigit((char) (c & 0x0f), 16));
             } else {
                 sb.append(c);
             }
@@ -21,9 +21,9 @@ public class Cookie {
     }
 
     public static JSONObject toJSONObject(String string) throws JSONException {
-        String         name;
-        JSONObject     jo = new JSONObject();
-        Object         value;
+        String name;
+        JSONObject jo = new JSONObject();
+        Object value;
         JSONTokener x = new JSONTokener(string);
         jo.put("name", x.nextTo('='));
         x.next('=');
@@ -32,7 +32,7 @@ public class Cookie {
         while (x.more()) {
             name = unescape(x.nextTo("=;"));
             if (x.next() != '=') {
-                if (name.equals("secure")) {
+                if ("secure".equals(name)) {
                     value = Boolean.TRUE;
                 } else {
                     throw x.syntaxError("Missing '=' in cookie parameter.");
@@ -81,7 +81,7 @@ public class Cookie {
                 int d = JSONTokener.dehexchar(string.charAt(i + 1));
                 int e = JSONTokener.dehexchar(string.charAt(i + 2));
                 if (d >= 0 && e >= 0) {
-                    c = (char)(d * 16 + e);
+                    c = (char) (d * 16 + e);
                     i += 2;
                 }
             }

@@ -1,8 +1,12 @@
 package me.skymc.tlm.command.sub;
 
 
-import java.util.List;
-
+import me.skymc.taboolib.commands.SubCommand;
+import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.tlm.TLM;
+import me.skymc.tlm.inventory.TLMInventoryHolder;
+import me.skymc.tlm.module.TabooLibraryModule;
+import me.skymc.tlm.module.sub.ModuleInventorySave;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -10,12 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.skymc.taboolib.commands.SubCommand;
-import me.skymc.taboolib.inventory.ItemUtils;
-import me.skymc.tlm.TLM;
-import me.skymc.tlm.inventory.TLMInventoryHolder;
-import me.skymc.tlm.module.TabooLibraryModule;
-import me.skymc.tlm.module.sub.ModuleInventorySave;
+import java.util.List;
 
 /**
  * @author sky
@@ -43,12 +42,12 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 列出背包
-		else if (args[1].equalsIgnoreCase("list")) {
+		else if ("list".equalsIgnoreCase(args[1])) {
 			TLM.getInst().getLanguage().get("INV-LIST").addPlaceholder("$name", moduleInventorySave.getInventorys().toString()).send(sender);
 		}
 		
 		// 查看背包
-		else if (args[1].equalsIgnoreCase("info")) {
+		else if ("info".equalsIgnoreCase(args[1])) {
 			// 如果是后台
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
@@ -108,7 +107,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 保存背包
-		else if (args[1].equalsIgnoreCase("save")) {
+		else if ("save".equalsIgnoreCase(args[1])) {
 			// 如果是后台
 			if (!(sender instanceof Player)) {
 				TLM.getInst().getLanguage().get("INV-CONSOLE").send(sender);
@@ -132,7 +131,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 覆盖背包
-		else if (args[1].equalsIgnoreCase("paste")) {
+		else if ("paste".equalsIgnoreCase(args[1])) {
 			// 判断长度
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);
@@ -162,7 +161,7 @@ public class TLMInvCommand extends SubCommand {
 			}
 			
 			// 覆盖背包
-			moduleInventorySave.pasteInventory(player, args[2], args.length > 4 ? args[3] : "null");
+			moduleInventorySave.pasteInventory(player, args[2], args.length > 4 ? args[4] : "null");
 			
 			// 如果是玩家
 			if (sender instanceof Player) {
@@ -175,7 +174,7 @@ public class TLMInvCommand extends SubCommand {
 		}
 		
 		// 删除背包
-		else if (args[1].equalsIgnoreCase("delete")) {
+		else if ("delete".equalsIgnoreCase(args[1])) {
 			// 判断长度
 			if (args.length < 3) {
 				TLM.getInst().getLanguage().get("INV-NAME").send(sender);

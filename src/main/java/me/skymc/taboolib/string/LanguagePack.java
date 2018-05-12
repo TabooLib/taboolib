@@ -1,16 +1,15 @@
 package me.skymc.taboolib.string;
 
+import me.skymc.taboolib.message.MsgUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-
-import me.skymc.taboolib.message.MsgUtils;
 
 @Deprecated
 public class LanguagePack {

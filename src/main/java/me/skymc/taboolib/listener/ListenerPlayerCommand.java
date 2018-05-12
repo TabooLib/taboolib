@@ -17,7 +17,7 @@ public class ListenerPlayerCommand implements Listener {
 	
 	@EventHandler
 	public void cmd(ServerCommandEvent e) {
-		if (e.getCommand().equals("savefile")) {
+		if ("savefile".equals(e.getCommand())) {
 			if (TabooLib.getVerint() > 10700) {
 				e.setCancelled(true);
 			}
@@ -29,7 +29,7 @@ public class ListenerPlayerCommand implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void cmd(PlayerCommandPreprocessEvent e) {
-		if (e.getMessage().equals("/unbreakable") && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
+		if ("/unbreakable".equals(e.getMessage()) && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
 			e.setCancelled(true);
 			
 			NBTItem nbti = new NBTItem(e.getPlayer().getItemInHand());

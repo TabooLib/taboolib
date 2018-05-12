@@ -8,7 +8,8 @@ public class JSONStringer extends JSONWriter {
         super(new StringWriter());
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return this.mode == 'd' ? this.writer.toString() : null;
     }
 }

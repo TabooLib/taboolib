@@ -1,14 +1,9 @@
 package me.skymc.taboolib.client;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.text.SimpleDateFormat;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import java.awt.*;
+import java.text.SimpleDateFormat;
 
 @Deprecated
 public class LogClient extends JFrame {

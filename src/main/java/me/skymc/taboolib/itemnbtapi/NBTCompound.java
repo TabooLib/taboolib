@@ -1,8 +1,8 @@
 package me.skymc.taboolib.itemnbtapi;
 
-import java.util.Set;
-
 import me.skymc.taboolib.TabooLib;
+
+import java.util.Set;
 
 public class NBTCompound {
 
@@ -149,7 +149,9 @@ public class NBTCompound {
 
     public NBTCompound getCompound(String name) {
         NBTCompound next = new NBTCompound(this, name);
-        if (NBTReflectionUtil.valideCompound(next)) return next;
+        if (NBTReflectionUtil.valideCompound(next)) {
+            return next;
+        }
         return null;
     }
 
@@ -158,7 +160,9 @@ public class NBTCompound {
     }
 
     public NBTType getType(String name) {
-        if (TabooLib.getVerint() == 10700) return NBTType.NBTTagEnd;
+        if (TabooLib.getVerint() == 10700) {
+            return NBTType.NBTTagEnd;
+        }
         return NBTType.valueOf(NBTReflectionUtil.getType(this, name));
     }
 

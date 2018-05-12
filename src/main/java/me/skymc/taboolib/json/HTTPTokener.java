@@ -15,7 +15,7 @@ public class HTTPTokener extends JSONTokener {
         } while (Character.isWhitespace(c));
         if (c == '"' || c == '\'') {
             q = c;
-            for (;;) {
+            for (; ; ) {
                 c = next();
                 if (c < ' ') {
                     throw syntaxError("Unterminated string.");
@@ -25,8 +25,8 @@ public class HTTPTokener extends JSONTokener {
                 }
                 sb.append(c);
             }
-        } 
-        for (;;) {
+        }
+        for (; ; ) {
             if (c == 0 || Character.isWhitespace(c)) {
                 return sb.toString();
             }

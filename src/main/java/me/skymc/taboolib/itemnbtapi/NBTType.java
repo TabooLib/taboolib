@@ -1,6 +1,7 @@
 package me.skymc.taboolib.itemnbtapi;
 
 public enum NBTType {
+
     NBTTagEnd(0),
     NBTTagByte(1),
     NBTTagShort(2),
@@ -25,9 +26,11 @@ public enum NBTType {
     }
 
     public static NBTType valueOf(int id) {
-        for (NBTType t : values())
-            if (t.getId() == id)
+        for (NBTType t : values()) {
+            if (t.getId() == id) {
                 return t;
+            }
+        }
         return NBTType.NBTTagEnd;
     }
 

@@ -1,12 +1,12 @@
 package me.skymc.taboolib.bookformatter.builder;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * @author sky
@@ -107,8 +107,9 @@ public class PageBuilder {
      */
     public static PageBuilder of(BaseComponent... text) {
         PageBuilder res = new PageBuilder();
-        for(BaseComponent b : text)
+        for(BaseComponent b : text) {
             res.add(b);
+        }
         return res;
     }
 }

@@ -668,18 +668,24 @@ public class NMSUtil19 {
                 try {
                     // 1.12, same as 1.10
                     class_EntityArmorStand_disabledSlotsField = class_EntityArmorStand.getDeclaredField("bB");
-                    if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) throw new Exception("Looks like 1.11, maybe");
+                    if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) {
+                        throw new Exception("Looks like 1.11, maybe");
+                    }
                 } catch (Throwable not12) {
                     try {
                         // 1.11
                         class_EntityArmorStand_disabledSlotsField = class_EntityArmorStand.getDeclaredField("bA");
-                        if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) throw new Exception("Looks like 1.10");
+                        if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) {
+                            throw new Exception("Looks like 1.10");
+                        }
                     } catch (Throwable ignore) {
                         // 1.10 and earlier
                         legacy = true;
                         try {
                             class_EntityArmorStand_disabledSlotsField = class_EntityArmorStand.getDeclaredField("bB");
-                            if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) throw new Exception("Looks like 1.9");
+                            if (class_EntityArmorStand_disabledSlotsField.getType() != Integer.TYPE) {
+                                throw new Exception("Looks like 1.9");
+                            }
                         } catch (Throwable ignore2) {
                             try {
                                 // 1.9.4
@@ -732,7 +738,9 @@ public class NMSUtil19 {
                 try {
                     // 1.10 and 1.11
                     class_PlayerConnection_floatCountField = class_PlayerConnection.getDeclaredField("C");
-                    if (class_PlayerConnection_floatCountField.getType() != Integer.TYPE) throw new Exception("Looks like 1.9");
+                    if (class_PlayerConnection_floatCountField.getType() != Integer.TYPE) {
+                        throw new Exception("Looks like 1.9");
+                    }
                     class_PlayerConnection_floatCountField.setAccessible(true);
                 } catch (Throwable ignore) {
                     // 1.9 and earlier
@@ -944,7 +952,9 @@ public class NMSUtil19 {
     }
 
     public static Object getHandle(org.bukkit.World world) {
-        if (world == null) return null;
+        if (world == null) {
+            return null;
+        }
         Object handle = null;
         try {
             handle = class_CraftWorld_getHandleMethod.invoke(world);
@@ -955,7 +965,9 @@ public class NMSUtil19 {
     }
 
     public static Object getHandle(org.bukkit.entity.Entity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         Object handle = null;
         try {
             handle = class_CraftEntity_getHandleMethod.invoke(entity);
@@ -966,7 +978,9 @@ public class NMSUtil19 {
     }
 
     public static Object getHandle(org.bukkit.entity.LivingEntity entity) {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         Object handle = null;
         try {
             handle = class_CraftLivingEntity_getHandleMethod.invoke(entity);
@@ -1015,7 +1029,9 @@ public class NMSUtil19 {
         World sourceWorld = source.getWorld();
         for (Player player : players) {
             Location location = player.getLocation();
-            if (!location.getWorld().equals(sourceWorld)) continue;
+            if (!location.getWorld().equals(sourceWorld)) {
+                continue;
+            }
             if (location.distanceSquared(source) <= viewDistanceSquared) {
                 sendPacket(player, packet);
             }
@@ -1054,11 +1070,15 @@ public class NMSUtil19 {
 
     public static org.bukkit.entity.Entity getBukkitEntity(Object entity)
     {
-        if (entity == null) return null;
+        if (entity == null) {
+            return null;
+        }
         try {
             Method getMethod = entity.getClass().getMethod("getBukkitEntity");
             Object bukkitEntity = getMethod.invoke(entity);
-            if (!(bukkitEntity instanceof org.bukkit.entity.Entity)) return null;
+            if (!(bukkitEntity instanceof org.bukkit.entity.Entity)) {
+                return null;
+            }
             return (org.bukkit.entity.Entity)bukkitEntity;
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1088,7 +1108,9 @@ public class NMSUtil19 {
     }
 
     public static ItemStack getCopy(ItemStack stack) {
-        if (stack == null) return null;
+        if (stack == null) {
+            return null;
+        }
 
         try {
             Object craft = getNMSCopy(stack);
@@ -1101,7 +1123,9 @@ public class NMSUtil19 {
     }
 
     public static ItemStack makeReal(ItemStack stack) {
-        if (stack == null) return null;
+        if (stack == null) {
+            return null;
+        }
         Object nmsStack = getHandle(stack);
         if (nmsStack == null) {
             stack = getCopy(stack);
@@ -1136,7 +1160,9 @@ public class NMSUtil19 {
         Object tag = null;
         try {
             Object mcItemStack = getHandle(itemStack);
-            if (mcItemStack == null) return null;
+            if (mcItemStack == null) {
+                return null;
+            }
             tag = class_ItemStack_tagField.get(mcItemStack);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1145,13 +1171,19 @@ public class NMSUtil19 {
     }
 
     public static Object getNode(ItemStack stack, String tag) {
-        if (NMSUtil19.isEmpty(stack)) return null;
+        if (NMSUtil19.isEmpty(stack)) {
+            return null;
+        }
         Object meta = null;
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return null;
+            if (craft == null) {
+                return null;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return null;
+            if (tagObject == null) {
+                return null;
+            }
             meta = class_NBTTagCompound_getMethod.invoke(tagObject, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1160,7 +1192,9 @@ public class NMSUtil19 {
     }
 
     public static boolean containsNode(Object nbtBase, String tag) {
-        if (nbtBase == null) return false;
+        if (nbtBase == null) {
+            return false;
+        }
         Boolean result = false;
         try {
             result = (Boolean)class_NBTTagCompound_hasKeyMethod.invoke(nbtBase, tag);
@@ -1171,7 +1205,9 @@ public class NMSUtil19 {
     }
 
     public static Object getNode(Object nbtBase, String tag) {
-        if (nbtBase == null) return null;
+        if (nbtBase == null) {
+            return null;
+        }
         Object meta = null;
         try {
             meta = class_NBTTagCompound_getMethod.invoke(nbtBase, tag);
@@ -1182,7 +1218,9 @@ public class NMSUtil19 {
     }
 
     public static Object createNode(Object nbtBase, String tag) {
-        if (nbtBase == null) return null;
+        if (nbtBase == null) {
+            return null;
+        }
         Object meta = null;
         try {
             meta = class_NBTTagCompound_getCompoundMethod.invoke(nbtBase, tag);
@@ -1194,12 +1232,16 @@ public class NMSUtil19 {
     }
 
     public static Object createNode(ItemStack stack, String tag) {
-        if (NMSUtil19.isEmpty(stack)) return null;
+        if (NMSUtil19.isEmpty(stack)) {
+            return null;
+        }
         Object outputObject = getNode(stack, tag);
         if (outputObject == null) {
             try {
                 Object craft = getHandle(stack);
-                if (craft == null) return null;
+                if (craft == null) {
+                    return null;
+                }
                 Object tagObject = getTag(craft);
                 if (tagObject == null) {
                     tagObject = class_NBTTagCompound.newInstance();
@@ -1220,7 +1262,9 @@ public class NMSUtil19 {
     }
 
     public static String getMetaString(Object node, String tag) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return null;
+        }
         String meta = null;
         try {
             meta = (String)class_NBTTagCompound_getStringMethod.invoke(node, tag);
@@ -1231,7 +1275,9 @@ public class NMSUtil19 {
     }
 
     public static String getMeta(Object node, String tag) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return null;
+        }
         String meta = null;
         try {
             meta = (String)class_NBTTagCompound_getStringMethod.invoke(node, tag);
@@ -1242,7 +1288,9 @@ public class NMSUtil19 {
     }
 
     public static Byte getMetaByte(Object node, String tag) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return null;
+        }
         Byte meta = null;
         try {
             meta = (Byte)class_NBTTagCompound_getByteMethod.invoke(node, tag);
@@ -1253,7 +1301,9 @@ public class NMSUtil19 {
     }
 
     public static Integer getMetaInt(Object node, String tag) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return null;
+        }
         Integer meta = null;
         try {
             meta = (Integer)class_NBTTagCompound_getIntMethod.invoke(node, tag);
@@ -1264,7 +1314,9 @@ public class NMSUtil19 {
     }
 
     public static Boolean getMetaBoolean(Object node, String tag) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return null;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return null;
+        }
         Boolean meta = null;
         try {
             meta = (Boolean)class_NBTTagCompound_getBooleanMethod.invoke(node, tag);
@@ -1275,7 +1327,9 @@ public class NMSUtil19 {
     }
 
     public static void setMeta(Object node, String tag, String value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             if (value == null || value.length() == 0) {
                 class_NBTTagCompound_removeMethod.invoke(node, tag);
@@ -1288,7 +1342,9 @@ public class NMSUtil19 {
     }
 
     public static void setMetaLong(Object node, String tag, long value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             class_NBTTagCompound_setLongMethod.invoke(node, tag, value);
         } catch (Throwable ex) {
@@ -1297,7 +1353,9 @@ public class NMSUtil19 {
     }
 
     public static void setMetaBoolean(Object node, String tag, boolean value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             class_NBTTagCompound_setBooleanMethod.invoke(node, tag, value);
         } catch (Throwable ex) {
@@ -1306,7 +1364,9 @@ public class NMSUtil19 {
     }
 
     public static void setMetaDouble(Object node, String tag, double value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             class_NBTTagCompound_setDoubleMethod.invoke(node, tag, value);
         } catch (Throwable ex) {
@@ -1315,7 +1375,9 @@ public class NMSUtil19 {
     }
 
     public static void setMetaInt(Object node, String tag, int value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             class_NBTTagCompound_setIntMethod.invoke(node, tag, value);
         } catch (Throwable ex) {
@@ -1324,7 +1386,9 @@ public class NMSUtil19 {
     }
 
     public static void removeMeta(Object node, String tag) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             class_NBTTagCompound_removeMethod.invoke(node, tag);
         } catch (Throwable ex) {
@@ -1333,13 +1397,19 @@ public class NMSUtil19 {
     }
 
     public static void removeMeta(ItemStack stack, String tag) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
 
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return;
+            if (craft == null) {
+                return;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return;
+            if (tagObject == null) {
+                return;
+            }
             removeMeta(tagObject, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1347,7 +1417,9 @@ public class NMSUtil19 {
     }
 
     public static void setMetaNode(Object node, String tag, Object child) {
-        if (node == null || !class_NBTTagCompound.isInstance(node)) return;
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
+            return;
+        }
         try {
             if (child == null) {
                 class_NBTTagCompound_removeMethod.invoke(node, tag);
@@ -1360,12 +1432,18 @@ public class NMSUtil19 {
     }
 
     public static boolean setMetaNode(ItemStack stack, String tag, Object child) {
-        if (NMSUtil19.isEmpty(stack)) return false;
+        if (NMSUtil19.isEmpty(stack)) {
+            return false;
+        }
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return false;
+            if (craft == null) {
+                return false;
+            }
             Object node = getTag(craft);
-            if (node == null) return false;
+            if (node == null) {
+                return false;
+            }
             if (child == null) {
                 class_NBTTagCompound_removeMethod.invoke(node, tag);
             } else {
@@ -1380,13 +1458,19 @@ public class NMSUtil19 {
     }
 
     public static String getMetaString(ItemStack stack, String tag) {
-        if (NMSUtil19.isEmpty(stack)) return null;
+        if (NMSUtil19.isEmpty(stack)) {
+            return null;
+        }
         String meta = null;
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return null;
+            if (craft == null) {
+                return null;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return null;
+            if (tagObject == null) {
+                return null;
+            }
             meta = (String)class_NBTTagCompound_getStringMethod.invoke(tagObject, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1395,12 +1479,18 @@ public class NMSUtil19 {
     }
 
     public static void setMeta(ItemStack stack, String tag, String value) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return;
+            if (craft == null) {
+                return;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return;
+            if (tagObject == null) {
+                return;
+            }
             class_NBTTagCompound_setStringMethod.invoke(tagObject, tag, value);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1408,12 +1498,18 @@ public class NMSUtil19 {
     }
 
     public static void setMetaBoolean(ItemStack stack, String tag, boolean value) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return;
+            if (craft == null) {
+                return;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return;
+            if (tagObject == null) {
+                return;
+            }
             setMetaBoolean(tagObject, tag, value);
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -1421,13 +1517,19 @@ public class NMSUtil19 {
     }
 
     public static boolean getMetaBoolean(ItemStack stack, String tag, boolean defaultValue) {
-        if (NMSUtil19.isEmpty(stack)) return defaultValue;
+        if (NMSUtil19.isEmpty(stack)) {
+            return defaultValue;
+        }
         boolean result = defaultValue;
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return defaultValue;
+            if (craft == null) {
+                return defaultValue;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return defaultValue;
+            if (tagObject == null) {
+                return defaultValue;
+            }
             Boolean value = getMetaBoolean(tagObject, tag);
             result = value == null ? defaultValue : value;
         } catch (Throwable ex) {
@@ -1437,7 +1539,9 @@ public class NMSUtil19 {
     }
 
     public static void addGlow(ItemStack stack) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
 
         ItemMeta meta = stack.getItemMeta();
         meta.addEnchant(Enchantment.LUCK, 1, true);
@@ -1445,7 +1549,9 @@ public class NMSUtil19 {
     }
 
     public static void removeGlow(ItemStack stack) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
 
         ItemMeta meta = stack.getItemMeta();
         if (meta.hasEnchant(Enchantment.LUCK)) {
@@ -1455,13 +1561,19 @@ public class NMSUtil19 {
     }
 
     public static boolean isUnbreakable(ItemStack stack) {
-        if (NMSUtil19.isEmpty(stack)) return false;
+        if (NMSUtil19.isEmpty(stack)) {
+            return false;
+        }
         Boolean unbreakableFlag = null;
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return false;
+            if (craft == null) {
+                return false;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return false;
+            if (tagObject == null) {
+                return false;
+            }
             unbreakableFlag = getMetaBoolean(tagObject, "Unbreakable");
         } catch (Throwable ignored) {
 
@@ -1471,13 +1583,19 @@ public class NMSUtil19 {
     }
 
     public static void makeUnbreakable(ItemStack stack) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
 
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return;
+            if (craft == null) {
+                return;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return;
+            if (tagObject == null) {
+                return;
+            }
 
             Object unbreakableFlag = null;
             unbreakableFlag = class_NBTTagByte_constructor.newInstance((byte) 1);
@@ -1492,13 +1610,19 @@ public class NMSUtil19 {
     }
 
     public static void hideFlags(ItemStack stack, byte flags) {
-        if (NMSUtil19.isEmpty(stack)) return;
+        if (NMSUtil19.isEmpty(stack)) {
+            return;
+        }
 
         try {
             Object craft = getHandle(stack);
-            if (craft == null) return;
+            if (craft == null) {
+                return;
+            }
             Object tagObject = getTag(craft);
-            if (tagObject == null) return;
+            if (tagObject == null) {
+                return;
+            }
 
             Object hideFlag = null;
             hideFlag = class_NBTTagByte_constructor.newInstance(flags);
@@ -1510,10 +1634,14 @@ public class NMSUtil19 {
 
     public static boolean createExplosion(Entity entity, World world, double x, double y, double z, float power, boolean setFire, boolean breakBlocks) {
         boolean result = false;
-        if (world == null) return false;
+        if (world == null) {
+            return false;
+        }
         try {
             Object worldHandle = getHandle(world);
-            if (worldHandle == null) return false;
+            if (worldHandle == null) {
+                return false;
+            }
             Object entityHandle = entity == null ? null : getHandle(entity);
 
             Object explosion = class_World_explodeMethod.invoke(worldHandle, entityHandle, x, y, z, power, setFire, breakBlocks);
@@ -1583,7 +1711,9 @@ public class NMSUtil19 {
     }
 
     public static Object setStringList(Object nbtBase, String tag, Collection<String> values) {
-        if (nbtBase == null) return null;
+        if (nbtBase == null) {
+            return null;
+        }
         Object listMeta = null;
         try {
             listMeta = class_NBTTagList.newInstance();
@@ -1602,7 +1732,9 @@ public class NMSUtil19 {
     }
 
     public static ItemStack getItem(Object itemTag) {
-        if (itemTag == null) return null;
+        if (itemTag == null) {
+            return null;
+        }
         ItemStack item = null;
         try {
             Object nmsStack = null;
@@ -1641,7 +1773,9 @@ public class NMSUtil19 {
     }
 
     public static Object getTileEntityData(Location location) {
-        if (class_CraftWorld_getTileEntityAtMethod == null || class_TileEntity_saveMethod == null) return null;
+        if (class_CraftWorld_getTileEntityAtMethod == null || class_TileEntity_saveMethod == null) {
+            return null;
+        }
         Object data = null;
         try {
             World world = location.getWorld();
@@ -1657,7 +1791,9 @@ public class NMSUtil19 {
     }
 
     public static Object getTileEntity(Location location) {
-        if (class_CraftWorld_getTileEntityAtMethod == null) return null;
+        if (class_CraftWorld_getTileEntityAtMethod == null) {
+            return null;
+        }
         Object tileEntity = null;
         try {
             World world = location.getWorld();
@@ -1669,11 +1805,17 @@ public class NMSUtil19 {
     }
 
     public static void clearItems(Location location) {
-        if (class_TileEntity_loadMethod == null || class_TileEntity_updateMethod == null || class_CraftWorld_getTileEntityAtMethod == null || class_TileEntity_saveMethod == null) return;
-        if (location == null) return;
+        if (class_TileEntity_loadMethod == null || class_TileEntity_updateMethod == null || class_CraftWorld_getTileEntityAtMethod == null || class_TileEntity_saveMethod == null) {
+            return;
+        }
+        if (location == null) {
+            return;
+        }
         try {
             World world = location.getWorld();
-            if (world == null) return;
+            if (world == null) {
+                return;
+            }
 
             Object tileEntity = class_CraftWorld_getTileEntityAtMethod.invoke(world, location.getBlockX(), location.getBlockY(), location.getBlockZ());
             if (tileEntity != null) {
@@ -1694,15 +1836,23 @@ public class NMSUtil19 {
     }
 
     public static void setTileEntityData(Location location, Object data) {
-        if (class_TileEntity_loadMethod == null || class_TileEntity_updateMethod == null || class_CraftWorld_getTileEntityAtMethod == null) return;
+        if (class_TileEntity_loadMethod == null || class_TileEntity_updateMethod == null || class_CraftWorld_getTileEntityAtMethod == null) {
+            return;
+        }
 
-        if (location == null || data == null) return;
+        if (location == null || data == null) {
+            return;
+        }
         try {
             World world = location.getWorld();
-            if (world == null) return;
+            if (world == null) {
+                return;
+            }
 
             Object tileEntity = class_CraftWorld_getTileEntityAtMethod.invoke(world, location.getBlockX(), location.getBlockY(), location.getBlockZ());
-            if (tileEntity == null) return;
+            if (tileEntity == null) {
+                return;
+            }
 
             class_NBTTagCompound_setIntMethod.invoke(data, "x", location.getBlockX());
             class_NBTTagCompound_setIntMethod.invoke(data, "y", location.getBlockY());
@@ -1716,7 +1866,9 @@ public class NMSUtil19 {
     }
 
     public static Vector getPosition(Object entityData, String tag) {
-        if (class_NBTTagList_getDoubleMethod == null) return null;
+        if (class_NBTTagList_getDoubleMethod == null) {
+            return null;
+        }
         try {
             Object posList = class_NBTTagCompound_getListMethod.invoke(entityData, tag, NBT_TYPE_DOUBLE);
             Double x = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 0);
@@ -1767,7 +1919,9 @@ public class NMSUtil19 {
 
     public static Map<String, Object> getMap(ConfigurationSection section)
     {
-        if (section == null) return null;
+        if (section == null) {
+            return null;
+        }
         if (section instanceof MemorySection)
         {
             try {
@@ -1791,11 +1945,17 @@ public class NMSUtil19 {
     }
 
     public static boolean isEmpty(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == Material.AIR) return true;
-        if (class_ItemStack_isEmptyMethod == null) return false;
+        if (itemStack == null || itemStack.getType() == Material.AIR) {
+            return true;
+        }
+        if (class_ItemStack_isEmptyMethod == null) {
+            return false;
+        }
         try {
             Object handle = getHandle(itemStack);
-            if (handle == null) return false;
+            if (handle == null) {
+                return false;
+            }
             return (Boolean)class_ItemStack_isEmptyMethod.invoke(handle);
         } catch (Throwable ex) {
             ex.printStackTrace();

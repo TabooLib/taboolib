@@ -1,6 +1,5 @@
 package me.skymc.taboolib.string.language2.value;
 
-import lombok.Getter;
 import me.skymc.taboolib.string.language2.Language2Format;
 import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
@@ -15,30 +14,31 @@ import java.util.List;
  * @since 2018-03-08 22:43:27
  */
 public class Language2Text implements Language2Line {
-	
-	@Getter
-	private List<String> text = new ArrayList<>(); 
-	
-	@Getter
-	private Language2Value value;
-	
-	public Language2Text(Language2Format format, List<String> list) {
-		this.value = format.getLanguage2Value();
-		// 遍历文本
+
+    private List<String> text = new ArrayList<>();
+
+    private Language2Value value;
+
+    public List<String> getText() {
+        return text;
+    }
+
+    public Language2Value getValue() {
+        return value;
+    }
+
+    public Language2Text(Language2Format format, List<String> list) {
+        this.value = format.getLanguage2Value();
         text.addAll(list);
-	}
+    }
 
-	@Override
-	public void send(Player player) {
-		for (String line : text) {
-			player.sendMessage(line);
-		}
-	}
+    @Override
+    public void send(Player player) {
+        text.forEach(player::sendMessage);
+    }
 
-	@Override
-	public void console() {
-		for (String line : text) {
-			Bukkit.getConsoleSender().sendMessage(line);
-		}
-	}
+    @Override
+    public void console() {
+        text.forEach(line -> Bukkit.getConsoleSender().sendMessage(line));
+    }
 }
