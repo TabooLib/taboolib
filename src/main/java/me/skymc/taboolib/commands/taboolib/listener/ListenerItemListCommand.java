@@ -51,11 +51,6 @@ public class ListenerItemListCommand implements Listener {
                     meta.setLore(lore);
                     item.setItemMeta(meta);
                     inventory.setItem(slot, item);
-
-                    System.out.println("lore: " + TLocale.asString("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
-                    System.out.println("lore: " + TLocale.asStringList("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
-
-                    TLocale.sendTo(player, "COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name);
                     holder.ITEMS_DATA.put(slot, name);
                 } else {
                     break;

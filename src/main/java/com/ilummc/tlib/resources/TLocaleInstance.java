@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @ThreadSafe
@@ -24,6 +24,7 @@ class TLocaleInstance {
 
     private final Map<String, List<TLocaleSerialize>> map = new HashMap<>();
     private final Plugin plugin;
+    private final AtomicInteger latestUpdateNodes = new AtomicInteger();
 
     TLocaleInstance(Plugin plugin) {
         this.plugin = plugin;
@@ -44,6 +45,10 @@ class TLocaleInstance {
 
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    public AtomicInteger getLatestUpdateNodes() {
+        return latestUpdateNodes;
     }
 
     public void sendTo(String path, CommandSender sender, String... args) {
@@ -80,20 +85,34 @@ class TLocaleInstance {
     }
 
     public void load(YamlConfiguration configuration) {
-        configuration.getKeys(true).forEach(s -> {
-            Object object = configuration.get(s);
-            if (object instanceof TLocaleSerialize) {
-                map.put(s, Collections.singletonList((TLocaleSerialize) object));
-            } else if (object instanceof List && !((List) object).isEmpty()) {
-                if (isListString((List) object)) {
-                    map.put(s, Collections.singletonList(TLocaleText.of(object)));
+        load(configuration, false);
+    }
+
+    public void load(YamlConfiguration configuration, boolean cleanup) {
+        int originNodes = map.size();
+        int updateNodes = 0;
+        if (cleanup) {
+            map.clear();
+        }
+        for (String s : configuration.getKeys(true)) {
+            boolean updated = false;
+            Object value = configuration.get(s);
+            if (value instanceof TLocaleSerialize) {
+                updated = map.put(s, Collections.singletonList((TLocaleSerialize) value)) != null;
+            } else if (value instanceof List && !((List) value).isEmpty()) {
+                if (isListString((List) value)) {
+                    updated = map.put(s, Collections.singletonList(TLocaleText.of(value))) != null;
                 } else {
-                    map.put(s, ((List<?>) object).stream().map(o -> o instanceof TLocaleSerialize ? (TLocaleSerialize) o : TLocaleText.of(String.valueOf(o))).collect(Collectors.toList()));
+                    updated = map.put(s, ((List<?>) value).stream().map(o -> o instanceof TLocaleSerialize ? (TLocaleSerialize) o : TLocaleText.of(String.valueOf(o))).collect(Collectors.toList())) != null;
                 }
-            } else if (!(object instanceof ConfigurationSection)) {
-                String str = String.valueOf(object);
-                map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSerialize.getEmpty() : TLocaleText.of(str)));
+            } else if (!(value instanceof ConfigurationSection)) {
+                String str = String.valueOf(value);
+                updated = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSerialize.getEmpty() : TLocaleText.of(str))) != null;
             }
-        });
+            if (updated) {
+                updateNodes++;
+            }
+        }
+        latestUpdateNodes.set(originNodes - updateNodes);
     }
 }
