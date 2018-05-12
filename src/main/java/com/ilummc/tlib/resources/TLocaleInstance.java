@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,9 +24,9 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 class TLocaleInstance {
 
-    private final Map<String, List<TLocaleSendable>> map = new HashMap<>();
+    private final Map<String, List<TLocaleSerialize>> map = new ConcurrentHashMap<>();
     private final Plugin plugin;
-    private int updateNodes;
+    private final AtomicInteger updateNodes = new AtomicInteger();
 
     TLocaleInstance(Plugin plugin) {
         this.plugin = plugin;
@@ -39,7 +41,7 @@ class TLocaleInstance {
         return map.size();
     }
 
-    public Map<String, List<TLocaleSendable>> getMap() {
+    public Map<String, List<TLocaleSerialize>> getMap() {
         return map;
     }
 
@@ -48,16 +50,16 @@ class TLocaleInstance {
     }
 
     public int getUpdateNodes() {
-        return updateNodes;
+        return updateNodes.get();
     }
 
     public void sendTo(String path, CommandSender sender, String... args) {
         try {
-            map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).forEach(sendable -> {
+            map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).forEach(tSender -> {
                 if (Bukkit.isPrimaryThread()) {
-                    sendable.sendTo(sender, args);
+                    tSender.sendTo(sender, args);
                 } else {
-                    Bukkit.getScheduler().runTask(plugin, () -> sendable.sendTo(sender, args));
+                    Bukkit.getScheduler().runTask(plugin, () -> tSender.sendTo(sender, args));
                 }
             });
         } catch (Exception | Error e) {
@@ -68,35 +70,37 @@ class TLocaleInstance {
     }
 
     public String asString(String path, String... args) {
-        return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asString(args);
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).get(0).asString(args);
     }
 
     public List<String> asStringList(String path, String... args) {
-        return map.getOrDefault(path, ImmutableList.of(TLocaleSendable.getEmpty(path))).get(0).asStringList(args);
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).get(0).asStringList(args);
     }
 
     public void load(YamlConfiguration configuration) {
-        updateNodes = 0;
+        updateNodes.set(0);
         configuration.getKeys(true).forEach(s -> {
             boolean isCover = false;
             Object object = configuration.get(s);
-            if (object instanceof TLocaleSendable) {
-                isCover = map.put(s, Collections.singletonList((TLocaleSendable) object)) != null;
+            if (object instanceof TLocaleSerialize) {
+                isCover = map.put(s, Collections.singletonList((TLocaleSerialize) object)) != null;
             } else if (object instanceof List && !((List) object).isEmpty()) {
-                isCover = map.put(s, ((List<?>) object).stream().map(TO_SENDABLE).collect(Collectors.toList())) != null;
+                isCover = map.put(s, ((List<?>) object).stream().map(TO_SERIALIZE).collect(Collectors.toList())) != null;
             } else if (!(object instanceof ConfigurationSection)) {
                 String str = String.valueOf(object);
-                isCover = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSendable.getEmpty() : TLocaleText.of(str))) != null;
+                isCover = map.put(s, Collections.singletonList(str.length() == 0 ? TLocaleSerialize.getEmpty() : TLocaleText.of(str))) != null;
             }
             if (isCover) {
-                updateNodes++;
+                updateNodes.getAndIncrement();
             }
         });
     }
 
-    private static final Function<Object, TLocaleSendable> TO_SENDABLE = o -> {
-        if (o instanceof TLocaleSendable) {
-            return ((TLocaleSendable) o);
+    private static final Function<Object, TLocaleSerialize> TO_SERIALIZE = o -> {
+        if (o instanceof TLocaleSerialize) {
+            return ((TLocaleSerialize) o);
+        } else if (o instanceof List) {
+            return TLocaleText.of(((List) o));
         } else if (o instanceof String) {
             return TLocaleText.of(((String) o));
         } else {

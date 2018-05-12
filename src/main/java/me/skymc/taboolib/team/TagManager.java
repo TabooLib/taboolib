@@ -1,5 +1,6 @@
 package me.skymc.taboolib.team;
 
+import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,6 +12,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * @author sky
@@ -20,7 +22,7 @@ public class TagManager implements Listener {
 
     private static TagManager inst;
 
-    private HashMap<String, PlayerData> playerdata = new HashMap<>();
+    private HashMap<UUID, PlayerData> playerData = new HashMap<>();
 
     private TagManager() {
         Bukkit.getPluginManager().registerEvents(this, Main.getInst());
@@ -35,8 +37,8 @@ public class TagManager implements Listener {
         return inst;
     }
 
-    public HashMap<String, PlayerData> getPlayerdata() {
-        return playerdata;
+    public HashMap<UUID, PlayerData> getPlayerData() {
+        return playerData;
     }
 
     /**
@@ -87,52 +89,44 @@ public class TagManager implements Listener {
      * @param player 玩家
      * @return {@link PlayerData}
      */
-    private PlayerData getPlayerData(Player player) {
-        return playerdata.computeIfAbsent(player.getName(), k -> new PlayerData(player.getName()));
+    public PlayerData getPlayerData(Player player) {
+        return playerData.computeIfAbsent(player.getUniqueId(), k -> new PlayerData(player));
     }
 
     /**
-     * 删除该玩家的称号数据
+     * 注销称号数据
      *
-     * @param player
+     * @param targetPlayer
      */
-    public void removeData(Player player) {
-        playerdata.remove(player.getName());
-        for (Player _player : Bukkit.getOnlinePlayers()) {
-            Scoreboard scoreboard = _player.getScoreboard();
-            if (scoreboard != null) {
-                Team team = scoreboard.getTeam(player.getName());
-                if (team != null) {
-                    team.unregister();
-                }
+    public void unloadData(Player targetPlayer) {
+        PlayerData data = getPlayerData(targetPlayer);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = getScoreboard(player);
+            Team team = scoreboard.getTeam(data.getName());
+            if (team != null) {
+                team.unregister();
             }
         }
+        data.reset();
     }
 
     /**
      * 将该玩家的数据向服务器所有玩家更新
      *
-     * @param player 玩家
+     * @param targetPlayer 玩家
      */
-    public void uploadData(Player player) {
-        PlayerData data = getPlayerData(player);
+    public void uploadData(Player targetPlayer) {
+        PlayerData data = getPlayerData(targetPlayer);
         String prefix = data.getPrefix().length() > 16 ? data.getPrefix().substring(0, 16) : data.getPrefix();
         String suffix = data.getSuffix().length() > 16 ? data.getSuffix().substring(0, 16) : data.getSuffix();
         // 如果没有称号数据
         if (prefix.isEmpty() && suffix.isEmpty()) {
+            unloadData(targetPlayer);
             return;
         }
-
-        for (Player _player : Bukkit.getOnlinePlayers()) {
-            Scoreboard scoreboard = _player.getScoreboard();
-            if (scoreboard == null) {
-                _player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-            }
-            Team team = scoreboard.getTeam(player.getName());
-            if (team == null) {
-                team = scoreboard.registerNewTeam(player.getName());
-                team.addEntry(player.getName());
-            }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Scoreboard scoreboard = getScoreboard(player);
+            Team team = getTeam(scoreboard, data);
             team.setPrefix(prefix);
             team.setSuffix(suffix);
         }
@@ -141,28 +135,19 @@ public class TagManager implements Listener {
     /**
      * 下载服务器内的称号数据到该玩家
      *
-     * @param player 玩家
+     * @param targetPlayer 玩家
      */
-    public void downloadData(Player player) {
-        Scoreboard scoreboard = player.getScoreboard();
-        if (scoreboard == null) {
-            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-        }
-
-        for (Player _player : Bukkit.getOnlinePlayers()) {
-            PlayerData data = getPlayerData(_player);
+    public void downloadData(Player targetPlayer) {
+        Scoreboard scoreboard = getScoreboard(targetPlayer);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData data = getPlayerData(player);
             String prefix = data.getPrefix().length() > 16 ? data.getPrefix().substring(0, 16) : data.getPrefix();
             String suffix = data.getSuffix().length() > 16 ? data.getSuffix().substring(0, 16) : data.getSuffix();
             // 如果没有称号数据
             if (prefix.isEmpty() && suffix.isEmpty()) {
                 continue;
             }
-
-            Team team = scoreboard.getTeam(_player.getName());
-            if (team == null) {
-                team = scoreboard.registerNewTeam(_player.getName());
-                team.addEntry(_player.getName());
-            }
+            Team team = getTeam(scoreboard, data);
             team.setPrefix(prefix);
             team.setSuffix(suffix);
         }
@@ -175,23 +160,50 @@ public class TagManager implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        removeData(e.getPlayer());
+        unloadData(e.getPlayer());
+    }
+
+    private Scoreboard getScoreboard(Player player) {
+        Scoreboard scoreboard = player.getScoreboard();
+        if (scoreboard == null) {
+            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+        }
+        return scoreboard;
+    }
+
+    private Team getTeam(Scoreboard scoreboard, PlayerData data) {
+        Team team = scoreboard.getTeam(data.getName());
+        if (team == null) {
+            team = scoreboard.registerNewTeam(data.getName());
+            team.addEntry(data.getName());
+        }
+        return team;
     }
 
     static class PlayerData {
 
+        private UUID uuid;
         private String name;
         private String prefix;
         private String suffix;
 
-        public PlayerData(String name) {
-            this.name = name;
+        public PlayerData(Player player) {
+            this.uuid = player.getUniqueId();
+            this.name = player.getName();
             this.prefix = "";
             this.suffix = "";
         }
 
+        public UUID getUuid() {
+            return uuid;
+        }
+
         public String getName() {
             return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public String getPrefix() {
@@ -208,6 +220,15 @@ public class TagManager implements Listener {
 
         public void setSuffix(String suffix) {
             this.suffix = suffix;
+        }
+
+        public boolean isEmpty() {
+            return Strings.isEmpty(suffix) && Strings.isEmpty(prefix);
+        }
+
+        public void reset() {
+            prefix = "";
+            suffix = "";
         }
     }
 }

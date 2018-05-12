@@ -161,7 +161,7 @@ public class TLMInvCommand extends SubCommand {
 			}
 			
 			// 覆盖背包
-			moduleInventorySave.pasteInventory(player, args[2], args.length > 4 ? args[3] : "null");
+			moduleInventorySave.pasteInventory(player, args[2], args.length > 4 ? args[4] : "null");
 			
 			// 如果是玩家
 			if (sender instanceof Player) {

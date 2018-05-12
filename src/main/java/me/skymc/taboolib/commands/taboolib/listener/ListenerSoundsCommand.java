@@ -34,13 +34,19 @@ public class ListenerSoundsCommand implements Listener {
         SoundLibraryHolder holder = new SoundLibraryHolder(page, search);
         Inventory inventory = Bukkit.createInventory(holder, 54, TLocale.asString("COMMANDS.TABOOLIB.SOUNDS.MENU.TITLE", String.valueOf(page)));
         List<Sound> soundFilter = Arrays.stream(Sound.values()).filter(sound -> search == null || sound.name().contains(search.toUpperCase())).collect(Collectors.toList());
+        List<String> soundLore = TLocale.asStringList("COMMANDS.TABOOLIB.SOUNDS.MENU.LORE");
 
         int loop = 0;
         for (Sound sound : soundFilter) {
             if (loop >= (page - 1) * 28) {
                 if (loop < page * 28) {
                     int slot = InventoryUtil.SLOT_OF_CENTENTS.get(loop - ((page - 1) * 28));
-                    inventory.setItem(slot, getSoundItem(sound.name()));
+                    ItemStack item = new ItemStack(Material.MAP);
+                    ItemMeta meta = item.getItemMeta();
+                    meta.setDisplayName("§f§n" + sound);
+                    meta.setLore(soundLore);
+                    item.setItemMeta(meta);
+                    inventory.setItem(slot, item);
                     holder.SOUNDS_DATA.put(slot, sound);
                 } else {
                     break;
@@ -60,15 +66,6 @@ public class ListenerSoundsCommand implements Listener {
             TLocale.sendTo(player, "COMMANDS.TABOOLIB.SOUNDS.RESULT.SEARCH", (search == null ? "*" : search), String.valueOf(soundFilter.size()));
         }
         player.openInventory(inventory);
-    }
-
-    private static ItemStack getSoundItem(String sound) {
-        ItemStack item = new ItemStack(Material.MAP);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§f§n" + sound);
-        meta.setLore(TLocale.asStringList("COMMANDS.TABOOLIB.SOUNDS.MENU.LORE"));
-        item.setItemMeta(meta);
-        return item;
     }
 
     @EventHandler

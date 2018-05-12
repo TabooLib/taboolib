@@ -1,8 +1,6 @@
 package me.skymc.taboolib.anvil;
 
-import com.ilummc.tlib.util.asm.AsmClassTransformer;
 import me.skymc.taboolib.nms.NMSUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**

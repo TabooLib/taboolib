@@ -32,6 +32,7 @@ CONFIG:
   
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
+  PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
   
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'

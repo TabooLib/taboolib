@@ -1,17 +1,21 @@
 package com.ilummc.tlib.resources;
 
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.bungee.api.ChatColor;
 import com.ilummc.tlib.inject.TLoggerManager;
 import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TLocale {
 
@@ -73,9 +77,36 @@ public class TLocale {
             pluginField.setAccessible(true);
             return (JavaPlugin) pluginField.get(callerClass.getClassLoader());
         } catch (Exception ignored) {
-            TLib.getTLib().getLogger().error("无效的语言文件发送形式: &4" + callerClass.getName());
+            TLocale.Logger.error("LOCALE.CALLER-PLUGIN-NOT-FOUND", callerClass.getName());
         }
         return (JavaPlugin) Main.getInst();
+    }
+
+    public static final class Translate extends TLocale {
+
+        public static boolean isPlaceholderUseDefault() {
+            return Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false);
+        }
+
+        public static boolean isPlaceholderPluginEnabled() {
+            return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled();
+        }
+
+        public static String setColored(String args) {
+            return ChatColor.translateAlternateColorCodes('&', args);
+        }
+
+        public static List<String> setColored(List<String> args) {
+            return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
+        }
+
+        public static String setPlaceholders(CommandSender sender, String args) {
+            return isPlaceholderPluginEnabled() ? sender instanceof Player ? PlaceholderAPI.setPlaceholders((Player) sender, args) : args : args;
+        }
+
+        public static List<String> setPlaceholders(CommandSender sender, List<String> args) {
+            return isPlaceholderPluginEnabled() ? sender instanceof Player ? PlaceholderAPI.setPlaceholders((Player) sender, args) : args : args;
+        }
     }
 
     public static final class Logger extends TLocale {

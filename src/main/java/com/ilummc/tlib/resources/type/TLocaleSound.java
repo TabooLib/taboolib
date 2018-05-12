@@ -1,10 +1,9 @@
 package com.ilummc.tlib.resources.type;
 
 import com.google.common.collect.Maps;
-import com.ilummc.tlib.resources.TLocaleSendable;
+import com.ilummc.tlib.resources.TLocaleSerialize;
 import me.skymc.taboolib.sound.SoundPack;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  */
 @Immutable
 @SerializableAs("ACTION")
-public class TLocaleSound implements TLocaleSendable, ConfigurationSerializable {
+public class TLocaleSound extends TLocaleSerialize {
 
     private final List<SoundPack> soundPacks;
 
