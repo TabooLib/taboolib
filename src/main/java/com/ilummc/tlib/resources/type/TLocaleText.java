@@ -63,6 +63,10 @@ public class TLocaleText implements TLocaleSendable, ConfigurationSerializable {
         return new TLocaleText(ChatColor.translateAlternateColorCodes('&', s), Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
     }
 
+    public static TLocaleText of(Object o) {
+        return o instanceof String ? of(((String) o)) : new TLocaleText(o, false);
+    }
+
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (text instanceof String) {
