@@ -112,7 +112,7 @@ public class TLocaleLoader {
     }
 
     private static boolean isVersionOutOfDate(YamlConfiguration configuration, YamlConfiguration configurationAtSteam) {
-        return (configurationAtSteam != null && configurationAtSteam.contains("VERSION") && configuration.contains("VERSION")) && NumberUtils.getDouble(configurationAtSteam.get("VERSION").toString()) > NumberUtils.getDouble(configuration.get("VERSION").toString());
+        return configurationAtSteam != null && configurationAtSteam.getDouble("VERSION", 0) > configuration.getDouble("VERSION", 0);
     }
 
     private static File getLocaleFile(Plugin plugin) {

@@ -7,13 +7,11 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.bungee.api.chat.*;
 import com.ilummc.tlib.bungee.chat.ComponentSerializer;
 import com.ilummc.tlib.compat.PlaceholderHook;
-import com.ilummc.tlib.resources.TLocaleSendable;
+import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.Main;
 import me.skymc.taboolib.jsonformatter.JSONFormatter;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 
 @ThreadSafe
 @SerializableAs("JSON")
-public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
+public class TLocaleJson extends TLocaleSerialize {
 
     private static final Pattern pattern = Pattern.compile("<([^<>]*)?@([^<>]*)>");
     private final List<BaseComponent[]> components;
@@ -39,7 +37,6 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
     }
 
     public static TLocaleJson valueOf(Map<String, Object> map) {
-        boolean papi = (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
         List<String> textList = getTextList(map.getOrDefault("text", "Empty Node"));
         Object argsObj = map.get("args");
         if (argsObj instanceof Map) {
@@ -61,7 +58,7 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                     String node = split.length > 1 ? split[1] : split[0];
                     if (section.containsKey(node)) {
                         Map<String, Object> arg = (Map<String, Object>) section.get(node);
-                        text = ChatColor.translateAlternateColorCodes('&', String.valueOf(arg.getOrDefault("text", text)));
+                        text = TLocale.Translate.setColored(String.valueOf(arg.getOrDefault("text", text)));
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
                         arg.forEach((key, value) -> {
                             if ("suggest".equalsIgnoreCase(key)) {
@@ -69,7 +66,7 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                             } else if ("command".equalsIgnoreCase(key) || "commands".equalsIgnoreCase(key)) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value))));
                             } else if ("hover".equalsIgnoreCase(key)) {
-                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', String.valueOf(value))).create())));
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
                             }
                         });
                         builder.addAll(Arrays.asList(component));
@@ -83,16 +80,16 @@ public class TLocaleJson implements TLocaleSendable, ConfigurationSerializable {
                 }
                 return builder.toArray(new BaseComponent[0]);
             }).collect(Collectors.toList());
-            return new TLocaleJson(collect, papi, map);
+            return new TLocaleJson(collect, isPlaceholderEnabled(map), map);
         }
-        return new TLocaleJson(textList.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()), papi, map);
+        return new TLocaleJson(textList.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()), isPlaceholderEnabled(map), map);
     }
 
     private static List<String> getTextList(Object textObj) {
         if (textObj instanceof List) {
-            return ((List<?>) textObj).stream().map(Object::toString).map(s -> ChatColor.translateAlternateColorCodes('&', s)).collect(Collectors.toList());
+            return ((List<?>) textObj).stream().map(Object::toString).map(s -> TLocale.Translate.setColored(s)).collect(Collectors.toList());
         } else if (textObj instanceof String) {
-            return Lists.newArrayList(ChatColor.translateAlternateColorCodes('&', (String) textObj));
+            return Lists.newArrayList(TLocale.Translate.setColored((String) textObj));
         } else {
             return Collections.emptyList();
         }

@@ -24,6 +24,7 @@ import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.packet.PacketUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.sign.SignUtils;
@@ -223,12 +224,10 @@ public class Main extends JavaPlugin implements Listener {
         TimeCycleManager.load();
         // 启动脚本
         JavaShell.javaShellSetup();
-        // 载入语言文件
-        exampleLanguage2 = new Language2("Language2", this);
         // 注册脚本
         SkriptHandler.getInst();
-        // 注册昵称
-        TagAPI.inst();
+        // 载入语言文件
+        exampleLanguage2 = new Language2("Language2", this);
 
         // 启动数据库储存方法
         if (getStorageType() == StorageType.SQL) {
@@ -252,6 +251,9 @@ public class Main extends JavaPlugin implements Listener {
             public void run() {
                 if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
+                }
+                if (PacketUtils.isProtocolLibEnabled()) {
+                    TagAPI.inst();
                 }
                 // 载入 SpecialItem 接口
                 SpecialItem.getInst().loadItems();
