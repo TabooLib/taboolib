@@ -6,7 +6,9 @@ import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.type.*;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboocode.TabooCodeLang;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -17,10 +19,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TLocaleLoader {
@@ -36,6 +35,7 @@ public class TLocaleLoader {
     }
 
     public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
+        TabooLib.debug(plugin, "TLocaleLoader.sendTo: " + plugin + ", path: " + path + ", sender: " + sender + ", args: " + Arrays.asList(args));
         if (Bukkit.isPrimaryThread()) {
             Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
         } else {
@@ -46,6 +46,7 @@ public class TLocaleLoader {
     }
 
     public static String asString(Plugin plugin, String path, String... args) {
+        TabooLib.debug(plugin, "TLocaleLoader.asString: " + plugin.getName() + ", path: " + path + ", args: " + Arrays.asList(args));
         TLocaleInstance tLocaleInstance = map.get(plugin.getName());
         if (tLocaleInstance != null) {
             return tLocaleInstance.asString(path, args);
@@ -55,6 +56,7 @@ public class TLocaleLoader {
     }
 
     public static List<String> asStringList(Plugin plugin, String path, String... args) {
+        TabooLib.debug(plugin, "TLocaleLoader.asStringList: " + plugin + ", path: " + path + ", args: " + Arrays.asList(args));
         TLocaleInstance tLocaleInstance = map.get(plugin.getName());
         if (tLocaleInstance != null) {
             return tLocaleInstance.asStringList(path, args);
@@ -98,6 +100,18 @@ public class TLocaleLoader {
         }
     }
 
+    public static boolean isLocaleLoaded(Plugin plugin) {
+        return map.containsKey(plugin.getName());
+    }
+
+    public static boolean isDependWithTabooLib(Plugin plugin) {
+        return plugin.getClass().getAnnotation(TLocalePlugin.class) != null || plugin.getDescription().getDepend().contains(Main.getInst().getName()) || plugin.getDescription().getSoftDepend().contains(Main.getInst().getName());
+    }
+
+    public static List<String> getLocalePriority() {
+        return Main.getInst().getConfig().contains("LOCALE.PRIORITY") ? Main.getInst().getConfig().getStringList("LOCALE.PRIORITY") : Collections.singletonList("zh_CN");
+    }
+
     private static boolean isLoadLocale(Plugin plugin, boolean isCover) {
         return (isCover || !isLocaleLoaded(plugin)) && (plugin.equals(Main.getInst()) || isDependWithTabooLib(plugin));
     }
@@ -117,18 +131,6 @@ public class TLocaleLoader {
 
     private static void releaseLocales(Plugin plugin) {
         getLocalePriority().stream().filter(localeName -> !new File(plugin.getDataFolder(), "lang/" + localeName + ".yml").exists() && plugin.getResource("lang/" + localeName + ".yml") != null).forEach(localeName -> plugin.saveResource("lang/" + localeName + ".yml", true));
-    }
-
-    public static boolean isLocaleLoaded(Plugin plugin) {
-        return map.containsKey(plugin.getName());
-    }
-
-    public static boolean isDependWithTabooLib(Plugin plugin) {
-        return plugin.getClass().getAnnotation(TLocalePlugin.class) != null || plugin.getDescription().getDepend().contains(Main.getInst().getName()) || plugin.getDescription().getSoftDepend().contains(Main.getInst().getName());
-    }
-
-    public static List<String> getLocalePriority() {
-        return Main.getInst().getConfig().contains("LOCALE.PRIORITY") ? Main.getInst().getConfig().getStringList("LOCALE.PRIORITY") : Collections.singletonList("zh_CN");
     }
 
     private static TLocaleInstance getLocaleInstance(Plugin plugin) {

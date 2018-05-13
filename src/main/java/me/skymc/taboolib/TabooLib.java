@@ -10,6 +10,10 @@ import java.util.UUID;
 
 public class TabooLib {
 
+    public static boolean isDebug() {
+        return Main.getInst().getConfig().getBoolean("DEBUG");
+    }
+
     public static void debug(Plugin plugin, String... args) {
         if (Main.getInst().getConfig().getBoolean("DEBUG")) {
             Arrays.stream(args).forEach(var -> Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[TabooLib - DEBUG][" + plugin.getName() + "] " + ChatColor.RED + var));
