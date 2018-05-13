@@ -57,12 +57,12 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
 
             @Override
             public void sendTo(CommandSender sender, String... args) {
-                sender.sendMessage("§4<" + path + "§4>");
+                sender.sendMessage("§8<" + path + "§8>");
             }
 
             @Override
             public String asString(String... args) {
-                return "§4<" + path + "§4>";
+                return "§8<" + path + "§8>";
             }
 
             @Override
