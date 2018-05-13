@@ -31,7 +31,7 @@ public class ArrayUtils {
 	
 	public static String[] removeFirst(String[] args) {
 		if (args.length <= 1) {
-			return null;
+			return new String[0];
 		}
 		List<String> list = asList(args);
 		list.remove(0);

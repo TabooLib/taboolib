@@ -108,7 +108,38 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
             @Override
             public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+                new InfoCommand(sender, args);
+            }
+        });
+    }
+
+    @CommandRegister(priority = 3.1)
+    void infoList() {
+        registerSubCommand(new BaseSubCommand() {
+
+            @Override
+            public String getLabel() {
+                return "itemList";
+            }
+
+            @Override
+            public String getDescription() {
+                return TLocale.asString("COMMANDS.TABOOLIB.ITEMLIST.DESCRIPTION");
+            }
+
+            @Override
+            public CommandArgument[] getArguments() {
+                return new CommandArgument[0];
+            }
+
+            @Override
+            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
                 new ItemListCommand(sender, args);
+            }
+
+            @Override
+            public boolean ignoredLabel() {
+                return false;
             }
         });
     }

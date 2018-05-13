@@ -44,7 +44,13 @@ public class ListenerItemListCommand implements Listener {
             if (loop >= (page - 1) * 28) {
                 if (loop < page * 28) {
                     int slot = InventoryUtil.SLOT_OF_CENTENTS.get(loop - ((page - 1) * 28));
-                    inventory.setItem(slot, getItem(map, name));
+                    ItemStack item = map.get(name).clone();
+                    ItemMeta meta = item.getItemMeta();
+                    List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
+                    lore.addAll(TLocale.asStringList("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    inventory.setItem(slot, item);
                     holder.ITEMS_DATA.put(slot, name);
                 } else {
                     break;
@@ -60,16 +66,6 @@ public class ListenerItemListCommand implements Listener {
             inventory.setItem(51, ItemUtils.setName(new ItemStack(Material.ARROW), TLocale.asString("COMMANDS.TABOOLIB.ITEMLIST.MENU.NEXT")));
         }
         player.openInventory(inventory);
-    }
-
-    private static ItemStack getItem(HashMap<String, ItemStack> map, String name) {
-        ItemStack item = map.get(name).clone();
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = meta.hasLore() ? meta.getLore() : new ArrayList<>();
-        lore.addAll(TLocale.asStringList("COMMANDS.TABOOLIB.ITEMLIST.MENU.LORE", name));
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
     }
 
     @EventHandler

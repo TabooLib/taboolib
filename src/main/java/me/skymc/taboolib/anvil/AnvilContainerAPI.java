@@ -46,7 +46,7 @@ public class AnvilContainerAPI implements Listener {
         meta.setDisplayName(str);
         item.setItemMeta(meta);
 
-        p.getOpenInventory().setItem(0, item);
+        p.getOpenInventory().getTopInventory().setItem(0, item);
         p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_PLACE, 1, 1);
     }
 

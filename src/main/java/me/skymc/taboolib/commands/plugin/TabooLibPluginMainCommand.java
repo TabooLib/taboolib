@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
+import me.skymc.taboolib.commands.internal.ISubCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.plugin.PluginUtils;
 import me.skymc.taboolib.string.ArrayUtils;
@@ -12,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +30,21 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
         loadCommand();
         unloadCommand();
         reloadCommand();
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+        if (args.length == 1) {
+            return getSubCommands().stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList());
+        } else if (args.length > 1 && isPluginCommand(args[0])) {
+            return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(x -> !PluginUtils.isIgnored(x)).collect(Collectors.toList()).stream().filter(plugin -> args[1].isEmpty() || plugin.getName().toLowerCase().startsWith(args[1].toLowerCase())).map(Plugin::getName).collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    private boolean isPluginCommand(String label) {
+        return "info".equalsIgnoreCase(label) || "load".equalsIgnoreCase(label) || "unload".equalsIgnoreCase(label) || "reload".equalsIgnoreCase(label);
     }
 
     @Override

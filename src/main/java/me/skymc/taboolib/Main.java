@@ -1,6 +1,8 @@
 package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.inject.TConfigWatcher;
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
@@ -24,6 +26,7 @@ import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.packet.PacketUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.sign.SignUtils;
@@ -179,7 +182,7 @@ public class Main extends JavaPlugin implements Listener {
                     String hash = connection.getValue(getTablePrefix() + "_serveruuid", "uuid", TabooLib.getServerUID(), "hash").toString();
                     // 如果这个值和我的值不同
                     if (!hash.equals(StringUtils.hashKeyForDisk(getDataFolder().getPath()))) {
-                        MsgUtils.warn("检测到本服序列号与其他服务器相同, 已重新生成!");
+                        TLocale.Logger.error("NOTIFY.ERROR-SERVER-KEY");
                         // 重新生成序列号
                         TabooLib.resetServerUID();
                         // 关服
@@ -188,7 +191,7 @@ public class Main extends JavaPlugin implements Listener {
                 }
             } else {
                 // 提示
-                MsgUtils.warn("数据库连接失败, 请检查配置是否正确!");
+                TLocale.Logger.error("NOTIFY.ERROR-CONNECTION-FALL");
                 // 关服
                 Bukkit.shutdown();
             }
@@ -223,12 +226,10 @@ public class Main extends JavaPlugin implements Listener {
         TimeCycleManager.load();
         // 启动脚本
         JavaShell.javaShellSetup();
-        // 载入语言文件
-        exampleLanguage2 = new Language2("Language2", this);
         // 注册脚本
         SkriptHandler.getInst();
-        // 注册昵称
-        TagAPI.inst();
+        // 载入语言文件
+        exampleLanguage2 = new Language2("Language2", this);
 
         // 启动数据库储存方法
         if (getStorageType() == StorageType.SQL) {
@@ -236,14 +237,16 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         // 载入完成
-        MsgUtils.send("§7插件载入完成!");
-        MsgUtils.send("§7插件版本: §f" + getDescription().getVersion());
-        MsgUtils.send("§7插件作者: §f" + getDescription().getAuthors());
-        MsgUtils.send("§7游戏版本: §f" + TabooLib.getVerint());
+        TLocale.Logger.info("NOTIFY.SUCCESS-LOADED", getDescription().getAuthors().toString(), getDescription().getVersion(), String.valueOf(TabooLib.getVersion()));
 
         // 文件保存
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, DataUtils::saveAllCaches, 20, 20 * 120);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
+        // 文件监控
+        TLib.getTLib().getConfigWatcher().addListener(new File(getDataFolder(), "config.yml"), null, obj -> {
+            reloadConfig();
+            TLocale.Logger.info("CONFIG.RELOAD-SUCCESS", inst.getName(), "config.yml");
+        });
 
         // 插件联动
         new BukkitRunnable() {
@@ -252,6 +255,9 @@ public class Main extends JavaPlugin implements Listener {
             public void run() {
                 if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
+                }
+                if (PacketUtils.isProtocolLibEnabled()) {
+                    TagAPI.inst();
                 }
                 // 载入 SpecialItem 接口
                 SpecialItem.getInst().loadItems();
@@ -275,8 +281,7 @@ public class Main extends JavaPlugin implements Listener {
 
         // 如果插件尚未启动完成
         if (!started) {
-            MsgUtils.send("&c插件尚未启动完成, 已跳过卸载代码");
-            MsgUtils.send("&c插件作者: &4坏黑");
+            TLocale.Logger.error("NOTIFY.FALL-DISABLE");
             return;
         }
 
@@ -310,8 +315,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         // 提示信息
-        MsgUtils.send("&c插件已卸载, 感谢您使用&4禁忌书库");
-        MsgUtils.send("&c插件作者: &4坏黑");
+        TLocale.Logger.error("NOTIFY.SUCCESS-DISABLE");
 
         // 清理头衔
         TagUtils.delete();

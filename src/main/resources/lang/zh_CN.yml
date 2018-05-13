@@ -30,8 +30,24 @@ CONFIG:
   RELOAD-FAIL: '插件 {0} 的配置 {1} 成功重载'
   LISTEN-START: '开始监听 {0} 插件的 {1} 配置文件'
   
+NOTIFY:
+  ERROR-SERVER-KEY: '&4检测到本服序列号与其他服务器相同, 已重新生成!'
+  ERROR-CONNECTION-FALL: '&4数据库连接失败, 请检查配置是否正确!'
+  SUCCESS-LOADED:
+  - '§7插件载入完成!'
+  - '§7插件作者: §f{0}'
+  - '§7插件版本: §f{1}'
+  - '§7游戏版本: §f{2}'
+  SUCCESS-DISABLE:
+  - '&c插件已卸载, 感谢您使用&4禁忌书库'
+  - '&c插件作者: &4坏黑'
+  FALL-DISABLE:
+  - '&c插件尚未启动完成, 已跳过卸载代码'
+  - '&c插件作者: &4坏黑'
+  
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
+  PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
   
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
@@ -137,7 +153,7 @@ COMMANDS:
     SUCCESS-NORMAL: '&8[&3&lTabooLib&8] &7重载成功'
     SUCCESS-ELAPSED-TIME: '&8[&3&lTabooLib&8] &7重载成功, 耗时: &f{0} ms'
   TABOOLIB:
-    COMMAND-TITLE: '&b&l----- &3&lTabooLib Commands &b&l-----'
+    COMMAND-TITLE: '&e&l----- &6&lTabooLib Commands &e&l-----'
     SAVE:
       DESCRIPTION: '载入插件'
       ARGUMENTS:
@@ -399,7 +415,7 @@ COMMANDS:
     SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
     HELP:
     - ''
-    - '&b&l----- &3&lLanguage2 Commands &b&l-----'
+    - '&e&l----- &6&lLanguage2 Commands &e&l-----'
     - ''
     - '&f /{0} send &8[&7玩家/ALL&8] &8[&7语言&8] &8<&7变量&8> &6- &e发送语言提示'
     - '&f /{0} reload &6- &e重载语言库'
@@ -416,7 +432,7 @@ COMMANDS:
     - '&f /{0} reload &6- &e重载语言库'
     - ''
   TPLUGIN:
-    COMMAND-TITLE: '&e&l----- &6&lTabooLibPlugin Commands &b&l-----'
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibPlugin Commands &e&l-----'
     LIST:
       DESCRIPTION: '列出插件'
       LIST-PLUGIN: 

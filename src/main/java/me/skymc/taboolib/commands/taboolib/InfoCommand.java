@@ -19,7 +19,7 @@ public class InfoCommand extends SubCommand {
                 TLocale.sendTo(sender, "COMMANDS.TABOOLIB.INFO.INVALID-ITEM");
             } else {
                 NBTItem nbt = new NBTItem(player.getItemInHand());
-                TLocale.sendTo(sender, "COMAMNDS.TABOOLIB.INFO.ITEM-INFO",
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.INFO.ITEM-INFO",
                         player.getItemInHand().getType().name(),
                         ItemUtils.getCustomName(player.getItemInHand()),
                         player.getItemInHand().getTypeId() + ":" + player.getItemInHand().getDurability(),

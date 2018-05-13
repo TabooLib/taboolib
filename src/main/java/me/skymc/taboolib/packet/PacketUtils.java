@@ -2,12 +2,30 @@ package me.skymc.taboolib.packet;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
+import com.google.common.base.Preconditions;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+/**
+ * @author sky
+ */
 public class PacketUtils {
+
+    public static void checkProtocolLib() {
+        Preconditions.checkArgument(isProtocolLibEnabled(), "Plugin \"ProtocolLib\" cannot found!");
+    }
+
+    public static boolean isProtocolLibEnabled() {
+        return Bukkit.getPluginManager().getPlugin("ProtocolLib") != null && Bukkit.getPluginManager().getPlugin("ProtocolLib").isEnabled();
+    }
+
+    public static ProtocolManager getManager() {
+        return ProtocolLibrary.getProtocolManager();
+    }
 
     public static void sendPacketEntityStatus(Entity entity, EntityStatus status, Player... players) {
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);

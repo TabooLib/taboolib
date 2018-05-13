@@ -27,12 +27,11 @@ public class TagDeleteCommand extends SubCommand {
             return;
         }
 
-        TagManager.getInst().removeData(player);
+        TagManager.getInst().unloadData(player);
         TagAPI.removePlayerDisplayName(player);
 
         if (sender instanceof Player) {
             TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.SUCCESS-DELETE", args[1]);
         }
     }
-
 }
