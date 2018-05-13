@@ -2,6 +2,8 @@ package me.skymc.taboolib.commands.internal;
 
 import com.google.common.base.Preconditions;
 import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.resources.TLocaleLoader;
+import com.ilummc.tlib.util.Ref;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
@@ -10,8 +12,11 @@ import me.skymc.taboolib.string.ArrayUtils;
 import me.skymc.taboolib.string.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -35,6 +40,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
         baseMainCommand.getRegisterCommand().setExecutor(baseMainCommand);
         baseMainCommand.getRegisterCommand().setTabCompleter(baseMainCommand);
         baseMainCommand.getLinkClasses().add(baseMainCommand.getClass());
+        baseMainCommand.disguisedPlugin();
         loadCommandRegister(baseMainCommand);
         return baseMainCommand;
     }
@@ -149,7 +155,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
     }
 
     private boolean isConfirmType(CommandSender sender, CommandType commandType) {
-        return commandType == CommandType.ALL || sender instanceof ConsoleCommandSender && commandType == CommandType.CONSOLE;
+        return commandType == CommandType.ALL || (sender instanceof Player && commandType == CommandType.PLAYER);
     }
 
     private void helpCommand(CommandSender sender, String label) {
@@ -158,5 +164,18 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
         sender.sendMessage(getEmptyLine());
         subCommands.stream().map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
         sender.sendMessage(getEmptyLine());
+    }
+
+    private void disguisedPlugin() {
+        linkClasses.forEach(clazz -> disguisedPlugin(clazz, (JavaPlugin) registerCommand.getPlugin()));
+    }
+
+    private void disguisedPlugin(Class<?> targetClass, JavaPlugin plugin) {
+        try {
+            Field pluginField = targetClass.getClassLoader().getClass().getDeclaredField("plugin");
+            pluginField.setAccessible(true);
+            pluginField.set(targetClass.newInstance(), plugin);
+        } catch (Exception ignored) {
+        }
     }
 }
