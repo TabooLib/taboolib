@@ -2,7 +2,10 @@ package com.ilummc.tlib.util;
 
 import com.google.gson.annotations.SerializedName;
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.asm.AsmAnalyser;
+import me.skymc.taboolib.Main;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import sun.reflect.Reflection;
@@ -94,6 +97,17 @@ public class Ref {
             }
         }
         return Optional.empty();
+    }
+
+    public static JavaPlugin getCallerPlugin(Class<?> callerClass) {
+        try {
+            Field pluginField = callerClass.getClassLoader().getClass().getDeclaredField("plugin");
+            pluginField.setAccessible(true);
+            return (JavaPlugin) pluginField.get(callerClass.getClassLoader());
+        } catch (Exception ignored) {
+            TLocale.Logger.error("LOCALE.CALLER-PLUGIN-NOT-FOUND", callerClass.getName());
+        }
+        return (JavaPlugin) Main.getInst();
     }
 
     private static abstract class CallerClass {

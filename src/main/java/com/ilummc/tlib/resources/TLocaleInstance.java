@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.resources.type.TLocaleText;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.TabooLib;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,10 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -63,7 +61,6 @@ class TLocaleInstance {
         } catch (Exception | Error e) {
             TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("SEND-LOCALE-ERROR"), path));
             TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.toString()));
-            e.printStackTrace();
         }
     }
 
