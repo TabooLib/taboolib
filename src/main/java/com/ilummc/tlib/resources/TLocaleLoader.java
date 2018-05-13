@@ -162,15 +162,19 @@ public class TLocaleLoader {
 
     private static int compareAndSet(Map<String, Object> origin, Map<String, Object> current, File file) {
         int i = compareMaps(origin, current);
-        DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-        options.setAllowUnicode(false);
-        Yaml yaml = new Yaml(options);
-        String dump = yaml.dump(current);
-        try {
-            Files.write(dump.getBytes(Charset.forName("utf-8")), file);
-        } catch (IOException ignored) {
+        /*
+        if (i > 0) {
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            options.setAllowUnicode(false);
+            Yaml yaml = new Yaml(options);
+            String dump = yaml.dump(current);
+            try {
+                Files.write(dump.getBytes(Charset.forName("utf-8")), file);
+            } catch (IOException ignored) {
+            }
         }
+        */
         return i;
     }
 
@@ -191,7 +195,7 @@ public class TLocaleLoader {
         Map<String, Object> currentMap = currentLocaleMap(localeFile);
         int update = compareAndSet(originMap, currentMap, localeFile);
         TLocaleInstance localeInstance = getLocaleInstance(plugin);
-        YamlConfiguration localeConfiguration = ConfigUtils.loadYaml(plugin, localeFile);
+        YamlConfiguration localeConfiguration = (YamlConfiguration) ConfigUtils.mapToConf(currentMap);
         localeInstance.load(localeConfiguration);
         if (update == 0) {
             infoLogger("SUCCESS-LOADING-LANG-NORMAL", plugin.getName(), localeFile.getName().split("\\.")[0], String.valueOf(localeInstance.size()));

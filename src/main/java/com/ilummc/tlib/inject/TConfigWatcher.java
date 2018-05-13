@@ -25,17 +25,21 @@ public class TConfigWatcher {
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 
     public TConfigWatcher() {
-        service.scheduleAtFixedRate(() -> map.forEach((service, triple) -> {
-            WatchKey key;
-            while ((key = service.poll()) != null) {
-                for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                    if (triple.getLeft().getName().equals(Objects.toString(watchEvent.context()))) {
-                        triple.getRight().accept(triple.getMiddle());
+        service.scheduleAtFixedRate(() -> {
+            synchronized (map) {
+                map.forEach((service, triple) -> {
+                    WatchKey key;
+                    while ((key = service.poll()) != null) {
+                        for (WatchEvent<?> watchEvent : key.pollEvents()) {
+                            if (triple.getLeft().getName().equals(Objects.toString(watchEvent.context()))) {
+                                triple.getRight().accept(triple.getMiddle());
+                            }
+                        }
+                        key.reset();
                     }
-                }
-                key.reset();
+                });
             }
-        }), 1000, 100, TimeUnit.MILLISECONDS);
+        }, 1000, 100, TimeUnit.MILLISECONDS);
     }
 
     public void addOnListen(File file, Object obj, Consumer<Object> consumer) {
