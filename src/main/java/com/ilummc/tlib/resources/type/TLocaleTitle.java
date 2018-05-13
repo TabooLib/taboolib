@@ -1,15 +1,11 @@
 package com.ilummc.tlib.resources.type;
 
 import com.google.common.collect.Maps;
-import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.resources.TLocaleSendable;
+import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.Main;
 import me.skymc.taboolib.display.TitleUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
@@ -24,7 +20,7 @@ import java.util.Map;
 
 @Immutable
 @SerializableAs("TITLE")
-public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable {
+public class TLocaleTitle extends TLocaleSerialize {
 
     private final String title;
     private final String subtitle;
@@ -47,12 +43,12 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
         TLocaleTitle title;
         try {
             title = new TLocaleTitle(
-                    (String) map.getOrDefault("title", ""),
-                    (String) map.getOrDefault("subtitle", ""),
-                    (int) map.getOrDefault("fadein", 10),
-                    (int) map.getOrDefault("fadeout", 10),
-                    (int) map.getOrDefault("stay", 20),
-                    (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false)));
+                    getStringOrDefault(map, "title", ""),
+                    getStringOrDefault(map, "subtitle", ""),
+                    getIntegerOrDefault(map, "fadein", 10),
+                    getIntegerOrDefault(map, "fadeout", 10),
+                    getIntegerOrDefault(map, "stay", 10),
+                    isPlaceholderEnabled(map));
         } catch (Exception e) {
             title = new TLocaleTitle("Empty Title message.", e.getMessage(), 10, 20, 10, false);
         }
@@ -70,7 +66,7 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
 
     @Override
     public String asString(String... args) {
-        return Strings.replaceWithOrder("TITLE: [title: '" + title + "', subtitle: '" + subtitle + "', fadeIn: " + fadein + ", fadeOut: " + fadeout + "]", args);
+        return Strings.replaceWithOrder(Strings.replaceWithOrder("TITLE: [title: ''{0}'', subtitle: ''{1}'', fadeIn: {2}, fadeOut: {3}]", title, subtitle, fadein, fadeout), args);
     }
 
     @Override
@@ -90,7 +86,7 @@ public class TLocaleTitle implements TLocaleSendable, ConfigurationSerializable 
         return map;
     }
 
-    private String replaceText(CommandSender sender, String s) {
-        return ChatColor.translateAlternateColorCodes('&', usePlaceholder ? PlaceholderHook.replace(sender, s) : s);
+    private String replaceText(CommandSender sender, String args) {
+        return usePlaceholder ? TLocale.Translate.setPlaceholders(sender, args) : TLocale.Translate.setColored(args);
     }
 }

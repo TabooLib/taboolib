@@ -27,4 +27,16 @@ public class Strings {
         }
         return stringBuilder.toString();
     }
+
+    public static String replaceWithOrder(String template, String... args) {
+        return replaceWithOrder(template, (Object[]) args);
+    }
+
+    public static boolean isBlank(String var) {
+        return var == null || var.trim().isEmpty();
+    }
+
+    public static boolean isEmpty(CharSequence var) {
+        return var == null || var.length() == 0;
+    }
 }

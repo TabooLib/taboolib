@@ -135,6 +135,7 @@ public class TagAPI implements Listener {
         AsyncPlayerReceiveNameTagEvent newEvent = new AsyncPlayerReceiveNameTagEvent(destinationPlayer, namedPlayer, getPlayerDisplayName(namedPlayer), UUID.fromString(builtUUID.toString()));
         Bukkit.getServer().getPluginManager().callEvent(newEvent);
 
+        updatePlayerTag(namedPlayer, newEvent);
         return new WrappedGameProfile(newEvent.getUUID(), newEvent.getTag().substring(0, Math.min(newEvent.getTag().length(), 16)));
     }
 
@@ -146,5 +147,15 @@ public class TagAPI implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         entityIdMap.remove(event.getPlayer().getEntityId());
+    }
+
+    private static void updatePlayerTag(Player namedPlayer, AsyncPlayerReceiveNameTagEvent newEvent) {
+        TagManager.PlayerData playerData = TagManager.getInst().getPlayerData(namedPlayer);
+        if (playerData.isEmpty()) {
+            return;
+        }
+        TagManager.getInst().unloadData(namedPlayer);
+        playerData.setName(newEvent.getTag());
+        TagManager.getInst().uploadData(namedPlayer);
     }
 }

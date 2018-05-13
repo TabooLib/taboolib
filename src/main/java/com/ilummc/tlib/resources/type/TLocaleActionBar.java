@@ -3,12 +3,11 @@ package com.ilummc.tlib.resources.type;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.nms.ActionBar;
-import com.ilummc.tlib.resources.TLocaleSendable;
+import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
@@ -17,7 +16,7 @@ import java.util.Map;
 
 @Immutable
 @SerializableAs("ACTION")
-public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializable {
+public class TLocaleActionBar extends TLocaleSerialize {
 
     private final String text;
     private final boolean papi;
@@ -29,8 +28,7 @@ public class TLocaleActionBar implements TLocaleSendable, ConfigurationSerializa
 
     public static TLocaleActionBar valueOf(Map<String, Object> map) {
         String text = ChatColor.translateAlternateColorCodes('&', String.valueOf(map.getOrDefault("text", "Empty Action bar message.")));
-        boolean papi = (boolean) map.getOrDefault("papi", Main.getInst().getConfig().getBoolean("LOCALE.USE_PAPI", false));
-        return new TLocaleActionBar(text, papi);
+        return new TLocaleActionBar(text, isPlaceholderEnabled(map));
     }
 
     @Override
