@@ -1,5 +1,6 @@
 package me.skymc.taboolib.listener;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.MysqlUtils;
@@ -41,7 +42,7 @@ public class ListenerPluginDisable implements Listener {
                     i++;
                 }
                 if (i > 0) {
-                    MsgUtils.send("已停止插件 &f" + e.getPlugin().getName() + "&7 的 &f" + i + "&7 条数据库连接");
+                    TLocale.Logger.info("MYSQL-CONNECTION.SUCCESS-CONNECTION-CANCEL", e.getPlugin().getName(), String.valueOf(i));
                 }
             }
         };
@@ -50,7 +51,7 @@ public class ListenerPluginDisable implements Listener {
         try {
             runnable.runTaskLater(Main.getInst(), 40);
         } catch (Exception err) {
-            MsgUtils.warn("异步任务失败, 执行方式改为同步执行");
+            TLocale.Logger.error("MYSQL-CONNECTION.FAIL-EXECUTE-TASK");
             runnable.run();
         }
     }

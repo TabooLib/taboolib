@@ -57,7 +57,7 @@ public class DataUtils implements Listener {
         try {
             conf.save(file);
         } catch (IOException e) {
-            TLocale.Logger.error("DATA-UTILS.FALL-SAVE-FILE", file.getName(), e.toString());
+            TLocale.Logger.error("DATA-UTILS.FAIL-SAVE-FILE", file.getName(), e.toString());
         }
     }
 

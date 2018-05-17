@@ -8,7 +8,23 @@ import org.bukkit.plugin.Plugin;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * @author sky
+ */
 public class TabooLib {
+
+    private static boolean spigot = false;
+
+    static {
+        try {
+            spigot = Bukkit.getConsoleSender() != null;
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static boolean isSpigot() {
+        return spigot;
+    }
 
     public static boolean isDebug() {
         return Main.getInst().getConfig().getBoolean("DEBUG");

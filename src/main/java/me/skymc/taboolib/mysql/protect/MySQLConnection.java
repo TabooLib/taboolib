@@ -32,7 +32,7 @@ public class MySQLConnection {
     public MySQLConnection(String url, String user, String port, String password, String database, int recheck, Plugin plugin) {
         // 检查驱动
         if (!loadDriverMySQL()) {
-            TLocale.Logger.error("MYSQL-CONNECTION.FALL-NOTFOUND-DRIVE");
+            TLocale.Logger.error("MYSQL-CONNECTION.FAIL-NOTFOUND-DRIVE");
             return;
         }
 
@@ -58,12 +58,12 @@ public class MySQLConnection {
                     Thread.sleep(getReCheckSeconds() * 1000);
 
                     if (connection == null) {
-                        TLocale.Logger.error("MYSQL-CONNECTION.FALL-NOTFOUND-CONNECTION", plugin.getName());
+                        TLocale.Logger.error("MYSQL-CONNECTION.FAIL-NOTFOUND-CONNECTION", plugin.getName());
                     } else {
                         isExists("taboolib");
                     }
                 } catch (Exception e) {
-                    TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-NORMAL", e.toString());
+                    TLocale.Logger.error("MYSQL-CONNECTION.FAIL-COMMAND-NORMAL", e.toString());
                 }
             }
         });
@@ -657,12 +657,12 @@ public class MySQLConnection {
     }
 
     private void printException(Exception e) {
-        TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-NORMAL", e.toString());
+        TLocale.Logger.error("MYSQL-CONNECTION.FAIL-COMMAND-NORMAL", e.toString());
         reconnection(e);
     }
 
     private void printExceptionDetail(SQLException e) {
-        TLocale.Logger.error("MYSQL-CONNECTION.FALL-COMMAND-DETAIL", String.valueOf(e.getErrorCode()), e.toString());
+        TLocale.Logger.error("MYSQL-CONNECTION.FAIL-COMMAND-DETAIL", String.valueOf(e.getErrorCode()), e.toString());
         reconnection(e);
     }
 

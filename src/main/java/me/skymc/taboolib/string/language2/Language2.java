@@ -74,7 +74,7 @@ public class Language2 {
         languageFile = new File(languageFolder, languageName);
         if (!languageFile.exists()) {
             if (plugin.getResource("Language2/" + languageName) == null) {
-                TLocale.Logger.error("LANGUAGE2.FALL-NOTFOUND-FILE", languageName);
+                TLocale.Logger.error("LANGUAGE2.FAIL-NOTFOUND-FILE", languageName);
             } else {
                 plugin.saveResource("Language2/" + languageName, true);
             }

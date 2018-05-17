@@ -48,7 +48,7 @@ public class WeightCollection<A> {
         return null;
     }
 
-    class WeightObject<B> {
+    public static class WeightObject<B> {
 
         private int weightNumber;
         private B weightObject;
