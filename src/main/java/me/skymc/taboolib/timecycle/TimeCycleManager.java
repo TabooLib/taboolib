@@ -59,7 +59,7 @@ public class TimeCycleManager {
         if (!cycles.containsKey(cycle.getName())) {
             cycles.put(cycle.getName(), cycle);
         } else {
-            TLocale.Logger.error("TIMECYCLE.FALL-CYCLE-EXISTS", cycle.getName());
+            TLocale.Logger.error("TIMECYCLE.FAIL-CYCLE-EXISTS", cycle.getName());
         }
     }
 

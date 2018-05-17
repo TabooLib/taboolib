@@ -93,10 +93,10 @@ public class TLM {
     }
 
     public void loadedFall(String moduleName, String result, String location) {
-        TLocale.Logger.error("TABOOLIB-MODULE.FALL-LOADED", moduleName, result, location);
+        TLocale.Logger.error("TABOOLIB-MODULE.FAIL-LOADED", moduleName, result, location);
     }
 
     public void runtimeFall(String moduleName, String result, String location) {
-        TLocale.Logger.error("TABOOLIB-MODULE.FALL-RUNTIME", moduleName, result, location);
+        TLocale.Logger.error("TABOOLIB-MODULE.FAIL-RUNTIME", moduleName, result, location);
     }
 }

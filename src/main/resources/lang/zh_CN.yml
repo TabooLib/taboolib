@@ -32,7 +32,7 @@ CONFIG:
   
 NOTIFY:
   ERROR-SERVER-KEY: '&4检测到本服序列号与其他服务器相同, 已重新生成!'
-  ERROR-CONNECTION-FALL: '&4数据库连接失败, 请检查配置是否正确!'
+  ERROR-CONNECTION-FAIL: '&4数据库连接失败, 请检查配置是否正确!'
   SUCCESS-LOADED:
   - '§7插件载入完成!'
   - '§7插件作者: §f{0}'
@@ -41,7 +41,7 @@ NOTIFY:
   SUCCESS-DISABLE:
   - '&c插件已卸载, 感谢您使用&4禁忌书库'
   - '&c插件作者: &4坏黑'
-  FALL-DISABLE:
+  FAIL-DISABLE:
   - '&c插件尚未启动完成, 已跳过卸载代码'
   - '&c插件作者: &4坏黑'
   
@@ -72,28 +72,28 @@ ENTITY-UTILS:
   NOTFOUND-PROTOCOLLIB: '缺少前置插件 ProtocolLib'
  
 FILE-UTILS:
-  FALL-LOAD-CONFIGURATION: '&4配置文件载入失败!, 插件: &c{0}&4, 文件: &c{1}'
+  FAIL-LOAD-CONFIGURATION: '&4配置文件载入失败!, 插件: &c{0}&4, 文件: &c{1}'
   
 DATA-UTILS:
   SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条插件数据, 耗时: &f{1} &7(ms)'
-  FALL-SAVE-FILE: '&4文件 &c{0}&4 保存失败, 原因: &c{1}'
+  FAIL-SAVE-FILE: '&4文件 &c{0}&4 保存失败, 原因: &c{1}'
   
 ITEM-UTILS:
-  FALL-LOAD-ITEMS: '物品库载入失败: &4{0}'
-  FALL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
-  FALL-LOAD-ENCHANT: '&c{0} &4不是一个有效的附魔名称, 输入 &c/tlib enchants&4 查看所有附魔'
-  FALL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
-  FALL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
-  FALL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
+  FAIL-LOAD-ITEMS: '物品库载入失败: &4{0}'
+  FAIL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
+  FAIL-LOAD-ENCHANT: '&c{0} &4不是一个有效的附魔名称, 输入 &c/tlib enchants&4 查看所有附魔'
+  FAIL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
+  FAIL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
+  FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
   SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
   SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
   EMPTY-ITEM: '空'
   
 LANGUAGE2:
-  FALL-NOTFOUND-FILE: '语言文件 {0} 不存在'
+  FAIL-NOTFOUND-FILE: '语言文件 {0} 不存在'
   
 TIMECYCLE:
-  FALL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
+  FAIL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
   
 ANVIL-CONTAINER:
   NAME-EXAMPLE: '在这里输入文本'
@@ -114,19 +114,29 @@ UPDATETASK:
   - '&8####################################################'
   
 MYSQL-CONNECTION:
-  FALL-NOTFOUND-DRIVE: '&7驱动器获取失败, 无法连接到数据库'
-  FALL-NOTFOUND-CONNECTION: '&7警告! 数据库尚未连接, 请检查配置文件后重启服务器! ({0})'
-  FALL-COMMAND-NORMAL: '&4数据库命令执行出错, 错误原因: &c{0}'
-  FALL-COMMAND-DETAIL: '&4数据库命令执行出错, 错误代码: &c{0}&4, 错误原因: &c{1}'
-  SUCCESS-REGISTERED: '&7已向书库注册插件 &f{0}&7 的数据库连接'
+  FAIL-CONNECT: '&4数据库 &c{0} &4连接失败, 原因: &c{0}'
+  FAIL-NOTFOUND-DRIVE: '&7驱动器获取失败, 无法连接到数据库'
+  FAIL-NOTFOUND-CONNECTION: '&7警告! 数据库尚未连接, 请检查配置文件后重启服务器! ({0})'
+  FAIL-COMMAND-NORMAL: '&4数据库命令执行出错, 错误原因: &c{0}'
+  FAIL-COMMAND-DETAIL: '&4数据库命令执行出错, 错误代码: &c{0}&4, 错误原因: &c{1}'
+  FAIL-EXECUTE-TASK: '异步任务失败, 执行方式改为同步执行'
+  SUCCESS-REGISTERED: '&7插件 &f{0}&7 注册新的数据库连接'
+  SUCCESS-REGISTERED-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
   SUCCESS-REGISTERED-LISTENER: '&7启动数据库连接监控'
+  SUCCESS-CONNECTION-CANCEL: '已停止插件 &f{0}&7 的 &f{1}&7 条数据库连接'
   NOTIFY-CONNECTING: '&7正在连接数据库, 地址: &f{0}'
-  NOTIFY-CONNECTED: '数据库连接成功 ({0}ms)'
+  NOTIFY-CONNECTED: '&7数据库连接成功 ({0}ms)'
+  
+MYSQL-HIKARI:
+  CREATE-SUCCESS: '&7插件 &f{0}&7 注册新的数据库连接: &f{1}'
+  CREATE-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
+  CLOSE-SUCCESS: '&7插件 &f{0} &7注册的数据库连接 &f{1} &7已被注销!'
+  CLOSE-FAIL: '&7插件 &f{0} &7注册的数据库连接正在被 &f{1} &7个插件使用, 无法注销!'
   
 TABOOLIB-MODULE:
   SUCCESS-LOADED: '&7载入 &f{0} &7个 &fTLM &7模块'
-  FALL-LOADED: '&4模块载入异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
-  FALL-RUNTIME: '&4模块运行异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
+  FAIL-LOADED: '&4模块载入异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
+  FAIL-RUNTIME: '&4模块运行异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
   
 COMMANDS:
   GLOBAL:
@@ -459,7 +469,7 @@ COMMANDS:
         0: '名称'
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4已经载入'
       LOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已载入'
-      LOAD-FALL: '&8[&3&lTabooLib&8] &7插件载入失败'
+      LOAD-FAIL: '&8[&3&lTabooLib&8] &7插件载入失败'
     UNLOAD:
       DESCRIPTION: '卸载插件'
       ARGUMENTS:
@@ -467,7 +477,7 @@ COMMANDS:
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
       UNLOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已卸载'
-      UNLOAD-FALL: '&8[&3&lTabooLib&8] &7插件卸载失败'
+      UNLOAD-FAIL: '&8[&3&lTabooLib&8] &7插件卸载失败'
     RELOAD:
       DESCRIPTION: '重载插件'
       ARGUMENTS:

@@ -35,7 +35,7 @@ public class ConfigUtils {
 
     @SuppressWarnings("unchecked")
     public static Map<String, Object> yamlToMap(String yamlText) {
-        return YAML.loadAs(yamlText, LinkedHashMap.class);
+        return (Map<String, Object>) YAML.load(yamlText);
     }
 
     public static MemoryConfiguration objToConf(Object object) {
@@ -199,7 +199,7 @@ public class ConfigUtils {
             configuration.loadFromString(yaml);
             return configuration;
         } catch (Exception e) {
-            TLocale.Logger.error("FILE-UTILS.FALL-LOAD-CONFIGURATION", plugin.getName(), file.getName());
+            TLocale.Logger.error("FILE-UTILS.FAIL-LOAD-CONFIGURATION", plugin.getName(), file.getName());
         }
         return configuration;
     }

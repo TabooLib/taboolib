@@ -100,7 +100,7 @@ public class ItemUtils {
             reloadItemCache();
             itemdir = YamlConfiguration.loadConfiguration(new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR")));
         } catch (Exception e) {
-            TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ITEMS", e.toString());
+            TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ITEMS", e.toString());
         }
     }
 
@@ -108,7 +108,7 @@ public class ItemUtils {
         FileConfiguration conf = ConfigUtils.load(Main.getInst(), file);
         for (String name : conf.getConfigurationSection("").getKeys(false)) {
             if (isExists(name)) {
-                TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ITEMS", name);
+                TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ITEMS", name);
             } else if (finalFile) {
                 itemCachesFinal.put(name, loadItem(conf, name));
             } else {
@@ -424,7 +424,7 @@ public class ItemUtils {
                 if (enchant != null) {
                     meta.addEnchant(enchant, section.getInt("enchants." + preEnchant), true);
                 } else {
-                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-ENCHANTS", preEnchant);
+                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ENCHANTS", preEnchant);
                 }
             }
         }
@@ -435,7 +435,7 @@ public class ItemUtils {
                 if (flag != null) {
                     meta.addItemFlags(flag);
                 } else {
-                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-FLAG", preFlag);
+                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-FLAG", preFlag);
                 }
             }
         }
@@ -454,7 +454,7 @@ public class ItemUtils {
                             NumberUtils.getInteger(section.getString("potions." + prePotionName).split("-")[0]),
                             NumberUtils.getInteger(section.getString("potions." + prePotionName).split("-")[1]) - 1), true);
                 } else {
-                    TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", prePotionName);
+                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", prePotionName);
                 }
             }
         }
@@ -505,7 +505,7 @@ public class ItemUtils {
                         } catch (Exception ignored) {
                         }
                     } else {
-                        TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", name);
+                        TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", name);
                     }
                 }
             }
@@ -544,7 +544,7 @@ public class ItemUtils {
             } catch (NumberFormatException ignored) {
             }
         } else {
-            TLocale.Logger.error("ITEM-UTILS.FALL-LOAD-POTION", name);
+            TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", name);
         }
         return nbt;
     }

@@ -23,6 +23,7 @@ import me.skymc.taboolib.javashell.JavaShell;
 import me.skymc.taboolib.listener.*;
 import me.skymc.taboolib.message.ChatCatcher;
 import me.skymc.taboolib.message.MsgUtils;
+import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
@@ -191,7 +192,7 @@ public class Main extends JavaPlugin implements Listener {
                 }
             } else {
                 // 提示
-                TLocale.Logger.error("NOTIFY.ERROR-CONNECTION-FALL");
+                TLocale.Logger.error("NOTIFY.ERROR-CONNECTION-FAIL");
                 // 关服
                 Bukkit.shutdown();
             }
@@ -281,7 +282,7 @@ public class Main extends JavaPlugin implements Listener {
 
         // 如果插件尚未启动完成
         if (!started) {
-            TLocale.Logger.error("NOTIFY.FALL-DISABLE");
+            TLocale.Logger.error("NOTIFY.FAIL-DISABLE");
             return;
         }
 
@@ -299,6 +300,8 @@ public class Main extends JavaPlugin implements Listener {
         SpecialItem.getInst().unloadItems();
         // 注销 TLM 接口
         TabooLibraryModule.getInst().unloadModules();
+        // 注销连接池
+        HikariHandler.closeDataSourceForce();
 
         // 结束数据库储存方法
         if (getStorageType() == StorageType.SQL) {

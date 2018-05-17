@@ -82,7 +82,7 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
                             break;
                         }
                         default: {
-                            TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.LOAD-FALL", name);
+                            TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.LOAD-FAIL", name);
                         }
                     }
                 }
@@ -123,7 +123,7 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
                             break;
                         }
                         default: {
-                            TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-FALL", name);
+                            TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-FAIL", name);
                         }
                     }
                 }
@@ -190,16 +190,20 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
                 if (plugin == null) {
                     TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INVALID-PLUGIN", name);
                 } else {
-                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INFO-PLUGIN",
-                            plugin.getName(),
-                            String.valueOf(plugin.getDescription().getDescription()),
-                            String.valueOf(plugin.getDescription().getAuthors()),
-                            String.valueOf(plugin.getDescription().getDepend()),
-                            String.valueOf(plugin.getDescription().getSoftDepend()),
-                            String.valueOf(plugin.getDescription().getMain()),
-                            String.valueOf(plugin.getDescription().getVersion()),
-                            String.valueOf(plugin.getDescription().getWebsite()),
-                            String.valueOf(plugin.getDescription().getCommands().keySet()));
+                    try {
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INFO-PLUGIN",
+                                plugin.getName(),
+                                String.valueOf(plugin.getDescription().getDescription()),
+                                String.valueOf(plugin.getDescription().getAuthors()),
+                                String.valueOf(plugin.getDescription().getDepend()),
+                                String.valueOf(plugin.getDescription().getSoftDepend()),
+                                String.valueOf(plugin.getDescription().getMain()),
+                                String.valueOf(plugin.getDescription().getVersion()),
+                                String.valueOf(plugin.getDescription().getWebsite()),
+                                String.valueOf(plugin.getDescription().getCommands().keySet()));
+                    } catch (Exception ignored) {
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INVALID-PLUGIN", name);
+                    }
                 }
             }
         });

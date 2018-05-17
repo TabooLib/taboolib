@@ -172,9 +172,9 @@ public class TagManager implements Listener {
     }
 
     private Team getTeam(Scoreboard scoreboard, PlayerData data) {
-        Team team = scoreboard.getTeam(data.getName());
+        Team team = scoreboard.getTeam(String.valueOf(data.getPrefix()));
         if (team == null) {
-            team = scoreboard.registerNewTeam(data.getName());
+            team = scoreboard.registerNewTeam(String.valueOf(data.getPrefix()));
             team.addEntry(data.getName());
         }
         return team;
