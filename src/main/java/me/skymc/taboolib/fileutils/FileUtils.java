@@ -1,6 +1,8 @@
 package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
+import com.ilummc.tlib.util.IO;
+import me.skymc.taboolib.Main;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -8,7 +10,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class FileUtils {
 
@@ -40,6 +44,31 @@ public class FileUtils {
             IOUtils.closeQuietly(bufferedReader);
             IOUtils.closeQuietly(inputStreamReader);
             IOUtils.closeQuietly(ins);
+        }
+    }
+
+    public static InputStream getResource(String filename) {
+        try {
+            URL url = Main.class.getClassLoader().getResource(filename);
+            if (url == null) {
+                return null;
+            } else {
+                URLConnection connection = url.openConnection();
+                connection.setUseCaches(false);
+                return connection.getInputStream();
+            }
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
+
+    public static void inputStreamToFile(InputStream inputStream, File file) {
+        try {
+            String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
+            FileWriter fileWriter = new FileWriter(FileUtils.createNewFile(file));
+            fileWriter.write(text);
+            fileWriter.close();
+        } catch (IOException ignored) {
         }
     }
 

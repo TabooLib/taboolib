@@ -1,9 +1,18 @@
 TLIB:
   INJECTION-SUCCESS: '注入成功'
   INJECTION-FAILED: '注入失败'
+  LOAD-FAIL-OFFLINE:
+  - '**********************************************'
+  - '** TabooLib-{0} 无法在您的服务器上使用'
+  - '**'
+  - '** 您的服务器尚未连接互联网导致本插件无法正常载入'
+  - '** 请使用离线版本或是手动下载依赖库文件'
+  - '**'
+  - '** 详情查阅: https://github.com/Bkm016/TabooLib'
+  - '**********************************************'
   
 DEPENDENCY:
-  OFFLINE-DEPENDENCY-WARN: '已启用离线模式, 将不会下载第三方依赖库'
+  DOWNLOAD-OFFLINE: '已启用离线模式, 将不会下载第三方依赖库'
   DOWNLOAD-CONNECTED: '  正在下载 {0} 大小 {1}'
   DOWNLOAD-PROGRESS: '    下载速度 {0} 进度 {1}'
   DOWNLOAD-SUCCESS: '  下载 {0} 完成'

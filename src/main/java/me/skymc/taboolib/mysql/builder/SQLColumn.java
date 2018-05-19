@@ -10,11 +10,6 @@ import java.util.Arrays;
  */
 public class SQLColumn {
 
-    public static void main(String[] args) {
-        SQLColumn column2 = new SQLColumn(SQLColumnType.INT, "player_title", "无");
-        System.out.println(column2.convertToCommand());
-    }
-
     /**
      * 类型
      */
