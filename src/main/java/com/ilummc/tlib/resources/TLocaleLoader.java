@@ -10,6 +10,7 @@ import me.skymc.taboocode.TabooCodeLang;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -140,7 +141,7 @@ public class TLocaleLoader {
     }
 
     private static YamlConfiguration getLocaleAtStream(Plugin plugin, File localeFile) {
-        InputStream localeInputSteam = plugin.getClass().getResourceAsStream("/lang/" + localeFile.getName());
+        InputStream localeInputSteam = FileUtils.getResource("lang/" + localeFile.getName());
         try {
             String yamlText = new String(IO.readFully(localeInputSteam), Charset.forName("utf-8"));
             YamlConfiguration yaml = new YamlConfiguration();

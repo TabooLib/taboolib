@@ -17,9 +17,8 @@ DATAURL:
 # 启用后将收到来自其他插件的调试信息
 DEBUG: false
 
-# 是否启用离线模式
-# 离线模式下将不会下载依赖
-OFFLINE-MODE: false
+# 网络连接测试地址
+TEST-URL: 'aliyun.com'
 
 # 下载依赖时启用的线程数
 DOWNLOAD-POOL-SIZE: 4

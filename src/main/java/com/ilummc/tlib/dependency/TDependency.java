@@ -52,8 +52,8 @@ public class TDependency {
     }
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
-        if (Main.getInst().getConfig().getBoolean("OFFLINE-MODE")) {
-            TLocale.Logger.warn("DEPENDENCY.OFFLINE-DEPENDENCY-WARN");
+        if (Main.isOfflineVersion()) {
+            TLocale.Logger.warn("DEPENDENCY.DOWNLOAD-OFFLINE");
             return false;
         }
         AtomicBoolean failed = new AtomicBoolean(false);

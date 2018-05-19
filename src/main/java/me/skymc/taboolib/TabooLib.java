@@ -1,5 +1,6 @@
 package me.skymc.taboolib;
 
+import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -37,11 +38,7 @@ public class TabooLib {
     }
 
     public static double getPluginVersion() {
-        try {
-            return Double.valueOf(Main.getInst().getDescription().getVersion());
-        } catch (Exception e) {
-            return 0D;
-        }
+        return NumberUtils.getDouble(Main.getInst().getDescription().getVersion());
     }
 
     public static String getVersion() {
