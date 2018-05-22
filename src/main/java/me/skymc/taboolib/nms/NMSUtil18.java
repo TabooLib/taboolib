@@ -313,7 +313,7 @@ public class NMSUtil18 {
             class_NBTTagCompound_getByteMethod = class_NBTTagCompound.getMethod("getByte", String.class);
             class_NBTTagCompound_getByteArrayMethod = class_NBTTagCompound.getMethod("getByteArray", String.class);
             class_NBTTagCompound_getListMethod = class_NBTTagCompound.getMethod("getList", String.class, Integer.TYPE);
-            class_CraftItemStack_copyMethod = class_CraftItemStack.getMethod("asNMSCopy", org.bukkit.inventory.ItemStack.class);
+            class_CraftItemStack_copyMethod = class_CraftItemStack.getMethod("asNMSCopy", ItemStack.class);
             class_CraftItemStack_asBukkitCopyMethod = class_CraftItemStack.getMethod("asBukkitCopy", class_ItemStack);
             class_CraftItemStack_mirrorMethod = class_CraftItemStack.getMethod("asCraftMirror", class_ItemStack);
             class_ItemStack_createStackMethod = class_ItemStack.getMethod("createStack", class_NBTTagCompound);
@@ -526,7 +526,7 @@ public class NMSUtil18 {
         return NMSUtil18.class.getClassLoader().loadClass(className);
     }
 
-    public static Object getHandle(org.bukkit.inventory.ItemStack stack) {
+    public static Object getHandle(ItemStack stack) {
         Object handle = null;
         try {
             handle = class_CraftItemStack_getHandleField.get(stack);
@@ -536,7 +536,7 @@ public class NMSUtil18 {
         return handle;
     }
 
-    public static Object getHandle(org.bukkit.World world) {
+    public static Object getHandle(World world) {
         if (world == null) {
             return null;
         }
@@ -549,7 +549,7 @@ public class NMSUtil18 {
         return handle;
     }
 
-    public static Object getHandle(org.bukkit.entity.Entity entity) {
+    public static Object getHandle(Entity entity) {
         if (entity == null) {
             return null;
         }
@@ -575,7 +575,7 @@ public class NMSUtil18 {
         return handle;
     }
 
-    public static boolean isDone(org.bukkit.Chunk chunk) {
+    public static boolean isDone(Chunk chunk) {
         Object chunkHandle = getHandle(chunk);
         boolean done = false;
         try {
@@ -586,7 +586,7 @@ public class NMSUtil18 {
         return done;
     }
 
-    public static Object getHandle(org.bukkit.Chunk chunk) {
+    public static Object getHandle(Chunk chunk) {
         Object handle = null;
         try {
             handle = class_CraftChunk_getHandleMethod.invoke(chunk);
@@ -596,7 +596,7 @@ public class NMSUtil18 {
         return handle;
     }
 
-    public static Object getHandle(org.bukkit.entity.Player player) {
+    public static Object getHandle(Player player) {
         Object handle = null;
         try {
             handle = class_CraftPlayer_getHandleMethod.invoke(player);
@@ -652,17 +652,17 @@ public class NMSUtil18 {
         return dir;
     }
 
-    public static org.bukkit.entity.Entity getBukkitEntity(Object entity) {
+    public static Entity getBukkitEntity(Object entity) {
         if (entity == null) {
             return null;
         }
         try {
             Method getMethod = entity.getClass().getMethod("getBukkitEntity");
             Object bukkitEntity = getMethod.invoke(entity);
-            if (!(bukkitEntity instanceof org.bukkit.entity.Entity)) {
+            if (!(bukkitEntity instanceof Entity)) {
                 return null;
             }
-            return (org.bukkit.entity.Entity) bukkitEntity;
+            return (Entity) bukkitEntity;
         } catch (Throwable ex) {
             ex.printStackTrace();
         }

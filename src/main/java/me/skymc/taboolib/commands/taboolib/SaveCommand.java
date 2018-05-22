@@ -49,7 +49,7 @@ public class SaveCommand extends SubCommand {
                 return;
             }
 
-            ChatCatcher.call((Player) sender, new ChatCatcher.Catcher() {
+            ChatCatcher.call((Player) sender, new Catcher() {
 
                 @Override
                 public void cancel() {

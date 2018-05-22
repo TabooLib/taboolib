@@ -2,10 +2,9 @@ package me.skymc.taboolib.commands.internal;
 
 import com.google.common.base.Preconditions;
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.resources.TLocaleLoader;
-import com.ilummc.tlib.util.Ref;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.internal.type.CommandField;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.commands.internal.type.CommandType;
 import me.skymc.taboolib.string.ArrayUtils;
@@ -47,6 +46,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
 
     public static void loadCommandRegister(BaseMainCommand baseMainCommand) {
         List<Method> methods = new ArrayList<>();
+        List<CommandField> fields = new ArrayList<>();
         baseMainCommand.getLinkClasses().forEach(clazz -> Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.getAnnotation(CommandRegister.class) != null).forEach(methods::add));
         if (methods.size() > 0) {
             methods.sort(Comparator.comparingDouble(a -> a.getAnnotation(CommandRegister.class).priority()));
@@ -58,8 +58,19 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
                 }
             });
         }
-        if (methods.size() > 0) {
-            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size()));
+        baseMainCommand.getLinkClasses().forEach(clazz -> Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CommandRegister.class) != null && field.getType().equals(BaseSubCommand.class)).forEach(field -> fields.add(new CommandField(field, clazz))));
+        if (fields.size() > 0) {
+            fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(CommandRegister.class).priority()));
+            fields.forEach(commandField -> {
+                try {
+                    commandField.getField().setAccessible(true);
+                    baseMainCommand.registerSubCommand((BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance()));
+                } catch (Exception ignored) {
+                }
+            });
+        }
+        if (methods.size() + fields.size() > 0) {
+            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size() + fields.size()));
         }
     }
 
@@ -94,7 +105,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
             helpCommand(sender, label);
         } else {
             for (BaseSubCommand subCommand : subCommands) {
-                if (subCommand == null || !args[0].equalsIgnoreCase(subCommand.getLabel())) {
+                if (subCommand == null || !args[0].equalsIgnoreCase(subCommand.getLabel()) || !hasPermission(sender, subCommand)) {
                     continue;
                 }
                 if (!isConfirmType(sender, subCommand.getType())) {
@@ -113,7 +124,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
 
                 @Override
                 public void run() {
-                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(Objects::nonNull).sorted((b, a) -> Double.compare(StringUtils.similarDegree(args[0], a.getLabel()), StringUtils.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
+                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && hasPermission(sender, x)).sorted((b, a) -> Double.compare(StringUtils.similarDegree(args[0], a.getLabel()), StringUtils.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
                     if (commandCompute.size() > 0) {
                         TLocale.sendTo(sender, "COMMANDS.INTERNAL.ERROR-COMMAND", args[0], commandCompute.get(0).getCommandString(label).trim());
                     }
@@ -125,7 +136,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return args.length == 1 ? subCommands.stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList()) : null;
+        return args.length == 1 ? subCommands.stream().filter(subCommand -> subCommand != null && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList()) : null;
     }
 
     @Override
@@ -162,7 +173,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
         sender.sendMessage(getEmptyLine());
         sender.sendMessage(getCommandTitle());
         sender.sendMessage(getEmptyLine());
-        subCommands.stream().map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
+        subCommands.stream().filter(subCommands -> hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
         sender.sendMessage(getEmptyLine());
     }
 
@@ -177,5 +188,9 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
             pluginField.set(targetClass.newInstance(), plugin);
         } catch (Exception ignored) {
         }
+    }
+
+    private boolean hasPermission(CommandSender sender, BaseSubCommand baseSubCommand) {
+        return baseSubCommand == null || baseSubCommand.getPermission() == null || sender.hasPermission(baseSubCommand.getPermission());
     }
 }
