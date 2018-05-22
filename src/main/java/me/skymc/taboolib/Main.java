@@ -8,6 +8,7 @@ import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
+import me.skymc.taboolib.commands.internal.TBaseCommand;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
 import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
@@ -21,6 +22,7 @@ import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
+import me.skymc.taboolib.itagapi.TagDataHandler;
 import me.skymc.taboolib.javashell.JavaShell;
 import me.skymc.taboolib.listener.*;
 import me.skymc.taboolib.message.ChatCatcher;
@@ -28,7 +30,6 @@ import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.packet.PacketUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.sign.SignUtils;
@@ -36,8 +37,6 @@ import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
-import me.skymc.taboolib.team.TagAPI;
-import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
 import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
@@ -150,6 +149,8 @@ public class Main extends JavaPlugin implements Listener {
         JavaShell.javaShellSetup();
         // 注册脚本
         SkriptHandler.getInst();
+        // 注册头衔
+        TagDataHandler.init(this);
         // 载入语言文件
         exampleLanguage2 = new Language2("Language2", this);
 
@@ -179,10 +180,6 @@ public class Main extends JavaPlugin implements Listener {
                 // 载入 PlaceholderAPI 扩展
                 if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
-                }
-                // 载入 ProtocolLib 扩展
-                if (PacketUtils.isProtocolLibEnabled()) {
-                    TagAPI.inst();
                 }
                 // 载入 SpecialItem 接口
                 SpecialItem.getInst().loadItems();
@@ -243,9 +240,6 @@ public class Main extends JavaPlugin implements Listener {
 
         // 提示信息
         TLocale.Logger.error("NOTIFY.SUCCESS-DISABLE");
-
-        // 清理头衔
-        TagUtils.delete();
 
         // 结束连接
         if (connection != null && connection.isConnection()) {
@@ -332,8 +326,8 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("language2").setExecutor(new Language2Command());
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
         getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
-        BaseMainCommand.createCommandExecutor("taboolib", new TabooLibMainCommand());
-        BaseMainCommand.createCommandExecutor("taboolibplugin", new TabooLibPluginMainCommand());
+        TBaseCommand.registerCommand("taboolib", new TabooLibMainCommand());
+        TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginMainCommand());
     }
 
     private void registerListener() {

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @Author sky
  * @Since 2018-05-09 22:38
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandRegister {
 

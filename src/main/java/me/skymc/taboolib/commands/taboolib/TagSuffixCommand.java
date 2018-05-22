@@ -1,9 +1,8 @@
 package me.skymc.taboolib.commands.taboolib;
 
 import com.ilummc.tlib.resources.TLocale;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.commands.SubCommand;
-import me.skymc.taboolib.team.TagManager;
+import me.skymc.taboolib.itagapi.TagDataHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,12 +26,9 @@ public class TagSuffixCommand extends SubCommand {
             return;
         }
 
-        String value = getArgs(2).replace("&", "§");
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            value = PlaceholderAPI.setPlaceholders(player, value);
-        }
-
-        TagManager.getInst().setSuffix(player, value);
+        String value = TLocale.Translate.setPlaceholders(player, getArgs(2));
+        TagDataHandler.getHandler().setSuffix(player, value);
+        
         if (sender instanceof Player) {
             TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.SUCCESS-SUFFIX-SET", args[1], value);
         }

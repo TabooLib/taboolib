@@ -2,8 +2,7 @@ package me.skymc.taboolib.commands.taboolib;
 
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.SubCommand;
-import me.skymc.taboolib.team.TagAPI;
-import me.skymc.taboolib.team.TagManager;
+import me.skymc.taboolib.itagapi.TagDataHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,8 +26,7 @@ public class TagDeleteCommand extends SubCommand {
             return;
         }
 
-        TagManager.getInst().unloadData(player);
-        TagAPI.removePlayerDisplayName(player);
+        TagDataHandler.getHandler().reset(player);
 
         if (sender instanceof Player) {
             TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.SUCCESS-DELETE", args[1]);

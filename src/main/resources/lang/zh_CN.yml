@@ -164,6 +164,9 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] &7你可能想要:'
     - '&8[&3&lTabooLib&8] &7{1}'
     COMMAND-REGISTER: '&7自动为插件 &f{0} &7的命令 &f{1} &7注册 &f{2} &7条子命令'
+    COMMAND-HELP: ' §f/{0} {1} {2} §6- §e{3}'
+    COMMAND-ARGUMENT: '§7<§8{0}§7>'
+    COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
     INSUFFICIENT: '&8[&3&lTabooLib&8] &4参数不足'
