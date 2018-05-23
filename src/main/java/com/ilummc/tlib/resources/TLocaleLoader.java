@@ -141,7 +141,7 @@ public class TLocaleLoader {
     }
 
     private static YamlConfiguration getLocaleAtStream(Plugin plugin, File localeFile) {
-        InputStream localeInputSteam = FileUtils.getResource("lang/" + localeFile.getName());
+        InputStream localeInputSteam = FileUtils.getResource(plugin, "lang/" + localeFile.getName());
         try {
             String yamlText = new String(IO.readFully(localeInputSteam), Charset.forName("utf-8"));
             YamlConfiguration yaml = new YamlConfiguration();

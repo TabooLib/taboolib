@@ -7,7 +7,6 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
-import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.TBaseCommand;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
@@ -334,7 +333,7 @@ public class Main extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ListenerPlayerCommand(), this);
         getServer().getPluginManager().registerEvents(new ListenerPlayerJump(), this);
-        getServer().getPluginManager().registerEvents(new ListenerPlayerQuit(), this);
+        getServer().getPluginManager().registerEvents(new ListenerPlayerJoinAndQuit(), this);
         getServer().getPluginManager().registerEvents(new ChatCatcher(), this);
         getServer().getPluginManager().registerEvents(new DataUtils(), this);
         getServer().getPluginManager().registerEvents(new AnvilContainerAPI(), this);
