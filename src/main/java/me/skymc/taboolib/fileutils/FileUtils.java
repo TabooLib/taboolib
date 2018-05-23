@@ -2,8 +2,10 @@ package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
 import com.ilummc.tlib.util.IO;
+import javafx.print.PageLayout;
 import me.skymc.taboolib.Main;
 import org.apache.commons.io.IOUtils;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -48,8 +50,12 @@ public class FileUtils {
     }
 
     public static InputStream getResource(String filename) {
+        return getResource(Main.getInst(), filename);
+    }
+
+    public static InputStream getResource(Plugin plugin, String filename) {
         try {
-            URL url = Main.class.getClassLoader().getResource(filename);
+            URL url = plugin.getClass().getClassLoader().getResource(filename);
             if (url == null) {
                 return null;
             } else {

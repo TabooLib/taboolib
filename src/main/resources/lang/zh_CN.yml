@@ -112,7 +112,8 @@ ANVIL-CONTAINER:
   - '&7随后点击右侧输出物品'
   
 UPDATETASK:
-  VERSION-LATEST: '插件已是最新版, 无需更新!'
+  VERSION-FAIL: '&4更新记录获取失败, 请检查网络连接!'
+  VERSION-LATEST: '&7插件已是最新版, 无需更新!'
   VERSION-OUTDATED:
   - '&8####################################################'
   - '&7 检测到有新的版本更新!'
