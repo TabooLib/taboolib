@@ -10,16 +10,19 @@ import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.jsonformatter.JSONFormatter;
+import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.json.tellraw.TellrawJson;
+import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.VariableFormatter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.entity.Player;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 
 @ThreadSafe
 @SerializableAs("JSON")
@@ -72,11 +75,11 @@ public class TLocaleJson extends TLocaleSerialize {
                         // 可能有很多个 BaseComponent，于是为每个 component 单独设置各种事件
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
                         arg.forEach((key, value) -> {
-                            if ("suggest".equalsIgnoreCase(key)) {
+                            if (key.equalsIgnoreCase("suggest")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value))));
-                            } else if ("command".equalsIgnoreCase(key) || "commands".equalsIgnoreCase(key)) {
+                            } else if (key.equalsIgnoreCase("command") || "commands".equalsIgnoreCase(key)) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value))));
-                            } else if ("hover".equalsIgnoreCase(key)) {
+                            } else if (key.equalsIgnoreCase("hover")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
                             }
                         });
@@ -101,7 +104,7 @@ public class TLocaleJson extends TLocaleSerialize {
 
     private static List<String> getTextList(Object textObj) {
         if (textObj instanceof List) {
-            return ((List<?>) textObj).stream().map(Object::toString).map(s -> TLocale.Translate.setColored(s)).collect(Collectors.toList());
+            return ((List<?>) textObj).stream().map(Object::toString).map(TLocale.Translate::setColored).collect(Collectors.toList());
         } else if (textObj instanceof String) {
             return Lists.newArrayList(TLocale.Translate.setColored((String) textObj));
         } else {
@@ -125,11 +128,11 @@ public class TLocaleJson extends TLocaleSerialize {
     }
 
     private void sendRawMessage(CommandSender sender, BaseComponent[] components) {
-        if (sender instanceof Player) {
-            JSONFormatter.sendRawMessage((Player) sender, ComponentSerializer.toString(components));
-        } else {
-            sender.sendMessage(TextComponent.toLegacyText(components));
-        }
+        TLocale.Tellraw.send(sender, ComponentSerializer.toString(components));
+    }
+
+    private List<BaseComponent> replace(List<BaseComponent> component, CommandSender sender, String... args) {
+        return component.stream().map(c -> replace(c, sender, args)).collect(Collectors.toList());
     }
 
     private BaseComponent[] replace(BaseComponent[] component, CommandSender sender, String... args) {
@@ -138,10 +141,6 @@ public class TLocaleJson extends TLocaleSerialize {
             components[i] = replace(component[i].duplicate(), sender, args);
         }
         return components;
-    }
-
-    private List<BaseComponent> replace(List<BaseComponent> component, CommandSender sender, String... args) {
-        return component.stream().map(c -> replace(c, sender, args)).collect(Collectors.toList());
     }
 
     private BaseComponent replace(BaseComponent component, CommandSender sender, String... args) {
@@ -165,5 +164,64 @@ public class TLocaleJson extends TLocaleSerialize {
     private String replace(CommandSender sender, String text, String[] args) {
         String s = Strings.replaceWithOrder(text, args);
         return papi ? PlaceholderHook.replace(sender, s) : s;
+    }
+
+    public static TellrawJson formatJson(Map<String, Object> section, Object textObject, TellrawJson pageJson) {
+        List<String> textList = textObject instanceof List ? (List<String>) textObject : Collections.singletonList(String.valueOf(textObject));
+        // 遍历本页文本
+        for (int i = 0; i < textList.size(); i++) {
+            // 捕捉变量
+            for (VariableFormatter.Variable variable : new VariableFormatter(textList.get(i), pattern).find().getVariableList()) {
+                // 如果是变量
+                if (variable.isVariable()) {
+                    String[] split = variable.getText().split("@");
+                    // @ 前面的字符串
+                    String text = split.length > 1 ? split[0] : "§4* Invalid Text *";
+                    // @ 后面的节点名
+                    String node = split.length > 1 ? split[1] : null;
+                    // 处理变量
+                    formatNode(section, pageJson, text, node);
+                } else {
+                    pageJson.append(variable.getText());
+                }
+            }
+            if (i + 1 < textList.size()) {
+                pageJson.newLine();
+            }
+        }
+        return pageJson;
+    }
+
+    private static void formatNode(Map<String, Object> section, TellrawJson pageJson, String text, String node) {
+        if (section.containsKey(node)) {
+            try {
+                Map<String, Object> args = (Map<String, Object>) section.get(node);
+                // 文本
+                pageJson.append(args.getOrDefault("text", text).toString());
+                // 功能
+                if (args.containsKey("item")) {
+                    pageJson.hoverItem(ItemUtils.getCacheItem(args.get("item").toString()));
+                }
+                if (args.containsKey("hover")) {
+                    pageJson.hoverText(args.get("hover").toString());
+                }
+                if (args.containsKey("suggest")) {
+                    pageJson.clickSuggest(args.get("suggest").toString());
+                }
+                if (args.containsKey("command")) {
+                    pageJson.clickCommand(args.get("command").toString());
+                }
+                if (args.containsKey("page")) {
+                    pageJson.clickChangePage(NumberUtils.getInteger(args.get("page").toString()));
+                }
+                if (args.containsKey("url")) {
+                    pageJson.clickOpenURL(args.get("url").toString());
+                }
+            } catch (Exception e) {
+                TLocale.Logger.error("LOCALE.BOOK-ARGUMENTS-IDENTIFICATION-FAILED", e.toString());
+            }
+        } else {
+            pageJson.append("§4* Invalid Argument *");
+        }
     }
 }

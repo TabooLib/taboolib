@@ -1,11 +1,8 @@
 package me.skymc.taboolib.bookformatter.builder;
 
+import com.ilummc.tlib.bungee.api.chat.*;
 import me.skymc.taboolib.bookformatter.action.ClickAction;
 import me.skymc.taboolib.bookformatter.action.HoverAction;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * @author sky

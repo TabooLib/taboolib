@@ -22,17 +22,19 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Level;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-@Deprecated
+/**
+ * @author Unknown
+ */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class NMSUtil19 {
-	
+
     protected static boolean failed = false;
     protected static boolean legacy = false;
 
     protected static String versionPrefix = "";
 
     protected final static int NBT_TYPE_COMPOUND = 10;
-    protected final static int NBT_TYPE_INT_ARRAY= 11;
+    protected final static int NBT_TYPE_INT_ARRAY = 11;
     protected final static int NBT_TYPE_DOUBLE = 6;
     protected final static int NBT_TYPE_FLOAT = 5;
     protected final static int NBT_TYPE_STRING = 8;
@@ -40,91 +42,91 @@ public class NMSUtil19 {
     protected static int WITHER_SKULL_TYPE = 66;
     protected static int FIREWORK_TYPE = 76;
 
-    protected static Class<?> class_Block;
-    protected static Class<?> class_ItemStack;
-    protected static Class<?> class_NBTBase;
-    protected static Class<?> class_NBTTagCompound;
-    protected static Class<?> class_NBTTagList;
-    protected static Class<?> class_NBTTagByte;
-    protected static Class<?> class_NBTTagDouble;
-    protected static Class<?> class_NBTTagFloat;
-    protected static Class<?> class_NBTTagInt;
-    protected static Class<?> class_NBTTagLong;
-    protected static Class<?> class_NBTTagShort;
-    protected static Class<?> class_NBTTagString;
-    protected static Class<?> class_CraftTask;
-    protected static Class<?> class_CraftInventoryCustom;
-    protected static Class<?> class_CraftItemStack;
-    protected static Class<?> class_CraftBlockState;
-    protected static Class<?> class_CraftLivingEntity;
-    protected static Class<?> class_CraftWorld;
-    protected static Class<?> class_Consumer;
-    protected static Class<?> class_Entity;
-    protected static Class<?> class_EntityCreature;
-    protected static Class<?> class_EntityLiving;
-    protected static Class<?> class_EntityHuman;
-    protected static Class<?> class_DataWatcher;
-    protected static Class<?> class_DamageSource;
-    protected static Class<?> class_EntityDamageSource;
-    protected static Class<?> class_World;
-    protected static Class<?> class_WorldServer;
-    protected static Class<?> class_Packet;
+    public static Class<?> class_Block;
+    public static Class<?> class_ItemStack;
+    public static Class<?> class_NBTBase;
+    public static Class<?> class_NBTTagCompound;
+    public static Class<?> class_NBTTagList;
+    public static Class<?> class_NBTTagByte;
+    public static Class<?> class_NBTTagDouble;
+    public static Class<?> class_NBTTagFloat;
+    public static Class<?> class_NBTTagInt;
+    public static Class<?> class_NBTTagLong;
+    public static Class<?> class_NBTTagShort;
+    public static Class<?> class_NBTTagString;
+    public static Class<?> class_CraftTask;
+    public static Class<?> class_CraftInventoryCustom;
+    public static Class<?> class_CraftItemStack;
+    public static Class<?> class_CraftBlockState;
+    public static Class<?> class_CraftLivingEntity;
+    public static Class<?> class_CraftWorld;
+    public static Class<?> class_Consumer;
+    public static Class<?> class_Entity;
+    public static Class<?> class_EntityCreature;
+    public static Class<?> class_EntityLiving;
+    public static Class<?> class_EntityHuman;
+    public static Class<?> class_DataWatcher;
+    public static Class<?> class_DamageSource;
+    public static Class<?> class_EntityDamageSource;
+    public static Class<?> class_World;
+    public static Class<?> class_WorldServer;
+    public static Class<?> class_Packet;
     protected static Class<Enum> class_EnumSkyBlock;
-    protected static Class<?> class_EntityPainting;
-    protected static Class<?> class_EntityItemFrame;
-    protected static Class<?> class_EntityMinecartRideable;
-    protected static Class<?> class_EntityTNTPrimed;
-    protected static Class<?> class_AxisAlignedBB;
-    protected static Class<?> class_PathPoint;
-    protected static Class<?> class_PathEntity;
-    protected static Class<?> class_EntityFirework;
-    protected static Class<?> class_CraftSkull;
-    protected static Class<?> class_CraftBanner;
-    protected static Class<?> class_CraftMetaSkull;
-    protected static Class<?> class_CraftMetaBanner;
-    protected static Class<?> class_GameProfile;
-    protected static Class<?> class_GameProfileProperty;
-    protected static Class<?> class_BlockPosition;
-    protected static Class<?> class_NBTCompressedStreamTools;
-    protected static Class<?> class_TileEntity;
-    protected static Class<?> class_TileEntitySign;
-    protected static Class<?> class_TileEntityContainer;
-    protected static Class<?> class_ChestLock;
+    public static Class<?> class_EntityPainting;
+    public static Class<?> class_EntityItemFrame;
+    public static Class<?> class_EntityMinecartRideable;
+    public static Class<?> class_EntityTNTPrimed;
+    public static Class<?> class_AxisAlignedBB;
+    public static Class<?> class_PathPoint;
+    public static Class<?> class_PathEntity;
+    public static Class<?> class_EntityFirework;
+    public static Class<?> class_CraftSkull;
+    public static Class<?> class_CraftBanner;
+    public static Class<?> class_CraftMetaSkull;
+    public static Class<?> class_CraftMetaBanner;
+    public static Class<?> class_GameProfile;
+    public static Class<?> class_GameProfileProperty;
+    public static Class<?> class_BlockPosition;
+    public static Class<?> class_NBTCompressedStreamTools;
+    public static Class<?> class_TileEntity;
+    public static Class<?> class_TileEntitySign;
+    public static Class<?> class_TileEntityContainer;
+    public static Class<?> class_ChestLock;
     protected static Class<Enum> class_EnumDirection;
-    protected static Class<?> class_EntityHorse;
-    protected static Class<?> class_EntityWitherSkull;
-    protected static Class<?> class_PacketPlayOutAttachEntity;
-    protected static Class<?> class_PacketPlayOutEntityDestroy;
-    protected static Class<?> class_PacketPlayOutSpawnEntity;
-    protected static Class<?> class_PacketPlayOutSpawnEntityLiving;
-    protected static Class<?> class_PacketPlayOutEntityMetadata;
-    protected static Class<?> class_PacketPlayOutEntityStatus;
-    protected static Class<?> class_PacketPlayOutCustomSoundEffect;
-    protected static Class<?> class_PacketPlayOutExperience;
-    protected static Class<?> class_PacketPlayOutAnimation;
-    protected static Class<?> class_PacketPlayOutBlockBreakAnimation;
+    public static Class<?> class_EntityHorse;
+    public static Class<?> class_EntityWitherSkull;
+    public static Class<?> class_PacketPlayOutAttachEntity;
+    public static Class<?> class_PacketPlayOutEntityDestroy;
+    public static Class<?> class_PacketPlayOutSpawnEntity;
+    public static Class<?> class_PacketPlayOutSpawnEntityLiving;
+    public static Class<?> class_PacketPlayOutEntityMetadata;
+    public static Class<?> class_PacketPlayOutEntityStatus;
+    public static Class<?> class_PacketPlayOutCustomSoundEffect;
+    public static Class<?> class_PacketPlayOutExperience;
+    public static Class<?> class_PacketPlayOutAnimation;
+    public static Class<?> class_PacketPlayOutBlockBreakAnimation;
     protected static Enum<?> enum_SoundCategory_PLAYERS;
     protected static Class<Enum> class_EnumSoundCategory;
-    protected static Class<?> class_EntityFallingBlock;
-    protected static Class<?> class_EntityArmorStand;
-    protected static Class<?> class_EntityPlayer;
-    protected static Class<?> class_PlayerConnection;
-    protected static Class<?> class_Chunk;
-    protected static Class<?> class_CraftPlayer;
-    protected static Class<?> class_CraftChunk;
-    protected static Class<?> class_CraftEntity;
-    protected static Class<?> class_EntityProjectile;
-    protected static Class<?> class_EntityFireball;
-    protected static Class<?> class_EntityArrow;
-    protected static Class<?> class_CraftArrow;
-    protected static Class<?> class_MinecraftServer;
-    protected static Class<?> class_CraftServer;
-    protected static Class<?> class_DataWatcherObject;
-    protected static Class<?> class_PacketPlayOutChat;
+    public static Class<?> class_EntityFallingBlock;
+    public static Class<?> class_EntityArmorStand;
+    public static Class<?> class_EntityPlayer;
+    public static Class<?> class_PlayerConnection;
+    public static Class<?> class_Chunk;
+    public static Class<?> class_CraftPlayer;
+    public static Class<?> class_CraftChunk;
+    public static Class<?> class_CraftEntity;
+    public static Class<?> class_EntityProjectile;
+    public static Class<?> class_EntityFireball;
+    public static Class<?> class_EntityArrow;
+    public static Class<?> class_CraftArrow;
+    public static Class<?> class_MinecraftServer;
+    public static Class<?> class_CraftServer;
+    public static Class<?> class_DataWatcherObject;
+    public static Class<?> class_PacketPlayOutChat;
     protected static Class<Enum> class_ChatMessageType;
     protected static Enum<?> enum_ChatMessageType_GAME_INFO;
-    protected static Class<?> class_ChatComponentText;
-    protected static Class<?> class_IChatBaseComponent;
+    public static Class<?> class_ChatComponentText;
+    public static Class<?> class_IChatBaseComponent;
 
     protected static Method class_NBTTagList_addMethod;
     protected static Method class_NBTTagList_getMethod;
@@ -275,8 +277,7 @@ public class NMSUtil19 {
     protected static Field class_Entity_moveStrafingField;
     protected static Field class_Entity_moveForwardField;
 
-    static
-    {
+    static {
         // Find classes Bukkit hides from us. :-D
         // Much thanks to @DPOHVAR for sharing the PowerNBT code that powers the reflection approach.
         String className = Bukkit.getServer().getClass().getName();
@@ -312,8 +313,8 @@ public class NMSUtil19 {
             class_Packet = fixBukkitClass("net.minecraft.server.Packet");
             class_World = fixBukkitClass("net.minecraft.server.World");
             class_WorldServer = fixBukkitClass("net.minecraft.server.WorldServer");
-            class_EnumSkyBlock = (Class<Enum>)fixBukkitClass("net.minecraft.server.EnumSkyBlock");
-            class_EnumSoundCategory = (Class<Enum>)fixBukkitClass("net.minecraft.server.SoundCategory");
+            class_EnumSkyBlock = (Class<Enum>) fixBukkitClass("net.minecraft.server.EnumSkyBlock");
+            class_EnumSoundCategory = (Class<Enum>) fixBukkitClass("net.minecraft.server.SoundCategory");
             enum_SoundCategory_PLAYERS = Enum.valueOf(class_EnumSoundCategory, "PLAYERS");
             class_EntityPainting = fixBukkitClass("net.minecraft.server.EntityPainting");
             class_EntityCreature = fixBukkitClass("net.minecraft.server.EntityCreature");
@@ -394,7 +395,7 @@ public class NMSUtil19 {
             class_EntityPlayer_setResourcePackMethod = class_EntityPlayer.getMethod("setResourcePack", String.class, String.class);
             class_CraftServer_getServerMethod = class_CraftServer.getMethod("getServer");
             class_MinecraftServer_getResourcePackMethod = class_MinecraftServer.getMethod("getResourcePack");
-            
+
             class_CraftInventoryCustom_constructor = class_CraftInventoryCustom.getConstructor(InventoryHolder.class, Integer.TYPE, String.class);
             class_EntityFireworkConstructor = class_EntityFirework.getConstructor(class_World, Double.TYPE, Double.TYPE, Double.TYPE, class_ItemStack);
             class_PacketSpawnEntityConstructor = class_PacketPlayOutSpawnEntity.getConstructor(class_Entity, Integer.TYPE);
@@ -478,10 +479,10 @@ public class NMSUtil19 {
             class_Chunk_doneField.setAccessible(true);
             class_CraftItemStack_getHandleField = class_CraftItemStack.getDeclaredField("handle");
             class_CraftItemStack_getHandleField.setAccessible(true);
-            
+
             class_MemorySection_mapField = MemorySection.class.getDeclaredField("map");
             class_MemorySection_mapField.setAccessible(true);
-            
+
             class_TileEntityContainer = fixBukkitClass("net.minecraft.server.TileEntityContainer");
             class_ChestLock = fixBukkitClass("net.minecraft.server.ChestLock");
             class_Entity_getBoundingBox = class_Entity.getMethod("getBoundingBox");
@@ -508,7 +509,7 @@ public class NMSUtil19 {
             class_CraftBanner_setPatternsMethod = class_CraftBanner.getMethod("setPatterns", List.class);
             class_CraftBanner_setBaseColorMethod = class_CraftBanner.getMethod("setBaseColor", DyeColor.class);
 
-            class_EnumDirection = (Class<Enum>)fixBukkitClass("net.minecraft.server.EnumDirection");
+            class_EnumDirection = (Class<Enum>) fixBukkitClass("net.minecraft.server.EnumDirection");
             class_BlockPosition_Constructor = class_BlockPosition.getConstructor(Double.TYPE, Double.TYPE, Double.TYPE);
             class_EntityPaintingConstructor = class_EntityPainting.getConstructor(class_World, class_BlockPosition, class_EnumDirection);
             class_EntityItemFrameConstructor = class_EntityItemFrame.getConstructor(class_World, class_BlockPosition, class_EnumDirection);
@@ -603,7 +604,7 @@ public class NMSUtil19 {
                     class_ChatComponentText_constructor = class_ChatComponentText.getConstructor(String.class);
 
                     // 1.12 specific
-                    class_ChatMessageType = (Class<Enum>)fixBukkitClass("net.minecraft.server.ChatMessageType");
+                    class_ChatMessageType = (Class<Enum>) fixBukkitClass("net.minecraft.server.ChatMessageType");
                     enum_ChatMessageType_GAME_INFO = Enum.valueOf(class_ChatMessageType, "GAME_INFO");
                     class_PacketPlayOutChat_constructor = class_PacketPlayOutChat.getConstructor(class_IChatBaseComponent, class_ChatMessageType);
 
@@ -771,8 +772,7 @@ public class NMSUtil19 {
                 Bukkit.getLogger().log(Level.WARNING, "An error occurred, setting arrow lifespan will not work", ex);
                 class_EntityArrow_lifeField = null;
             }
-            if (class_EntityArrow_lifeField != null)
-            {
+            if (class_EntityArrow_lifeField != null) {
                 class_EntityArrow_lifeField.setAccessible(true);
             }
 
@@ -874,8 +874,7 @@ public class NMSUtil19 {
                 // 1.10 and earlier
                 legacy = true;
             }
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             failed = true;
             Bukkit.getLogger().log(Level.SEVERE, "An unexpected error occurred initializing Magic", ex);
         }
@@ -884,7 +883,7 @@ public class NMSUtil19 {
     public static boolean getFailed() {
         return failed;
     }
-    
+
     public static boolean isLegacy() {
         return legacy;
     }
@@ -994,7 +993,7 @@ public class NMSUtil19 {
         Object chunkHandle = getHandle(chunk);
         boolean done = false;
         try {
-            done = (Boolean)class_Chunk_doneField.get(chunkHandle);
+            done = (Boolean) class_Chunk_doneField.get(chunkHandle);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1021,11 +1020,11 @@ public class NMSUtil19 {
         return handle;
     }
 
-    protected static void sendPacket(Server server, Location source, Collection<? extends Player> players, Object packet) throws Exception  {
+    protected static void sendPacket(Server server, Location source, Collection<? extends Player> players, Object packet) throws Exception {
         players = ((players != null && players.size() > 0) ? players : server.getOnlinePlayers());
 
         int viewDistance = Bukkit.getServer().getViewDistance() * 16;
-        int viewDistanceSquared =  viewDistance * viewDistance;
+        int viewDistanceSquared = viewDistance * viewDistance;
         World sourceWorld = source.getWorld();
         for (Player player : players) {
             Location location = player.getLocation();
@@ -1045,31 +1044,29 @@ public class NMSUtil19 {
         Method sendPacketMethod = connection.getClass().getMethod("sendPacket", class_Packet);
         sendPacketMethod.invoke(connection, packet);
     }
-    
-    public static int getFacing(BlockFace direction)
-    {
+
+    public static int getFacing(BlockFace direction) {
         int dir;
         switch (direction) {
-        case SOUTH:
-        default:
-            dir = 0;
-            break;
-        case WEST:
-            dir = 1;
-            break;
-        case NORTH:
-            dir = 2;
-            break;
-        case EAST:
-            dir = 3;
-            break;
+            case SOUTH:
+            default:
+                dir = 0;
+                break;
+            case WEST:
+                dir = 1;
+                break;
+            case NORTH:
+                dir = 2;
+                break;
+            case EAST:
+                dir = 3;
+                break;
         }
-        
+
         return dir;
     }
 
-    public static Entity getBukkitEntity(Object entity)
-    {
+    public static Entity getBukkitEntity(Object entity) {
         if (entity == null) {
             return null;
         }
@@ -1079,7 +1076,7 @@ public class NMSUtil19 {
             if (!(bukkitEntity instanceof Entity)) {
                 return null;
             }
-            return (Entity)bukkitEntity;
+            return (Entity) bukkitEntity;
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1197,7 +1194,7 @@ public class NMSUtil19 {
         }
         Boolean result = false;
         try {
-            result = (Boolean)class_NBTTagCompound_hasKeyMethod.invoke(nbtBase, tag);
+            result = (Boolean) class_NBTTagCompound_hasKeyMethod.invoke(nbtBase, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1267,7 +1264,7 @@ public class NMSUtil19 {
         }
         String meta = null;
         try {
-            meta = (String)class_NBTTagCompound_getStringMethod.invoke(node, tag);
+            meta = (String) class_NBTTagCompound_getStringMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1280,7 +1277,7 @@ public class NMSUtil19 {
         }
         String meta = null;
         try {
-            meta = (String)class_NBTTagCompound_getStringMethod.invoke(node, tag);
+            meta = (String) class_NBTTagCompound_getStringMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1293,7 +1290,7 @@ public class NMSUtil19 {
         }
         Byte meta = null;
         try {
-            meta = (Byte)class_NBTTagCompound_getByteMethod.invoke(node, tag);
+            meta = (Byte) class_NBTTagCompound_getByteMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1306,7 +1303,7 @@ public class NMSUtil19 {
         }
         Integer meta = null;
         try {
-            meta = (Integer)class_NBTTagCompound_getIntMethod.invoke(node, tag);
+            meta = (Integer) class_NBTTagCompound_getIntMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1319,7 +1316,7 @@ public class NMSUtil19 {
         }
         Boolean meta = null;
         try {
-            meta = (Boolean)class_NBTTagCompound_getBooleanMethod.invoke(node, tag);
+            meta = (Boolean) class_NBTTagCompound_getBooleanMethod.invoke(node, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1327,7 +1324,7 @@ public class NMSUtil19 {
     }
 
     public static void setMeta(Object node, String tag, String value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1342,7 +1339,7 @@ public class NMSUtil19 {
     }
 
     public static void setMetaLong(Object node, String tag, long value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1353,7 +1350,7 @@ public class NMSUtil19 {
     }
 
     public static void setMetaBoolean(Object node, String tag, boolean value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1364,7 +1361,7 @@ public class NMSUtil19 {
     }
 
     public static void setMetaDouble(Object node, String tag, double value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1375,7 +1372,7 @@ public class NMSUtil19 {
     }
 
     public static void setMetaInt(Object node, String tag, int value) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1386,7 +1383,7 @@ public class NMSUtil19 {
     }
 
     public static void removeMeta(Object node, String tag) {
-        if (node == null|| !class_NBTTagCompound.isInstance(node)) {
+        if (node == null || !class_NBTTagCompound.isInstance(node)) {
             return;
         }
         try {
@@ -1453,7 +1450,7 @@ public class NMSUtil19 {
             ex.printStackTrace();
             return false;
         }
-        
+
         return true;
     }
 
@@ -1471,7 +1468,7 @@ public class NMSUtil19 {
             if (tagObject == null) {
                 return null;
             }
-            meta = (String)class_NBTTagCompound_getStringMethod.invoke(tagObject, tag);
+            meta = (String) class_NBTTagCompound_getStringMethod.invoke(tagObject, tag);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
@@ -1578,7 +1575,7 @@ public class NMSUtil19 {
         } catch (Throwable ignored) {
 
         }
-        
+
         return unbreakableFlag != null && unbreakableFlag;
     }
 
@@ -1646,7 +1643,7 @@ public class NMSUtil19 {
 
             Object explosion = class_World_explodeMethod.invoke(worldHandle, entityHandle, x, y, z, power, setFire, breakBlocks);
             Field cancelledField = explosion.getClass().getDeclaredField("wasCanceled");
-            result = (Boolean)cancelledField.get(explosion);
+            result = (Boolean) cancelledField.get(explosion);
         } catch (Throwable ex) {
             ex.printStackTrace();
             result = false;
@@ -1665,7 +1662,7 @@ public class NMSUtil19 {
     public static void makeUnplaceable(ItemStack itemStack) {
         setMeta(itemStack, "unplaceable", "true");
     }
-    
+
     public static void removeUnplaceable(ItemStack itemStack) {
         removeMeta(itemStack, "unplaceable");
     }
@@ -1743,7 +1740,7 @@ public class NMSUtil19 {
             } else {
                 nmsStack = class_ItemStack_createStackMethod.invoke(null, itemTag);
             }
-            item = (ItemStack)class_CraftItemStack_mirrorMethod.invoke(null, nmsStack);
+            item = (ItemStack) class_CraftItemStack_mirrorMethod.invoke(null, nmsStack);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -1753,7 +1750,7 @@ public class NMSUtil19 {
     public static ItemStack[] getItems(Object rootTag, String tagName) {
         try {
             Object itemList = class_NBTTagCompound_getListMethod.invoke(rootTag, tagName, NBT_TYPE_COMPOUND);
-            Integer size = (Integer)class_NBTTagList_sizeMethod.invoke(itemList);
+            Integer size = (Integer) class_NBTTagList_sizeMethod.invoke(itemList);
             ItemStack[] items = new ItemStack[size];
             for (int i = 0; i < size; i++) {
                 try {
@@ -1823,10 +1820,10 @@ public class NMSUtil19 {
                 class_TileEntity_saveMethod.invoke(tileEntity, entityData);
                 Object itemList = class_NBTTagCompound_getListMethod.invoke(entityData, "Items", NBT_TYPE_COMPOUND);
                 if (itemList != null) {
-                    List items = (List)class_NBTTagList_list.get(itemList);
+                    List items = (List) class_NBTTagList_list.get(itemList);
                     items.clear();
                 }
-                class_NBTTagCompound_removeMethod.invoke(entityData,"Item");
+                class_NBTTagCompound_removeMethod.invoke(entityData, "Item");
                 class_TileEntity_loadMethod.invoke(tileEntity, entityData);
                 class_TileEntity_updateMethod.invoke(tileEntity);
             }
@@ -1871,9 +1868,9 @@ public class NMSUtil19 {
         }
         try {
             Object posList = class_NBTTagCompound_getListMethod.invoke(entityData, tag, NBT_TYPE_DOUBLE);
-            Double x = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 0);
-            Double y = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 1);
-            Double z = (Double)class_NBTTagList_getDoubleMethod.invoke(posList, 2);
+            Double x = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 0);
+            Double y = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 1);
+            Double z = (Double) class_NBTTagList_getDoubleMethod.invoke(posList, 2);
             if (x != null && y != null && z != null) {
                 return new Vector(x, y, z);
             }
@@ -1886,7 +1883,7 @@ public class NMSUtil19 {
     public static Entity getEntity(World world, UUID uuid) {
         try {
             Object worldHandle = getHandle(world);
-            final Map<UUID, Entity> entityMap = (Map<UUID, Entity>)class_WorldServer_entitiesByUUIDField.get(worldHandle);
+            final Map<UUID, Entity> entityMap = (Map<UUID, Entity>) class_WorldServer_entitiesByUUIDField.get(worldHandle);
             if (entityMap != null) {
                 Object nmsEntity = entityMap.get(uuid);
                 if (nmsEntity != null) {
@@ -1906,9 +1903,8 @@ public class NMSUtil19 {
             ex.printStackTrace();
         }
     }
-    
-    public static void playCustomSound(Player player, Location location, String sound, float volume, float pitch)
-    {
+
+    public static void playCustomSound(Player player, Location location, String sound, float volume, float pitch) {
         try {
             Object packet = class_PacketPlayOutCustomSoundEffect_Constructor.newInstance(sound, enum_SoundCategory_PLAYERS, location.getX(), location.getY(), location.getZ(), volume, pitch);
             sendPacket(player, packet);
@@ -1917,17 +1913,15 @@ public class NMSUtil19 {
         }
     }
 
-    public static Map<String, Object> getMap(ConfigurationSection section)
-    {
+    public static Map<String, Object> getMap(ConfigurationSection section) {
         if (section == null) {
             return null;
         }
-        if (section instanceof MemorySection)
-        {
+        if (section instanceof MemorySection) {
             try {
                 Object mapObject = class_MemorySection_mapField.get(section);
                 if (mapObject instanceof Map) {
-                    return (Map<String, Object>)mapObject; 
+                    return (Map<String, Object>) mapObject;
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -1940,7 +1934,7 @@ public class NMSUtil19 {
         for (String key : keys) {
             map.put(key, section.get(key));
         }
-        
+
         return map;
     }
 
@@ -1956,7 +1950,7 @@ public class NMSUtil19 {
             if (handle == null) {
                 return false;
             }
-            return (Boolean)class_ItemStack_isEmptyMethod.invoke(handle);
+            return (Boolean) class_ItemStack_isEmptyMethod.invoke(handle);
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
