@@ -1,8 +1,10 @@
 package me.skymc.taboolib.bookformatter;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
+import com.ilummc.tlib.bungee.api.chat.BaseComponent;
+import com.ilummc.tlib.bungee.api.chat.TextComponent;
+import com.ilummc.tlib.bungee.chat.ComponentSerializer;
+import com.ilummc.tlib.logger.TLogger;
+import com.ilummc.tlib.resources.TLocale;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,11 +34,13 @@ public final class BookReflection {
 
     private static final Method craftPlayerGetHandle;
 
-    //This method takes an enum that represents the player's hand only in versions >= 1.9
-    //In the other versions it only takes the nms item
+    /*
+    This method takes an enum that represents the player's hand only in versions >= 1.9
+    In the other versions it only takes the nms item
+    */
     private static final Method entityPlayerOpenBook;
 
-    //only version >= 1.9
+    // only version >= 1.9
     private static final Object[] hands;
 
     //Older versions
@@ -115,18 +120,22 @@ public final class BookReflection {
      * @param meta       the book meta to change
      * @param components the pages of the book
      */
-    @SuppressWarnings("unchecked")//reflections = unchecked warnings
-    public static void setPages(BookMeta meta, BaseComponent[][] components) {
+    public static void setPages(BookMeta meta, BaseComponent[]... components) {
+        List<Object> pages = null;
         try {
-            List<Object> pages = (List<Object>) craftMetaBookField.get(meta);
-            pages.clear();
-            for (BaseComponent[] c : components) {
-                final String json = ComponentSerializer.toString(c);
-                //System.out.println("page:" + json); //Debug
-                pages.add(chatSerializerA.invoke(null, json));
-            }
+            pages = (List<Object>) craftMetaBookField.get(meta);
         } catch (Exception e) {
-            throw new UnsupportedVersionException(e);
+            TLogger.getGlobalLogger().error("Error while executing reflections, failed to get bookmeta (version: " + BookReflection.version + ")");
+            return;
+        }
+        pages.clear();
+        for (BaseComponent[] c : components) {
+            try {
+                pages.add(chatSerializerA.invoke(null, ComponentSerializer.toString(c)));
+            } catch (Exception e) {
+                TLogger.getGlobalLogger().error("Error while executing reflections, submit to developers the following log (version: " + BookReflection.version + ")");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -136,17 +145,21 @@ public final class BookReflection {
      * @param meta       the book meta to change
      * @param components the pages of the book
      */
-    @SuppressWarnings("unchecked")//reflections = unchecked warnings
-    public static void addPages(BookMeta meta, BaseComponent[][] components) {
+    public static void addPages(BookMeta meta, BaseComponent[]... components) {
+        List<Object> pages = null;
         try {
-            List<Object> pages = (List<Object>) craftMetaBookField.get(meta);
-            for (BaseComponent[] c : components) {
-                final String json = ComponentSerializer.toString(c);
-                //System.out.println("page:" + json); //Debug
-                pages.add(chatSerializerA.invoke(null, json));
-            }
+            pages = (List<Object>) craftMetaBookField.get(meta);
         } catch (Exception e) {
-            throw new UnsupportedVersionException(e);
+            TLogger.getGlobalLogger().error("Error while executing reflections, failed to get bookmeta (version: " + BookReflection.version + ")");
+            return;
+        }
+        for (BaseComponent[] c : components) {
+            try {
+                pages.add(chatSerializerA.invoke(null, ComponentSerializer.toString(c)));
+            } catch (Exception e) {
+                TLogger.getGlobalLogger().error("Error while executing reflections, submit to developers the following log (version: " + BookReflection.version + ")");
+                e.printStackTrace();
+            }
         }
     }
 

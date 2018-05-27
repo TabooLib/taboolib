@@ -30,8 +30,10 @@ public class TLocaleLoader {
     public static void init() {
         ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
         ConfigurationSerialization.registerClass(TLocaleJson.class, "JSON");
+        ConfigurationSerialization.registerClass(TLocaleBook.class, "BOOK");
         ConfigurationSerialization.registerClass(TLocaleSound.class, "SOUND");
         ConfigurationSerialization.registerClass(TLocaleTitle.class, "TITLE");
+        ConfigurationSerialization.registerClass(TLocaleBossBar.class, "BAR");
         ConfigurationSerialization.registerClass(TLocaleActionBar.class, "ACTION");
     }
 

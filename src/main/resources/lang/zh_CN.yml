@@ -57,6 +57,10 @@ NOTIFY:
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
   PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
+  BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook 的变量识别失败: {0}'
+  BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar 的颜色识别失败: {0}'
+  BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar 的类型识别失败: {0}'
+  BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
   
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'

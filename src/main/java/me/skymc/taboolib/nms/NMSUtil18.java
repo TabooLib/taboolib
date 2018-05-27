@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * @author Unknown
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
-@Deprecated
 public class NMSUtil18 {
 
     protected static boolean failed = false;

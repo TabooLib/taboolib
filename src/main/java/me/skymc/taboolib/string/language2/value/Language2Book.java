@@ -1,5 +1,9 @@
 package me.skymc.taboolib.string.language2.value;
 
+import com.ilummc.tlib.bungee.api.chat.BaseComponent;
+import com.ilummc.tlib.bungee.api.chat.ClickEvent;
+import com.ilummc.tlib.bungee.api.chat.HoverEvent;
+import com.ilummc.tlib.bungee.api.chat.TextComponent;
 import me.skymc.taboolib.bookformatter.BookFormatter;
 import me.skymc.taboolib.bookformatter.action.ClickAction;
 import me.skymc.taboolib.bookformatter.action.HoverAction;
@@ -8,6 +12,7 @@ import me.skymc.taboolib.bookformatter.builder.PageBuilder;
 import me.skymc.taboolib.bookformatter.builder.TextBuilder;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.string.VariableFormatter;
 import me.skymc.taboolib.string.language2.Language2Format;
 import me.skymc.taboolib.string.language2.Language2Line;
 import me.skymc.taboolib.string.language2.Language2Value;
@@ -21,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -52,17 +56,15 @@ public class Language2Book implements Language2Line {
         // 变量
         this.player = player;
         this.value = format.getLanguage2Value();
-
-        // 获取书本设置
+        this.book = BookFormatter.writtenBook();
+        // 设置
         formatOptions(list);
-        // 书本
-        book = BookFormatter.writtenBook();
         // 内容
         PageBuilder page = new PageBuilder();
         // 遍历内容
         for (String line : list) {
             // 翻页
-            if ("[page]".equals(line)) {
+            if (line.equals("[page]")) {
                 book.addPages(page.build());
                 page = new PageBuilder();
             }
@@ -70,56 +72,49 @@ public class Language2Book implements Language2Line {
             else if (line.startsWith("@option")) {
                 break;
             } else {
-                Matcher matcher = pattern.matcher(line);
-                boolean find = false;
-                while (matcher.find()) {
-                    find = true;
-                    String optionName = matcher.group(1);
-                    String optionFullName = "<@" + matcher.group(1) + ">";
-                    // 判断设置是否存在
-                    if (!options.containsKey(optionName)) {
-                        page.add("§4[<ERROR-50: " + format.getLanguage2Value().getLanguageKey() + ">]");
-                    } else {
-                        String[] line_split = line.split(optionFullName);
-                        try {
-                            // 单独一行
-                            if (line_split.length == 0) {
-                                page.add(options.get(optionName).build()).endLine();
-                            } else {
-                                // 前段
-                                page.add(line_split[0]);
-                                // 变量
-                                page.add(options.get(optionName).build());
-                                // 后段
-                                if (line_split.length >= 2) {
-                                    // 获取文本
-                                    StringBuilder sb = new StringBuilder();
-                                    for (int i = 1; i < line_split.length; i++) {
-                                        sb.append(line_split[i]).append(optionFullName);
-                                    }
-                                    // 更改文本
-                                    line = sb.substring(0, sb.length() - optionFullName.length());
-                                    // 如果后段还有变量
-                                    if (!pattern.matcher(line).find()) {
-                                        page.add(line_split[1]).endLine();
-                                    }
-                                } else {
-                                    page.endLine();
-                                }
+                for (VariableFormatter.Variable variable : new VariableFormatter(line, pattern).find().getVariableList()) {
+                    if (variable.isVariable()) {
+                        String node = variable.getText().substring(1);
+                        if (!options.containsKey(node)) {
+                            page.add("§4[<ERROR-50: " + format.getLanguage2Value().getLanguageKey() + ">]");
+                        } else {
+                            TextBuilder builder = options.get(node);
+                            BaseComponent component = new TextComponent(builder.getText());
+                            if (builder.getHover() != null) {
+                                component.setHoverEvent(new HoverEvent(builder.getHover().action(), builder.getHover().value()));
                             }
-                        } catch (Exception e) {
-                            page.add("§4[<ERROR-51: " + format.getLanguage2Value().getLanguageKey() + ">]");
+                            if (builder.getClick() != null) {
+                                component.setClickEvent(new ClickEvent(builder.getClick().action(), builder.getClick().value()));
+                            }
+                            page.add(component);
                         }
+                    } else {
+                        page.add(variable.getText());
                     }
                 }
-                if (!find) {
-                    page.add(line).endLine();
-                }
+                page.newLine();
             }
         }
         // 结尾
         book.addPages(page.build());
     }
+
+
+    @Override
+    public void send(Player player) {
+        BookFormatter.forceOpen(player, book.build());
+    }
+
+    @Override
+    public void console() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[<ERROR-40: " + value.getLanguageKey() + ">]");
+    }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
 
     public static Pattern getPattern() {
         return pattern;
@@ -139,6 +134,46 @@ public class Language2Book implements Language2Line {
 
     public BookBuilder getBook() {
         return book;
+    }
+
+    // *********************************
+    //
+    //          Private Methods
+    //
+    // *********************************
+
+    private List<List<String>> getBookPages(List<String> source) {
+        List<List<String>> list = new ArrayList<>();
+        for (String line : removeOption(source)) {
+            if (line.equalsIgnoreCase("[page]")) {
+                list.add(new ArrayList<>());
+            } else {
+                getLatestList(list).add(line);
+            }
+        }
+        return list;
+    }
+
+    public List<String> getLatestList(List<List<String>> list) {
+        if (list.size() == 0) {
+            List<String> newList = new ArrayList<>();
+            list.add(newList);
+            return newList;
+        } else {
+            return list.get(list.size() - 1);
+        }
+    }
+
+    public List<String> removeOption(List<String> source) {
+        List<String> list = new ArrayList<>();
+        for (String line : source) {
+            if (!line.contains("@option")) {
+                list.add(line);
+            } else {
+                return list;
+            }
+        }
+        return list;
     }
 
     private void formatOptions(List<String> list) {
@@ -203,15 +238,5 @@ public class Language2Book implements Language2Line {
         // 返回最后设置
         options_source.put(optionName, option);
         return options_source;
-    }
-
-    @Override
-    public void send(Player player) {
-        BookFormatter.forceOpen(player, book.build());
-    }
-
-    @Override
-    public void console() {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[<ERROR-40: " + value.getLanguageKey() + ">]");
     }
 }

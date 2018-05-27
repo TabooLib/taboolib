@@ -7,6 +7,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+/**
+ * @author Unknown
+ */
 public class NMSUtils {
 
     public static Class<?> c = getOBCClass("block.CraftBlock");
