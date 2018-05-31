@@ -1,9 +1,11 @@
 package me.skymc.taboolib.itagapi;
 
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -14,19 +16,21 @@ import java.util.UUID;
 public class TagPlayerData {
 
     private final UUID uuid;
+    private final String nameOrigin;
     private String nameDisplay;
     private String prefix;
     private String suffix;
 
     public TagPlayerData(Player player) {
         this.uuid = player.getUniqueId();
+        this.nameOrigin = player.getName();
         this.nameDisplay = player.getName();
         this.prefix = "";
         this.suffix = "";
     }
 
     public String getTeamHash() {
-        return String.valueOf(Objects.hash(prefix));
+        return Main.getInst().getConfig().getBoolean("TABLIST-SORT") ? String.valueOf(Objects.hash(prefix)) : nameOrigin;
     }
 
     public TagPlayerData reset() {
@@ -38,7 +42,7 @@ public class TagPlayerData {
 
     @Override
     public String toString() {
-        return Strings.replaceWithOrder("TagPlayerData'{'uuid={0}, nameDisplay=''{1}'', prefix=''{2}'', suffix=''{3}'''}'", uuid, nameDisplay, prefix, suffix);
+        return Strings.replaceWithOrder("TagPlayerData'{'uuid={0}, nameOrigin=''{1}'', nameDisplay=''{2}'', prefix=''{3}'', suffix=''{4}'''}'", uuid, nameOrigin, nameDisplay, prefix, suffix);
     }
 
     // *********************************
@@ -52,7 +56,7 @@ public class TagPlayerData {
     }
 
     public String getNameOrigin() {
-        return Bukkit.getPlayer(uuid).getName();
+        return nameOrigin;
     }
 
     public String getNameDisplay() {

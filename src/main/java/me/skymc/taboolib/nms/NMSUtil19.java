@@ -921,13 +921,16 @@ public class NMSUtil19 {
         return result;
     }
 
-    public static Class<?> fixBukkitClass(String className) throws ClassNotFoundException {
+    public static Class<?> fixBukkitClass(String className) {
         if (!versionPrefix.isEmpty()) {
             className = className.replace("org.bukkit.craftbukkit.", "org.bukkit.craftbukkit." + versionPrefix);
             className = className.replace("net.minecraft.server.", "net.minecraft.server." + versionPrefix);
         }
 
-        return NMSUtils.class.getClassLoader().loadClass(className);
+        try {
+            return NMSUtils.class.getClassLoader().loadClass(className);
+        } catch (ClassNotFoundException ignored) {
+        }
     }
 
     public static Object getHandle(Server server) {
