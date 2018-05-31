@@ -155,5 +155,6 @@ public class TLocale {
                 sender.sendMessage(TextComponent.toLegacyText(ComponentSerializer.parse(rawMessage)));
             }
         }
+
     }
 }

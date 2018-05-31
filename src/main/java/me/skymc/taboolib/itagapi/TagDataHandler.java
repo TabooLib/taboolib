@@ -6,6 +6,7 @@ import me.skymc.taboolib.packet.PacketUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -156,7 +157,7 @@ public class TagDataHandler implements Listener {
         downloadPlayerVariable(e.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
         cancelPlayerVariable(e.getPlayer(), unregisterPlayerData(e.getPlayer()));
     }

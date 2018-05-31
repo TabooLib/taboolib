@@ -33,6 +33,10 @@ LOCALE:
   # 关闭可提升性能
   # 如果需要开启仍然可以在语言文件中加入 papi: true
   USE_PAPI: false
+  
+# 玩家列表（TAB）是否根据前缀排序
+# 启用后将会导致部分通过计分板获取玩家数据的插件出错（BedwarsRel、SkyWars）
+TABLIST-SORT: false
 
 # 是否启用更新检测
 UPDATE-CHECK: true
