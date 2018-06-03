@@ -1,14 +1,24 @@
 package me.skymc.taboolib.commands;
 
 import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.Main;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
+import me.skymc.taboolib.commands.internal.type.CommandType;
 import me.skymc.taboolib.commands.taboolib.*;
+import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.plugin.PluginUtils;
+import me.skymc.taboolib.update.UpdateTask;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
 
 /**
  * @Author sky
@@ -721,6 +731,61 @@ public class TabooLibMainCommand extends BaseMainCommand {
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
             new ImportCommand(sender, args);
+        }
+    };
+
+    @CommandRegister(priority = 26)
+    BaseSubCommand updatePlugin = new BaseSubCommand() {
+
+        @Override
+        public String getLabel() {
+            return "updatePlugin";
+        }
+
+        @Override
+        public String getDescription() {
+            return TLocale.asString("COMMANDS.TABOOLIB.UPDATEPLUGIN.DESCRIPTION");
+        }
+
+        @Override
+        public CommandArgument[] getArguments() {
+            return new CommandArgument[0];
+        }
+
+        @Override
+        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (!UpdateTask.isHaveUpdate()) {
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-FOUND");
+                return;
+            }
+
+            File file = new File("plugins/update");
+            if (!file.exists()) {
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-SUPPORT");
+                return;
+            }
+
+            File pluginFile = PluginUtils.getPluginFile(Main.getInst());
+            if (pluginFile == null) {
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.FILE-NOT-FOUND");
+                return;
+            }
+
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    String url = Strings.replaceWithOrder("https://github.com/Bkm016/TabooLib/releases/download/{0}/TabooLib-{0}.jar", UpdateTask.getNewVersion());
+                    TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-START", url);
+                    FileUtils.download(url, new File(file, pluginFile.getName()));
+                    TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
+                }
+            }.runTaskAsynchronously(Main.getInst());
+        }
+
+        @Override
+        public CommandType getType() {
+            return CommandType.CONSOLE;
         }
     };
 }

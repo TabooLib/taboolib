@@ -7,6 +7,7 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -26,9 +27,6 @@ public class UpdateTask {
         return newVersion;
     }
 
-    /**
-     * 旧地址：https://internal.github.com/repos/Bkm016/TabooLib/releases/latest
-     */
     public UpdateTask() {
         new BukkitRunnable() {
 
@@ -53,6 +51,15 @@ public class UpdateTask {
                     } else {
                         haveUpdate = true;
                         TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (Main.getInst().getConfig().getBoolean("UPDATE-DOWNLOAD", false)) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "taboolib updatePlugin");
+                                }
+                            }
+                        }.runTask(Main.getInst());
                     }
                 }
             }

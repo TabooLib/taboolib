@@ -7,6 +7,9 @@ import me.skymc.taboolib.commands.internal.BaseSubCommand;
 import me.skymc.taboolib.commands.internal.ISubCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
+import me.skymc.taboolib.plugin.PluginLoadState;
+import me.skymc.taboolib.plugin.PluginLoadStateType;
+import me.skymc.taboolib.plugin.PluginUnloadState;
 import me.skymc.taboolib.plugin.PluginUtils;
 import me.skymc.taboolib.string.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -62,16 +65,29 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
             String name = ArrayUtils.arrayJoin(args, 0);
             if (PluginUtils.getPluginByName(name) != null) {
-                TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.INVALID-PLUGIN", name);
+                TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.INVALID-PLUGIN", name, name + " already loaded!");
             } else {
-                switch (PluginUtils.load(name)) {
-                    case "loaded": {
-                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.LOAD-SUCCESS", name);
+                PluginLoadState loadState;
+                try {
+                    loadState = PluginUtils.load(name);
+                } catch (Exception e) {
+                    loadState = new PluginLoadState(PluginLoadStateType.INVALID_PLUGIN, e.toString());
+                }
+                switch (loadState.getStateType()) {
+                    case INVALID_DESCRIPTION: {
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.INVALID-DESCRIPTION");
                         break;
                     }
-                    default: {
-                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.LOAD-FAIL", name);
+                    case INVALID_PLUGIN: {
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.INVALID-PLUGIN", name, loadState.getMessage());
+                        break;
                     }
+                    case FILE_NOT_FOUND: {
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.FILE-NOT-FOUND", name);
+                        break;
+                    }
+                    default:
+                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LOAD.LOAD-SUCCESS", name);
                 }
             }
         }
@@ -104,14 +120,16 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
             } else if (PluginUtils.isIgnored(plugin)) {
                 TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.INVALID-PLUGIN-IGNORED", name);
             } else {
-                switch (PluginUtils.unload(plugin)) {
-                    case "unloaded": {
-                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-SUCCESS", name);
-                        break;
-                    }
-                    default: {
-                        TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-FAIL", name);
-                    }
+                PluginUnloadState unloadState;
+                try {
+                    unloadState = PluginUtils.unload(plugin);
+                } catch (Exception e) {
+                    unloadState = new PluginUnloadState(true, e.toString());
+                }
+                if (unloadState.isFailed()) {
+                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-FAIL", name, unloadState.getMessage());
+                } else {
+                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.UNLOAD.UNLOAD-SUCCESS", name);
                 }
             }
         }
@@ -185,9 +203,9 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
                             String.valueOf(plugin.getDescription().getMain()),
                             String.valueOf(plugin.getDescription().getVersion()),
                             String.valueOf(plugin.getDescription().getWebsite()),
-                            String.valueOf(plugin.getDescription().getCommands().keySet()));
-                } catch (Exception ignored) {
-                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INVALID-PLUGIN", name);
+                            String.valueOf(plugin.getDescription().getCommands() == null ? "" : plugin.getDescription().getCommands().keySet()));
+                } catch (Exception e) {
+                    TLocale.sendTo(sender, "COMMANDS.TPLUGIN.INFO.INVALID-DESCRIPTION", name, e.getMessage());
                 }
             }
         }
@@ -213,7 +231,7 @@ public class TabooLibPluginMainCommand extends BaseMainCommand {
 
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            List<String> pluginList = Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(Plugin::getName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.toList());
+            List<String> pluginList = Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(PluginUtils::getFormattedName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.toList());
             TLocale.sendTo(sender, "COMMANDS.TPLUGIN.LIST.LIST-PLUGIN", String.valueOf(Bukkit.getPluginManager().getPlugins().length), Joiner.on(", ").join(pluginList));
         }
     };

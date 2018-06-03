@@ -119,7 +119,7 @@ public class FileUtils {
      *
      * @param file 文件夹
      */
-    public void deleteAllFile(File file) {
+    public static void deleteAllFile(File file) {
         if (!file.exists()) {
             return;
         }
@@ -139,7 +139,7 @@ public class FileUtils {
      * @param file1 文件1
      * @param file2 文件2
      */
-    public void copyAllFile(String file1, String file2) {
+    public static void copyAllFile(String file1, String file2) {
         File _file1 = new File(file1);
         File _file2 = new File(file2);
         if (!_file2.exists()) {
@@ -168,7 +168,7 @@ public class FileUtils {
      * @param file1 文件1
      * @param file2 文件2
      */
-    public void fileChannelCopy(File file1, File file2) {
+    public static void fileChannelCopy(File file1, File file2) {
         FileInputStream fileIn = null;
         FileOutputStream fileOut = null;
         FileChannel channelIn = null;
