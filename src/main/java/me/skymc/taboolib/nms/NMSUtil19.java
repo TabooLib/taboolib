@@ -911,7 +911,7 @@ public class NMSUtil19 {
     }
 
     public static Class<?> getBukkitClass(String className) {
-        Class<?> result = null;
+        Class<?> result;
         try {
             result = fixBukkitClass(className);
         } catch (Exception ex) {
@@ -930,6 +930,7 @@ public class NMSUtil19 {
         try {
             return NMSUtils.class.getClassLoader().loadClass(className);
         } catch (ClassNotFoundException ignored) {
+            return null;
         }
     }
 

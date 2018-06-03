@@ -41,6 +41,9 @@ TABLIST-SORT: false
 # 是否启用更新检测
 UPDATE-CHECK: true
 
+# 是否启用自动更新
+UPDATE-DOWNLOAD: false
+
 # 是否在关闭服务器时清理玩家数据
 # 该配置将在启用数据库储存时失效
 DELETE-DATA: false

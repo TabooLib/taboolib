@@ -157,7 +157,7 @@ COMMANDS:
     ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
     ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4只有启用数据库储存时才能这么做'
   INTERNAL:
-    ONLY-PLAYER: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
+    TYPE-ERROR: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
     TYPE-PLAYER: 玩家
     TYPE-CONSOLE: 控制台
     ERROR-USAGE:
@@ -230,6 +230,13 @@ COMMANDS:
       IMPORTING-START: '&8[&3&lTabooLib&8] &7开始导入 &f{0} &7项玩家数据'
       IMPORTING-PROGRESS: '&8[&3&lTabooLib&8] &7导入玩家数据: &f{0} &7进度: &f{1}/{2}'
       SUCCESS: '&8[&3&lTabooLib&8] &7导入完成'
+    UPDATEPLUGIN:
+      DESCRIPTION: '&4更新插件 &8(谨防非正规途径的插件获取方式)'
+      UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
+      UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
+      FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
+      UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
+      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 重启服务器自动更新!'
     JAVASHELL:
       DESCRIPTION:
         LOAD: '载入脚本'
@@ -470,6 +477,7 @@ COMMANDS:
       ARGUMENTS:
         0: '名称'
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
+      INVALID-DESCRIPTION: '&8[&3&lTabooLib&8] &4获取插件 &c{0} &4信息失败: &c{1}'
       INFO-PLUGIN:
       - '&8[&3&lTabooLib&8] &7插件名称: &f{0}'
       - '&8[&3&lTabooLib&8] &7描述: &f{1}'
@@ -484,9 +492,10 @@ COMMANDS:
       DESCRIPTION: '载入插件'
       ARGUMENTS:
         0: '名称'
-      INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4已经载入'
+      INVALID-DESCRIPTION: '&8[&3&lTabooLib&8] &4插件目录不存在'
+      INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4载入失败: &c{1}'
+      FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4插件 &c{0} &4文件不存在'
       LOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已载入'
-      LOAD-FAIL: '&8[&3&lTabooLib&8] &7插件载入失败'
     UNLOAD:
       DESCRIPTION: '卸载插件'
       ARGUMENTS:
@@ -494,7 +503,7 @@ COMMANDS:
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
       UNLOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已卸载'
-      UNLOAD-FAIL: '&8[&3&lTabooLib&8] &7插件卸载失败'
+      UNLOAD-FAIL: '&8[&3&lTabooLib&8] &4插件 &c{0} &e卸载失败: &c{1}'
     RELOAD:
       DESCRIPTION: '重载插件'
       ARGUMENTS:

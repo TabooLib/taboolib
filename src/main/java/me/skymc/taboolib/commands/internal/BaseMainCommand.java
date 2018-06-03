@@ -109,7 +109,7 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
                     continue;
                 }
                 if (!isConfirmType(sender, subCommand.getType())) {
-                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.ONLY-PLAYER", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()));
+                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()));
                     return true;
                 }
                 String[] subCommandArgs = ArrayUtils.removeFirst(args);
@@ -166,7 +166,9 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
     }
 
     private boolean isConfirmType(CommandSender sender, CommandType commandType) {
-        return commandType == CommandType.ALL || (sender instanceof Player && commandType == CommandType.PLAYER);
+        return commandType == CommandType.ALL
+                || (sender instanceof Player && commandType == CommandType.PLAYER)
+                || (sender instanceof ConsoleCommandSender && commandType == CommandType.CONSOLE);
     }
 
     private void helpCommand(CommandSender sender, String label) {
