@@ -45,6 +45,10 @@ public class TabooLib {
         return Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
     }
 
+    public static int getVersionNumber() {
+        return getVerint();
+    }
+
     public static String getServerUID() {
         if (!DataUtils.getPluginData("TabooLibrary", null).contains("serverUID")) {
             DataUtils.getPluginData("TabooLibrary", null).set("serverUID", UUID.randomUUID().toString());
@@ -56,20 +60,22 @@ public class TabooLib {
         DataUtils.getPluginData("TabooLibrary", null).set("serverUID", UUID.randomUUID().toString());
     }
 
+    @Deprecated
     public static int getVerint() {
-        if (getVersion().startsWith("v1_7")) {
+        String version = getVersion();
+        if (version.startsWith("v1_7")) {
             return 10700;
-        } else if (getVersion().startsWith("v1_8")) {
+        } else if (version.startsWith("v1_8")) {
             return 10800;
-        } else if (getVersion().startsWith("v1_9")) {
+        } else if (version.startsWith("v1_9")) {
             return 10900;
-        } else if (getVersion().startsWith("v1_10")) {
+        } else if (version.startsWith("v1_10")) {
             return 11000;
-        } else if (getVersion().startsWith("v1_11")) {
+        } else if (version.startsWith("v1_11")) {
             return 11100;
-        } else if (getVersion().startsWith("v1_12")) {
+        } else if (version.startsWith("v1_12")) {
             return 11200;
-        } else if (getVersion().startsWith("v1_13")) {
+        } else if (version.startsWith("v1_13")) {
             return 11300;
         }
         return 0;

@@ -13,7 +13,7 @@ public class CycleInfoCommand extends SubCommand {
 
 	public CycleInfoCommand(CommandSender sender, String[] args) {
 		super(sender, args);
-		if (args.length < 3) {
+		if (args.length < 2) {
 			TLocale.sendTo(sender, "COMMANDS.PARAMETER.UNKNOWN");
 			return;
 		}

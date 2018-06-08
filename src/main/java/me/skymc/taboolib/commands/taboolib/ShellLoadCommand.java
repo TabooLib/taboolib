@@ -11,7 +11,7 @@ public class ShellLoadCommand extends SubCommand {
 
 	public ShellLoadCommand(CommandSender sender, String[] args) {
 		super(sender, args);
-		if (args.length < 3) {
+		if (args.length < 2) {
 			TLocale.sendTo(sender, "COMMANDS.TABOOLIB.JAVASHELL.INVALID-NAME");
 			return;
 		}
