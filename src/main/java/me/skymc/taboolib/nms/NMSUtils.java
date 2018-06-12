@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.stream.IntStream;
 
 /**
  * @author Unknown
@@ -18,6 +19,14 @@ public class NMSUtils {
     public static String getVersion() {
         String name = Bukkit.getServer().getClass().getPackage().getName();
         return name.substring(name.lastIndexOf('.') + 1) + ".";
+    }
+
+    public static <T extends Enum<T>> T getEnumSilent(Class<T> enumType, String str) {
+        try {
+            return Enum.valueOf(enumType, str);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     public static Class<?> getClassWithException(String name) throws Exception {
@@ -287,13 +296,13 @@ public class NMSUtils {
 
     public static Method getMethodWithException(Class<?> clazz, String name, Class<?>... args) throws Exception {
         for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || ClassListEqual(args, m.getParameterTypes()))) {
+            if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || classListEqual(args, m.getParameterTypes()))) {
                 m.setAccessible(true);
                 return m;
             }
         }
         for (Method m : clazz.getMethods()) {
-            if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || ClassListEqual(args, m.getParameterTypes()))) {
+            if (m.getName().equals(name) && (args.length == 0 && m.getParameterTypes().length == 0 || classListEqual(args, m.getParameterTypes()))) {
                 m.setAccessible(true);
                 return m;
             }
@@ -309,16 +318,8 @@ public class NMSUtils {
         return null;
     }
 
-    public static boolean ClassListEqual(Class<?>[] l1, Class<?>[] l2) {
-        if (l1.length != l2.length) {
-            return false;
-        }
-        for (int i = 0; i < l1.length; i++) {
-            if (l1[i] != l2[i]) {
-                return false;
-            }
-        }
-        return true;
+    public static boolean classListEqual(Class<?>[] l1, Class<?>[] l2) {
+        return l1.length == l2.length && IntStream.range(0, l1.length).noneMatch(i -> l1[i] != l2[i]);
     }
 
     public static Class<?> getInnerClassWithException(Class<?> c, String className) throws Exception {
@@ -349,13 +350,13 @@ public class NMSUtils {
 
     public static Constructor<?> getConstructor(Class<?> clazz, Class<?>... args) throws Exception {
         for (Constructor<?> c : clazz.getDeclaredConstructors()) {
-            if (args.length == 0 && c.getParameterTypes().length == 0 || ClassListEqual(args, c.getParameterTypes())) {
+            if (args.length == 0 && c.getParameterTypes().length == 0 || classListEqual(args, c.getParameterTypes())) {
                 c.setAccessible(true);
                 return c;
             }
         }
         for (Constructor<?> c : clazz.getConstructors()) {
-            if (args.length == 0 && c.getParameterTypes().length == 0 || ClassListEqual(args, c.getParameterTypes())) {
+            if (args.length == 0 && c.getParameterTypes().length == 0 || classListEqual(args, c.getParameterTypes())) {
                 c.setAccessible(true);
                 return c;
             }
