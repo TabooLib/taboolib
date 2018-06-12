@@ -2,6 +2,14 @@ package com.ilummc.tlib.util;
 
 public class Strings {
 
+    public static boolean isBlank(String var) {
+        return var == null || var.trim().isEmpty();
+    }
+
+    public static boolean isEmpty(CharSequence var) {
+        return var == null || var.length() == 0;
+    }
+
     /**
      * 优化过的 String#replace，比默认快了大概 5 倍
      *
@@ -28,15 +36,13 @@ public class Strings {
         return stringBuilder.toString();
     }
 
+    // *********************************
+    //
+    //           Deprecated
+    //
+    // *********************************
+
     public static String replaceWithOrder(String template, String... args) {
         return replaceWithOrder(template, (Object[]) args);
-    }
-
-    public static boolean isBlank(String var) {
-        return var == null || var.trim().isEmpty();
-    }
-
-    public static boolean isEmpty(CharSequence var) {
-        return var == null || var.length() == 0;
     }
 }

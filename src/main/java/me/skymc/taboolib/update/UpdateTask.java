@@ -1,11 +1,13 @@
 package me.skymc.taboolib.update;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -14,11 +16,17 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class UpdateTask {
 
-    private static final String API = "https://internal.github.com/repos/Bkm016/TabooLib/releases/latest";
+    private static boolean haveUpdate = false;
+    private static double newVersion = 0;
 
-    /**
-     * 检测更新
-     */
+    public static boolean isHaveUpdate() {
+        return haveUpdate;
+    }
+
+    public static double getNewVersion() {
+        return newVersion;
+    }
+
     public UpdateTask() {
         new BukkitRunnable() {
 
@@ -27,14 +35,31 @@ public class UpdateTask {
                 if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK")) {
                     return;
                 }
-                String value = FileUtils.getStringFromURL(API, "{}");
-                JsonObject json = new JsonParser().parse(value).getAsJsonObject();
-                if (json.entrySet().size() > 0) {
-                    double newVersion = Double.parseDouble(json.get("tag_name").getAsString());
+
+                String value = FileUtils.getStringFromURL("https://api.github.com/repos/Bkm016/TabooLib/tags", null);
+                if (value == null) {
+                    TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
+                    return;
+                }
+
+                JsonElement json = new JsonParser().parse(value);
+                if (json.isJsonArray()) {
+                    JsonObject latestObject = json.getAsJsonArray().get(0).getAsJsonObject();
+                    newVersion = latestObject.get("name").getAsDouble();
                     if (TabooLib.getPluginVersion() >= newVersion) {
                         TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
                     } else {
+                        haveUpdate = true;
                         TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (Main.getInst().getConfig().getBoolean("UPDATE-DOWNLOAD", false)) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "taboolib updatePlugin");
+                                }
+                            }
+                        }.runTask(Main.getInst());
                     }
                 }
             }

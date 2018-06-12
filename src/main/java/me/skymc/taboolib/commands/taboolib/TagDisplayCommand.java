@@ -3,6 +3,7 @@ package me.skymc.taboolib.commands.taboolib;
 import com.ilummc.tlib.resources.TLocale;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.commands.SubCommand;
+import me.skymc.taboolib.itagapi.TagDataHandler;
 import me.skymc.taboolib.team.TagAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -27,12 +28,9 @@ public class TagDisplayCommand extends SubCommand {
             return;
         }
 
-        String value = getArgs(2).replace("&", "§");
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            value = PlaceholderAPI.setPlaceholders(player, value);
-        }
+        String value = TLocale.Translate.setPlaceholders(player, getArgs(2));
+        TagDataHandler.getHandler().setDisplay(player, value);
 
-        TagAPI.setPlayerDisplayName(player, value);
         if (sender instanceof Player) {
             TLocale.sendTo(sender, "COMMANDS.TABOOLIB.PLAYERTAG.SUCCESS-DISPLAY-SET", args[1], value);
         }

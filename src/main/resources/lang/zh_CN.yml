@@ -1,9 +1,18 @@
 TLIB:
   INJECTION-SUCCESS: '注入成功'
   INJECTION-FAILED: '注入失败'
+  LOAD-FAIL-OFFLINE:
+  - '**********************************************'
+  - '** TabooLib-{0} 无法在您的服务器上使用'
+  - '**'
+  - '** 您的服务器尚未连接互联网导致本插件无法正常载入'
+  - '** 请使用离线版本或是手动下载依赖库文件'
+  - '**'
+  - '** 详情查阅: https://github.com/Bkm016/TabooLib'
+  - '**********************************************'
   
 DEPENDENCY:
-  OFFLINE-DEPENDENCY-WARN: '已启用离线模式, 将不会下载第三方依赖库'
+  DOWNLOAD-OFFLINE: '已启用离线模式, 将不会下载第三方依赖库'
   DOWNLOAD-CONNECTED: '  正在下载 {0} 大小 {1}'
   DOWNLOAD-PROGRESS: '    下载速度 {0} 进度 {1}'
   DOWNLOAD-SUCCESS: '  下载 {0} 完成'
@@ -48,6 +57,10 @@ NOTIFY:
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
   PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
+  BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook 的变量识别失败: {0}'
+  BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar 的颜色识别失败: {0}'
+  BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar 的类型识别失败: {0}'
+  BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
   
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
@@ -103,7 +116,8 @@ ANVIL-CONTAINER:
   - '&7随后点击右侧输出物品'
   
 UPDATETASK:
-  VERSION-LATEST: '插件已是最新版, 无需更新!'
+  VERSION-FAIL: '&4更新记录获取失败, 请检查网络连接!'
+  VERSION-LATEST: '&7插件已是最新版, 无需更新!'
   VERSION-OUTDATED:
   - '&8####################################################'
   - '&7 检测到有新的版本更新!'
@@ -143,7 +157,7 @@ COMMANDS:
     ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
     ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4只有启用数据库储存时才能这么做'
   INTERNAL:
-    ONLY-PLAYER: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
+    TYPE-ERROR: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
     TYPE-PLAYER: 玩家
     TYPE-CONSOLE: 控制台
     ERROR-USAGE:
@@ -155,6 +169,9 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] &7你可能想要:'
     - '&8[&3&lTabooLib&8] &7{1}'
     COMMAND-REGISTER: '&7自动为插件 &f{0} &7的命令 &f{1} &7注册 &f{2} &7条子命令'
+    COMMAND-HELP: ' §f/{0} {1} {2} §6- §e{3}'
+    COMMAND-ARGUMENT: '§7<§8{0}§7>'
+    COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
     INSUFFICIENT: '&8[&3&lTabooLib&8] &4参数不足'
@@ -213,6 +230,13 @@ COMMANDS:
       IMPORTING-START: '&8[&3&lTabooLib&8] &7开始导入 &f{0} &7项玩家数据'
       IMPORTING-PROGRESS: '&8[&3&lTabooLib&8] &7导入玩家数据: &f{0} &7进度: &f{1}/{2}'
       SUCCESS: '&8[&3&lTabooLib&8] &7导入完成'
+    UPDATEPLUGIN:
+      DESCRIPTION: '&4更新插件 &8(谨防非正规途径的插件获取方式)'
+      UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
+      UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
+      FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
+      UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
+      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 重启服务器自动更新!'
     JAVASHELL:
       DESCRIPTION:
         LOAD: '载入脚本'
@@ -453,6 +477,7 @@ COMMANDS:
       ARGUMENTS:
         0: '名称'
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
+      INVALID-DESCRIPTION: '&8[&3&lTabooLib&8] &4获取插件 &c{0} &4信息失败: &c{1}'
       INFO-PLUGIN:
       - '&8[&3&lTabooLib&8] &7插件名称: &f{0}'
       - '&8[&3&lTabooLib&8] &7描述: &f{1}'
@@ -467,9 +492,10 @@ COMMANDS:
       DESCRIPTION: '载入插件'
       ARGUMENTS:
         0: '名称'
-      INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4已经载入'
+      INVALID-DESCRIPTION: '&8[&3&lTabooLib&8] &4插件目录不存在'
+      INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4载入失败: &c{1}'
+      FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4插件 &c{0} &4文件不存在'
       LOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已载入'
-      LOAD-FAIL: '&8[&3&lTabooLib&8] &7插件载入失败'
     UNLOAD:
       DESCRIPTION: '卸载插件'
       ARGUMENTS:
@@ -477,7 +503,7 @@ COMMANDS:
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
       UNLOAD-SUCCESS: '&8[&3&lTabooLib&8] &7插件已卸载'
-      UNLOAD-FAIL: '&8[&3&lTabooLib&8] &7插件卸载失败'
+      UNLOAD-FAIL: '&8[&3&lTabooLib&8] &4插件 &c{0} &e卸载失败: &c{1}'
     RELOAD:
       DESCRIPTION: '重载插件'
       ARGUMENTS:

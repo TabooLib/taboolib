@@ -6,6 +6,7 @@ import com.ilummc.tlib.bungee.api.chat.TextComponent;
 import com.ilummc.tlib.bungee.api.chat.TranslatableComponent;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 
 /**

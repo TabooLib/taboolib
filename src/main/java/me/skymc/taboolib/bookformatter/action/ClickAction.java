@@ -1,6 +1,6 @@
 package me.skymc.taboolib.bookformatter.action;
 
-import net.md_5.bungee.api.chat.ClickEvent;
+import com.ilummc.tlib.bungee.api.chat.ClickEvent;
 
 /**
  * @author sky
@@ -86,12 +86,12 @@ public interface ClickAction {
 
         @Override
         public ClickEvent.Action action() {
-            return null;
+            return action;
         }
 
         @Override
         public String value() {
-            return null;
+            return value;
         }
     }
 }

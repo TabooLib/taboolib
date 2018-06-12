@@ -1,5 +1,7 @@
 package me.skymc.taboolib.commands.internal.type;
 
+import com.ilummc.tlib.resources.TLocale;
+
 import java.util.Objects;
 
 /**
@@ -30,7 +32,7 @@ public class CommandArgument {
 
     @Override
     public String toString() {
-        return required ? "§7[§8" + name + "§7]" : "§7<§8" + name + "§7>";
+        return required ? TLocale.asString("COMMANDS.INTERNAL.COMMAND-ARGUMENT-REQUIRE", name) : TLocale.asString("COMMANDS.INTERNAL.COMMAND-ARGUMENT", name);
     }
 
     @Override
