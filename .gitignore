@@ -22,3 +22,4 @@ hs_err_pid*
 .gradle/4.3.1/
 .idea
 target
+TabooLib.iml
