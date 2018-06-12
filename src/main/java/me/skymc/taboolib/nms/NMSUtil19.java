@@ -315,7 +315,7 @@ public class NMSUtil19 {
             class_WorldServer = fixBukkitClass("net.minecraft.server.WorldServer");
             class_EnumSkyBlock = (Class<Enum>) fixBukkitClass("net.minecraft.server.EnumSkyBlock");
             class_EnumSoundCategory = (Class<Enum>) fixBukkitClass("net.minecraft.server.SoundCategory");
-            enum_SoundCategory_PLAYERS = Enum.valueOf(class_EnumSoundCategory, "PLAYERS");
+            enum_SoundCategory_PLAYERS = NMSUtils.getEnumSilent(class_EnumSoundCategory, "PLAYERS");
             class_EntityPainting = fixBukkitClass("net.minecraft.server.EntityPainting");
             class_EntityCreature = fixBukkitClass("net.minecraft.server.EntityCreature");
             class_EntityItemFrame = fixBukkitClass("net.minecraft.server.EntityItemFrame");

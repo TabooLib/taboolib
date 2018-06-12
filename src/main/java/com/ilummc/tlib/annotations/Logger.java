@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Logger {
 
-    String value() default "[{0}|{1}] {1}";
+    String value() default "[{0}|{1}§f] {2}";
 
     int level() default com.ilummc.tlib.logger.TLogger.INFO;
 
