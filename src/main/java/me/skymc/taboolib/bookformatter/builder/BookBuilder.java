@@ -1,7 +1,7 @@
 package me.skymc.taboolib.bookformatter.builder;
 
+import com.ilummc.tlib.bungee.api.chat.BaseComponent;
 import me.skymc.taboolib.bookformatter.BookReflection;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -123,6 +123,21 @@ public class BookBuilder {
      */
     public ItemStack build() {
         book.setItemMeta(meta);
+        return book;
+    }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+
+    public BookMeta getMeta() {
+        return meta;
+    }
+
+    public ItemStack getBook() {
         return book;
     }
 }

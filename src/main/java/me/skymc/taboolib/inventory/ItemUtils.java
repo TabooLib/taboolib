@@ -402,7 +402,7 @@ public class ItemUtils {
             return section.getItemStack("bukkit");
         }
         // 材质
-        ItemStack item = new ItemStack(asMaterial(section.get("material").toString()));
+        ItemStack item = new ItemStack(asMaterial(section.getString("material")));
         // 数量
         item.setAmount(section.contains("amount") ? section.getInt("amount") : 1);
         // 耐久

@@ -1,14 +1,20 @@
 package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
+import com.ilummc.tlib.util.IO;
+import javafx.print.PageLayout;
+import me.skymc.taboolib.Main;
 import org.apache.commons.io.IOUtils;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class FileUtils {
 
@@ -40,6 +46,35 @@ public class FileUtils {
             IOUtils.closeQuietly(bufferedReader);
             IOUtils.closeQuietly(inputStreamReader);
             IOUtils.closeQuietly(ins);
+        }
+    }
+
+    public static InputStream getResource(String filename) {
+        return getResource(Main.getInst(), filename);
+    }
+
+    public static InputStream getResource(Plugin plugin, String filename) {
+        try {
+            URL url = plugin.getClass().getClassLoader().getResource(filename);
+            if (url == null) {
+                return null;
+            } else {
+                URLConnection connection = url.openConnection();
+                connection.setUseCaches(false);
+                return connection.getInputStream();
+            }
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
+
+    public static void inputStreamToFile(InputStream inputStream, File file) {
+        try {
+            String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
+            FileWriter fileWriter = new FileWriter(FileUtils.createNewFile(file));
+            fileWriter.write(text);
+            fileWriter.close();
+        } catch (IOException ignored) {
         }
     }
 
@@ -84,7 +119,7 @@ public class FileUtils {
      *
      * @param file 文件夹
      */
-    public void deleteAllFile(File file) {
+    public static void deleteAllFile(File file) {
         if (!file.exists()) {
             return;
         }
@@ -104,7 +139,7 @@ public class FileUtils {
      * @param file1 文件1
      * @param file2 文件2
      */
-    public void copyAllFile(String file1, String file2) {
+    public static void copyAllFile(String file1, String file2) {
         File _file1 = new File(file1);
         File _file2 = new File(file2);
         if (!_file2.exists()) {
@@ -133,7 +168,7 @@ public class FileUtils {
      * @param file1 文件1
      * @param file2 文件2
      */
-    public void fileChannelCopy(File file1, File file2) {
+    public static void fileChannelCopy(File file1, File file2) {
         FileInputStream fileIn = null;
         FileOutputStream fileOut = null;
         FileChannel channelIn = null;

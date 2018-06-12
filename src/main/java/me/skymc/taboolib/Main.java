@@ -1,12 +1,13 @@
 package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.inject.TConfigWatcher;
+import com.ilummc.tlib.annotations.Dependency;
+import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
-import me.skymc.taboolib.commands.internal.BaseMainCommand;
+import me.skymc.taboolib.commands.internal.TBaseCommand;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
 import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
@@ -17,17 +18,17 @@ import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.entity.EntityUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
+import me.skymc.taboolib.itagapi.TagDataHandler;
 import me.skymc.taboolib.javashell.JavaShell;
 import me.skymc.taboolib.listener.*;
 import me.skymc.taboolib.message.ChatCatcher;
-import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.packet.PacketUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.sign.SignUtils;
@@ -35,8 +36,6 @@ import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
-import me.skymc.taboolib.team.TagAPI;
-import me.skymc.taboolib.team.TagUtils;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
 import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
@@ -50,12 +49,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.InetAddress;
 import java.util.Random;
 
 /**
  * @author sky
  */
 public class Main extends JavaPlugin implements Listener {
+
+    public Main() {
+        inst = this;
+    }
+
+    public enum StorageType {
+        LOCAL, SQL
+    }
 
     private static Plugin inst;
 
@@ -65,7 +74,7 @@ public class Main extends JavaPlugin implements Listener {
 
     private static File serverDataFolder;
 
-    private static StorageType storageType;
+    private static StorageType storageType = StorageType.LOCAL;
 
     private static boolean disable = false;
 
@@ -75,59 +84,9 @@ public class Main extends JavaPlugin implements Listener {
 
     private static boolean started;
 
+    private static boolean isInternetOnline = false;
+
     private FileConfiguration config = null;
-
-    public static Plugin getInst() {
-        return inst;
-    }
-
-    public static String getPrefix() {
-        return "§8[§3§lTabooLib§8] §7";
-    }
-
-    public static net.milkbowl.vault.economy.Economy getEconomy() {
-        return Economy;
-    }
-
-    public static void setEconomy(net.milkbowl.vault.economy.Economy economy) {
-        Economy = economy;
-    }
-
-    public static File getPlayerDataFolder() {
-        return playerDataFolder;
-    }
-
-    public static File getServerDataFolder() {
-        return serverDataFolder;
-    }
-
-    public static StorageType getStorageType() {
-        return storageType;
-    }
-
-    public static boolean isDisable() {
-        return disable;
-    }
-
-    public static MySQLConnection getConnection() {
-        return connection;
-    }
-
-    public static Language2 getExampleLanguage2() {
-        return exampleLanguage2;
-    }
-
-    public static boolean isStarted() {
-        return started;
-    }
-
-    public static Random getRandom() {
-        return NumberUtils.getRandom();
-    }
-
-    public static String getTablePrefix() {
-        return inst.getConfig().getString("MYSQL.PREFIX");
-    }
 
     @Override
     public FileConfiguration getConfig() {
@@ -150,71 +109,31 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onLoad() {
-        inst = this;
         disable = false;
-
         // 载入配置
         saveDefaultConfig();
-
-        // 加载依赖
+        // 载入牛逼玩意儿
         TLib.init();
         TLib.injectPluginManager();
-
-        // 载入目录
+        // 网络检测
+        testInternet();
+        // 创建文件夹
         setupDataFolder();
-        // 注册配置
-        DataUtils.addPluginData("TabooLibrary", null);
-
-        // 启用数据库
-        if (getConfig().getBoolean("MYSQL.ENABLE")) {
-            // 连接数据库
-            connection = new MySQLConnection(getConfig().getString("MYSQL.HOST"), getConfig().getString("MYSQL.USER"), getConfig().getString("MYSQL.POST"), getConfig().getString("MYSQL.PASSWORD"), getConfig().getString("MYSQL.DATABASE"), 30, this);
-            // 连接成功
-            if (connection.isConnection()) {
-                // 创建表
-                connection.createTable(getTablePrefix() + "_playerdata", "username", "configuration");
-                connection.createTable(getTablePrefix() + "_plugindata", "name", "variable", "upgrade");
-                connection.createTable(getTablePrefix() + "_serveruuid", "uuid", "hash");
-
-                // 如果没有数据
-                if (!connection.isExists(getTablePrefix() + "_serveruuid", "uuid", TabooLib.getServerUID())) {
-                    connection.intoValue(getTablePrefix() + "_serveruuid", TabooLib.getServerUID(), StringUtils.hashKeyForDisk(getDataFolder().getPath()));
-                } else {
-                    String hash = connection.getValue(getTablePrefix() + "_serveruuid", "uuid", TabooLib.getServerUID(), "hash").toString();
-                    // 如果这个值和我的值不同
-                    if (!hash.equals(StringUtils.hashKeyForDisk(getDataFolder().getPath()))) {
-                        TLocale.Logger.error("NOTIFY.ERROR-SERVER-KEY");
-                        // 重新生成序列号
-                        TabooLib.resetServerUID();
-                        // 关服
-                        Bukkit.shutdown();
-                    }
-                }
-            } else {
-                // 提示
-                TLocale.Logger.error("NOTIFY.ERROR-CONNECTION-FAIL");
-                // 关服
-                Bukkit.shutdown();
-            }
-            // 储存方式
-            storageType = StorageType.SQL;
-        } else {
-            // 储存方式
-            storageType = StorageType.LOCAL;
-        }
+        // 创建数据库
+        setupDatabase();
+        // 载入离线库文件
+        setupLibraries();
+        // 载入牛逼玩意儿
+        TLib.initPost();
     }
 
     @Override
     public void onEnable() {
-        // 注册指令
-        getCommand("language2").setExecutor(new Language2Command());
-        getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
-        getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
-        BaseMainCommand.createCommandExecutor("taboolib", new TabooLibMainCommand());
-        BaseMainCommand.createCommandExecutor("taboolibplugin", new TabooLibPluginMainCommand());
-
+        // 注册命令
+        registerCommands();
         // 注册监听
         registerListener();
+
         // 载入经济
         EcoUtils.setupEconomy();
         // 载入权限
@@ -229,6 +148,8 @@ public class Main extends JavaPlugin implements Listener {
         JavaShell.javaShellSetup();
         // 注册脚本
         SkriptHandler.getInst();
+        // 注册头衔
+        TagDataHandler.init(this);
         // 载入语言文件
         exampleLanguage2 = new Language2("Language2", this);
 
@@ -243,6 +164,7 @@ public class Main extends JavaPlugin implements Listener {
         // 文件保存
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, DataUtils::saveAllCaches, 20, 20 * 120);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
+
         // 文件监控
         TLib.getTLib().getConfigWatcher().addListener(new File(getDataFolder(), "config.yml"), null, obj -> {
             reloadConfig();
@@ -254,11 +176,9 @@ public class Main extends JavaPlugin implements Listener {
 
             @Override
             public void run() {
+                // 载入 PlaceholderAPI 扩展
                 if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
-                }
-                if (PacketUtils.isProtocolLibEnabled()) {
-                    TagAPI.inst();
                 }
                 // 载入 SpecialItem 接口
                 SpecialItem.getInst().loadItems();
@@ -320,18 +240,32 @@ public class Main extends JavaPlugin implements Listener {
         // 提示信息
         TLocale.Logger.error("NOTIFY.SUCCESS-DISABLE");
 
-        // 清理头衔
-        TagUtils.delete();
-
         // 结束连接
         if (connection != null && connection.isConnection()) {
             connection.closeConnection();
         }
 
+        // 卸载牛逼玩意儿
         TLib.unload();
 
         // 关闭服务器
         Bukkit.shutdown();
+    }
+
+    private void testInternet() {
+        try {
+            InetAddress inetAddress = InetAddress.getByName(getConfig().getString("TEST-URL", "aliyun.com"));
+            isInternetOnline = inetAddress.isReachable(10000);
+        } catch (Exception ignored) {
+        }
+        if (!isInternetOnline() && !isOfflineVersion() && !isLibrariesExists()) {
+            TLocale.Logger.error("TLIB.LOAD-FAIL-OFFLINE", getDescription().getVersion());
+            // 死锁
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private void setupDataFolder() {
@@ -345,11 +279,61 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
+    private void setupLibraries() {
+        if (!isOfflineVersion()) {
+            return;
+        }
+        for (Dependency dependency : TDependencyInjector.getDependencies(TLib.getTLib())) {
+            if (dependency.type() == Dependency.Type.LIBRARY && dependency.maven().matches(".*:.*:.*")) {
+                String fileName = String.join("-", dependency.maven().split(":")) + ".jar";
+                File targetFile = FileUtils.file(TLib.getTLib().getLibsFolder(), fileName);
+                InputStream inputStream = FileUtils.getResource("libs/" + fileName);
+                if (!targetFile.exists() && inputStream != null) {
+                    FileUtils.inputStreamToFile(inputStream, FileUtils.file(TLib.getTLib().getLibsFolder(), fileName));
+                }
+            }
+        }
+    }
+
+    private void setupDatabase() {
+        DataUtils.addPluginData("TabooLibrary", null);
+        if (getConfig().getBoolean("MYSQL.ENABLE")) {
+            connection = new MySQLConnection(getConfig().getString("MYSQL.HOST"), getConfig().getString("MYSQL.USER"), getConfig().getString("MYSQL.POST"), getConfig().getString("MYSQL.PASSWORD"), getConfig().getString("MYSQL.DATABASE"), 30, this);
+            if (connection.isConnection()) {
+                connection.createTable(getTablePrefix() + "_playerdata", "username", "configuration");
+                connection.createTable(getTablePrefix() + "_plugindata", "name", "variable", "upgrade");
+                connection.createTable(getTablePrefix() + "_serveruuid", "uuid", "hash");
+                if (!connection.isExists(getTablePrefix() + "_serveruuid", "uuid", TabooLib.getServerUID())) {
+                    connection.intoValue(getTablePrefix() + "_serveruuid", TabooLib.getServerUID(), StringUtils.hashKeyForDisk(getDataFolder().getPath()));
+                } else {
+                    String hash = connection.getValue(getTablePrefix() + "_serveruuid", "uuid", TabooLib.getServerUID(), "hash").toString();
+                    if (!hash.equals(StringUtils.hashKeyForDisk(getDataFolder().getPath()))) {
+                        TLocale.Logger.error("NOTIFY.ERROR-SERVER-KEY");
+                        TabooLib.resetServerUID();
+                        Bukkit.shutdown();
+                    }
+                }
+            } else {
+                TLocale.Logger.error("NOTIFY.ERROR-CONNECTION-FAIL");
+                Bukkit.shutdown();
+            }
+            storageType = StorageType.SQL;
+        }
+    }
+
+    private void registerCommands() {
+        getCommand("language2").setExecutor(new Language2Command());
+        getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
+        getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
+        TBaseCommand.registerCommand("taboolib", new TabooLibMainCommand());
+        TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginMainCommand());
+    }
+
     private void registerListener() {
         getServer().getPluginManager().registerEvents(this, this);
         getServer().getPluginManager().registerEvents(new ListenerPlayerCommand(), this);
         getServer().getPluginManager().registerEvents(new ListenerPlayerJump(), this);
-        getServer().getPluginManager().registerEvents(new ListenerPlayerQuit(), this);
+        getServer().getPluginManager().registerEvents(new ListenerPlayerJoinAndQuit(), this);
         getServer().getPluginManager().registerEvents(new ChatCatcher(), this);
         getServer().getPluginManager().registerEvents(new DataUtils(), this);
         getServer().getPluginManager().registerEvents(new AnvilContainerAPI(), this);
@@ -368,7 +352,73 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
-    public enum StorageType {
-        LOCAL, SQL
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public static Plugin getInst() {
+        return inst;
+    }
+
+    public static String getPrefix() {
+        return "§8[§3§lTabooLib§8] §7";
+    }
+
+    public static net.milkbowl.vault.economy.Economy getEconomy() {
+        return Economy;
+    }
+
+    public static void setEconomy(net.milkbowl.vault.economy.Economy economy) {
+        Economy = economy;
+    }
+
+    public static File getPlayerDataFolder() {
+        return playerDataFolder;
+    }
+
+    public static File getServerDataFolder() {
+        return serverDataFolder;
+    }
+
+    public static StorageType getStorageType() {
+        return storageType;
+    }
+
+    public static boolean isDisable() {
+        return disable;
+    }
+
+    public static MySQLConnection getConnection() {
+        return connection;
+    }
+
+    public static Language2 getExampleLanguage2() {
+        return exampleLanguage2;
+    }
+
+    public static boolean isStarted() {
+        return started;
+    }
+
+    public static Random getRandom() {
+        return NumberUtils.getRandom();
+    }
+
+    public static String getTablePrefix() {
+        return inst.getConfig().getString("MYSQL.PREFIX");
+    }
+
+    public static boolean isInternetOnline() {
+        return isInternetOnline;
+    }
+
+    public static boolean isOfflineVersion() {
+        return inst.getResource("libs") != null;
+    }
+
+    public static boolean isLibrariesExists() {
+        return TLib.getTLib().getLibsFolder().listFiles().length > 0;
     }
 }

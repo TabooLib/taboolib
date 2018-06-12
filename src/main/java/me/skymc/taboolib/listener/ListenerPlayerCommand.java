@@ -14,29 +14,29 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
 public class ListenerPlayerCommand implements Listener {
-	
-	@EventHandler
-	public void cmd(ServerCommandEvent e) {
-		if ("savefile".equals(e.getCommand())) {
-			if (TabooLib.getVerint() > 10700) {
-				e.setCancelled(true);
-			}
+
+    @EventHandler
+    public void cmd(ServerCommandEvent e) {
+        if ("savefile".equals(e.getCommand())) {
+            if (TabooLib.getVerint() > 10700) {
+                e.setCancelled(true);
+            }
             Bukkit.getScheduler().runTask(Main.getInst(), DataUtils::saveAllCaches);
-			Bukkit.getScheduler().runTask(Main.getInst(), () -> PlayerDataManager.saveAllCaches(true, false));
-		}
-	}
-	
-	@SuppressWarnings("deprecation")
-	@EventHandler
-	public void cmd(PlayerCommandPreprocessEvent e) {
-		if ("/unbreakable".equals(e.getMessage()) && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
-			e.setCancelled(true);
-			
-			NBTItem nbti = new NBTItem(e.getPlayer().getItemInHand());
-			nbti.setInteger("Unbreakable", 1);
-			e.getPlayer().setItemInHand(nbti.getItem());
-			
-			MsgUtils.send(e.getPlayer(), "Success!");
-		}
-	}
+            Bukkit.getScheduler().runTask(Main.getInst(), () -> PlayerDataManager.saveAllCaches(true, false));
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler
+    public void cmd(PlayerCommandPreprocessEvent e) {
+        if ("/unbreakable".equals(e.getMessage()) && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
+            e.setCancelled(true);
+
+            NBTItem nbti = new NBTItem(e.getPlayer().getItemInHand());
+            nbti.setInteger("Unbreakable", 1);
+            e.getPlayer().setItemInHand(nbti.getItem());
+
+            MsgUtils.send(e.getPlayer(), "Success!");
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package me.skymc.taboolib.bookformatter.builder;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import com.ilummc.tlib.bungee.api.chat.*;
+import me.skymc.taboolib.string.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class PageBuilder {
 	
-    private List<BaseComponent> text = new ArrayList<>();
+    private BaseComponent[] text = TextComponent.fromLegacyText("");
 
     /**
      * Adds a simple black-colored text to the page
@@ -22,7 +22,7 @@ public class PageBuilder {
      * @return the PageBuilder's calling instance
      */
     public PageBuilder add(String text) {
-        this.text.add(TextBuilder.of(text).build());
+        Arrays.stream(TextComponent.fromLegacyText(text)).forEach(component -> this.text = ArrayUtils.arrayAppend(this.text, component));
         return this;
     }
 
@@ -32,7 +32,7 @@ public class PageBuilder {
      * @return the PageBuilder's calling instance
      */
     public PageBuilder add(BaseComponent component) {
-        this.text.add(component);
+        this.text = ArrayUtils.arrayAppend(this.text, component);
         return this;
     }
 
@@ -42,17 +42,7 @@ public class PageBuilder {
      * @return the PageBuilder's calling instance
      */
     public PageBuilder add(BaseComponent... components) {
-        this.text.addAll(Arrays.asList(components));
-        return this;
-    }
-
-    /**
-     * Adds one or more components to the page
-     * @param components the components to add
-     * @return the PageBuilder's calling instance
-     */
-    public PageBuilder add(Collection<BaseComponent> components) {
-        this.text.addAll(components);
+        Arrays.stream(components).forEach(component -> this.text = ArrayUtils.arrayAppend(this.text, component));
         return this;
     }
 
@@ -61,8 +51,7 @@ public class PageBuilder {
      * @return the PageBuilder's calling instance
      */
     public PageBuilder newLine() {
-        this.text.add(new TextComponent("\n"));
-        return this;
+        return add("\n");
     }
     
     /**
@@ -78,9 +67,8 @@ public class PageBuilder {
      * @return an array of BaseComponents representing the page
      */
     public BaseComponent[] build() {
-        return text.toArray(new BaseComponent[0]);
+        return text;
     }
-
 
     /**
      * Creates a new PageBuilder instance wih the parameter as the initial text

@@ -13,8 +13,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class TDependencyInjector {
+
+    public static Dependency[] getDependencies(Object o) {
+        Dependency[] dependencies = new Dependency[0];
+        Dependencies d = o.getClass().getAnnotation(Dependencies.class);
+        if (d != null) {
+            dependencies = d.value();
+        }
+        Dependency d2 = o.getClass().getAnnotation(Dependency.class);
+        if (d2 != null) {
+            dependencies = new Dependency[]{d2};
+        }
+        return dependencies;
+    }
 
     public static void inject(Plugin plugin, Object o) {
         TLocaleLoader.load(plugin, true);
@@ -135,17 +149,7 @@ public class TDependencyInjector {
     }
 
     private static void injectDependencies(Plugin plugin, Object o) {
-        Dependency[] dependencies = new Dependency[0];
-        {
-            Dependencies d = o.getClass().getAnnotation(Dependencies.class);
-            if (d != null) {
-                dependencies = d.value();
-            }
-            Dependency d2 = o.getClass().getAnnotation(Dependency.class);
-            if (d2 != null) {
-                dependencies = new Dependency[]{d2};
-            }
-        }
+        Dependency[] dependencies = getDependencies(o);
         if (dependencies.length != 0) {
             TLocale.Logger.info("DEPENDENCY.LOADING-START", plugin.getName());
             for (Dependency dependency : dependencies) {
@@ -167,5 +171,4 @@ public class TDependencyInjector {
             TLocale.Logger.info("DEPENDENCY.LOAD-COMPLETE");
         }
     }
-
 }

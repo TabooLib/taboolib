@@ -1,10 +1,10 @@
 package me.skymc.taboolib.bookformatter.action;
 
+import com.ilummc.tlib.bungee.api.chat.BaseComponent;
+import com.ilummc.tlib.bungee.api.chat.HoverEvent;
+import com.ilummc.tlib.bungee.api.chat.TextComponent;
 import me.skymc.taboolib.bookformatter.BookAchievement;
 import me.skymc.taboolib.bookformatter.BookReflection;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Achievement;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
@@ -157,12 +157,12 @@ public interface HoverAction {
 
         @Override
         public HoverEvent.Action action() {
-            return null;
+            return action;
         }
 
         @Override
         public BaseComponent[] value() {
-            return new BaseComponent[0];
+            return value;
         }
     }
 }

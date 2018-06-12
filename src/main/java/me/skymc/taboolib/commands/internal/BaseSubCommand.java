@@ -1,8 +1,10 @@
 package me.skymc.taboolib.commands.internal;
 
-import me.skymc.taboolib.commands.internal.type.CommandArgument;
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.internal.type.CommandType;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -23,23 +25,16 @@ public abstract class BaseSubCommand implements ISubCommand {
         return false;
     }
 
+    public String getPermission() {
+        return null;
+    }
+
     public boolean isParameterConform(String[] args) {
         return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
     }
 
     public String getCommandString(String label) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" §f/");
-        stringBuilder.append(label);
-        stringBuilder.append(" ");
-        stringBuilder.append(getLabel());
-        stringBuilder.append(" ");
-        for (CommandArgument parameter : getArguments()) {
-            stringBuilder.append(parameter.toString());
-            stringBuilder.append(" ");
-        }
-        stringBuilder.append("§6- §e");
-        stringBuilder.append(getDescription());
-        return stringBuilder.toString();
+        String stringBuilder = Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining());
+        return TLocale.asString("COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), stringBuilder.trim(), getDescription());
     }
 }

@@ -13,6 +13,7 @@ import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.IO;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -49,7 +50,7 @@ public class TLib {
             libsFolder.mkdirs();
         }
         try {
-            String yamlText = new String(IO.readFully(TLib.class.getResourceAsStream("/lang/internal.yml")), Charset.forName("utf-8"));
+            String yamlText = new String(IO.readFully(FileUtils.getResource("lang/internal.yml")), Charset.forName("utf-8"));
             internalLanguage = new YamlConfiguration();
             internalLanguage.loadFromString(yamlText);
         } catch (IOException | InvalidConfigurationException ignored) {
@@ -71,13 +72,14 @@ public class TLib {
         TLocaleLoader.init();
         PlaceholderHook.init();
         TLocaleLoader.load(Main.getInst(), false);
-        TDependencyInjector.inject(Main.getInst(), tLib);
+    }
 
+    public static void initPost() {
+        TDependencyInjector.inject(Main.getInst(), TLib.getTLib());
         try {
             Pool.init();
         } catch (Throwable ignored) {
         }
-
     }
 
     public static void unload() {

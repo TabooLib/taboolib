@@ -1,8 +1,3 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
 package me.skymc.taboolib.plugin;
 
 import com.google.common.base.Joiner;
@@ -26,16 +21,33 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * @author PluginMan
+ */
 public class PluginUtils {
 
-    private PluginUtils() {
+    PluginUtils() {
+    }
+
+    public static File getPluginFile(Plugin plugin) {
+        for (File pluginFile : Objects.requireNonNull(new File("plugins").listFiles())) {
+            if (pluginFile.getName().endsWith(".jar")) {
+                try {
+                    PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
+                    if (desc.getName().equalsIgnoreCase(plugin.getName())) {
+                        return pluginFile;
+                    }
+                } catch (InvalidDescriptionException ignored) {
+                }
+            }
+        }
+        return null;
     }
 
     public static void enable(Plugin plugin) {
         if (plugin != null && !plugin.isEnabled()) {
             Bukkit.getPluginManager().enablePlugin(plugin);
         }
-
     }
 
     public static void disable(Plugin plugin) {
@@ -45,11 +57,11 @@ public class PluginUtils {
     }
 
     public static void enableAll() {
-        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> isIgnored(plugin)).forEach(PluginUtils::enable);
+        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(PluginUtils::isIgnored).forEach(PluginUtils::enable);
     }
 
     public static void disableAll() {
-        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> isIgnored(plugin)).forEach(PluginUtils::disable);
+        Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(PluginUtils::isIgnored).forEach(PluginUtils::disable);
     }
 
     public static String getFormattedName(Plugin plugin) {
@@ -58,7 +70,7 @@ public class PluginUtils {
 
     public static String getFormattedName(Plugin plugin, boolean includeVersions) {
         ChatColor color = plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED;
-        String pluginName = color + plugin.getName();
+        String pluginName = color + plugin.getName() + ChatColor.RESET;
         if (includeVersions) {
             pluginName = pluginName + " (" + plugin.getDescription().getVersion() + ")";
         }
@@ -89,9 +101,8 @@ public class PluginUtils {
         Map commands = plugin.getDescription().getCommands();
         if (commands != null) {
             for (Object o : commands.entrySet()) {
-                Entry thisEntry = (Entry) o;
-                if (thisEntry != null) {
-                    parsedCommands.add((String) thisEntry.getKey());
+                if (o != null) {
+                    parsedCommands.add((String) ((Entry) o).getKey());
                 }
             }
         }
@@ -158,37 +169,28 @@ public class PluginUtils {
         return plugin.equals(Main.getInst());
     }
 
-    private static String load(Plugin plugin) {
+    private static PluginLoadState load(Plugin plugin) {
         return load(plugin.getName());
     }
 
-    /**
-     * 返回内容：
-     *
-     * plugin-directory —— 插件目录不存在
-     * cannot-find —— 插件不存在
-     * invalid-description —— 无效的描述
-     * invalid-plugin —— 无效的插件
-     * loaded —— 载入成功
-     */
-    public static String load(String name) {
+    public static PluginLoadState load(String name) {
         Plugin target;
         File pluginDir = new File("plugins");
         if (!pluginDir.isDirectory()) {
-            return "plugin-directory";
+            return new PluginLoadState(PluginLoadStateType.DIRECTORY_NOT_FOUND, "null");
         } else {
             File pluginFile = new File(pluginDir, name + ".jar");
-            if (!pluginFile.isFile()) {
-                for (File f : Objects.requireNonNull(pluginDir.listFiles())) {
-                    if (f.getName().endsWith(".jar")) {
+            if (!pluginFile.exists()) {
+                for (File plugin : Objects.requireNonNull(pluginDir.listFiles())) {
+                    if (plugin.getName().endsWith(".jar")) {
                         try {
-                            PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(f);
+                            PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(plugin);
                             if (desc.getName().equalsIgnoreCase(name)) {
-                                pluginFile = f;
+                                pluginFile = plugin;
                                 break;
                             }
-                        } catch (InvalidDescriptionException var11) {
-                            return "cannot-find";
+                        } catch (InvalidDescriptionException ignored) {
+                            return new PluginLoadState(PluginLoadStateType.FILE_NOT_FOUND, "null");
                         }
                     }
                 }
@@ -196,15 +198,15 @@ public class PluginUtils {
 
             try {
                 target = Bukkit.getPluginManager().loadPlugin(pluginFile);
-            } catch (InvalidDescriptionException var9) {
-                return "invalid-description";
-            } catch (InvalidPluginException var10) {
-                return "invalid-plugin";
+            } catch (InvalidDescriptionException e) {
+                return new PluginLoadState(PluginLoadStateType.INVALID_DESCRIPTION, e.toString());
+            } catch (InvalidPluginException e) {
+                return new PluginLoadState(PluginLoadStateType.INVALID_PLUGIN, e.toString());
             }
 
             target.onLoad();
             Bukkit.getPluginManager().enablePlugin(target);
-            return "loaded";
+            return new PluginLoadState(PluginLoadStateType.LOADED, "null");
         }
     }
 
@@ -213,20 +215,13 @@ public class PluginUtils {
             unload(plugin);
             load(plugin);
         }
-
     }
 
     public static void reloadAll() {
         Arrays.stream(Bukkit.getPluginManager().getPlugins(), 0, Bukkit.getPluginManager().getPlugins().length).filter(PluginUtils::isIgnored).forEach(PluginUtils::reload);
     }
 
-    /**
-     * 返回内容：
-     *
-     * failed —— 卸载失败
-     * unloaded —— 卸载成功
-     */
-    public static String unload(Plugin plugin) {
+    public static PluginUnloadState unload(Plugin plugin) {
         String name = plugin.getName();
         PluginManager pluginManager = Bukkit.getPluginManager();
         SimpleCommandMap commandMap = null;
@@ -236,7 +231,6 @@ public class PluginUtils {
         Map<Event, SortedSet<RegisteredListener>> listeners = null;
         if (pluginManager != null) {
             pluginManager.disablePlugin(plugin);
-
             try {
                 Field pluginsField = Bukkit.getPluginManager().getClass().getDeclaredField("plugins");
                 pluginsField.setAccessible(true);
@@ -259,8 +253,8 @@ public class PluginUtils {
                 Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 knownCommandsField.setAccessible(true);
                 commands = (Map) knownCommandsField.get(commandMap);
-            } catch (NoSuchFieldException | IllegalAccessException var15) {
-                return "failed";
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                return new PluginUnloadState(true, e.toString());
             }
         }
 
@@ -276,10 +270,8 @@ public class PluginUtils {
         Iterator it;
         if (listeners != null) {
             it = listeners.values().iterator();
-
             while (it.hasNext()) {
                 SortedSet<RegisteredListener> set = (SortedSet) it.next();
-
                 while (it.hasNext()) {
                     RegisteredListener value = (RegisteredListener) it.next();
                     if (value.getPlugin() == plugin) {
@@ -291,7 +283,6 @@ public class PluginUtils {
 
         if (commandMap != null) {
             it = commands.entrySet().iterator();
-
             while (it.hasNext()) {
                 Entry<String, Command> entry = (Entry) it.next();
                 if (entry.getValue() instanceof PluginCommand) {
@@ -312,7 +303,7 @@ public class PluginUtils {
                 Logger.getLogger(PluginUtils.class.getName()).log(Level.SEVERE, null, var13);
             }
         }
-        return "unloaded";
+        return new PluginUnloadState(false, "null");
     }
 
     private static String consolidateStrings(String[] args, int start) {

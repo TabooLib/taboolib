@@ -1,5 +1,6 @@
 package me.skymc.taboolib.jsonformatter;
 
+import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.json.JSONArray;
 import me.skymc.taboolib.json.JSONObject;
 import me.skymc.taboolib.jsonformatter.click.ClickEvent;
@@ -15,17 +16,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Unknown
+ */
+@Deprecated
 public class JSONFormatter {
 
     public static void sendRawMessage(Player player, String message) {
-        try {
-            Object entityplayer = NMSUtils.getHandle(player);
-            Object ppco = ppc.get(entityplayer);
-            Object packet = ppocc.newInstance(message);
-            sp.invoke(ppco, packet);
-        } catch (Exception e) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + player.getName() + " " + message);
-        }
+        TLocale.Tellraw.send(player, message);
     }
 
     private JSONArray ja = new JSONArray();
