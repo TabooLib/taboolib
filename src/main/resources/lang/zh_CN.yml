@@ -236,7 +236,7 @@ COMMANDS:
       UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
       FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
       UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
-      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 重启服务器自动更新!'
+      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
     JAVASHELL:
       DESCRIPTION:
         LOAD: '载入脚本'
@@ -273,6 +273,13 @@ COMMANDS:
       SUCCESS-PREFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的前缀为 &f{1}'
       SUCCESS-SUFFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的后缀为 &f{1}'
       SUCCESS-DELETE: '&8[&3&lTabooLib&8] &7删除玩家 &f{0} &7的称号数据'
+    LAGSERVER:
+      DESCRIPTION: '休眠主线程'
+      ARGUMENTS:
+        0: '毫秒'
+      INVALID-TIME: '&8[&3&lTabooLib&8] &4休眠时间不可超过 &c30000 &4毫秒'
+      START: '&8[&3&lTabooLib&8] &7线程休眠开始.'
+      STOP: '&8[&3&lTabooLib&8] &7线程休眠结束.'
     INFO:
       DESCRIPTION: '查看物品信息'
       INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
@@ -455,16 +462,18 @@ COMMANDS:
     - '&f /{0} reload &6- &e重载语言库'
     - ''
   TLOCALE:
-    INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
-    SUCCESS-RELOAD: '&8[&3&lTabooLib&8] &7重载完成'
-    SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
-    HELP:
-    - ''
-    - '&b&l----- &3&lTabooLibLoacle Commands &b&l-----'
-    - ''
-    - '&f /{0} send &8[&7玩家/ALL&8] &8[&7语言&8] &8<&7变量&8> &6- &e发送语言提示'
-    - '&f /{0} reload &6- &e重载语言库'
-    - ''
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibLoacle Commands &e&l-----'
+    SEND:
+      DESCRIPTION: '发送语言提示'
+      ARGUMENTS:
+        0: '目标'
+        1: '地址'
+        2: '变量'
+      INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
+      INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在或没有使用 Tlocale 语言文件.'
+      INVALID-PATH: '&8[&3&lTabooLib&8] &4错误的语言文件地址:&c {0}'
+      SUCCESS-RELOAD: '&8[&3&lTabooLib&8] &7重载完成'
+      SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
   TPLUGIN:
     COMMAND-TITLE: '&e&l----- &6&lTabooLibPlugin Commands &e&l-----'
     LIST:
