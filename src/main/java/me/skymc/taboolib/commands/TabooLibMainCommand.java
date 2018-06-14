@@ -11,6 +11,7 @@ import me.skymc.taboolib.commands.internal.type.CommandType;
 import me.skymc.taboolib.commands.taboolib.*;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.plugin.PluginUtils;
 import me.skymc.taboolib.update.UpdateTask;
 import org.bukkit.Bukkit;
@@ -710,7 +711,44 @@ public class TabooLibMainCommand extends BaseMainCommand {
     @CommandRegister(priority = 24)
     BaseSubCommand getEmptyLine6 = null;
 
-    @CommandRegister(priority = 25)
+    @CommandRegister(priority = 24.1)
+    BaseSubCommand lagServer = new BaseSubCommand() {
+        @Override
+        public String getLabel() {
+            return "lagServer";
+        }
+
+        @Override
+        public String getDescription() {
+            return TLocale.asString("COMMANDS.TABOOLIB.LAGSERVER.DESCRIPTION");
+        }
+
+        @Override
+        public CommandArgument[] getArguments() {
+            return new CommandArgument[] {
+                    new CommandArgument(TLocale.asString("COMMANDS.TABOOLIB.LAGSERVER.ARGUMENTS.0"))
+            };
+        }
+
+        @Override
+        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (NumberUtils.getInteger(args[0]) > 300000) {
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.LAGSERVER.INVALID-TIME");
+            } else {
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.LAGSERVER.START");
+                try {
+                    Thread.sleep(NumberUtils.getInteger(args[0]));
+                } catch (Exception ignored) {
+                }
+                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.LAGSERVER.STOP");
+            }
+        }
+    };
+
+    @CommandRegister(priority = 26)
+    BaseSubCommand getEmptyLine7 = null;
+
+    @CommandRegister(priority = 27)
     BaseSubCommand importData = new BaseSubCommand() {
 
         @Override
@@ -734,7 +772,7 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 26)
+    @CommandRegister(priority = 28)
     BaseSubCommand updatePlugin = new BaseSubCommand() {
 
         @Override
@@ -781,11 +819,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
                     TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
                 }
             }.runTaskAsynchronously(Main.getInst());
-        }
-
-        @Override
-        public CommandType getType() {
-            return CommandType.CONSOLE;
         }
     };
 }

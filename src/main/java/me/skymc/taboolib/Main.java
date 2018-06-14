@@ -4,6 +4,8 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
+import com.ilummc.tlib.util.IO;
+import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
@@ -49,8 +51,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -180,10 +185,21 @@ public class Main extends JavaPlugin implements Listener {
                 if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
                 }
+
                 // 载入 SpecialItem 接口
                 SpecialItem.getInst().loadItems();
                 // 载入 TLM 接口
                 TLM.getInst();
+
+                // 面子工程
+                InputStream inputStream = FileUtils.getResource("motd.txt");
+                try {
+                    String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
+                    if (text != null) {
+                        Arrays.stream(text.split("\n")).forEach(line -> Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(line, getDescription().getVersion())));
+                    }
+                } catch (IOException ignored) {
+                }
             }
         }.runTask(this);
 
@@ -324,8 +340,8 @@ public class Main extends JavaPlugin implements Listener {
     private void registerCommands() {
         getCommand("language2").setExecutor(new Language2Command());
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
-        getCommand("tabooliblocale").setExecutor(new TabooLibLocaleCommand());
         TBaseCommand.registerCommand("taboolib", new TabooLibMainCommand());
+        TBaseCommand.registerCommand("tabooliblocale", new TabooLibLocaleCommand());
         TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginMainCommand());
     }
 

@@ -36,9 +36,13 @@ public class StringUtils {
     public static double similarDegree(String strA, String strB){
         String newStrA = removeSign(max(strA, strB));
         String newStrB = removeSign(min(strA, strB));
-        int temp = Math.max(newStrA.length(), newStrB.length());
-        int temp2 = longestCommonSubstring(newStrA, newStrB).length();
-        return temp2 * 1.0 / temp;
+        try {
+            int temp = Math.max(newStrA.length(), newStrB.length());
+            int temp2 = longestCommonSubstring(newStrA, newStrB).length();
+            return temp2 * 1.0 / temp;
+        } catch (Exception ignored) {
+            return 0;
+        }
     }
 
     private static String max(String strA, String strB) {
