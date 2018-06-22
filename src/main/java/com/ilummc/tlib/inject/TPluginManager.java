@@ -20,19 +20,26 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public class TPluginManager implements PluginManager {
 
+    private static TPluginManager singleton;
     private final PluginManager instance;
     private final Main main = (Main) Main.getInst();
     private static File updateDirectory = null;
     private Server server;
     private Map<Pattern, PluginLoader> fileAssociations = new HashMap<>();
     private List<Plugin> plugins = new ArrayList<>();
-	private Map<String, Plugin> lookupNames = new HashMap<>();
+    private Map<String, Plugin> lookupNames = new HashMap<>();
     private SimpleCommandMap commandMap;
     private Map<String, Permission> permissions = new HashMap<>();
     private Map<Boolean, Set<Permission>> defaultPerms = new LinkedHashMap<>();
     private Map<String, Map<Permissible, Boolean>> permSubs = new HashMap<>();
     private Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<>();
     private boolean useTimings = false;
+    private List<Plugin> delayedDisable = new ArrayList<>();
+
+    public static void delayDisable(Plugin plugin) {
+        if (!singleton.delayedDisable.contains(plugin))
+            singleton.delayedDisable.add(plugin);
+    }
 
     public TPluginManager() {
         instance = Bukkit.getPluginManager();
@@ -48,22 +55,23 @@ public class TPluginManager implements PluginManager {
         cloneField("permSubs");
         cloneField("defSubs");
         cloneField("useTimings");
+        singleton = this;
     }
-    
+
     private void cloneField(String bukkitName) {
-    	try {
-    		Field bukkitField = instance.getClass().getDeclaredField(bukkitName);
-    		Field thisFiled = this.getClass().getDeclaredField(bukkitName);
-    		if (bukkitField == null || thisFiled == null) {
+        try {
+            Field bukkitField = instance.getClass().getDeclaredField(bukkitName);
+            Field thisFiled = this.getClass().getDeclaredField(bukkitName);
+            if (bukkitField == null || thisFiled == null) {
                 TLocale.Logger.warn("MISC.FIELD-COPY-FAILED", bukkitName);
-    			return;
-    		}
-    		bukkitField.setAccessible(true);
-    		thisFiled.setAccessible(true);
-    		thisFiled.set(this, bukkitField.get(instance));
+                return;
+            }
+            bukkitField.setAccessible(true);
+            thisFiled.setAccessible(true);
+            thisFiled.set(this, bukkitField.get(instance));
         } catch (Exception e) {
             TLocale.Logger.error("MISC.FIELD-COPY-ERROR", bukkitName, e.toString());
-		}
+        }
     }
 
     @Override
@@ -104,10 +112,12 @@ public class TPluginManager implements PluginManager {
     @Override
     public void disablePlugins() {
         for (Plugin plugin : getPlugins()) {
-            if (plugin != main) {
+            if (plugin != main && !delayedDisable.contains(plugin)) {
                 disablePlugin(plugin);
             }
         }
+        Collections.reverse(delayedDisable);
+        delayedDisable.forEach(singleton::disablePlugin);
         disablePlugin(main);
     }
 
