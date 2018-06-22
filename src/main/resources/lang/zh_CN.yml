@@ -520,6 +520,15 @@ COMMANDS:
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
       TRY-RELOAD: '&8[&3&lTabooLib&8] &7尝试重载插件...'
+  TRANSLATE-UUID:
+    COMMAND-TITLE: '&e&l----- &6&lTranslateUUID Commands &e&l-----'
+    IMPORTLOCAL:
+      DESCRIPTION: '导入本地数据到数据库'
+      DISABLED: '&8[&3&lTabooLib&8] &4该功能尚未启用'
+      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送, 详细信息请查看控制台'
+    RELOAD:
+      DESCRIPTION: '重载配置及数据库'
+      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送, 详细信息请查看控制台'
 
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'

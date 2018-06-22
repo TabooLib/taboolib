@@ -797,12 +797,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
                 return;
             }
 
-            File file = new File("plugins/update");
-            if (!file.exists()) {
-                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-SUPPORT");
-                return;
-            }
-
             File pluginFile = PluginUtils.getPluginFile(Main.getInst());
             if (pluginFile == null) {
                 TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.FILE-NOT-FOUND");
@@ -815,8 +809,15 @@ public class TabooLibMainCommand extends BaseMainCommand {
                 public void run() {
                     String url = Strings.replaceWithOrder("https://github.com/Bkm016/TabooLib/releases/download/{0}/TabooLib-{0}.jar", UpdateTask.getNewVersion());
                     TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-START", url);
-                    FileUtils.download(url, new File(file, pluginFile.getName()));
-                    TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
+
+                    File file = new File("plugins/update");
+                    if (file.exists()) {
+                        FileUtils.download(url, new File(file, pluginFile.getName()));
+                        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
+                    } else {
+                        FileUtils.download(url, pluginFile);
+                        Bukkit.shutdown();
+                    }
                 }
             }.runTaskAsynchronously(Main.getInst());
         }

@@ -23,6 +23,9 @@ commands:
     permission: taboolib.admin
   taboolibrarymodule:
     aliases: [tlm]
+  translateuuid:
+    aliases: 'tuuid'
+    permission: taboolib.admin
     
 depend: [Vault]
 softdepend: [PlaceholderAPI, Skript, MassiveLag]

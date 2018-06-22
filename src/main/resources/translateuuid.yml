@@ -1,0 +1,11 @@
+# 是否启用
+Enable: false
+
+# 数据库地址
+Database:
+  host: 'localhost'
+  port: '3306'
+  user: 'root'
+  password: ''
+  database: 'test'
+  table: 'taboolib_translate_uuid_database'

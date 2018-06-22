@@ -39,6 +39,8 @@ import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
+import me.skymc.taboolib.translateuuid.TranslateUUID;
+import me.skymc.taboolib.translateuuid.TranslateUUIDCommand;
 import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
@@ -186,10 +188,12 @@ public class Main extends JavaPlugin implements Listener {
                     new SupportPlaceholder(getInst(), "taboolib").hook();
                 }
 
-                // 载入 SpecialItem 接口
-                SpecialItem.getInst().loadItems();
                 // 载入 TLM 接口
                 TLM.getInst();
+                // 载入 SpecialItem 接口
+                SpecialItem.getInst().loadItems();
+                // 载入 TranslateUUID 工具
+                TranslateUUID.init();
 
                 // 面子工程
                 InputStream inputStream = FileUtils.getResource("motd.txt");
@@ -236,6 +240,8 @@ public class Main extends JavaPlugin implements Listener {
         SpecialItem.getInst().unloadItems();
         // 注销 TLM 接口
         TabooLibraryModule.getInst().unloadModules();
+        // 注销 TranslateUUID 接口
+        TranslateUUID.cancel();
         // 注销连接池
         HikariHandler.closeDataSourceForce();
 
@@ -343,6 +349,7 @@ public class Main extends JavaPlugin implements Listener {
         TBaseCommand.registerCommand("taboolib", new TabooLibMainCommand());
         TBaseCommand.registerCommand("tabooliblocale", new TabooLibLocaleCommand());
         TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginMainCommand());
+        TBaseCommand.registerCommand("translateuuid", new TranslateUUIDCommand());
     }
 
     private void registerListener() {

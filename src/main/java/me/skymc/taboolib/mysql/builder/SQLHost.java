@@ -1,10 +1,10 @@
 package me.skymc.taboolib.mysql.builder;
 
-import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 /**
@@ -84,6 +84,6 @@ public class SQLHost {
 
     @Override
     public String toString() {
-        return "host='" + "SQLHost{" + host + '\'' + ", user='" + user + '\'' + ", port='" + port + '\'' + ", password='" + password + '\'' + ", database='" + database + '\'' + '}';
+        return MessageFormat.format("SQLHost'{'host=''{0}'', user=''{1}'', port=''{2}'', password=''{3}'', database=''{4}'', plugin={5}'}'", host, user, port, password, database, plugin);
     }
 }

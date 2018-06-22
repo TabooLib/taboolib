@@ -176,6 +176,7 @@ public class SpecialItem implements Listener {
                             e.getWhoClicked().setItemOnCursor(null);
                         }
                         break;
+                    default:
                 }
             }
         }

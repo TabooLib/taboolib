@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
 import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -63,6 +64,6 @@ public class UpdateTask {
                     }
                 }
             }
-        }.runTaskLaterAsynchronously(Main.getInst(), 100);
+        }.runTaskTimerAsynchronously(Main.getInst(), 100, 20 * 60 * 60 * 6);
     }
 }
