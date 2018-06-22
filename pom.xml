@@ -6,13 +6,10 @@
 
     <groupId>me.skymc</groupId>
     <artifactId>TabooLib</artifactId>
-    <version>4.09</version>
+    <version>4.10</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compile.source>1.5</maven.compile.source>
-        <maven.compile.target>1.5</maven.compile.target>
-        <maven.compile.deprecation>off</maven.compile.deprecation>
     </properties>
     <build>
         <defaultGoal>clean install package</defaultGoal>
@@ -33,8 +30,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <showDeprecation>false</showDeprecation>
+                    <useIncrementalCompilation>true</useIncrementalCompilation>
                 </configuration>
             </plugin>
             <plugin>
