@@ -22,6 +22,7 @@ public class HikariHandler {
      *
      * @param host 数据库地址
      * @return {@link HikariDataSource}
+     * @throws java.sql.SQLException 数据库连接失败异常
      */
     public static HikariDataSource createDataSource(SQLHost host, HikariConfig hikariConfig) {
         MapDataSource mapDataSource = dataSource.computeIfAbsent(host, x -> new MapDataSource(x, new HikariDataSource(hikariConfig == null ? createConfig(host) : hikariConfig)));
@@ -50,7 +51,7 @@ public class HikariHandler {
      * @param host 地址
      */
     public static void closeDataSource(SQLHost host) {
-        if (dataSource.containsKey(host)) {
+        if (host != null && dataSource.containsKey(host)) {
             MapDataSource mapDataSource = dataSource.get(host);
             if (mapDataSource.getActivePlugin().getAndDecrement() <= 1) {
                 mapDataSource.getHikariDataSource().close();

@@ -10,26 +10,15 @@ import java.util.Arrays;
  */
 public class SQLColumn {
 
-    /**
-     * 类型
-     */
+    public static final SQLColumn PRIMARY_KEY_ID = new SQLColumn(SQLColumnType.INT, "id", SQLColumnOption.NOTNULL, SQLColumnOption.PRIMARY_KEY, SQLColumnOption.AUTO_INCREMENT);
+
     private SQLColumnType columnType;
     private int m;
     private int d;
 
-    /**
-     * 名称
-     */
     private String columnName;
-
-    /**
-     * 默认值
-     */
     private Object defaultValue;
 
-    /**
-     * 属性值
-     */
     private SQLColumnOption[] columnOptions;
 
     /**
@@ -106,30 +95,32 @@ public class SQLColumn {
     }
 
     private String convertToOptions() {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (SQLColumnOption options : columnOptions) {
             switch (options) {
                 case NOTNULL:
-                    stringBuilder.append(" not null");
+                    builder.append(" not null");
                     break;
                 case PRIMARY_KEY:
-                    stringBuilder.append(" primary key");
+                    builder.append(" primary key");
                     break;
                 case AUTO_INCREMENT:
-                    stringBuilder.append(" auto_increment");
+                    builder.append(" auto_increment");
                     break;
                 case UNIQUE_KEY:
-                    stringBuilder.append(" unique key");
+                    builder.append(" unique key");
                     break;
                 default:
             }
         }
-        if (defaultValue instanceof String) {
-            stringBuilder.append(" default '").append(defaultValue).append("'");
-        } else {
-            stringBuilder.append(" default ").append(defaultValue);
+        if (defaultValue != null) {
+            if (defaultValue instanceof String) {
+                builder.append(" default '").append(defaultValue).append("'");
+            } else {
+                builder.append(" default ").append(defaultValue);
+            }
         }
-        return stringBuilder.toString();
+        return builder.toString();
     }
 
     @Override
