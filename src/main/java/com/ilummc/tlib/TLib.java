@@ -17,6 +17,7 @@ import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,12 +98,12 @@ public class TLib {
             Field field = Bukkit.getServer().getClass().getDeclaredField("pluginManager");
             field.setAccessible(true);
             field.set(Bukkit.getServer(), new TPluginManager());
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
-        }
-        if (Bukkit.getPluginManager() instanceof TPluginManager) {
             TLocale.Logger.info("TLIB.INJECTION-SUCCESS");
-        } else {
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
             TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
+            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (plugin != Main.getInst()) TDependencyInjector.inject(plugin, plugin);
+            }
         }
     }
 

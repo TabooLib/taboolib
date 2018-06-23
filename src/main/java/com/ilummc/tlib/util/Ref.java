@@ -101,11 +101,11 @@ public class Ref {
 
     public static JavaPlugin getCallerPlugin(Class<?> callerClass) {
         try {
-            Field pluginField = callerClass.getClassLoader().getClass().getDeclaredField("plugin");
-            pluginField.setAccessible(true);
-            return (JavaPlugin) pluginField.get(callerClass.getClassLoader());
-        } catch (Exception ignored) {
+            return JavaPlugin.getProvidingPlugin(callerClass);
+        } catch (IllegalArgumentException ignored) {
             TLocale.Logger.error("LOCALE.CALLER-PLUGIN-NOT-FOUND", callerClass.getName());
+        } catch (IllegalStateException e) {
+            TLocale.Logger.error("LOCALE.STATIC-CLASS-LOADER", callerClass.getName());
         }
         return (JavaPlugin) Main.getInst();
     }
