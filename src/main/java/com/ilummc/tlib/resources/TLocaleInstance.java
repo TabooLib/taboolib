@@ -52,7 +52,7 @@ class TLocaleInstance {
     public void sendTo(String path, CommandSender sender, String... args) {
         try {
             map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).forEach(tSender -> {
-                if (Bukkit.isPrimaryThread()) {
+                if (Bukkit.isPrimaryThread() || "true".equals(System.getProperty("tlib.forceAsync"))) {
                     tSender.sendTo(sender, args);
                 } else {
                     Bukkit.getScheduler().runTask(plugin, () -> tSender.sendTo(sender, args));
