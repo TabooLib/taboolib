@@ -1,6 +1,8 @@
 TLIB:
   INJECTION-SUCCESS: '注入成功'
-  INJECTION-FAILED: '注入失败'
+  INJECTION-FAILED:
+    - '注入失败'
+    - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
   LOAD-FAIL-OFFLINE:
   - '**********************************************'
   - '** TabooLib-{0} 无法在您的服务器上使用'
@@ -61,6 +63,8 @@ LOCALE:
   BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar 的颜色识别失败: {0}'
   BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar 的类型识别失败: {0}'
   BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
+  CALLER-PLUGIN-NOT-FOUND: '{0} 不是一个由插件加载的类'
+  STATIC-CLASS-LOADER: '{0} 由静态类加载器初始化，无法获得其从属的插件'
   
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'

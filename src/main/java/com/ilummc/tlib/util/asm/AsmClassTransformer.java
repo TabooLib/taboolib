@@ -34,7 +34,7 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
             newClassName = from.getName() + "_TabooLibRemap_" + this.hashCode() + "_" + toVer;
             prevName = from.getName().replace('.', '/');
             classReader.accept(this, ClassReader.SKIP_DEBUG);
-            Class<?> clazz = new AsmClassLoader().createNewClass(newClassName, writer.toByteArray());
+            Class<?> clazz = AsmClassLoader.createNewClass(newClassName, writer.toByteArray());
             Field field = from.getClassLoader().getClass().getDeclaredField("classes");
             field.setAccessible(true);
             ((Map<String, Class<?>>) field.get(from.getClassLoader())).put(newClassName, clazz);
