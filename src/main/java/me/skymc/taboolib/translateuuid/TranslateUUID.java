@@ -118,16 +118,22 @@ public class TranslateUUID {
         ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(32);
 
         AtomicInteger i = new AtomicInteger();
+        AtomicInteger fail = new AtomicInteger();
         int size = playerDataFolder.listFiles().length;
 
         TLogger.getGlobalLogger().info("Start importing the local data...");
         for (File file : playerDataFolder.listFiles()) {
+            if (fail.get() > 10) {
+                TLogger.getGlobalLogger().info("The number of failures exceeds the threshold! import stopped..");
+                break;
+            }
             threadPool.submit(() -> {
                 try {
                     String username = getUsernameInDatFile(file);
                     updateUsername(UUID.fromString(file.getName().split("\\.")[0]), username);
                     TLogger.getGlobalLogger().info("importing... " + username + "(" + i.getAndIncrement() + "/" + size + ")");
                 } catch (Exception ignored) {
+                    fail.getAndIncrement();
                 }
             });
         }
