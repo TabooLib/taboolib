@@ -102,7 +102,9 @@ public class TLib {
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
             TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                if (plugin != Main.getInst()) TDependencyInjector.inject(plugin, plugin);
+                if (plugin != Main.getInst()) {
+                    TDependencyInjector.inject(plugin, plugin);
+                }
             }
         }
     }

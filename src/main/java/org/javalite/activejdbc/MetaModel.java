@@ -163,7 +163,7 @@ public class MetaModel implements Serializable {
     }
 
     /**
-     * @return name of the addColumn for optimistic locking record version
+     * @return name of the column for optimistic locking record version
      */
     public String getVersionColumn() {
         return versionColumn;
@@ -401,11 +401,11 @@ public class MetaModel implements Serializable {
     }
 
     /**
-     * FK name is a foreign key name used in relationships as a foreign key addColumn in a child table (table represented by this
+     * FK name is a foreign key name used in relationships as a foreign key column in a child table (table represented by this
      * instance is a parent table).
      * The FK name is derived using {@link org.javalite.common.Inflector}: It is a singular version of this table name plus "_id".
      *
-     * @return foreign key name used in relationships as a foreign key addColumn in a child table.
+     * @return foreign key name used in relationships as a foreign key column in a child table.
      */
     public String getFKName() {
         return singularize(getTableName()).toLowerCase() + "_id";
@@ -469,10 +469,10 @@ public class MetaModel implements Serializable {
     }
 
     /**
-     * Provides addColumn metadata map, keyed by attribute names.
+     * Provides column metadata map, keyed by attribute names.
      * Table columns correspond to ActiveJDBC model attributes.
      *
-     * @return Provides addColumn metadata map, keyed by attribute names.
+     * @return Provides column metadata map, keyed by attribute names.
      */
     public Map<String, ColumnMetadata> getColumnMetadata() {
         if (columnMetadata == null || columnMetadata.isEmpty()) {

@@ -37,8 +37,9 @@ public class TPluginManager implements PluginManager {
     private List<Plugin> delayedDisable = new ArrayList<>();
 
     public static void delayDisable(Plugin plugin) {
-        if (!singleton.delayedDisable.contains(plugin))
+        if (!singleton.delayedDisable.contains(plugin)) {
             singleton.delayedDisable.add(plugin);
+        }
     }
 
     public TPluginManager() {
