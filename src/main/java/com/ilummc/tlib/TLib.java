@@ -99,7 +99,7 @@ public class TLib {
             field.setAccessible(true);
             field.set(Bukkit.getServer(), new TPluginManager());
             TLocale.Logger.info("TLIB.INJECTION-SUCCESS");
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+        } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
             TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
                 if (plugin != Main.getInst()) TDependencyInjector.inject(plugin, plugin);
