@@ -71,7 +71,7 @@ public class TLocaleBook extends TLocaleSerialize {
             @Override
             public void run() {
                 BookBuilder bookBuilder = BookFormatter.writtenBook();
-                pages.stream().map(jsonPage -> papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(jsonPage.toRawMessage(), args)) : TLocale.Translate.setColored(Strings.replaceWithOrder(jsonPage.toRawMessage(), args))).map(ComponentSerializer::parse).forEach(bookBuilder::addPages);
+                pages.stream().map(jsonPage -> format(jsonPage, sender, args)).map(ComponentSerializer::parse).forEach(bookBuilder::addPages);
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -80,6 +80,10 @@ public class TLocaleBook extends TLocaleSerialize {
                 }.runTask(Main.getInst());
             }
         }.runTaskAsynchronously(Main.getInst());
+    }
+
+    private String format(TellrawJson jsonPage, CommandSender sender, String[] args) {
+        return papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(jsonPage.toRawMessage(), args)) : Strings.replaceWithOrder(jsonPage.toRawMessage(), args);
     }
 
     public static TLocaleBook valueOf(Map<String, Object> map) {
