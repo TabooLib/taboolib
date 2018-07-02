@@ -171,7 +171,7 @@ public class TLocaleJson extends TLocaleSerialize {
         // 遍历本页文本
         for (int i = 0; i < textList.size(); i++) {
             // 捕捉变量
-            for (VariableFormatter.Variable variable : new VariableFormatter(textList.get(i), pattern).find().getVariableList()) {
+            for (VariableFormatter.Variable variable : new VariableFormatter(TLocale.Translate.setColored(textList.get(i)), pattern).find().getVariableList()) {
                 // 如果是变量
                 if (variable.isVariable()) {
                     String[] split = variable.getText().split("@");
