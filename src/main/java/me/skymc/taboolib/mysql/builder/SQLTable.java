@@ -2,6 +2,8 @@ package me.skymc.taboolib.mysql.builder;
 
 import com.google.common.base.Preconditions;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
+import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
 
 /**
@@ -50,6 +52,14 @@ public class SQLTable {
 
     public String truncateQuery() {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
+    }
+
+    public RunnableUpdate executeUpdate(String query) {
+        return new RunnableUpdate(query);
+    }
+
+    public RunnableQuery executeQuery(String query) {
+        return new RunnableQuery(query);
     }
 
     // *********************************
