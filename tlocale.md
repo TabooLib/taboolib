@@ -1,16 +1,21 @@
 # TLocale
 
-通过简单的 yml 文件自定义你的所有信息
+语言文件的重新定义
 
-## 添加一个语言文件
+## 注册语言文件
 
-TLocale 的语言文件是自动加载的，你可以在 TabooLib 初始化你的插件完毕后任意的调用来发送，前提是你在 `plugin.yml` 添加了 TabooLib 为 `depend` 或 `softdepend`
+TLocale 的语言文件是自动加载的，你可以通过以下任意一种方式来注册语言文件。
+
+1. 在 `plugin.yml` 文件中添加 TabooLib 为 `depend` 或 `softdepend`。
+2. 在插件主类添加 `@TLocalePlugin` 注解。
+
+## 添加语言文件
 
 语言文件应该放在 `/lang/xx_XX.yml` 中，TabooLib 默认会加载 `zh_CN` 和 `en_US` 的语言文件。
 
 在添加了语言文件后，你就应该可以使用 `com.ilummc.tlib.resources.TLocale` 类的所有静态方法了。
 
-在 `/TaabooLib/config.yml` 中有 `LOCALE` 下的几个选项可以设置加载的语言和是否默认启用 PlaceholderAPI
+在 `/TabooLib/config.yml` 中有 `LOCALE` 下的几个选项可以设置加载的语言和是否默认启用 PlaceholderAPI
 
 ## 发送一条消息
 
@@ -130,13 +135,17 @@ node4:
     - 'Placeholder API 测试 %vault_eco_balance%'
   papi: true
 ```
-你可以在任意一个 `TEXT` 中添加 `papi: true` 来启用对 PlaceholderAPI 的支持，如果不添加，默认值为 `/TaabooLib/config.yml` 中的 `LOCALE.USE_PAPI` 设置的值。
+
+你可以在任意一个 `TEXT` 中添加 `papi: true` 来启用对 PlaceholderAPI 的支持。  
+默认值为 `/TaabooLib/config.yml` 中 `LOCALE.USE_PAPI` 所设置的值。
 
 所有的选项都是**可选的** 。
 
 ### TITLE
 
-`TITLE` 类型代表一条 title 消息，可以含有淡入淡出的时间选项。所有的选项都是**可选的** 。
+`TITLE` 类型代表一条 title 消息，可以含有淡入淡出的时间选项。
+
+所有的选项都是**可选的** 。
 
 ```yaml
 node:
@@ -151,7 +160,9 @@ node:
 
 ### ACTION
 
-`ACTION` 类型代表一条 ActionBar 消息。所有的选项都是**可选的** 。
+`ACTION` 类型代表一条 ActionBar 消息。
+
+所有的选项都是**可选的** 。
 
 ```yaml
 node:
@@ -205,3 +216,45 @@ node:
         甚至可以加入 PAPI 变量如 %player_name%
       command: '点击文本也可以替换，不做演示'
 ```
+
+### BOOK
+
+`BOOK` 类型代表含有可以点击和可以含有悬浮文字的书本内容。
+
+消息的文本在 `pages` 中指定，其余使用方式与 `JSON` 类型相同。
+
+所有的选项都是**可选的** 。
+
+```yaml
+node:
+  ==: BOOK
+  pages:
+    1:
+      - '书本第一页'
+      - '<点击建议命令@test1>'
+      - '<点击执行命令@test2>'
+    2:
+      - '书本第二页'
+      - '变量用法与 JSON 相同'
+  papi: true
+  args:
+    test1:
+      suggest: '/say 建议执行的命令'
+    test2:
+      command: '/say 点击直接执行的命令'
+```
+
+### SOUND
+
+`SOUND` 代表向玩家发送音效提示。
+
+音效在 `sound` 中指定，格式为 `音效名-音调-音量`
+
+所有的选项都是**可选的** 。
+
+```yaml
+noded
+  ==: SOUND
+  sound: 'ENTITY_PLAYER_LEVEL-1-1'
+```
+
