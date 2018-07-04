@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <groupId>org.spigotmc</groupId>
+    <artifactId>spigot-api</artifactId>
+    <versioning>
+        <latest>1.12.2-R0.1-SNAPSHOT</latest>
+        <versions>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
+        </versions>
+        <lastUpdated>20180627103100</lastUpdated>
+    </versioning>
+</metadata>
