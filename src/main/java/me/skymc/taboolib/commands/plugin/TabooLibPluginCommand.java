@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-05-07 20:14
  */
-public class TabooLibPluginMainCommand extends BaseMainCommand {
+public class TabooLibPluginCommand extends BaseMainCommand {
 
     @Override
     public String getCommandTitle() {

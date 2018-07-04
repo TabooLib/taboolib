@@ -78,13 +78,12 @@ public class SQLHost {
                 Objects.equals(getUser(), sqlHost.getUser()) &&
                 Objects.equals(getPort(), sqlHost.getPort()) &&
                 Objects.equals(getPassword(), sqlHost.getPassword()) &&
-                Objects.equals(getDatabase(), sqlHost.getDatabase()) &&
-                Objects.equals(getPlugin(), sqlHost.getPlugin());
+                Objects.equals(getDatabase(), sqlHost.getDatabase());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getHost(), getUser(), getPort(), getPassword(), getDatabase(), getPlugin());
+        return Objects.hash(getHost(), getUser(), getPort(), getPassword(), getDatabase());
     }
 
     @Override
