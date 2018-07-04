@@ -389,7 +389,7 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static void setEconomy(Economy economy) {
-        this.economy = economy;
+        Main.economy = economy;
     }
 
     public static File getPlayerDataFolder() {
