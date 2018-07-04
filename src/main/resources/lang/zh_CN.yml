@@ -239,6 +239,7 @@ COMMANDS:
       UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
       UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
       FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
+      PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
       UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
       UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
     JAVASHELL:
