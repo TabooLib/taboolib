@@ -8,11 +8,12 @@ import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.anvil.AnvilContainerAPI;
 import me.skymc.taboolib.bstats.Metrics;
+import me.skymc.taboolib.commands.TabooLibExecuteCommand;
 import me.skymc.taboolib.commands.TabooLibMainCommand;
 import me.skymc.taboolib.commands.internal.TBaseCommand;
 import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
-import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
+import me.skymc.taboolib.commands.plugin.TabooLibPluginCommand;
 import me.skymc.taboolib.commands.taboolib.listener.ListenerItemListCommand;
 import me.skymc.taboolib.commands.taboolib.listener.ListenerSoundsCommand;
 import me.skymc.taboolib.database.GlobalDataManager;
@@ -45,6 +46,7 @@ import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
 import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
@@ -74,25 +76,15 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private static Plugin inst;
-
-    private static net.milkbowl.vault.economy.Economy Economy;
-
+    private static Economy economy;
     private static File playerDataFolder;
-
     private static File serverDataFolder;
-
     private static StorageType storageType = StorageType.LOCAL;
-
-    private static boolean disable = false;
-
     private static MySQLConnection connection = null;
-
     private static Language2 exampleLanguage2;
-
-    private static boolean started;
-
+    private static boolean disable = false;
+    private static boolean started = false;
     private static boolean isInternetOnline = false;
-
     private FileConfiguration config = null;
 
     @Override
@@ -132,6 +124,8 @@ public class Main extends JavaPlugin implements Listener {
         setupLibraries();
         // 载入牛逼玩意儿
         TLib.initPost();
+        // 注册连接池
+        HikariHandler.init();
     }
 
     @Override
@@ -348,7 +342,8 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("taboolibrarymodule").setExecutor(new TLMCommands());
         TBaseCommand.registerCommand("taboolib", new TabooLibMainCommand());
         TBaseCommand.registerCommand("tabooliblocale", new TabooLibLocaleCommand());
-        TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginMainCommand());
+        TBaseCommand.registerCommand("taboolibplugin", new TabooLibPluginCommand());
+        TBaseCommand.registerCommand("taboolibexecute", new TabooLibExecuteCommand());
         TBaseCommand.registerCommand("translateuuid", new TranslateUUIDCommand());
     }
 
@@ -390,11 +385,11 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public static net.milkbowl.vault.economy.Economy getEconomy() {
-        return Economy;
+        return economy;
     }
 
-    public static void setEconomy(net.milkbowl.vault.economy.Economy economy) {
-        Economy = economy;
+    public static void setEconomy(Economy economy) {
+        this.economy = economy;
     }
 
     public static File getPlayerDataFolder() {

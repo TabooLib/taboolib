@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.commands.plugin.TabooLibPluginMainCommand;
 import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
