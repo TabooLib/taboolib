@@ -1,17 +1,45 @@
 package me.skymc.taboolib.player;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
  * @author sky
  */
 public class PlayerUtils {
+
+    private static boolean setup;
+    private static boolean useReflection;
+    private static Method oldGetOnlinePlayersMethod;
+
+    public static Collection<? extends Player> getOnlinePlayers() {
+        try {
+            if (!setup) {
+                oldGetOnlinePlayersMethod = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+                if (oldGetOnlinePlayersMethod.getReturnType() == Player[].class) {
+                    useReflection = true;
+                }
+                setup = true;
+            }
+            if (!useReflection) {
+                return Bukkit.getOnlinePlayers();
+            } else {
+                Player[] playersArray = (Player[]) oldGetOnlinePlayersMethod.invoke(null);
+                return ImmutableList.copyOf(playersArray);
+            }
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
 
     /**
      * 获取目标方块
