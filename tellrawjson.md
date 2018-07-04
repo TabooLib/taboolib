@@ -1,7 +1,6 @@
 `me.skymc.taboolib.json.tellraw.TellrawJson`
 
 ## 作用
----
 
 TellrawJson 封装了 `md_5` 的 `TextComponent` 相关工具。  
 最大化的减少开发成本，简化了原版 Tellraw 信息的发送过程。
@@ -9,7 +8,6 @@ TellrawJson 封装了 `md_5` 的 `TextComponent` 相关工具。
 > TLocale 的 `BOOK` 功能就是由 TellrawJson 开发而成的。
 
 ## 开始
----
 
 **创建对象**
 
