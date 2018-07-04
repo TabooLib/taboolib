@@ -1,7 +1,5 @@
 `me.skymc.taboolib.string.ArrayUtils`
 
-ArrayUtils 提供了一些关于数组的常用方法。
-
 ## arrayJoin
 
 这个方法在使用指令的时候会经常用到，例如 `/say BlackSKY Hello World!`。  
