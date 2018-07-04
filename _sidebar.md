@@ -5,4 +5,5 @@
 * 实用工具
 
 * [Ref](ref.md)
+* [ArrayUtils](arrayutils.md)
 * [TellrawJson](tellrawjson.md)
