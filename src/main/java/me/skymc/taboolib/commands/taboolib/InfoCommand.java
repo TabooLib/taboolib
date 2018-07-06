@@ -4,6 +4,7 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
+import me.skymc.taboolib.json.JSONReader;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public class InfoCommand extends SubCommand {
                         player.getItemInHand().getType().name(),
                         ItemUtils.getCustomName(player.getItemInHand()),
                         player.getItemInHand().getTypeId() + ":" + player.getItemInHand().getDurability(),
-                        nbt.toString());
+                        JSONReader.formatJson(nbt.asNBTString()));
             }
         }
     }

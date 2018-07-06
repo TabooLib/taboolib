@@ -12,6 +12,7 @@ import me.skymc.taboolib.commands.taboolib.*;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
+import me.skymc.taboolib.player.PlayerUtils;
 import me.skymc.taboolib.plugin.PluginUtils;
 import me.skymc.taboolib.update.UpdateTask;
 import org.bukkit.Bukkit;
@@ -807,6 +808,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
                 @Override
                 public void run() {
+                    if (PlayerUtils.getOnlinePlayers().size() > 0) {
+                        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.PLAYER-ONLINE");
+                        return;
+                    }
+
                     String url = Strings.replaceWithOrder("https://github.com/Bkm016/TabooLib/releases/download/{0}/TabooLib-{0}.jar", UpdateTask.getNewVersion());
                     TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-START", url);
 

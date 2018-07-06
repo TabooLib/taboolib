@@ -74,7 +74,11 @@ public class SQLHost {
             return false;
         }
         SQLHost sqlHost = (SQLHost) o;
-        return Objects.equals(getHost(), sqlHost.getHost()) && Objects.equals(getPort(), sqlHost.getPort()) && Objects.equals(getUser(), sqlHost.getUser()) && Objects.equals(getPassword(), sqlHost.getPassword()) && Objects.equals(getDatabase(), sqlHost.getDatabase());
+        return Objects.equals(getHost(), sqlHost.getHost()) &&
+                Objects.equals(getUser(), sqlHost.getUser()) &&
+                Objects.equals(getPort(), sqlHost.getPort()) &&
+                Objects.equals(getPassword(), sqlHost.getPassword()) &&
+                Objects.equals(getDatabase(), sqlHost.getDatabase());
     }
 
     @Override
@@ -84,6 +88,13 @@ public class SQLHost {
 
     @Override
     public String toString() {
-        return MessageFormat.format("SQLHost'{'host=''{0}'', user=''{1}'', port=''{2}'', password=''{3}'', database=''{4}'', plugin={5}'}'", host, user, port, password, database, plugin);
+        return "SQLHost{" +
+                "host='" + host + '\'' +
+                ", user='" + user + '\'' +
+                ", port='" + port + '\'' +
+                ", password='" + password + '\'' +
+                ", database='" + database + '\'' +
+                ", plugin=" + plugin +
+                '}';
     }
 }

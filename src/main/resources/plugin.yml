@@ -21,6 +21,9 @@ commands:
   taboolibplugin:
     aliases: [tabooplugin, tplugin]
     permission: taboolib.admin
+  taboolibexecute:
+    aliases: [texecute]
+    permission: taboolib.admin
   taboolibrarymodule:
     aliases: [tlm]
   translateuuid:

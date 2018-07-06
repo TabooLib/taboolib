@@ -1,0 +1,32 @@
+# 默认连接池配置
+DefaultSettings:
+  DriverClassName: 'com.mysql.jdbc.Driver'
+  AutoCommit: true
+  MinimumIdle: 1
+  # 连接池大小
+  MaximumPoolSize: 10
+  # 用来指定验证连接有效性的超时时间（毫秒/默认: 5秒）
+  ValidationTimeout: 3000
+  # 等待连接池分配连接的最大时长（毫秒/默认: 30秒）
+  # 超过这个时长还没可用的连接则发生 SQLException
+  ConnectionTimeout: 10000
+  # 一个连接idle状态的最大时长（毫秒/默认: 10分钟），超时则被释放
+  IdleTimeout: 60000
+  # 一个连接的生命时长（毫秒/默认: 30分钟），超时而且没被使用则被释放
+  MaxLifetime: 60000
+  # 是否自定义配置，为true时下面两个参数才生效
+  DataSourceProperty:
+    cachePrepStmts: true
+    # 连接池大小默认25，官方推荐250-500
+    prepStmtCacheSize: 250
+    # 单条语句最大长度默认256，官方推荐2048
+    prepStmtCacheSqlLimit: 2048
+    # 新版本MySQL支持服务器端准备，开启能够得到显著性能提升
+    useServerPrepStmts: true
+    useLocalSessionState: true
+    useLocalTransactionState: true
+    rewriteBatchedStatements: true
+    cacheResultSetMetadata: true
+    cacheServerConfiguration: true
+    elideSetAutoCommits: true
+    maintainTimeStats: false

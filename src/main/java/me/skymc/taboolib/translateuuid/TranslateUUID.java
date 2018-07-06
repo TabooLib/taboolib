@@ -159,15 +159,7 @@ public class TranslateUUID {
     // *********************************
 
     private static void createTable() {
-        PreparedStatement preparedStatement = null;
-        try (Connection connection = dataSource.getConnection()) {
-            preparedStatement = connection.prepareStatement(sqlTable.createQuery());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            TLogger.getGlobalLogger().error("Database error: " + e.toString());
-        } finally {
-            SQLExecutor.freeStatement(preparedStatement, null);
-        }
+        sqlTable.executeUpdate(sqlTable.createQuery()).dataSource(dataSource).run();
     }
 
     private static String getDefaultWorldName() {
@@ -194,21 +186,11 @@ public class TranslateUUID {
     }
 
     private static String translateInternal(Connection connection, String input, String output, String command) {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        try {
-            preparedStatement = connection.prepareStatement(Strings.replaceWithOrder(command, sqlTable.getTableName()));
-            preparedStatement.setString(1, input);
-            resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                return resultSet.getString(output);
-            }
-        } catch (SQLException e) {
-            TLogger.getGlobalLogger().error("Database error: " + e.toString());
-        } finally {
-            SQLExecutor.freeStatement(preparedStatement, resultSet);
-        }
-        return null;
+        return sqlTable.executeQuery(Strings.replaceWithOrder(command, sqlTable.getTableName()))
+                .connection(connection)
+                .statement(statement -> statement.setString(1, input))
+                .resultNext(result -> result.getString(output))
+                .run(null, "");
     }
 
     // *********************************
