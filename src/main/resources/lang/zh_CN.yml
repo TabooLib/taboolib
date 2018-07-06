@@ -239,6 +239,7 @@ COMMANDS:
       UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
       UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
       FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
+      PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
       UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
       UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
     JAVASHELL:
@@ -533,6 +534,20 @@ COMMANDS:
     RELOAD:
       DESCRIPTION: '重载配置及数据库'
       SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送, 详细信息请查看控制台'
+  TEXECUTE:
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibExecute Commands &e&l-----'
+    CHAT:
+      DESCRIPTION: '使玩家输入聊天内容'
+      ARGUMENTS:
+        0: '玩家'
+        1: '内容'
+      INVALID-PLAYER-OFFLINE: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线.'
+    COMMAND:
+      DESCRIPTION: '使目标输入执行指令'
+      ARGUMENTS:
+        0: '目标'
+        1: '内容'
+      INVALID-TARGET-NOT-FOUND: '&8[&3&lTabooLib&8] &4目标 &c{0} &4不存在.'
 
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'

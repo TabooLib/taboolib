@@ -1,8 +1,8 @@
 # TabooLib
 
-> Bukkit 开发工具库
+> Bukkit 开发工具库集合
 
-[![](http://ci.pcd.ac.cn/job/TabooLibDev/badge/icon)](http://ci.pcd.ac.cn/job/TabooLibDev)
+[![](http://ci.pcd.ac.cn/job/TabooLib/badge/icon)](http://ci.pcd.ac.cn/job/TabooLib)
 [![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
 [![](https://img.shields.io/github/release/Bkm016/TabooLib.svg)](https://github.com/Bkm016/TabooLib/tags)
 [![](https://img.shields.io/github/stars/Bkm016/TabooLib.svg?style=flat-square&label=Stars)](https://github.com/Bkm016/TabooLib)

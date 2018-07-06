@@ -190,7 +190,7 @@ public class NBTCompound {
     }
     
     public String asNBTString(){
-        return getCompound().toString();
+        return getCompound() == null ? "" : getCompound().toString();
     }
 
 }

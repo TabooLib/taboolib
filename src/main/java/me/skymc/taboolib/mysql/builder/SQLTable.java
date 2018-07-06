@@ -1,8 +1,11 @@
 package me.skymc.taboolib.mysql.builder;
 
-import com.google.common.base.Preconditions;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
+import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
+
+import java.util.Arrays;
 
 /**
  * @Author sky
@@ -24,19 +27,16 @@ public class SQLTable {
 
     public SQLTable addColumn(SQLColumn sqlColumn) {
         if (columns == null) {
-            columns = new SQLColumn[]{sqlColumn};
+            columns = new SQLColumn[] {sqlColumn};
         } else {
-            ArrayUtils.arrayAppend(columns, sqlColumn);
+            columns = ArrayUtils.arrayAppend(columns, sqlColumn);
         }
         return this;
     }
 
     public String createQuery() {
-        Preconditions.checkNotNull(columns);
         StringBuilder builder = new StringBuilder();
-        for (SQLColumn sqlColumn : columns) {
-            builder.append(sqlColumn.convertToCommand()).append(", ");
-        }
+        Arrays.stream(columns).forEach(sqlColumn -> builder.append(sqlColumn.convertToCommand()).append(", "));
         return Strings.replaceWithOrder("create table if not exists `{0}` ({1})", tableName, builder.substring(0, builder.length() - 2));
     }
 
@@ -50,6 +50,14 @@ public class SQLTable {
 
     public String truncateQuery() {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
+    }
+
+    public RunnableUpdate executeUpdate(String query) {
+        return new RunnableUpdate(query);
+    }
+
+    public RunnableQuery executeQuery(String query) {
+        return new RunnableQuery(query);
     }
 
     // *********************************

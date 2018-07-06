@@ -42,13 +42,7 @@ public class TLocaleTitle extends TLocaleSerialize {
     public static TLocaleTitle valueOf(Map<String, Object> map) {
         TLocaleTitle title;
         try {
-            title = new TLocaleTitle(
-                    getStringOrDefault(map, "title", ""),
-                    getStringOrDefault(map, "subtitle", ""),
-                    getIntegerOrDefault(map, "fadein", 10),
-                    getIntegerOrDefault(map, "fadeout", 10),
-                    getIntegerOrDefault(map, "stay", 10),
-                    isPlaceholderEnabled(map));
+            title = new TLocaleTitle(getStringOrDefault(map, "title", ""), getStringOrDefault(map, "subtitle", ""), getIntegerOrDefault(map, "fadein", 10), getIntegerOrDefault(map, "fadeout", 10), getIntegerOrDefault(map, "stay", 10), isPlaceholderEnabled(map));
         } catch (Exception e) {
             title = new TLocaleTitle("Empty Title message.", e.getMessage(), 10, 20, 10, false);
         }
@@ -58,7 +52,7 @@ public class TLocaleTitle extends TLocaleSerialize {
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            TitleUtils.sendTitle((Player) sender, replaceText(sender, title), replaceText(sender, subtitle), fadein, stay, fadeout);
+            TitleUtils.sendTitle((Player) sender, replaceText(sender, Strings.replaceWithOrder(title, args)), replaceText(sender, Strings.replaceWithOrder(subtitle, args)), fadein, stay, fadeout);
         } else {
             TLocale.Logger.error("LOCALE.TITLE-SEND-TO-NON-PLAYER", asString(args));
         }
@@ -86,7 +80,7 @@ public class TLocaleTitle extends TLocaleSerialize {
         return map;
     }
 
-    private String replaceText(CommandSender sender, String args) {
-        return usePlaceholder ? TLocale.Translate.setPlaceholders(sender, args) : TLocale.Translate.setColored(args);
+    private String replaceText(CommandSender sender, String text, String... args) {
+        return usePlaceholder ? TLocale.Translate.setPlaceholders(sender, text) : TLocale.Translate.setColored(text);
     }
 }

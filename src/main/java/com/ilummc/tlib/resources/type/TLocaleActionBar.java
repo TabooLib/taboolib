@@ -2,10 +2,9 @@ package com.ilummc.tlib.resources.type;
 
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.compat.PlaceholderHook;
-import com.ilummc.tlib.nms.ActionBar;
 import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.Main;
+import me.skymc.taboolib.display.ActionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -34,7 +33,7 @@ public class TLocaleActionBar extends TLocaleSerialize {
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            ActionBar.sendActionBar(((Player) sender), replace(sender, text, args));
+            ActionUtils.send(((Player) sender), replace(sender, text, args));
         }
     }
 

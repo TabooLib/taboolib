@@ -32,14 +32,7 @@ public class EntityUtils implements Listener {
      * @return
      */
     public static Entity getEntityWithUUID(UUID u) {
-        for (World w : Bukkit.getWorlds()) {
-            for (Entity e : w.getLivingEntities()) {
-                if (e.getUniqueId().equals(u)) {
-                    return e;
-                }
-            }
-        }
-        return null;
+        return Bukkit.getWorlds().stream().flatMap(w -> w.getLivingEntities().stream()).filter(e -> e.getUniqueId().equals(u)).findFirst().orElse(null);
     }
 
     /**
@@ -50,12 +43,7 @@ public class EntityUtils implements Listener {
      * @return
      */
     public static Entity getEntityWithUUID_World(UUID u, World world) {
-        for (Entity e : world.getLivingEntities()) {
-            if (e.getUniqueId().equals(u)) {
-                return e;
-            }
-        }
-        return null;
+        return world.getLivingEntities().stream().filter(e -> e.getUniqueId().equals(u)).findFirst().orElse(null);
     }
 
     /**
@@ -66,11 +54,7 @@ public class EntityUtils implements Listener {
      */
     public static void addGlow(Player player, Entity entity) {
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
-            try {
-                throw new PluginNotFoundException(TLocale.asString("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB"));
-            } catch (Exception e) {
-                //
-            }
+            TLocale.sendToConsole("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB");
         }
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getIntegers().write(0, entity.getEntityId());
@@ -94,11 +78,7 @@ public class EntityUtils implements Listener {
      */
     public static void delGlow(Player player, Entity entity) {
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") == null) {
-            try {
-                throw new PluginNotFoundException(TLocale.asString("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB"));
-            } catch (Exception e) {
-                //
-            }
+            TLocale.sendToConsole("ENTITY-UTILS.NOTFOUND-PROTOCOLLIB");
         }
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         packet.getIntegers().write(0, entity.getEntityId());

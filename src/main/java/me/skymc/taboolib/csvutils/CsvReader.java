@@ -500,7 +500,7 @@ public class CsvReader {
                                 ++dataBuffer2.Position;
                                 if (this.userSettings.SafetySwitch && this.dataBuffer.Position - this.dataBuffer.ColumnStart + this.columnBuffer.Position > 100000) {
                                     this.close();
-                                    throw new IOException("Maximum addColumn length of 100,000 exceeded in addColumn " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting addColumn lengths greater than 100,000 characters to" + " avoid this error.");
+                                    throw new IOException("Maximum column length of 100,000 exceeded in column " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting column lengths greater than 100,000 characters to" + " avoid this error.");
                                 }
                             }
                         } while (this.hasMoreData && this.startedColumn);
@@ -695,7 +695,7 @@ public class CsvReader {
                                 ++dataBuffer3.Position;
                                 if (this.userSettings.SafetySwitch && this.dataBuffer.Position - this.dataBuffer.ColumnStart + this.columnBuffer.Position > 100000) {
                                     this.close();
-                                    throw new IOException("Maximum addColumn length of 100,000 exceeded in addColumn " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting addColumn lengths greater than 100,000 characters to" + " avoid this error.");
+                                    throw new IOException("Maximum column length of 100,000 exceeded in column " + NumberFormat.getIntegerInstance().format(this.columnsCount) + " in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting column lengths greater than 100,000 characters to" + " avoid this error.");
                                 }
                             }
                         } while (this.hasMoreData && this.startedColumn);
@@ -868,7 +868,7 @@ public class CsvReader {
         this.startedColumn = false;
         if (this.columnsCount >= 100000 && this.userSettings.SafetySwitch) {
             this.close();
-            throw new IOException("Maximum addColumn count of 100,000 exceeded in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting more than 100,000 columns per record to" + " avoid this error.");
+            throw new IOException("Maximum column count of 100,000 exceeded in record " + NumberFormat.getIntegerInstance().format(this.currentRecord) + ". Set the SafetySwitch property to false" + " if you're expecting more than 100,000 columns per record to" + " avoid this error.");
         }
         if (this.columnsCount == this.values.length) {
             final int n3 = this.values.length * 2;
