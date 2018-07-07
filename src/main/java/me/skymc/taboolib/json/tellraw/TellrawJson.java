@@ -13,6 +13,7 @@ import me.skymc.taboolib.string.VariableFormatter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
@@ -52,6 +53,14 @@ public class TellrawJson {
 
     public TellrawJson append(String text) {
         Arrays.stream(TextComponent.fromLegacyText(text)).forEach(component -> this.components = ArrayUtils.arrayAppend(this.components, component));
+        return this;
+    }
+
+    public TellrawJson append(TellrawJson json) {
+        BaseComponent[] newArray = new BaseComponent[components.length + json.components.length];
+        System.arraycopy(components, 0, newArray, 0, components.length);
+        System.arraycopy(json.components, 0, newArray, components.length, json.components.length);
+        components = newArray;
         return this;
     }
 

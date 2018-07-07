@@ -539,7 +539,7 @@ public class NMSUtil19 {
                     class_NBTTagList_getDoubleMethod = class_NBTTagList.getMethod("e", Integer.TYPE);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering NBTTagList.getDouble, loading entities from schematics will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering NBTTagList.getDouble, loading entities from schematics will not work");
                 class_NBTTagList_getDoubleMethod = null;
             }
 
@@ -577,7 +577,7 @@ public class NMSUtil19 {
                     }
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering entity movement accessors, vehicle control will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering entity movement accessors, vehicle control will not work");
                 class_Entity_jumpingField = null;
                 class_Entity_moveStrafingField = null;
                 class_Entity_moveForwardField = null;
@@ -589,7 +589,7 @@ public class NMSUtil19 {
                 Class<?> craftMagicNumbers = fixBukkitClass("org.bukkit.craftbukkit.util.CraftMagicNumbers");
                 class_CraftMagicNumbers_getBlockMethod = craftMagicNumbers.getMethod("getBlock", Material.class);
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering block durability accessor, durability-based block checks will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering block durability accessor, durability-based block checks will not work");
                 class_Block_durabilityField = null;
                 class_CraftMagicNumbers_getBlockMethod = null;
             }
@@ -614,7 +614,7 @@ public class NMSUtil19 {
                     class_PacketPlayOutChat_constructor = class_PacketPlayOutChat.getConstructor(class_IChatBaseComponent, Byte.TYPE);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering action bar methods, action bar messages will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering action bar methods, action bar messages will not work");
                 class_PacketPlayOutChat = null;
             }
 
@@ -631,7 +631,7 @@ public class NMSUtil19 {
                     class_CraftWorld_spawnMethod = class_CraftWorld.getMethod("spawn", Location.class, Class.class, CreatureSpawnEvent.SpawnReason.class);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering custom spawn method, spawn reasons will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred while registering custom spawn method, spawn reasons will not work");
                 class_CraftWorld_spawnMethod = null;
                 class_Consumer = null;
             }
@@ -642,7 +642,7 @@ public class NMSUtil19 {
                 class_TileEntity_updateMethod = class_TileEntity.getMethod("update");
                 class_TileEntity_saveMethod = class_TileEntity.getMethod("save", class_NBTTagCompound);
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, handling of tile entities may not work well", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, handling of tile entities may not work well");
                 class_TileEntity_loadMethod = null;
                 class_TileEntity_updateMethod = null;
                 class_TileEntity_saveMethod = null;
@@ -651,7 +651,7 @@ public class NMSUtil19 {
             try {
                 class_NBTCompressedStreamTools_loadFileMethod = class_NBTCompressedStreamTools.getMethod("a", InputStream.class);
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, schematics will not load", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, schematics will not load");
             }
 
             try {
@@ -659,7 +659,7 @@ public class NMSUtil19 {
                 class_DamageSource_getMagicSourceMethod = class_DamageSource.getMethod("b", class_Entity, class_Entity);
                 class_DamageSource_MagicField = class_DamageSource.getField("MAGIC");
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, magic damage will not work, using normal damage instead", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, magic damage will not work, using normal damage instead");
                 class_EntityLiving_damageEntityMethod = null;
                 class_DamageSource_getMagicSourceMethod = null;
                 class_DamageSource_MagicField = null;
@@ -699,7 +699,7 @@ public class NMSUtil19 {
                     }
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, armor stand slots cannot be locked", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, armor stand slots cannot be locked");
                 class_EntityArmorStand_disabledSlotsField = null;
             }
             if (class_EntityArmorStand_disabledSlotsField != null) {
@@ -730,7 +730,7 @@ public class NMSUtil19 {
                     }
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, chest locking and unlocking will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, chest locking and unlocking will not work");
                 class_TileEntityContainer_setLock = null;
                 class_TileEntityContainer_getLock = null;
             }
@@ -750,7 +750,7 @@ public class NMSUtil19 {
                     class_PlayerConnection_floatCountField.setAccessible(true);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, player flight exemption will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, player flight exemption will not work");
                 class_PlayerConnection_floatCountField = null;
             }
 
@@ -769,7 +769,7 @@ public class NMSUtil19 {
                     }
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, setting arrow lifespan will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, setting arrow lifespan will not work");
                 class_EntityArrow_lifeField = null;
             }
             if (class_EntityArrow_lifeField != null) {
@@ -780,7 +780,7 @@ public class NMSUtil19 {
                 // 1.9 and up
                 class_EntityDamageSource_setThornsMethod = class_EntityDamageSource.getMethod("w");
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, thorn damage override to hurt ender dragon will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, thorn damage override to hurt ender dragon will not work");
                 class_EntityDamageSource_setThornsMethod = null;
             }
 
@@ -801,7 +801,7 @@ public class NMSUtil19 {
                     class_Entity_saveMethod = class_Entity.getMethod("e", class_NBTTagCompound);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, saving entities to spawn eggs will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, saving entities to spawn eggs will not work");
                 class_Entity_getTypeMethod = null;
                 class_Entity_saveMethod = null;
             }
@@ -819,7 +819,7 @@ public class NMSUtil19 {
                     class_ItemStack_createStackMethod = class_ItemStack.getMethod("createStack", class_NBTTagCompound);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, restoring inventories from schematics will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, restoring inventories from schematics will not work");
                 class_ItemStack_createStackMethod = null;
             }
 
@@ -827,7 +827,7 @@ public class NMSUtil19 {
                 class_EntityArrow_damageField = class_EntityArrow.getDeclaredField("damage");
                 class_EntityArrow_damageField.setAccessible(true);
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, setting arrow damage will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, setting arrow damage will not work");
                 class_EntityArrow_damageField = null;
             }
 
@@ -844,7 +844,7 @@ public class NMSUtil19 {
                     class_Entity_isSilentMethod = class_Entity.getDeclaredMethod("ad");
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, silent entities will not work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, silent entities will not work");
                 class_Entity_setSilentMethod = null;
                 class_Entity_isSilentMethod = null;
             }
@@ -861,7 +861,7 @@ public class NMSUtil19 {
                     class_ArmorStand_setGravity = class_EntityArmorStand.getDeclaredMethod("setGravity", Boolean.TYPE);
                 }
             } catch (Throwable ex) {
-                Bukkit.getLogger().log(Level.WARNING, "An error occurred, hacky no-gravity armor stands won't work", ex);
+                Bukkit.getLogger().log(Level.WARNING, "An error occurred, hacky no-gravity armor stands won't work");
                 class_Entity_setNoGravity = null;
                 class_ArmorStand_setGravity = null;
             }
@@ -876,7 +876,7 @@ public class NMSUtil19 {
             }
         } catch (Throwable ex) {
             failed = true;
-            Bukkit.getLogger().log(Level.SEVERE, "An unexpected error occurred initializing Magic", ex);
+            Bukkit.getLogger().log(Level.SEVERE, "An unexpected error occurred initializing Magic");
         }
     }
 

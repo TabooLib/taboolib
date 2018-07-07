@@ -140,6 +140,8 @@ public class TLocale {
 
     public static class Tellraw extends TLocale {
 
+        private static final Class<?> chatSerializer = NMSUtils.getNMSClassSilent("ChatSerializer", "IChatBaseComponent");
+        private static final Method chatSerializerA = NMSUtils.getMethodSilent(chatSerializer, "a", String.class);
         private static final Field playerConnection = NMSUtils.getFieldSilent(NMSUtil19.class_EntityPlayer, "playerConnection");
         private static final Method sendPacket = NMSUtils.getMethodSilent(NMSUtil19.class_PlayerConnection, "sendPacket", NMSUtil19.class_Packet);
         private static final Constructor<?> PacketPlayOutChat = NMSUtils.getConstructorSilent(NMSUtil19.class_PacketPlayOutChat, NMSUtil19.class_IChatBaseComponent);
@@ -147,7 +149,7 @@ public class TLocale {
         public static void send(CommandSender sender, String rawMessage) {
             if (sender instanceof Player) {
                 try {
-                    sendPacket.invoke(playerConnection.get(NMSUtils.getHandle(sender)), PacketPlayOutChat.newInstance(rawMessage));
+                    sendPacket.invoke(playerConnection.get(NMSUtils.getHandle(sender)), PacketPlayOutChat.newInstance(chatSerializerA.invoke(null, rawMessage)));
                 } catch (Exception e) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " " + rawMessage);
                 }

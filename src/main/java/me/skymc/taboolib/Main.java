@@ -254,7 +254,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         // 提示信息
-        TLocale.Logger.error("NOTIFY.SUCCESS-DISABLE");
+        TLocale.Logger.info("NOTIFY.SUCCESS-DISABLE");
 
         // 结束连接
         if (connection != null && connection.isConnection()) {
