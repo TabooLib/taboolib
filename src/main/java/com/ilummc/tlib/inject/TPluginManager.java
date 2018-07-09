@@ -155,7 +155,7 @@ public class TPluginManager implements PluginManager {
 
     @Override
     public void disablePlugin(Plugin plugin) {
-        TDependencyInjector.onDisable(plugin);
+        TDependencyInjector.ejectOnDisable(plugin);
         instance.disablePlugin(plugin);
     }
 
