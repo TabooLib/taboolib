@@ -46,7 +46,7 @@ public class TDependencyInjector {
     }
 
     public static void inject(Plugin plugin, Object o) {
-        if (!plugin.equals(Main.getInst()) && !injected.contains(plugin.getName())) {
+        if (!injected.contains(plugin.getName())) {
             injected.add(plugin.getName());
             TLocaleLoader.load(plugin, true);
             injectDependencies(plugin, o);
