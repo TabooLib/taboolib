@@ -13,9 +13,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+/**
+ * @author Izzel_Aliz
+ */
 public class TDependencyInjector {
+
+    private static List<String> injected = new ArrayList<>();
 
     public static Dependency[] getDependencies(Object o) {
         Dependency[] dependencies = new Dependency[0];
@@ -30,26 +37,28 @@ public class TDependencyInjector {
         return dependencies;
     }
 
-    public static void inject(Plugin plugin, Object o) {
-        TLocaleLoader.load(plugin, true);
-        injectDependencies(plugin, o);
-        injectLogger(plugin, o);
-        injectConfig(plugin, o);
-        injectPluginInstance(plugin, o);
-    }
-
     static void injectOnEnable(Plugin plugin) {
-        if (!plugin.equals(Main.getInst())) {
-            inject(plugin, plugin);
-        }
+        inject(plugin, plugin);
     }
 
-    static void onDisable(Plugin plugin) {
+    static void ejectOnDisable(Plugin plugin) {
         eject(plugin, plugin);
+    }
+
+    public static void inject(Plugin plugin, Object o) {
+        if (!plugin.equals(Main.getInst()) && !injected.contains(plugin.getName())) {
+            injected.add(plugin.getName());
+            TLocaleLoader.load(plugin, true);
+            injectDependencies(plugin, o);
+            injectLogger(plugin, o);
+            injectConfig(plugin, o);
+            injectPluginInstance(plugin, o);
+        }
     }
 
     public static void eject(Plugin plugin, Object o) {
         try {
+            injected.remove(plugin.getName());
             ejectConfig(plugin, o);
         } catch (Throwable ignored) {
         }
