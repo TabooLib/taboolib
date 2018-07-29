@@ -82,7 +82,7 @@ public class PluginUtils {
     }
 
     public static Plugin getPluginByName(String name) {
-        return Arrays.stream(Bukkit.getPluginManager().getPlugins(), 0, Bukkit.getPluginManager().getPlugins().length).filter(plugin -> name.equalsIgnoreCase(plugin.getName())).findFirst().orElse(null);
+        return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> name.equalsIgnoreCase(plugin.getName())).findFirst().orElse(null);
     }
 
     public static List<String> getPluginNames(boolean fullName) {
