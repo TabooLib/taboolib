@@ -148,7 +148,7 @@ public class Main extends JavaPlugin implements Listener {
         // 启动脚本
         JavaShell.javaShellSetup();
         // 注册脚本
-        SkriptHandler.getInst();
+        SkriptHandler.register();
         // 注册头衔
         TagDataHandler.init(this);
         // 载入语言文件
@@ -167,7 +167,7 @@ public class Main extends JavaPlugin implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
 
         // 文件监控
-        TLib.getTLib().getConfigWatcher().addListener(new File(getDataFolder(), "config.yml"), null, obj -> {
+        TLib.getTLib().getConfigWatcher().addSimpleListener(new File(getDataFolder(), "config.yml"), () -> {
             reloadConfig();
             TLocale.Logger.info("CONFIG.RELOAD-SUCCESS", inst.getName(), "config.yml");
         });

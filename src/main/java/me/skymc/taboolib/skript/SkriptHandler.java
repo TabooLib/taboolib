@@ -12,24 +12,14 @@ import org.bukkit.inventory.ItemStack;
  * @since 2018-02-28 15:40:55
  */
 public class SkriptHandler {
-	
-	private static SkriptHandler inst = null;
-	
-	private SkriptHandler() {
-		if (Bukkit.getPluginManager().getPlugin("Skript") != null) {
-			Skript.registerExpression(ExpressionItemCache.class, ItemStack.class, ExpressionType.SIMPLE, "taboolib itemcache %string%");
-			Skript.registerExpression(ExpressionTabooCodeItem.class, ItemStack.class, ExpressionType.SIMPLE, "taboocode itemcache %string%");
-		}
-	}
-	
-	public static SkriptHandler getInst() {
-		if (inst == null) {
-			synchronized (SkriptHandler.class) {
-				if (inst == null) {
-					inst = new SkriptHandler();
-				}
-			}
-		}
-		return inst;
-	}
+
+    public static void register() {
+        if (Bukkit.getPluginManager().getPlugin("Skript") != null) {
+            try {
+                Skript.registerExpression(ExpressionItemCache.class, ItemStack.class, ExpressionType.SIMPLE, "taboolib itemcache %string%");
+                Skript.registerExpression(ExpressionTabooCodeItem.class, ItemStack.class, ExpressionType.SIMPLE, "taboocode itemcache %string%");
+            } catch (Exception ignored) {
+            }
+        }
+    }
 }

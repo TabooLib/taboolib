@@ -1,0 +1,5 @@
+name: TabooLib
+main: me.skymc.taboolib.bungee.TabooLibBungee
+version: ${project.version}
+
+author: [lzzelAliz, 坏黑]

@@ -127,6 +127,13 @@
             <systemPath>${basedir}/libs/1_8_R3.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>bungeecord</groupId>
+            <artifactId>bungeecord</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/BungeeCord.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.sun.tools</groupId>
             <artifactId>jshell</artifactId>
             <version>1</version>
