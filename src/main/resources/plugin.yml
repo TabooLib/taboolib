@@ -1,12 +1,10 @@
-
 name: TabooLib
-
-authors: [坏黑]
-website: http://www.15imc.com/index.html
-
 main: me.skymc.taboolib.Main
-
 version: ${project.version}
+
+author: [lzzelAliz, 坏黑]
+depend: [Vault]
+softdepend: [PlaceholderAPI, Skript, MassiveLag]
 
 commands:
   taboolib:
@@ -29,6 +27,3 @@ commands:
   translateuuid:
     aliases: 'tuuid'
     permission: taboolib.admin
-    
-depend: [Vault]
-softdepend: [PlaceholderAPI, Skript, MassiveLag]
