@@ -18,18 +18,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
+@Deprecated
 public class JavaShell {
 
     private static String paths = "";
-
     private static File javaShellFolder;
-
     private static File scriptFolder;
-
     private static File cacheFolder;
-
     private static File libFolder;
-
     private static HashMap<String, Class<?>> shells = new HashMap<>();
 
     public static String getPaths() {

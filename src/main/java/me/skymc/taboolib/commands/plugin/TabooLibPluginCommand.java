@@ -5,6 +5,7 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
 import me.skymc.taboolib.commands.internal.ISubCommand;
+import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.plugin.PluginLoadState;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-05-07 20:14
  */
+@TCommand(name = "taboolibplugin")
 public class TabooLibPluginCommand extends BaseMainCommand {
 
     @Override

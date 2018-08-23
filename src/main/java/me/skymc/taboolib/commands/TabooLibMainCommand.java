@@ -5,6 +5,7 @@ import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
+import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.commands.internal.type.CommandType;
@@ -33,6 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @Author sky
  * @Since 2018-05-09 21:38
  */
+@TCommand(name = "taboolib")
 public class TabooLibMainCommand extends BaseMainCommand {
 
     @Override

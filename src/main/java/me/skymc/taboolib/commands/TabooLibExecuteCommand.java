@@ -4,6 +4,7 @@ import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
+import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.string.ArrayUtils;
@@ -18,6 +19,7 @@ import org.bukkit.event.server.ServerCommandEvent;
  * @Author sky
  * @Since 2018-07-04 21:32
  */
+@TCommand(name = "taboolibexecute")
 public class TabooLibExecuteCommand extends BaseMainCommand {
 
     @Override

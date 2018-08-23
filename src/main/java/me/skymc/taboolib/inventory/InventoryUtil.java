@@ -7,6 +7,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.LinkedList;
 
+/**
+ * @author sky
+ */
 public class InventoryUtil {
 
     public final static LinkedList<Integer> SLOT_OF_CENTENTS = new LinkedList<>(Arrays.asList(

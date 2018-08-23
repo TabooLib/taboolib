@@ -367,6 +367,7 @@ COMMANDS:
       - ' &f- &7注册插件: &f{1}'
       - ' &f- &7上次刷新时间: &f{2}'
       - ' &f- &7下次刷新时间: &f{3}'
+      - ''
       LIST:
         HEAD:
         - ''
@@ -548,7 +549,37 @@ COMMANDS:
         0: '目标'
         1: '内容'
       INVALID-TARGET-NOT-FOUND: '&8[&3&lTabooLib&8] &4目标 &c{0} &4不存在.'
+  TLOGS:
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibLogs Commands &e&l-----'
+    INFO:
+      DESCRIPTION: '写入一般记录'
+      ARGUMENTS:
+        0: '目录'
+        1: '内容'
+      SUCCESS: '&8[&3&lTabooLib&8] &7写入完成.'
+    ERROR:
+      DESCRIPTION: '写入错误记录'
+      ARGUMENTS:
+        0: '目录'
+        1: '内容'
+      SUCCESS: '&8[&3&lTabooLib&8] &7写入完成.'
+    WARNING:
+      DESCRIPTION: '写入警告记录'
+      ARGUMENTS:
+        0: '目录'
+        1: '内容'
+      SUCCESS: '&8[&3&lTabooLib&8] &7写入完成.'
 
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
   CONNECTION-ERROR: '连接到数据库错误：{0}'
+  
+COMMUNICATION:
+  FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
+  FAILED-CONNECT-SERVER: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接失败.'
+  FAILED-CONNECT-CLIENT: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接出错: {0}'
+  FAILED-READING-PACKET: '§8[§3§lTabooLibClient§8] &4本地通讯网络数据包读取失败: {0}'
+  SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7本地通讯网络连接成功.'
+  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7加入本地通讯网络.'
+  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7退出本地通讯网络.'
+  CLIENT-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7发送信息: &f{1}'
