@@ -25,5 +25,8 @@ commands:
   taboolibrarymodule:
     aliases: [tlm]
   translateuuid:
-    aliases: 'tuuid'
+    aliases: [tuuid]
+    permission: taboolib.admin
+  tabooliblogs:
+    aliases: [tlog, tlogs]
     permission: taboolib.admin

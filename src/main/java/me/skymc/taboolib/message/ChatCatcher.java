@@ -1,5 +1,6 @@
 package me.skymc.taboolib.message;
 
+import me.skymc.taboolib.listener.TListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+@TListener
 public class ChatCatcher implements Listener {
 
     private static HashMap<String, LinkedList<Catcher>> playerdata = new HashMap<>();

@@ -11,6 +11,7 @@ import java.util.*;
 /**
  * @author sky
  */
+@Deprecated
 public class MySQLConnection {
 
     private String url;

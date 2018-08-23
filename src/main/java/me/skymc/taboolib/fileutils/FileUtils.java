@@ -2,22 +2,32 @@ package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
 import com.ilummc.tlib.util.IO;
-import javafx.print.PageLayout;
 import me.skymc.taboolib.Main;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
+import java.util.jar.JarFile;
 
+/**
+ * @author sky
+ */
 public class FileUtils {
 
+    /**
+     * 获取本地 IP 地址
+     *
+     * @return {@link String}
+     */
     public static String ip() {
         URL url;
         URLConnection con;
@@ -49,10 +59,77 @@ public class FileUtils {
         }
     }
 
+    /**
+     * 获取插件所有类
+     *
+     * @return {@link List<Class>}
+     */
+    public static List<Class> getClasses(Class<?> obj) {
+        List<Class> classes = new ArrayList<>();
+        URL url = getCaller(obj).getProtectionDomain().getCodeSource().getLocation();
+        try {
+            File src;
+            try {
+                src = new File(url.toURI());
+            } catch (URISyntaxException e) {
+                src = new File(url.getPath());
+            }
+            new JarFile(src).stream().filter(entry -> entry.getName().endsWith(".class")).forEach(entry -> {
+                String className = entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6);
+                try {
+                    classes.add(Class.forName(className, false, obj.getClassLoader()));
+                } catch (Throwable ignored) {
+                }
+            });
+        } catch (Throwable ignored) {
+        }
+        return classes;
+    }
+
+    /**
+     * 获取插件所有类
+     *
+     * @return {@link List<Class>}
+     */
+    public static List<Class> getClasses(Plugin plugin) {
+        List<Class> classes = new ArrayList<>();
+        URL url = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
+        try {
+            File src;
+            try {
+                src = new File(url.toURI());
+            } catch (URISyntaxException e) {
+                src = new File(url.getPath());
+            }
+            new JarFile(src).stream().filter(entry -> entry.getName().endsWith(".class")).forEach(entry -> {
+                String className = entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6);
+                try {
+                    classes.add(Class.forName(className, false, plugin.getClass().getClassLoader()));
+                } catch (Throwable ignored) {
+                }
+            });
+        } catch (Throwable ignored) {
+        }
+        return classes;
+    }
+
+    /**
+     * 获取资源文件
+     *
+     * @param filename 文件名
+     * @return {@link InputStream}
+     */
     public static InputStream getResource(String filename) {
         return getResource(Main.getInst(), filename);
     }
 
+    /**
+     * 获取插件资源文件
+     *
+     * @param plugin   插件
+     * @param filename 文件名
+     * @return {@link InputStream}
+     */
     public static InputStream getResource(Plugin plugin, String filename) {
         try {
             URL url = plugin.getClass().getClassLoader().getResource(filename);
@@ -68,6 +145,12 @@ public class FileUtils {
         }
     }
 
+    /**
+     * 写入文件
+     *
+     * @param inputStream 输入流
+     * @param file        文件
+     */
     public static void inputStreamToFile(InputStream inputStream, File file) {
         try {
             String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
@@ -94,14 +177,58 @@ public class FileUtils {
     }
 
     /**
+     * 检测文件并创建（目录）
+     *
+     * @param file 文件
+     */
+    public static void createNewFileAndPath(File file) {
+        if (!file.exists()) {
+            String filePath = file.getPath();
+            int index = filePath.lastIndexOf(File.separator);
+            String folderPath;
+            File folder;
+            if ((index >= 0) && (!(folder = new File(filePath.substring(0, index))).exists())) {
+                folder.mkdirs();
+            }
+            try {
+                file.createNewFile();
+            } catch (IOException ignored) {
+            }
+        }
+    }
+
+    /**
+     * 创建并获取目录
+     *
+     * @param path 目录文件
+     * @return
+     */
+    public static File folder(File path) {
+        if (!path.exists()) {
+            path.mkdirs();
+        }
+        return path;
+    }
+
+    /**
+     * 创建并获取目录
+     *
+     * @param path 目录地址
+     * @return
+     */
+    public static File folder(String path) {
+        return folder(new File(path));
+    }
+
+    /**
      * 创建并获取文件
      *
-     * @param Path     目录
+     * @param path     目录
      * @param filePath 地址
      * @return
      */
-    public static File file(File Path, String filePath) {
-        return createNewFile(new File(Path, filePath));
+    public static File file(File path, String filePath) {
+        return createNewFile(new File(path, filePath));
     }
 
     /**
@@ -136,29 +263,29 @@ public class FileUtils {
     /**
      * 复制文件夹
      *
-     * @param file1 文件1
-     * @param file2 文件2
+     * @param originFileName 文件1
+     * @param targetFileName 文件2
      */
-    public static void copyAllFile(String file1, String file2) {
-        File _file1 = new File(file1);
-        File _file2 = new File(file2);
-        if (!_file2.exists()) {
-            if (!_file1.isDirectory()) {
-                createNewFile(_file2);
+    public static void copyAllFile(String originFileName, String targetFileName) {
+        File originFile = new File(originFileName);
+        File targetFile = new File(targetFileName);
+        if (!targetFile.exists()) {
+            if (!originFile.isDirectory()) {
+                createNewFile(targetFile);
             } else {
-                _file2.mkdirs();
+                targetFile.mkdirs();
             }
         }
-        if (_file1.isDirectory()) {
-            for (File file : Objects.requireNonNull(_file1.listFiles())) {
+        if (originFile.isDirectory()) {
+            for (File file : Objects.requireNonNull(originFile.listFiles())) {
                 if (file.isDirectory()) {
-                    copyAllFile(file.getAbsolutePath(), file2 + "/" + file.getName());
+                    copyAllFile(file.getAbsolutePath(), targetFileName + "/" + file.getName());
                 } else {
-                    fileChannelCopy(file, new File(file2 + "/" + file.getName()));
+                    fileChannelCopy(file, new File(targetFileName + "/" + file.getName()));
                 }
             }
         } else {
-            fileChannelCopy(_file1, _file2);
+            fileChannelCopy(originFile, targetFile);
         }
     }
 
@@ -313,6 +440,17 @@ public class FileUtils {
         download(downloadURL, new File(saveDir, filename));
     }
 
+    @Deprecated
+    public static void close(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Deprecated
     public static byte[] read(InputStream in) {
         byte[] buffer = new byte[1024];
         int len;
@@ -326,12 +464,17 @@ public class FileUtils {
         return bos.toByteArray();
     }
 
-    public static void close(Closeable closeable) {
+    // *********************************
+    //
+    //         Private Methods
+    //
+    // *********************************
+
+    private static Class getCaller(Class<?> obj) {
         try {
-            if (closeable != null) {
-                closeable.close();
-            }
-        } catch (Exception ignored) {
+            return Class.forName(Thread.currentThread().getStackTrace()[3].getClassName(), false, obj.getClassLoader());
+        } catch (ClassNotFoundException ignored) {
         }
+        return null;
     }
 }

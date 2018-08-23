@@ -1,6 +1,7 @@
 package me.skymc.taboolib.anvil;
 
 import com.ilummc.tlib.resources.TLocale;
+import me.skymc.taboolib.listener.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,9 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * @author sky
- */
+@TListener
 public class AnvilContainerAPI implements Listener {
 
     public static List<String> list = new ArrayList<>();

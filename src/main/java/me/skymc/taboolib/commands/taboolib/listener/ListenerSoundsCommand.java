@@ -3,6 +3,7 @@ package me.skymc.taboolib.commands.taboolib.listener;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.inventory.InventoryUtil;
 import me.skymc.taboolib.inventory.ItemUtils;
+import me.skymc.taboolib.listener.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  * @author sky
  * @since 2018年2月4日 下午4:35:00
  */
+@TListener
 public class ListenerSoundsCommand implements Listener {
 
     public static void openInventory(Player player, int page, String search) {

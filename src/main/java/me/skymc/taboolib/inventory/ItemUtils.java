@@ -34,6 +34,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.IntStream;
 
+/**
+ * @author sky
+ */
 public class ItemUtils {
 
     private static FileConfiguration itemdir = null;
@@ -418,11 +421,11 @@ public class ItemUtils {
             meta.setLore(asString(section.getStringList("lore"), papiPlayer));
         }
         // 附魔
-        if (section.contains("enchants")) {
-            for (String preEnchant : section.getConfigurationSection("enchants").getKeys(false)) {
+        if (section.contains("enchant")) {
+            for (String preEnchant : section.getConfigurationSection("enchant").getKeys(false)) {
                 Enchantment enchant = asEnchantment(preEnchant);
                 if (enchant != null) {
-                    meta.addEnchant(enchant, section.getInt("enchants." + preEnchant), true);
+                    meta.addEnchant(enchant, section.getInt("enchant." + preEnchant), true);
                 } else {
                     TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ENCHANTS", preEnchant);
                 }

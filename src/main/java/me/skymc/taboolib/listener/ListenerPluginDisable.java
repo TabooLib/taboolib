@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 
+@TListener
 public class ListenerPluginDisable implements Listener {
 
     @EventHandler
