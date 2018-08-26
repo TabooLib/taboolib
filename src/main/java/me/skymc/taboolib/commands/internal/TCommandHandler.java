@@ -1,6 +1,7 @@
 package me.skymc.taboolib.commands.internal;
 
 import com.ilummc.tlib.resources.TLocale;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.methods.ReflectionUtils;
@@ -133,10 +134,12 @@ public class TCommandHandler implements Listener {
      */
     public static void registerCommands() {
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            try {
-                registerCommand(plugin);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (plugin.equals(TabooLib.instance()) || plugin.getDescription().getDepend().contains("TabooLib")) {
+                try {
+                    registerCommand(plugin);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 package me.skymc.taboolib.listener;
 
-import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -11,7 +11,6 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -29,10 +28,12 @@ public class TListenerHandler implements Listener {
      */
     public static void setupListeners() {
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            try {
-                setupListener(plugin);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (plugin.equals(TabooLib.instance()) || plugin.getDescription().getDepend().contains("TabooLib")) {
+                try {
+                    setupListener(plugin);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
