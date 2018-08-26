@@ -30,7 +30,7 @@ public class TabooLibClient {
     public static void init() {
         if (TabooLibSettings.load()) {
             connect();
-            Bukkit.getScheduler().runTaskTimerAsynchronously(TabooLib.instance(), TabooLibClient::reconnect, 0, 20);
+            Bukkit.getScheduler().runTaskTimerAsynchronously(TabooLib.instance(), TabooLibClient::reconnect, 0, 100);
         } else {
             TLocale.sendToConsole("COMMUNICATION.FAILED-LOAD-SETTINGS", TabooLibSettings.getThrowable().toString());
         }
@@ -70,7 +70,7 @@ public class TabooLibClient {
             }
             return;
         } catch (IOException e) {
-            TLocale.sendToConsole("COMMUNICATION.FAILED-CONNECT-CLIENT", e.toString());
+            TLocale.sendToConsole("COMMUNICATION.FAILED-CONNECT-CLIENT", e.getMessage());
             return;
         }
 
@@ -80,7 +80,7 @@ public class TabooLibClient {
                     packet.readOnClient();
                 }
             } catch (IOException e) {
-                TLocale.sendToConsole("COMMUNICATION.FAILED-READING-PACKET", e.toString());
+                TLocale.sendToConsole("COMMUNICATION.FAILED-READING-PACKET", e.getMessage());
             }
         });
     }

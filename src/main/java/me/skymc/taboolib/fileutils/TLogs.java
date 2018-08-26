@@ -20,7 +20,11 @@ import java.text.SimpleDateFormat;
 /**
  * @author sky
  */
-@TCommand(name = "tabooliblogs")
+@TCommand(
+        name = "tabooliblogs",
+        aliases = {"tlog", "tlogs"},
+        permission = "taboolib.admin"
+)
 public class TLogs extends BaseMainCommand {
 
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm:ss");

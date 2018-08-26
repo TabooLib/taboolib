@@ -12,6 +12,7 @@ import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;

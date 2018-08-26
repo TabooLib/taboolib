@@ -1,5 +1,6 @@
 package me.skymc.taboolib.listener;
 
+import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -56,7 +58,7 @@ public class TListenerHandler implements Listener {
                     // 实例化监听器
                     Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) pluginClass.newInstance();
                     listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                } catch (InstantiationException | IllegalAccessException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

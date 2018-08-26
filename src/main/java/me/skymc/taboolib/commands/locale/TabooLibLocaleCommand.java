@@ -22,7 +22,11 @@ import java.util.stream.IntStream;
  * @author sky
  * @since 2018-04-22 14:36:28
  */
-@TCommand(name = "tabooliblocale")
+@TCommand(
+        name = "tabooliblocale",
+        aliases = {"taboolocale", "tlocale"},
+        permission = "taboolib.admin"
+)
 public class TabooLibLocaleCommand extends BaseMainCommand {
 
     @Override
