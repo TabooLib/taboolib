@@ -28,13 +28,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @Author sky
  * @Since 2018-05-09 21:38
  */
-@TCommand(name = "taboolib")
+@TCommand(
+        name = "taboolib",
+        permission = "taboolib.admin",
+        aliases = "tlib"
+)
 public class TabooLibMainCommand extends BaseMainCommand {
 
     @Override
@@ -563,72 +568,7 @@ public class TabooLibMainCommand extends BaseMainCommand {
     @CommandRegister(priority = 17)
     BaseSubCommand getEmptyLine4 = null;
 
-    @CommandRegister(priority = 18)
-    BaseSubCommand shellLoad = new BaseSubCommand() {
-
-        @Override
-        public String getLabel() {
-            return "shellLoad";
-        }
-
-        @Override
-        public String getDescription() {
-            return TLocale.asString("COMMANDS.TABOOLIB.JAVASHELL.DESCRIPTION.LOAD");
-        }
-
-        @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[]{
-                    new CommandArgument(TLocale.asString("COMMANDS.TABOOLIB.JAVASHELL.ARGUMENTS.LOAD.0"))
-            };
-        }
-
-        @Override
-        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            new ShellLoadCommand(sender, args);
-        }
-
-        @Override
-        public boolean ignoredLabel() {
-            return false;
-        }
-    };
-
-    @CommandRegister(priority = 19)
-    BaseSubCommand shellUnload = new BaseSubCommand() {
-
-        @Override
-        public String getLabel() {
-            return "shellUnload";
-        }
-
-        @Override
-        public String getDescription() {
-            return TLocale.asString("COMMANDS.TABOOLIB.JAVASHELL.DESCRIPTION.UNLOAD");
-        }
-
-        @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[]{
-                    new CommandArgument(TLocale.asString("COMMANDS.TABOOLIB.JAVASHELL.ARGUMENTS.UNLOAD.0"))
-            };
-        }
-
-        @Override
-        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            new ShellUnloadCommand(sender, args);
-        }
-
-        @Override
-        public boolean ignoredLabel() {
-            return false;
-        }
-    };
-
     @CommandRegister(priority = 20)
-    BaseSubCommand getEmptyLine5 = null;
-
-    @CommandRegister(priority = 20.5)
     BaseSubCommand tagDisplay = new BaseSubCommand() {
 
         @Override

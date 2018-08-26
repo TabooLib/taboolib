@@ -4,6 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * @Author sky
@@ -15,4 +16,13 @@ public @interface TCommand {
 
     String name();
 
+    String permission() default "";
+
+    String permissionMessage() default "";
+
+    String description() default "";
+
+    String usage() default "";
+
+    String[] aliases() default "";
 }

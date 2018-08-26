@@ -25,14 +25,21 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-05-07 21:38
  */
-public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, TabExecutor {
+public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     private PluginCommand registerCommand;
     private List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
     private List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
 
+    /**
+     * 指令标题
+     *
+     * @return 文本
+     */
+    abstract public String getCommandTitle();
+
     public static BaseMainCommand createCommandExecutor(String command, BaseMainCommand baseMainCommand) {
-        Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\"not found");
+        Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\" not found");
         Preconditions.checkArgument(baseMainCommand != null, "Executor cannot be null");
         Preconditions.checkArgument(baseMainCommand.getClass() != BaseMainCommand.class, "Executor can not be \"BaseMainCommand.class\"");
         baseMainCommand.setRegisterCommand(Bukkit.getPluginCommand(command));
@@ -100,6 +107,11 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
     }
 
     @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+        return args.length == 1 ? subCommands.stream().filter(subCommand -> subCommand != null && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList()) : null;
+    }
+
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             helpCommand(sender, label);
@@ -135,11 +147,6 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return args.length == 1 ? subCommands.stream().filter(subCommand -> subCommand != null && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList()) : null;
-    }
-
-    @Override
     public String toString() {
         return "registerCommand=" + "BaseMainCommand{" + registerCommand + ", linkClasses=" + linkClasses + ", subCommands=" + subCommands + '}';
     }
@@ -160,6 +167,12 @@ public abstract class BaseMainCommand implements IMainCommand, CommandExecutor, 
     public int hashCode() {
         return Objects.hash(getRegisterCommand(), getLinkClasses(), getSubCommands());
     }
+
+    // *********************************
+    //
+    //        Private Methods
+    //
+    // *********************************
 
     private String getEmptyLine() {
         return TabooLib.getVerint() < 10800 ? "~" : "";

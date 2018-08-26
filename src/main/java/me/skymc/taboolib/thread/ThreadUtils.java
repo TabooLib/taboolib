@@ -5,6 +5,7 @@ import java.util.LinkedList;
 /**
  * @author sky
  */
+@Deprecated
 public class ThreadUtils {
 
     private static final LinkedList<Runnable> queue = new LinkedList<>();

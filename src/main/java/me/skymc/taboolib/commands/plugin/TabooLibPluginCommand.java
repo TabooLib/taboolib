@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
-import me.skymc.taboolib.commands.internal.ISubCommand;
 import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
@@ -26,7 +25,11 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-05-07 20:14
  */
-@TCommand(name = "taboolibplugin")
+@TCommand(
+        name = "taboolibplugin",
+        aliases = {"tabooplugin", "tplugin"},
+        permission = "taboolib.admin"
+)
 public class TabooLibPluginCommand extends BaseMainCommand {
 
     @Override
@@ -37,7 +40,7 @@ public class TabooLibPluginCommand extends BaseMainCommand {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
         if (args.length == 1) {
-            return getSubCommands().stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(ISubCommand::getLabel).collect(Collectors.toList());
+            return getSubCommands().stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList());
         } else if (args.length > 1 && isPluginCommand(args[0])) {
             return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(x -> !PluginUtils.isIgnored(x)).collect(Collectors.toList()).stream().filter(plugin -> args[1].isEmpty() || plugin.getName().toLowerCase().startsWith(args[1].toLowerCase())).map(Plugin::getName).collect(Collectors.toList());
         } else {
@@ -60,7 +63,7 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[]{new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.LOAD.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.LOAD.ARGUMENTS.0"), true)};
         }
 
         @Override
@@ -110,7 +113,7 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[]{new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.UNLOAD.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.UNLOAD.ARGUMENTS.0"), true)};
         }
 
         @Override
@@ -152,7 +155,7 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[]{new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.RELOAD.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.RELOAD.ARGUMENTS.0"), true)};
         }
 
         @Override
@@ -185,7 +188,7 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[]{new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.INFO.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.INFO.ARGUMENTS.0"), true)};
         }
 
         @Override

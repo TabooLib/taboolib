@@ -1,58 +1,37 @@
 package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
-import com.ilummc.tlib.annotations.Dependency;
-import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.anvil.AnvilContainerAPI;
-import me.skymc.taboolib.bstats.Metrics;
-import me.skymc.taboolib.commands.TabooLibExecuteCommand;
-import me.skymc.taboolib.commands.TabooLibMainCommand;
-import me.skymc.taboolib.commands.internal.TBaseCommand;
-import me.skymc.taboolib.commands.language.Language2Command;
-import me.skymc.taboolib.commands.locale.TabooLibLocaleCommand;
-import me.skymc.taboolib.commands.plugin.TabooLibPluginCommand;
-import me.skymc.taboolib.commands.taboolib.listener.ListenerItemListCommand;
-import me.skymc.taboolib.commands.taboolib.listener.ListenerSoundsCommand;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
-import me.skymc.taboolib.entity.EntityUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.fileutils.TLogs;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.itagapi.TagDataHandler;
 import me.skymc.taboolib.javascript.ScriptHandler;
-import me.skymc.taboolib.javashell.JavaShell;
-import me.skymc.taboolib.listener.*;
-import me.skymc.taboolib.message.ChatCatcher;
+import me.skymc.taboolib.listener.TListenerHandler;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
-import me.skymc.taboolib.sign.SignUtils;
 import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.socket.TabooLibClient;
-import me.skymc.taboolib.string.StringUtils;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
 import me.skymc.taboolib.translateuuid.TranslateUUID;
-import me.skymc.taboolib.translateuuid.TranslateUUIDCommand;
 import me.skymc.taboolib.update.UpdateTask;
 import me.skymc.tlm.TLM;
-import me.skymc.tlm.command.TLMCommands;
 import me.skymc.tlm.module.TabooLibraryModule;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,11 +39,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * @author sky
@@ -118,7 +95,7 @@ public class Main extends JavaPlugin {
         TLib.init();
         TLib.injectPluginManager();
         // 载入插件设置
-        TabooLibSettings.setup();
+        TabooLibLoader.setup();
         // 载入大饼
         TLib.initPost();
         // 载入连接池
@@ -128,7 +105,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         // 注册插件配置
-        TabooLibSettings.register();
+        TabooLibLoader.register();
         // 载入经济
         EcoUtils.setupEconomy();
         // 载入权限
@@ -211,8 +188,6 @@ public class Main extends JavaPlugin {
         DataUtils.saveAllCaches();
         // 保存玩家数据
         PlayerDataManager.saveAllPlayers(false, true);
-        // 结束脚本
-        JavaShell.javaShellCancel();
         // 注销 SpecialItem 接口
         SpecialItem.getInst().unloadItems();
         // 注销 TLM 接口

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-08-23 17:04
  */
-class TabooLibSettings {
+class TabooLibLoader {
 
     static void setup() {
         testInternet();
@@ -33,8 +33,8 @@ class TabooLibSettings {
     }
 
     static void register() {
-        registerCommands();
         registerListener();
+        registerCommands();
         registerMetrics();
     }
 

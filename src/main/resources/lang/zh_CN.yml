@@ -172,7 +172,9 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] &7指令 &f{0} &7不存在'
     - '&8[&3&lTabooLib&8] &7你可能想要:'
     - '&8[&3&lTabooLib&8] &7{1}'
-    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的命令 &f{1} &7注册 &f{2} &7条子命令'
+    COMMAND-CREATE: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册到服务器'
+    COMMAND-CREATE-FAILED: '&7插件 &f{0} &7的 &f{1} &7命令注册失败: &c{2}'
+    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册 &f{2} &7条子命令'
     COMMAND-HELP: ' §f/{0} {1} {2} §6- §e{3}'
     COMMAND-ARGUMENT: '§7<§8{0}§7>'
     COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
@@ -242,19 +244,6 @@ COMMANDS:
       PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
       UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
       UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
-    JAVASHELL:
-      DESCRIPTION:
-        LOAD: '载入脚本'
-        UNLOAD: '卸载脚本'
-      ARGUMENTS:
-        LOAD:
-          0: '名称'
-        UNLOAD:
-          0: '名称'
-      INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
-      INVALID-SHELL: '&8[&3&lTabooLib&8] &4脚本 &c{0} &4不存在'
-      SUCCESS-LOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已载入'
-      SUCCESS-UNLOAD: '&8[&3&lTabooLib&8] &7脚本 &f{0} &7已卸载'
     PLAYERTAG:
       DESCRIPTION:
         DISPLAY: '设置玩家展示名称'
@@ -582,4 +571,4 @@ COMMUNICATION:
   SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7本地通讯网络连接成功.'
   CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7加入本地通讯网络.'
   CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7退出本地通讯网络.'
-  CLIENT-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7发送信息: &f{1}'
+  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7发送信息: &f{1}'

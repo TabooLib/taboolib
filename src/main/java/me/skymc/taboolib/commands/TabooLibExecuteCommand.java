@@ -19,7 +19,11 @@ import org.bukkit.event.server.ServerCommandEvent;
  * @Author sky
  * @Since 2018-07-04 21:32
  */
-@TCommand(name = "taboolibexecute")
+@TCommand(
+        name = "taboolibexecute",
+        aliases = {"texecute"},
+        permission = "taboolib.admin"
+)
 public class TabooLibExecuteCommand extends BaseMainCommand {
 
     @Override
