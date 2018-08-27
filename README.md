@@ -52,6 +52,12 @@
 <a name="download"></a>
 插件下载
 ---
+[![](http://ci.pcd.ac.cn/job/TabooLib/badge/icon)](http://ci.pcd.ac.cn/job/TabooLib)
+[![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
+[![](https://img.shields.io/github/release/Bkm016/TabooLib.svg)](https://github.com/Bkm016/TabooLib/tags)
+[![](https://img.shields.io/github/stars/Bkm016/TabooLib.svg?style=flat-square&label=Stars)](https://github.com/Bkm016/TabooLib)
+[![](https://jitpack.io/v/Bkm016/TabooLib.svg)](https://jitpack.io/#Bkm016/TabooLib)
+
 你可以在 [**这里**](https://github.com/Bkm016/TabooLib/releases) 下载正式版本  
 如果你的服务器没有连接互联网（内网跨服），请下载 **libs.rar** 文件并手动解压至服务端目录  
 
