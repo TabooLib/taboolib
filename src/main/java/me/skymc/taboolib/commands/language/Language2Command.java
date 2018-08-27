@@ -2,11 +2,12 @@ package me.skymc.taboolib.commands.language;
 
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
+import me.skymc.taboolib.object.Instantiable;
 import me.skymc.taboolib.string.language2.Language2Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -14,18 +15,23 @@ import org.bukkit.entity.Player;
  * @author sky
  * @since 2018年2月13日 下午5:11:01
  */
-public class Language2Command implements CommandExecutor {
+@Instantiable("Language2Command")
+public class Language2Command {
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length == 0) {
-            TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.HELP", label);
-        } else if ("reload".equalsIgnoreCase(args[0])) {
-            reload(sender);
-        } else if ("send".equalsIgnoreCase(args[0])) {
-            send(sender, args);
-        }
-        return true;
+    public Language2Command() {
+        SimpleCommandBuilder.create("language2", TabooLib.instance())
+                .aliases("lang2")
+                .permission("taboolib.admin")
+                .execute((sender, args) -> {
+                    if (args.length == 0) {
+                        TLocale.sendTo(sender, "COMMANDS.LANGUAGE2.HELP", "langauge2");
+                    } else if ("reload".equalsIgnoreCase(args[0])) {
+                        reload(sender);
+                    } else if ("send".equalsIgnoreCase(args[0])) {
+                        send(sender, args);
+                    }
+                    return true;
+                }).build();
     }
 
     private void send(CommandSender sender, String[] args) {

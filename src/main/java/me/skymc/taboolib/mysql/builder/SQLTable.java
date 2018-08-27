@@ -5,6 +5,8 @@ import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
 import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.Arrays;
 
 /**
@@ -50,6 +52,18 @@ public class SQLTable {
 
     public String truncateQuery() {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
+    }
+
+    public RunnableUpdate executeInsert(String values) {
+        return executeUpdate("insert into " + tableName + " values(" + values + ")");
+    }
+
+    public RunnableQuery executeSelect(String where) {
+        return executeQuery("select * from " + tableName + " where " + where);
+    }
+
+    public RunnableUpdate executeUpdate(String where, String update) {
+        return executeUpdate("update " + tableName + " set " + update + " where " + where);
     }
 
     public RunnableUpdate executeUpdate(String query) {
