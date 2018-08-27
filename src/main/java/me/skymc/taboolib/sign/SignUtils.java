@@ -1,6 +1,8 @@
 package me.skymc.taboolib.sign;
 
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.location.LocationUtils;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.methods.MethodsUtils;
@@ -22,9 +24,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 @Deprecated
+@TListener(condition = "check")
 public class SignUtils implements Listener {
 
     public static HashMap<String, Block> signs = new HashMap<>();
+
+    public static boolean check() {
+        return TabooLib.getVerint() > 10700;
+    }
 
     public static void openSign(Player p, Block b) {
 

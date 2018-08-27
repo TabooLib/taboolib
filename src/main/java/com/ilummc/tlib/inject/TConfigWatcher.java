@@ -19,9 +19,7 @@ import java.util.function.Consumer;
  */
 public class TConfigWatcher {
 
-    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1,
-            new BasicThreadFactory.Builder().namingPattern("TConfigWatcherService-%d").build());
-
+    private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1, new BasicThreadFactory.Builder().namingPattern("TConfigWatcherService-%d").build());
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 
     public TConfigWatcher() {
@@ -40,6 +38,10 @@ public class TConfigWatcher {
                 });
             }
         }, 1000, 100, TimeUnit.MILLISECONDS);
+    }
+
+    public void addSimpleListener(File file, Runnable runnable) {
+        addListener(file, null, obj -> runnable.run());
     }
 
     public void addOnListen(File file, Object obj, Consumer<Object> consumer) {
@@ -82,5 +84,4 @@ public class TConfigWatcher {
             }
         });
     }
-
 }

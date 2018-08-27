@@ -1,34 +1,15 @@
-
 name: TabooLib
-
-authors: [坏黑]
-website: http://www.15imc.com/index.html
-
 main: me.skymc.taboolib.Main
-
 version: ${project.version}
 
+author: [lzzelAliz, 坏黑]
+depend: [Vault]
+softdepend: [PlaceholderAPI, Skript, MassiveLag]
+
+# 两个命令删除预定
 commands:
-  taboolib:
-    aliases: [tlib]
-    permission: taboolib.admin
   language2:
     aliases: [lang2]
     permission: taboolib.admin
-  tabooliblocale:
-    aliases: [taboolocale, tlocale]
-    permission: taboolib.admin
-  taboolibplugin:
-    aliases: [tabooplugin, tplugin]
-    permission: taboolib.admin
-  taboolibexecute:
-    aliases: [texecute]
-    permission: taboolib.admin
   taboolibrarymodule:
     aliases: [tlm]
-  translateuuid:
-    aliases: 'tuuid'
-    permission: taboolib.admin
-    
-depend: [Vault]
-softdepend: [PlaceholderAPI, Skript, MassiveLag]

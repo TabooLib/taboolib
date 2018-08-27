@@ -23,6 +23,10 @@ public class TabooLib {
         }
     }
 
+    public static Main instance() {
+        return (Main) Main.getInst();
+    }
+
     public static boolean isSpigot() {
         return spigot;
     }

@@ -4,12 +4,12 @@ import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
+import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,6 +22,11 @@ import java.util.stream.IntStream;
  * @author sky
  * @since 2018-04-22 14:36:28
  */
+@TCommand(
+        name = "tabooliblocale",
+        aliases = {"taboolocale", "tlocale"},
+        permission = "taboolib.admin"
+)
 public class TabooLibLocaleCommand extends BaseMainCommand {
 
     @Override

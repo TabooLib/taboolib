@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,6 +88,52 @@ public class PlayerUtils {
         player.updateInventory();
         if (scoreboard) {
             player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+        }
+    }
+
+    /**
+     * 获取玩家的鱼钩
+     *
+     * @param player 玩家
+     * @return net.minecraft.server.{version}.EntityFishingHook
+     */
+    public static Object getPlayerHookedFish(HumanEntity player) {
+        try {
+            Object entityHuman = player.getClass().getMethod("getHandle").invoke(player);
+            return entityHuman.getClass().getField("hookedFish").get(entityHuman);
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /**
+     * 获取鱼钩的钓鱼时间
+     *
+     * @param fishHook 鱼钩
+     * @return int
+     */
+    public static int getFishingTicks(Object fishHook) {
+        try {
+            Field fishingTicks = fishHook.getClass().getDeclaredField("h");
+            fishingTicks.setAccessible(true);
+            return (int) fishingTicks.get(fishHook);
+        } catch (Exception ignored) {
+        }
+        return -1;
+    }
+
+    /**
+     * 设置鱼钩的钓鱼时间
+     *
+     * @param fishHook 鱼钩
+     * @param ticks    时间
+     */
+    public static void setFishingTicks(Object fishHook, int ticks) {
+        try {
+            Field fishingTicks = fishHook.getClass().getDeclaredField("h");
+            fishingTicks.setAccessible(true);
+            fishingTicks.set(fishHook, ticks);
+        } catch (Exception ignored) {
         }
     }
 }

@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 
+@TListener
 public class ListenerPlayerJump implements Listener {
 
     public HashMap<Player, Long> cooldown = new HashMap<>();
