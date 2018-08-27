@@ -30,9 +30,11 @@ dependencies {
 }
 ```
 
-### sbt
+### Simple Build Tool
 
 ```scala
 resolvers += "jitpack" at "https://jitpack.io"
 libraryDependencies += "com.github.Bkm016" % "TabooLib" % "JitPack版本"
 ```
+
+您需要在 `plugin.yml` 中添加 `softdepend: TabooLib` 或者 `depend: TabooLib` 才能享受到全部功能。
