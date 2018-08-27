@@ -28,12 +28,10 @@ public class TListenerHandler implements Listener {
      */
     public static void setupListeners() {
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.equals(TabooLib.instance()) || plugin.getDescription().getDepend().contains("TabooLib")) {
-                try {
-                    setupListener(plugin);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                setupListener(plugin);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -45,6 +43,9 @@ public class TListenerHandler implements Listener {
      * @param plugin 插件
      */
     public static void setupListener(Plugin plugin) {
+        if (!(plugin.equals(TabooLib.instance()) || TabooLib.isDependTabooLib(plugin))) {
+            return;
+        }
         List<Class> classes = FileUtils.getClasses(plugin);
         for (Class<?> pluginClass : classes) {
             if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {

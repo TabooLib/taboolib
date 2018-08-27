@@ -34,7 +34,6 @@ class TabooLibLoader {
 
     static void register() {
         registerListener();
-        registerCommands();
         registerMetrics();
     }
 
@@ -94,14 +93,6 @@ class TabooLibLoader {
         Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
         // 初始化数据库
         TabooLibDatabase.init();
-    }
-
-    /**
-     * 载入插件命令
-     */
-    static void registerCommands() {
-        Bukkit.getPluginCommand("language2").setExecutor(new Language2Command());
-        Bukkit.getPluginCommand("taboolibrarymodule").setExecutor(new TLMCommands());
     }
 
     /**
