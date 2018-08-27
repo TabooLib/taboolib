@@ -1,8 +1,6 @@
 # 文件监控
 监听文件的更改，配置文件的超级助手
 
-<br>
-
 ## 创建一个简单的文件监听
 ```java
 public class Plugin extends JavaPlugin {
@@ -22,8 +20,6 @@ public class Plugin extends JavaPlugin {
     }
 }
 ```
-
-<br>
 
 ## 注销文件监听
 ```java
