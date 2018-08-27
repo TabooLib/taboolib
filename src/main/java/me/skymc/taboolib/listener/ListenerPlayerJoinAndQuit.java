@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+@TListener
 public class ListenerPlayerJoinAndQuit implements Listener {
 
     @EventHandler

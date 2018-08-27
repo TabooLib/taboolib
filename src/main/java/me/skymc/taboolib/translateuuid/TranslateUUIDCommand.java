@@ -3,6 +3,7 @@ package me.skymc.taboolib.translateuuid;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
+import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import org.bukkit.command.Command;
@@ -12,6 +13,11 @@ import org.bukkit.command.CommandSender;
  * @Author sky
  * @Since 2018-06-22 17:09
  */
+@TCommand(
+        name = "translateuuid",
+        aliases = "tuuid",
+        permission = "taboolib.admin"
+)
 public class TranslateUUIDCommand extends BaseMainCommand {
 
     @Override

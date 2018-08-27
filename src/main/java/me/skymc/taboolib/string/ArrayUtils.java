@@ -1,5 +1,8 @@
 package me.skymc.taboolib.string;
 
+import com.ilummc.tlib.util.Strings;
+
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -63,6 +66,26 @@ public class ArrayUtils {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
         ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
         return (T) objectInputStream.readObject();
+    }
+
+    public static <T> T skipEmpty(T obj) {
+        return skipEmpty(obj, null);
+    }
+
+    public static <T> T[] skipEmpty(T[] obj) {
+        return skipEmpty(obj, null);
+    }
+
+    public static <T> T skipEmpty(T obj, T def) {
+        return Strings.isEmpty(String.valueOf(obj)) ? def : obj;
+    }
+
+    public static <T> T[] skipEmpty(T[] obj, T[] def) {
+        if (obj.length == 0) {
+            return def;
+        }
+        T firstElement = skipEmpty(obj[0]);
+        return firstElement == null ? def : obj;
     }
 
     // *********************************

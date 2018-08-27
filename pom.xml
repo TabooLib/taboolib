@@ -6,7 +6,7 @@
 
     <groupId>me.skymc</groupId>
     <artifactId>TabooLib</artifactId>
-    <version>4.14</version>
+    <version>4.2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,12 +51,24 @@
                                 <includes>
                                     <include>com.ilummc.eagletdl</include>
                                     <include>org.ow2.asm</include>
+                                    <include>com.google.code.gson</include>
                                 </includes>
                             </artifactSet>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>me.skymc.taboolib.socket.TabooLibServer</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -81,6 +93,11 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -125,6 +142,13 @@
             <version>1</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/1_8_R3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>bungeecord</groupId>
+            <artifactId>bungeecord</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/BungeeCord.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.sun.tools</groupId>

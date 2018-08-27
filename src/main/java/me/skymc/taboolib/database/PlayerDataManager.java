@@ -7,6 +7,7 @@ import me.skymc.taboolib.events.PlayerLoadedEvent;
 import me.skymc.taboolib.exception.PlayerOfflineException;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.listener.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@TListener
 public class PlayerDataManager implements Listener {
 
     private static final ConcurrentHashMap<String, FileConfiguration> PLAYER_DATA = new ConcurrentHashMap<>();

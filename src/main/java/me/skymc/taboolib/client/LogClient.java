@@ -19,7 +19,7 @@ public class LogClient extends JFrame {
 		super(title);
 		
 		// DEFAULT CLOSE OPERATION
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		
 		// SETTINGS
 		final JScrollPane scrollPane = new JScrollPane();
@@ -37,30 +37,21 @@ public class LogClient extends JFrame {
 		textArea.setBackground(Color.black);
 		textArea.setForeground(Color.LIGHT_GRAY);
 		
-		addstr(title);
-		addstr("");
+		addString(title);
+		addString("");
 	}
-	
+
 	public void addString(String a) {
-		
-		textArea.append("[" + sdf.format(System.currentTimeMillis()) + " NONE]: " + a + '\n');
-		textArea.setSelectionStart(textArea.getText().length());
-	}
-	
-	public void addstr(String a) {
-		
 		textArea.append(a + '\n');
 		textArea.setSelectionStart(textArea.getText().length());
 	}
 	
 	public void info(String a) {
-		
 		textArea.append("[" + sdf.format(System.currentTimeMillis()) + " INFO]: " + a + '\n');
 		textArea.setSelectionStart(textArea.getText().length());
 	}
 	
 	public void warn(String a) {
-		
 		textArea.append("[" + sdf.format(System.currentTimeMillis()) + " WARN]: " + a + '\n');
 		textArea.setSelectionStart(textArea.getText().length());
 	}

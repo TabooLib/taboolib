@@ -4,6 +4,9 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
+/**
+ * @author Unknown
+ */
 public class EncodeUtils {
 
     /**
@@ -53,7 +56,7 @@ public class EncodeUtils {
      */
     public static void convert(File file, String fromCharsetName, String toCharsetName, FilenameFilter filter) throws Exception {
         if (file.isDirectory()) {
-            File[] fileList = null;
+            File[] fileList;
             if (filter == null) {
                 fileList = file.listFiles();
             } else {
@@ -63,10 +66,8 @@ public class EncodeUtils {
                 convert(f, fromCharsetName, toCharsetName, filter);
             }
         } else {
-            if (filter == null
-                    || filter.accept(file.getParentFile(), file.getName())) {
-                String fileContent = getFileContentFromCharset(file,
-                        fromCharsetName);
+            if (filter == null || filter.accept(file.getParentFile(), file.getName())) {
+                String fileContent = getFileContentFromCharset(file, fromCharsetName);
                 saveFile2Charset(file, toCharsetName, fileContent);
             }
         }
@@ -85,8 +86,7 @@ public class EncodeUtils {
             throw new UnsupportedCharsetException(fromCharsetName);
         }
         InputStream inputStream = new FileInputStream(file);
-        InputStreamReader reader = new InputStreamReader(inputStream,
-                fromCharsetName);
+        InputStreamReader reader = new InputStreamReader(inputStream, fromCharsetName);
         char[] chs = new char[(int) file.length()];
         reader.read(chs);
         String str = new String(chs).trim();
@@ -110,7 +110,5 @@ public class EncodeUtils {
         OutputStreamWriter outWrite = new OutputStreamWriter(outputStream, toCharsetName);
         outWrite.write(content);
         outWrite.close();
-
-        System.out.println("[Encodeing...] 更改文件: " + file.getPath());
     }
 }

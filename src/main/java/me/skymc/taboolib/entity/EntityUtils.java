@@ -5,7 +5,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.ilummc.tlib.resources.TLocale;
-import me.skymc.taboolib.exception.PluginNotFoundException;
+import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.listener.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -17,12 +18,20 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
+/**
+ * @author sky
+ */
+@TListener(condition = "check")
 public class EntityUtils implements Listener {
 
     private static Entity lastSpawnedEntity = null;
 
     public static Entity getLastSpawnedEntity() {
         return lastSpawnedEntity;
+    }
+
+    public static boolean check() {
+        return TabooLib.getVerint() > 10700;
     }
 
     /**
@@ -42,7 +51,7 @@ public class EntityUtils implements Listener {
      * @param world
      * @return
      */
-    public static Entity getEntityWithUUID_World(UUID u, World world) {
+    public static Entity getEntityWithUUID(UUID u, World world) {
         return world.getLivingEntities().stream().filter(e -> e.getUniqueId().equals(u)).findFirst().orElse(null);
     }
 
