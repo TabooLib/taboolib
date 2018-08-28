@@ -4,7 +4,6 @@ import com.ilummc.tlib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import java.text.MessageFormat;
 import java.util.Objects;
 
 /**

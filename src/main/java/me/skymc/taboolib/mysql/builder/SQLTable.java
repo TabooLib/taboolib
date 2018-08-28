@@ -5,8 +5,6 @@ import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
 import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.util.Arrays;
 
 /**

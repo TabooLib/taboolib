@@ -6,10 +6,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.mysql.builder.SQLHost;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
