@@ -3,7 +3,9 @@ package me.skymc.taboolib.listener;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.database.PlayerDataManager;
+import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
+import me.skymc.taboolib.json.tellraw.TellrawJson;
 import me.skymc.taboolib.message.MsgUtils;
 import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
@@ -30,14 +32,19 @@ public class ListenerPlayerCommand implements Listener {
     @SuppressWarnings("deprecation")
     @EventHandler
     public void cmd(PlayerCommandPreprocessEvent e) {
-        if ("/unbreakable".equals(e.getMessage()) && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
+        if (e.getMessage().equals("/unbreakable") && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
             e.setCancelled(true);
-
-            NBTItem nbti = new NBTItem(e.getPlayer().getItemInHand());
-            nbti.setInteger("Unbreakable", 1);
-            e.getPlayer().setItemInHand(nbti.getItem());
-
+            NBTItem nbt = new NBTItem(e.getPlayer().getItemInHand());
+            nbt.setInteger("Unbreakable", 1);
+            e.getPlayer().setItemInHand(nbt.getItem());
             MsgUtils.send(e.getPlayer(), "Success!");
+        } else if (e.getMessage().equals("/tellrawTest") && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.tellraw")) {
+            e.setCancelled(true);
+            TellrawJson.create()
+                    .append("§8[§3§lTabooLib§8] §7TellrawJson Test: §f[")
+                    .append(ItemUtils.getCustomName(e.getPlayer().getItemInHand())).hoverItem(e.getPlayer().getItemInHand())
+                    .append("§f]")
+                    .send(e.getPlayer());
         }
     }
 }
