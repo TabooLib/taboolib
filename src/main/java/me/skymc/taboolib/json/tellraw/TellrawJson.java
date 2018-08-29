@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -93,6 +94,12 @@ public class TellrawJson {
         return this;
     }
 
+    public BaseComponent[] getComponentsAll() {
+        List<BaseComponent> components = this.components.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).collect(Collectors.toList());
+        this.componentsLatest.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).forEach(components::add);
+        return components.toArray(new BaseComponent[0]);
+    }
+
     public String getItemComponent(ItemStack itemStack) {
         try {
             Method asNMSCopyMethod = ReflectionUtils.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
@@ -136,12 +143,6 @@ public class TellrawJson {
     }
 
     public BaseComponent[] getComponents() {
-        return components.toArray(new BaseComponent[0]);
-    }
-
-    public BaseComponent[] getComponentsAll() {
-        List<BaseComponent> components = new ArrayList<>(this.components);
-        components.addAll(componentsLatest);
         return components.toArray(new BaseComponent[0]);
     }
 }

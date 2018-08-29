@@ -19,6 +19,9 @@ import java.util.List;
  */
 public class SimpleCommandBuilder {
 
+    public static final CompleterTab EMPTY_COMPLETER_TAB = ((sender, args) -> new ArrayList<>());
+    public static final CompleterCommand EMPTY_COMPLETER_COMMAND = ((sender, args) -> false);
+
     private final String command;
     private final Plugin plugin;
     private String description;
@@ -26,8 +29,8 @@ public class SimpleCommandBuilder {
     private List<String> aliases;
     private String permission;
     private String permissionMessage;
-    private CompleterCommand completerCommand;
-    private CompleterTab completerTab;
+    private CompleterTab completerTab = EMPTY_COMPLETER_TAB;
+    private CompleterCommand completerCommand = EMPTY_COMPLETER_COMMAND;
 
     SimpleCommandBuilder(String command, Plugin plugin) {
         this.command = command;
@@ -78,6 +81,7 @@ public class SimpleCommandBuilder {
 
     public SimpleCommandBuilder build() {
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
+        Preconditions.checkNotNull(completerTab, "缺少 \"CompleterTab\" 部分");
         TCommandHandler.registerPluginCommand(
                 plugin,
                 command,
