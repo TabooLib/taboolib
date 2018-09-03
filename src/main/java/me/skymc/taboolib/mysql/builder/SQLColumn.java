@@ -22,7 +22,7 @@ public class SQLColumn {
     private SQLColumnOption[] columnOptions;
 
     /**
-     * 文本类型常用构造器
+     * 文本 类型常用构造器
      * new SQLColumn(SQLColumnType.TEXT, "username");
      */
     public SQLColumn(SQLColumnType columnType, String columnName) {
@@ -30,7 +30,17 @@ public class SQLColumn {
     }
 
     /**
-     * 主键类型常用构造器
+     * CHAR 类型常用构造器
+     *
+     * @param columnType
+     * @param columnName
+     */
+    public SQLColumn(SQLColumnType columnType, int m, String columnName) {
+        this(columnType, m, 0, columnName, null);
+    }
+
+    /**
+     * 主键 类型常用构造器
      * new SQLColumn(SQLColumnType.TEXT, "username", SQLColumnOption.PRIMARY_KEY, SQLColumnOption.AUTO_INCREMENT);
      */
     public SQLColumn(SQLColumnType columnType, String columnName, SQLColumnOption... columnOptions) {
@@ -38,7 +48,7 @@ public class SQLColumn {
     }
 
     /**
-     * 数据类型常用构造器
+     * 数据 类型常用构造器
      * new SQLColumn(SQLColumnType.TEXT, "player_group", "PLAYER");
      */
     public SQLColumn(SQLColumnType columnType, String columnName, Object defaultValue) {
@@ -99,25 +109,25 @@ public class SQLColumn {
         for (SQLColumnOption options : columnOptions) {
             switch (options) {
                 case NOTNULL:
-                    builder.append(" not null");
+                    builder.append(" NOT NULL");
                     break;
                 case PRIMARY_KEY:
-                    builder.append(" primary key");
+                    builder.append(" PRIMARY KEY");
                     break;
                 case AUTO_INCREMENT:
-                    builder.append(" auto_increment");
+                    builder.append(" AUTO_INCREMENT");
                     break;
                 case UNIQUE_KEY:
-                    builder.append(" unique key");
+                    builder.append(" UNIQUE KEY");
                     break;
                 default:
             }
         }
         if (defaultValue != null) {
             if (defaultValue instanceof String) {
-                builder.append(" default '").append(defaultValue).append("'");
+                builder.append(" DEFAULT '").append(defaultValue).append("'");
             } else {
-                builder.append(" default ").append(defaultValue);
+                builder.append(" DEFAULT ").append(defaultValue);
             }
         }
         return builder.toString();
