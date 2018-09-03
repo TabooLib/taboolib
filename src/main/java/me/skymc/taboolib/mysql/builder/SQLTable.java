@@ -60,7 +60,11 @@ public class SQLTable {
         return executeQuery("select * from " + tableName + " where " + where);
     }
 
-    public RunnableUpdate executeUpdate(String where, String update) {
+    public RunnableQuery executeSelect() {
+        return executeQuery("select * from " + tableName);
+    }
+
+    public RunnableUpdate executeUpdate(String update, String where) {
         return executeUpdate("update " + tableName + " set " + update + " where " + where);
     }
 
