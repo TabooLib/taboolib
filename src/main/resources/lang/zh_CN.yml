@@ -533,7 +533,13 @@ COMMANDS:
         1: '内容'
       INVALID-PLAYER-OFFLINE: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线.'
     COMMAND:
-      DESCRIPTION: '使目标输入执行指令'
+      DESCRIPTION: '使目标执行指令'
+      ARGUMENTS:
+        0: '目标'
+        1: '内容'
+      INVALID-TARGET-NOT-FOUND: '&8[&3&lTabooLib&8] &4目标 &c{0} &4不存在.'
+    COMMAND-AS-OP:
+      DESCRIPTION: '使目标以管理员身份执行指令'
       ARGUMENTS:
         0: '目标'
         1: '内容'
