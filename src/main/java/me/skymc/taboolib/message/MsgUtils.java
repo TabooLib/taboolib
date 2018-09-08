@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
+@Deprecated
 public class MsgUtils {
 
     public static void send(CommandSender sender, String s) {

@@ -1,9 +1,9 @@
 package me.skymc.taboolib.object;
 
 import com.ilummc.tlib.util.Ref;
-import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.TabooLibLoader;
 import me.skymc.taboolib.listener.TListener;
+import me.skymc.taboolib.methods.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Since 2018-08-27 10:04
  */
 @TListener
-public class InstanceHandler implements Listener {
+public class InstantiableLoader implements Listener {
 
     private static ConcurrentHashMap<String, Object> instance = new ConcurrentHashMap<>();
 
-    public InstanceHandler() {
+    public InstantiableLoader() {
         loadInstantiable();
     }
 
@@ -52,19 +52,18 @@ public class InstanceHandler implements Listener {
     }
 
     public static void loadInstantiable(Plugin plugin) {
-        if (!(plugin.equals(TabooLib.instance()) || TabooLib.isDependTabooLib(plugin))) {
-            return;
-        }
-        for (Class pluginClass : FileUtils.getClasses(plugin)) {
-            if (pluginClass.isAnnotationPresent(Instantiable.class)) {
-                Instantiable instantiable = (Instantiable) pluginClass.getAnnotation(Instantiable.class);
-                try {
-                    instance.put(instantiable.value(), pluginClass.newInstance());
-                } catch (Exception e) {
-                    e.printStackTrace();
+        TabooLibLoader.getPluginClasses(plugin).ifPresent(classes -> {
+            for (Class pluginClass : classes) {
+                if (pluginClass.isAnnotationPresent(Instantiable.class)) {
+                    Instantiable instantiable = (Instantiable) pluginClass.getAnnotation(Instantiable.class);
+                    try {
+                        instance.put(instantiable.value(), ReflectionUtils.instantiateObject(pluginClass));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
+        });
     }
 
     // *********************************

@@ -18,7 +18,8 @@ public class TabooLib {
 
     static {
         try {
-            spigot = Bukkit.getConsoleSender() != null;
+            Class.forName("org.bukkit.Bukkit");
+            spigot = true;
         } catch (Exception ignored) {
         }
     }
@@ -30,6 +31,16 @@ public class TabooLib {
      */
     public static Main instance() {
         return (Main) Main.getInst();
+    }
+
+    /**
+     * 插件是否为 TabooLib（沙雕方法）
+     *
+     * @param plugin 插件
+     * @return boolean
+     */
+    public static boolean isTabooLib(Plugin plugin) {
+        return plugin.equals(instance()) || plugin.getName().equals("TabooLib");
     }
 
     /**
@@ -66,7 +77,7 @@ public class TabooLib {
      * @return String
      */
     public static String getVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+        return Bukkit.getServer().getClass().getName().split("\\.")[3];
     }
 
     /**

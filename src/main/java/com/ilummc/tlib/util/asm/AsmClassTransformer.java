@@ -13,16 +13,15 @@ import java.util.Map;
 public class AsmClassTransformer extends ClassVisitor implements Opcodes {
 
     private final Class<?> from;
-
-    private final String fromVer, toVer;
-
+    private final String fromVer;
+    private final String toVer;
     private final ClassWriter writer;
-
-    private String newClassName, prevName;
+    private String newClassName;
+    private String prevName;
 
     private AsmClassTransformer(Class<?> from, String fromVer, String toVer, ClassWriter classWriter) {
         super(Opcodes.ASM6, classWriter);
-        writer = classWriter;
+        this.writer = classWriter;
         this.from = from;
         this.fromVer = fromVer;
         this.toVer = toVer;
@@ -67,9 +66,15 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         super.visitInnerClass(replace(name), outerName, replace(name).substring(outerName.length() + 1), access);
     }
 
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, newClassName.replace('.', '/'), replace(signature), replace(superName), replace(interfaces));
+    }
+
     private String replace(String text) {
         if (text != null) {
-            return text.replace("net/minecraft/server/" + fromVer, "net/minecraft/server/" + toVer)
+            return text
+                    .replace("net/minecraft/server/" + fromVer, "net/minecraft/server/" + toVer)
                     .replace("org/bukkit/craftbukkit/" + fromVer, "org/bukkit/craftbukkit/" + toVer)
                     .replace(prevName, newClassName.replace('.', '/'));
         } else {
@@ -86,12 +91,6 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        super.visit(version, access, newClassName.replace('.', '/'), replace(signature),
-                replace(superName), replace(interfaces));
     }
 
     private class AsmMethodTransformer extends MethodVisitor {

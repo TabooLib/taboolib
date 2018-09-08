@@ -2,7 +2,9 @@ package me.skymc.taboolib.listener;
 
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.TabooLibLoader;
 import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.methods.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -43,28 +45,26 @@ public class TListenerHandler implements Listener {
      * @param plugin 插件
      */
     public static void setupListener(Plugin plugin) {
-        if (!(plugin.equals(TabooLib.instance()) || TabooLib.isDependTabooLib(plugin))) {
-            return;
-        }
-        List<Class> classes = FileUtils.getClasses(plugin);
-        for (Class<?> pluginClass : classes) {
-            if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
-                try {
-                    TListener tListener = pluginClass.getAnnotation(TListener.class);
-                    // 检查注册条件
-                    if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
-                        if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
-                            continue;
+        TabooLibLoader.getPluginClasses(plugin).ifPresent(classes -> {
+            for (Class<?> pluginClass : classes) {
+                if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
+                    try {
+                        TListener tListener = pluginClass.getAnnotation(TListener.class);
+                        // 检查注册条件
+                        if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
+                            if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
+                                continue;
+                            }
                         }
+                        // 实例化监听器
+                        Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
+                        listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    // 实例化监听器
-                    Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) pluginClass.newInstance();
-                    listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
-        }
+        });
     }
 
     /**
