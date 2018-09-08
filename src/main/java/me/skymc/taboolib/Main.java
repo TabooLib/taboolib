@@ -4,6 +4,7 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.common.function.TFunctionLoader;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
@@ -198,6 +199,8 @@ public class Main extends JavaPlugin {
         HikariHandler.closeDataSourceForce();
         // 注销监听器
         TListenerHandler.cancelListeners();
+        // 注销子模块
+        TFunctionLoader.unloadFunction();
         // 结束数据库储存方法
         if (getStorageType() == StorageType.SQL) {
             GlobalDataManager.SQLMethod.cancelSQLMethod();

@@ -28,6 +28,7 @@ DEPENDENCY:
   LIBRARY-LOAD-SUCCESS: '  {0} 请求的库文件 {1} 加载成功'
   LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
   LOAD-COMPLETE: '依赖加载完成'
+  LOAD-CLASSES: '&7缓存 &f{0} &7插件的 &f{1} &7个类耗时&f {2} &7毫秒.'
   
 CONFIG:
   LOAD-FAIL-NO-ANNOTATION: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
@@ -111,13 +112,6 @@ LANGUAGE2:
   
 TIMECYCLE:
   FAIL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
-  
-ANVIL-CONTAINER:
-  NAME-EXAMPLE: '在这里输入文本'
-  LORE-NORMAL:
-  - ''
-  - '&7在上方文本框内输入信息'
-  - '&7随后点击右侧输出物品'
   
 UPDATETASK:
   VERSION-FAIL: '&4更新记录获取失败, 请检查网络连接!'
