@@ -112,7 +112,7 @@ public class Main extends JavaPlugin {
         // 载入权限
         PermissionUtils.loadRegisteredServiceProvider();
         // 物品名称
-        ItemUtils.LoadLib();
+        ItemUtils.init();
         // 低层工具
         DabItemUtils.getInstance();
         // 载入周期管理器
