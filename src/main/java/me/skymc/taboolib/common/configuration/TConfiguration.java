@@ -25,22 +25,24 @@ public class TConfiguration extends YamlConfiguration {
         TLib.getTLib().getConfigWatcher().addSimpleListener(this.file, this::reload);
     }
 
-    /**
-     * 释放文件监听
-     */
     public void release() {
         TLib.getTLib().getConfigWatcher().removeListener(file);
     }
 
-    /**
-     * 重新载入配置
-     */
     public void reload() {
         try {
             load(file);
-            Optional.ofNullable(runnable).ifPresent(Runnable::run);
+            runListener();
         } catch (IOException | InvalidConfigurationException e) {
             TLogger.getGlobalLogger().warn("Cannot load configuration from stream: " + e.toString());
+        }
+    }
+
+    public void runListener() {
+        try {
+            Optional.ofNullable(runnable).ifPresent(Runnable::run);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

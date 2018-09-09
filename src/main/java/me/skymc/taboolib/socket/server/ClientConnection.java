@@ -46,7 +46,7 @@ public class ClientConnection implements Runnable {
             /*
                 连接丢失，客户端退出
              */
-            TabooLibServer.sendPacket(new PacketQuit(socket.getPort(), e.getMessage()));
+            TabooLibServer.sendPacket(new PacketQuit(socket.getPort(), "SocketException: " + e.getMessage()));
         } catch (Exception e) {
             TabooLibServer.println("Client running failed: " + e.toString());
         }

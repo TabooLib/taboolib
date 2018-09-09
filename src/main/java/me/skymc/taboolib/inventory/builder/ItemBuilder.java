@@ -3,8 +3,10 @@ package me.skymc.taboolib.inventory.builder;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.string.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -20,7 +22,7 @@ import java.util.List;
 /**
  * @Author sky
  * @Since 2018-08-22 11:37
- * @BuilderVersion 1.0
+ * @BuilderVersion 1.1
  */
 public class ItemBuilder {
 
@@ -38,6 +40,11 @@ public class ItemBuilder {
     public ItemBuilder(Material material, int amount, int damage) {
         itemStack = new ItemStack(material, amount, (short) damage);
         itemMeta = itemStack.getItemMeta();
+    }
+
+    public ItemBuilder(OfflinePlayer player) {
+        this(Material.SKULL_ITEM, 1, 3);
+        this.skullOwner(player.getName());
     }
 
     public ItemBuilder material(int id) {
@@ -143,6 +150,13 @@ public class ItemBuilder {
     public ItemBuilder eggType(EntityType entityType) {
         if (itemMeta instanceof SpawnEggMeta) {
             ((SpawnEggMeta) itemMeta).setSpawnedType(entityType);
+        }
+        return this;
+    }
+
+    public ItemBuilder skullOwner(String name) {
+        if (itemMeta instanceof SkullMeta) {
+            ((SkullMeta) itemMeta).setOwner(name);
         }
         return this;
     }

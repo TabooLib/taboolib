@@ -11,42 +11,41 @@ import org.bukkit.Bukkit;
  * @Author sky
  * @Since 2018-08-22 23:01
  */
-@PacketType(name = "message")
-public class PacketMessage extends Packet {
+@PacketType(name = "command")
+public class PacketCommand extends Packet {
 
-    private String message;
+    private String command;
 
-    public PacketMessage(int port) {
-        this(port, "none");
-    }
-
-    public PacketMessage(int port, String message) {
+    public PacketCommand(int port) {
         super(port);
-        this.message = message;
     }
 
-    public PacketMessage(String message) {
+    public PacketCommand(String command) {
         super(Bukkit.getPort());
-        this.message = message;
+        this.command = command;
     }
 
     @Override
     public void readOnServer() {
-        TabooLibServer.println(getPort() + ": " + message);
+        String[] args = command.split(" ");
+        if (args[0].equalsIgnoreCase("online")) {
+            TabooLibServer.sendPacket(new PacketMessage(0, "Online: " + TabooLibServer.getClient().size()));
+        } else {
+            TabooLibServer.sendPacket(new PacketMessage(0, "Invalid arguments."));
+        }
     }
 
     @Override
     public void readOnClient() {
-        TLocale.sendToConsole("COMMUNICATION.PACKET-MESSAGE", String.valueOf(getPort()), message);
     }
 
     @Override
     public void serialize(JsonObject json) {
-        json.addProperty("message", message);
+        json.addProperty("command", this.command);
     }
 
     @Override
     public void unSerialize(JsonObject json) {
-        message = json.get("message").getAsString();
+        this.command = json.get("command").getAsString();
     }
 }

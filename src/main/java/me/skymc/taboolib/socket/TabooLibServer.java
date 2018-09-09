@@ -55,7 +55,7 @@ public class TabooLibServer {
             /*
                 检测无效的客户端连接，如果超过 5000 毫秒没有收到客户端的回应（上一次心跳包的回应）则注销链接
              */
-            client.entrySet().stream().filter(connection -> connection.getValue().isAlive()).map(connection -> new PacketQuit(connection.getKey(), "Lost connection")).forEach(TabooLibServer::sendPacket);
+            client.entrySet().stream().filter(connection -> !connection.getValue().isAlive()).map(connection -> new PacketQuit(connection.getKey(), "Lost connection")).forEach(TabooLibServer::sendPacket);
         }, 0, 1, TimeUnit.SECONDS);
 
         while (true) {
@@ -76,7 +76,6 @@ public class TabooLibServer {
     }
 
     public static void sendPacket(String origin) {
-        println("Packet sending: " + origin + ", online: " + client.size());
         // 在服务端尝试解析动作并运行
         Optional.ofNullable(PacketSerializer.unSerialize(origin)).ifPresent(Packet::readOnServer);
         // 将动作发送至所有客户端
