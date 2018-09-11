@@ -23,6 +23,7 @@ import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.socket.TabooLibClient;
+import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
@@ -162,6 +163,10 @@ public class Main extends JavaPlugin {
                         Arrays.stream(text.split("\n")).forEach(line -> Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(line, getDescription().getVersion())));
                     }
                 } catch (IOException ignored) {
+                }
+                // 本地通讯网络终端
+                if (getConfig().getBoolean("SERVER")) {
+                    TabooLibServer.main(new String[0]);
                 }
                 // 本地通讯网络
                 TabooLibClient.init();

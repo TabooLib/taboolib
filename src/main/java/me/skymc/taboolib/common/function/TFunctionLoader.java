@@ -40,14 +40,10 @@ public class TFunctionLoader implements Listener {
                     TFunction function = (TFunction) pluginClass.getAnnotation(TFunction.class);
                     try {
                         Method method = pluginClass.getDeclaredMethod(function.enable());
-                        if (method == null) {
-                            continue;
-                        }
                         method.setAccessible(true);
                         method.invoke(pluginClass.newInstance());
                         pluginFunction.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(pluginClass);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -65,13 +61,9 @@ public class TFunctionLoader implements Listener {
                     TFunction function = (TFunction) pluginClass.getAnnotation(TFunction.class);
                     try {
                         Method method = pluginClass.getDeclaredMethod(function.disable());
-                        if (method == null) {
-                            continue;
-                        }
                         method.setAccessible(true);
                         method.invoke(pluginClass.newInstance());
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             }

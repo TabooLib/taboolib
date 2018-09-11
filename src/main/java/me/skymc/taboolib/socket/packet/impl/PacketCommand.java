@@ -1,10 +1,9 @@
 package me.skymc.taboolib.socket.packet.impl;
 
-import com.google.gson.JsonObject;
-import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketType;
+import me.skymc.taboolib.socket.packet.PacketValue;
 import org.bukkit.Bukkit;
 
 /**
@@ -14,6 +13,7 @@ import org.bukkit.Bukkit;
 @PacketType(name = "command")
 public class PacketCommand extends Packet {
 
+    @PacketValue
     private String command;
 
     public PacketCommand(int port) {
@@ -33,19 +33,5 @@ public class PacketCommand extends Packet {
         } else {
             TabooLibServer.sendPacket(new PacketMessage(0, "Invalid arguments."));
         }
-    }
-
-    @Override
-    public void readOnClient() {
-    }
-
-    @Override
-    public void serialize(JsonObject json) {
-        json.addProperty("command", this.command);
-    }
-
-    @Override
-    public void unSerialize(JsonObject json) {
-        this.command = json.get("command").getAsString();
     }
 }

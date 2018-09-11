@@ -1,10 +1,10 @@
 package me.skymc.taboolib.socket.packet.impl;
 
-import com.google.gson.JsonObject;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketType;
+import me.skymc.taboolib.socket.packet.PacketValue;
 
 /**
  * @Author sky
@@ -13,6 +13,7 @@ import me.skymc.taboolib.socket.packet.PacketType;
 @PacketType(name = "quit")
 public class PacketQuit extends Packet {
 
+    @PacketValue
     private String message;
 
     public PacketQuit(int port) {
@@ -42,15 +43,5 @@ public class PacketQuit extends Packet {
     @Override
     public void readOnClient() {
         TLocale.sendToConsole("COMMUNICATION.CLIENT-QUITED", String.valueOf(getPort()));
-    }
-
-    @Override
-    public void serialize(JsonObject json) {
-        json.addProperty("message", message);
-    }
-
-    @Override
-    public void unSerialize(JsonObject json) {
-        message = json.get("message").getAsString();
     }
 }

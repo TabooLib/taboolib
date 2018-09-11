@@ -5,6 +5,7 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketType;
+import me.skymc.taboolib.socket.packet.PacketValue;
 import org.bukkit.Bukkit;
 
 /**
@@ -14,6 +15,7 @@ import org.bukkit.Bukkit;
 @PacketType(name = "message")
 public class PacketMessage extends Packet {
 
+    @PacketValue
     private String message;
 
     public PacketMessage(int port) {
@@ -38,15 +40,5 @@ public class PacketMessage extends Packet {
     @Override
     public void readOnClient() {
         TLocale.sendToConsole("COMMUNICATION.PACKET-MESSAGE", String.valueOf(getPort()), message);
-    }
-
-    @Override
-    public void serialize(JsonObject json) {
-        json.addProperty("message", message);
-    }
-
-    @Override
-    public void unSerialize(JsonObject json) {
-        message = json.get("message").getAsString();
     }
 }

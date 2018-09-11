@@ -1,11 +1,13 @@
 package me.skymc.taboolib.socket;
 
+·import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketSerializer;
 import me.skymc.taboolib.socket.packet.impl.PacketHeartbeat;
 import me.skymc.taboolib.socket.packet.impl.PacketQuit;
 import me.skymc.taboolib.socket.server.ClientConnection;
+import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -58,17 +60,22 @@ public class TabooLibServer {
             client.entrySet().stream().filter(connection -> !connection.getValue().isAlive()).map(connection -> new PacketQuit(connection.getKey(), "Lost connection")).forEach(TabooLibServer::sendPacket);
         }, 0, 1, TimeUnit.SECONDS);
 
-        while (true) {
-            try {
-                Socket socket = server.accept();
-                ClientConnection connection = new ClientConnection(socket);
-                client.put(socket.getPort(), connection);
-                executorService.execute(connection);
-                println("Client accepted: " + socket.getPort() + " online: " + client.size());
-            } catch (Exception e) {
-                println("Client accept failed: " + e.toString());
+        /*
+            异步接收连接请求
+         */
+        Executors.newSingleThreadScheduledExecutor().execute(() -> {
+            while (true) {
+                try {
+                    Socket socket = server.accept();
+                    ClientConnection connection = new ClientConnection(socket);
+                    client.put(socket.getPort(), connection);
+                    executorService.execute(connection);
+                    println("Client accepted: " + socket.getPort() + " online: " + client.size());
+                } catch (Exception e) {
+                    println("Client accept failed: " + e.toString());
+                }
             }
-        }
+        });
     }
 
     public static void sendPacket(Packet packet) {
@@ -89,9 +96,8 @@ public class TabooLibServer {
     }
 
     public static void println(Object obj) {
-        System.out.println("[" + infoFormat.format(System.currentTimeMillis()) + " INFO]: " + obj);
+        System.out.println(TabooLib.isSpigot() ? obj : "[" + infoFormat.format(System.currentTimeMillis()) + " INFO]: " + obj);
     }
-
 
     public static Optional<Map.Entry<Integer, ClientConnection>> getConnection(int port) {
         return client.entrySet().stream().filter(entry -> entry.getKey().equals(port)).findFirst();
