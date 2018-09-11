@@ -13,16 +13,6 @@ DATAURL:
   # 物品数据（来自 ItemSave 插件）
   ITEMDIR: 'plugins/Skript/scripts/config/item.yml'
   
-# 是否启用调试模式
-# 启用后将收到来自其他插件的调试信息
-DEBUG: false
-
-# 网络连接测试地址
-TEST-URL: 'aliyun.com'
-
-# 下载依赖时启用的线程数
-DOWNLOAD-POOL-SIZE: 4
-
 # 语言文件相关设置
 LOCALE:
   # 加载语言文件的顺序
@@ -33,6 +23,20 @@ LOCALE:
   # 关闭可提升性能
   # 如果需要开启仍然可以在语言文件中加入 papi: true
   USE_PAPI: false
+  
+# 是否启用调试模式
+# 启用后将收到来自其他插件的调试信息
+DEBUG: false
+
+# 是否在当前服务器启用交流网终端
+# 启用后将会收到大量调试信息, 不建议使用
+SERVER: false
+
+# 网络连接测试地址
+TEST-URL: 'aliyun.com'
+
+# 下载依赖时启用的线程数
+DOWNLOAD-POOL-SIZE: 4
 
 # 玩家列表（TAB-API）是否根据前缀排序
 TABLIST-SORT: true
