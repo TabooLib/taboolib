@@ -1,5 +1,6 @@
 package me.skymc.taboolib;
 
+import me.skymc.taboolib.nms.NMSUtils;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import net.md_5.bungee.api.ChatColor;
@@ -127,6 +128,21 @@ public class TabooLib {
             DataUtils.getPluginData("TabooLibrary", null).set("serverUID", UUID.randomUUID().toString());
         }
         return DataUtils.getPluginData("TabooLibrary", null).getString("serverUID");
+    }
+
+    /**
+     * 获取服务器 TPS
+     *
+     * @return double[3]
+     */
+    public static double[] getTPS() {
+        try {
+            Class<?> minecraftServer = NMSUtils.getNMSClass("MinecraftServer");
+            Object server = minecraftServer.getMethod("getServer").invoke(null);
+            return (double[]) server.getClass().getField("recentTps").get(server);
+        } catch (Exception e) {
+            return new double[] {0, 0, 0};
+        }
     }
 
     @Deprecated
