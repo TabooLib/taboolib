@@ -1,13 +1,12 @@
 package me.skymc.taboolib.socket;
 
-·import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketSerializer;
 import me.skymc.taboolib.socket.packet.impl.PacketHeartbeat;
 import me.skymc.taboolib.socket.packet.impl.PacketQuit;
 import me.skymc.taboolib.socket.server.ClientConnection;
-import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.net.ServerSocket;
