@@ -165,6 +165,5 @@ public class TabooLibLoader implements Listener {
     static void registerMetrics() {
         Metrics metrics = new Metrics(TabooLib.instance());
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).count())));
-        metrics.addCustomChart(new Metrics.AdvancedPie("plugins_using_taboolib_name", () -> Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).collect(Collectors.toMap(Plugin::getName, plugin -> 1, (a, b) -> b))));
     }
 }

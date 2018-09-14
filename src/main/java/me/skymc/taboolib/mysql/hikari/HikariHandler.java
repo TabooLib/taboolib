@@ -89,4 +89,18 @@ public class HikariHandler {
         }
         return config;
     }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public static ConcurrentHashMap<SQLHost, MapDataSource> getDataSource() {
+        return dataSource;
+    }
+
+    public static FileConfiguration getSettings() {
+        return settings;
+    }
 }

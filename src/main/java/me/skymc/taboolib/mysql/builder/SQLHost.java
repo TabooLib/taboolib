@@ -18,18 +18,28 @@ public class SQLHost {
     private String password;
     private String database;
     private Plugin plugin;
+    private boolean autoClose;
 
     public SQLHost(ConfigurationSection section, Plugin plugin) {
+        this(section, plugin, false);
+    }
+
+    public SQLHost(ConfigurationSection section, Plugin plugin, boolean autoClose) {
         this(section.getString("host", "localhost"), section.getString("user", "root"), section.getString("port", "3306"), section.getString("password", ""), section.getString("database", "test"), plugin);
     }
 
     public SQLHost(String host, String user, String port, String password, String database, Plugin plugin) {
+        this(host, user, port, password, database, plugin, false);
+    }
+
+    public SQLHost(String host, String user, String port, String password, String database, Plugin plugin, boolean autoClose) {
         this.host = host;
         this.user = user;
         this.port = port;
         this.password = password;
         this.database = database;
         this.plugin = plugin;
+        this.autoClose = false;
     }
 
     public String getHost() {
@@ -56,6 +66,10 @@ public class SQLHost {
         return plugin;
     }
 
+    public boolean isAutoClose() {
+        return autoClose;
+    }
+
     public String getConnectionUrl() {
         return Strings.replaceWithOrder("jdbc:mysql://{0}:{1}/{2}?characterEncoding=utf-8&useSSL=false", this.host, this.port, this.database);
     }
@@ -73,16 +87,18 @@ public class SQLHost {
             return false;
         }
         SQLHost sqlHost = (SQLHost) o;
-        return Objects.equals(getHost(), sqlHost.getHost()) &&
+        return autoClose == sqlHost.autoClose &&
+                Objects.equals(getHost(), sqlHost.getHost()) &&
                 Objects.equals(getUser(), sqlHost.getUser()) &&
                 Objects.equals(getPort(), sqlHost.getPort()) &&
                 Objects.equals(getPassword(), sqlHost.getPassword()) &&
-                Objects.equals(getDatabase(), sqlHost.getDatabase());
+                Objects.equals(getDatabase(), sqlHost.getDatabase()) &&
+                Objects.equals(getPlugin(), sqlHost.getPlugin());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getHost(), getUser(), getPort(), getPassword(), getDatabase());
+        return Objects.hash(getHost(), getUser(), getPort(), getPassword(), getDatabase(), getPlugin(), autoClose);
     }
 
     @Override
@@ -94,6 +110,7 @@ public class SQLHost {
                 ", password='" + password + '\'' +
                 ", database='" + database + '\'' +
                 ", plugin=" + plugin +
+                ", autoClose=" + autoClose +
                 '}';
     }
 }
