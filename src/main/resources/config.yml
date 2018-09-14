@@ -12,7 +12,7 @@ DATAURL:
   SERVER-DATA: 'plugins/TabooLib/serverdata/'
   # 物品数据（来自 ItemSave 插件）
   ITEMDIR: 'plugins/Skript/scripts/config/item.yml'
-  
+
 # 语言文件相关设置
 LOCALE:
   # 加载语言文件的顺序
@@ -23,7 +23,14 @@ LOCALE:
   # 关闭可提升性能
   # 如果需要开启仍然可以在语言文件中加入 papi: true
   USE_PAPI: false
-  
+
+# 是否注入 PluginManager，关闭后可能会导致部分功能出错。
+PLUGIN-INJECTOR:
+  ENABLE: true
+  # 检测下面的插件并自动关闭注入
+  DISABLE-ON-PLUGIN-EXISTS:
+  - LuckPerms
+
 # 是否启用调试模式
 # 启用后将收到来自其他插件的调试信息
 DEBUG: false
@@ -83,7 +90,7 @@ MYSQL:
   DATABASE: 'test'
   # 数据表前缀
   PREFIX: 'taboolib'
-  
+
 # 全局变量信息
 PluginData:
   # 检查更新间隔（单位：秒）

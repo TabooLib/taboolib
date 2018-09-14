@@ -26,11 +26,7 @@ public class SQLTable {
     }
 
     public SQLTable addColumn(SQLColumn sqlColumn) {
-        if (columns == null) {
-            columns = new SQLColumn[] {sqlColumn};
-        } else {
-            columns = ArrayUtils.arrayAppend(columns, sqlColumn);
-        }
+        columns = columns == null ? new SQLColumn[] {sqlColumn} : ArrayUtils.arrayAppend(columns, sqlColumn);
         return this;
     }
 

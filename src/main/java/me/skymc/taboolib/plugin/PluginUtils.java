@@ -30,7 +30,7 @@ public class PluginUtils {
     }
 
     public static File getPluginFile(Plugin plugin) {
-        for (File pluginFile : Objects.requireNonNull(new File("plugins").listFiles())) {
+        for (File pluginFile : new File("plugins").listFiles()) {
             if (pluginFile.getName().endsWith(".jar")) {
                 try {
                     PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
@@ -42,6 +42,21 @@ public class PluginUtils {
             }
         }
         return null;
+    }
+
+    public static boolean isPluginExists(String name) {
+        for (File pluginFile : new File("plugins").listFiles()) {
+            if (pluginFile.getName().endsWith(".jar")) {
+                try {
+                    PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
+                    if (desc.getName().equalsIgnoreCase(name)) {
+                        return true;
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        return false;
     }
 
     public static void enable(Plugin plugin) {

@@ -2,7 +2,6 @@ package me.skymc.taboolib.string;
 
 import com.ilummc.tlib.util.Strings;
 
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -20,15 +19,21 @@ import java.util.stream.IntStream;
  */
 public class ArrayUtils {
 
-    public static String arrayJoin(String[] args, int start) {
-        return IntStream.range(start, args.length).mapToObj(i -> args[i] + " ").collect(Collectors.joining()).trim();
+    public static <T> int indexOf(T[] array, T obj) {
+        return array == null || array.length == 0 ? -1 : IntStream.range(0, array.length).filter(i -> array[i] != null && array[i].equals(obj)).findFirst().orElse(-1);
+    }
+
+    public static <T> boolean contains(T[] array, T obj) {
+        return indexOf(array, obj) != -1;
     }
 
     @SafeVarargs
-    public static <T> List<T> asList(T... args) {
-        List<T> list = new ArrayList<>();
-        Collections.addAll(list, args);
-        return list;
+    public static <T> T[] asArray(T... args) {
+        return args;
+    }
+
+    public static String arrayJoin(String[] args, int start) {
+        return IntStream.range(start, args.length).mapToObj(i -> args[i] + " ").collect(Collectors.joining()).trim();
     }
 
     public static <T> T[] arrayAppend(T[] array, T obj) {
@@ -86,6 +91,13 @@ public class ArrayUtils {
         }
         T firstElement = skipEmpty(obj[0]);
         return firstElement == null ? def : obj;
+    }
+
+    @SafeVarargs
+    public static <T> List<T> asList(T... args) {
+        List<T> list = new ArrayList<>();
+        Collections.addAll(list, args);
+        return list;
     }
 
     // *********************************
