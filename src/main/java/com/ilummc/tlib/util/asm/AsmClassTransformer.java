@@ -50,6 +50,10 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
         return new Builder().toVersion(Bukkit.getServer().getClass().getName().split("\\.")[3]);
     }
 
+    public static Builder builder(String ver) {
+        return new Builder().toVersion(ver);
+    }
+
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         MethodVisitor visitor = super.visitMethod(access, name, replace(descriptor), replace(signature), replace(exceptions));

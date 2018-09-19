@@ -187,4 +187,14 @@ public class ItemBuilder {
         }
         return buildItem;
     }
+
+    /**
+     * 从文本中获取物品（name:名字;lore:描述||描述;material:材质）
+     *
+     * @param str
+     * @return
+     */
+    public static ItemStack fromString(String str) {
+        return null;
+    }
 }

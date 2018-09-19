@@ -59,8 +59,7 @@ public class TListenerHandler implements Listener {
                         // 实例化监听器
                         Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
                         listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (Exception ignored) {
                     }
                 }
             }
