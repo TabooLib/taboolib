@@ -8,16 +8,12 @@ import org.objectweb.asm.*;
 public class AnvilContainerAsm {
 
     public static byte[] create(String version) {
-
         ClassWriter cw = new ClassWriter(0);
         FieldVisitor fv;
         MethodVisitor mv;
         AnnotationVisitor av0;
-
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, "me/skymc/taboolib/anvil/AnvilContainer", null, "net/minecraft/server/" + version + "/ContainerAnvil", null);
-
         cw.visitSource("AnvilContainer.java", null);
-
         {
             mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Lnet/minecraft/server/" + version + "/EntityHuman;)V", null, null);
             mv.visitCode();
@@ -139,7 +135,6 @@ public class AnvilContainerAsm {
             mv.visitEnd();
         }
         cw.visitEnd();
-
         return cw.toByteArray();
     }
 }

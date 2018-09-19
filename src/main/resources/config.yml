@@ -75,6 +75,7 @@ ENABLE-UUID: false
 HIDE-NOTIFY: true
 
 # 数据库信息
+# 该功能在当前版本下无法使用，请勿启用
 MYSQL:
   # 是否启用数据库
   ENABLE: false

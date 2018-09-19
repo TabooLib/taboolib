@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -34,16 +33,6 @@ import java.util.stream.Collectors;
 public class TabooLibLoader implements Listener {
 
     static HashMap<String, List<Class>> pluginClasses = new HashMap<>();
-
-    @EventHandler (priority = EventPriority.LOWEST)
-    public void onEnable(PluginEnableEvent e) {
-        pluginClasses.remove(e.getPlugin().getName());
-    }
-
-    @EventHandler (priority = EventPriority.MONITOR)
-    public void onDisable(PluginDisableEvent e) {
-        setupClasses(e.getPlugin());
-    }
 
     static void setup() {
         testInternet();
@@ -165,5 +154,15 @@ public class TabooLibLoader implements Listener {
     static void registerMetrics() {
         Metrics metrics = new Metrics(TabooLib.instance());
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).count())));
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEnable(PluginEnableEvent e) {
+        pluginClasses.remove(e.getPlugin().getName());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDisable(PluginDisableEvent e) {
+        setupClasses(e.getPlugin());
     }
 }

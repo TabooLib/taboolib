@@ -48,8 +48,7 @@ public class PlayerContainerLoader implements Listener {
                     field.setAccessible(true);
                     try {
                         pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(field.get(pluginClass), annotation.uniqueId()));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } catch (IllegalAccessException ignored) {
                     }
                 }
             }

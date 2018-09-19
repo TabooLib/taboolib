@@ -2,7 +2,8 @@ package me.skymc.taboolib.anvil;
 
 import com.ilummc.tlib.util.asm.AsmClassLoader;
 import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.listener.TListener;
+import me.skymc.taboolib.object.Instantiable;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,7 +12,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 /**
  * @author sky
  */
-@TListener
+@Instantiable("AnvilContainerAPI")
 public class AnvilContainerAPI implements Listener {
 
     private static Class<?> impl;
@@ -19,6 +20,7 @@ public class AnvilContainerAPI implements Listener {
     public AnvilContainerAPI() {
         try {
             impl = AsmClassLoader.createNewClass("me.skymc.taboolib.anvil.AnvilContainer", AnvilContainerAsm.create(TabooLib.getVersion()));
+            Bukkit.getPluginManager().registerEvents(this, TabooLib.instance());
         } catch (Exception e) {
             e.printStackTrace();
         }
