@@ -19,7 +19,7 @@ public class AnvilContainerAPI implements Listener {
 
     public AnvilContainerAPI() {
         try {
-            impl = AsmClassLoader.createNewClass("me.skymc.taboolib.anvil.AnvilContainer", AnvilContainerAsm.create(TabooLib.getVersion()));
+            impl = AsmClassLoader.createNewClass("me.skymc.taboolib.anvil.AnvilContainer", AnvilContainerGenerator.generate());
             Bukkit.getPluginManager().registerEvents(this, TabooLib.instance());
         } catch (Exception e) {
             e.printStackTrace();
