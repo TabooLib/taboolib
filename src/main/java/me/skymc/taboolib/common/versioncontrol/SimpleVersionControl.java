@@ -52,7 +52,7 @@ public class SimpleVersionControl {
     }
 
     public Class<?> translate() throws IOException {
-        ClassReader classReader = new ClassReader(target);
+        ClassReader classReader = new ClassReader("/" + target);
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
         classReader.accept(classVisitor, 0);

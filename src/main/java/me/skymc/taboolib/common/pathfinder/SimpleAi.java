@@ -4,7 +4,7 @@ package me.skymc.taboolib.common.pathfinder;
  * @Author sky
  * @Since 2018-09-19 19:42
  */
-public abstract class SimpleAI {
+public abstract class SimpleAi {
 
     public abstract boolean shouldExecute();
 

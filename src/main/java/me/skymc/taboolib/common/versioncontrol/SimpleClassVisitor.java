@@ -8,7 +8,7 @@ import org.objectweb.asm.Opcodes;
 import java.util.stream.IntStream;
 
 /**
- * 我不信 ClassNotFound 的邪，自己写了一个发现还是一样。。。
+ * 我不信 ClassNotFoundException 的邪，自己写了一个发现还是一样。。。
  *
  * @Author sky
  * @Since 2018-09-19 21:17

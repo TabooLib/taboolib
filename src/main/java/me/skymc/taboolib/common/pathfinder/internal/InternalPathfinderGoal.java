@@ -1,16 +1,18 @@
 package me.skymc.taboolib.common.pathfinder.internal;
 
-import me.skymc.taboolib.common.pathfinder.SimpleAI;
+import me.skymc.taboolib.common.pathfinder.SimpleAi;
 
 /**
+ * 该类仅用作生成 ASM 代码，无任何意义
+ *
  * @Author sky
  * @Since 2018-09-19 22:31
  */
-public class ParentPathfinderGoal extends net.minecraft.server.v1_12_R1.PathfinderGoal {
+public class InternalPathfinderGoal extends net.minecraft.server.v1_12_R1.PathfinderGoal {
 
-    private final SimpleAI simpleAI;
+    private final SimpleAi simpleAI;
 
-    public ParentPathfinderGoal(SimpleAI simpleAI) {
+    public InternalPathfinderGoal(SimpleAi simpleAI) {
         this.simpleAI = simpleAI;
     }
 
