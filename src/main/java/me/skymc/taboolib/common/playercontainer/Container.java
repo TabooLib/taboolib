@@ -1,4 +1,4 @@
-package me.skymc.taboolib.common.playercontanier;
+package me.skymc.taboolib.common.playercontainer;
 
 /**
  * @author sky

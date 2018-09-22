@@ -17,7 +17,7 @@ public class SimpleMethodVisitor extends MethodVisitor {
     private final SimpleVersionControl simpleVersionControl;
 
     public SimpleMethodVisitor(SimpleVersionControl simpleVersionControl, MethodVisitor methodVisitor) {
-        super(Opcodes.ASM6, methodVisitor);
+        super(Opcodes.ASM5, methodVisitor);
         this.simpleVersionControl = simpleVersionControl;
     }
 

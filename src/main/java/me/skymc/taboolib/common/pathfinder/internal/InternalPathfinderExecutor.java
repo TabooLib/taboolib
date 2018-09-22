@@ -1,10 +1,14 @@
 package me.skymc.taboolib.common.pathfinder.internal;
 
 import me.skymc.taboolib.common.pathfinder.PathfinderExecutor;
+import me.skymc.taboolib.common.pathfinder.SimpleAi;
+import me.skymc.taboolib.common.pathfinder.SimpleAiSelector;
+import me.skymc.taboolib.nms.NMSUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Field;
@@ -20,20 +24,28 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
 
     private Field pathEntity;
     private Field pathfinderGoalSelectorSet;
+    private Field controllerJumpCurrent;
 
     public InternalPathfinderExecutor() {
         try {
-            pathfinderGoalSelectorSet = PathfinderGoalSelector.class.getDeclaredField("b");
+            pathfinderGoalSelectorSet = NMSUtils.getNMSClass("PathfinderGoalSelector").getDeclaredField("b");
             pathfinderGoalSelectorSet.setAccessible(true);
+            controllerJumpCurrent = NMSUtils.getNMSClass("ControllerJump").getDeclaredField("a");
+            controllerJumpCurrent.setAccessible(true);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        for (Field field : NavigationAbstract.class.getDeclaredFields()) {
-            if (field.getType().equals(PathEntity.class)) {
-                field.setAccessible(true);
-                pathEntity = field;
-                return;
+        try {
+            Class<?> pathEntityClass = NMSUtils.getNMSClass("PathEntity");
+            for (Field field : NMSUtils.getNMSClass("NavigationAbstract").getDeclaredFields()) {
+                if (field.getType().equals(pathEntityClass)) {
+                    field.setAccessible(true);
+                    pathEntity = field;
+                    return;
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,6 +60,31 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
+    public Object getPathEntity(LivingEntity entity) {
+        try {
+            return pathEntity.get(getNavigation(entity));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Object getControllerJump(LivingEntity entity) {
+        return ((EntityInsentient) getEntityInsentient(entity)).getControllerJump();
+    }
+
+    @Override
+    public Object getControllerMove(LivingEntity entity) {
+        return ((EntityInsentient) getEntityInsentient(entity)).getControllerMove();
+    }
+
+    @Override
+    public Object getControllerLook(LivingEntity entity) {
+        return ((EntityInsentient) getEntityInsentient(entity)).getControllerLook();
+    }
+
+    @Override
     public Object getGoalSelector(LivingEntity entity) {
         return ((EntityInsentient) getEntityInsentient(entity)).goalSelector;
     }
@@ -58,13 +95,13 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
-    public void setGoalAi(LivingEntity entity, Object ai, int priority) {
-        ((EntityInsentient) getEntityInsentient(entity)).goalSelector.a(priority, (PathfinderGoal) ai);
+    public void setGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
+        ((EntityInsentient) getEntityInsentient(entity)).goalSelector.a(priority, (PathfinderGoal) SimpleAiSelector.getCreator().createPathfinderGoal(ai));
     }
 
     @Override
-    public void setTargetAi(LivingEntity entity, Object ai, int priority) {
-        ((EntityInsentient) getEntityInsentient(entity)).targetSelector.a(priority, (PathfinderGoal) ai);
+    public void setTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
+        ((EntityInsentient) getEntityInsentient(entity)).targetSelector.a(priority, (PathfinderGoal) SimpleAiSelector.getCreator().createPathfinderGoal(ai));
     }
 
     @Override
@@ -86,27 +123,42 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
-    public Object navigationMove(LivingEntity entity, Location location) {
+    public boolean navigationMove(LivingEntity entity, Location location) {
         return navigationMove(entity, location, entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue());
     }
 
     @Override
-    public Object navigationMove(LivingEntity entity, Location location, double speed) {
+    public boolean navigationMove(LivingEntity entity, Location location, double speed) {
         return ((Navigation) getNavigation(entity)).a(location.getX(), location.getY(), location.getZ(), speed);
     }
 
     @Override
     public boolean navigationReach(LivingEntity entity) {
-        PathEntity pathEntity = getPathEntity(entity);
-        return pathEntity == null || pathEntity.b();
+        Object pathEntity = getPathEntity(entity);
+        return pathEntity == null || ((PathEntity) pathEntity).b();
     }
 
-    private PathEntity getPathEntity(LivingEntity entity) {
+    @Override
+    public void controllerLookAt(LivingEntity entity, Location target) {
+        ((ControllerLook) getControllerLook(entity)).a(target.getX(), target.getY(), target.getZ(), 10, 40);
+    }
+
+    @Override
+    public void controllerLookAt(LivingEntity entity, Entity target) {
+        ((ControllerLook) getControllerLook(entity)).a((net.minecraft.server.v1_8_R3.Entity) target, 10, 40);
+    }
+
+    @Override
+    public void controllerJumpReady(LivingEntity entity) {
+        ((ControllerJump) getControllerJump(entity)).a();
+    }
+
+    @Override
+    public boolean controllerJumpCurrent(LivingEntity entity) {
         try {
-            return (PathEntity) pathEntity.get(getNavigation(entity));
-        } catch (Exception e) {
-            e.printStackTrace();
+            return controllerJumpCurrent.getBoolean(getControllerJump(entity));
+        } catch (Exception ignored) {
+            return false;
         }
-        return null;
     }
 }

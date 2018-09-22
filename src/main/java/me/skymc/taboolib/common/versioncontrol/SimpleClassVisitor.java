@@ -18,13 +18,18 @@ public class SimpleClassVisitor extends ClassVisitor {
     private final SimpleVersionControl simpleVersionControl;
 
     public SimpleClassVisitor(SimpleVersionControl simpleVersionControl, ClassVisitor classVisitor) {
-        super(Opcodes.ASM6, classVisitor);
+        super(Opcodes.ASM5, classVisitor);
         this.simpleVersionControl = simpleVersionControl;
     }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, translate(superName), translate(interfaces));
+    }
+
+    @Override
+    public void visitInnerClass(String name, String outerName, String innerName, int access) {
+        super.visitInnerClass(name, translate(outerName), translate(innerName), access);
     }
 
     @Override

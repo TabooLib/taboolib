@@ -1,5 +1,6 @@
 package me.skymc.taboolib.common.pathfinder.internal;
 
+import me.skymc.taboolib.common.pathfinder.PathfinderCreator;
 import me.skymc.taboolib.common.pathfinder.SimpleAi;
 
 /**
@@ -8,12 +9,20 @@ import me.skymc.taboolib.common.pathfinder.SimpleAi;
  * @Author sky
  * @Since 2018-09-19 22:31
  */
-public class InternalPathfinderGoal extends net.minecraft.server.v1_12_R1.PathfinderGoal {
+public class InternalPathfinderCreator extends net.minecraft.server.v1_8_R3.PathfinderGoal implements PathfinderCreator {
 
-    private final SimpleAi simpleAI;
+    private SimpleAi simpleAI;
 
-    public InternalPathfinderGoal(SimpleAi simpleAI) {
-        this.simpleAI = simpleAI;
+    public InternalPathfinderCreator() {
+    }
+
+    public InternalPathfinderCreator(SimpleAi ai) {
+        this.simpleAI = ai;
+    }
+
+    @Override
+    public Object createPathfinderGoal(SimpleAi ai) {
+        return new InternalPathfinderCreator(ai);
     }
 
     @Override

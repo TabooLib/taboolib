@@ -1,4 +1,4 @@
-package me.skymc.taboolib.common.playercontanier;
+package me.skymc.taboolib.common.playercontainer;
 
 import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.TabooLib;

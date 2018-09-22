@@ -1,7 +1,10 @@
 package me.skymc.taboolib.common.versioncontrol;
 
 import com.ilummc.tlib.util.asm.AsmClassLoader;
+import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.fileutils.FileUtils;
+import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -19,16 +22,17 @@ public class SimpleVersionControl {
     private String target;
     private String from;
     private String to;
+    private Plugin plugin;
 
     SimpleVersionControl() {
     }
 
     public static SimpleVersionControl create() {
-        return new SimpleVersionControl().to(TabooLib.getVersion());
+        return new SimpleVersionControl().to(TabooLib.getVersion()).plugin(Main.getInst());
     }
 
     public static SimpleVersionControl create(String toVersion) {
-        return new SimpleVersionControl().to(toVersion);
+        return new SimpleVersionControl().to(toVersion).plugin(Main.getInst());
     }
 
     public SimpleVersionControl target(Class<?> target) {
@@ -51,11 +55,18 @@ public class SimpleVersionControl {
         return this;
     }
 
+    public SimpleVersionControl plugin(Plugin plugin) {
+        this.plugin = plugin;
+        return this;
+    }
+
     public Class<?> translate() throws IOException {
-        ClassReader classReader = new ClassReader("/" + target);
+        ClassReader classReader = new ClassReader(FileUtils.getResource(plugin, target.replace(".", "/") + ".class"));
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
         classReader.accept(classVisitor, 0);
+        classWriter.visitEnd();
+        classVisitor.visitEnd();
         return AsmClassLoader.createNewClass(target, classWriter.toByteArray());
     }
 
