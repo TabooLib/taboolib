@@ -133,13 +133,9 @@ public class FileUtils {
     public static InputStream getResource(Plugin plugin, String filename) {
         try {
             URL url = plugin.getClass().getClassLoader().getResource(filename);
-            if (url == null) {
-                return null;
-            } else {
-                URLConnection connection = url.openConnection();
-                connection.setUseCaches(false);
-                return connection.getInputStream();
-            }
+            URLConnection connection = url.openConnection();
+            connection.setUseCaches(false);
+            return connection.getInputStream();
         } catch (IOException ignored) {
             return null;
         }

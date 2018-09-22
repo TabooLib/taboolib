@@ -1,4 +1,4 @@
-package me.skymc.taboolib.common.playercontanier;
+package me.skymc.taboolib.common.playercontainer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

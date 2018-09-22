@@ -20,7 +20,7 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
     private String prevName;
 
     private AsmClassTransformer(Class<?> from, String fromVer, String toVer, ClassWriter classWriter) {
-        super(Opcodes.ASM6, classWriter);
+        super(Opcodes.ASM5, classWriter);
         this.writer = classWriter;
         this.from = from;
         this.fromVer = fromVer;
@@ -100,7 +100,7 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
     private class AsmMethodTransformer extends MethodVisitor {
 
         AsmMethodTransformer(MethodVisitor visitor) {
-            super(Opcodes.ASM6, visitor);
+            super(Opcodes.ASM5, visitor);
         }
 
         @Override
