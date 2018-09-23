@@ -39,6 +39,7 @@ new ItemBuilder(Material.STONE, 1, 0);
 | potionColor | 更改药水颜色 | 药水 |
 | potionEffect | 添加效果 | 药水 |
 | effType | 更改生物类型 | 怪物蛋 |
+| skullOwner | 更改头颅皮肤 | 头颅 |
 | unbreakable | 无法破坏 | ~ |
 | colored | 转换名称和描述的颜色 | ~ |
 | shiny | 添加附魔并隐藏 | ~ |
