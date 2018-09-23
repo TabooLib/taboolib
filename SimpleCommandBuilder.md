@@ -14,6 +14,7 @@ public class Plugin extends JavaPlugin {
             .execute((sender, args) -> {
                 // ...
                 sender.sendMessage("指令执行成功");
+                return true;
             }).build();
     }
 }
