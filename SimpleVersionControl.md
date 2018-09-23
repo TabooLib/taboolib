@@ -27,7 +27,7 @@ public class SimpleAiSelector {
     }
 }
 ```
-> 更多详细的用法可见本插件在的 InternalPathfinderExecutor 和 InternalPathfinderCreator 类
+> 更多详细的用法可见本插件的 InternalPathfinderExecutor 和 InternalPathfinderCreator 类
 
 ## 1. 创建抽象类
 本篇教程内容为使用 SimpleVersionControl 制作自动适配服务端版本的无反射 tps 获取工具。  
