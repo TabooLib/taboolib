@@ -21,4 +21,8 @@ public class SimpleCounter {
         }
         return false;
     }
+
+    public void reset() {
+        timer = 0;
+    }
 }
