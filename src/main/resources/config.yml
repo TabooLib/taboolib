@@ -31,10 +31,6 @@ PLUGIN-INJECTOR:
   DISABLE-ON-PLUGIN-EXISTS:
   - LuckPerms
 
-# 是否启用调试模式
-# 启用后将收到来自其他插件的调试信息
-DEBUG: false
-
 # 是否在当前服务器启用交流网终端
 # 启用后将会收到大量调试信息, 不建议使用
 SERVER: false

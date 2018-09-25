@@ -98,22 +98,40 @@ public class TabooLib {
     }
 
     /**
-     * 是否为 debug 模式
+     * 是否为调试模式
      *
      * @return boolean
      */
     public static boolean isDebug() {
-        return Main.getInst().getConfig().getBoolean("DEBUG");
+        return DataUtils.getPluginData("TabooLibrary", instance()).getBoolean("debug");
     }
 
     /**
-     * 发送 debug 信息
+     * 切换调试模式
+     *
+     * @param debug 值
+     */
+    public static void setDebug(boolean debug) {
+        DataUtils.getPluginData("TabooLibrary", instance()).set("debug", debug);
+    }
+
+    /**
+     * 发送调试信息
+     *
+     * @param args 内容
+     */
+    public static void debug(String... args) {
+        debug(instance(), args);
+    }
+
+    /**
+     * 发送调试信息
      *
      * @param plugin 插件名
      * @param args   内容
      */
     public static void debug(Plugin plugin, String... args) {
-        if (Main.getInst().getConfig().getBoolean("DEBUG")) {
+        if (TabooLib.isDebug()) {
             Arrays.stream(args).forEach(var -> Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "[TabooLib - DEBUG][" + plugin.getName() + "] " + ChatColor.RED + var));
         }
     }

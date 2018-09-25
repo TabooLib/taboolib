@@ -1,5 +1,6 @@
 package me.skymc.taboolib.listener;
 
+import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.database.PlayerDataManager;
@@ -15,17 +16,32 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+/**
+ * @author sky
+ */
 @TListener
 public class ListenerPlayerCommand implements Listener {
 
     @EventHandler
     public void cmd(ServerCommandEvent e) {
-        if ("savefile".equals(e.getCommand())) {
+        if (e.getCommand().equalsIgnoreCase("saveFiles")) {
             if (TabooLib.getVerint() > 10700) {
                 e.setCancelled(true);
             }
             Bukkit.getScheduler().runTask(Main.getInst(), DataUtils::saveAllCaches);
             Bukkit.getScheduler().runTask(Main.getInst(), () -> PlayerDataManager.saveAllCaches(true, false));
+            TLogger.getGlobalLogger().info("Successfully.");
+        } else if (e.getCommand().equalsIgnoreCase("tDebug")) {
+            if (TabooLib.getVerint() > 10700) {
+                e.setCancelled(true);
+            }
+            if (TabooLib.isDebug()) {
+                TabooLib.setDebug(false);
+                TLogger.getGlobalLogger().info("&cDisabled.");
+            } else {
+                TabooLib.setDebug(true);
+                TLogger.getGlobalLogger().info("&aEnabled.");
+            }
         }
     }
 
