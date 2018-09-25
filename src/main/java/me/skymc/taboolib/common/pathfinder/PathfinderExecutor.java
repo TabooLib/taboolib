@@ -14,8 +14,6 @@ public abstract class PathfinderExecutor {
 
     public abstract Object getNavigation(LivingEntity entity);
 
-    public abstract Object getPathEntity(LivingEntity entity);
-
     public abstract Object getControllerJump(LivingEntity entity);
 
     public abstract Object getControllerMove(LivingEntity entity);
@@ -25,6 +23,10 @@ public abstract class PathfinderExecutor {
     public abstract Object getGoalSelector(LivingEntity entity);
 
     public abstract Object getTargetSelector(LivingEntity entity);
+
+    public abstract Object getPathEntity(LivingEntity entity);
+
+    public abstract void setPathEntity(LivingEntity entity, Object pathEntity);
 
     public abstract void setGoalAi(LivingEntity entity, SimpleAi ai, int priority);
 
@@ -38,6 +40,10 @@ public abstract class PathfinderExecutor {
 
     public abstract boolean navigationMove(LivingEntity entity, Location location, double speed);
 
+    public abstract boolean navigationMove(LivingEntity entity, LivingEntity target);
+
+    public abstract boolean navigationMove(LivingEntity entity, LivingEntity target, double speed);
+
     public abstract boolean navigationReach(LivingEntity entity);
 
     public abstract void controllerLookAt(LivingEntity entity, Location target);
@@ -47,4 +53,6 @@ public abstract class PathfinderExecutor {
     public abstract void controllerJumpReady(LivingEntity entity);
 
     public abstract boolean controllerJumpCurrent(LivingEntity entity);
+
+    public abstract void setFollowRange(LivingEntity entity, double value);
 }

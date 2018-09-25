@@ -8,6 +8,7 @@ import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -60,16 +61,6 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
-    public Object getPathEntity(LivingEntity entity) {
-        try {
-            return pathEntity.get(getNavigation(entity));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
     public Object getControllerJump(LivingEntity entity) {
         return ((EntityInsentient) getEntityInsentient(entity)).getControllerJump();
     }
@@ -92,6 +83,25 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public Object getTargetSelector(LivingEntity entity) {
         return ((EntityInsentient) getEntityInsentient(entity)).targetSelector;
+    }
+
+    @Override
+    public Object getPathEntity(LivingEntity entity) {
+        try {
+            return pathEntity.get(getNavigation(entity));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void setPathEntity(LivingEntity entity, Object pathEntity) {
+        try {
+            this.pathEntity.set(getNavigation(entity), pathEntity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -124,12 +134,22 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
 
     @Override
     public boolean navigationMove(LivingEntity entity, Location location) {
-        return navigationMove(entity, location, entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue());
+        return navigationMove(entity, location, 0.6);
     }
 
     @Override
     public boolean navigationMove(LivingEntity entity, Location location, double speed) {
         return ((Navigation) getNavigation(entity)).a(location.getX(), location.getY(), location.getZ(), speed);
+    }
+
+    @Override
+    public boolean navigationMove(LivingEntity entity, LivingEntity target) {
+        return navigationMove(entity, target, 0.6);
+    }
+
+    @Override
+    public boolean navigationMove(LivingEntity entity, LivingEntity target, double speed) {
+        return ((Navigation) getNavigation(entity)).a(((CraftEntity) target).getHandle(), speed);
     }
 
     @Override
@@ -145,7 +165,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
 
     @Override
     public void controllerLookAt(LivingEntity entity, Entity target) {
-        ((ControllerLook) getControllerLook(entity)).a((net.minecraft.server.v1_8_R3.Entity) target, 10, 40);
+        ((ControllerLook) getControllerLook(entity)).a(((CraftEntity) target).getHandle(), 10, 40);
     }
 
     @Override
@@ -160,5 +180,10 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    @Override
+    public void setFollowRange(LivingEntity entity, double value) {
+        ((EntityInsentient) getEntityInsentient(entity)).getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(value);
     }
 }
