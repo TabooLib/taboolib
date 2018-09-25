@@ -158,11 +158,11 @@ public class TabooLibLoader implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onEnable(PluginEnableEvent e) {
-        pluginClasses.remove(e.getPlugin().getName());
+        setupClasses(e.getPlugin());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDisable(PluginDisableEvent e) {
-        setupClasses(e.getPlugin());
+        pluginClasses.remove(e.getPlugin().getName());
     }
 }

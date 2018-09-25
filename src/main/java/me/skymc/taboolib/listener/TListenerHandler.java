@@ -3,7 +3,6 @@ package me.skymc.taboolib.listener;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.TabooLibLoader;
-import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.methods.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -47,7 +46,7 @@ public class TListenerHandler implements Listener {
     public static void setupListener(Plugin plugin) {
         TabooLibLoader.getPluginClasses(plugin).ifPresent(classes -> {
             for (Class<?> pluginClass : classes) {
-                if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
+                if (org.bukkit.event.Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
                     try {
                         TListener tListener = pluginClass.getAnnotation(TListener.class);
                         // 检查注册条件
@@ -59,7 +58,9 @@ public class TListenerHandler implements Listener {
                         // 实例化监听器
                         Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
                         listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                    } catch (Exception ignored) {
+                        TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
+                    } catch (Exception e) {
+                        TabooLib.debug("Listener setup failed: " + e.toString());
                     }
                 }
             }
@@ -113,6 +114,7 @@ public class TListenerHandler implements Listener {
                 }
                 // 注册监听
                 Bukkit.getPluginManager().registerEvents(listener, plugin);
+                TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " registered. (" + plugin.getName() + ")");
             }
         });
     }
@@ -154,6 +156,10 @@ public class TListenerHandler implements Listener {
         });
     }
 
+    public static HashMap<String, List<Listener>> getListeners() {
+        return listeners;
+    }
+
     @EventHandler
     public void onPluginEnable(PluginEnableEvent e) {
         try {
@@ -169,15 +175,5 @@ public class TListenerHandler implements Listener {
             cancelListener(e.getPlugin());
         } catch (Exception ignored) {
         }
-    }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
-    public static HashMap<String, List<Listener>> getListeners() {
-        return listeners;
     }
 }
