@@ -70,10 +70,12 @@ public class UpdateTask {
             TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.FILE-NOT-FOUND");
             return;
         }
-        FileUtils.download("https://github.com/Bkm016/TabooLib/releases/download/" + newVersion + "/TabooLib-" + newVersion + ".jar", pluginFile);
-        TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
-        if (shutdown) {
-            Bukkit.shutdown();
-        }
+        Bukkit.getScheduler().runTaskAsynchronously(TabooLib.instance(), () -> {
+            FileUtils.download("https://github.com/Bkm016/TabooLib/releases/download/" + newVersion + "/TabooLib-" + newVersion + ".jar", pluginFile);
+            TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
+            if (shutdown) {
+                Bukkit.shutdown();
+            }
+        });
     }
 }
