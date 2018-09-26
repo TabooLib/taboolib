@@ -6,14 +6,12 @@ import me.skymc.taboolib.common.pathfinder.SimpleAiSelector;
 import me.skymc.taboolib.nms.NMSUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Field;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * 该类仅用作生成 ASM 代码，无任何意义
@@ -117,7 +115,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void clearGoalAi(LivingEntity entity) {
         try {
-            ((Set) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).goalSelector)).clear();
+            ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).goalSelector)).clear();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -126,7 +124,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void clearTargetAi(LivingEntity entity) {
         try {
-            ((Set) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).targetSelector)).clear();
+            ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).targetSelector)).clear();
         } catch (Exception e) {
             e.printStackTrace();
         }

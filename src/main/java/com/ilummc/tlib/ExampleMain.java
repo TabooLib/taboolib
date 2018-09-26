@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 @TConfig(name = "cfg.yml", charset = "GBK")
 public class ExampleMain extends JavaPlugin {
 
+    private Property<Boolean> update = Property.of(false);
+
     public static void main(String[] args) {
         MemoryMXBean bean = ManagementFactory.getMemoryMXBean();
         System.out.println(bean.getHeapMemoryUsage().toString());
@@ -33,8 +35,6 @@ public class ExampleMain extends JavaPlugin {
             System.out.println(s);
         }
     }
-
-    private Property<Boolean> update = Property.of(false);
 
     @Override
     public void onEnable() {

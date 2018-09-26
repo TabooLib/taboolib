@@ -82,6 +82,7 @@ public class TConfiguration extends YamlConfiguration {
     public void reload() {
         try {
             load(file);
+            runListener();
         } catch (IOException | InvalidConfigurationException e) {
             TLogger.getGlobalLogger().warn("Cannot load configuration from stream: " + e.toString());
         }
