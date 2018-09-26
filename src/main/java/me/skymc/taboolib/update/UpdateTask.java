@@ -75,7 +75,7 @@ public class UpdateTask {
             TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.FILE-NOT-FOUND");
             return;
         }
-        FileUtils.download(Strings.replaceWithOrder("https://github.com/Bkm016/TabooLib/releases/download/{0}/TabooLib-{0}.jar", UpdateTask.getNewVersion()), pluginFile);
+        FileUtils.download("https://github.com/Bkm016/TabooLib/releases/download/" + newVersion + "/TabooLib-" + newVersion + ".jar", pluginFile);
         TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
         if (shutdown) {
             Bukkit.shutdown();
