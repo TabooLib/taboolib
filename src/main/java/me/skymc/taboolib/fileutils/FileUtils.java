@@ -1,13 +1,15 @@
 package me.skymc.taboolib.fileutils;
 
 import ch.njol.util.Closeable;
+import com.ilummc.eagletdl.EagletTask;
+import com.ilummc.eagletdl.ProgressEvent;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import me.skymc.taboolib.Main;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -405,35 +407,38 @@ public class FileUtils {
     /**
      * 下载文件
      *
-     * @param downloadURL 下载地址
-     * @param file        保存位置
+     * @param url   下载地址
+     * @param file  下载位置
+     * @param async 是否异步
      */
-    public static void download(String downloadURL, File file) {
-        HttpURLConnection conn = null;
-        InputStream inputStream = null;
-        FileOutputStream fos = null;
-        try {
-            URL url = new URL(downloadURL);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(5 * 1000);
-            conn.setRequestProperty("User-Agent", "Mozilla/31.0 (compatible; MSIE 10.0; Windows NT; DigExt)");
-
-            inputStream = conn.getInputStream();
-            byte[] data = read(inputStream);
-
-            fos = new FileOutputStream(createNewFile(file));
-            fos.write(data);
-        } catch (Exception ignored) {
-        } finally {
-            IOUtils.close(conn);
-            IOUtils.closeQuietly(fos);
-            IOUtils.closeQuietly(inputStream);
+    public static void download(String url, File file, boolean async) {
+        EagletTask eagletTask = new EagletTask()
+                .url(url)
+                .file(file)
+                .setThreads(8)
+                .setOnError(event -> {
+                })
+                .setOnConnected(event -> TLocale.Logger.info("UTIL.DOWNLOAD-CONNECTED", file.getName(), ProgressEvent.format(event.getContentLength())))
+                .setOnProgress(event -> TLocale.Logger.info("UTIL.DOWNLOAD-PROGRESS", event.getSpeedFormatted(), event.getPercentageFormatted()))
+                .setOnComplete(event -> {
+                    if (event.isSuccess()) {
+                        TLocale.Logger.info("UTIL.DOWNLOAD-SUCCESS", file.getName());
+                    } else {
+                        TLocale.Logger.error("UTIL.DOWNLOAD-FAILED", file.getName());
+                    }
+                }).start();
+        if (!async) {
+            eagletTask.waitUntil();
         }
     }
 
+    public static void download(String url, File file) {
+        download(url, file, false);
+    }
+
     @Deprecated
-    public static void download(String downloadURL, String filename, File saveDir) {
-        download(downloadURL, new File(saveDir, filename));
+    public static void download(String url, String filename, File saveDir) {
+        download(url, new File(saveDir, filename));
     }
 
     @Deprecated
