@@ -1,10 +1,8 @@
 package me.skymc.taboolib.update;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
@@ -21,7 +19,6 @@ import java.io.File;
  */
 public class UpdateTask {
 
-    private static boolean haveUpdate = false;
     private static double newVersion = 0;
 
     public UpdateTask() {
@@ -39,12 +36,10 @@ public class UpdateTask {
                 }
                 JsonElement json = new JsonParser().parse(value);
                 if (json.isJsonArray()) {
-                    JsonObject latestObject = json.getAsJsonArray().get(0).getAsJsonObject();
-                    newVersion = latestObject.get("name").getAsDouble();
+                    newVersion = json.getAsJsonArray().get(0).getAsJsonObject().get("name").getAsDouble();
                     if (TabooLib.getPluginVersion() >= newVersion) {
                         TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
                     } else {
-                        haveUpdate = true;
                         TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
                         Bukkit.getScheduler().runTask(TabooLib.instance(), () -> updatePlugin(true));
                     }
@@ -54,7 +49,7 @@ public class UpdateTask {
     }
 
     public static boolean isHaveUpdate() {
-        return haveUpdate;
+        return newVersion > 0;
     }
 
     public static double getNewVersion() {
