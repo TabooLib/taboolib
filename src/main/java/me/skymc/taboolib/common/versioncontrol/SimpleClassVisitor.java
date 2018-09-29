@@ -43,7 +43,7 @@ public class SimpleClassVisitor extends ClassVisitor {
     }
 
     private String translate(String target) {
-        return target == null ? null : target.replace("/" + simpleVersionControl.getFrom() + "/", "/" + simpleVersionControl.getTo() + "/");
+        return target == null ? null : simpleVersionControl.replace(target);
     }
 
     private String[] translate(String[] target) {

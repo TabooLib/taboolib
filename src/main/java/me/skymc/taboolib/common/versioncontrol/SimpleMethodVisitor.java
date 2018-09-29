@@ -47,7 +47,7 @@ public class SimpleMethodVisitor extends MethodVisitor {
     }
 
     private String translate(String target) {
-        return target == null ? null : target.replaceAll("/" + simpleVersionControl.getFrom() + "/", "/" + simpleVersionControl.getTo() + "/");
+        return target == null ? null : simpleVersionControl.replace(target);
     }
 
     private String[] translate(String[] target) {
