@@ -52,7 +52,7 @@
 <a name="download"></a>
 插件下载
 ---
-[![](http://ci.pcd.ac.cn/job/TabooLib/badge/icon)](http://ci.pcd.ac.cn/job/TabooLib)
+[![](http://jenkins.mirez.cc/buildStatus/icon?job=TabooLib)](http://jenkins.mirez.cc/job/TabooLib/)
 [![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
 [![](https://img.shields.io/github/release/Bkm016/TabooLib.svg)](https://github.com/Bkm016/TabooLib/tags)
 [![](https://img.shields.io/github/stars/Bkm016/TabooLib.svg?style=flat-square&label=Stars)](https://github.com/Bkm016/TabooLib)
