@@ -1,5 +1,6 @@
 package me.skymc.taboolib.common.versioncontrol;
 
+import com.google.common.collect.Lists;
 import com.ilummc.tlib.util.asm.AsmClassLoader;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
@@ -10,6 +11,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 我不信 ClassNotFound 的邪，自己写了一个发现还是一样。。。
@@ -20,7 +23,7 @@ import java.io.IOException;
 public class SimpleVersionControl {
 
     private String target;
-    private String from;
+    private List<String> from = Lists.newArrayList();
     private String to;
     private Plugin plugin;
 
@@ -46,7 +49,7 @@ public class SimpleVersionControl {
     }
 
     public SimpleVersionControl from(String from) {
-        this.from = from.startsWith("v") ? from : "v" + from;
+        this.from.add(from.startsWith("v") ? from : "v" + from);
         return this;
     }
 
@@ -80,11 +83,18 @@ public class SimpleVersionControl {
         return target;
     }
 
-    public String getFrom() {
+    public List<String> getFrom() {
         return from;
     }
 
     public String getTo() {
         return to;
+    }
+
+    public String replace(String origin) {
+        for (String from : from) {
+            origin = origin.replace("/" + from + "/", "/" + to + "/");
+        }
+        return origin;
     }
 }
