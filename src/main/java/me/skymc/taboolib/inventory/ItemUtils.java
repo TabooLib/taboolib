@@ -4,13 +4,13 @@ import com.ilummc.tlib.resources.TLocale;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.common.configuration.TConfiguration;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
 import me.skymc.taboolib.itemnbtapi.NBTList;
 import me.skymc.taboolib.itemnbtapi.NBTListCompound;
 import me.skymc.taboolib.itemnbtapi.NBTType;
 import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.string.Language;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -39,72 +39,57 @@ import java.util.stream.IntStream;
  */
 public class ItemUtils {
 
-    private static FileConfiguration itemdir = null;
-
-    private static FileConfiguration itemCache = null;
-
     private static File finalItemsFolder;
-
-    private static LinkedHashMap<String, String> itemlib = new LinkedHashMap<>();
-
+    private static FileConfiguration itemDir;
+    private static FileConfiguration itemCache;
+    private static TConfiguration itemName;
+    private static LinkedHashMap<String, String> itemLib = new LinkedHashMap<>();
     private static LinkedHashMap<String, ItemStack> itemCaches = new LinkedHashMap<>();
-
     private static LinkedHashMap<String, ItemStack> itemCachesFinal = new LinkedHashMap<>();
 
-    public static FileConfiguration getItemdir() {
-        return itemdir;
-    }
-
-    public static FileConfiguration getItemCache() {
-        return itemCache;
-    }
-
-    public static File getFinalItemsFolder() {
-        return finalItemsFolder;
-    }
-
-    public static LinkedHashMap<String, String> getItemlib() {
-        return itemlib;
-    }
-
-    public static LinkedHashMap<String, ItemStack> getItemCaches() {
-        return itemCaches;
-    }
-
-    public static LinkedHashMap<String, ItemStack> getItemCachesFinal() {
-        return itemCachesFinal;
-    }
-
-    /**
-     * 获取物品缓存
-     * 检测顺序：
-     * 1. 固定物品库
-     * 2. 动态物品库
-     *
-     * @param name 物品名称
-     * @return
-     */
-    public static ItemStack getCacheItem(String name) {
-        // 检测固定物品库是否存在该物品
-        if (itemCachesFinal.containsKey(name)) {
-            return itemCachesFinal.get(name);
-        }
-        // 返回动态物品库
-        return itemCaches.get(name);
-    }
-
-    public static boolean isExists(String name) {
-        return itemCachesFinal.containsKey(name) || itemCaches.containsKey(name);
-    }
-
-    public static void LoadLib() {
+    public static void init() {
         try {
+            reloadItemDir();
             reloadItemName();
             reloadItemCache();
-            itemdir = YamlConfiguration.loadConfiguration(new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR")));
         } catch (Exception e) {
             TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ITEMS", e.toString());
         }
+    }
+
+    public static void reloadItemDir() {
+        File file = new File(Main.getInst().getConfig().getString("DATAURL.ITEMDIR"));
+        if (file.exists()) {
+            itemDir = YamlConfiguration.loadConfiguration(file);
+        }
+    }
+
+    public static void reloadItemName() {
+        itemName = TConfiguration.createInResource(Main.getInst(), "Language/ITEM_NAME.yml");
+        itemName.listener(() -> {
+            itemName.getConfigurationSection("").getKeys(false).forEach(a -> itemLib.put(a, itemName.getString(a)));
+            TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemLib.size()));
+        }).runListener();
+    }
+
+    public static void reloadItemCache() {
+        itemCaches.clear();
+        itemCachesFinal.clear();
+        loadItemsFile(getItemCacheFile(), false);
+        finalItemsFolder = new File(Main.getInst().getDataFolder(), "FinalItems");
+        if (!finalItemsFolder.exists()) {
+            finalItemsFolder.mkdir();
+        }
+        Arrays.stream(finalItemsFolder.listFiles()).forEach(file -> loadItemsFile(file, true));
+        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
+    }
+
+    public static File getItemCacheFile() {
+        File itemCacheFile = new File(Main.getInst().getDataFolder(), "items.yml");
+        if (!itemCacheFile.exists()) {
+            Main.getInst().saveResource("items.yml", true);
+        }
+        return itemCacheFile;
     }
 
     public static void loadItemsFile(File file, boolean finalFile) {
@@ -120,33 +105,22 @@ public class ItemUtils {
         }
     }
 
-    public static void reloadItemCache() {
-        itemCaches.clear();
-        itemCachesFinal.clear();
-        loadItemsFile(getItemCacheFile(), false);
-        // 创建固定物品库
-        finalItemsFolder = new File(Main.getInst().getDataFolder(), "FinalItems");
-        if (!finalItemsFolder.exists()) {
-            finalItemsFolder.mkdir();
-        }
-        // 检查固定物品库中的物品
-        Arrays.stream(finalItemsFolder.listFiles()).forEach(file -> loadItemsFile(file, true));
-        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
+    // *********************************
+    //
+    //              API
+    //
+    // *********************************
+
+    public static boolean isExists(String name) {
+        return itemCachesFinal.containsKey(name) || itemCaches.containsKey(name);
     }
 
-    public static void reloadItemName() {
-        FileConfiguration conf = new Language("ITEM_NAME", Main.getInst(), true).getConfiguration();
-        itemlib.clear();
-        conf.getConfigurationSection("").getKeys(false).forEach(a -> itemlib.put(a, conf.getString(a)));
-        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemlib.size()));
+    public static ItemStack getCacheItem(String name) {
+        return itemCachesFinal.containsKey(name) ? itemCachesFinal.get(name) : itemCaches.get(name);
     }
 
-    public static File getItemCacheFile() {
-        File itemCacheFile = new File(Main.getInst().getDataFolder(), "items.yml");
-        if (!itemCacheFile.exists()) {
-            Main.getInst().saveResource("items.yml", true);
-        }
-        return itemCacheFile;
+    public static ItemStack getItemFromDir(String name) {
+        return itemDir != null ? itemDir.getItemStack("item." + name) : null;
     }
 
     public static String getCustomName(ItemStack item) {
@@ -154,19 +128,7 @@ public class ItemUtils {
             return TLocale.asString("ITEM-UTILS.EMPTY-ITEM");
         }
         int data = item.getType().getMaxDurability() == 0 ? item.getDurability() : 0;
-        return item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : itemlib.get(item.getType() + ":" + data) == null ? item.getType().toString() : itemlib.get(item.getType() + ":" + data);
-    }
-
-    public static ItemStack getItemFromDir(String name) {
-        if (itemdir != null) {
-            return itemdir.getItemStack("item." + name);
-        }
-        return null;
-    }
-
-    @SuppressWarnings("deprecation")
-    public static ItemStack item(int n, int a, int d) {
-        return new ItemStack(n, a, (short) d);
+        return item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : itemLib.get(item.getType() + ":" + data) == null ? item.getType().toString() : itemLib.get(item.getType() + ":" + data);
     }
 
     public static ItemStack setName(ItemStack i, String n) {
@@ -176,7 +138,7 @@ public class ItemUtils {
         return i;
     }
 
-    public static ItemStack Enchant(ItemStack i, Enchantment e, int l) {
+    public static ItemStack enchant(ItemStack i, Enchantment e, int l) {
         ItemMeta meta = i.getItemMeta();
         meta.addEnchant(e, l, false);
         i.setItemMeta(meta);
@@ -203,10 +165,7 @@ public class ItemUtils {
     }
 
     public static String asString(String args, Player placeholderPlayer) {
-        if (placeholderPlayer == null) {
-            return args.replace("&", "§");
-        }
-        return PlaceholderAPI.setPlaceholders(placeholderPlayer, args.replace("&", "§"));
+        return placeholderPlayer == null ? args.replace("&", "§") : PlaceholderAPI.setPlaceholders(placeholderPlayer, args.replace("&", "§"));
     }
 
     public static List<String> asString(List<String> args, Player placeholderPlayer) {
@@ -281,58 +240,30 @@ public class ItemUtils {
         }
     }
 
-    /**
-     * 包含介绍
-     *
-     * @param i 物品
-     * @param a 关键字
-     */
+    public static int getLore(ItemStack i, String a) {
+        return isLored(i) ? IntStream.range(0, i.getItemMeta().getLore().size()).filter(j -> i.getItemMeta().getLore().get(j).contains(a)).findFirst().orElse(0) : 0;
+    }
+
     public static boolean hasLore(ItemStack i, String a) {
         return isLored(i) && i.getItemMeta().getLore().toString().contains(a);
     }
 
-    /**
-     * 如果已描述
-     *
-     * @param i
-     * @return
-     */
     public static boolean isLored(ItemStack i) {
         return i != null && i.getItemMeta() != null && i.getItemMeta().getLore() != null;
     }
 
-    /**
-     * 如果已命名
-     *
-     * @param i
-     * @return
-     */
     public static boolean isNamed(ItemStack i) {
         return i != null && i.getItemMeta() != null && i.getItemMeta().getDisplayName() != null;
     }
 
-    /**
-     * 添加描述
-     *
-     * @param is   物品
-     * @param lore 描述
-     */
-    public static ItemStack addLore(ItemStack is, String lore) {
+    public static ItemStack addLore(ItemStack is, String line) {
         ItemMeta meta = is.getItemMeta();
-
-        List<String> _lore = meta.hasLore() ? meta.getLore() : Collections.emptyList();
-        _lore.add(lore.replaceAll("&", "§"));
-
+        List<String> lore = meta.hasLore() ? meta.getLore() : Collections.emptyList();
+        lore.add(TLocale.Translate.setColored(line));
         is.setItemMeta(meta);
         return is;
     }
 
-    /**
-     * 移除描述
-     *
-     * @param is   物品
-     * @param line 行数
-     */
     public static ItemStack delLore(ItemStack is, int line) {
         ItemMeta meta = is.getItemMeta();
         if (meta.hasLore()) {
@@ -346,40 +277,7 @@ public class ItemUtils {
         return is;
     }
 
-    /**
-     * 获取介绍所在行数
-     *
-     * @param i 物品
-     * @param a 关键字
-     */
-    public static int getLore(ItemStack i, String a) {
-        return isLored(i) ? IntStream.range(0, i.getItemMeta().getLore().size()).filter(j -> i.getItemMeta().getLore().get(j).contains(a)).findFirst().orElse(0) : 0;
-    }
-
-    /**
-     * 添加耐久
-     *
-     * @param i 物品
-     * @param d 耐久
-     */
-    public static ItemStack addDurability(ItemStack i, int d) {
-        i.setDurability((short) (i.getDurability() + d));
-        int min = i.getDurability();
-        int max = i.getType().getMaxDurability();
-        if (min >= max) {
-            i.setType(Material.AIR);
-        }
-        return i;
-    }
-
-    /**
-     * 替换描述
-     *
-     * @param i  物品
-     * @param l1 关键字1
-     * @param l2 关键字2
-     */
-    public static ItemStack repalceLore(ItemStack i, String l1, String l2) {
+    public static ItemStack replaceLore(ItemStack i, String l1, String l2) {
         if (!isLored(i)) {
             return i;
         } else {
@@ -388,6 +286,16 @@ public class ItemUtils {
             IntStream.range(0, lore.size()).forEach(j -> lore.set(j, lore.get(j).replace(l1, l2)));
             meta.setLore(lore);
             i.setItemMeta(meta);
+        }
+        return i;
+    }
+
+    public static ItemStack addDurability(ItemStack i, int d) {
+        i.setDurability((short) (i.getDurability() + d));
+        int min = i.getDurability();
+        int max = i.getType().getMaxDurability();
+        if (min >= max) {
+            i.setType(Material.AIR);
         }
         return i;
     }
@@ -550,6 +458,62 @@ public class ItemUtils {
             TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", name);
         }
         return nbt;
+    }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public static FileConfiguration getItemDir() {
+        return itemDir;
+    }
+
+    public static LinkedHashMap<String, String> getItemLib() {
+        return itemLib;
+    }
+
+    public static FileConfiguration getItemCache() {
+        return itemCache;
+    }
+
+    public static File getFinalItemsFolder() {
+        return finalItemsFolder;
+    }
+
+    public static LinkedHashMap<String, ItemStack> getItemCaches() {
+        return itemCaches;
+    }
+
+    public static LinkedHashMap<String, ItemStack> getItemCachesFinal() {
+        return itemCachesFinal;
+    }
+
+    // *********************************
+    //
+    //        Deprecated
+    //
+    // *********************************
+
+    @Deprecated
+    public static FileConfiguration getItemdir() {
+        return itemDir;
+    }
+
+    @Deprecated
+    public static LinkedHashMap<String, String> getItemlib() {
+        return itemLib;
+    }
+
+    @Deprecated
+    public static ItemStack item(int n, int a, int d) {
+        return new ItemStack(n, a, (short) d);
+    }
+
+    @Deprecated
+    public static ItemStack repalceLore(ItemStack i, String l1, String l2) {
+        return replaceLore(i, l1, l2);
     }
 
     @Deprecated

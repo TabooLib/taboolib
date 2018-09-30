@@ -5,11 +5,3 @@ version: ${project.version}
 author: [lzzelAliz, 坏黑]
 depend: [Vault]
 softdepend: [PlaceholderAPI, Skript, MassiveLag]
-
-# 两个命令删除预定
-commands:
-  language2:
-    aliases: [lang2]
-    permission: taboolib.admin
-  taboolibrarymodule:
-    aliases: [tlm]

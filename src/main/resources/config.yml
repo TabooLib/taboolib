@@ -12,16 +12,6 @@ DATAURL:
   SERVER-DATA: 'plugins/TabooLib/serverdata/'
   # 物品数据（来自 ItemSave 插件）
   ITEMDIR: 'plugins/Skript/scripts/config/item.yml'
-  
-# 是否启用调试模式
-# 启用后将收到来自其他插件的调试信息
-DEBUG: false
-
-# 网络连接测试地址
-TEST-URL: 'aliyun.com'
-
-# 下载依赖时启用的线程数
-DOWNLOAD-POOL-SIZE: 4
 
 # 语言文件相关设置
 LOCALE:
@@ -33,10 +23,29 @@ LOCALE:
   # 关闭可提升性能
   # 如果需要开启仍然可以在语言文件中加入 papi: true
   USE_PAPI: false
-  
-# 玩家列表（TAB）是否根据前缀排序
-# 启用后将会导致部分通过计分板获取玩家数据的插件出错（BedwarsRel、SkyWars）
-TABLIST-SORT: false
+
+# 是否注入 PluginManager，关闭后可能会导致部分功能出错。
+PLUGIN-INJECTOR:
+  ENABLE: true
+  # 检测下面的插件并自动关闭注入
+  DISABLE-ON-PLUGIN-EXISTS:
+  - LuckPerms
+
+# 是否在当前服务器启用交流网终端
+# 启用后将会收到大量调试信息, 不建议使用
+SERVER: false
+
+# 网络连接测试地址
+TEST-URL: 'aliyun.com'
+
+# 下载依赖时启用的线程数
+DOWNLOAD-POOL-SIZE: 4
+
+# 玩家列表（TAB-API）是否根据前缀排序
+TABLIST-SORT: true
+
+# 玩家列表（TAB-API）是否自动清理没有成员的队伍
+TABLIST-AUTO-CLEAN-TEAM: true
 
 # 是否启用更新检测
 UPDATE-CHECK: true
@@ -62,6 +71,7 @@ ENABLE-UUID: false
 HIDE-NOTIFY: true
 
 # 数据库信息
+# 该功能在当前版本下无法使用，请勿启用
 MYSQL:
   # 是否启用数据库
   ENABLE: false
@@ -77,7 +87,7 @@ MYSQL:
   DATABASE: 'test'
   # 数据表前缀
   PREFIX: 'taboolib'
-  
+
 # 全局变量信息
 PluginData:
   # 检查更新间隔（单位：秒）

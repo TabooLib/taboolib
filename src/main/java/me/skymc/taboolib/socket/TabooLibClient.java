@@ -2,9 +2,13 @@ package me.skymc.taboolib.socket;
 
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketSerializer;
+import me.skymc.taboolib.socket.packet.impl.PacketCommand;
+import me.skymc.taboolib.socket.packet.impl.PacketMessage;
+import me.skymc.taboolib.string.ArrayUtils;
 import org.bukkit.Bukkit;
 
 import java.io.*;
@@ -83,6 +87,23 @@ public class TabooLibClient {
                 TLocale.sendToConsole("COMMUNICATION.FAILED-READING-PACKET", e.getMessage());
             }
         });
+
+        SimpleCommandBuilder.create("TabooLibClient", TabooLib.instance())
+                .aliases("tclient")
+                .permission("*")
+                .execute((sender, args) -> {
+                    if (args.length == 0) {
+                        sender.sendMessage("§c[TabooLibClient] §f/tclient message §7[TEXT] §8- §7发送测试信息");
+                        sender.sendMessage("§c[TabooLibClient] §f/tclient command §7[TEXT] §8- §7发送测试命令");
+                    } else if (args[0].equalsIgnoreCase("message") && args.length > 1) {
+                        sendPacket(new PacketMessage(ArrayUtils.arrayJoin(args, 1)));
+                    } else if (args[0].equalsIgnoreCase("command") && args.length > 1) {
+                        sendPacket(new PacketCommand(ArrayUtils.arrayJoin(args, 1)));
+                    } else {
+                        sender.sendMessage("§c[TabooLibClient] §7指令错误.");
+                    }
+                    return true;
+                }).build();
     }
 
     // *********************************

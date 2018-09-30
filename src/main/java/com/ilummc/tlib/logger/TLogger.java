@@ -1,9 +1,12 @@
 package com.ilummc.tlib.logger;
 
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
 public class TLogger {
@@ -12,7 +15,7 @@ public class TLogger {
 
     private static TLogger globalLogger = new TLogger("§8[§3§lTabooLib§8][§r{1}§8] §f{2}", Main.getInst(), TLogger.FINE);
     private final String pattern;
-    private Plugin plugin;
+    private String name;
     private int level;
 
     public static TLogger getGlobalLogger() {
@@ -23,8 +26,8 @@ public class TLogger {
         return pattern;
     }
 
-    public Plugin getPlugin() {
-        return plugin;
+    public String getName() {
+        return name;
     }
 
     public int getLevel() {
@@ -37,49 +40,83 @@ public class TLogger {
 
     public TLogger(String pattern, Plugin plugin, int level) {
         this.pattern = pattern;
-        this.plugin = plugin;
+        this.name = plugin.getName();
+        this.level = level;
+    }
+
+    public TLogger(String pattern, String name, int level) {
+        this.pattern = pattern;
+        this.name = name;
         this.level = level;
     }
 
     public void verbose(String msg) {
         if (level <= VERBOSE) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§f全部", ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§f全部", TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§f全部", TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void finest(String msg) {
         if (level <= FINEST) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§e良好", ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§e良好", TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§e良好", TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void fine(String msg) {
         if (level <= FINE) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§a正常", ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§a正常", TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§a正常", TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void info(String msg) {
         if (level <= INFO) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§b信息", ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§b信息", TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§b信息", TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void warn(String msg) {
         if (level <= WARN) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§6警告", "§6" + ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§6警告", "§6" + TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§6警告", "§6" + TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void error(String msg) {
         if (level <= ERROR) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§c错误", "§c" + ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§c错误", "§c" + TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§c错误", "§c" + TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
     public void fatal(String msg) {
         if (level <= FATAL) {
-            Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, plugin.getName(), "§4致命错误", "§4" + ChatColor.translateAlternateColorCodes('&', msg)));
+            if (TabooLib.isSpigot()) {
+                Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(pattern, name, "§4致命错误", "§4" + TLocale.Translate.setColored(msg)));
+            } else {
+                BungeeCord.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(Strings.replaceWithOrder(pattern, name, "§4致命错误", "§4" + TLocale.Translate.setColored(msg))));
+            }
         }
     }
 
@@ -87,4 +124,7 @@ public class TLogger {
         return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", plugin, TLogger.FINE);
     }
 
+    public static TLogger getUnformatted(String name) {
+        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", name, TLogger.FINE);
+    }
 }

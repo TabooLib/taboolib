@@ -14,15 +14,16 @@ import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.IO;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.slf4j:slf4j-api:1.7.25")
@@ -58,14 +59,6 @@ public class TLib {
         }
     }
 
-    public static TLib getTLib() {
-        return tLib;
-    }
-
-    public static YamlConfiguration getInternalLanguage() {
-        return internalLanguage;
-    }
-
     public static void init() {
         tLib = new TLib();
 
@@ -94,6 +87,11 @@ public class TLib {
     }
 
     public static void injectPluginManager() {
+        if (!tLib.isInjectEnabled() || tLib.isBlackListPluginExists()) {
+            TLocale.Logger.fatal("TLIB.INJECTION-DISABLED");
+            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin != Main.getInst()).forEach(plugin -> TDependencyInjector.inject(plugin, plugin));
+            return;
+        }
         try {
             Field field = Bukkit.getServer().getClass().getDeclaredField("pluginManager");
             field.setAccessible(true);
@@ -101,12 +99,16 @@ public class TLib {
             TLocale.Logger.info("TLIB.INJECTION-SUCCESS");
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
             TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
-            for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                if (plugin != Main.getInst()) {
-                    TDependencyInjector.inject(plugin, plugin);
-                }
-            }
+            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin != Main.getInst()).forEach(plugin -> TDependencyInjector.inject(plugin, plugin));
         }
+    }
+
+    public static TLib getTLib() {
+        return tLib;
+    }
+
+    public static YamlConfiguration getInternalLanguage() {
+        return internalLanguage;
     }
 
     public TLogger getLogger() {
@@ -123,5 +125,19 @@ public class TLib {
 
     public File getLibsFolder() {
         return libsFolder;
+    }
+
+    // *********************************
+    //
+    //        Private Methods
+    //
+    // *********************************
+
+    private boolean isInjectEnabled() {
+        return Main.getInst().getConfig().getBoolean("PLUGIN-INJECTOR.ENABLE", true);
+    }
+
+    private boolean isBlackListPluginExists() {
+        return Main.getInst().getConfig().getStringList("PLUGIN-INJECTOR.DISABLE-ON-PLUGIN-EXISTS").stream().anyMatch(PluginUtils::isPluginExists);
     }
 }

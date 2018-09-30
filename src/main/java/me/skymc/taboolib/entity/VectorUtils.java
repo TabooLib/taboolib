@@ -18,7 +18,7 @@ public class VectorUtils {
 
     /**
      * 物品丢弃
-     *
+     * <p>
      * 常用参数：
      * itemDrop(player, itemStack, 0.2, 0.5)
      *
@@ -57,7 +57,7 @@ public class VectorUtils {
 
     /**
      * 生物抛射
-     *
+     * <p>
      * 常用参数：
      * entityPush(entity, location, 15)
      *
@@ -69,17 +69,17 @@ public class VectorUtils {
         Location from = entity.getLocation();
 
         Vector test = to.clone().subtract(from).toVector();
-        Double elevation = test.getY();
+        double elevation = test.getY();
 
         Double launchAngle = calculateLaunchAngle(from, to, velocity, elevation, 20.0D);
-        Double distance = Math.sqrt(Math.pow(test.getX(), 2.0D) + Math.pow(test.getZ(), 2.0D));
+        double distance = Math.sqrt(Math.pow(test.getX(), 2.0D) + Math.pow(test.getZ(), 2.0D));
         if (distance == 0.0D) {
             return;
         }
         if (launchAngle == null) {
             launchAngle = Math.atan((40.0D * elevation + Math.pow(velocity, 2.0D)) / (40.0D * elevation + 2.0D * Math.pow(velocity, 2.0D)));
         }
-        Double hangTime = calculateHangTime(launchAngle, velocity, elevation, 20.0D);
+        double hangTime = calculateHangTime(launchAngle, velocity, elevation, 20.0D);
 
         test.setY(Math.tan(launchAngle) * distance);
         test = normalizeVector(test);
@@ -113,7 +113,7 @@ public class VectorUtils {
 
     private static Double calculateLaunchAngle(Location from, Location to, double v, double elevation, double g) {
         Vector vector = from.clone().subtract(to).toVector();
-        Double distance = Math.sqrt(Math.pow(vector.getX(), 2.0D) + Math.pow(vector.getZ(), 2.0D));
+        double distance = Math.sqrt(Math.pow(vector.getX(), 2.0D) + Math.pow(vector.getZ(), 2.0D));
         double v2 = Math.pow(v, 2.0D);
         double v4 = Math.pow(v, 4.0D);
         double check = g * (g * Math.pow(distance, 2.0D) + 2.0D * elevation * v2);

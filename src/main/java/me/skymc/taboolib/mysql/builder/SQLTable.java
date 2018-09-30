@@ -26,11 +26,7 @@ public class SQLTable {
     }
 
     public SQLTable addColumn(SQLColumn sqlColumn) {
-        if (columns == null) {
-            columns = new SQLColumn[] {sqlColumn};
-        } else {
-            columns = ArrayUtils.arrayAppend(columns, sqlColumn);
-        }
+        columns = columns == null ? new SQLColumn[] {sqlColumn} : ArrayUtils.arrayAppend(columns, sqlColumn);
         return this;
     }
 
@@ -50,6 +46,22 @@ public class SQLTable {
 
     public String truncateQuery() {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
+    }
+
+    public RunnableUpdate executeInsert(String values) {
+        return executeUpdate("insert into " + tableName + " values(" + values + ")");
+    }
+
+    public RunnableQuery executeSelect(String where) {
+        return executeQuery("select * from " + tableName + " where " + where);
+    }
+
+    public RunnableQuery executeSelect() {
+        return executeQuery("select * from " + tableName);
+    }
+
+    public RunnableUpdate executeUpdate(String update, String where) {
+        return executeUpdate("update " + tableName + " set " + update + " where " + where);
     }
 
     public RunnableUpdate executeUpdate(String query) {

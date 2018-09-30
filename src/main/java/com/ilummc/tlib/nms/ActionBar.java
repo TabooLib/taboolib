@@ -40,10 +40,8 @@ public abstract class ActionBar {
         @Override
         public void send(Player player, String text) {
             net.minecraft.server.v1_12_R1.ChatComponentText component = new net.minecraft.server.v1_12_R1.ChatComponentText(text);
-            net.minecraft.server.v1_12_R1.PacketPlayOutChat packet = new net.minecraft.server.v1_12_R1.PacketPlayOutChat(component,
-                    net.minecraft.server.v1_12_R1.ChatMessageType.a((byte) 2));
+            net.minecraft.server.v1_12_R1.PacketPlayOutChat packet = new net.minecraft.server.v1_12_R1.PacketPlayOutChat(component, net.minecraft.server.v1_12_R1.ChatMessageType.a((byte) 2));
             ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-
         }
     }
 }

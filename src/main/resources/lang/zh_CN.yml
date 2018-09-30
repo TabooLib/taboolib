@@ -1,8 +1,11 @@
 TLIB:
   INJECTION-SUCCESS: '注入成功'
   INJECTION-FAILED:
-    - '注入失败'
-    - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
+  - '注入失败'
+  - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
+  INJECTION-DISABLED:
+  - '关闭注入'
+  - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
   LOAD-FAIL-OFFLINE:
   - '**********************************************'
   - '** TabooLib-{0} 无法在您的服务器上使用'
@@ -12,15 +15,15 @@ TLIB:
   - '**'
   - '** 详情查阅: https://github.com/Bkm016/TabooLib'
   - '**********************************************'
-  
+
 DEPENDENCY:
   DOWNLOAD-OFFLINE: '已启用离线模式, 将不会下载第三方依赖库'
   DOWNLOAD-CONNECTED: '  正在下载 {0} 大小 {1}'
   DOWNLOAD-PROGRESS: '    下载速度 {0} 进度 {1}'
   DOWNLOAD-SUCCESS: '  下载 {0} 完成'
   DOWNLOAD-FAILED:
-    - '  下载 {0} 失败'
-    - '  请手动下载 {1} 并重命名为 {2} 后放在 /{0}/libs 文件夹内'
+  - '  下载 {0} 失败'
+  - '  请手动下载 {1} 并重命名为 {2} 后放在 /{0}/libs 文件夹内'
   PLUGIN-AUTOLOAD-FAIL: '{0} 所依赖的插件 {1} 尝试自动加载失败，请尝试手动下载'
   PLUGIN-LOAD-SUCCESS: '  {0} 请求的插件 {1} 加载成功'
   PLUGIN-LOAD-FAIL: '  {0} 请求的插件 {1} 加载失败'
@@ -28,7 +31,8 @@ DEPENDENCY:
   LIBRARY-LOAD-SUCCESS: '  {0} 请求的库文件 {1} 加载成功'
   LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
   LOAD-COMPLETE: '依赖加载完成'
-  
+  LOAD-CLASSES: '&7缓存 &f{0} &7插件的 &f{1} &7个类耗时&f {2} &7毫秒.'
+
 CONFIG:
   LOAD-FAIL-NO-ANNOTATION: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
   LOAD-FAIL: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
@@ -40,7 +44,7 @@ CONFIG:
   RELOAD-SUCCESS: '插件 {0} 的配置 {1} 成功重载'
   RELOAD-FAIL: '插件 {0} 的配置 {1} 成功重载'
   LISTEN-START: '开始监听 {0} 插件的 {1} 配置文件'
-  
+
 NOTIFY:
   ERROR-SERVER-KEY: '&4检测到本服序列号与其他服务器相同, 已重新生成!'
   ERROR-CONNECTION-FAIL: '&4数据库连接失败, 请检查配置是否正确!'
@@ -55,7 +59,7 @@ NOTIFY:
   FAIL-DISABLE:
   - '&c插件尚未启动完成, 已跳过卸载代码'
   - '&c插件作者: &4坏黑'
-  
+
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
   PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
@@ -65,36 +69,36 @@ LOCALE:
   BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
   CALLER-PLUGIN-NOT-FOUND: '{0} 不是一个由插件加载的类'
   STATIC-CLASS-LOADER: '{0} 由静态类加载器初始化，无法获得其从属的插件'
-  
+
 MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
-  
+
 COOLDOWNPACK:
   PACK-REGISTER: '注册冷却包: {0}, 时间: {1} 秒 ({2})'
   PACK-REGISTER-ANONYMOUS: '注册冷却包: {0}, 时间: {1} 秒 (匿名注册)'
   PACK-UNREGISTER: '注销冷却包: {0} (主动注销)'
   PACK-UNREGISTER-AUTO: '注销冷却包: {0} (自动注销)'
- 
+
 GLOBAL-DATAMANAGER:
   ERROR-CHECK-VARIABLE: '&4变量 &c{0} &4载入异常: &c{1}'
   SUCCESS-LOADED-VARIABLE: '&7从数据库中获取 &f{0} &7个变量, 耗时: &f{1} &7(ms)'
-  
+
 PLAYER-DATAMANAGER:
   ERROR-STORAGE-SQL: '不允许在储存模式为数据库的情况下获取离线玩家数据'
   ERROR-PLAYER-DATA: '&4玩家 &c{0} &4的数据载入出现异常: &c{1}'
   SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条玩家数据, 耗时: &f{1} &7(ms)'
-  
+
 ENTITY-UTILS:
   NOTFOUND-PROTOCOLLIB: '缺少前置插件 ProtocolLib'
- 
+
 FILE-UTILS:
   FAIL-LOAD-CONFIGURATION: '&4配置文件载入失败!, 插件: &c{0}&4, 文件: &c{1}'
-  
+
 DATA-UTILS:
   SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条插件数据, 耗时: &f{1} &7(ms)'
   FAIL-SAVE-FILE: '&4文件 &c{0}&4 保存失败, 原因: &c{1}'
-  
+
 ITEM-UTILS:
   FAIL-LOAD-ITEMS: '物品库载入失败: &4{0}'
   FAIL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
@@ -105,20 +109,13 @@ ITEM-UTILS:
   SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
   SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
   EMPTY-ITEM: '空'
-  
+
 LANGUAGE2:
   FAIL-NOTFOUND-FILE: '语言文件 {0} 不存在'
-  
+
 TIMECYCLE:
   FAIL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
-  
-ANVIL-CONTAINER:
-  NAME-EXAMPLE: '在这里输入文本'
-  LORE-NORMAL:
-  - ''
-  - '&7在上方文本框内输入信息'
-  - '&7随后点击右侧输出物品'
-  
+
 UPDATETASK:
   VERSION-FAIL: '&4更新记录获取失败, 请检查网络连接!'
   VERSION-LATEST: '&7插件已是最新版, 无需更新!'
@@ -130,7 +127,7 @@ UPDATETASK:
   - '&7 下载地址: &fhttp://www.mcbbs.net/thread-773065-1-1.html'
   - '&7 开源地址: &fhttps://github.com/Bkm016/TabooLib/'
   - '&8####################################################'
-  
+
 MYSQL-CONNECTION:
   FAIL-CONNECT: '&4数据库 &c{0} &4连接失败, 原因: &c{0}'
   FAIL-NOTFOUND-DRIVE: '&7驱动器获取失败, 无法连接到数据库'
@@ -144,26 +141,26 @@ MYSQL-CONNECTION:
   SUCCESS-CONNECTION-CANCEL: '已停止插件 &f{0}&7 的 &f{1}&7 条数据库连接'
   NOTIFY-CONNECTING: '&7正在连接数据库, 地址: &f{0}'
   NOTIFY-CONNECTED: '&7数据库连接成功 ({0}ms)'
-  
+
 MYSQL-HIKARI:
   CREATE-SUCCESS: '&7插件 &f{0}&7 注册新的数据库连接: &f{1}'
   CREATE-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
   CLOSE-SUCCESS: '&7插件 &f{0} &7注册的数据库连接 &f{1} &7已被注销!'
   CLOSE-FAIL: '&7插件 &f{0} &7注册的数据库连接正在被 &f{1} &7个插件使用, 无法注销!'
-  
+
 TABOOLIB-MODULE:
   SUCCESS-LOADED: '&7载入 &f{0} &7个 &fTLM &7模块'
   FAIL-LOADED: '&4模块载入异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
   FAIL-RUNTIME: '&4模块运行异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
-  
+
 COMMANDS:
   GLOBAL:
     ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
     ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4只有启用数据库储存时才能这么做'
   INTERNAL:
     TYPE-ERROR: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
-    TYPE-PLAYER: 玩家
-    TYPE-CONSOLE: 控制台
+    TYPE-PLAYER: '玩家'
+    TYPE-CONSOLE: '控制台'
     ERROR-USAGE:
     - '&8[&3&lTabooLib&8] &7指令 &f{0} &7参数不足'
     - '&8[&3&lTabooLib&8] &7正确用法:'
@@ -240,10 +237,9 @@ COMMANDS:
       DESCRIPTION: '&4更新插件 &8(谨防非正规途径的插件获取方式)'
       UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
       UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
+      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
       FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
       PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
-      UPDATE-START: '&8[&3&lTabooLib&8] &7开始下载:&f {0}'
-      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
     PLAYERTAG:
       DESCRIPTION:
         DISPLAY: '设置玩家展示名称'
@@ -385,7 +381,7 @@ COMMANDS:
             hover: '&f点击复制'
             suggest: '{0}'
       FOOT:
-      - ''    
+      - ''
     ENCHANTS:
       DESCRIPTION: '查看所有附魔'
       HEAD:
@@ -430,7 +426,7 @@ COMMANDS:
             hover: '&f点击复制'
             suggest: '{0}'
       FOOT:
-      - ''  
+      - ''
     SLOTS:
       DESCRIPTION: '查看所有部位'
       HEAD:
@@ -473,7 +469,7 @@ COMMANDS:
     COMMAND-TITLE: '&e&l----- &6&lTabooLibPlugin Commands &e&l-----'
     LIST:
       DESCRIPTION: '列出插件'
-      LIST-PLUGIN: 
+      LIST-PLUGIN:
       - '&8[&3&lTabooLib&8] &7插件总数: &f{0}'
       - '&8[&3&lTabooLib&8] &7插件列表: &f{1}'
     INFO:
@@ -533,7 +529,13 @@ COMMANDS:
         1: '内容'
       INVALID-PLAYER-OFFLINE: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线.'
     COMMAND:
-      DESCRIPTION: '使目标输入执行指令'
+      DESCRIPTION: '使目标执行指令'
+      ARGUMENTS:
+        0: '目标'
+        1: '内容'
+      INVALID-TARGET-NOT-FOUND: '&8[&3&lTabooLib&8] &4目标 &c{0} &4不存在.'
+    COMMAND-AS-OP:
+      DESCRIPTION: '使目标以管理员身份执行指令'
       ARGUMENTS:
         0: '目标'
         1: '内容'
@@ -562,13 +564,20 @@ COMMANDS:
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
   CONNECTION-ERROR: '连接到数据库错误：{0}'
-  
+
 COMMUNICATION:
   FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
   FAILED-CONNECT-SERVER: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接失败.'
   FAILED-CONNECT-CLIENT: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接出错: {0}'
   FAILED-READING-PACKET: '§8[§3§lTabooLibClient§8] &4本地通讯网络数据包读取失败: {0}'
   SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7本地通讯网络连接成功.'
-  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7加入本地通讯网络.'
-  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7退出本地通讯网络.'
-  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &flocalhost:{0} &7发送信息: &f{1}'
+  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7加入本地通讯网络.'
+  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7退出本地通讯网络.'
+  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7发送信息: &f{1}'
+  PACKET-COMMAND: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7运行命令: &f{1}'
+
+UTIL:
+  DOWNLOAD-CONNECTED: '开始下载文件 {0} 大小 {1}'
+  DOWNLOAD-PROGRESS: '  下载速度 {0} 进度 {1}'
+  DOWNLOAD-SUCCESS: '下载 {0} 完成!'
+  DOWNLOAD-FAILED: '下载 {0} 失败!'

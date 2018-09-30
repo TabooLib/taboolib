@@ -5,25 +5,34 @@ import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.bstats.Metrics;
-import me.skymc.taboolib.commands.language.Language2Command;
 import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.listener.TListenerHandler;
 import me.skymc.taboolib.playerdata.DataUtils;
-import me.skymc.tlm.command.TLMCommands;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @Author sky
  * @Since 2018-08-23 17:04
  */
-class TabooLibLoader {
+@TListener
+public class TabooLibLoader implements Listener {
+
+    static HashMap<String, List<Class>> pluginClasses = new HashMap<>();
 
     static void setup() {
         testInternet();
@@ -33,9 +42,19 @@ class TabooLibLoader {
     }
 
     static void register() {
+        setupClasses();
         registerListener();
-        registerCommands();
         registerMetrics();
+    }
+
+    /**
+     * 获取插件所有被读取到的类
+     *
+     * @param plugin 插件
+     * @return List
+     */
+    public static Optional<List<Class>> getPluginClasses(Plugin plugin) {
+        return Optional.ofNullable(pluginClasses.get(plugin.getName()));
     }
 
     /**
@@ -44,6 +63,40 @@ class TabooLibLoader {
     static void setupDataFolder() {
         Main.setPlayerDataFolder(FileUtils.folder(Main.getInst().getConfig().getString("DATAURL.PLAYER-DATA")));
         Main.setServerDataFolder(FileUtils.folder(Main.getInst().getConfig().getString("DATAURL.SERVER-DATA")));
+    }
+
+    /**
+     * 载入插件数据库
+     */
+    static void setupDatabase() {
+        DataUtils.addPluginData("TabooLibrary", null);
+        // 检查是否启用数据库
+        Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
+        // 初始化数据库
+        TabooLibDatabase.init();
+    }
+
+    /**
+     * 读取插件类
+     */
+    static void setupClasses() {
+        Arrays.stream(Bukkit.getPluginManager().getPlugins()).forEach(TabooLibLoader::setupClasses);
+    }
+
+    /**
+     * 读取插件类
+     */
+    static void setupClasses(Plugin plugin) {
+        if (!(TabooLib.isTabooLib(plugin) || TabooLib.isDependTabooLib(plugin))) {
+            return;
+        }
+        try {
+            long time = System.currentTimeMillis();
+            List<Class> classes = FileUtils.getClasses(plugin);
+            TLocale.Logger.info("DEPENDENCY.LOAD-CLASSES", plugin.getName(), String.valueOf(classes.size()), String.valueOf(System.currentTimeMillis() - time));
+            pluginClasses.put(plugin.getName(), classes);
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -86,25 +139,6 @@ class TabooLibLoader {
     }
 
     /**
-     * 载入插件数据库
-     */
-    static void setupDatabase() {
-        DataUtils.addPluginData("TabooLibrary", null);
-        // 检查是否启用数据库
-        Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
-        // 初始化数据库
-        TabooLibDatabase.init();
-    }
-
-    /**
-     * 载入插件命令
-     */
-    static void registerCommands() {
-        Bukkit.getPluginCommand("language2").setExecutor(new Language2Command());
-        Bukkit.getPluginCommand("taboolibrarymodule").setExecutor(new TLMCommands());
-    }
-
-    /**
      * 载入插件监听
      */
     static void registerListener() {
@@ -120,7 +154,15 @@ class TabooLibLoader {
     static void registerMetrics() {
         Metrics metrics = new Metrics(TabooLib.instance());
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).count())));
-        metrics.addCustomChart(new Metrics.AdvancedPie("plugins_using_taboolib_name", () -> Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).collect(Collectors.toMap(Plugin::getName, plugin -> 1, (a, b) -> b))));
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEnable(PluginEnableEvent e) {
+        setupClasses(e.getPlugin());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDisable(PluginDisableEvent e) {
+        pluginClasses.remove(e.getPlugin().getName());
+    }
 }
