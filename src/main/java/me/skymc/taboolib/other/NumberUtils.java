@@ -3,6 +3,9 @@ package me.skymc.taboolib.other;
 import java.text.DecimalFormat;
 import java.util.Random;
 
+/**
+ * @author sky
+ */
 public class NumberUtils {
 
     private static Random random = new Random();
@@ -50,6 +53,22 @@ public class NumberUtils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static Boolean getBooleanAbbreviation(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        if (str.length() < 4) {
+            char var = str.charAt(0);
+            if (var == 'y' || var == 'Y' || var == 't' || var == 'T' || var == '1') {
+                return true;
+            }
+            if (var == 'n' || var == 'N' || var == 'f' || var == 'F' || var == '0') {
+                return false;
+            }
+        }
+        return getBoolean(str);
     }
 
     @Deprecated

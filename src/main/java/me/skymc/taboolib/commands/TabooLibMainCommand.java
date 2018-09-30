@@ -779,39 +779,12 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (!UpdateTask.isHaveUpdate()) {
-                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-FOUND");
-                return;
-            }
+            UpdateTask.updatePlugin(true);
+        }
 
-            File pluginFile = PluginUtils.getPluginFile(Main.getInst());
-            if (pluginFile == null) {
-                TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.FILE-NOT-FOUND");
-                return;
-            }
-
-            new BukkitRunnable() {
-
-                @Override
-                public void run() {
-                    if (PlayerUtils.getOnlinePlayers().size() > 0) {
-                        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.PLAYER-ONLINE");
-                        return;
-                    }
-
-                    String url = Strings.replaceWithOrder("https://github.com/Bkm016/TabooLib/releases/download/{0}/TabooLib-{0}.jar", UpdateTask.getNewVersion());
-                    TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-START", url);
-
-                    File file = new File("plugins/update");
-                    if (file.exists()) {
-                        FileUtils.download(url, new File(file, pluginFile.getName()));
-                        TLocale.sendTo(sender, "COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
-                    } else {
-                        FileUtils.download(url, pluginFile);
-                        Bukkit.shutdown();
-                    }
-                }
-            }.runTaskAsynchronously(Main.getInst());
+        @Override
+        public CommandType getType() {
+            return CommandType.CONSOLE;
         }
     };
 }

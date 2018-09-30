@@ -1,5 +1,6 @@
 package me.skymc.taboolib.socket;
 
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.socket.packet.Packet;
 import me.skymc.taboolib.socket.packet.PacketSerializer;
@@ -55,20 +56,25 @@ public class TabooLibServer {
             /*
                 检测无效的客户端连接，如果超过 5000 毫秒没有收到客户端的回应（上一次心跳包的回应）则注销链接
              */
-            client.entrySet().stream().filter(connection -> connection.getValue().isAlive()).map(connection -> new PacketQuit(connection.getKey(), "Lost connection")).forEach(TabooLibServer::sendPacket);
+            client.entrySet().stream().filter(connection -> !connection.getValue().isAlive()).map(connection -> new PacketQuit(connection.getKey(), "Lost connection")).forEach(TabooLibServer::sendPacket);
         }, 0, 1, TimeUnit.SECONDS);
 
-        while (true) {
-            try {
-                Socket socket = server.accept();
-                ClientConnection connection = new ClientConnection(socket);
-                client.put(socket.getPort(), connection);
-                executorService.execute(connection);
-                println("Client accepted: " + socket.getPort() + " online: " + client.size());
-            } catch (Exception e) {
-                println("Client accept failed: " + e.toString());
+        /*
+            异步接收连接请求
+         */
+        Executors.newSingleThreadScheduledExecutor().execute(() -> {
+            while (true) {
+                try {
+                    Socket socket = server.accept();
+                    ClientConnection connection = new ClientConnection(socket);
+                    client.put(socket.getPort(), connection);
+                    executorService.execute(connection);
+                    println("Client accepted: " + socket.getPort() + " online: " + client.size());
+                } catch (Exception e) {
+                    println("Client accept failed: " + e.toString());
+                }
             }
-        }
+        });
     }
 
     public static void sendPacket(Packet packet) {
@@ -76,7 +82,6 @@ public class TabooLibServer {
     }
 
     public static void sendPacket(String origin) {
-        println("Packet sending: " + origin + ", online: " + client.size());
         // 在服务端尝试解析动作并运行
         Optional.ofNullable(PacketSerializer.unSerialize(origin)).ifPresent(Packet::readOnServer);
         // 将动作发送至所有客户端
@@ -90,9 +95,8 @@ public class TabooLibServer {
     }
 
     public static void println(Object obj) {
-        System.out.println("[" + infoFormat.format(System.currentTimeMillis()) + " INFO]: " + obj);
+        System.out.println(TabooLib.isSpigot() ? obj : "[" + infoFormat.format(System.currentTimeMillis()) + " INFO]: " + obj);
     }
-
 
     public static Optional<Map.Entry<Integer, ClientConnection>> getConnection(int port) {
         return client.entrySet().stream().filter(entry -> entry.getKey().equals(port)).findFirst();

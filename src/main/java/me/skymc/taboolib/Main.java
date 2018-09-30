@@ -4,6 +4,7 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.common.function.TFunctionLoader;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
@@ -22,6 +23,7 @@ import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.socket.TabooLibClient;
+import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.string.language2.Language2;
 import me.skymc.taboolib.support.SupportPlaceholder;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
@@ -111,7 +113,7 @@ public class Main extends JavaPlugin {
         // 载入权限
         PermissionUtils.loadRegisteredServiceProvider();
         // 物品名称
-        ItemUtils.LoadLib();
+        ItemUtils.init();
         // 低层工具
         DabItemUtils.getInstance();
         // 载入周期管理器
@@ -162,6 +164,10 @@ public class Main extends JavaPlugin {
                     }
                 } catch (IOException ignored) {
                 }
+                // 本地通讯网络终端
+                if (getConfig().getBoolean("SERVER")) {
+                    TabooLibServer.main(new String[0]);
+                }
                 // 本地通讯网络
                 TabooLibClient.init();
             }
@@ -198,6 +204,8 @@ public class Main extends JavaPlugin {
         HikariHandler.closeDataSourceForce();
         // 注销监听器
         TListenerHandler.cancelListeners();
+        // 注销子模块
+        TFunctionLoader.unloadFunction();
         // 结束数据库储存方法
         if (getStorageType() == StorageType.SQL) {
             GlobalDataManager.SQLMethod.cancelSQLMethod();

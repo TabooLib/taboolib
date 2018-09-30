@@ -54,20 +54,20 @@ public class TCommandHandler implements Listener {
         return registerPluginCommand(plugin, command, "", "/" + command, new ArrayList<>(), null, null, commandExecutor, null);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor, TabExecutor tabExecutor) {
-        return registerPluginCommand(plugin, command, "", "/" + command, new ArrayList<>(), null, null, commandExecutor, tabExecutor);
+    public static boolean registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+        return registerPluginCommand(plugin, command, "", "/" + command, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, CommandExecutor commandExecutor, TabExecutor tabExecutor) {
-        return registerPluginCommand(plugin, command, description, "/" + command, new ArrayList<>(), null, null, commandExecutor, tabExecutor);
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+        return registerPluginCommand(plugin, command, description, "/" + command, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, CommandExecutor commandExecutor, TabExecutor tabExecutor) {
-        return registerPluginCommand(plugin, command, description, usage, new ArrayList<>(), null, null, commandExecutor, tabExecutor);
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+        return registerPluginCommand(plugin, command, description, usage, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, CommandExecutor commandExecutor, TabExecutor tabExecutor) {
-        return registerPluginCommand(plugin, command, description, usage, aliases, null, null, commandExecutor, tabExecutor);
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+        return registerPluginCommand(plugin, command, description, usage, aliases, null, null, commandExecutor, tabCompleter);
     }
 
     /**
@@ -81,16 +81,16 @@ public class TCommandHandler implements Listener {
      * @param permission        权限
      * @param permissionMessage 权限提示
      * @param commandExecutor   命令执行器
-     * @param tabExecutor       补全执行器
+     * @param tabCompleter       补全执行器
      * @return 注册结果(boolean)
      */
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabExecutor tabExecutor) {
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         try {
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
             PluginCommand pluginCommand = constructor.newInstance(command, plugin);
             pluginCommand.setExecutor(commandExecutor);
-            pluginCommand.setTabCompleter(tabExecutor);
+            pluginCommand.setTabCompleter(tabCompleter);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "description", description);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "usageMessage", usage);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "aliases", aliases);
@@ -98,7 +98,9 @@ public class TCommandHandler implements Listener {
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permission", permission);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permissionMessage", permissionMessage);
             commandMap.register(command, pluginCommand);
-            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE", plugin.getName(), command);
+            if (!TabooLib.isTabooLib(plugin)) {
+                TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE", plugin.getName(), command);
+            }
             return true;
         } catch (Exception e) {
             TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.getMessage());
@@ -134,12 +136,10 @@ public class TCommandHandler implements Listener {
      */
     public static void registerCommands() {
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.equals(TabooLib.instance()) || plugin.getDescription().getDepend().contains("TabooLib")) {
-                try {
-                    registerCommand(plugin);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                registerCommand(plugin);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -150,6 +150,9 @@ public class TCommandHandler implements Listener {
      * @param plugin 插件
      */
     public static void registerCommand(Plugin plugin) {
+        if (!(plugin.equals(TabooLib.instance()) || TabooLib.isDependTabooLib(plugin))) {
+            return;
+        }
         for (Class pluginClass : FileUtils.getClasses(plugin)) {
             if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TCommand.class)) {
                 TCommand tCommand = (TCommand) pluginClass.getAnnotation(TCommand.class);

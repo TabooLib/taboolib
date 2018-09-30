@@ -6,10 +6,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.mysql.builder.SQLHost;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,5 +88,19 @@ public class HikariHandler {
             config.addDataSourceProperty("maintainTimeStats", "false");
         }
         return config;
+    }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public static ConcurrentHashMap<SQLHost, MapDataSource> getDataSource() {
+        return dataSource;
+    }
+
+    public static FileConfiguration getSettings() {
+        return settings;
     }
 }

@@ -2,6 +2,7 @@ package me.skymc.taboolib.itagapi;
 
 import com.google.common.base.Preconditions;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.packet.PacketUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -132,7 +133,10 @@ public class TagDataHandler implements Listener {
         entryTeam.addEntry(playerData.getNameDisplay());
         entryTeam.setPrefix(playerData.getPrefix());
         entryTeam.setSuffix(playerData.getSuffix());
-        TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
+        // 傻逼 BedWarsRel 我草你妈的
+        if (TabooLib.instance().getConfig().getBoolean("TABLIST-AUTO-CLEAN-TEAM", true)) {
+            TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
+        }
     }
 
     private void cancelPlayerVariable(Player player, TagPlayerData playerData) {
@@ -142,7 +146,10 @@ public class TagDataHandler implements Listener {
         for (Player online : Bukkit.getOnlinePlayers()) {
             Scoreboard scoreboard = TagUtils.getScoreboardComputeIfAbsent(player);
             TagUtils.cleanEntryInScoreboard(scoreboard, playerData.getNameDisplay());
-            TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
+            // 傻逼 BedWarsRel 我草你妈的
+            if (TabooLib.instance().getConfig().getBoolean("TABLIST-AUTO-CLEAN-TEAM", true)) {
+                TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
+            }
         }
     }
 
@@ -157,7 +164,7 @@ public class TagDataHandler implements Listener {
         downloadPlayerVariable(e.getPlayer());
     }
 
-    @EventHandler (priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
         cancelPlayerVariable(e.getPlayer(), unregisterPlayerData(e.getPlayer()));
     }

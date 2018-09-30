@@ -97,6 +97,47 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
     };
 
+    @CommandRegister(priority = 2)
+    BaseSubCommand commandAsOp = new BaseSubCommand() {
+        @Override
+        public String getLabel() {
+            return "commandAsOp";
+        }
+
+        @Override
+        public String getDescription() {
+            return TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.DESCRIPTION");
+        }
+
+        @Override
+        public CommandArgument[] getArguments() {
+            return new CommandArgument[] {
+                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.0")),
+                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.1"))
+            };
+        }
+
+        @Override
+        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+            if (args[0].equalsIgnoreCase("console")) {
+                dispatchCommand(Bukkit.getConsoleSender(), ArrayUtils.arrayJoin(args, 1));
+                return;
+            }
+            Player player = Bukkit.getPlayerExact(args[0]);
+            if (player == null) {
+                TLocale.sendTo(sender, "INVALID-TARGET-NOT-FOUND", args[0]);
+                return;
+            }
+            boolean isOp = player.isOp();
+            player.setOp(true);
+            try {
+                dispatchCommand(player, ArrayUtils.arrayJoin(args, 1));
+            } catch (Exception ignored) {
+            }
+            player.setOp(isOp);
+        }
+    };
+
     public static boolean dispatchCommand(CommandSender sender, String command) {
         try {
             if ((sender instanceof Player)) {

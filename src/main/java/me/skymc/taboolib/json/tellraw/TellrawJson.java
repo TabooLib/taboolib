@@ -4,33 +4,30 @@ import com.ilummc.tlib.bungee.api.chat.*;
 import com.ilummc.tlib.bungee.chat.ComponentSerializer;
 import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocale;
-import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.methods.ReflectionUtils;
 import me.skymc.taboolib.nms.NMSUtils;
-import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.string.ArrayUtils;
-import me.skymc.taboolib.string.VariableFormatter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
  * @Since 2018-05-26 14:42json
+ * @BuilderLevel 1.2
  */
 public class TellrawJson {
 
-    private BaseComponent[] components = TextComponent.fromLegacyText("");
-    private final Class<?> craftItemStackClazz = NMSUtils.getOBCClass("inventory.CraftItemStack");
-    private final Class<?> nmsItemStackClazz = NMSUtils.getNMSClass("ItemStack");
-    private final Class<?> nbtTagCompoundClazz = NMSUtils.getNMSClass("NBTTagCompound");
-    private final String INVALID_ITEM = "{id:stone,tag:{display:{Name:§c* Invalid ItemStack *}}}";
+    private List<BaseComponent> components = new ArrayList<>();
+    private List<BaseComponent> componentsLatest = new ArrayList<>();
+    private static final Class<?> craftItemStackClazz = NMSUtils.getOBCClass("inventory.CraftItemStack");
+    private static final Class<?> nmsItemStackClazz = NMSUtils.getNMSClass("ItemStack");
+    private static final Class<?> nbtTagCompoundClazz = NMSUtils.getNMSClass("NBTTagCompound");
+    private static final String INVALID_ITEM = "{id:stone,tag:{display:{Name:§c* Invalid ItemStack *}}}";
 
     TellrawJson() {
     }
@@ -39,12 +36,16 @@ public class TellrawJson {
         return new TellrawJson();
     }
 
+    public void send(CommandSender sender) {
+        TLocale.Tellraw.send(sender, toRawMessage());
+    }
+
     public String toRawMessage() {
-        return ComponentSerializer.toString(components);
+        return ComponentSerializer.toString(getComponentsAll());
     }
 
     public String toLegacyText() {
-        return TextComponent.toLegacyText(components);
+        return TextComponent.toLegacyText(getComponentsAll());
     }
 
     public TellrawJson newLine() {
@@ -52,50 +53,51 @@ public class TellrawJson {
     }
 
     public TellrawJson append(String text) {
-        Arrays.stream(TextComponent.fromLegacyText(text)).forEach(component -> this.components = ArrayUtils.arrayAppend(this.components, component));
+        appendComponents();
+        componentsLatest.addAll(ArrayUtils.asList(TextComponent.fromLegacyText(text)));
         return this;
     }
 
     public TellrawJson append(TellrawJson json) {
-        BaseComponent[] newArray = new BaseComponent[components.length + json.components.length];
-        System.arraycopy(components, 0, newArray, 0, components.length);
-        System.arraycopy(json.components, 0, newArray, components.length, json.components.length);
-        components = newArray;
+        appendComponents();
+        componentsLatest.addAll(ArrayUtils.asList(json.getComponentsAll()));
         return this;
     }
 
     public TellrawJson hoverText(String text) {
-        getLatestComponent().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(text).create()));
+        getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(text).create())));
         return this;
     }
 
     public TellrawJson hoverItem(ItemStack itemStack) {
-        getLatestComponent().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(getItemComponent(itemStack)).create()));
+        getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(getItemComponent(itemStack)).create())));
         return this;
     }
 
     public TellrawJson clickCommand(String command) {
-        getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command));
+        getLatestComponent().forEach(component -> component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command)));
         return this;
     }
 
     public TellrawJson clickSuggest(String command) {
-        getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command));
+        getLatestComponent().forEach(component -> component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
         return this;
     }
 
     public TellrawJson clickOpenURL(String url) {
-        getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+        getLatestComponent().forEach(component -> component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url)));
         return this;
     }
 
     public TellrawJson clickChangePage(int page) {
-        getLatestComponent().setClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, String.valueOf(page)));
+        getLatestComponent().forEach(component -> component.setClickEvent(new ClickEvent(ClickEvent.Action.CHANGE_PAGE, String.valueOf(page))));
         return this;
     }
 
-    public void send(CommandSender sender) {
-        TLocale.Tellraw.send(sender, toRawMessage());
+    public BaseComponent[] getComponentsAll() {
+        List<BaseComponent> components = this.components.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).collect(Collectors.toList());
+        this.componentsLatest.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).forEach(components::add);
+        return components.toArray(new BaseComponent[0]);
     }
 
     public String getItemComponent(ItemStack itemStack) {
@@ -106,7 +108,7 @@ public class TellrawJson {
             Object nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
             return saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj).toString();
         } catch (Throwable t) {
-            TLogger.getGlobalLogger().error("failed to serialize itemstack to nms item: " + t.toString());
+            TLogger.getGlobalLogger().error("failed to serialize bukkit item to nms item: " + t.toString());
             return INVALID_ITEM;
         }
     }
@@ -117,12 +119,17 @@ public class TellrawJson {
     //
     // *********************************
 
-    private BaseComponent getLatestComponent() {
-        return components[components.length - 1];
+    private List<BaseComponent> getLatestComponent() {
+        return componentsLatest;
     }
 
-    private void setLatestComponent(BaseComponent component) {
-        components[components.length - 1] = component;
+    private void setLatestComponent(BaseComponent... component) {
+        componentsLatest.addAll(ArrayUtils.asList(component));
+    }
+
+    private void appendComponents() {
+        components.addAll(componentsLatest);
+        componentsLatest.clear();
     }
 
     // *********************************
@@ -131,12 +138,11 @@ public class TellrawJson {
     //
     // *********************************
 
-    public BaseComponent[] getComponents() {
-        return components;
-    }
-
     public void setComponents(BaseComponent[] components) {
-        this.components = components;
+        this.components = ArrayUtils.asList(components);
     }
 
+    public BaseComponent[] getComponents() {
+        return components.toArray(new BaseComponent[0]);
+    }
 }
