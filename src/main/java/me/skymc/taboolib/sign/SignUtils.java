@@ -1,5 +1,6 @@
 package me.skymc.taboolib.sign;
 
+import com.google.common.annotations.Beta;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.listener.TListener;
@@ -24,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 @Deprecated
+@Beta
 @TListener(condition = "check")
 public class SignUtils implements Listener {
 
