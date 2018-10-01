@@ -8,6 +8,8 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.cloud.TCloudLoader;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.string.ArrayUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.util.NumberConversions;
 
 import java.io.File;
 import java.util.stream.IntStream;
@@ -93,5 +95,12 @@ public class Expansion {
 
     public File getFile() {
         return type == ExpansionType.INTERNAL ? new File(TCloudLoader.getExpansionInternalFolder(), "[TCLOUD] " + name + ".jar") : new File("plugins/[TCLOUD] " + name + ".jar");
+    }
+
+    public boolean canUpdate() {
+        if (!TCloudLoader.isExpansionExists(this)) {
+            return false;
+        }
+        return type == ExpansionType.PLUGIN && NumberConversions.toDouble(Bukkit.getPluginManager().getPlugin(name).getDescription().getVersion()) < NumberConversions.toDouble(version);
     }
 }

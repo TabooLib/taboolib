@@ -49,16 +49,12 @@ public class TCloudLoader {
                 TLocale.Logger.error("TCLOUD.LIST-CONNECT-FAILED");
                 return;
             }
-            TLocale.Logger.info("TCLOUD.LIST-CONNECT-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
-            time = System.currentTimeMillis();
             try {
                 latestJsonObject = new JsonParser().parse(latestJsonOrigin).getAsJsonObject();
             } catch (Exception e) {
                 TLocale.Logger.info("TCLOUD.LIST-PARSE-FAILED", e.getMessage());
                 return;
             }
-            TLocale.Logger.info("TCLOUD.LIST-PARSE-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
-            time = System.currentTimeMillis();
             if (latestJsonObject.has("plugins")) {
                 for (Map.Entry<String, JsonElement> pluginEntry : latestJsonObject.getAsJsonObject("plugins").entrySet()) {
                     try {

@@ -100,7 +100,6 @@ public abstract class BaseSubCommand {
      * @return String
      */
     public String getCommandString(String label) {
-        String stringBuilder = Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining());
-        return TLocale.asString("COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), stringBuilder.trim(), getDescription());
+        return TLocale.asString("COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
     }
 }
