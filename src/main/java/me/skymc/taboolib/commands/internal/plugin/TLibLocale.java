@@ -26,4 +26,8 @@ public class TLibLocale {
     public static CommandArgument argument(String name, String label, int index) {
         return new CommandArgument(TLocale.asString("COMMANDS." + name + "." + label + ".ARGUMENTS." + index));
     }
+
+    public static CommandArgument argument(String name, String label, int index, boolean required) {
+        return new CommandArgument(TLocale.asString("COMMANDS." + name + "." + label + ".ARGUMENTS." + index), required);
+    }
 }

@@ -43,9 +43,11 @@
 | /taboolibplugin | TPlugin 工具主命令 | taboolib.admin |
 | /taboolibexecute | TExecute 工具主命令 | taboolib.admin |
 | /tabooliblogs | TLogs 工具主命令 | taboolib.admin |
+| /taboolibcloud | TCLOUD 模块主命令 | taboolib.admin |
 | /taboolibrarymodule | TLM 模块主命令 | tlm.use |
 | /language2 | Language2 工具主命令 | taboolib.admin |
 | /translateuuid | TranslateUUID 工具主命令 | taboolib.admin |
+
 
 <br>
 

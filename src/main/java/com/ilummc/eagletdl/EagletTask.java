@@ -71,15 +71,21 @@ public class EagletTask {
         // create thread pool for download
         executorService = Executors.newFixedThreadPool(threadAmount);
         // check if is already running
-        if (running) throw new AlreadyStartException();
+        if (running) {
+            throw new AlreadyStartException();
+        }
         // start the monitor thread
         monitor = new Thread(() -> {
             lock.lock();
             // fire a new start event
-            if (onStart != null) onStart.handle(new StartEvent(this));
+            if (onStart != null) {
+                onStart.handle(new StartEvent(this));
+            }
             try {
                 // create the target file
-                if (!dest.exists()) dest.createNewFile();
+                if (!dest.exists()) {
+                    dest.createNewFile();
+                }
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 // set the connection properties
                 httpHeader.forEach(connection::addRequestProperty);
@@ -90,27 +96,26 @@ public class EagletTask {
                 contentLength = connection.getContentLengthLong();
                 // fire a new connected event
                 // contains connection properties
-                if (onConnected != null) onConnected.handle(new ConnectedEvent(contentLength, this));
+                if (onConnected != null) {
+                    onConnected.handle(new ConnectedEvent(contentLength, this));
+                }
                 // if this is an unknown length task
                 if (contentLength == -1 || threadAmount == 1) {
                     // pass the connection instance to this new thread
                     SingleThreadDownload download = new SingleThreadDownload(connection, dest, this);
                     executorService.execute(download);
                     long last = 0;
-                    while (true) {
+                    do {
                         Thread.sleep(1000);
                         // check the progress
                         long progress = download.getCurrentProgress();
                         // fire a new progress event
-                        if (onProgress != null)
-                            onProgress.handle(new ProgressEvent(progress - last, this,
-                                    ((double) progress) / Math.max((double) contentLength, 0D)));
+                        if (onProgress != null) {
+                            onProgress.handle(new ProgressEvent(progress - last, this, ((double) progress) / Math.max((double) contentLength, 0D)));
+                        }
                         last = progress;
                         // check complete
-                        if (last == contentLength || download.isComplete()) {
-                            break;
-                        }
-                    }
+                    } while (last != contentLength && !download.isComplete());
                     // close the thread pool, release resources
                     executorService.shutdown();
                     // change the running flag to false
@@ -131,48 +136,54 @@ public class EagletTask {
                         splitDownloads.add(download);
                     }
                     long last = 0;
-                    while (true) {
+                    do {
                         Thread.sleep(1000);
                         long progress = 0;
                         // Collect download progress
                         for (SplitDownload splitDownload : splitDownloads) {
                             progress += splitDownload.getCurrentIndex() - splitDownload.startIndex;
                             // blocked then restart from current index
-                            if (!splitDownload.isComplete() &&
-                                    System.currentTimeMillis() - splitDownload.getLastUpdateTime() > maxBlockingTime) {
+                            if (!splitDownload.isComplete() && System.currentTimeMillis() - splitDownload.getLastUpdateTime() > maxBlockingTime) {
                                 splitDownload.setStartIndex(splitDownload.getCurrentIndex());
-                                if (splitDownload.getRetry() <= maxRetry)
+                                if (splitDownload.getRetry() <= maxRetry) {
                                     executorService.execute(splitDownload);
-                                else throw new RetryFailedException(this);
+                                } else {
+                                    throw new RetryFailedException(this);
+                                }
                             }
                         }
                         // Fire a progress event
-                        if (onProgress != null)
+                        if (onProgress != null) {
                             onProgress.handle(new ProgressEvent(progress - last, this,
                                     ((double) progress) / ((double) contentLength)));
+                        }
                         last = progress;
                         // check complete
-                        if (last >= contentLength) {
-                            break;
-                        }
-                    }
+                    } while (last < contentLength);
                     // close the thread pool, release resources
                     executorService.shutdown();
                     // change the running flag to false
                     running = false;
                 }
                 // check hash
-                if (md5 != null && !md5.equalsIgnoreCase(HashUtil.md5(dest)))
+                if (md5 != null && !md5.equalsIgnoreCase(HashUtil.md5(dest))) {
                     throw new HashNotMatchException();
-                if (sha1 != null && !sha1.equalsIgnoreCase(HashUtil.sha1(dest)))
+                }
+                if (sha1 != null && !sha1.equalsIgnoreCase(HashUtil.sha1(dest))) {
                     throw new HashNotMatchException();
-                if (sha256 != null && !sha256.equalsIgnoreCase(HashUtil.sha256(dest)))
+                }
+                if (sha256 != null && !sha256.equalsIgnoreCase(HashUtil.sha256(dest))) {
                     throw new HashNotMatchException();
-                if (onComplete != null) onComplete.handle(new CompleteEvent(this, true));
+                }
+                if (onComplete != null) {
+                    onComplete.handle(new CompleteEvent(this, true));
+                }
             } catch (Exception e) {
                 onError.handle(new ErrorEvent(e, this));
                 executorService.shutdown();
-                if (onComplete != null) onComplete.handle(new CompleteEvent(this, false));
+                if (onComplete != null) {
+                    onComplete.handle(new CompleteEvent(this, false));
+                }
             } finally {
                 lock.unlock();
             }
@@ -182,14 +193,18 @@ public class EagletTask {
     }
 
     public EagletTask waitUntil() {
-        while (lock.tryLock()) lock.unlock();
+        while (lock.tryLock()) {
+            lock.unlock();
+        }
         lock.lock();
         lock.unlock();
         return this;
     }
 
     public EagletTask waitFor(long timeout, TimeUnit unit) {
-        while (lock.tryLock()) lock.unlock();
+        while (lock.tryLock()) {
+            lock.unlock();
+        }
         try {
             lock.tryLock(timeout, unit);
         } catch (InterruptedException e) {
@@ -404,7 +419,9 @@ public class EagletTask {
      * @return task instance
      */
     public EagletTask setThreads(int i) {
-        if (i < 1) throw new RuntimeException("Thread amount cannot be zero or negative!");
+        if (i < 1) {
+            throw new RuntimeException("Thread amount cannot be zero or negative!");
+        }
         threadAmount = i;
         return this;
     }
