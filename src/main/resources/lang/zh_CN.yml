@@ -560,6 +560,44 @@ COMMANDS:
         0: '目录'
         1: '内容'
       SUCCESS: '&8[&3&lTabooLib&8] &7写入完成.'
+  TCLOUD:
+    COMMAND-TITLE: '&e&l----- &6&lTabooLibCloud Commands &e&l-----'
+    REFRESH:
+      DESCRIPTION: '刷新扩展列表'
+      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送. &8(详细信息请在控制台查看)'
+    STATUS:
+      DESCRIPTION: '查看扩展统计'
+      STATUS:
+      - '&8[&3&lTabooLib&8] &7当前总共 &f{0} &7项扩展被 &fTCLOUD &7录入, 其中包含:'
+      - '&8[&3&lTabooLib&8] &7内置扩展 &f{1} &7项'
+      - '&8[&3&lTabooLib&8] &7插件扩展 &f{2} &7项'
+      CONNECT-FAILED: '&8[&3&lTabooLib&8] &c尚未获取扩展列表, 输入 &4/tcloud refresh &c刷新.'
+    INFO:
+      DESCRIPTION: '查看扩展信息'
+      ARGUMENTS:
+        0: '名称'
+      EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在, 输入 &4/tcloud refresh &c刷新.'
+      EXPANSION-INFO:
+      - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7信息:'
+      - '&8[&3&lTabooLib&8] &7作者 &f{1}'
+      - '&8[&3&lTabooLib&8] &7版本 &f{2}'
+      - '&8[&3&lTabooLib&8] &7描述 &f{3}'
+      - '&8[&3&lTabooLib&8] &7最后更新时间 &f{4}'
+      - '&8[&3&lTabooLib&8] &7最后更新内容 &f{5}'
+      EXPANSION-INFO-DETAIL:
+        0: '&8[&3&lTabooLib&8] &7详细描述'
+        1: '&8[&3&lTabooLib&8] &7- &f{0}'
+    DOWNLOAD:
+      DESCRIPTION: '下载扩展'
+      ARGUMENTS:
+        0: '名称'
+      EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在, 输入 &4/tcloud refresh &c刷新.'
+      EXPANSION-EXISTS: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c已存在, 输入 &4/tcloud update &c更新.'
+      DOWNLOAD-START:
+      - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7开始下载:'
+      - '&8[&3&lTabooLib&8] &7目标 &f{1}'
+      - '&8[&3&lTabooLib&8] &7地址 &f{2}'
+      DOWNLOAD-SUCCESS: '&8[&3&lTabooLib&8] &7扩展 &f{0} &7下载完成. &8(详细信息请在控制台查看)'
 
 DATABASE:
   CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
@@ -581,3 +619,11 @@ UTIL:
   DOWNLOAD-PROGRESS: '  下载速度 {0} 进度 {1}'
   DOWNLOAD-SUCCESS: '下载 {0} 完成!'
   DOWNLOAD-FAILED: '下载 {0} 失败!'
+
+TCLOUD:
+  LIST-CONNECT-SUCCESS: '获取 &fTCLOUD &7扩展列表完成! 耗时 &f{0} &7毫秒.'
+  LIST-CONNECT-FAILED: '获取 &4TCLOUD &c扩展列表失败!'
+  LIST-PARSE-SUCCESS: '读取 &fTCLOUD &7扩展列表完成! 耗时 &f{0} &7毫秒'
+  LIST-PARSE-FAILED: '读取 &4TCLOUD &c扩展列表失败: &4{0}'
+  LIST-LOAD-SUCCESS: '载入 &fTCLOUD &7扩展列表完成! 耗时 &f{0} &7毫秒'
+  LIST-LOAD-FAILED: '载入 &4{0} &c扩展数据失败: &4{1}'
