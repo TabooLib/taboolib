@@ -5,10 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public class ScoreboardUtil {
 
@@ -49,7 +46,7 @@ public class ScoreboardUtil {
         return title;
     }
 
-    public static HashMap<String, Integer> cutRanked(HashMap<String, Integer> content) {
+    public static HashMap<String, Integer> cutRanked(Map<String, Integer> content) {
         HashMap<String, Integer> elements = new HashMap<>(content);
 
         while (elements.size() > 15) {
@@ -204,7 +201,7 @@ public class ScoreboardUtil {
         }
     }
 
-    public static boolean rankedSidebarDisplay(Player p, String title, HashMap<String, Integer> elements) {
+    public static boolean rankedSidebarDisplay(Player p, String title, Map<String, Integer> elements) {
         try {
             title = cutRankedTitle(title);
             elements = cutRanked(elements);
@@ -238,7 +235,7 @@ public class ScoreboardUtil {
         }
     }
 
-    public static boolean rankedSidebarDisplay(Collection<Player> players, String title, HashMap<String, Integer> elements) {
+    public static boolean rankedSidebarDisplay(Collection<Player> players, String title, Map<String, Integer> elements) {
         for (Player player : players) {
             if (!rankedSidebarDisplay(player, title, elements)) {
                 return false;
@@ -248,7 +245,7 @@ public class ScoreboardUtil {
         return true;
     }
 
-    public static boolean rankedSidebarDisplay(Collection<Player> players, String title, HashMap<String, Integer> elements, Scoreboard board) {
+    public static boolean rankedSidebarDisplay(Collection<Player> players, String title, Map<String, Integer> elements, Scoreboard board) {
         try {
             title = cutRankedTitle(title);
             elements = cutRanked(elements);
