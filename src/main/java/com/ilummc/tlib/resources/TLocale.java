@@ -70,7 +70,6 @@ public class TLocale {
         try {
             return asStringList(path, Ref.getCallerClass(3).orElse(Main.class), args);
         } catch (Exception e) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("FETCH-LOCALE-ERROR"), path));
             TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return Collections.singletonList("§4<" + path + "§4>");
         }
@@ -95,6 +94,7 @@ public class TLocale {
         }
 
         public static List<String> setColored(List<String> args) {
+            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), ""));
             return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
         }
 
