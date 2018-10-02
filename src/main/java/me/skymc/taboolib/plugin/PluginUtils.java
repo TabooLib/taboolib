@@ -29,19 +29,14 @@ public class PluginUtils {
     PluginUtils() {
     }
 
-    public static File getPluginFile(Plugin plugin) {
-        for (File pluginFile : new File("plugins").listFiles()) {
-            if (pluginFile.getName().endsWith(".jar")) {
-                try {
-                    PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
-                    if (desc.getName().equalsIgnoreCase(plugin.getName())) {
-                        return pluginFile;
-                    }
-                } catch (InvalidDescriptionException ignored) {
-                }
-            }
+    private File getPluginFile(JavaPlugin plugin) {
+        try {
+            Method method = JavaPlugin.class.getDeclaredMethod("getFile");
+            method.setAccessible(true);
+            return (File) method.invoke(plugin);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Could not get plugin file", e);
         }
-        return null;
     }
 
     public static boolean isPluginExists(String name) {
