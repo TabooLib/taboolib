@@ -49,7 +49,7 @@ public class UpdateTask {
     }
 
     public static boolean isHaveUpdate() {
-        return newVersion > 0;
+        return newVersion > TabooLib.getPluginVersion();
     }
 
     public static double getNewVersion() {
