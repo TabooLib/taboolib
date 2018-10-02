@@ -7,7 +7,9 @@ import org.bukkit.event.{EventHandler, Listener}
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 
-object Example extends JavaPlugin with Listener {
+class Example extends JavaPlugin with Listener {
+
+  implicit lazy val plugin: Example = this
 
   @EventHandler
   def onJoin(event: PlayerJoinEvent): Unit = {
@@ -23,6 +25,14 @@ object Example extends JavaPlugin with Listener {
     event.getPlayer.openAnvil()
     event.getPlayer << "locale.node" << "node.2"
     event.getPlayer.teleport(event.getPlayer.getLocation + (1, 2, 3))
+    Task {
+      event.getPlayer << "test"
+    }
+    AsyncTask(20) {
+      event.getPlayer << "later"
+    }
+    class a
+    assert(this == JavaPlugin.getProvidingPlugin(classOf[a]))
   }
 
 }

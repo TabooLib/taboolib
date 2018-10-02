@@ -2,7 +2,7 @@ package com.ilummc.tlib.scala
 
 import org.bukkit.scheduler.BukkitRunnable
 
-private[scala] class ScalaTaskExecutor(task: => Unit) extends BukkitRunnable {
+private[scala] class ScalaTaskExecutor(task: => Any) extends BukkitRunnable {
 
   override def run(): Unit = {
     try task catch {
@@ -14,7 +14,7 @@ private[scala] class ScalaTaskExecutor(task: => Unit) extends BukkitRunnable {
 }
 
 object ScalaTaskExecutor {
-  def apply(task: => Unit): ScalaTaskExecutor = new ScalaTaskExecutor(task)
+  def apply(task: => Any): ScalaTaskExecutor = new ScalaTaskExecutor(task)
 }
 
 class CancelException extends RuntimeException {
