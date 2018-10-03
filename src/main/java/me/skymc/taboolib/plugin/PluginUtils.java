@@ -9,6 +9,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.*;
+import org.bukkit.plugin.java.JavaPlugin;
+import java.lang.reflect.Method;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,18 +32,13 @@ public class PluginUtils {
     }
 
     public static File getPluginFile(Plugin plugin) {
-        for (File pluginFile : new File("plugins").listFiles()) {
-            if (pluginFile.getName().endsWith(".jar")) {
-                try {
-                    PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
-                    if (desc.getName().equalsIgnoreCase(plugin.getName())) {
-                        return pluginFile;
-                    }
-                } catch (InvalidDescriptionException ignored) {
-                }
-            }
+        try {
+            Method method = plugin.getClass().getDeclaredMethod("getFile");
+            method.setAccessible(true);
+            return (File) method.invoke(plugin);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Could not get plugin file", e);
         }
-        return null;
     }
 
     public static boolean isPluginExists(String name) {
