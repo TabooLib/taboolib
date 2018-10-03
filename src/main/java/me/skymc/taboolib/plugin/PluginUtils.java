@@ -31,7 +31,7 @@ public class PluginUtils {
     PluginUtils() {
     }
 
-    private File getPluginFile(Plugin plugin) {
+    public static File getPluginFile(Plugin plugin) {
         try {
             Method method = plugin.getClass().getDeclaredMethod("getFile");
             method.setAccessible(true);
