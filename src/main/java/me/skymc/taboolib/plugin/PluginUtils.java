@@ -31,9 +31,9 @@ public class PluginUtils {
     PluginUtils() {
     }
 
-    private File getPluginFile(JavaPlugin plugin) {
+    private File getPluginFile(Plugin plugin) {
         try {
-            Method method = JavaPlugin.class.getDeclaredMethod("getFile");
+            Method method = plugin.getClass().getDeclaredMethod("getFile");
             method.setAccessible(true);
             return (File) method.invoke(plugin);
         } catch (ReflectiveOperationException e) {
