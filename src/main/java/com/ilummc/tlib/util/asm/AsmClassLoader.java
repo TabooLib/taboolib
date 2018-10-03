@@ -7,7 +7,7 @@ public class AsmClassLoader extends ClassLoader {
     }
 
     public static AsmClassLoader getInstance() {
-        return AsmClassLoaderHolder.instance;
+        return new AsmClassLoader();
     }
 
     private AsmClassLoader() {
