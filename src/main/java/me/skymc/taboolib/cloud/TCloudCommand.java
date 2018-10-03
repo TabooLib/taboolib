@@ -218,19 +218,20 @@ public class TCloudCommand extends BaseMainCommand {
             }
             Map<String, Expansion> expansions = type == ExpansionType.PLUGIN ? TCloudLoader.getExpansionPlugins() : TCloudLoader.getExpansionInternal();
             int page = args.length < 2 ? 1 : NumberConversions.toInt(args[1]);
-            if (page < 1 || page > (expansions.size() / 5) + 1) {
+            int pageMax = (expansions.size() / 5) + ((expansions.size() % 5) == 0 ? 0 : 1);
+            if (page < 1 || page > pageMax) {
                 TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.INVALID-TYPE.1");
                 return;
             }
-            TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-HEAD", type.name(), String.valueOf(page), String.valueOf((expansions.size() / 5) + 1));
+            TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-HEAD", type.name(), String.valueOf(page), String.valueOf(pageMax));
             int i = (page - 1) * 5;
             for (Map.Entry<String, Expansion> entry : new SimpleIterator(expansions).mapIterator((page - 1) * 5, page * 5)) {
                 if (!TCloudLoader.isExpansionExists(entry.getValue())) {
-                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.0", String.valueOf(++i), entry.getValue().getName(), entry.getValue().getDescription());
+                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.0", String.valueOf(++i), entry.getValue().getName(), Arrays.toString(entry.getValue().getAuthor()));
                 } else if (entry.getValue().canUpdate()) {
-                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.1", String.valueOf(++i), entry.getValue().getName(), entry.getValue().getDescription());
+                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.1", String.valueOf(++i), entry.getValue().getName(), Arrays.toString(entry.getValue().getAuthor()));
                 } else {
-                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.2", String.valueOf(++i), entry.getValue().getName(), entry.getValue().getDescription());
+                    TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-EXPANSION.2", String.valueOf(++i), entry.getValue().getName(), Arrays.toString(entry.getValue().getAuthor()));
                 }
             }
             TLocale.sendTo(sender, "COMMANDS.TCLOUD.LIST.LIST-BOTTOM");
