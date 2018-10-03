@@ -9,6 +9,8 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.*;
+import org.bukkit.plugin.java.JavaPlugin;
+import java.lang.reflect.Method;
 
 import java.io.File;
 import java.io.IOException;
