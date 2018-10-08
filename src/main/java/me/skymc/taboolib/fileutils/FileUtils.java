@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
 
 /**
@@ -94,7 +95,7 @@ public class FileUtils {
      * @return {@link List<Class>}
      */
     public static List<Class> getClasses(Plugin plugin) {
-        List<Class> classes = new ArrayList<>();
+        List<Class> classes = new CopyOnWriteArrayList<>();
         URL url = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
         try {
             File src;
