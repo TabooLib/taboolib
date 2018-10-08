@@ -44,27 +44,25 @@ public class TListenerHandler implements Listener {
      * @param plugin 插件
      */
     public static void setupListener(Plugin plugin) {
-        TabooLibLoader.getPluginClasses(plugin).ifPresent(classes -> {
-            for (Class<?> pluginClass : classes) {
-                if (org.bukkit.event.Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
-                    try {
-                        TListener tListener = pluginClass.getAnnotation(TListener.class);
-                        // 检查注册条件
-                        if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
-                            if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
-                                continue;
-                            }
+        for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {
+            if (org.bukkit.event.Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
+                try {
+                    TListener tListener = pluginClass.getAnnotation(TListener.class);
+                    // 检查注册条件
+                    if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
+                        if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
+                            continue;
                         }
-                        // 实例化监听器
-                        Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
-                        listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                        TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
-                    } catch (Exception e) {
-                        TabooLib.debug("Listener setup failed: " + e.toString());
                     }
+                    // 实例化监听器
+                    Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
+                    listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
+                    TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
+                } catch (Exception e) {
+                    TabooLib.debug("Listener setup failed: " + e.toString());
                 }
             }
-        });
+        }
     }
 
     /**

@@ -186,6 +186,8 @@ public class Main extends JavaPlugin {
             TLocale.Logger.error("NOTIFY.FAIL-DISABLE");
             return;
         }
+        // 注销插件
+        TabooLibLoader.unregister();
         // 保存数据
         Bukkit.getOnlinePlayers().forEach(x -> DataUtils.saveOnline(x.getName()));
         // 结束线程
@@ -204,8 +206,6 @@ public class Main extends JavaPlugin {
         HikariHandler.closeDataSourceForce();
         // 注销监听器
         TListenerHandler.cancelListeners();
-        // 注销子模块
-        TFunctionLoader.unloadFunction();
         // 结束数据库储存方法
         if (getStorageType() == StorageType.SQL) {
             GlobalDataManager.SQLMethod.cancelSQLMethod();
