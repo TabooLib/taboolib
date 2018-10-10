@@ -94,7 +94,6 @@ public class TLocale {
         }
 
         public static List<String> setColored(List<String> args) {
-            TLib.getTLib().getLogger().error(Strings.replaceWithOrder(TLib.getInternalLanguage().getString("LOCALE-ERROR-REASON"), ""));
             return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
         }
 
