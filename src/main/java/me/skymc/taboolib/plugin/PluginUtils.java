@@ -33,7 +33,7 @@ public class PluginUtils {
 
     public static File getPluginFile(Plugin plugin) {
         try {
-            Method method = plugin.getClass().getDeclaredMethod("getFile");
+            Method method = JavaPlugin.class.getDeclaredMethod("getFile");
             method.setAccessible(true);
             return (File) method.invoke(plugin);
         } catch (ReflectiveOperationException e) {
