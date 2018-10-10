@@ -29,14 +29,14 @@ public class UpdateTask {
                 if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK")) {
                     return;
                 }
-                String value = FileUtils.getStringFromURL("https://api.github.com/repos/Bkm016/TabooLib/tags", null);
+                String value = FileUtils.getStringFromURL("https://api.github.com/repos/Bkm016/TabooLib/releases", null);
                 if (value == null) {
                     TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
                     return;
                 }
                 JsonElement json = new JsonParser().parse(value);
                 if (json.isJsonArray()) {
-                    newVersion = json.getAsJsonArray().get(0).getAsJsonObject().get("name").getAsDouble();
+                    newVersion = json.getAsJsonArray().get(0).getAsJsonObject().get("tag_name").getAsDouble();
                     if (TabooLib.getPluginVersion() >= newVersion) {
                         TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
                     } else {
