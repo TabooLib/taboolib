@@ -58,6 +58,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 continue;
             }
             try {
+                declaredField.setAccessible(true);
                 tInjectTask.run(plugin, declaredField, annotation.value());
             } catch (Exception e) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage());
