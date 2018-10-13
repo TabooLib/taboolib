@@ -4,7 +4,7 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
-import me.skymc.taboolib.object.Instantiable;
+import me.skymc.taboolib.common.loader.Instantiable;
 import me.skymc.taboolib.string.language2.Language2Value;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

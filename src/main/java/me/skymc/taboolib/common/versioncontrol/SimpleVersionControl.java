@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 我不信 ClassNotFound 的邪，自己写了一个发现还是一样。。。
- *
  * @Author sky
  * @Since 2018-09-19 21:05
  */
@@ -64,6 +62,10 @@ public class SimpleVersionControl {
     }
 
     public Class<?> translate() throws IOException {
+        return translate(plugin);
+    }
+
+    public Class<?> translate(Plugin plugin) throws IOException {
         ClassReader classReader = new ClassReader(FileUtils.getResource(plugin, target.replace(".", "/") + ".class"));
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);

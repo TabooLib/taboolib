@@ -42,6 +42,11 @@ public class ItemBuilder {
         itemMeta = itemStack.getItemMeta();
     }
 
+    public ItemBuilder(ItemStack itemStack) {
+        this.itemStack = itemStack;
+        this.itemMeta = itemStack.getItemMeta();
+    }
+
     public ItemBuilder(OfflinePlayer player) {
         this(Material.SKULL_ITEM, 1, 3);
         this.skullOwner(player.getName());

@@ -1,7 +1,7 @@
 package me.skymc.taboolib.common.pathfinder;
 
 import me.skymc.taboolib.common.versioncontrol.SimpleVersionControl;
-import me.skymc.taboolib.object.Instantiable;
+import me.skymc.taboolib.common.loader.Instantiable;
 
 /**
  * @Author sky

@@ -16,7 +16,9 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -70,6 +72,10 @@ public class TCommandHandler implements Listener {
         return registerPluginCommand(plugin, command, description, usage, aliases, null, null, commandExecutor, tabCompleter);
     }
 
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+        return registerPluginCommand(plugin, command, description, usage, aliases, permission, permissionMessage, commandExecutor, tabCompleter, false);
+    }
+
     /**
      * 向服务端动态注册命令
      *
@@ -81,10 +87,11 @@ public class TCommandHandler implements Listener {
      * @param permission        权限
      * @param permissionMessage 权限提示
      * @param commandExecutor   命令执行器
-     * @param tabCompleter       补全执行器
+     * @param tabCompleter      补全执行器
+     * @param silence           是否屏蔽提示
      * @return 注册结果(boolean)
      */
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter, boolean silence) {
         try {
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
@@ -93,17 +100,18 @@ public class TCommandHandler implements Listener {
             pluginCommand.setTabCompleter(tabCompleter);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "description", description);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "usageMessage", usage);
-            ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "aliases", aliases);
-            ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "activeAliases", aliases);
+            ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "aliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
+            ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "activeAliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permission", permission);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permissionMessage", permissionMessage);
-            commandMap.register(command, pluginCommand);
-            if (!TabooLib.isTabooLib(plugin)) {
+            commandMap.register(plugin.getName(), pluginCommand);
+            if (!TabooLib.isTabooLib(plugin) && !silence) {
                 TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE", plugin.getName(), command);
             }
             return true;
         } catch (Exception e) {
-            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.getMessage());
+            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.toString());
+            e.printStackTrace();
             return false;
         }
     }
