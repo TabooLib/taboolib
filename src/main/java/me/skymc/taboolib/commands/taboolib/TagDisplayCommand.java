@@ -1,10 +1,8 @@
 package me.skymc.taboolib.commands.taboolib;
 
 import com.ilummc.tlib.resources.TLocale;
-import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.commands.SubCommand;
 import me.skymc.taboolib.itagapi.TagDataHandler;
-import me.skymc.taboolib.team.TagAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -3,6 +3,7 @@ package me.skymc.taboolib.common.inject;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.TabooLibLoader;
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
 import me.skymc.taboolib.common.configuration.TConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -35,6 +36,14 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
             try {
                 field.set(null, TConfiguration.createInResource(plugin, args[0]));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        // SimpleCommandBuilder Inject
+        injectTypes.put(SimpleCommandBuilder.class, (plugin, field, args) -> {
+            try {
+                ((SimpleCommandBuilder) field.get(null)).build();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

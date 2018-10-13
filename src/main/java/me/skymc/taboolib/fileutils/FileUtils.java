@@ -161,6 +161,20 @@ public class FileUtils {
     }
 
     /**
+     * 释放资源文件
+     *
+     * @param plugin  所属插件
+     * @param path    地址
+     * @param replace 是否替换
+     */
+    public static void releaseResource(Plugin plugin, String path, boolean replace) {
+        File file = new File(plugin.getDataFolder(), path);
+        if (!file.exists() || replace) {
+            inputStreamToFile(getResource(plugin, path), file);
+        }
+    }
+
+    /**
      * 检测文件并创建
      *
      * @param file 文件

@@ -1,4 +1,4 @@
-package me.skymc.taboolib.object;
+package me.skymc.taboolib.common.loader;
 
 import com.ilummc.tlib.util.Ref;
 import me.skymc.taboolib.TabooLibLoader;

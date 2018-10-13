@@ -1,4 +1,4 @@
-package me.skymc.taboolib.object;
+package me.skymc.taboolib.common.loader;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

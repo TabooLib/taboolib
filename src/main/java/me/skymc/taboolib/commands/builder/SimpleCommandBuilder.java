@@ -31,6 +31,7 @@ public class SimpleCommandBuilder {
     private String permissionMessage;
     private CompleterTab completerTab = EMPTY_COMPLETER_TAB;
     private CompleterCommand completerCommand = EMPTY_COMPLETER_COMMAND;
+    private boolean silence;
 
     SimpleCommandBuilder(String command, Plugin plugin) {
         this.command = command;
@@ -38,6 +39,7 @@ public class SimpleCommandBuilder {
         this.description = "";
         this.usage = "/" + command;
         this.aliases = new ArrayList<>();
+        this.silence = false;
     }
 
     public static SimpleCommandBuilder create(String command, Plugin plugin) {
@@ -79,6 +81,11 @@ public class SimpleCommandBuilder {
         return this;
     }
 
+    public SimpleCommandBuilder silence() {
+        this.silence = true;
+        return this;
+    }
+
     public SimpleCommandBuilder build() {
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
         Preconditions.checkNotNull(completerTab, "缺少 \"CompleterTab\" 部分");
@@ -91,7 +98,8 @@ public class SimpleCommandBuilder {
                 permission,
                 permissionMessage,
                 (sender, command, s, args) -> completerCommand.execute(sender, args),
-                (sender, command, s, args) -> completerTab.execute(sender, args));
+                (sender, command, s, args) -> completerTab.execute(sender, args),
+                silence);
         return this;
     }
 }

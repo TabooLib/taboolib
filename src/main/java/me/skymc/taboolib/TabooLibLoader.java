@@ -4,9 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.annotations.Dependency;
+import com.ilummc.tlib.dependency.TDependencyLoader;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.bstats.Metrics;
+import me.skymc.taboolib.deprecated.TabooLibDeprecated;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.listener.TListenerHandler;
@@ -32,11 +34,13 @@ import java.util.*;
 @TListener
 public class TabooLibLoader implements Listener {
 
+    static TabooLibDeprecated tabooLibDeprecated;
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
 
     static void setup() {
         testInternet();
+        setupAddons();
         setupDataFolder();
         setupDatabase();
         setupLibraries();
@@ -44,13 +48,22 @@ public class TabooLibLoader implements Listener {
 
     static void register() {
         setupClasses();
-        loadClasses();
         registerListener();
         registerMetrics();
+        loadClasses();
+        try {
+            tabooLibDeprecated = new TabooLibDeprecated();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     static void unregister() {
         unloadClasses();
+    }
+
+    public static TabooLibDeprecated getTabooLibDeprecated() {
+        return tabooLibDeprecated;
     }
 
     public static Optional<List<Class>> getPluginClasses(Plugin plugin) {
@@ -82,6 +95,14 @@ public class TabooLibLoader implements Listener {
     static void registerMetrics() {
         Metrics metrics = new Metrics(TabooLib.instance());
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).count())));
+    }
+
+    static void setupAddons() {
+        TabooLib.instance().saveResource("Addons/TabooLibDeprecated.jar", true);
+        File file = new File(TabooLib.instance().getDataFolder(), "Addons");
+        if (file.exists()) {
+            Arrays.stream(file.listFiles()).forEach(listFile -> TDependencyLoader.addToPath(TabooLib.instance(), listFile));
+        }
     }
 
     static void setupDataFolder() {

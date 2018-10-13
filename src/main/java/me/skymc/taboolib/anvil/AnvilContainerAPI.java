@@ -2,7 +2,7 @@ package me.skymc.taboolib.anvil;
 
 import com.ilummc.tlib.util.asm.AsmClassLoader;
 import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.object.Instantiable;
+import me.skymc.taboolib.common.loader.Instantiable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

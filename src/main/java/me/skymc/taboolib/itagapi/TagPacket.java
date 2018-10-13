@@ -37,7 +37,7 @@ class TagPacket implements Listener {
     }
 
     public static void inst() {
-        assert !loaded : "TagAPI is already instanced!";
+        Preconditions.checkArgument(!loaded, "TagAPI is already instanced!");
         loaded = true;
 
         Bukkit.getServer().getOnlinePlayers().forEach(player -> entityIdMap.put(player.getEntityId(), player));
@@ -79,7 +79,6 @@ class TagPacket implements Listener {
         Preconditions.checkState(Main.getInst().isEnabled(), "Not Enabled!");
         Preconditions.checkNotNull(player, "player");
         Preconditions.checkNotNull(forWhom, "forWhom");
-
         if (player != forWhom && player.getWorld() == forWhom.getWorld() && forWhom.canSee(player)) {
             forWhom.hidePlayer(player);
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(Main.getInst(), () -> forWhom.showPlayer(player), 2);
@@ -90,13 +89,11 @@ class TagPacket implements Listener {
         Preconditions.checkState(Main.getInst().isEnabled(), "Not Enabled!");
         Preconditions.checkNotNull(player, "player");
         Preconditions.checkNotNull(forWhom, "forWhom");
-
         forWhom.forEach(playerFor -> refreshPlayer(player, playerFor));
     }
 
     private static WrappedGameProfile getSentName(int sentEntityId, WrappedGameProfile sent, Player destinationPlayer) {
-        Preconditions.checkState(Bukkit.getServer().isPrimaryThread(), "Can only process events on main thread.");
-
+//      Preconditions.checkState(Bukkit.getServer().isPrimaryThread(), "Can only process events on main thread.");
         Player namedPlayer = entityIdMap.get(sentEntityId);
         if (namedPlayer == null) {
             // They probably were dead when we reloaded
