@@ -134,14 +134,7 @@ public class FileUtils {
      * @return {@link InputStream}
      */
     public static InputStream getResource(Plugin plugin, String filename) {
-        try {
-            URL url = plugin.getClass().getClassLoader().getResource(filename);
-            URLConnection connection = url.openConnection();
-            connection.setUseCaches(false);
-            return connection.getInputStream();
-        } catch (IOException ignored) {
-            return null;
-        }
+        return plugin.getClass().getClassLoader().getResourceAsStream(filename);
     }
 
     /**

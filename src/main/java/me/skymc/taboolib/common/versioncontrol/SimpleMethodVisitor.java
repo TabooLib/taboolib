@@ -22,8 +22,13 @@ public class SimpleMethodVisitor extends MethodVisitor {
     }
 
     @Override
+    public void visitMethodInsn(int opcode, String owner, String name, String descriptor) {
+        super.visitMethodInsn(opcode, translate(owner), translate(name), translate(descriptor));
+    }
+
+    @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-        super.visitMethodInsn(opcode, translate(owner), name, translate(descriptor), isInterface);
+        super.visitMethodInsn(opcode, translate(owner), translate(name), translate(descriptor), isInterface);
     }
 
     @Override
@@ -43,7 +48,7 @@ public class SimpleMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
-        super.visitLocalVariable(name, translate(descriptor), translate(signature), start, end, index);
+        super.visitLocalVariable(translate(name), translate(descriptor), translate(signature), start, end, index);
     }
 
     private String translate(String target) {

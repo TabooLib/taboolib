@@ -2,10 +2,7 @@ package me.skymc.taboolib.string;
 
 import com.ilummc.tlib.util.Strings;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +61,7 @@ public class ArrayUtils {
         return (T) newArray;
     }
 
-    public static <T> T cloneAsByte(T obj) throws Exception {
+    public static <T> T cloneAsByte(T obj) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
         objectOutputStream.writeObject(obj);
