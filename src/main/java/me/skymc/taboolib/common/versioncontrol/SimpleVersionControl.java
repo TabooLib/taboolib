@@ -11,8 +11,9 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author sky
@@ -20,12 +21,15 @@ import java.util.List;
  */
 public class SimpleVersionControl {
 
+    private static Map<String, Class<?>> cacheClasses = new HashMap<>();
     private String target;
-    private List<String> from = Lists.newArrayList();
     private String to;
+    private List<String> from = Lists.newArrayList();
     private Plugin plugin;
+    private boolean useCache;
 
     SimpleVersionControl() {
+        useCache = false;
     }
 
     public static SimpleVersionControl create() {
@@ -61,18 +65,30 @@ public class SimpleVersionControl {
         return this;
     }
 
+    public SimpleVersionControl useCache() {
+        this.useCache = true;
+        return this;
+    }
+
     public Class<?> translate() throws IOException {
         return translate(plugin);
     }
 
     public Class<?> translate(Plugin plugin) throws IOException {
+        if (useCache && cacheClasses.containsKey(target)) {
+            return cacheClasses.get(target);
+        }
         ClassReader classReader = new ClassReader(FileUtils.getResource(plugin, target.replace(".", "/") + ".class"));
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
         classReader.accept(classVisitor, 0);
         classWriter.visitEnd();
         classVisitor.visitEnd();
-        return AsmClassLoader.createNewClass(target, classWriter.toByteArray());
+        Class<?> newClass = AsmClassLoader.createNewClass(target, classWriter.toByteArray());
+        if (useCache) {
+            cacheClasses.put(target, newClass);
+        }
+        return newClass;
     }
 
     // *********************************
@@ -99,4 +115,5 @@ public class SimpleVersionControl {
         }
         return origin;
     }
+
 }
