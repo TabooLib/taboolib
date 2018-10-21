@@ -40,7 +40,6 @@ public class TabooLibLoader implements Listener {
 
     static void setup() {
         testInternet();
-        setupAddons();
         setupDataFolder();
         setupDatabase();
         setupLibraries();
@@ -97,14 +96,6 @@ public class TabooLibLoader implements Listener {
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin.getDescription().getDepend().contains("TabooLib")).count())));
     }
 
-    static void setupAddons() {
-        TabooLib.instance().saveResource("Addons/TabooLibDeprecated.jar", true);
-        File file = new File(TabooLib.instance().getDataFolder(), "Addons");
-        if (file.exists()) {
-            Arrays.stream(file.listFiles()).forEach(listFile -> TDependencyLoader.addToPath(TabooLib.instance(), listFile));
-        }
-    }
-
     static void setupDataFolder() {
         Main.setPlayerDataFolder(FileUtils.folder(Main.getInst().getConfig().getString("DATAURL.PLAYER-DATA")));
         Main.setServerDataFolder(FileUtils.folder(Main.getInst().getConfig().getString("DATAURL.SERVER-DATA")));
@@ -114,6 +105,14 @@ public class TabooLibLoader implements Listener {
         DataUtils.addPluginData("TabooLibrary", null);
         Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
         TabooLibDatabase.init();
+    }
+
+    static void setupAddons() {
+        TabooLib.instance().saveResource("Addons/TabooLibDeprecated.jar", true);
+        File file = new File(TabooLib.instance().getDataFolder(), "Addons");
+        if (file.exists()) {
+            Arrays.stream(file.listFiles()).forEach(listFile -> TDependencyLoader.addToPath(TabooLib.instance(), listFile));
+        }
     }
 
     static void setupLibraries() {
