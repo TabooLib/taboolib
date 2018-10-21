@@ -24,22 +24,27 @@ public class SimpleClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        super.visit(version, access, name, translate(signature), translate(superName), translate(interfaces));
+        super.visit(version, access, translate(name), translate(signature), translate(superName), translate(interfaces));
     }
 
     @Override
     public void visitInnerClass(String name, String outerName, String innerName, int access) {
-        super.visitInnerClass(name, translate(outerName), translate(innerName), access);
+        super.visitInnerClass(translate(name), translate(outerName), translate(innerName), access);
     }
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        return super.visitField(access, name, translate(descriptor), translate(signature), value);
+        return super.visitField(access, translate(name), translate(descriptor), translate(signature), value instanceof String ? translate((String) value) : value);
+    }
+
+    @Override
+    public void visitOuterClass(String owner, String name, String descriptor) {
+        super.visitOuterClass(translate(owner), translate(name), translate(descriptor));
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        return new SimpleMethodVisitor(simpleVersionControl, super.visitMethod(access, name, translate(descriptor), translate(signature), translate(exceptions)));
+        return new SimpleMethodVisitor(simpleVersionControl, super.visitMethod(access, translate(name), translate(descriptor), translate(signature), translate(exceptions)));
     }
 
     private String translate(String target) {
