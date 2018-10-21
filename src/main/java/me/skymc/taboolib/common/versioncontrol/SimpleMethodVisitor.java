@@ -1,8 +1,6 @@
 package me.skymc.taboolib.common.versioncontrol;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 
 import java.util.stream.IntStream;
 
@@ -22,6 +20,11 @@ public class SimpleMethodVisitor extends MethodVisitor {
     }
 
     @Override
+    public void visitParameter(String name, int access) {
+        super.visitParameter(translate(name), access);
+    }
+
+    @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor) {
         super.visitMethodInsn(opcode, translate(owner), translate(name), translate(descriptor));
     }
@@ -33,7 +36,11 @@ public class SimpleMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitLdcInsn(Object value) {
-        super.visitLdcInsn(value instanceof String ? translate((String) value) : value);
+        if (value instanceof Type) {
+            super.visitLdcInsn(Type.getType(translate(((Type) value).getDescriptor())));
+        } else {
+            super.visitLdcInsn(value);
+        }
     }
 
     @Override
@@ -43,12 +50,17 @@ public class SimpleMethodVisitor extends MethodVisitor {
 
     @Override
     public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-        super.visitFieldInsn(opcode, translate(owner), name, translate(descriptor));
+        super.visitFieldInsn(opcode, translate(owner), translate(name), translate(descriptor));
     }
 
     @Override
     public void visitLocalVariable(String name, String descriptor, String signature, Label start, Label end, int index) {
         super.visitLocalVariable(translate(name), translate(descriptor), translate(signature), start, end, index);
+    }
+
+    @Override
+    public void visitInvokeDynamicInsn(String name, String descriptor, Handle bootstrapMethodHandle, Object... bootstrapMethodArguments) {
+        super.visitInvokeDynamicInsn(translate(name), translate(descriptor), bootstrapMethodHandle, bootstrapMethodArguments);
     }
 
     private String translate(String target) {
