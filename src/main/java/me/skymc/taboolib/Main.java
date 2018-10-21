@@ -93,6 +93,8 @@ public class Main extends JavaPlugin {
         disable = false;
         // 载入配置文件
         saveDefaultConfig();
+        // 载入扩展
+        TabooLibLoader.setupAddons();
         // 载入牛逼东西
         TLib.init();
         TLib.injectPluginManager();
