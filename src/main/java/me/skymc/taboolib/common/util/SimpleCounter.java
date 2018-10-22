@@ -8,16 +8,28 @@ public class SimpleCounter {
 
     private int timer;
     private int limit;
+    private boolean ignoredFirst;
+    private boolean counterFirst;
 
     public SimpleCounter(int limit) {
+        this(limit, false);
+    }
+
+    public SimpleCounter(int limit, boolean ignoredFirst) {
         this.timer = 0;
         this.limit = limit;
+        this.ignoredFirst = true;
+        this.counterFirst = true;
     }
 
     public boolean next() {
         if (--timer <= 0) {
             timer = limit;
-            return true;
+            if (ignoredFirst && counterFirst) {
+                counterFirst = false;
+            } else {
+                return true;
+            }
         }
         return false;
     }
