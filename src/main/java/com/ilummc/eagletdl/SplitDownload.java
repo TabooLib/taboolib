@@ -80,7 +80,10 @@ class SplitDownload implements Runnable {
                     }
                     complete = true;
                 }
-            } else throw new DoNotSupportMultipleThreadException();
+                file.close();
+            } else {
+                throw new DoNotSupportMultipleThreadException();
+            }
         } catch (Exception e) {
             task.onError.handle(new ErrorEvent(e, task));
             retry++;

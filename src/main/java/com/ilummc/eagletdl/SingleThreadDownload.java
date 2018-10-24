@@ -35,8 +35,7 @@ class SingleThreadDownload implements Runnable {
     public void run() {
         byte[] buf = new byte[1024];
         int len = 0;
-        try (BufferedInputStream stream = new BufferedInputStream(connection.getInputStream());
-             BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(target))) {
+        try (BufferedInputStream stream = new BufferedInputStream(connection.getInputStream()); BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(target))) {
             while ((len = stream.read(buf)) > 0) {
                 outputStream.write(buf, 0, len);
                 currentProgress += len;
