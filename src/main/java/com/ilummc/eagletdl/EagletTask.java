@@ -111,7 +111,7 @@ public class EagletTask {
                         long progress = download.getCurrentProgress();
                         // fire a new progress event
                         if (onProgress != null) {
-                            onProgress.handle(new ProgressEvent(progress - last, this, ((double) progress) / Math.max((double) contentLength, 0D)));
+                            onProgress.handle(new ProgressEvent(progress - last < 0 ? 0 : progress - last, this, ((double) progress) / Math.max((double) contentLength, 0D)));
                         }
                         last = progress;
                         // check complete
