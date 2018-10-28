@@ -19,7 +19,7 @@ public class TabooLib {
 
     static {
         try {
-            Class.forName("org.bukkit.Bukkit");
+            Class.forName("org.spigotmc.SpigotConfig");
             spigot = true;
         } catch (Exception ignored) {
         }
