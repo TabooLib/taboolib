@@ -5,6 +5,8 @@ import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.TabooLibLoader;
 import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
 import me.skymc.taboolib.common.configuration.TConfiguration;
+import me.skymc.taboolib.common.packet.TPacketHandler;
+import me.skymc.taboolib.common.packet.TPacketListener;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -25,6 +27,14 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             try {
                 field.set(null, TLogger.getUnformatted(plugin));
             } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        });
+        // TPacketListener Inject
+        injectTypes.put(TPacketListener.class, (plugin, field, args) -> {
+            try {
+                TPacketHandler.addListener(plugin, ((TPacketListener) field.get(null)));
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
