@@ -9,6 +9,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
+ * 让 JsonObject 有更加人性化的操作，目前版本只能获取数据。
+ *
  * @Author 坏黑
  * @Since 2018-10-27 23:46
  */

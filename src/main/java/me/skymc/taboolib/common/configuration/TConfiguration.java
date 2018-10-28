@@ -3,6 +3,7 @@ package me.skymc.taboolib.common.configuration;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.logger.TLogger;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Ref;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
@@ -33,6 +34,10 @@ public class TConfiguration extends YamlConfiguration {
         reload();
         TLib.getTLib().getConfigWatcher().addSimpleListener(this.file, this::reload);
         TabooLib.debug("Loaded TConfiguration \"" + file.getName() + "\" from Plugin \"" + plugin.getName() + "\"");
+    }
+
+    public static Map<String, List<File>> getFiles() {
+        return files;
     }
 
     /**
@@ -71,8 +76,16 @@ public class TConfiguration extends YamlConfiguration {
         return create(file, plugin);
     }
 
-    public static Map<String, List<File>> getFiles() {
-        return files;
+    public String getStringColored(String path) {
+        return TLocale.Translate.setColored(getString(path));
+    }
+
+    public String getStringColored(String path, String def) {
+        return TLocale.Translate.setColored(getString(path, def));
+    }
+
+    public List<String> getStringListColored(String path) {
+        return TLocale.Translate.setColored(getStringList(path));
     }
 
     public void release() {
@@ -94,14 +107,6 @@ public class TConfiguration extends YamlConfiguration {
     //
     // *********************************
 
-    public void runListener() {
-        try {
-            Optional.ofNullable(runnable).ifPresent(Runnable::run);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public File getFile() {
         return file;
     }
@@ -109,5 +114,13 @@ public class TConfiguration extends YamlConfiguration {
     public TConfiguration listener(Runnable runnable) {
         this.runnable = runnable;
         return this;
+    }
+
+    public void runListener() {
+        try {
+            Optional.ofNullable(runnable).ifPresent(Runnable::run);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
