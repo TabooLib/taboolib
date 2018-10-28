@@ -18,7 +18,6 @@ public class ScriptHandler {
 
     private static ScriptEngine scriptEngine;
     private static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-    private static FileConfiguration scriptsFile;
 
     public static void inst() {
         try {
@@ -31,8 +30,7 @@ public class ScriptHandler {
 
     public static CompiledScript compile(String script) {
         try {
-            Compilable compilable = (Compilable) scriptEngine;
-            return compilable.compile(script);
+            return ((Compilable) scriptEngine).compile(script);
         } catch (Exception e) {
             TLogger.getGlobalLogger().info("§4JavaScript §c" + script + "§4 Compile Failed: §c" + e.toString());
             return null;

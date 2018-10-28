@@ -88,6 +88,7 @@
                                     <include>com.ilummc.eagletdl</include>
                                     <include>org.ow2.asm</include>
                                     <include>com.google.code.gson</include>
+                                    <include>net.objecthunter</include>
                                 </includes>
                             </artifactSet>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -153,6 +154,11 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>2.12.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.objecthunter</groupId>
+            <artifactId>exp4j</artifactId>
+            <version>0.4.8</version>
         </dependency>
         <dependency>
             <groupId>bukkit</groupId>
