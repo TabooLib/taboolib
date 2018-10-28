@@ -302,74 +302,13 @@ public class FileUtils {
      * @param file2 文件2
      */
     public static void fileChannelCopy(File file1, File file2) {
-        FileInputStream fileIn = null;
-        FileOutputStream fileOut = null;
-        FileChannel channelIn = null;
-        FileChannel channelOut = null;
-        try {
-            fileIn = new FileInputStream(file1);
-            fileOut = new FileOutputStream(file2);
-            channelIn = fileIn.getChannel();
-            channelOut = fileOut.getChannel();
+        try (FileInputStream fileIn = new FileInputStream(file1);
+             FileOutputStream fileOut = new FileOutputStream(file2);
+             FileChannel channelIn = fileIn.getChannel();
+             FileChannel channelOut = fileOut.getChannel()) {
             channelIn.transferTo(0, channelIn.size(), channelOut);
         } catch (IOException ignored) {
-        } finally {
-            IOUtils.closeQuietly(channelIn);
-            IOUtils.closeQuietly(channelOut);
-            IOUtils.closeQuietly(fileIn);
-            IOUtils.closeQuietly(fileOut);
         }
-    }
-
-    /**
-     * 通过输入流读取文本
-     *
-     * @param in     输入流
-     * @param size   大小
-     * @param encode 编码
-     * @return 文本
-     */
-    public static String getStringFromInputStream(InputStream in, int size, String encode) {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[size];
-            int i;
-            while ((i = in.read(b)) > 0) {
-                bos.write(b, 0, i);
-            }
-            return new String(bos.toByteArray(), encode);
-        } catch (IOException ignored) {
-        }
-        return null;
-    }
-
-    /**
-     * 通过文件读取文本
-     *
-     * @param file   文件
-     * @param size   大小
-     * @param encode 编码
-     * @return 文本
-     */
-    public static String getStringFromFile(File file, int size, String encode) {
-        FileInputStream fin = null;
-        BufferedInputStream bin = null;
-        try {
-            fin = new FileInputStream(file);
-            bin = new BufferedInputStream(fin);
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[size];
-            int i;
-            while ((i = bin.read(b)) > 0) {
-                bos.write(b, 0, i);
-            }
-            return new String(bos.toByteArray(), encode);
-        } catch (IOException ignored) {
-        } finally {
-            IOUtils.closeQuietly(bin);
-            IOUtils.closeQuietly(fin);
-        }
-        return null;
     }
 
     /**
@@ -397,19 +336,63 @@ public class FileUtils {
         try {
             conn = new URL(url).openConnection();
             bin = new BufferedInputStream(conn.getInputStream());
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] b = new byte[size];
-            int i;
-            while ((i = bin.read(b)) > 0) {
-                bos.write(b, 0, i);
-            }
-            return new String(bos.toByteArray(), conn.getContentEncoding() == null ? "UTF-8" : conn.getContentEncoding());
-        } catch (IOException ignored) {
+            return getStringFromInputStream(bin, size, conn.getContentEncoding() == null ? "UTF-8" : conn.getContentEncoding());
+        } catch (IOException e) {
+            e.printStackTrace();
         } finally {
             IOUtils.close(conn);
             IOUtils.closeQuietly(bin);
         }
         return null;
+    }
+
+    /**
+     * 通过文件读取文本
+     *
+     * @param file   文件
+     * @param size   大小
+     * @param encode 编码
+     * @return 文本
+     */
+    public static String getStringFromFile(File file, int size, String encode) {
+        try (FileInputStream fin = new FileInputStream(file); BufferedInputStream bin = new BufferedInputStream(fin)) {
+            return getStringFromInputStream(fin, size, encode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 通过输入流读取文本
+     *
+     * @param in     输入流
+     * @param size   大小
+     * @param encode 编码
+     * @return 文本
+     */
+    public static String getStringFromInputStream(InputStream in, int size, String encode) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            byte[] b = new byte[size];
+            int i;
+            while ((i = in.read(b)) > 0) {
+                bos.write(b, 0, i);
+            }
+            return new String(bos.toByteArray(), encode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 下载文件
+     *
+     * @param url  下载地址
+     * @param file 下载位置
+     */
+    public static void download(String url, File file) {
+        download(url, file, false);
     }
 
     /**
@@ -438,10 +421,6 @@ public class FileUtils {
         if (!async) {
             eagletTask.waitUntil();
         }
-    }
-
-    public static void download(String url, File file) {
-        download(url, file, false);
     }
 
     @Deprecated
