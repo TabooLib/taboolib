@@ -1,5 +1,21 @@
 `me.skymc.taboolib.string.ArrayUtils`
 
+## indexOf
+
+获取对象在数组中的位置
+
+```java
+int index = ArrayUtils.indexOf(args, "object");
+```
+
+## contains
+
+判断对象是否在数组中
+
+```java
+boolean b = ArrayUtils.contains(args, "object");
+```
+
 ## arrayJoin
 
 这个方法在使用指令的时候会经常用到，例如 `/say BlackSKY Hello World!`。  
