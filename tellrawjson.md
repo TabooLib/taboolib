@@ -1,4 +1,5 @@
-`me.skymc.taboolib.json.tellraw.TellrawJson`
+# TellrawJson
+更方便的 Tellraw 信息发送工具
 
 ## 作用
 
