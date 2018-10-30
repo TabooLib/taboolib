@@ -144,12 +144,14 @@ public class FileUtils {
      * @param file        文件
      */
     public static void inputStreamToFile(InputStream inputStream, File file) {
-        try {
-            String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
-            FileWriter fileWriter = new FileWriter(FileUtils.createNewFile(file));
-            fileWriter.write(text);
-            fileWriter.close();
-        } catch (IOException ignored) {
+        try (FileOutputStream fos = new FileOutputStream(file) ; BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            byte[] buf = new byte[1024];
+            int len;
+            while((len = inputStream.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+            bos.flush();
+        } catch (Exception ignored) {
         }
     }
 
