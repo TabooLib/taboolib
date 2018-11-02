@@ -2,6 +2,12 @@ name: TabooLib
 main: me.skymc.taboolib.Main
 version: ${project.version}
 
-author: [lzzelAliz, 坏黑]
-depend: [Vault]
-softdepend: [PlaceholderAPI, Skript, MassiveLag]
+authors:
+- 坏黑
+- lzzelAliz
+
+softdepend:
+- Vault
+- PlaceholderAPI
+- Skript
+- MassiveLag
