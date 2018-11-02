@@ -24,25 +24,16 @@ public class TDependencyInjector {
 
     private static List<String> injected = new ArrayList<>();
 
-    public static Dependency[] getDependencies(Object o) {
-        Dependency[] dependencies = new Dependency[0];
-        Dependencies d = o.getClass().getAnnotation(Dependencies.class);
-        if (d != null) {
-            dependencies = d.value();
-        }
-        Dependency d2 = o.getClass().getAnnotation(Dependency.class);
-        if (d2 != null) {
-            dependencies = new Dependency[]{d2};
-        }
-        return dependencies;
-    }
-
     static void injectOnEnable(Plugin plugin) {
         inject(plugin, plugin);
     }
 
     static void ejectOnDisable(Plugin plugin) {
         eject(plugin, plugin);
+    }
+
+    public static boolean injected(Plugin plugin) {
+        return injected.contains(plugin.getName());
     }
 
     public static void inject(Plugin plugin, Object o) {
@@ -62,6 +53,19 @@ public class TDependencyInjector {
             ejectConfig(plugin, o);
         } catch (Throwable ignored) {
         }
+    }
+
+    public static Dependency[] getDependencies(Object o) {
+        Dependency[] dependencies = new Dependency[0];
+        Dependencies d = o.getClass().getAnnotation(Dependencies.class);
+        if (d != null) {
+            dependencies = d.value();
+        }
+        Dependency d2 = o.getClass().getAnnotation(Dependency.class);
+        if (d2 != null) {
+            dependencies = new Dependency[]{d2};
+        }
+        return dependencies;
     }
 
     private static void ejectConfig(Plugin plugin, Object o) {

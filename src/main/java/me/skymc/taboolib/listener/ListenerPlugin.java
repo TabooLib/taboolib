@@ -2,10 +2,13 @@ package me.skymc.taboolib.listener;
 
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.inject.TConfigWatcher;
+import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.configuration.TConfiguration;
+import me.skymc.taboolib.events.TPluginEnableEvent;
+import me.skymc.taboolib.events.TPluginLoadEvent;
 import me.skymc.taboolib.mysql.MysqlUtils;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
@@ -25,11 +28,26 @@ import java.util.Optional;
  * @author sky
  */
 @TListener
-public class ListenerPluginDisable implements Listener {
+public class ListenerPlugin implements Listener {
+
+    @EventHandler
+    public void enable(TPluginEnableEvent e) {
+        if (!TLib.getTLib().isInjectEnabled() || !TLib.getTLib().isBlackListPluginExists()) {
+            try {
+                TDependencyInjector.inject(e.getPlugin(), e.getPlugin());
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
+        }
+    }
 
     @EventHandler
     public void disable(PluginDisableEvent e) {
         TabooLib.debug("Plugin \"" + e.getPlugin().getName() + "\" was disabled.");
+        // 注销插件注入
+        if (!TLib.getTLib().isInjectEnabled() || !TLib.getTLib().isBlackListPluginExists()) {
+            TDependencyInjector.eject(e.getPlugin(), e.getPlugin());
+        }
         // 注销时间周期
         TimeCycleManager.cancel(e.getPlugin());
         // 注销插件配置

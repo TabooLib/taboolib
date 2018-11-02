@@ -127,17 +127,12 @@ public class TLib {
         return libsFolder;
     }
 
-    // *********************************
-    //
-    //        Private Methods
-    //
-    // *********************************
-
-    private boolean isInjectEnabled() {
+    public boolean isInjectEnabled() {
         return Main.getInst().getConfig().getBoolean("PLUGIN-INJECTOR.ENABLE", true);
     }
 
-    private boolean isBlackListPluginExists() {
+    public boolean isBlackListPluginExists() {
         return Main.getInst().getConfig().getStringList("PLUGIN-INJECTOR.DISABLE-ON-PLUGIN-EXISTS").stream().anyMatch(PluginUtils::isPluginExists);
     }
+
 }
