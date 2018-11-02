@@ -2,6 +2,8 @@ package me.skymc.taboolib.plugin;
 
 import com.google.common.base.Joiner;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.events.TPluginEnableEvent;
+import me.skymc.taboolib.events.TPluginLoadEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,11 +12,11 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.*;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.lang.reflect.Method;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.Map.Entry;
@@ -207,7 +209,6 @@ public class PluginUtils {
                     }
                 }
             }
-
             try {
                 target = Bukkit.getPluginManager().loadPlugin(pluginFile);
             } catch (InvalidDescriptionException e) {
@@ -215,8 +216,22 @@ public class PluginUtils {
             } catch (InvalidPluginException e) {
                 return new PluginLoadState(PluginLoadStateType.INVALID_PLUGIN, e.toString());
             }
-
+            try {
+                Bukkit.getPluginManager().callEvent(new TPluginLoadEvent(target));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                Bukkit.getPluginManager().callEvent(new TPluginLoadEvent(target));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             target.onLoad();
+            try {
+                Bukkit.getPluginManager().callEvent(new TPluginEnableEvent(target));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Bukkit.getPluginManager().enablePlugin(target);
             return new PluginLoadState(PluginLoadStateType.LOADED, "null");
         }

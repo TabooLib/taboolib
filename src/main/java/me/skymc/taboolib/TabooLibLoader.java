@@ -9,6 +9,8 @@ import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.deprecated.TabooLibDeprecated;
+import me.skymc.taboolib.events.TPluginEnableEvent;
+import me.skymc.taboolib.events.TPluginLoadEvent;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.listener.TListenerHandler;
@@ -19,7 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -183,7 +184,7 @@ public class TabooLibLoader implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onEnable(PluginEnableEvent e) {
+    public void onEnable(TPluginEnableEvent e) {
         setupClasses(e.getPlugin());
         Optional.ofNullable(pluginClasses.get(e.getPlugin().getName())).ifPresent(classes -> classes.forEach(pluginClass -> loadClass(e.getPlugin(), pluginClass)));
     }
