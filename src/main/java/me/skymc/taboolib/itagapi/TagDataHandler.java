@@ -3,6 +3,7 @@ package me.skymc.taboolib.itagapi;
 import com.google.common.base.Preconditions;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.common.function.TFunction;
 import me.skymc.taboolib.packet.PacketUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,16 +25,17 @@ import java.util.UUID;
  * @Author sky
  * @Since 2018-05-23 0:37
  */
+@TFunction(enable = "init")
 public class TagDataHandler implements Listener {
 
     private static TagDataHandler handler;
     private HashMap<UUID, TagPlayerData> playersData = new HashMap<>();
 
-    public static void init(Plugin plugin) {
+    public static void init() {
         Preconditions.checkArgument(handler == null, "TagDataHandler is already instanced!");
         handler = new TagDataHandler();
         // 注册监听
-        Bukkit.getPluginManager().registerEvents(handler, plugin);
+        Bukkit.getPluginManager().registerEvents(handler, TabooLib.instance());
         // 启动相关功能
         new BukkitRunnable() {
 
@@ -43,7 +45,7 @@ public class TagDataHandler implements Listener {
                     TagPacket.inst();
                 }
             }
-        }.runTask(plugin);
+        }.runTask(TabooLib.instance());
     }
 
     public TagPlayerData unregisterPlayerData(Player player) {

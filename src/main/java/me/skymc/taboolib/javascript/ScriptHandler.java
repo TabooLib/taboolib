@@ -2,6 +2,7 @@ package me.skymc.taboolib.javascript;
 
 import com.ilummc.tlib.logger.TLogger;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
+import me.skymc.taboolib.common.function.TFunction;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.script.Compilable;
@@ -14,12 +15,13 @@ import java.util.Objects;
  * @Author sky
  * @Since 2018-06-02 22:48
  */
+@TFunction(enable = "init")
 public class ScriptHandler {
 
     private static ScriptEngine scriptEngine;
     private static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
-    public static void inst() {
+    public static void init() {
         try {
             NashornScriptEngineFactory factory = (NashornScriptEngineFactory) scriptEngineManager.getEngineFactories().stream().filter(factories -> "Oracle Nashorn".equalsIgnoreCase(factories.getEngineName())).findFirst().orElse(null);
             scriptEngine = Objects.requireNonNull(factory).getScriptEngine("-doe", "--global-per-engine");

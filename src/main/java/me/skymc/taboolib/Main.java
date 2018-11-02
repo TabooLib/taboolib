@@ -4,32 +4,21 @@ import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.common.function.TFunctionLoader;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
-import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
-import me.skymc.taboolib.itagapi.TagDataHandler;
-import me.skymc.taboolib.javascript.ScriptHandler;
 import me.skymc.taboolib.listener.TListenerHandler;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
-import me.skymc.taboolib.nms.item.DabItemUtils;
 import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.permission.PermissionUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
-import me.skymc.taboolib.skript.SkriptHandler;
 import me.skymc.taboolib.socket.TabooLibClient;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.string.language2.Language2;
-import me.skymc.taboolib.support.SupportPlaceholder;
-import me.skymc.taboolib.timecycle.TimeCycleManager;
 import me.skymc.taboolib.translateuuid.TranslateUUID;
 import me.skymc.taboolib.update.UpdateTask;
-import me.skymc.tlm.TLM;
 import me.skymc.tlm.module.TabooLibraryModule;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -110,24 +99,6 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         // 注册插件配置
         TabooLibLoader.register();
-        // 载入经济
-        EcoUtils.setupEconomy();
-        // 载入权限
-        PermissionUtils.loadRegisteredServiceProvider();
-        // 物品名称
-        ItemUtils.init();
-        // 低层工具
-        DabItemUtils.getInstance();
-        // 载入周期管理器
-        TimeCycleManager.load();
-        // 启动脚本
-        ScriptHandler.inst();
-        // 注册脚本
-        SkriptHandler.register();
-        // 注册头衔
-        TagDataHandler.init(this);
-        // 载入语言文件
-        exampleLanguage2 = new Language2("Language2", this);
         // 启动数据库储存方法
         if (getStorageType() == StorageType.SQL) {
             GlobalDataManager.SQLMethod.startSQLMethod();
@@ -147,16 +118,6 @@ public class Main extends JavaPlugin {
 
             @Override
             public void run() {
-                // 载入 PlaceholderAPI 扩展
-                if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                    new SupportPlaceholder(getInst(), "taboolib").hook();
-                }
-                // 载入 TLM 接口
-                TLM.getInst();
-                // 载入 SpecialItem 接口
-                SpecialItem.getInst().loadItems();
-                // 载入 TranslateUUID 工具
-                TranslateUUID.init();
                 // 面子工程
                 InputStream inputStream = FileUtils.getResource("motd.txt");
                 try {
@@ -178,6 +139,8 @@ public class Main extends JavaPlugin {
         new UpdateTask();
         // 启动
         started = true;
+        // 载入语言文件
+        exampleLanguage2 = new Language2("Language2", this);
     }
 
     @Override
@@ -198,12 +161,6 @@ public class Main extends JavaPlugin {
         DataUtils.saveAllCaches();
         // 保存玩家数据
         PlayerDataManager.saveAllPlayers(false, true);
-        // 注销 SpecialItem 接口
-        SpecialItem.getInst().unloadItems();
-        // 注销 TLM 接口
-        TabooLibraryModule.getInst().unloadModules();
-        // 注销 TranslateUUID 接口
-        TranslateUUID.cancel();
         // 注销连接池
         HikariHandler.closeDataSourceForce();
         // 注销监听器

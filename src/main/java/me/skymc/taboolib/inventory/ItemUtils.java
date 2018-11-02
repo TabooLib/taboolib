@@ -5,6 +5,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.configuration.TConfiguration;
+import me.skymc.taboolib.common.function.TFunction;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
 import me.skymc.taboolib.itemnbtapi.NBTList;
@@ -37,6 +38,7 @@ import java.util.stream.IntStream;
 /**
  * @author sky
  */
+@TFunction(enable = "init")
 public class ItemUtils {
 
     private static File finalItemsFolder;
