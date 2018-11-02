@@ -60,6 +60,11 @@ public class TabooLibLoader implements Listener {
 
     static void unregister() {
         unloadClasses();
+        try {
+            tabooLibDeprecated.unregister();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static TabooLibDeprecated getTabooLibDeprecated() {
