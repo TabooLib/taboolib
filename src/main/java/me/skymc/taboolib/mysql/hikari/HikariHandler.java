@@ -64,28 +64,18 @@ public class HikariHandler {
         config.setJdbcUrl(sqlHost.getConnectionUrl());
         config.setUsername(sqlHost.getUser());
         config.setPassword(sqlHost.getPassword());
-        config.setConnectionTestQuery("SELECT 1");
         config.setAutoCommit(settings.getBoolean("DefaultSettings.AutoCommit", true));
-        config.setMinimumIdle(settings.getInt("DefaultSettings.MinimumIdle", 1));
+        config.setMinimumIdle(settings.getInt("DefaultSettings.MinimumIdle", -1));
         config.setMaximumPoolSize(settings.getInt("DefaultSettings.MaximumPoolSize", 10));
-        config.setValidationTimeout(settings.getInt("DefaultSettings.ValidationTimeout", 3000));
-        config.setConnectionTimeout(settings.getInt("DefaultSettings.ConnectionTimeout", 10000));
-        config.setIdleTimeout(settings.getInt("DefaultSettings.IdleTimeout", 60000));
-        config.setMaxLifetime(settings.getInt("DefaultSettings.MaxLifetime", 60000));
+        config.setValidationTimeout(settings.getInt("DefaultSettings.ValidationTimeout", 5000));
+        config.setConnectionTimeout(settings.getInt("DefaultSettings.ConnectionTimeout", 30000));
+        config.setIdleTimeout(settings.getInt("DefaultSettings.IdleTimeout", 600000));
+        config.setMaxLifetime(settings.getInt("DefaultSettings.MaxLifetime", 1800000));
+        if (settings.contains("DefaultSettings.ConnectionTestQuery")) {
+            config.setConnectionTestQuery(settings.getString("DefaultSettings.ConnectionTestQuery"));
+        }
         if (settings.contains("DefaultSettings.DataSourceProperty")) {
             settings.getConfigurationSection("DefaultSettings.DataSourceProperty").getKeys(false).forEach(key -> config.addDataSourceProperty(key, settings.getString("DefaultSettings.DataSourceProperty." + key)));
-        } else {
-            config.addDataSourceProperty("cachePrepStmts", "true");
-            config.addDataSourceProperty("prepStmtCacheSize", "250");
-            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-            config.addDataSourceProperty("useServerPrepStmts", "true");
-            config.addDataSourceProperty("useLocalSessionState", "true");
-            config.addDataSourceProperty("useLocalTransactionState", "true");
-            config.addDataSourceProperty("rewriteBatchedStatements", "true");
-            config.addDataSourceProperty("cacheResultSetMetadata", "true");
-            config.addDataSourceProperty("cacheServerConfiguration", "true");
-            config.addDataSourceProperty("elideSetAutoCommits", "true");
-            config.addDataSourceProperty("maintainTimeStats", "false");
         }
         return config;
     }

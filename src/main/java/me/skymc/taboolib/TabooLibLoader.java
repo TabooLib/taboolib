@@ -38,6 +38,7 @@ public class TabooLibLoader implements Listener {
     static TabooLibDeprecated tabooLibDeprecated;
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
+    static List<Runnable> tasks = Lists.newArrayList();
 
     static void setup() {
         testInternet();
@@ -56,6 +57,15 @@ public class TabooLibLoader implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Bukkit.getScheduler().runTask(TabooLib.instance(), () -> {
+            for (Runnable task : tasks) {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     static void unregister() {
@@ -78,6 +88,10 @@ public class TabooLibLoader implements Listener {
     public static List<Class> getPluginClassSafely(Plugin plugin) {
         List<Class> classes = pluginClasses.get(plugin.getName());
         return classes == null ? new ArrayList<>() : new ArrayList<>(classes);
+    }
+
+    public static void runTaskOnEnabled(Runnable runnable) {
+        tasks.add(runnable);
     }
 
     static boolean isLoader(Class pluginClass) {
