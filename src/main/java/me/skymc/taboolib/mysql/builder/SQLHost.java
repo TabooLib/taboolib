@@ -1,10 +1,13 @@
 package me.skymc.taboolib.mysql.builder;
 
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.string.ArrayUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -19,6 +22,7 @@ public class SQLHost {
     private String database;
     private Plugin plugin;
     private boolean autoClose;
+    private List<String> flags = ArrayUtils.asList("characterEncoding=utf-8", "useSSL=false");
 
     public SQLHost(ConfigurationSection section, Plugin plugin) {
         this(section, plugin, false);
@@ -70,12 +74,24 @@ public class SQLHost {
         return autoClose;
     }
 
+    public List<String> getFlags() {
+        return flags;
+    }
+
     public String getConnectionUrl() {
-        return Strings.replaceWithOrder("jdbc:mysql://{0}:{1}/{2}?characterEncoding=utf-8&useSSL=false", this.host, this.port, this.database);
+        return Strings.replaceWithOrder("jdbc:mysql://{0}:{1}/{2}" + getFlagsInUrl(), this.host, this.port, this.database);
     }
 
     public String getConnectionUrlSimple() {
         return Strings.replaceWithOrder("jdbc:mysql://{0}:{1}/{2}", this.host, this.port, this.database);
+    }
+
+    public String getFlagsInUrl() {
+        if (flags.isEmpty()) {
+            return "";
+        }
+        String collect = flags.stream().map(f -> f + "&").collect(Collectors.joining());
+        return "?" + collect.substring(0, collect.length() - 1);
     }
 
     @Override
