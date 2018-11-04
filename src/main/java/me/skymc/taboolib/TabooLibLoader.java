@@ -39,6 +39,7 @@ public class TabooLibLoader implements Listener {
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
     static List<Runnable> tasks = Lists.newArrayList();
+    static boolean started;
 
     static void setup() {
         testInternet();
@@ -91,7 +92,11 @@ public class TabooLibLoader implements Listener {
     }
 
     public static void runTaskOnEnabled(Runnable runnable) {
-        tasks.add(runnable);
+        if (Main.isStarted()) {
+            runnable.run();
+        } else {
+            tasks.add(runnable);
+        }
     }
 
     static boolean isLoader(Class pluginClass) {
