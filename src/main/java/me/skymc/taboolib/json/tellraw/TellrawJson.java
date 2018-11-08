@@ -2,17 +2,20 @@ package me.skymc.taboolib.json.tellraw;
 
 import com.ilummc.tlib.bungee.api.chat.*;
 import com.ilummc.tlib.bungee.chat.ComponentSerializer;
-import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.TLocale;
-import me.skymc.taboolib.methods.ReflectionUtils;
-import me.skymc.taboolib.nms.NMSUtils;
+import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.string.ArrayUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import protocolsupport.api.ProtocolSupportAPI;
+import us.myles.ViaVersion.api.Via;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -24,10 +27,8 @@ public class TellrawJson {
 
     private List<BaseComponent> components = new ArrayList<>();
     private List<BaseComponent> componentsLatest = new ArrayList<>();
-    private static final Class<?> craftItemStackClazz = NMSUtils.getOBCClass("inventory.CraftItemStack");
-    private static final Class<?> nmsItemStackClazz = NMSUtils.getNMSClass("ItemStack");
-    private static final Class<?> nbtTagCompoundClazz = NMSUtils.getNMSClass("NBTTagCompound");
-    private static final String INVALID_ITEM = "{id:stone,tag:{display:{Name:§c* Invalid ItemStack *}}}";
+    private Map<String, String[]> itemTag = new HashMap<>();
+    private int bukkitVersion = TabooLib.getVersionNumber();
 
     TellrawJson() {
     }
@@ -37,11 +38,36 @@ public class TellrawJson {
     }
 
     public void send(CommandSender sender) {
-        TLocale.Tellraw.send(sender, toRawMessage());
+        send(sender, new String[0]);
+    }
+
+    public void send(CommandSender sender, String... args) {
+        if (sender instanceof Player) {
+            if (TellrawCreator.isViaVersionLoaded()) {
+                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(Via.getAPI().getPlayerVersion(sender) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION), args));
+            } else if (TellrawCreator.isProtocolSupportLoaded()) {
+                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(ProtocolSupportAPI.getProtocolVersion((Player) sender).getId() > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION), args));
+            } else {
+                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(), args));
+            }
+        } else {
+            TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(), args));
+        }
     }
 
     public String toRawMessage() {
         return ComponentSerializer.toString(getComponentsAll());
+    }
+
+    public String toRawMessage(TellrawVersion version) {
+        String rawMessage = toRawMessage();
+        if (version == TellrawVersion.CURRENT_VERSION) {
+            return rawMessage;
+        }
+        for (Map.Entry<String, String[]> stringEntry : itemTag.entrySet()) {
+            rawMessage = rawMessage.replace(stringEntry.getKey(), version == TellrawVersion.HIGH_VERSION ? stringEntry.getValue()[1] : stringEntry.getValue()[0]);
+        }
+        return rawMessage;
     }
 
     public String toLegacyText() {
@@ -61,6 +87,7 @@ public class TellrawJson {
     public TellrawJson append(TellrawJson json) {
         appendComponents();
         componentsLatest.addAll(ArrayUtils.asList(json.getComponentsAll()));
+        itemTag.putAll(json.itemTag);
         return this;
     }
 
@@ -70,7 +97,18 @@ public class TellrawJson {
     }
 
     public TellrawJson hoverItem(ItemStack itemStack) {
-        getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new ComponentBuilder(getItemComponent(itemStack)).create())));
+        return hoverItem(itemStack, true);
+    }
+
+    public TellrawJson hoverItem(ItemStack itemStack, boolean supportVersion) {
+        BaseComponent[] itemComponentCurrentVersion = new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.CURRENT_VERSION)).create();
+        getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemComponentCurrentVersion)));
+        if (supportVersion) {
+            itemTag.put(ComponentSerializer.toString(itemComponentCurrentVersion), new String[] {
+                    ComponentSerializer.toString(new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.LOW_VERSION)).create()),
+                    ComponentSerializer.toString(new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.HIGH_VERSION)).create())
+            });
+        }
         return this;
     }
 
@@ -98,19 +136,6 @@ public class TellrawJson {
         List<BaseComponent> components = this.components.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).collect(Collectors.toList());
         this.componentsLatest.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).forEach(components::add);
         return components.toArray(new BaseComponent[0]);
-    }
-
-    public String getItemComponent(ItemStack itemStack) {
-        try {
-            Method asNMSCopyMethod = ReflectionUtils.getMethod(craftItemStackClazz, "asNMSCopy", ItemStack.class);
-            Method saveNmsItemStackMethod = ReflectionUtils.getMethod(nmsItemStackClazz, "save", nbtTagCompoundClazz);
-            Object nmsNbtTagCompoundObj = nbtTagCompoundClazz.newInstance();
-            Object nmsItemStackObj = asNMSCopyMethod.invoke(null, itemStack);
-            return saveNmsItemStackMethod.invoke(nmsItemStackObj, nmsNbtTagCompoundObj).toString();
-        } catch (Throwable t) {
-            TLogger.getGlobalLogger().error("failed to serialize bukkit item to nms item: " + t.toString());
-            return INVALID_ITEM;
-        }
     }
 
     // *********************************

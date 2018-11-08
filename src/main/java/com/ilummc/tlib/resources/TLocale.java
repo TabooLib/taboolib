@@ -2,7 +2,6 @@ package com.ilummc.tlib.resources;
 
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.bungee.api.ChatColor;
-import com.ilummc.tlib.bungee.api.chat.BaseComponent;
 import com.ilummc.tlib.bungee.api.chat.TextComponent;
 import com.ilummc.tlib.bungee.chat.ComponentSerializer;
 import com.ilummc.tlib.inject.TLoggerManager;
@@ -10,15 +9,11 @@ import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
-import me.skymc.taboolib.nms.NMSUtil19;
-import me.skymc.taboolib.nms.NMSUtils;
+import me.skymc.taboolib.json.tellraw.TellrawCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -139,23 +134,12 @@ public class TLocale {
 
     public static class Tellraw extends TLocale {
 
-        private static final Class<?> chatSerializer = NMSUtils.getNMSClassSilent("ChatSerializer", "IChatBaseComponent");
-        private static final Method chatSerializerA = NMSUtils.getMethodSilent(chatSerializer, "a", String.class);
-        private static final Field playerConnection = NMSUtils.getFieldSilent(NMSUtil19.class_EntityPlayer, "playerConnection");
-        private static final Method sendPacket = NMSUtils.getMethodSilent(NMSUtil19.class_PlayerConnection, "sendPacket", NMSUtil19.class_Packet);
-        private static final Constructor<?> PacketPlayOutChat = NMSUtils.getConstructorSilent(NMSUtil19.class_PacketPlayOutChat, NMSUtil19.class_IChatBaseComponent);
-
         public static void send(CommandSender sender, String rawMessage) {
             if (sender instanceof Player) {
-                try {
-                    sendPacket.invoke(playerConnection.get(NMSUtils.getHandle(sender)), PacketPlayOutChat.newInstance(chatSerializerA.invoke(null, rawMessage)));
-                } catch (Exception e) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "tellraw " + sender.getName() + " " + rawMessage);
-                }
+                TellrawCreator.getAbstractTellraw().sendRawMessage((Player) sender, rawMessage);
             } else {
                 sender.sendMessage(TextComponent.toLegacyText(ComponentSerializer.parse(rawMessage)));
             }
         }
-
     }
 }
