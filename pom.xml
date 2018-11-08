@@ -238,6 +238,20 @@
             <systemPath>${basedir}/libs/BossBarAPI.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>viaversion</groupId>
+            <artifactId>viaversion</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/ViaVersion.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>protocolsupport</groupId>
+            <artifactId>protocolsupport</artifactId>
+            <version>1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/ProtocolSupport.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>deprecated</groupId>
             <artifactId>deprecated</artifactId>
             <version>1</version>
