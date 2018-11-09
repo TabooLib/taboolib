@@ -32,6 +32,7 @@ public class SimpleCommandBuilder {
     private CompleterTab completerTab = EMPTY_COMPLETER_TAB;
     private CompleterCommand completerCommand = EMPTY_COMPLETER_COMMAND;
     private boolean silence;
+    private boolean forceRegister;
 
     SimpleCommandBuilder(String command, Plugin plugin) {
         this.command = command;
@@ -43,7 +44,7 @@ public class SimpleCommandBuilder {
     }
 
     public static SimpleCommandBuilder create(String command, Plugin plugin) {
-        return new SimpleCommandBuilder(command, plugin);
+        return new SimpleCommandBuilder(command.toLowerCase(), plugin);
     }
 
     public SimpleCommandBuilder description(String description) {
@@ -86,9 +87,17 @@ public class SimpleCommandBuilder {
         return this;
     }
 
+    public SimpleCommandBuilder forceRegister() {
+        this.forceRegister = true;
+        return this;
+    }
+
     public SimpleCommandBuilder build() {
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
         Preconditions.checkNotNull(completerTab, "缺少 \"CompleterTab\" 部分");
+        if (forceRegister) {
+            TCommandHandler.getKnownCommands().remove(command);
+        }
         TCommandHandler.registerPluginCommand(
                 plugin,
                 command,
