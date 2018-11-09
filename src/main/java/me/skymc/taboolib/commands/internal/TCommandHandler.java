@@ -1,7 +1,10 @@
 package me.skymc.taboolib.commands.internal;
 
+import com.ilummc.tlib.inject.TPluginManager;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
+import me.skymc.taboolib.common.util.SimpleReflection;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.methods.ReflectionUtils;
@@ -12,12 +15,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,15 +33,13 @@ import java.util.stream.Collectors;
 public class TCommandHandler implements Listener {
 
     private static SimpleCommandMap commandMap;
+    private static Map<String, Command> knownCommands;
 
     public TCommandHandler() {
-        try {
-            Field commandMap = Bukkit.getPluginManager().getClass().getDeclaredField("commandMap");
-            commandMap.setAccessible(true);
-            TCommandHandler.commandMap = (SimpleCommandMap) commandMap.get(Bukkit.getPluginManager());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SimpleReflection.saveFiled(Bukkit.getPluginManager() instanceof TPluginManager ? TPluginManager.class : SimplePluginManager.class, "commandMap");
+        SimpleReflection.saveFiled(SimpleCommandMap.class, "knownCommands");
+        commandMap = (SimpleCommandMap) SimpleReflection.getFieldValue(Bukkit.getPluginManager() instanceof TPluginManager ? TPluginManager.class : SimplePluginManager.class, Bukkit.getPluginManager(), "commandMap");
+        knownCommands = (Map<String, Command>) SimpleReflection.getFieldValue(SimpleCommandMap.class, commandMap, "knownCommands");
         try {
             registerCommands();
         } catch (Exception e) {
@@ -191,5 +194,9 @@ public class TCommandHandler implements Listener {
 
     public static SimpleCommandMap getCommandMap() {
         return commandMap;
+    }
+
+    public static Map<String, Command> getKnownCommands() {
+        return knownCommands;
     }
 }
