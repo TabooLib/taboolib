@@ -33,6 +33,10 @@ public class PluginUtils {
     PluginUtils() {
     }
 
+    public static boolean isPluginExists(String name) {
+        return getPluginFile(name) != null;
+    }
+
     public static File getPluginFile(Plugin plugin) {
         try {
             Method method = JavaPlugin.class.getDeclaredMethod("getFile");
@@ -43,19 +47,19 @@ public class PluginUtils {
         }
     }
 
-    public static boolean isPluginExists(String name) {
+    public static File getPluginFile(String name) {
         for (File pluginFile : new File("plugins").listFiles()) {
             if (pluginFile.getName().endsWith(".jar")) {
                 try {
                     PluginDescriptionFile desc = Main.getInst().getPluginLoader().getPluginDescription(pluginFile);
                     if (desc.getName().equalsIgnoreCase(name)) {
-                        return true;
+                        return pluginFile;
                     }
                 } catch (Exception ignored) {
                 }
             }
         }
-        return false;
+        return null;
     }
 
     public static void enable(Plugin plugin) {

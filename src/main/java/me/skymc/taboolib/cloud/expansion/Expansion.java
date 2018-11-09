@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.ilummc.eagletdl.EagletTask;
 import com.ilummc.eagletdl.ProgressEvent;
 import com.ilummc.tlib.resources.TLocale;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.cloud.TCloudLoader;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.string.ArrayUtils;
@@ -28,9 +29,10 @@ public class Expansion {
     private final String lastUpdate;
     private final String lastUpdateNote;
     private final String link;
+    private final double dependVersion;
     private final ExpansionType type;
 
-    public Expansion(String name, String[] author, String description, String[] detail, String version, String lastUpdate, String lastUpdateNote, String link, ExpansionType type) {
+    public Expansion(String name, String[] author, String description, String[] detail, String version, String lastUpdate, String lastUpdateNote, String link, double dependVersion, ExpansionType type) {
         this.name = name;
         this.author = author;
         this.description = description;
@@ -39,6 +41,7 @@ public class Expansion {
         this.lastUpdate = lastUpdate;
         this.lastUpdateNote = lastUpdateNote;
         this.link = link;
+        this.dependVersion = dependVersion;
         this.type = type;
     }
 
@@ -50,7 +53,8 @@ public class Expansion {
         String lastUpdate = object.get("last_update").getAsString();
         String lastUpdateNote = object.get("last_update_note").getAsString();
         String link = object.get("link").getAsString();
-        return new Expansion(name, author, description, detail, version, lastUpdate, lastUpdateNote, link, type);
+        double dependVersion = object.has("depend-version") ? object.get("depend-version").getAsDouble() : 0D;
+        return new Expansion(name, author, description, detail, version, lastUpdate, lastUpdateNote, link, dependVersion, type);
     }
 
     public static String[] toArray(JsonArray json) {
@@ -89,12 +93,20 @@ public class Expansion {
         return link;
     }
 
+    public double getDependVersion() {
+        return dependVersion;
+    }
+
     public ExpansionType getType() {
         return type;
     }
 
     public File getFile() {
         return type == ExpansionType.INTERNAL ? new File(TCloudLoader.getExpansionInternalFolder(), "[TCLOUD] " + name + ".jar") : new File("plugins/[TCLOUD] " + name + ".jar");
+    }
+
+    public boolean canUse() {
+        return TabooLib.getPluginVersion() >= dependVersion;
     }
 
     public boolean canUpdate() {
