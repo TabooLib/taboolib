@@ -52,7 +52,7 @@ public class TLocaleTitle extends TLocaleSerialize {
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            TitleUtils.sendTitle((Player) sender, replaceText(sender, Strings.replaceWithOrder(title, args)), replaceText(sender, Strings.replaceWithOrder(subtitle, args)), fadein, stay, fadeout);
+            TLocale.Display.sendTitle((Player) sender, replaceText(sender, Strings.replaceWithOrder(title, args)), replaceText(sender, Strings.replaceWithOrder(subtitle, args)), fadein, stay, fadeout);
         } else {
             TLocale.Logger.error("LOCALE.TITLE-SEND-TO-NON-PLAYER", asString(args));
         }

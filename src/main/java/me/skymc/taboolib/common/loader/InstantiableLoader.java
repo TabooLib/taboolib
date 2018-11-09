@@ -1,5 +1,6 @@
 package me.skymc.taboolib.common.loader;
 
+import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.util.Ref;
 import me.skymc.taboolib.TabooLibLoader;
 import me.skymc.taboolib.listener.TListener;
@@ -59,6 +60,7 @@ public class InstantiableLoader implements Listener {
                     try {
                         instance.put(instantiable.value(), ReflectionUtils.instantiateObject(pluginClass));
                     } catch (Exception e) {
+                        TLogger.getGlobalLogger().warn("Instance Failed: " + pluginClass.getName());
                         e.printStackTrace();
                     }
                 }

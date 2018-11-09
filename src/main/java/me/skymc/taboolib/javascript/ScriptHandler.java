@@ -21,7 +21,7 @@ public class ScriptHandler {
     private static ScriptEngine scriptEngine;
     private static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
-    public static void init() {
+    static void init() {
         try {
             NashornScriptEngineFactory factory = (NashornScriptEngineFactory) scriptEngineManager.getEngineFactories().stream().filter(factories -> "Oracle Nashorn".equalsIgnoreCase(factories.getEngineName())).findFirst().orElse(null);
             scriptEngine = Objects.requireNonNull(factory).getScriptEngine("-doe", "--global-per-engine");

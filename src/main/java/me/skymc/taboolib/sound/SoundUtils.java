@@ -16,7 +16,7 @@ public class SoundUtils {
         }
     }
 
-    static String getModifiedSound(String str) {
+    public static String getModifiedSound(String str) {
         if (TabooLib.getVerint() < 10900) {
             str = str.replace("BLOCK_FIRE_EXTINGUISH", "FIZZ");
             str = str.replace("BLOCK_NOTE_HAT", "NOTE_STICKS");

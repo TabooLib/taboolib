@@ -2,6 +2,7 @@ package com.ilummc.tlib.resources.type;
 
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.compat.PlaceholderHook;
+import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleSerialize;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.display.ActionUtils;
@@ -33,7 +34,7 @@ public class TLocaleActionBar extends TLocaleSerialize {
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            ActionUtils.send(((Player) sender), replace(sender, text, args));
+            TLocale.Display.sendActionBar(((Player) sender), replace(sender, text, args));
         }
     }
 
