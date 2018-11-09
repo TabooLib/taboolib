@@ -12,6 +12,7 @@ import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.common.util.SimpleIterator;
 import me.skymc.taboolib.fileutils.FileUtils;
+import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -134,6 +135,8 @@ public class TCloudCommand extends BaseMainCommand {
             Expansion expansion = TCloudLoader.getExpansion(args[0]);
             if (expansion == null) {
                 TLocale.sendTo(sender, "COMMANDS.TCLOUD.DOWNLOAD.EXPANSION-NOT-FOUND", args[0]);
+            } else if (!expansion.canUse()) {
+                TLocale.sendTo(sender, "COMMANDS.TCLOUD.DOWNLOAD.EXPANSION-VERSION", args[0], String.valueOf(expansion.getDependVersion()));
             } else if (TCloudLoader.isExpansionExists(expansion)) {
                 TLocale.sendTo(sender, "COMMANDS.TCLOUD.DOWNLOAD.EXPANSION-EXISTS", args[0]);
             } else {
@@ -172,10 +175,12 @@ public class TCloudCommand extends BaseMainCommand {
                 TLocale.sendTo(sender, "COMMANDS.TCLOUD.UPDATE.EXPANSION-NOT-EXISTS", args[0]);
             } else if (!expansion.canUpdate()) {
                 TLocale.sendTo(sender, "COMMANDS.TCLOUD.UPDATE.EXPANSION-NO-UPDATE", args[0]);
+            } else if (!expansion.canUse()) {
+                TLocale.sendTo(sender, "COMMANDS.TCLOUD.UPDATE.EXPANSION-VERSION", args[0], String.valueOf(expansion.getDependVersion()));
             } else {
                 Bukkit.getScheduler().runTaskAsynchronously(TabooLib.instance(), () -> {
                     TLocale.sendTo(sender, "COMMANDS.TCLOUD.UPDATE.UPDATE-START", args[0], expansion.getVersion(), expansion.getLink());
-                    FileUtils.download(expansion.getLink(), expansion.getFile());
+                    FileUtils.download(expansion.getLink(), PluginUtils.getPluginFile(expansion.getName()));
                     TLocale.sendTo(sender, "COMMANDS.TCLOUD.UPDATE.UPDATE-SUCCESS", args[0]);
                 });
             }

@@ -19,10 +19,9 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.enable());
-                if (method != null) {
-                    method.setAccessible(true);
-                    method.invoke(null);
-                }
+                method.setAccessible(true);
+                method.invoke(null);
+            } catch (NoSuchMethodException ignore) {
             } catch (Exception e) {
                 TLogger.getGlobalLogger().warn("TFunction load Failed: " + pluginClass.getName());
                 e.printStackTrace();
@@ -36,10 +35,9 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.disable());
-                if (method != null) {
-                    method.setAccessible(true);
-                    method.invoke(null);
-                }
+                method.setAccessible(true);
+                method.invoke(null);
+            } catch (NoSuchMethodException ignore) {
             } catch (Exception e) {
                 TLogger.getGlobalLogger().warn("TFunction unload Failed: " + pluginClass.getName());
                 e.printStackTrace();

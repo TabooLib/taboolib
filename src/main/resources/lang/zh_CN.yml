@@ -593,6 +593,7 @@ COMMANDS:
         0: '名称'
       EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在.'
       EXPANSION-EXISTS: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c已存在.'
+      EXPANSION-VERSION: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c需要 &4TabooLib v{1}&c 版本才可以使用!'
       DOWNLOAD-START:
       - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7开始下载:'
       - '&8[&3&lTabooLib&8] &7地址 &f{1}'
@@ -604,6 +605,7 @@ COMMANDS:
       EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在.'
       EXPANSION-NOT-EXISTS: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c尚未下载.'
       EXPANSION-NO-UPDATE: '&8[&3&lTabooLib&8] &7扩展 &f{0} &7已是最新版本.'
+      EXPANSION-VERSION: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c需要 &4TabooLib v{1}&c 版本才可以使用!'
       UPDATE-START:
       - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7开始更新:'
       - '&8[&3&lTabooLib&8] &7版本 &f{1}'

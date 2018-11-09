@@ -14,7 +14,9 @@ import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author sky
@@ -26,8 +28,8 @@ public class TCloudLoader {
     private static String url = "https://gitee.com/bkm016/TabooLibCloud/raw/master/cloud.json";
     private static String latestJsonOrigin;
     private static JsonObject latestJsonObject;
-    private static Map<String, Expansion> expansionPlugins = Maps.newHashMap();
-    private static Map<String, Expansion> expansionInternal = Maps.newHashMap();
+    private static Map<String, Expansion> expansionPlugins = Maps.newTreeMap();
+    private static Map<String, Expansion> expansionInternal = Maps.newTreeMap();
     private static File expansionInternalFolder;
 
     static void init() {
@@ -101,11 +103,21 @@ public class TCloudLoader {
         return expansionInternalFolder;
     }
 
-    public static Expansion getExpansion(String name) {
-        return expansionPlugins.getOrDefault(name, expansionInternal.get(name));
-    }
-
     public static boolean isExpansionExists(Expansion expansion) {
         return expansion.getType() == ExpansionType.PLUGIN && PluginUtils.isPluginExists(expansion.getName());
+    }
+
+    public static Expansion getExpansion(String name) {
+        for (Map.Entry<String, Expansion> stringExpansionEntry : expansionPlugins.entrySet()) {
+            if (stringExpansionEntry.getKey().equalsIgnoreCase(name)) {
+                return stringExpansionEntry.getValue();
+            }
+        }
+        for (Map.Entry<String, Expansion> stringExpansionEntry : expansionInternal.entrySet()) {
+            if (stringExpansionEntry.getKey().equalsIgnoreCase(name)) {
+                return stringExpansionEntry.getValue();
+            }
+        }
+        return null;
     }
 }
