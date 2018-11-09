@@ -20,7 +20,7 @@ import java.util.Map;
  * @Author sky
  * @Since 2018-09-30 17:30
  */
-@TFunction
+@TFunction(enable = "init")
 public class TCloudLoader {
 
     private static String url = "https://gitee.com/bkm016/TabooLibCloud/raw/master/cloud.json";
@@ -30,7 +30,7 @@ public class TCloudLoader {
     private static Map<String, Expansion> expansionInternal = Maps.newHashMap();
     private static File expansionInternalFolder;
 
-    public void onEnable() {
+    static void init() {
         createFolder();
         refresh();
     }

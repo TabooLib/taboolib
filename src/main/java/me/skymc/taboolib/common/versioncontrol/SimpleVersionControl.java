@@ -11,6 +11,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class SimpleVersionControl {
     private List<String> from = Lists.newArrayList();
     private Plugin plugin;
     private boolean useCache;
+    private boolean useNMS;
 
     SimpleVersionControl() {
         useCache = false;
@@ -40,33 +42,66 @@ public class SimpleVersionControl {
         return new SimpleVersionControl().to(toVersion).plugin(Main.getInst());
     }
 
-    public SimpleVersionControl target(Class<?> target) {
-        this.target = target.getName();
-        return this;
+    public static SimpleVersionControl createSimple(String target, String... from) {
+        return create().target(target).from(from);
     }
 
+    public static SimpleVersionControl createNMS(String target) {
+        return create().target(target).useNMS();
+    }
+
+    /**
+     * 设置转换类地址，写法如：me.skymc.taboolib.packet.InternalPacket
+     */
     public SimpleVersionControl target(String target) {
         this.target = target;
         return this;
     }
 
+    /**
+     * 设置原版本，写法如：v1_8_R3
+     */
     public SimpleVersionControl from(String from) {
         this.from.add(from.startsWith("v") ? from : "v" + from);
         return this;
     }
+    /**
+     * 设置原版本，写法如：v1_8_R3, v1_12_R1
+     */
+    public SimpleVersionControl from(String... from) {
+        Arrays.stream(from).forEach(v -> this.from.add(v.startsWith("v") ? v : "v" + v));
+        return this;
+    }
 
+    /**
+     *  设置目标版本
+     */
     public SimpleVersionControl to(String to) {
         this.to = to.startsWith("v") ? to : "v" + to;
         return this;
     }
 
+    /**
+     * 设置插件，不填默认指向 TabooLib
+     */
     public SimpleVersionControl plugin(Plugin plugin) {
         this.plugin = plugin;
         return this;
     }
 
+    /**
+     * 转换类将会保存在 TabooLib 中，防止出现 NoClassDefFoundError 异常
+     */
     public SimpleVersionControl useCache() {
         this.useCache = true;
+        return this;
+    }
+
+    /**
+     * 自动转换所有使用到的 NMS 或 OBC 方法
+     */
+    public SimpleVersionControl useNMS() {
+        this.useNMS = true;
         return this;
     }
 
@@ -110,10 +145,12 @@ public class SimpleVersionControl {
     }
 
     public String replace(String origin) {
+        if (useNMS) {
+            origin = origin.replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/").replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
+        }
         for (String from : from) {
             origin = origin.replace("/" + from + "/", "/" + to + "/");
         }
         return origin;
     }
-
 }

@@ -9,6 +9,7 @@ import com.ilummc.tlib.util.Ref;
 import com.ilummc.tlib.util.Strings;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.common.nms.NMSHandler;
 import me.skymc.taboolib.json.tellraw.TellrawCreator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -74,6 +75,32 @@ public class TLocale {
         Ref.getCallerClass(3).ifPresent(clazz -> TLocaleLoader.load(Ref.getCallerPlugin(clazz), false));
     }
 
+    public static final class Tellraw extends TLocale {
+
+        public static void send(CommandSender sender, String rawMessage) {
+            if (sender instanceof Player) {
+                TellrawCreator.getAbstractTellraw().sendRawMessage((Player) sender, rawMessage);
+            } else {
+                sender.sendMessage(TextComponent.toLegacyText(ComponentSerializer.parse(rawMessage)));
+            }
+        }
+    }
+
+    public static final class Display extends TLocale {
+
+        public static void sendTitle(Player player, String title, String subTitle) {
+            sendTitle(player, title, subTitle, 10, 20, 10);
+        }
+
+        public static void sendTitle(Player player, String title, String subTitle, int fadein, int stay, int fadeout) {
+            NMSHandler.getHandler().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
+        }
+
+        public static void sendActionBar(Player player, String text) {
+            NMSHandler.getHandler().sendActionBar(player, text);
+        }
+    }
+
     public static final class Translate extends TLocale {
 
         public static boolean isPlaceholderUseDefault() {
@@ -129,17 +156,6 @@ public class TLocale {
 
         public static void verbose(String path, String... args) {
             Ref.getCallerClass(3).ifPresent(clazz -> asStringList(path, clazz, args).forEach(locale -> TLoggerManager.getLogger(Ref.getCallerPlugin(clazz)).verbose(locale)));
-        }
-    }
-
-    public static class Tellraw extends TLocale {
-
-        public static void send(CommandSender sender, String rawMessage) {
-            if (sender instanceof Player) {
-                TellrawCreator.getAbstractTellraw().sendRawMessage((Player) sender, rawMessage);
-            } else {
-                sender.sendMessage(TextComponent.toLegacyText(ComponentSerializer.parse(rawMessage)));
-            }
         }
     }
 }

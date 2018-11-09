@@ -20,11 +20,7 @@ public class TellrawCreator {
         viaVersionLoaded = Bukkit.getPluginManager().getPlugin("ViaVersion") != null;
         protocolSupportLoaded = Bukkit.getPluginManager().getPlugin("ProtocolSupport") != null;
         try {
-            abstractTellraw = (AbstractTellraw) SimpleVersionControl.create()
-                    .from("v1_8_R3")
-                    .target("me.skymc.taboolib.json.tellraw.internal.InternalTellraw")
-                    .translate()
-                    .newInstance();
+            abstractTellraw = (AbstractTellraw) SimpleVersionControl.createNMS("me.skymc.taboolib.json.tellraw.internal.InternalTellraw").translate().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

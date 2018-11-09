@@ -30,11 +30,7 @@ public class TPacketHandler implements Listener {
 
     public TPacketHandler() {
         try {
-            channelExecutor = (ChannelExecutor) SimpleVersionControl.create()
-                    .from("v1_8_R3")
-                    .target("me.skymc.taboolib.common.packet.channel.InternalChannelExecutor")
-                    .translate()
-                    .newInstance();
+            channelExecutor = (ChannelExecutor) SimpleVersionControl.createNMS("me.skymc.taboolib.common.packet.channel.InternalChannelExecutor").translate().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

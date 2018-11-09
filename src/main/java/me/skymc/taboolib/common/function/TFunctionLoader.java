@@ -1,7 +1,9 @@
 package me.skymc.taboolib.common.function;
 
+import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.TabooLibLoader;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Method;
 
@@ -17,9 +19,13 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.enable());
-                method.setAccessible(true);
-                method.invoke(pluginClass.newInstance());
-            } catch (Exception ignored) {
+                if (method != null) {
+                    method.setAccessible(true);
+                    method.invoke(null);
+                }
+            } catch (Exception e) {
+                TLogger.getGlobalLogger().warn("TFunction load Failed: " + pluginClass.getName());
+                e.printStackTrace();
             }
         }
     }
@@ -30,9 +36,13 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.disable());
-                method.setAccessible(true);
-                method.invoke(pluginClass.newInstance());
-            } catch (Exception ignored) {
+                if (method != null) {
+                    method.setAccessible(true);
+                    method.invoke(null);
+                }
+            } catch (Exception e) {
+                TLogger.getGlobalLogger().warn("TFunction unload Failed: " + pluginClass.getName());
+                e.printStackTrace();
             }
         }
     }

@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -31,7 +30,7 @@ public class TagDataHandler implements Listener {
     private static TagDataHandler handler;
     private HashMap<UUID, TagPlayerData> playersData = new HashMap<>();
 
-    public static void init() {
+    static void init() {
         Preconditions.checkArgument(handler == null, "TagDataHandler is already instanced!");
         handler = new TagDataHandler();
         // 注册监听
