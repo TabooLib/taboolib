@@ -19,10 +19,7 @@ public class ListenerNetWork implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onNetWork(PluginNetworkEvent e) {
         if (e.getPlugin() != null && e.getPlugin().equals(Main.getInst())) {
-            // 取消阻止
             e.setCancelled(false);
-            // 后台提示
-            MsgUtils.warn("已取消 &4YUM &c对本插件网络访问的阻止!");
         }
     }
 }
