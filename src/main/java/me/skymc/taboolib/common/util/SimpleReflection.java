@@ -14,15 +14,15 @@ public class SimpleReflection {
 
     private static Map<String, Map<String, Field>> fieldCached = Maps.newHashMap();
 
-    public static void saveFiled(Class<?> nmsClass) {
+    public static void saveField(Class<?> nmsClass) {
         try {
-            Arrays.stream(nmsClass.getDeclaredFields()).forEach(declaredField -> saveFiled(nmsClass, declaredField.getName()));
+            Arrays.stream(nmsClass.getDeclaredFields()).forEach(declaredField -> saveField(nmsClass, declaredField.getName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void saveFiled(Class<?> nmsClass, String fieldName) {
+    public static void saveField(Class<?> nmsClass, String fieldName) {
         try {
             Field declaredField = nmsClass.getDeclaredField(fieldName);
             declaredField.setAccessible(true);

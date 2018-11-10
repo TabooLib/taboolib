@@ -24,8 +24,8 @@ public class InternalTellraw implements AbstractTellraw {
     private int bukkitVersion = TabooLib.getVersionNumber();
 
     public InternalTellraw() {
-        SimpleReflection.saveFiled(NBTTagCompound.class, "map");
-        SimpleReflection.saveFiled(NBTTagList.class, "list");
+        SimpleReflection.saveField(NBTTagCompound.class, "map");
+        SimpleReflection.saveField(NBTTagList.class, "list");
     }
 
     @Override
