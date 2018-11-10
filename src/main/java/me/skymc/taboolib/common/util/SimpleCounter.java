@@ -18,7 +18,7 @@ public class SimpleCounter {
     public SimpleCounter(int limit, boolean ignoredFirst) {
         this.timer = 0;
         this.limit = limit;
-        this.ignoredFirst = true;
+        this.ignoredFirst = ignoredFirst;
         this.counterFirst = true;
     }
 
