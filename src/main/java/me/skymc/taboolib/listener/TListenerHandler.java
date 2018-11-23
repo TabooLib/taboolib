@@ -1,5 +1,6 @@
 package me.skymc.taboolib.listener;
 
+import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.TabooLibLoader;
@@ -56,10 +57,15 @@ public class TListenerHandler implements Listener {
                     }
                     // 实例化监听器
                     Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) ReflectionUtils.instantiateObject(pluginClass);
-                    listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                    TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
+                    try {
+                        listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
+                        TabooLib.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
+                    } catch (Exception e) {
+                        TLogger.getGlobalLogger().warn("TListener setup Failed: " + pluginClass.getName());
+                        e.printStackTrace();
+                    }
                 } catch (Exception e) {
-                    TabooLib.debug("Listener setup failed: " + e.toString());
+                    TabooLib.debug("Listener " + pluginClass.getSimpleName() + "(" + plugin.getName() + ")" + " setup failed: " + e.toString());
                 }
             }
         }
