@@ -2,6 +2,7 @@ package me.skymc.taboolib.common.inject;
 
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.logger.TLogger;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.TabooLibLoader;
 import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
 import me.skymc.taboolib.common.configuration.TConfiguration;
@@ -65,6 +66,9 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 if (builder.isBuild()) {
                     TLogger.getGlobalLogger().error("Command was registered.  (" + field.getType().getName() + ")");
                 } else {
+                    if (builder.getPlugin() == null) {
+                        builder.plugin(plugin);
+                    }
                     builder.build();
                 }
             } catch (Exception e) {
@@ -88,8 +92,12 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 try {
                     declaredField.setAccessible(true);
                     injectTypes.get(Plugin.class).run(plugin, declaredField, annotation.value());
-                } catch (Exception e) {
+                    TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
+                } catch (Throwable e) {
                     TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
+                    if (e.getMessage() == null) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -114,8 +122,12 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             try {
                 declaredField.setAccessible(true);
                 tInjectTask.run(plugin, declaredField, annotation.value());
-            } catch (Exception e) {
+                TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
+            } catch (Throwable e) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
+                if (e.getMessage() == null) {
+                    e.printStackTrace();
+                }
             }
         }
     }

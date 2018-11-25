@@ -20,8 +20,8 @@ public class SimpleCommandBuilder {
     public static final CompleterTab EMPTY_COMPLETER_TAB = ((sender, args) -> new ArrayList<>());
     public static final CompleterCommand EMPTY_COMPLETER_COMMAND = ((sender, args) -> false);
 
-    private final String command;
-    private final Plugin plugin;
+    private String command;
+    private Plugin plugin;
     private String description;
     private String usage;
     private List<String> aliases;
@@ -34,8 +34,6 @@ public class SimpleCommandBuilder {
     private boolean build;
 
     SimpleCommandBuilder(String command, Plugin plugin) {
-        Preconditions.checkNotNull(command, "command cannot not be null");
-        Preconditions.checkNotNull(plugin,  "plugin cannot not be null");
         this.command = command;
         this.plugin = plugin;
         this.description = "";
@@ -47,6 +45,16 @@ public class SimpleCommandBuilder {
 
     public static SimpleCommandBuilder create(String command, Plugin plugin) {
         return new SimpleCommandBuilder(command.toLowerCase(), plugin);
+    }
+
+    public SimpleCommandBuilder command(String command) {
+        this.command = command;
+        return this;
+    }
+
+    public SimpleCommandBuilder plugin(Plugin plugin) {
+        this.plugin = plugin;
+        return this;
     }
 
     public SimpleCommandBuilder description(String description) {
@@ -94,11 +102,9 @@ public class SimpleCommandBuilder {
         return this;
     }
 
-    public boolean isBuild() {
-        return build;
-    }
-
     public SimpleCommandBuilder build() {
+        Preconditions.checkNotNull(plugin, "缺少 \"plugin\" 部分");
+        Preconditions.checkNotNull(command, "缺少 \"command\" 部分");
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
         Preconditions.checkNotNull(completerTab, "缺少 \"CompleterTab\" 部分");
         if (forceRegister) {
@@ -117,5 +123,59 @@ public class SimpleCommandBuilder {
                 silence);
         build = true;
         return this;
+    }
+
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public String getCommand() {
+        return command;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public String getPermissionMessage() {
+        return permissionMessage;
+    }
+
+    public CompleterTab getCompleterTab() {
+        return completerTab;
+    }
+
+    public CompleterCommand getCompleterCommand() {
+        return completerCommand;
+    }
+
+    public boolean isSilence() {
+        return silence;
+    }
+
+    public boolean isForceRegister() {
+        return forceRegister;
+    }
+
+    public boolean isBuild() {
+        return build;
     }
 }
