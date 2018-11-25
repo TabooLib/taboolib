@@ -6,6 +6,7 @@ import me.skymc.taboolib.TabooLibLoader;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /**
  * @Author sky
@@ -19,6 +20,10 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.enable());
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
+                    return;
+                }
                 method.setAccessible(true);
                 method.invoke(null);
                 TabooLib.debug("Function " + pluginClass.getSimpleName() + " loaded. (" + plugin.getName() + ")");
@@ -36,6 +41,10 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
                 Method method = pluginClass.getDeclaredMethod(function.disable());
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
+                    return;
+                }
                 method.setAccessible(true);
                 method.invoke(null);
                 TabooLib.debug("Function " + pluginClass.getSimpleName() + " unloaded. (" + plugin.getName() + ")");
