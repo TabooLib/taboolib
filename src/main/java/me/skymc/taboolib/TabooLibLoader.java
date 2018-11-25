@@ -209,7 +209,9 @@ public class TabooLibLoader implements Listener {
         loaders.forEach(loader -> {
             try {
                 loader.preLoad(plugin, loadClass);
-            } catch (Throwable ignored) {
+            } catch (NoClassDefFoundError ignore) {
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         });
     }
@@ -218,7 +220,9 @@ public class TabooLibLoader implements Listener {
         loaders.forEach(loader -> {
             try {
                 loader.postLoad(plugin, loadClass);
-            } catch (Throwable ignored) {
+            } catch (NoClassDefFoundError ignore) {
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         });
     }
@@ -227,7 +231,9 @@ public class TabooLibLoader implements Listener {
         loaders.forEach(loader -> {
             try {
                 loader.unload(plugin, loadClass);
-            } catch (Throwable ignored) {
+            } catch (NoClassDefFoundError ignore) {
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
         });
     }
