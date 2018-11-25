@@ -10,7 +10,6 @@ import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.bstats.Metrics;
 import me.skymc.taboolib.deprecated.TabooLibDeprecated;
 import me.skymc.taboolib.events.TPluginEnableEvent;
-import me.skymc.taboolib.events.TPluginLoadEvent;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListener;
 import me.skymc.taboolib.listener.TListenerHandler;
@@ -35,6 +34,18 @@ import java.util.*;
 @TListener
 public class TabooLibLoader implements Listener {
 
+    /*
+        关于 TabooLib 各项自动化接口的执行顺序
+
+         [ENABLING]
+         第一阶段：运行 @TInject（Instance Inject）
+         第二阶段（先后）：实例化 @TListener -> 实例化 @Instantiable
+         第三阶段（并行）：运行 @TFunction & 运行 @TInject
+
+         [ENABLED]
+         第三阶段：注册 @TListener
+     */
+
     static TabooLibDeprecated tabooLibDeprecated;
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
@@ -50,9 +61,10 @@ public class TabooLibLoader implements Listener {
 
     static void register() {
         setupClasses();
+        preLoadClasses();
         registerListener();
         registerMetrics();
-        loadClasses();
+        postLoadClasses();
         try {
             tabooLibDeprecated = new TabooLibDeprecated();
         } catch (Exception e) {
@@ -103,8 +115,12 @@ public class TabooLibLoader implements Listener {
         return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
     }
 
-    static void loadClasses() {
-        pluginClasses.forEach((key, classes) -> classes.forEach(pluginClass -> loadClass(Bukkit.getPluginManager().getPlugin(key), pluginClass)));
+    static void preLoadClasses() {
+        pluginClasses.forEach((key, classes) -> classes.forEach(pluginClass -> preLoadClass(Bukkit.getPluginManager().getPlugin(key), pluginClass)));
+    }
+
+    static void postLoadClasses() {
+        pluginClasses.forEach((key, classes) -> classes.forEach(pluginClass -> postLoadClass(Bukkit.getPluginManager().getPlugin(key), pluginClass)));
     }
 
     static void unloadClasses() {
@@ -189,10 +205,19 @@ public class TabooLibLoader implements Listener {
         });
     }
 
-    static void loadClass(Plugin plugin, Class<?> loadClass) {
+    static void preLoadClass(Plugin plugin, Class<?> loadClass) {
         loaders.forEach(loader -> {
             try {
-                loader.load(plugin, loadClass);
+                loader.preLoad(plugin, loadClass);
+            } catch (Throwable ignored) {
+            }
+        });
+    }
+
+    static void postLoadClass(Plugin plugin, Class<?> loadClass) {
+        loaders.forEach(loader -> {
+            try {
+                loader.postLoad(plugin, loadClass);
             } catch (Throwable ignored) {
             }
         });
@@ -208,9 +233,14 @@ public class TabooLibLoader implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onEnable(TPluginEnableEvent e) {
+    public void onEnablePre(TPluginEnableEvent e) {
         setupClasses(e.getPlugin());
-        Optional.ofNullable(pluginClasses.get(e.getPlugin().getName())).ifPresent(classes -> classes.forEach(pluginClass -> loadClass(e.getPlugin(), pluginClass)));
+        Optional.ofNullable(pluginClasses.get(e.getPlugin().getName())).ifPresent(classes -> classes.forEach(pluginClass -> preLoadClass(e.getPlugin(), pluginClass)));
+    }
+
+    @EventHandler
+    public void onEnablePost(TPluginEnableEvent e) {
+        Optional.ofNullable(pluginClasses.get(e.getPlugin().getName())).ifPresent(classes -> classes.forEach(pluginClass -> postLoadClass(e.getPlugin(), pluginClass)));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -220,7 +250,10 @@ public class TabooLibLoader implements Listener {
 
     public interface Loader {
 
-        default void load(Plugin plugin, Class<?> loadClass) {
+        default void preLoad(Plugin plugin, Class<?> loadClass) {
+        }
+
+        default void postLoad(Plugin plugin, Class<?> loadClass) {
         }
 
         default void unload(Plugin plugin, Class<?> cancelClass) {
