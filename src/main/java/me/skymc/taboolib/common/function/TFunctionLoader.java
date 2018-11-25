@@ -15,7 +15,7 @@ import java.lang.reflect.Modifier;
 public class TFunctionLoader implements TabooLibLoader.Loader {
 
     @Override
-    public void load(Plugin plugin, Class<?> pluginClass) {
+    public void postLoad(Plugin plugin, Class<?> pluginClass) {
         if (pluginClass.isAnnotationPresent(TFunction.class)) {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {

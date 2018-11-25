@@ -4,13 +4,14 @@ import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.TabooLibLoader;
+import me.skymc.taboolib.events.TPluginEnableEvent;
 import me.skymc.taboolib.methods.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
@@ -164,11 +165,11 @@ public class TListenerHandler implements Listener {
         return listeners;
     }
 
-    @EventHandler
-    public void onPluginEnable(PluginEnableEvent e) {
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPluginEnable(TPluginEnableEvent e) {
         try {
             setupListener(e.getPlugin());
-            registerListener(e.getPlugin());
+            Bukkit.getScheduler().runTask(TabooLib.instance(), () -> registerListener(e.getPlugin()));
         } catch (Exception ignored) {
         }
     }

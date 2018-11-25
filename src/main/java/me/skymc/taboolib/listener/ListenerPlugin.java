@@ -8,12 +8,12 @@ import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.configuration.TConfiguration;
 import me.skymc.taboolib.events.TPluginEnableEvent;
-import me.skymc.taboolib.events.TPluginLoadEvent;
 import me.skymc.taboolib.mysql.MysqlUtils;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,7 +30,7 @@ import java.util.Optional;
 @TListener
 public class ListenerPlugin implements Listener {
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void enable(TPluginEnableEvent e) {
         if (!TLib.getTLib().isInjectEnabled() || !TLib.getTLib().isBlackListPluginExists()) {
             try {

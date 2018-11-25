@@ -225,11 +225,6 @@ public class PluginUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            try {
-                Bukkit.getPluginManager().callEvent(new TPluginLoadEvent(target));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
             target.onLoad();
             try {
                 Bukkit.getPluginManager().callEvent(new TPluginEnableEvent(target));

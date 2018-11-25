@@ -30,7 +30,7 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
     }
 
     @Override
-    public void load(Plugin plugin, Class<?> pluginClass) {
+    public void postLoad(Plugin plugin, Class<?> pluginClass) {
         for (Field field : pluginClass.getDeclaredFields()) {
             PlayerContainer annotation = field.getAnnotation(PlayerContainer.class);
             if (annotation == null) {
