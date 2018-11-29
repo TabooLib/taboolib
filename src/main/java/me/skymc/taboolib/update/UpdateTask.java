@@ -20,6 +20,17 @@ import java.io.File;
 public class UpdateTask {
 
     private static double newVersion = 0;
+    private static int updateLocationUsing;
+    private static String[][] updateLocation = {
+            {
+                    "https://api.github.com/repos/Bkm016/TabooLib/releases",
+                    "https://github.com/Bkm016/TabooLib/releases/download/?/TabooLib-?.jar"
+            },
+            {
+                    "https://gitee.com/bkm016/TabooLibCloud/raw/master/release.json",
+                    "https://gitee.com/bkm016/TabooLibCloud/raw/master/core/TabooLib.jar"
+            }
+    };
 
     public UpdateTask() {
         new BukkitRunnable() {
@@ -29,20 +40,28 @@ public class UpdateTask {
                 if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK")) {
                     return;
                 }
-                String value = FileUtils.getStringFromURL("https://api.github.com/repos/Bkm016/TabooLib/releases", null);
-                if (value == null) {
-                    TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
-                    return;
-                }
-                JsonElement json = new JsonParser().parse(value);
-                if (json.isJsonArray()) {
-                    newVersion = json.getAsJsonArray().get(0).getAsJsonObject().get("tag_name").getAsDouble();
-                    if (TabooLib.getPluginVersion() >= newVersion) {
-                        TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
-                    } else {
-                        TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
-                        Bukkit.getScheduler().runTask(TabooLib.instance(), () -> updatePlugin(true));
+                boolean success = false;
+                for (int i = 0; i < updateLocation.length; i++) {
+                    String[] location = updateLocation[i];
+                    String value = FileUtils.getStringFromURL(location[0], null);
+                    if (value == null) {
+                        continue;
                     }
+                    JsonElement json = new JsonParser().parse(value);
+                    if (json.isJsonArray()) {
+                        updateLocationUsing = i;
+                        newVersion = json.getAsJsonArray().get(0).getAsJsonObject().get("tag_name").getAsDouble();
+                        if (TabooLib.getPluginVersion() >= newVersion) {
+                            TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
+                        } else {
+                            TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
+                            Bukkit.getScheduler().runTask(TabooLib.instance(), () -> updatePlugin(true, false));
+                        }
+                        return;
+                    }
+                }
+                if (!success) {
+                    TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
                 }
             }
         }.runTaskTimerAsynchronously(Main.getInst(), 100, 20 * 60 * 60 * 6);
@@ -56,8 +75,16 @@ public class UpdateTask {
         return newVersion;
     }
 
-    public static void updatePlugin(boolean shutdown) {
-        if (!UpdateTask.isHaveUpdate()) {
+    public static int getUpdateLocationUsing() {
+        return updateLocationUsing;
+    }
+
+    public static String[][] getUpdateLocation() {
+        return updateLocation;
+    }
+
+    public static void updatePlugin(boolean shutdown, boolean force) {
+        if (!UpdateTask.isHaveUpdate() || (newVersion == 0 || !force)) {
             TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-FOUND");
             return;
         }
@@ -71,7 +98,7 @@ public class UpdateTask {
             return;
         }
         Bukkit.getScheduler().runTaskAsynchronously(TabooLib.instance(), () -> {
-            FileUtils.download("https://github.com/Bkm016/TabooLib/releases/download/" + newVersion + "/TabooLib-" + newVersion + ".jar", pluginFile);
+            FileUtils.download(updateLocation[updateLocationUsing][1].replace("?", String.valueOf(newVersion)), pluginFile);
             TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-SUCCESS");
             if (shutdown) {
                 Bukkit.shutdown();

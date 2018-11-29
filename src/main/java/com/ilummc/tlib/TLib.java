@@ -4,7 +4,6 @@ import com.ilummc.tlib.annotations.Dependency;
 import com.ilummc.tlib.compat.PlaceholderHook;
 import com.ilummc.tlib.config.TLibConfig;
 import com.ilummc.tlib.db.Pool;
-import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.inject.TPluginManager;
@@ -62,7 +61,6 @@ public class TLib {
     public static void init() {
         tLib = new TLib();
 
-        TLoggerFilter.init();
         TLocaleLoader.init();
         PlaceholderHook.init();
         TLocaleLoader.load(Main.getInst(), false);
