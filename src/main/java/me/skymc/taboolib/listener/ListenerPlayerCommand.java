@@ -3,6 +3,8 @@ package me.skymc.taboolib.listener;
 import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
+import me.skymc.taboolib.common.inject.TInject;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
@@ -21,6 +23,30 @@ import org.bukkit.event.server.ServerCommandEvent;
  */
 @TListener
 public class ListenerPlayerCommand implements Listener {
+
+    private static boolean nextException;
+
+    public ListenerPlayerCommand() {
+        Bukkit.getScheduler().runTaskTimer(TabooLib.instance(), () -> {
+            if (nextException) {
+                nextException = false;
+                throw new IllegalStateException();
+            }
+        }, 0, 20);
+    }
+
+    @TInject
+    static SimpleCommandBuilder tExceptionCommand = SimpleCommandBuilder.create("tExceptionCommand", TabooLib.instance())
+            .execute((sender, args) -> {
+                throw new IllegalStateException();
+            });
+
+    @TInject
+    static SimpleCommandBuilder tExceptionSchedule = SimpleCommandBuilder.create("tExceptionSchedule", TabooLib.instance())
+            .execute((sender, args) -> {
+                nextException = true;
+                return true;
+            });
 
     @EventHandler
     public void cmd(ServerCommandEvent e) {
@@ -42,6 +68,9 @@ public class ListenerPlayerCommand implements Listener {
                 TabooLib.setDebug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
+        } else if (e.getCommand().equalsIgnoreCase("tExceptionEvent")) {
+            e.setCancelled(true);
+            throw new IllegalStateException();
         }
     }
 

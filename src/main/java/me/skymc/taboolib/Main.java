@@ -1,6 +1,7 @@
 package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
@@ -8,7 +9,6 @@ import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
-import me.skymc.taboolib.inventory.speciaitem.SpecialItem;
 import me.skymc.taboolib.listener.TListenerHandler;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
@@ -17,9 +17,7 @@ import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.socket.TabooLibClient;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.string.language2.Language2;
-import me.skymc.taboolib.translateuuid.TranslateUUID;
 import me.skymc.taboolib.update.UpdateTask;
-import me.skymc.tlm.module.TabooLibraryModule;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -82,6 +80,8 @@ public class Main extends JavaPlugin {
         disable = false;
         // 载入配置文件
         saveDefaultConfig();
+        // 载入日志过滤
+        TLoggerFilter.preInit();
         // 载入扩展
         TabooLibLoader.setupAddons();
         // 载入牛逼东西
@@ -97,6 +97,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // 载入日志过滤
+        TLoggerFilter.postInit();
         // 注册插件配置
         TabooLibLoader.register();
         // 启动数据库储存方法

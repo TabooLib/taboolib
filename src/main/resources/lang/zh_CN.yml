@@ -240,6 +240,8 @@ COMMANDS:
       UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
       FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件'
       PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
+      ARGUMENTS:
+        0: '-f'
     PLAYERTAG:
       DESCRIPTION:
         DISPLAY: '设置玩家展示名称'
@@ -658,3 +660,36 @@ TCLOUD:
   LIST-LOAD-FAILED: '载入 &4{0} &c扩展数据失败: &4{1}'
   LIST-PARSE-FAILED: '读取 &4TCLOUD &c扩展列表失败: &4{0}'
   LIST-CONNECT-FAILED: '获取 &4TCLOUD &c扩展列表失败!'
+
+TFILTER:
+  EXCEPTION-MIRROR:
+    EVENT:
+      HEAD:
+      - '&c插件 &4{0} &c执行事件时出现异常! &7(处理耗时: {1}ms)'
+      - '&c异常事件: &4{2}'
+      - '&c异常类型: &4{3}'
+      - '&c异常内容: &4{4}'
+      - '&c异常位置:'
+      STACK-TRACE: '&7  {0}. &4{1}'
+    COMMAND:
+      HEAD:
+      - '&c插件 &4{0} &c执行命令时出现异常! &7(处理耗时: {1}ms)'
+      - '&c异常命令: &4{2}'
+      - '&c异常类型: &4{3}'
+      - '&c异常内容: &4{4}'
+      - '&c异常位置:'
+      STACK-TRACE: '&7  {0}. &4{1}'
+    SCHEDULE:
+      HEAD:
+      - '&c插件 &4{0} &c执行任务时出现异常! &7(处理耗时: {1}ms)'
+      - '&c异常类型: &4{2}'
+      - '&c异常内容: &4{3}'
+      - '&c异常位置:'
+      STACK-TRACE: '&7  {0}. &4{1}'
+    OTHER:
+      HEAD:
+      - '&c插件 &4{0} &c运行时出现异常! &7(处理耗时: {1}ms)'
+      - '&c异常类型: &4{2}'
+      - '&c异常内容: &4{3}'
+      - '&c异常位置:'
+      STACK-TRACE: '&7  {0}. &4{1}'

@@ -1,6 +1,7 @@
 package me.skymc.taboolib.listener;
 
 import com.ilummc.tlib.TLib;
+import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.inject.TConfigWatcher;
 import com.ilummc.tlib.inject.TDependencyInjector;
 import com.ilummc.tlib.resources.TLocale;
@@ -8,6 +9,7 @@ import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.configuration.TConfiguration;
 import me.skymc.taboolib.events.TPluginEnableEvent;
+import me.skymc.taboolib.events.TPluginLoadEvent;
 import me.skymc.taboolib.mysql.MysqlUtils;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
@@ -29,6 +31,12 @@ import java.util.Optional;
  */
 @TListener
 public class ListenerPlugin implements Listener {
+
+    public void load(TPluginLoadEvent e) {
+        if (TabooLib.isDependTabooLib(e.getPlugin())) {
+            TLoggerFilter.inject(new TLoggerFilter(), e.getPlugin().getLogger());
+        }
+    }
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void enable(TPluginEnableEvent e) {

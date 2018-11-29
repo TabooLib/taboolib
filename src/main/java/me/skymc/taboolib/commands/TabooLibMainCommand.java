@@ -1,7 +1,6 @@
 package me.skymc.taboolib.commands;
 
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.commands.internal.BaseMainCommand;
 import me.skymc.taboolib.commands.internal.BaseSubCommand;
@@ -11,12 +10,9 @@ import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import me.skymc.taboolib.commands.internal.type.CommandType;
 import me.skymc.taboolib.commands.taboolib.*;
 import me.skymc.taboolib.database.GlobalDataManager;
-import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.inventory.ItemUtils;
 import me.skymc.taboolib.other.DateUtils;
 import me.skymc.taboolib.other.NumberUtils;
-import me.skymc.taboolib.player.PlayerUtils;
-import me.skymc.taboolib.plugin.PluginUtils;
 import me.skymc.taboolib.timecycle.TimeCycle;
 import me.skymc.taboolib.timecycle.TimeCycleEvent;
 import me.skymc.taboolib.timecycle.TimeCycleInitializeEvent;
@@ -27,8 +23,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -774,12 +768,14 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[0];
+            return new CommandArgument[] {
+                    new CommandArgument(TLocale.asString("COMMANDS.TABOOLIB.UPDATEPLUGIN.ARGUMENTS.0"), false)
+            };
         }
 
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            UpdateTask.updatePlugin(true);
+            UpdateTask.updatePlugin(true, args.length > 0);
         }
 
         @Override
