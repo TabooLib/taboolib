@@ -63,7 +63,7 @@ public class FilterExceptionMirror extends TLoggerFilterHandler {
             } catch (Exception ignored) {
             }
         }
-        if (plugin.get() != null) {
+        if (plugin.get() != null && (TabooLib.isTabooLib(plugin.get()) || TabooLib.isDependTabooLib(plugin.get()))) {
             TLocale.Logger.error("TFILTER.EXCEPTION-MIRROR." + message + ".HEAD", args.run());
             for (int i = 0; i < stackTraces.size(); i++) {
                 StackTraceElement stack = stackTraces.get(i);
