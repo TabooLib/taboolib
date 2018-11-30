@@ -1,5 +1,6 @@
 package me.skymc.taboolib.listener;
 
+import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.logger.TLogger;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
@@ -30,7 +31,7 @@ public class ListenerPlayerCommand implements Listener {
         Bukkit.getScheduler().runTaskTimer(TabooLib.instance(), () -> {
             if (nextException) {
                 nextException = false;
-                throw new IllegalStateException();
+                throw new IllegalStateException("TabooLib Example Exception");
             }
         }, 0, 20);
     }
@@ -38,7 +39,7 @@ public class ListenerPlayerCommand implements Listener {
     @TInject
     static SimpleCommandBuilder tExceptionCommand = SimpleCommandBuilder.create("tExceptionCommand", TabooLib.instance())
             .execute((sender, args) -> {
-                throw new IllegalStateException();
+                throw new IllegalStateException("TabooLib Example Exception");
             });
 
     @TInject
@@ -70,13 +71,16 @@ public class ListenerPlayerCommand implements Listener {
             }
         } else if (e.getCommand().equalsIgnoreCase("tExceptionEvent")) {
             e.setCancelled(true);
-            throw new IllegalStateException();
+            throw new IllegalStateException("TabooLib Example Exception");
         }
     }
 
     @SuppressWarnings("deprecation")
     @EventHandler
     public void cmd(PlayerCommandPreprocessEvent e) {
+        // 注入异常拦截器
+        TLoggerFilter.inject0();
+        // 其他指令
         if (e.getMessage().equals("/unbreakable") && PermissionUtils.hasPermission(e.getPlayer(), "taboolib.unbreakable")) {
             e.setCancelled(true);
             NBTItem nbt = new NBTItem(e.getPlayer().getItemInHand());
@@ -90,6 +94,9 @@ public class ListenerPlayerCommand implements Listener {
                     .append(ItemUtils.getCustomName(e.getPlayer().getItemInHand())).hoverItem(e.getPlayer().getItemInHand())
                     .append("§f]")
                     .send(e.getPlayer());
+        } else if (e.getMessage().equalsIgnoreCase("/tExceptionEvent")) {
+            e.setCancelled(true);
+            throw new IllegalStateException("TabooLib Example Exception");
         }
     }
 }

@@ -13,7 +13,7 @@ public class FilterConfiguration extends TLoggerFilterHandler {
 
     @Override
     public boolean isLoggable(LogRecord e) {
-        if (e.getMessage().contains("Cannot load configuration from stream")) {
+        if (String.valueOf(e.getMessage()).contains("Cannot load configuration from stream")) {
             StackTraceElement[] elements = Thread.currentThread().getStackTrace();
             for (StackTraceElement element : elements) {
                 if (element.getClassName().contains("ConfigUtils")) {

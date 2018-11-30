@@ -19,7 +19,8 @@ public class TabooLib {
 
     static {
         try {
-            Class.forName("org.spigotmc.SpigotConfig");
+            // 判断是否为独立客户端运行，不是判断 Bukkit 与 Spigot
+            Class.forName("org.bukkit.Bukkit");
             spigot = true;
         } catch (Exception ignored) {
         }
