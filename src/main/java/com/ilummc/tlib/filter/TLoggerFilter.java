@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 public class TLoggerFilter implements Filter {
 
     private Filter filter;
+    private Logger logger;
     private static List<TLoggerFilterHandler> handlers = Lists.newLinkedList();
     private static Map<String, TLoggerFilter> pluginFilter = Maps.newHashMap();
     private static TLoggerFilter globalFilter;
+    private static String playerConnectionName;
 
     static {
         handlers.add(new FilterConfiguration());
@@ -35,23 +37,30 @@ public class TLoggerFilter implements Filter {
     public static void preInit() {
         inject(new TLoggerFilter(), Bukkit.getLogger());
         inject(new TLoggerFilter(), TabooLib.instance().getLogger());
+        try {
+            playerConnectionName = Class.forName("net.minecraft.server." + TabooLib.getVersion() + ".PlayerConnection").getName();
+        } catch (Exception ignored) {
+        }
     }
 
     public static void postInit() {
         Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(TabooLib::isDependTabooLib).forEach(plugin -> inject(new TLoggerFilter(), plugin.getLogger()));
     }
 
-    public static void inject(TLoggerFilter filter, Logger logger) {
-        try {
-            filter.filter = logger.getFilter();
-            logger.setFilter(filter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void inject0() {
+        inject(new TLoggerFilter(), Logger.getLogger(playerConnectionName));
     }
 
-    public Filter getFilter() {
-        return filter;
+    public static void inject(TLoggerFilter filter, Logger logger) {
+        if (!(logger.getFilter() instanceof TLoggerFilter)) {
+            try {
+                filter.filter = logger.getFilter();
+                filter.logger = logger;
+                logger.setFilter(filter);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static TLoggerFilter getGlobalFilter() {
@@ -64,6 +73,14 @@ public class TLoggerFilter implements Filter {
 
     public static List<TLoggerFilterHandler> getHandlers() {
         return handlers;
+    }
+
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     @Override

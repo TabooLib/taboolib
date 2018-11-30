@@ -13,6 +13,6 @@ public class FilterInvalidPluginLoader extends TLoggerFilterHandler {
     @Override
     public boolean isLoggable(LogRecord e) {
         // 屏蔽插件加载器注入导致的警告信息
-        return !e.getMessage().contains("Enabled plugin with unregistered PluginClassLoader");
+        return !String.valueOf(e.getMessage()).contains("Enabled plugin with unregistered PluginClassLoader");
     }
 }

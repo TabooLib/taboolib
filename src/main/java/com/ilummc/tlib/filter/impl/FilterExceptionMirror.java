@@ -83,7 +83,7 @@ public class FilterExceptionMirror extends TLoggerFilterHandler {
         if (isScheduleException(e)) {
             long time = System.currentTimeMillis();
             AtomicReference<Plugin> plugin = new AtomicReference<>();
-            return !printException(plugin, e.getThrown().getStackTrace(), "SCHEDULE", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), e.getThrown().getClass().getName(), String.valueOf(e.getThrown().getMessage())});
+            return !printException(plugin, e.getThrown().getStackTrace(), "SCHEDULE", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), e.getThrown().getClass().getSimpleName(), String.valueOf(e.getThrown().getMessage())});
         }
         // 是否为其他可捕捉异常
         else if (isValidException(e.getThrown())) {
@@ -93,7 +93,7 @@ public class FilterExceptionMirror extends TLoggerFilterHandler {
                 if (matcher.find()) {
                     long time = System.currentTimeMillis();
                     AtomicReference<Plugin> plugin = new AtomicReference<>();
-                    return !printException(plugin, e.getThrown().getCause().getStackTrace(), "EVENT", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), matcher.group(1), e.getThrown().getCause().getClass().getName(), String.valueOf(e.getThrown().getCause().getMessage())});
+                    return !printException(plugin, e.getThrown().getCause().getStackTrace(), "EVENT", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), matcher.group(1), e.getThrown().getCause().getClass().getSimpleName(), String.valueOf(e.getThrown().getCause().getMessage())});
                 }
             }
             // 命令异常
@@ -102,14 +102,14 @@ public class FilterExceptionMirror extends TLoggerFilterHandler {
                 if (matcher.find()) {
                     long time = System.currentTimeMillis();
                     AtomicReference<Plugin> plugin = new AtomicReference<>();
-                    return !printException(plugin, e.getThrown().getCause().getStackTrace(), "COMMAND", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), matcher.group(1), e.getThrown().getCause().getClass().getName(), String.valueOf(e.getThrown().getCause().getMessage())});
+                    return !printException(plugin, e.getThrown().getCause().getStackTrace(), "COMMAND", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), matcher.group(1), e.getThrown().getCause().getClass().getSimpleName(), String.valueOf(e.getThrown().getCause().getMessage())});
                 }
             }
             // 其他异常
             else {
                 long time = System.currentTimeMillis();
                 AtomicReference<Plugin> plugin = new AtomicReference<>();
-                return !printException(plugin, e.getThrown().getCause().getStackTrace(), "OTHER", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), e.getThrown().getCause().getClass().getName(), String.valueOf(e.getThrown().getCause().getMessage())});
+                return !printException(plugin, e.getThrown().getCause().getStackTrace(), "OTHER", () -> new String[] {plugin.get().getName(), String.valueOf(System.currentTimeMillis() - time), e.getThrown().getCause().getClass().getSimpleName(), String.valueOf(e.getThrown().getCause().getMessage())});
             }
         }
         return true;

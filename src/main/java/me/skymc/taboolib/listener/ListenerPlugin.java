@@ -32,6 +32,7 @@ import java.util.Optional;
 @TListener
 public class ListenerPlugin implements Listener {
 
+    @EventHandler
     public void load(TPluginLoadEvent e) {
         if (TabooLib.isDependTabooLib(e.getPlugin())) {
             TLoggerFilter.inject(new TLoggerFilter(), e.getPlugin().getLogger());
