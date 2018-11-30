@@ -84,7 +84,7 @@ public class UpdateTask {
     }
 
     public static void updatePlugin(boolean shutdown, boolean force) {
-        if (!UpdateTask.isHaveUpdate() || (newVersion == 0 || !force)) {
+        if (!UpdateTask.isHaveUpdate() && (newVersion == 0 || !force)) {
             TLocale.Logger.info("COMMANDS.TABOOLIB.UPDATEPLUGIN.UPDATE-NOT-FOUND");
             return;
         }
