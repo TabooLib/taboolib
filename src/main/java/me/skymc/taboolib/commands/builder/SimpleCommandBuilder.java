@@ -92,6 +92,7 @@ public class SimpleCommandBuilder {
         return this;
     }
 
+    @Deprecated
     public SimpleCommandBuilder silence() {
         this.silence = true;
         return this;

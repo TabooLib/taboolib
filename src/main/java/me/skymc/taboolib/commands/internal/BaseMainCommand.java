@@ -76,8 +76,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 }
             });
         }
-        if (methods.size() + fields.size() > 0 && !TabooLib.isTabooLib(baseMainCommand.getRegisterCommand().getPlugin())) {
-            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size() + fields.size()));
+        if (methods.size() + fields.size() > 0) {
+            TabooLib.debug("Registered " + (methods.size() + fields.size()) + " sub-command with " + baseMainCommand.getRegisterCommand().getName() + " (" + baseMainCommand.getRegisterCommand().getPlugin().getName() + ")");
+//            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size() + fields.size()));
         }
     }
 

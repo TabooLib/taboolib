@@ -105,12 +105,13 @@ public class TCommandHandler implements Listener {
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permission", permission);
             ReflectionUtils.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permissionMessage", permissionMessage);
             commandMap.register(plugin.getName(), pluginCommand);
-            if (!TabooLib.isTabooLib(plugin) && !silence) {
-                TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE", plugin.getName(), command);
-            }
+            TabooLib.debug("Command " + command + " created. (" + plugin.getName() + ")");
+//            if (!TabooLib.isTabooLib(plugin) && !silence) {
+//                TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE", plugin.getName(), command);
+//            }
             return true;
         } catch (Exception e) {
-            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.toString());
+            TLocale.Logger.error("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.toString());
             e.printStackTrace();
             return false;
         }

@@ -28,10 +28,10 @@ DEPENDENCY:
   PLUGIN-LOAD-SUCCESS: '  {0} 请求的插件 {1} 加载成功'
   PLUGIN-LOAD-FAIL: '  {0} 请求的插件 {1} 加载失败'
   LOADING-START: '正在加载 {0} 插件所需的依赖'
-  LIBRARY-LOAD-SUCCESS: '  {0} 请求的库文件 {1} 加载成功'
+#  LIBRARY-LOAD-SUCCESS: '  {0} 请求的库文件 {1} 加载成功'
   LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
   LOAD-COMPLETE: '依赖加载完成'
-  LOAD-CLASSES: '&7缓存 &f{0} &7插件的 &f{1} &7个类耗时&f {2} &7毫秒.'
+#  LOAD-CLASSES: '&7缓存 &f{0} &7插件的 &f{1} &7个类耗时&f {2} &7毫秒.'
 
 CONFIG:
   LOAD-FAIL-NO-ANNOTATION: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
@@ -74,11 +74,11 @@ MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
 
-COOLDOWNPACK:
-  PACK-REGISTER: '注册冷却包: {0}, 时间: {1} 秒 ({2})'
-  PACK-REGISTER-ANONYMOUS: '注册冷却包: {0}, 时间: {1} 秒 (匿名注册)'
-  PACK-UNREGISTER: '注销冷却包: {0} (主动注销)'
-  PACK-UNREGISTER-AUTO: '注销冷却包: {0} (自动注销)'
+#COOLDOWNPACK:
+#  PACK-REGISTER: '注册冷却包: {0}, 时间: {1} 秒 ({2})'
+#  PACK-REGISTER-ANONYMOUS: '注册冷却包: {0}, 时间: {1} 秒 (匿名注册)'
+#  PACK-UNREGISTER: '注销冷却包: {0} (主动注销)'
+#  PACK-UNREGISTER-AUTO: '注销冷却包: {0} (自动注销)'
 
 GLOBAL-DATAMANAGER:
   ERROR-CHECK-VARIABLE: '&4变量 &c{0} &4载入异常: &c{1}'
@@ -106,8 +106,8 @@ ITEM-UTILS:
   FAIL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
   FAIL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
   FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
-  SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
-  SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
+#  SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
+#  SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
   EMPTY-ITEM: '空'
 
 LANGUAGE2:
@@ -169,9 +169,9 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] &7指令 &f{0} &7不存在'
     - '&8[&3&lTabooLib&8] &7你可能想要:'
     - '&8[&3&lTabooLib&8] &7{1}'
-    COMMAND-CREATE: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册到服务器'
     COMMAND-CREATE-FAILED: '&7插件 &f{0} &7的 &f{1} &7命令注册失败: &c{2}'
-    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册 &f{2} &7条子命令'
+#    COMMAND-CREATE: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册到服务器'
+#    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册 &f{2} &7条子命令'
     COMMAND-HELP: ' §f/{0} {1} {2}§6- §e{3}'
     COMMAND-ARGUMENT: '§7<§8{0}§7>'
     COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'

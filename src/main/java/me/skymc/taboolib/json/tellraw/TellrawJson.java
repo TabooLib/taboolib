@@ -138,6 +138,11 @@ public class TellrawJson {
         return components.toArray(new BaseComponent[0]);
     }
 
+    @Deprecated
+    public String getItemComponent(ItemStack item) {
+        return TellrawCreator.getAbstractTellraw().getItemComponent(item);
+    }
+
     // *********************************
     //
     //         Private Methods
