@@ -6,7 +6,7 @@
   + [TDependency](dependency.md)
   + [TListener](TListener.md)
   + [TFunction](TFunction.md)
-  + [TConfiguration](TConfiguration.md) [暂无文档]
+  + [TConfiguration](TConfiguration.md)
   + [TPacket](TPacket.md) [暂无文档]
   + [TInject](TInject.md) [暂无文档]
   + [ItemBuilder](ItemBuilder.md)
