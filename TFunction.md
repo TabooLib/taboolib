@@ -12,11 +12,11 @@
 @TFunction
 public class Handler {
 
-    static onEnable() {
+    static void onEnable() {
         // ... 初始化内容 
     }
     
-    static onDisable() {
+    static void onDisable() {
         // ... 注销内容
     }
 }
@@ -32,11 +32,11 @@ public class Handler {
 )
 public class Handler {
 
-    static init() {
+    static void init() {
         // ... 初始化内容 
     }
     
-    static cancel() {
+    static void cancel() {
         // ... 注销内容
     }
 }
