@@ -14,13 +14,13 @@
   + [SimpleCommandBuilder](SimpleCommandBuilder.md)
   + [SimpleVersionControl](SimpleVersionControl.md)
   + [SimpleAi](SimpleAi.md)
+  + [TellrawJson](tellrawjson.md)
   
 * 一般工具
   + [Ref](ref.md)
   + [ArrayUtils](arrayutils.md)
   + [FileUtils](FileUtils.md) [暂无文档]
   + [ConfigUtils](ConfigUtils.md) [暂无文档]
-  + [TellrawJson](tellrawjson.md)
   + [ConfigWatcher](ConfigWatcher.md)
   + [TagDataHandler](TagDataHandler.md) [暂无文档]
 
