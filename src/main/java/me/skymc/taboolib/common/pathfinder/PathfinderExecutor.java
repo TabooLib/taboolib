@@ -36,6 +36,14 @@ public abstract class PathfinderExecutor {
 
     public abstract void clearTargetAi(LivingEntity entity);
 
+    public abstract Iterable getGoalAi(LivingEntity entity);
+
+    public abstract Iterable getTargetAi(LivingEntity entity);
+
+    public abstract void setGoalAi(LivingEntity entity, Iterable ai);
+
+    public abstract void setTargetAi(LivingEntity entity, Iterable ai);
+
     public abstract boolean navigationMove(LivingEntity entity, Location location);
 
     public abstract boolean navigationMove(LivingEntity entity, Location location, double speed);

@@ -131,6 +131,44 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
+    public Iterable getGoalAi(LivingEntity entity) {
+        try {
+            return ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).goalSelector));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Iterable getTargetAi(LivingEntity entity) {
+        try {
+            return ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).targetSelector));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void setGoalAi(LivingEntity entity, Iterable ai) {
+        try {
+            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).goalSelector, ai);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setTargetAi(LivingEntity entity, Iterable ai) {
+        try {
+            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).targetSelector, ai);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
     public boolean navigationMove(LivingEntity entity, Location location) {
         return navigationMove(entity, location, 0.6);
     }
