@@ -11,16 +11,8 @@ public class SimpleAiSelector {
 
     public SimpleAiSelector() {
         try {
-            internalPathfinderCreator = (PathfinderCreator) SimpleVersionControl.create()
-                    .from("1_8_R3")
-                    .target("me.skymc.taboolib.common.pathfinder.internal.InternalPathfinderCreator")
-                    .translate()
-                    .newInstance();
-            internalPathfinderExecutor = (PathfinderExecutor) SimpleVersionControl.create()
-                    .from("1_8_R3")
-                    .target("me.skymc.taboolib.common.pathfinder.internal.InternalPathfinderExecutor")
-                    .translate()
-                    .newInstance();
+            internalPathfinderCreator = (PathfinderCreator) SimpleVersionControl.createNMS("me.skymc.taboolib.common.pathfinder.internal.InternalPathfinderCreator").translate().newInstance();
+            internalPathfinderExecutor = (PathfinderExecutor) SimpleVersionControl.createNMS("me.skymc.taboolib.common.pathfinder.internal.InternalPathfinderExecutor").translate().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -58,7 +50,7 @@ public class TPSTool extends AbstractTPSTool {
 }
 ```
 
-## 3. 转换
+## 3. 转换：初窥门径
 ```java
 package me.skymc.taboolib.example;
 
@@ -97,10 +89,82 @@ public class Main extends JavaPlugin {
     }
 }
 ```
+
+## 4. 转换：略有小成
+```java
+package me.skymc.taboolib.example;
+
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
+import me.skymc.taboolib.common.versioncontrol.SimpleVersionControl;
+import me.skymc.taboolib.example.tps.AbstractTPSTool;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Arrays;
+public class Main extends JavaPlugin {
+
+    private AbstractTPSTool tpsTool;
+
+    @Override
+    public void onEnable() {
+        try {
+            tpsTool = (AbstractTPSTool) SimpleVersionControl.createSimple("me.skymc.taboolib.example.tps.TPSTool", "1_8_R3")
+                    // 插件
+                    .plugin(this)
+                    // 转换
+                    .translate()
+                    // 实例化
+                    .newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 创建 getTPS 命令
+        SimpleCommandBuilder.create("getTPS", this).execute((sender, args) -> {
+            sender.sendMessage("tps: " + Arrays.toString(tpsTool.getTPS()));
+            return true;
+        }).build();
+    }
+}
+```
+
+## 5. 转换：登峰造极
+```java
+package me.skymc.taboolib.example;
+
+import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
+import me.skymc.taboolib.common.versioncontrol.SimpleVersionControl;
+import me.skymc.taboolib.example.tps.AbstractTPSTool;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Arrays;
+public class Main extends JavaPlugin {
+
+    private AbstractTPSTool tpsTool;
+
+    @Override
+    public void onEnable() {
+        try {
+            tpsTool = (AbstractTPSTool) SimpleVersionControl.createNMS("me.skymc.taboolib.example.tps.TPSTool")
+                    // 插件
+                    .plugin(this)
+                    // 转换
+                    .translate()
+                    // 实例化
+                    .newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // 创建 getTPS 命令
+        SimpleCommandBuilder.create("getTPS", this).execute((sender, args) -> {
+            sender.sendMessage("tps: " + Arrays.toString(tpsTool.getTPS()));
+            return true;
+        }).build();
+    }
+}
+```
 > tps: [19.90449272934489, 19.980825292911394, 19.993604343142234]
 
 ## 已知问题
-因个人 asm 水平有限，实现类中不可定义 nms 的变量，请用 Object 代替后强转：
+实现类中不可定义 nms 的变量，请用 Object 代替后强转：
 ```java
     public boolean navigationReach(LivingEntity entity) {
         Object pathEntity = this.getPathEntity(entity);
