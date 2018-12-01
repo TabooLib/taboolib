@@ -30,7 +30,7 @@ dependencies {
 }
 ```
 
-### Simple Build Tool
+### sbt
 
 ```scala
 resolvers += "jitpack" at "https://jitpack.io"
