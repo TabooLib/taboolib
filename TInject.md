@@ -21,12 +21,6 @@ public class Plugin extends JavaPlugin {
     static TConfiguration conf;
     
     @TInject
-    static SimpleCommandBuilder command = SimpleCommandBuilder.create("cmd", inst)
-        .execute((sender, args) -> {
-            return true;
-        });
-        
-    @TInject
     static TPacketListener listener = new TPacketListener() {
 
         @Override
@@ -39,6 +33,12 @@ public class Plugin extends JavaPlugin {
             return true;
         }
     };
+    
+    @TInject
+    static SimpleCommandBuilder command = SimpleCommandBuilder.create("cmd", inst)
+        .execute((sender, args) -> {
+            return true;
+        });
 }
 ```
-!> 该注解只能用于静态类型
+!> 只可用于静态类型
