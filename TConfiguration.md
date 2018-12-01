@@ -3,7 +3,7 @@
 基于 ConfigWatcher 的配置文件类型，自动重载。
 
 ## 使用环境
-人类的本质是... （TabooLib 自动化接口，懒就对了）
+人类的本质是... （自动化接口，能省则省就对了）
 
 ## 基本用法
 ```java
@@ -21,6 +21,18 @@ public class Plugin extends JavaPlugin {
 }
 ```
 !> 创建监听后不要忘记执行 runListener()。
+
+## 灵魂用法
+```java
+public class Plugin extends JavaPlugin {
+
+    @TInject("config.yml")
+    private static TConfiguration conf;
+  
+    // ... 随便搞就行了
+}
+```
+!> 注入会在 onEnable() 方法执行之前进行。
 
 ## 其他方法
 | 方法 | 作用 |
