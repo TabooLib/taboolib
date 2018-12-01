@@ -5,7 +5,7 @@
   + [TLocale](tlocale.md)
   + [TDependency](dependency.md)
   + [TListener](TListener.md)
-  + [TFunction](TFunction.md) [暂无文档]
+  + [TFunction](TFunction.md)
   + [TConfiguration](TConfiguration.md) [暂无文档]
   + [TPacket](TPacket.md) [暂无文档]
   + [TInject](TInject.md) [暂无文档]
