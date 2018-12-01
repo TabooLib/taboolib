@@ -40,7 +40,7 @@ public class TagDataHandler implements Listener {
 
             @Override
             public void run() {
-                if (PacketUtils.isProtocolLibEnabled()) {
+                if (PacketUtils.isProtocolLibEnabled() && Main.getInst().getConfig().getBoolean("TABLIST-PACKET", true)) {
                     TagPacket.inst();
                 }
             }
