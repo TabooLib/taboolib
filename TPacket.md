@@ -39,9 +39,9 @@ public class Plugin extends JavaPlugin {
             public boolean onSend(Player player, Object packet) {
                 if (packet instanceof PacketPlayOutChat) {
                     // 反射获取信息内容
-                    IChatBaseComponent component = (IChatBaseComponent) SimpleReflection.getFieldValue(PacketPlayOutChat.class, packet, "a");
+                    IChatBaseComponent c = (IChatBaseComponent) SimpleReflection.getFieldValue(PacketPlayOutChat.class, packet, "a");
                     // 如果有指定内容则取消发送（获取文本方法可能不准确不过大概是这个意思）
-                    return !component.getText().contains("【脏话】");
+                    return !c.getText().contains("【脏话】");
                 }
                 return true;
             }
@@ -49,4 +49,4 @@ public class Plugin extends JavaPlugin {
     }
 }
 ```
->! 搭配 SimpleVersionControl 一起食用效果更佳。
+！> 搭配 SimpleVersionControl 一起食用效果更佳。
