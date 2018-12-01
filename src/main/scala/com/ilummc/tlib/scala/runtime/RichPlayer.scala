@@ -54,8 +54,8 @@ class RichPlayer(private val player: Player) extends RichOfflinePlayer(player) {
 
   def locale(node: String, params: String*): Unit = sendLocalizedMessage(node, params: _*)
 
-  def <<(node: String): RichPlayer = {
-    TLocale.sendTo(player, node)
+  def <<(text: String): RichPlayer = {
+    player.sendMessage(text)
     this
   }
 
