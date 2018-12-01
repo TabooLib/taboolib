@@ -8,7 +8,7 @@
   + [TFunction](TFunction.md)
   + [TConfiguration](TConfiguration.md)
   + [TPacket](TPacket.md)
-  + [TInject](TInject.md) [暂无文档]
+  + [TInject](TInject.md)
   + [ItemBuilder](ItemBuilder.md)
   + [MenuBuilder](MenuBuilder.md)
   + [SimpleCommandBuilder](SimpleCommandBuilder.md)
