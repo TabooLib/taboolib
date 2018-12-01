@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.bukkit.{Location, OfflinePlayer, World, util}
 
-object Implicits {
+abstract class Implicits {
 
   implicit def player2rich(player: Player): RichPlayer = player
 
