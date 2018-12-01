@@ -47,6 +47,9 @@ TABLIST-SORT: true
 # 玩家列表（TAB-API）是否自动清理没有成员的队伍
 TABLIST-AUTO-CLEAN-TEAM: true
 
+# 是否启用发包（禁用后会影响 tagDisplay() 方法的使用）
+TABLIST-PACKET: true
+
 # 是否启用更新检测
 UPDATE-CHECK: true
 
