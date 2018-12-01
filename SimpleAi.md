@@ -135,6 +135,7 @@ Bukkit.getScheduler().runTask(SpecialPet.getInst(), () -> SimpleAiSelector.getEx
 | void controllerLookAt(LivingEntity entity, Entity target) | 看向目标 | 否 |
 | void controllerJumpReady(LivingEntity entity) | 使生物跳跃 | 否 |
 | boolean controllerJumpCurrent(LivingEntity entity) | 生物正在跳跃 | 是 |
+| void setFollowRange(LivingEntity entity, double value) | 设置跟随距离 | 否 |
 
 
 
