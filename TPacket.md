@@ -49,4 +49,4 @@ public class Plugin extends JavaPlugin {
     }
 }
 ```
-！> 搭配 SimpleVersionControl 一起食用效果更佳。
+!> 搭配 SimpleVersionControl 一起食用效果更佳。
