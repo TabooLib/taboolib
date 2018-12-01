@@ -1,9 +1,9 @@
 # TellrawJson
-更方便的 Tellraw 信息发送工具
+便捷 Tellraw 信息发送工具
 
 ## 作用
 
-TellrawJson 封装了 `md_5` 的 `TextComponent` 相关工具。  
+TellrawJson 基于 `md_5` 的 `TextComponent` 相关工具。  
 最大化的减少开发成本，简化了原版 Tellraw 信息的发送过程。
 
 > TLocale 的 `BOOK` 功能就是由 TellrawJson 开发而成的。
@@ -24,8 +24,8 @@ TellrawJson json = TellrawJson.create();
 首先我们添加一个文本块：  
 
 ```java
-TellrawJson json = TellrawJson.create();
-json.append("Hello World!");
+TellrawJson json = TellrawJson.create()
+    .append("Hello World!");
 ```
 
 **添加动作**
@@ -33,26 +33,24 @@ json.append("Hello World!");
 我们可以通过以下几种方式来为刚才添加的文本块设定动作。  
 
 ```java
-TellrawJson json = TellrawJson.create();
-json.append("Hello World!");
-json.hoverText("悬浮文本显示"):
-json.hoverItem(new ItemStack(Material.STONE));
-json.clickCommand("/say 点击执行指令");
-json.clickSuggest("/say 点击建议指令");
-json.clickOpenURL("https://www.mcbbs.net/");
+TellrawJson json = TellrawJson.create()
+    .append("Hello World!")
+    .hoverText("悬浮文本显示")
+    .hoverItem(new ItemStack(Material.STONE)) // 基于 ViaVersion 和 ProtocolSupport 修复了 NBTTagList 的版本差异问题。
+    .clickCommand("/say 点击执行指令")
+    .clickSuggest("/say 点击建议指令")
+    .clickOpenURL("https://www.mcbbs.net/");
 ```
 
 !> `click` 与 `hover` 在每个文本块中只能各出现一次，Tellraw 信息是不允许又执行又建议指令的。
 
 **发送文本**
 
-最激动人心的时刻到了?  
-
 ```java
-TellrawJson json = TellrawJson.create();
-json.append("Hello World!");
-json.hoverText("悬浮文本显示"):
-json.send(player);
+TellrawJson json = TellrawJson.create()
+    .append("Hello World!")
+    .hoverText("悬浮文本显示")
+    .send(player);
 ```
 
 是不是比 TextComponent 要简单的多了
