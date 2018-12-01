@@ -70,7 +70,8 @@ public class ItemUtils {
         itemName = TConfiguration.createInResource(Main.getInst(), "Language/ITEM_NAME.yml");
         itemName.listener(() -> {
             itemName.getConfigurationSection("").getKeys(false).forEach(a -> itemLib.put(a, itemName.getString(a)));
-            TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemLib.size()));
+            TabooLib.debug("Loaded " + itemLib.size() + " items name.");
+//            TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemLib.size()));
         }).runListener();
     }
 
@@ -83,7 +84,8 @@ public class ItemUtils {
             finalItemsFolder.mkdir();
         }
         Arrays.stream(finalItemsFolder.listFiles()).forEach(file -> loadItemsFile(file, true));
-        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
+        TabooLib.debug("Loaded " + (itemCaches.size() + itemCachesFinal.size()) + " items.");
+//        TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-CACHES", String.valueOf(itemCaches.size() + itemCachesFinal.size()));
     }
 
     public static File getItemCacheFile() {

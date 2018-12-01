@@ -6,7 +6,7 @@ import com.ilummc.tlib.dependency.TDependency;
 import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.Ref;
-import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,7 +14,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,7 +62,7 @@ public class TDependencyInjector {
         }
         Dependency d2 = o.getClass().getAnnotation(Dependency.class);
         if (d2 != null) {
-            dependencies = new Dependency[]{d2};
+            dependencies = new Dependency[] {d2};
         }
         return dependencies;
     }
@@ -168,14 +167,16 @@ public class TDependencyInjector {
             for (Dependency dependency : dependencies) {
                 if (dependency.type() == Dependency.Type.PLUGIN) {
                     if (TDependency.requestPlugin(dependency.plugin())) {
-                        TLocale.Logger.info("DEPENDENCY.PLUGIN-LOAD-SUCCESS", plugin.getName(), dependency.plugin());
+                        TabooLib.debug("  Loaded " + dependency.plugin() + " (" + plugin.getName() + ")");
+//                        TLocale.Logger.info("DEPENDENCY.PLUGIN-LOAD-SUCCESS", plugin.getName(), dependency.plugin());
                     } else {
                         TLocale.Logger.warn("DEPENDENCY.PLUGIN-LOAD-FAIL", plugin.getName(), dependency.plugin());
                     }
                 }
                 if (dependency.type() == Dependency.Type.LIBRARY) {
                     if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url())) {
-                        TLocale.Logger.info("DEPENDENCY.LIBRARY-LOAD-SUCCESS", plugin.getName(), String.join(":", dependency.maven()));
+                        TabooLib.debug("  Loaded " + String.join(":", dependency.maven()) + " (" + plugin.getName() + ")");
+//                        TLocale.Logger.info("DEPENDENCY.LIBRARY-LOAD-SUCCESS", plugin.getName(), String.join(":", dependency.maven()));
                     } else {
                         TLocale.Logger.warn("DEPENDENCY.LIBRARY-LOAD-FAIL", plugin.getName(), String.join(":", dependency.maven()));
                     }

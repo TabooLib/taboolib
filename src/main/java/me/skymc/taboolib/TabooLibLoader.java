@@ -187,7 +187,7 @@ public class TabooLibLoader implements Listener {
             try {
                 long time = System.currentTimeMillis();
                 List<Class> classes = FileUtils.getClasses(plugin);
-                TLocale.Logger.info("DEPENDENCY.LOAD-CLASSES", plugin.getName(), String.valueOf(classes.size()), String.valueOf(System.currentTimeMillis() - time));
+                TabooLib.debug("Saved " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
                 pluginClasses.put(plugin.getName(), classes);
             } catch (Exception ignored) {
             }
