@@ -1,6 +1,7 @@
 package com.ilummc.tlib.filter.impl;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.ilummc.tlib.filter.TLoggerFilterHandler;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
@@ -11,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.LogRecord;
 import java.util.regex.Matcher;
@@ -53,17 +55,17 @@ public class FilterExceptionMirror extends TLoggerFilterHandler {
      * @return 是否成功捕捉并打印
      */
     public boolean printException(AtomicReference<Plugin> plugin, StackTraceElement[] stackTraceElements, String message, ArgumentsCallback args) {
+        Set<Plugin> plugins = Sets.newHashSet();
         List<StackTraceElement> stackTraces = Lists.newLinkedList();
         for (StackTraceElement stack : stackTraceElements) {
             try {
-                plugin.set(JavaPlugin.getProvidingPlugin(Class.forName(stack.getClassName())));
-                if (TabooLib.isTabooLib(plugin.get()) || TabooLib.isDependTabooLib(plugin.get())) {
-                    stackTraces.add(stack);
-                }
+                plugins.add(JavaPlugin.getProvidingPlugin(Class.forName(stack.getClassName())));
+                stackTraces.add(stack);
             } catch (Exception ignored) {
             }
         }
-        if (plugin.get() != null && (TabooLib.isTabooLib(plugin.get()) || TabooLib.isDependTabooLib(plugin.get()))) {
+        if (!plugins.isEmpty() && plugins.stream().allMatch(p -> TabooLib.isTabooLib(p) || TabooLib.isDependTabooLib(p))) {
+            plugin.set(plugins.iterator().next());
             TLocale.Logger.error("TFILTER.EXCEPTION-MIRROR." + message + ".HEAD", args.run());
             for (int i = 0; i < stackTraces.size(); i++) {
                 StackTraceElement stack = stackTraces.get(i);

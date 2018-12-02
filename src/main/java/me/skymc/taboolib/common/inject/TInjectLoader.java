@@ -24,45 +24,45 @@ public class TInjectLoader implements TabooLibLoader.Loader {
 
     static {
         // Instance Inject
-        injectTypes.put(Plugin.class, (plugin, field, args) -> {
+        injectTypes.put(Plugin.class, (plugin, field, args, instance) -> {
             try {
-                field.set(null, plugin);
+                field.set(instance, plugin);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // TLogger Inject
-        injectTypes.put(TLogger.class, (plugin, field, args) -> {
+        injectTypes.put(TLogger.class, (plugin, field, args, instance) -> {
             try {
-                field.set(null, args.length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args[0]));
+                field.set(instance, args.length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // TPacketListener Inject
-        injectTypes.put(TPacketListener.class, (plugin, field, args) -> {
+        injectTypes.put(TPacketListener.class, (plugin, field, args, instance) -> {
             try {
-                TPacketHandler.addListener(plugin, ((TPacketListener) field.get(null)));
+                TPacketHandler.addListener(plugin, ((TPacketListener) field.get(instance)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // TConfiguration Inject
-        injectTypes.put(TConfiguration.class, (plugin, field, args) -> {
+        injectTypes.put(TConfiguration.class, (plugin, field, args, instance) -> {
             try {
                 if (args.length == 0) {
                     TLogger.getGlobalLogger().error("Invalid inject arguments: " + field.getName() + " (" + field.getType().getName() + ")");
                 } else {
-                    field.set(null, TConfiguration.createInResource(plugin, args[0]));
+                    field.set(instance, TConfiguration.createInResource(plugin, args[0]));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // SimpleCommandBuilder Inject
-        injectTypes.put(SimpleCommandBuilder.class, (plugin, field, args) -> {
+        injectTypes.put(SimpleCommandBuilder.class, (plugin, field, args, instance) -> {
             try {
-                SimpleCommandBuilder builder = (SimpleCommandBuilder) field.get(null);
+                SimpleCommandBuilder builder = (SimpleCommandBuilder) field.get(instance);
                 if (builder.isBuild()) {
                     TLogger.getGlobalLogger().error("Command was registered.  (" + field.getType().getName() + ")");
                 } else {
@@ -84,14 +84,21 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
+            Object instance = null;
+            // 如果是非静态类型
             if (!Modifier.isStatic(declaredField.getModifiers())) {
-                TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
-                continue;
+                // 是否为主类
+                if (pluginClass.equals(plugin.getClass())) {
+                    instance = plugin;
+                } else {
+                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
+                    continue;
+                }
             }
             if (declaredField.getType().equals(plugin.getClass())) {
                 try {
                     declaredField.setAccessible(true);
-                    injectTypes.get(Plugin.class).run(plugin, declaredField, annotation.value());
+                    injectTypes.get(Plugin.class).run(plugin, declaredField, annotation.value(), instance);
                     TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
                 } catch (Throwable e) {
                     TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
@@ -110,9 +117,16 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             if (annotation == null || declaredField.getType().equals(plugin.getClass())) {
                 continue;
             }
+            Object instance = null;
+            // 如果是非静态类型
             if (!Modifier.isStatic(declaredField.getModifiers())) {
-                TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
-                continue;
+                // 是否为主类
+                if (pluginClass.equals(plugin.getClass())) {
+                    instance = plugin;
+                } else {
+                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
+                    continue;
+                }
             }
             TInjectTask tInjectTask = injectTypes.get(declaredField.getType());
             if (tInjectTask == null) {
@@ -121,7 +135,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
             try {
                 declaredField.setAccessible(true);
-                tInjectTask.run(plugin, declaredField, annotation.value());
+                tInjectTask.run(plugin, declaredField, annotation.value(), instance);
                 TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
             } catch (Throwable e) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
