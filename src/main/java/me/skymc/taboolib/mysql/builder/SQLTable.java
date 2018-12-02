@@ -1,11 +1,14 @@
 package me.skymc.taboolib.mysql.builder;
 
 import com.ilummc.tlib.util.Strings;
+import me.skymc.taboolib.mysql.builder.data.Insert;
+import me.skymc.taboolib.mysql.builder.data.Select;
 import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
 import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -48,28 +51,40 @@ public class SQLTable {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
     }
 
-    public RunnableUpdate executeInsert(String values) {
-        return executeUpdate("insert into " + tableName + " values(" + values + ")");
+    public RunnableQuery select(Select where) {
+        return executeSelect(Arrays.stream(where.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")));
     }
 
-    public RunnableQuery executeSelect(String where) {
-        return executeQuery("select * from " + tableName + " where " + where);
+    public RunnableUpdate insert(Insert... inserts) {
+        return executeInsert(Arrays.stream(inserts).map(Insert::getText).collect(Collectors.joining(", ")));
+    }
+
+    public RunnableUpdate update(Select update, Select where) {
+        return executeUpdate(Arrays.stream(update.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")), Arrays.stream(where.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")));
+    }
+
+    public RunnableQuery executeQuery(String query) {
+        return new RunnableQuery(query);
     }
 
     public RunnableQuery executeSelect() {
         return executeQuery("select * from " + tableName);
     }
 
-    public RunnableUpdate executeUpdate(String update, String where) {
-        return executeUpdate("update " + tableName + " set " + update + " where " + where);
+    public RunnableQuery executeSelect(String queryWhere) {
+        return executeQuery("select * from " + tableName + " where " + queryWhere);
+    }
+
+    public RunnableUpdate executeInsert(String queryValues) {
+        return executeUpdate("insert into " + tableName + " values(" + queryValues + ")");
     }
 
     public RunnableUpdate executeUpdate(String query) {
         return new RunnableUpdate(query);
     }
 
-    public RunnableQuery executeQuery(String query) {
-        return new RunnableQuery(query);
+    public RunnableUpdate executeUpdate(String update, String where) {
+        return executeUpdate("update " + tableName + " set " + update + " where " + where);
     }
 
     // *********************************
