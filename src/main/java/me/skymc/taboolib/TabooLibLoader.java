@@ -24,6 +24,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.InetAddress;
 import java.util.*;
 
@@ -186,7 +190,13 @@ public class TabooLibLoader implements Listener {
         if (TabooLib.isTabooLib(plugin) || TabooLib.isDependTabooLib(plugin)) {
             try {
                 long time = System.currentTimeMillis();
-                List<Class> classes = FileUtils.getClasses(plugin);
+                List<Class> classes;
+                IgnoreClasses annotation = plugin.getClass().getAnnotation(IgnoreClasses.class);
+                if (annotation != null) {
+                    classes = FileUtils.getClasses(plugin, annotation.value());
+                } else {
+                    classes = FileUtils.getClasses(plugin);
+                }
                 TabooLib.debug("Saved " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
                 pluginClasses.put(plugin.getName(), classes);
             } catch (Exception ignored) {
@@ -264,5 +274,13 @@ public class TabooLibLoader implements Listener {
 
         default void unload(Plugin plugin, Class<?> cancelClass) {
         }
+    }
+
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface IgnoreClasses {
+
+        String[] value();
+
     }
 }
