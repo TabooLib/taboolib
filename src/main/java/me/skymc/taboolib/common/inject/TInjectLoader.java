@@ -81,7 +81,8 @@ public class TInjectLoader implements TabooLibLoader.Loader {
     public void preLoad(Plugin plugin, Class<?> pluginClass) {
         for (Field declaredField : pluginClass.getDeclaredFields()) {
             TInject annotation = declaredField.getAnnotation(TInject.class);
-            if (annotation == null) {
+            // 是否为主类类型
+            if (annotation == null || !declaredField.getType().equals(plugin.getClass())) {
                 continue;
             }
             Object instance = null;
@@ -95,18 +96,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                     continue;
                 }
             }
-            if (declaredField.getType().equals(plugin.getClass())) {
-                try {
-                    declaredField.setAccessible(true);
-                    injectTypes.get(Plugin.class).run(plugin, declaredField, annotation.value(), instance);
-                    TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
-                } catch (Throwable e) {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
-                    if (e.getMessage() == null) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+            inject(plugin, declaredField, instance, annotation, injectTypes.get(Plugin.class));
         }
     }
 
@@ -129,19 +119,23 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 }
             }
             TInjectTask tInjectTask = injectTypes.get(declaredField.getType());
-            if (tInjectTask == null) {
+            if (tInjectTask != null) {
+                inject(plugin, declaredField, instance, annotation, tInjectTask);
+            } else {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " is an invalid inject type. (" + declaredField.getType().getName() + ")");
-                continue;
             }
-            try {
-                declaredField.setAccessible(true);
-                tInjectTask.run(plugin, declaredField, annotation.value(), instance);
-                TabooLib.debug(declaredField.getName() + " injected. (" + declaredField.getType().getName() + ")");
-            } catch (Throwable e) {
-                TLogger.getGlobalLogger().error(declaredField.getName() + " inject failed: " + e.getMessage() + " (" + declaredField.getType().getName() + ")");
-                if (e.getMessage() == null) {
-                    e.printStackTrace();
-                }
+        }
+    }
+
+    public void inject(Plugin plugin, Field field, Object instance, TInject annotation, TInjectTask injectTask) {
+        try {
+            field.setAccessible(true);
+            injectTask.run(plugin, field, annotation.value(), instance);
+            TabooLib.debug(field.getName() + " injected. (" + field.getType().getName() + ")");
+        } catch (Throwable e) {
+            TLogger.getGlobalLogger().error(field.getName() + " inject failed: " + e.getMessage() + " (" + field.getType().getName() + ")");
+            if (e.getMessage() == null) {
+                e.printStackTrace();
             }
         }
     }

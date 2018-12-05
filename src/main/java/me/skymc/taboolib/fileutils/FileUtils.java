@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -90,9 +91,19 @@ public class FileUtils {
     /**
      * 获取插件所有类
      *
-     * @return {@link List<Class>}
+     * @param plugin 插件
      */
     public static List<Class> getClasses(Plugin plugin) {
+        return getClasses(plugin, new String[0]);
+    }
+
+    /**
+     * 获取插件所有类
+     *
+     * @param plugin 插件
+     * @param ignore 忽略包名
+     */
+    public static List<Class> getClasses(Plugin plugin, String[] ignore) {
         List<Class> classes = new CopyOnWriteArrayList<>();
         URL url = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
         try {
@@ -105,7 +116,9 @@ public class FileUtils {
             new JarFile(src).stream().filter(entry -> entry.getName().endsWith(".class")).forEach(entry -> {
                 String className = entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6);
                 try {
-                    classes.add(Class.forName(className, false, plugin.getClass().getClassLoader()));
+                    if (Arrays.stream(ignore).noneMatch(className::startsWith)) {
+                        classes.add(Class.forName(className, false, plugin.getClass().getClassLoader()));
+                    }
                 } catch (Throwable ignored) {
                 }
             });
@@ -142,10 +155,10 @@ public class FileUtils {
      * @param file        文件
      */
     public static void inputStreamToFile(InputStream inputStream, File file) {
-        try (FileOutputStream fos = new FileOutputStream(file) ; BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+        try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             byte[] buf = new byte[1024];
             int len;
-            while((len = inputStream.read(buf)) > 0) {
+            while ((len = inputStream.read(buf)) > 0) {
                 bos.write(buf, 0, len);
             }
             bos.flush();
