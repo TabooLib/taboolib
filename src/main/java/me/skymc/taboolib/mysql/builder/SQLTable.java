@@ -1,14 +1,12 @@
 package me.skymc.taboolib.mysql.builder;
 
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboolib.mysql.builder.data.Insert;
-import me.skymc.taboolib.mysql.builder.data.Select;
+import me.skymc.taboolib.mysql.IColumn;
 import me.skymc.taboolib.mysql.builder.query.RunnableQuery;
 import me.skymc.taboolib.mysql.builder.query.RunnableUpdate;
 import me.skymc.taboolib.string.ArrayUtils;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -17,10 +15,15 @@ import java.util.stream.Collectors;
 public class SQLTable {
 
     private String tableName;
-    private SQLColumn[] columns;
+    private IColumn[] columns;
 
     public SQLTable(String tableName) {
         this.tableName = tableName;
+    }
+
+    public SQLTable(String tableName, IColumn... column) {
+        this.tableName = tableName;
+        this.columns = column;
     }
 
     public SQLTable(String tableName, SQLColumn... column) {
@@ -28,6 +31,12 @@ public class SQLTable {
         this.columns = column;
     }
 
+    public SQLTable column(IColumn column) {
+        columns = columns == null ? new IColumn[] {column} : ArrayUtils.arrayAppend(columns, column);
+        return this;
+    }
+
+    @Deprecated
     public SQLTable addColumn(SQLColumn sqlColumn) {
         columns = columns == null ? new SQLColumn[] {sqlColumn} : ArrayUtils.arrayAppend(columns, sqlColumn);
         return this;
@@ -49,18 +58,6 @@ public class SQLTable {
 
     public String truncateQuery() {
         return Strings.replaceWithOrder("truncate table `{0}`", tableName);
-    }
-
-    public RunnableQuery select(Select where) {
-        return executeSelect(Arrays.stream(where.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")));
-    }
-
-    public RunnableUpdate insert(Insert... inserts) {
-        return executeInsert(Arrays.stream(inserts).map(Insert::getText).collect(Collectors.joining(", ")));
-    }
-
-    public RunnableUpdate update(Select update, Select where) {
-        return executeUpdate(Arrays.stream(update.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")), Arrays.stream(where.getColumn()).map(s -> s + " = ?").collect(Collectors.joining(", ")));
     }
 
     public RunnableQuery executeQuery(String query) {
@@ -97,7 +94,7 @@ public class SQLTable {
         return tableName;
     }
 
-    public SQLColumn[] getColumns() {
+    public IColumn[] getColumns() {
         return columns;
     }
 }

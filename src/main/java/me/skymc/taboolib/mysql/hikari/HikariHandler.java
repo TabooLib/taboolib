@@ -6,7 +6,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.mysql.IHost;
 import me.skymc.taboolib.mysql.builder.SQLHost;
+import me.skymc.taboolib.mysql.sqlite.SQLiteHost;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.sql.DataSource;
@@ -18,24 +20,20 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class HikariHandler {
 
-    private static ConcurrentHashMap<SQLHost, MapDataSource> dataSource = new ConcurrentHashMap<>();
-    private static FileConfiguration settings;
+    private static ConcurrentHashMap<IHost, MapDataSource> dataSource = new ConcurrentHashMap<>();
+    private static FileConfiguration settings = ConfigUtils.saveDefaultConfig(Main.getInst(), "hikarisettings.yml");
 
-    public static void init() {
-        settings = ConfigUtils.saveDefaultConfig(Main.getInst(), "hikarisettings.yml");
-    }
-
-    public static DataSource createDataSource(SQLHost host) {
+    public static DataSource createDataSource(IHost host) {
         return createDataSource(host, null);
     }
 
-    public static HikariDataSource createDataSource(SQLHost host, HikariConfig hikariConfig) {
+    public static HikariDataSource createDataSource(IHost host, HikariConfig hikariConfig) {
         MapDataSource mapDataSource = dataSource.computeIfAbsent(host, x -> new MapDataSource(x, new HikariDataSource(hikariConfig == null ? createConfig(host) : hikariConfig)));
         mapDataSource.getActivePlugin().getAndIncrement();
         if (mapDataSource.getActivePlugin().get() == 1) {
             TLocale.Logger.info("MYSQL-HIKARI.CREATE-SUCCESS", host.getPlugin().getName(), host.getConnectionUrlSimple());
         } else {
-            TLocale.Logger.info("MYSQL-HIKARI.CREATE-EXISTS", host.getPlugin().getName(), mapDataSource.getSqlHost().getPlugin().getName());
+            TLocale.Logger.info("MYSQL-HIKARI.CREATE-EXISTS", host.getPlugin().getName(), mapDataSource.getHost().getPlugin().getName());
         }
         return mapDataSource.getHikariDataSource();
     }
@@ -45,7 +43,7 @@ public class HikariHandler {
         dataSource.values().forEach(x -> x.getHikariDataSource().close());
     }
 
-    public static void closeDataSource(SQLHost host) {
+    public static void closeDataSource(IHost host) {
         if (host != null && dataSource.containsKey(host)) {
             MapDataSource mapDataSource = dataSource.get(host);
             if (mapDataSource.getActivePlugin().getAndDecrement() <= 1) {
@@ -58,14 +56,20 @@ public class HikariHandler {
         }
     }
 
-    public static HikariConfig createConfig(SQLHost sqlHost) {
+    public static HikariConfig createConfig(IHost host) {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName(settings.getString("DefaultSettings.DriverClassName", "com.mysql.jdbc.Driver"));
-        config.setJdbcUrl(sqlHost.getConnectionUrl());
-        config.setUsername(sqlHost.getUser());
-        config.setPassword(sqlHost.getPassword());
+        config.setJdbcUrl(host.getConnectionUrl());
+        if (host instanceof SQLHost) {
+            config.setDriverClassName(settings.getString("DefaultSettings.DriverClassName", "com.mysql.jdbc.Driver"));
+            config.setUsername(((SQLHost) host).getUser());
+            config.setPassword(((SQLHost) host).getPassword());
+        } else if (host instanceof SQLiteHost) {
+            config.setDriverClassName("org.sqlite.JDBC");
+        } else {
+            throw new IllegalArgumentException("Invalid host: " + host.getClass().getName());
+        }
         config.setAutoCommit(settings.getBoolean("DefaultSettings.AutoCommit", true));
-        config.setMinimumIdle(settings.getInt("DefaultSettings.MinimumIdle", -1));
+        config.setMinimumIdle(settings.getInt("DefaultSettings.MinimumIdle", 1));
         config.setMaximumPoolSize(settings.getInt("DefaultSettings.MaximumPoolSize", 10));
         config.setValidationTimeout(settings.getInt("DefaultSettings.ValidationTimeout", 5000));
         config.setConnectionTimeout(settings.getInt("DefaultSettings.ConnectionTimeout", 30000));
@@ -80,13 +84,33 @@ public class HikariHandler {
         return config;
     }
 
+    @Deprecated
+    public static DataSource createDataSource(SQLHost host) {
+        return createDataSource((IHost) host, null);
+    }
+
+    @Deprecated
+    public static HikariConfig createConfig(SQLHost host) {
+        return createConfig((IHost) host);
+    }
+
+    @Deprecated
+    public static HikariDataSource createDataSource(SQLHost host, HikariConfig hikariConfig) {
+        return createDataSource((IHost) host, hikariConfig);
+    }
+
+    @Deprecated
+    public static void closeDataSource(SQLHost host) {
+        closeDataSource((IHost) host);
+    }
+
     // *********************************
     //
     //        Getter and Setter
     //
     // *********************************
 
-    public static ConcurrentHashMap<SQLHost, MapDataSource> getDataSource() {
+    public static ConcurrentHashMap<IHost, MapDataSource> getDataSource() {
         return dataSource;
     }
 

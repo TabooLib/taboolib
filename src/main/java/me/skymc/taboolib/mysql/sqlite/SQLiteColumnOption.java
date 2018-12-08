@@ -1,10 +1,10 @@
-package me.skymc.taboolib.mysql.builder;
+package me.skymc.taboolib.mysql.sqlite;
 
 /**
  * @Author sky
  * @Since 2018-05-14 21:43
  */
-public enum SQLColumnOption {
+public enum SQLiteColumnOption {
 
     /**
      * 不能为空
@@ -14,7 +14,7 @@ public enum SQLColumnOption {
     /**
      * 唯一
      */
-    UNIQUE_KEY("UNIQUE KEY"),
+    UNIQUE("UNIQUE"),
 
     /**
      * 主键
@@ -24,11 +24,11 @@ public enum SQLColumnOption {
     /**
      * 递增
      */
-    AUTO_INCREMENT("AUTO_INCREMENT");
+    AUTOINCREMENT("AUTOINCREMENT");
 
     String text;
 
-    SQLColumnOption(String text) {
+    SQLiteColumnOption(String text) {
         this.text = text;
     }
 

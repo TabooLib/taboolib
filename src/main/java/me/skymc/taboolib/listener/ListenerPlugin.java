@@ -100,5 +100,7 @@ public class ListenerPlugin implements Listener {
             TLocale.Logger.error("MYSQL-CONNECTION.FAIL-EXECUTE-TASK");
             runnable.run();
         }
+        // 注销异常拦截
+        e.getPlugin().getLogger().setFilter(null);
     }
 }

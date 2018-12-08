@@ -78,6 +78,11 @@ public class TInjectLoader implements TabooLibLoader.Loader {
     }
 
     @Override
+    public int priority() {
+        return -999;
+    }
+
+    @Override
     public void preLoad(Plugin plugin, Class<?> pluginClass) {
         for (Field declaredField : pluginClass.getDeclaredFields()) {
             TInject annotation = declaredField.getAnnotation(TInject.class);
