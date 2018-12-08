@@ -108,7 +108,7 @@ public class SQLColumn extends IColumn {
 
     private String convertToOptions() {
         StringBuilder builder = new StringBuilder();
-        Arrays.stream(columnOptions).forEach(option -> builder.append(" ").append(option));
+        Arrays.stream(columnOptions).forEach(option -> builder.append(" ").append(option.getText()));
         if (defaultValue != null) {
             if (defaultValue instanceof String) {
                 builder.append(" DEFAULT '").append(defaultValue).append("'");
