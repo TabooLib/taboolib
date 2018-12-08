@@ -1,7 +1,7 @@
 package me.skymc.taboolib.mysql.hikari;
 
 import com.zaxxer.hikari.HikariDataSource;
-import me.skymc.taboolib.mysql.builder.SQLHost;
+import me.skymc.taboolib.mysql.IHost;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,18 +11,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MapDataSource {
 
-    private SQLHost sqlHost;
+    private IHost host;
     private AtomicInteger activePlugin;
     private HikariDataSource hikariDataSource;
 
-    MapDataSource(SQLHost sqlHost, HikariDataSource hikariDataSource) {
-        this.sqlHost = sqlHost;
+    MapDataSource(IHost host, HikariDataSource hikariDataSource) {
+        this.host = host;
         this.activePlugin = new AtomicInteger();
         this.hikariDataSource = hikariDataSource;
     }
 
-    public SQLHost getSqlHost() {
-        return sqlHost;
+    public IHost getHost() {
+        return host;
     }
 
     public AtomicInteger getActivePlugin() {

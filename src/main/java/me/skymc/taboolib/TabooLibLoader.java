@@ -109,7 +109,13 @@ public class TabooLibLoader implements Listener {
 
     public static void runTaskOnEnabled(Runnable runnable) {
         if (Main.isStarted()) {
-            runnable.run();
+            Bukkit.getScheduler().runTask(TabooLib.instance(), () -> {
+                try {
+                    runnable.run();
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            });
         } else {
             tasks.add(runnable);
         }
@@ -212,6 +218,7 @@ public class TabooLibLoader implements Listener {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            loaders.sort(Comparator.comparingInt(Loader::priority));
         });
     }
 
@@ -273,6 +280,10 @@ public class TabooLibLoader implements Listener {
         }
 
         default void unload(Plugin plugin, Class<?> cancelClass) {
+        }
+
+        default int priority() {
+            return 0;
         }
     }
 

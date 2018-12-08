@@ -91,8 +91,6 @@ public class Main extends JavaPlugin {
         TabooLibLoader.setup();
         // 载入大饼
         TLib.initPost();
-        // 载入连接池
-        HikariHandler.init();
     }
 
     @Override
