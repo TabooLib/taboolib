@@ -182,11 +182,13 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 5)
-    BaseSubCommand emptyLine1 = null;
-
     @CommandRegister(priority = 6)
     BaseSubCommand attributes = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -213,6 +215,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand enchants = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "enchants";
         }
@@ -235,6 +242,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 8)
     BaseSubCommand potions = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -261,6 +273,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand flags = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "flags";
         }
@@ -285,6 +302,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand slots = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "slots";
         }
@@ -307,6 +329,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 11)
     BaseSubCommand sounds = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -334,11 +361,13 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 12)
-    BaseSubCommand emptyLine2 = null;
-
     @CommandRegister(priority = 13)
     BaseSubCommand getVariable = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -373,6 +402,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand setVariable = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "setVariable";
         }
@@ -402,11 +436,13 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 13.2)
-    BaseSubCommand getEmptyLine3 = null;
-
     @CommandRegister(priority = 13.3)
     BaseSubCommand cycleList = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -433,6 +469,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 14)
     BaseSubCommand cycleInfo = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -478,6 +519,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand cycleReset = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "cycleReset";
         }
@@ -519,6 +565,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 16)
     BaseSubCommand cycleUpdate = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -689,11 +740,14 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 24)
-    BaseSubCommand getEmptyLine6 = null;
-
     @CommandRegister(priority = 24.1)
     BaseSubCommand lagServer = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
         @Override
         public String getLabel() {
             return "lagServer";

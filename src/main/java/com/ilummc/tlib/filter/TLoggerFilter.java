@@ -7,6 +7,7 @@ import com.ilummc.tlib.filter.impl.FilterExceptionMirror;
 import com.ilummc.tlib.filter.impl.FilterInvalidPluginLoader;
 import me.skymc.taboolib.TabooLib;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,6 +61,18 @@ public class TLoggerFilter implements Filter {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static void eject(Plugin plugin) {
+        try {
+            if (plugin.getLogger().getFilter() instanceof TLoggerFilter) {
+                ((TLoggerFilter) plugin.getLogger().getFilter()).filter = null;
+                ((TLoggerFilter) plugin.getLogger().getFilter()).logger = null;
+                plugin.getLogger().setFilter(null);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
