@@ -102,4 +102,13 @@ public abstract class BaseSubCommand {
     public String getCommandString(String label) {
         return TLocale.asString("COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
     }
+
+    /**
+     * 是否在命令帮助中隐藏
+     *
+     * @return boolean
+     */
+    public boolean hideInHelp() {
+        return false;
+    }
 }

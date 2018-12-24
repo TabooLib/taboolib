@@ -189,7 +189,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         sender.sendMessage(getEmptyLine());
         sender.sendMessage(getCommandTitle());
         sender.sendMessage(getEmptyLine());
-        subCommands.stream().filter(subCommands -> hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
+        subCommands.stream().filter(subCommands -> !hideInHelp(subCommands) && hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
         sender.sendMessage(getEmptyLine());
     }
 
@@ -204,6 +204,10 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             pluginField.set(targetClass.newInstance(), plugin);
         } catch (Exception ignored) {
         }
+    }
+
+    private boolean hideInHelp(BaseSubCommand baseSubCommand) {
+        return baseSubCommand != null && baseSubCommand.hideInHelp();
     }
 
     private boolean hasPermission(CommandSender sender, BaseSubCommand baseSubCommand) {

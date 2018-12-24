@@ -101,6 +101,6 @@ public class ListenerPlugin implements Listener {
             runnable.run();
         }
         // 注销异常拦截
-        e.getPlugin().getLogger().setFilter(null);
+        TLoggerFilter.eject(e.getPlugin());
     }
 }
