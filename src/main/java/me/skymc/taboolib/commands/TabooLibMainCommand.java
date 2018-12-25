@@ -45,6 +45,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand save = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "save";
         }
@@ -72,6 +77,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 2)
     BaseSubCommand item = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -113,7 +123,7 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
         @Override
         public String getDescription() {
-            return TLocale.asString("COMMANDS.TABOOLIB.ITEMLIST.DESCRIPTION");
+            return TLocale.asString("COMMANDS.TABOOLIB.INFO.DESCRIPTION");
         }
 
         @Override
@@ -129,6 +139,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 3.1)
     BaseSubCommand infoList = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -158,6 +173,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 4)
     BaseSubCommand itemReload = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -610,11 +630,13 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 17)
-    BaseSubCommand getEmptyLine4 = null;
-
     @CommandRegister(priority = 20)
     BaseSubCommand tagDisplay = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -649,6 +671,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand tagPrefix = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "tagPrefix";
         }
@@ -681,6 +708,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand tagSuffix = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "tagSuffix";
         }
@@ -711,6 +743,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 23)
     BaseSubCommand tagDelete = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {
@@ -780,11 +817,13 @@ public class TabooLibMainCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 26)
-    BaseSubCommand getEmptyLine7 = null;
-
     @CommandRegister(priority = 27)
     BaseSubCommand importData = new BaseSubCommand() {
+
+        @Override
+        public boolean hideInHelp() {
+            return true;
+        }
 
         @Override
         public String getLabel() {

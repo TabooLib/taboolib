@@ -87,7 +87,9 @@ public class ListenerSoundsCommand implements Listener {
                 openInventory((Player) e.getWhoClicked(), soundLibraryHolder.PAGE + 1, soundLibraryHolder.SEARCH);
             } else {
                 Sound sound = soundLibraryHolder.SOUNDS_DATA.get(e.getRawSlot());
-                if (e.getClick().isLeftClick()) {
+                if (e.getClick().isKeyboardClick()) {
+                    ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 0f);
+                } else if (e.getClick().isLeftClick()) {
                     ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 1f);
                 } else if (e.getClick().isRightClick()) {
                     ((Player) e.getWhoClicked()).playSound(e.getWhoClicked().getLocation(), sound, 1f, 2f);
