@@ -109,7 +109,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return args.length == 1 ? subCommands.stream().filter(subCommand -> subCommand != null && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList()) : null;
+        return args.length == 1 ? subCommands.stream().filter(subCommand -> !hideInHelp(subCommand) && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList()) : null;
     }
 
     @Override
