@@ -25,10 +25,28 @@ import java.util.stream.Collectors;
  */
 public class TellrawJson {
 
+    private int bukkitVersion = TabooLib.getVersionNumber();
     private List<BaseComponent> components = new ArrayList<>();
     private List<BaseComponent> componentsLatest = new ArrayList<>();
     private Map<String, String[]> itemTag = new HashMap<>();
-    private int bukkitVersion = TabooLib.getVersionNumber();
+    private List<String> nbtWhitelist = ArrayUtils.asList(
+            // 附魔
+            "ench",
+            // 附魔书
+            "StoredEnchantments",
+            // 展示
+            "display",
+            // 属性
+            "AttributeModifiers",
+            // 药水
+            "Potion",
+            // 特殊药水
+            "CustomPotionEffects",
+            // 隐藏标签
+            "HideFlags",
+            // 方块标签
+            "BlockEntityTag"
+    );
 
     TellrawJson() {
     }
@@ -101,6 +119,7 @@ public class TellrawJson {
     }
 
     public TellrawJson hoverItem(ItemStack itemStack, boolean supportVersion) {
+        itemStack = TellrawCreator.getAbstractTellraw().optimizeNBT(itemStack, nbtWhitelist);
         BaseComponent[] itemComponentCurrentVersion = new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.CURRENT_VERSION)).create();
         getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemComponentCurrentVersion)));
         if (supportVersion) {
@@ -174,5 +193,21 @@ public class TellrawJson {
 
     public BaseComponent[] getComponents() {
         return components.toArray(new BaseComponent[0]);
+    }
+
+    public int getBukkitVersion() {
+        return bukkitVersion;
+    }
+
+    public List<BaseComponent> getComponentsLatest() {
+        return componentsLatest;
+    }
+
+    public Map<String, String[]> getItemTag() {
+        return itemTag;
+    }
+
+    public List<String> getNBTWhitelist() {
+        return nbtWhitelist;
     }
 }
