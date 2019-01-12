@@ -3,7 +3,6 @@ package com.ilummc.tlib.filter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.ilummc.tlib.filter.impl.FilterConfiguration;
-import com.ilummc.tlib.filter.impl.FilterExceptionMirror;
 import com.ilummc.tlib.filter.impl.FilterInvalidPluginLoader;
 import me.skymc.taboolib.TabooLib;
 import org.bukkit.Bukkit;
@@ -31,8 +30,8 @@ public class TLoggerFilter implements Filter {
 
     static {
         handlers.add(new FilterConfiguration());
-        handlers.add(new FilterExceptionMirror());
         handlers.add(new FilterInvalidPluginLoader());
+        //        handlers.add(new FilterExceptionMirror());
     }
 
     public static void preInit() {
