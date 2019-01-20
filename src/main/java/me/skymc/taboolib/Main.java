@@ -119,13 +119,15 @@ public class Main extends JavaPlugin {
             @Override
             public void run() {
                 // 面子工程
-                InputStream inputStream = FileUtils.getResource("motd.txt");
-                try {
-                    String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
-                    if (text != null) {
-                        Arrays.stream(text.split("\n")).forEach(line -> Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(line, getDescription().getVersion())));
+                if (!TabooLib.isSilent()) {
+                    InputStream inputStream = FileUtils.getResource("motd.txt");
+                    try {
+                        String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
+                        if (text != null) {
+                            Arrays.stream(text.split("\n")).forEach(line -> Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(line, getDescription().getVersion())));
+                        }
+                    } catch (IOException ignored) {
                     }
-                } catch (IOException ignored) {
                 }
                 // 本地通讯网络终端
                 if (getConfig().getBoolean("SERVER")) {
@@ -135,12 +137,14 @@ public class Main extends JavaPlugin {
                 TabooLibClient.init();
             }
         }.runTask(this);
-        // 更新检测
-        new UpdateTask();
         // 启动
         started = true;
         // 载入语言文件
         exampleLanguage2 = new Language2("Language2", this);
+        // 更新检测
+        if (!TabooLib.isSilent()) {
+            new UpdateTask();
+        }
     }
 
     @Override
