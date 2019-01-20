@@ -12,6 +12,7 @@ import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.resources.TLocaleLoader;
 import com.ilummc.tlib.util.IO;
 import me.skymc.taboolib.Main;
+import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
@@ -96,8 +97,8 @@ public class TLib {
             field.set(Bukkit.getServer(), new TPluginManager());
             TLocale.Logger.info("TLIB.INJECTION-SUCCESS");
         } catch (NoSuchFieldException | IllegalAccessException | IllegalArgumentException ignored) {
-            TLocale.Logger.fatal("TLIB.INJECTION-FAILED");
-            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin != Main.getInst()).forEach(plugin -> TDependencyInjector.inject(plugin, plugin));
+            TLocale.Logger.error("TLIB.INJECTION-FAILED");
+            Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> !TabooLib.isTabooLib(plugin)).forEach(plugin -> TDependencyInjector.inject(plugin, plugin));
         }
     }
 

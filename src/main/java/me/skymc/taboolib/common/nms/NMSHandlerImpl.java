@@ -3,6 +3,7 @@ package me.skymc.taboolib.common.nms;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.packet.TPacketHandler;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
+import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
@@ -27,5 +28,10 @@ public class NMSHandlerImpl extends NMSHandler {
         } else {
             TPacketHandler.sendPacket(player, new PacketPlayOutChat(new ChatComponentText(String.valueOf(text)), (byte) 2));
         }
+    }
+
+    @Override
+    public double[] getTPS() {
+        return MinecraftServer.getServer().recentTps;
     }
 }

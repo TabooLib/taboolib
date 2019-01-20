@@ -14,9 +14,7 @@ import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @Author sky
@@ -48,13 +46,17 @@ public class TCloudLoader {
             long time = System.currentTimeMillis();
             latestJsonOrigin = FileUtils.getStringFromURL(url, 1024);
             if (latestJsonOrigin == null) {
-                TLocale.Logger.error("TCLOUD.LIST-CONNECT-FAILED");
+                if (!TabooLib.isSilent()) {
+                    TLocale.Logger.error("TCLOUD.LIST-CONNECT-FAILED");
+                }
                 return;
             }
             try {
                 latestJsonObject = new JsonParser().parse(latestJsonOrigin).getAsJsonObject();
             } catch (Exception e) {
-                TLocale.Logger.info("TCLOUD.LIST-PARSE-FAILED", e.getMessage());
+                if (!TabooLib.isSilent()) {
+                    TLocale.Logger.info("TCLOUD.LIST-PARSE-FAILED", e.getMessage());
+                }
                 return;
             }
             if (latestJsonObject.has("plugins")) {
@@ -62,7 +64,9 @@ public class TCloudLoader {
                     try {
                         expansionPlugins.put(pluginEntry.getKey(), Expansion.unSerialize(ExpansionType.PLUGIN, pluginEntry.getKey(), pluginEntry.getValue().getAsJsonObject()));
                     } catch (Exception e) {
-                        TLocale.Logger.info("TCLOUD.LIST-LOAD-FAILED", pluginEntry.getKey(), e.getMessage());
+                        if (!TabooLib.isSilent()) {
+                            TLocale.Logger.info("TCLOUD.LIST-LOAD-FAILED", pluginEntry.getKey(), e.getMessage());
+                        }
                     }
                 }
             }
@@ -71,11 +75,15 @@ public class TCloudLoader {
                     try {
                         expansionInternal.put(pluginEntry.getKey(), Expansion.unSerialize(ExpansionType.INTERNAL, pluginEntry.getKey(), pluginEntry.getValue().getAsJsonObject()));
                     } catch (Exception e) {
-                        TLocale.Logger.info("TCLOUD.LIST-LOAD-FAILED", pluginEntry.getKey(), e.getMessage());
+                        if (!TabooLib.isSilent()) {
+                            TLocale.Logger.info("TCLOUD.LIST-LOAD-FAILED", pluginEntry.getKey(), e.getMessage());
+                        }
                     }
                 }
             }
-            TLocale.Logger.info("TCLOUD.LIST-LOAD-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
+            if (!TabooLib.isSilent()) {
+                TLocale.Logger.info("TCLOUD.LIST-LOAD-SUCCESS", String.valueOf(System.currentTimeMillis() - time));
+            }
         });
     }
 

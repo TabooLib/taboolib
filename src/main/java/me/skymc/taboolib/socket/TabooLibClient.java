@@ -68,7 +68,7 @@ public class TabooLibClient {
             /*
                 防止未启用终端服务器导致重复提示连接失败信息
              */
-            if (!notify) {
+            if (!notify && !TabooLib.isSilent()) {
                 notify = true;
                 TLocale.sendToConsole("COMMUNICATION.FAILED-CONNECT-SERVER");
             }

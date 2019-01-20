@@ -32,6 +32,8 @@ public abstract class NMSHandler {
 
     abstract public void sendActionBar(Player player, String text);
 
+    abstract public double[] getTPS();
+
     public static NMSHandler getHandler() {
         return handler;
     }
