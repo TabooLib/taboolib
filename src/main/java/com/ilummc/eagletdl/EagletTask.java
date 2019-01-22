@@ -42,7 +42,7 @@ public class EagletTask {
 
     int connectionTimeout = 7000;
     int readTimeout = 7000;
-    int maxRetry = 3;
+    int maxRetry = 5;
 
     private File dest;
 

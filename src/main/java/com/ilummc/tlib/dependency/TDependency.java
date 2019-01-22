@@ -10,7 +10,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TDependency {
 
-    public static final String MAVEN_REPO = "http://maven.aliyun.com/nexus/content/groups/public";
+    // 阿里 http://maven.aliyun.com/nexus/content/groups/public
+    public static final String MAVEN_REPO = "http://repo.maven.apache.org/maven2";
 
     /**
      * 请求一个插件作为依赖，这个插件将会在所有已经添加的 Jenkins 仓库、Maven 仓库寻找
