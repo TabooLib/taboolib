@@ -65,34 +65,37 @@ public class InternalTellraw implements AbstractTellraw {
 
     @Override
     public ItemStack optimizeShulkerBox(ItemStack item) {
-        if (item.getType().name().endsWith("SHULKER_BOX")) {
-            ItemStack itemClone = item.clone();
-            BlockStateMeta blockStateMeta = (BlockStateMeta) itemClone.getItemMeta();
-            ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
-            ItemStack[] contents = shulkerBox.getInventory().getContents();
-            ItemStack[] contentsClone = new ItemStack[contents.length];
-            for (int i = 0; i < contents.length; i++) {
-                ItemStack content = contents[i];
-                if (!ItemUtils.isNull(content)) {
-                    ItemStack contentClone = new ItemStack(Material.STONE, content.getAmount(), content.getDurability());
-                    if (content.getItemMeta().hasDisplayName()) {
-                        ItemUtils.setName(contentClone, content.getItemMeta().getDisplayName());
+        try {
+            if (item.getType().name().endsWith("SHULKER_BOX")) {
+                ItemStack itemClone = item.clone();
+                BlockStateMeta blockStateMeta = (BlockStateMeta) itemClone.getItemMeta();
+                ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
+                ItemStack[] contents = shulkerBox.getInventory().getContents();
+                ItemStack[] contentsClone = new ItemStack[contents.length];
+                for (int i = 0; i < contents.length; i++) {
+                    ItemStack content = contents[i];
+                    if (!ItemUtils.isNull(content)) {
+                        ItemStack contentClone = new ItemStack(Material.STONE, content.getAmount(), content.getDurability());
+                        if (content.getItemMeta().hasDisplayName()) {
+                            ItemUtils.setName(contentClone, content.getItemMeta().getDisplayName());
+                        }
+                        contentsClone[i] = contentClone;
                     }
-                    contentsClone[i] = contentClone;
                 }
+                shulkerBox.getInventory().setContents(contentsClone);
+                blockStateMeta.setBlockState(shulkerBox);
+                itemClone.setItemMeta(blockStateMeta);
+                return itemClone;
+            } else if (item.getItemMeta() instanceof BlockStateMeta && ((BlockStateMeta) item.getItemMeta()).getBlockState() instanceof InventoryHolder) {
+                ItemStack itemClone = item.clone();
+                BlockStateMeta blockStateMeta = (BlockStateMeta) itemClone.getItemMeta();
+                InventoryHolder inventoryHolder = (InventoryHolder) blockStateMeta.getBlockState();
+                inventoryHolder.getInventory().clear();
+                blockStateMeta.setBlockState((org.bukkit.block.BlockState) inventoryHolder);
+                itemClone.setItemMeta(blockStateMeta);
+                return itemClone;
             }
-            shulkerBox.getInventory().setContents(contentsClone);
-            blockStateMeta.setBlockState(shulkerBox);
-            itemClone.setItemMeta(blockStateMeta);
-            return itemClone;
-        } else if (item.getItemMeta() instanceof BlockStateMeta && ((BlockStateMeta) item.getItemMeta()).getBlockState() instanceof InventoryHolder) {
-            ItemStack itemClone = item.clone();
-            BlockStateMeta blockStateMeta = (BlockStateMeta) itemClone.getItemMeta();
-            InventoryHolder inventoryHolder = (InventoryHolder) blockStateMeta.getBlockState();
-            inventoryHolder.getInventory().clear();
-            blockStateMeta.setBlockState((org.bukkit.block.BlockState) inventoryHolder);
-            itemClone.setItemMeta(blockStateMeta);
-            return itemClone;
+        } catch (Throwable ignored) {
         }
         return item;
     }
