@@ -12,7 +12,7 @@ public class TDependency {
 
     // 阿里 http://maven.aliyun.com/nexus/content/groups/public
     // Maven Central
-    public static final String MAVEN_REPO = "https://maven.aliyun.com/repository/central";
+    public static final String MAVEN_REPO = "http://repo1.maven.org/maven2";
 
     /**
      * 请求一个插件作为依赖，这个插件将会在所有已经添加的 Jenkins 仓库、Maven 仓库寻找
@@ -63,27 +63,18 @@ public class TDependency {
         new EagletTask()
                 .url(link)
                 .file(target)
-                .setThreads(getDownloadPoolSize())
-                .setOnError(event -> {
-                })
-                .setOnConnected(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-CONNECTED",
-                        String.join(":", new String[]{groupId, artifactId, version}), ProgressEvent.format(event.getContentLength())))
-                .setOnProgress(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-PROGRESS",
-                        event.getSpeedFormatted(), event.getPercentageFormatted()))
+                .setThreads(1)
+                .setOnError(event -> event.getException().printStackTrace())
+                .setOnConnected(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-CONNECTED", String.join(":", new String[] {groupId, artifactId, version}), ProgressEvent.format(event.getContentLength())))
+                .setOnProgress(event -> TLocale.Logger.info("DEPENDENCY.DOWNLOAD-PROGRESS", event.getSpeedFormatted(), event.getPercentageFormatted()))
                 .setOnComplete(event -> {
                     if (event.isSuccess()) {
-                        TLocale.Logger.info("DEPENDENCY.DOWNLOAD-SUCCESS",
-                                String.join(":", new String[]{groupId, artifactId, version}));
+                        TLocale.Logger.info("DEPENDENCY.DOWNLOAD-SUCCESS", String.join(":", new String[] {groupId, artifactId, version}));
                     } else {
                         failed.set(true);
-                        TLocale.Logger.error("DEPENDENCY.DOWNLOAD-FAILED",
-                                String.join(":", new String[]{groupId, artifactId, version}), link, target.getName());
+                        TLocale.Logger.error("DEPENDENCY.DOWNLOAD-FAILED", String.join(":", new String[] {groupId, artifactId, version}), link, target.getName());
                     }
                 }).start().waitUntil();
         return !failed.get();
-    }
-
-    private static int getDownloadPoolSize() {
-        return Main.getInst().getConfig().getInt("DOWNLOAD-POOL-SIZE", 4);
     }
 }
