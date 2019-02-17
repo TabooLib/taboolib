@@ -188,7 +188,7 @@ public class ItemUtils {
     @SuppressWarnings("deprecation")
     public static Material asMaterial(String args) {
         try {
-            Material material = Material.getMaterial(args);
+            Material material = Material.getMaterial(args.toUpperCase());
             return material != null ? material : Material.getMaterial(Integer.valueOf(args));
         } catch (Exception e) {
             return Material.STONE;

@@ -106,7 +106,7 @@ public class EagletTask {
                     executorService.execute(download);
                     long last = 0;
                     do {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                         // check the progress
                         long progress = download.getCurrentProgress();
                         // fire a new progress event
@@ -116,7 +116,7 @@ public class EagletTask {
                         last = progress;
                         // check complete
                     } while (last != contentLength && !download.isComplete());
-                    // close the thread pool, release resources
+                    // close the thread pool, DoNotSupportMultipleThreadExceptionrelease resources
                     executorService.shutdown();
                     // change the running flag to false
                     running = false;
@@ -137,7 +137,7 @@ public class EagletTask {
                     }
                     long last = 0;
                     do {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                         long progress = 0;
                         // Collect download progress
                         for (SplitDownload splitDownload : splitDownloads) {

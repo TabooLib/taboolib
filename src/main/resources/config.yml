@@ -38,9 +38,6 @@ SERVER: false
 # 网络连接测试地址
 TEST-URL: 'aliyun.com'
 
-# 下载依赖时启用的线程数
-DOWNLOAD-POOL-SIZE: 4
-
 # 玩家列表（TAB-API）是否根据前缀排序
 TABLIST-SORT: true
 

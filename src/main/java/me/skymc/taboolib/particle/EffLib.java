@@ -403,7 +403,12 @@ public enum EffLib {
     /**
      * 挥砍
      */
-    SWEEP_ATTACK("sweepAttack", 45, 9);
+    SWEEP_ATTACK("sweepAttack", 45, 9),
+
+	/**
+	 * 不死图腾
+	 */
+	TOTEM("totem", 46, 11);
 
 	private static final Map<String, EffLib> NAME_MAP = new HashMap<>();
 	private static final Map<Integer, EffLib> ID_MAP = new HashMap<>();
