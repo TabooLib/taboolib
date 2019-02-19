@@ -13,10 +13,16 @@ public class MenuBuilderHolder implements InventoryHolder {
 
     private final boolean lock;
     private final HashMap<Integer, MenuBuilderItem> items;
+    private final Inventory parent;
 
-    public MenuBuilderHolder(boolean lock, HashMap<Integer, MenuBuilderItem> items) {
+    public MenuBuilderHolder(boolean lock, HashMap<Integer, MenuBuilderItem> items, Inventory parent) {
         this.lock = lock;
         this.items = items;
+        this.parent = parent;
+    }
+
+    public MenuBuilderHolder(boolean lock, HashMap<Integer, MenuBuilderItem> items) {
+        this(lock, items, null);
     }
 
     @Override
@@ -36,5 +42,9 @@ public class MenuBuilderHolder implements InventoryHolder {
 
     public HashMap<Integer, MenuBuilderItem> getItems() {
         return items;
+    }
+
+    public Inventory getParent() {
+        return parent;
     }
 }

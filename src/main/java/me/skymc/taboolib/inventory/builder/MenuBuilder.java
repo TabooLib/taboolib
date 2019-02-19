@@ -20,6 +20,7 @@ public class MenuBuilder {
     private boolean lock;
     private String name;
     private int rows = 9;
+    private Inventory parent;
 
     private HashMap<Integer, MenuBuilderItem> items = new HashMap<>();
 
@@ -56,8 +57,13 @@ public class MenuBuilder {
         return this;
     }
 
+    public MenuBuilder parent(Inventory parent) {
+        this.parent = parent;
+        return this;
+    }
+
     public Inventory build() {
-        Inventory inventory = Bukkit.createInventory(new MenuBuilderHolder(lock, items), rows, name);
+        Inventory inventory = Bukkit.createInventory(new MenuBuilderHolder(lock, items, parent), rows, name);
         items.forEach((key, value) -> inventory.setItem(key, value.getItemStack()));
         return inventory;
     }
