@@ -59,7 +59,7 @@ public class TJsonArray implements Iterable<TJsonObject> {
      * @param obj 成员
      */
     public void add(Boolean obj) {
-        jsonArray.add(obj);
+        jsonArray.add(new JsonPrimitive(obj));
     }
 
     /**
@@ -68,7 +68,7 @@ public class TJsonArray implements Iterable<TJsonObject> {
      * @param obj 成员
      */
     public void add(Character obj) {
-        jsonArray.add(obj);
+        jsonArray.add(new JsonPrimitive(obj));
     }
 
     /**
@@ -77,7 +77,7 @@ public class TJsonArray implements Iterable<TJsonObject> {
      * @param obj 成员
      */
     public void add(Number obj) {
-        jsonArray.add(obj);
+        jsonArray.add(new JsonPrimitive(obj));
     }
 
     /**
@@ -86,7 +86,7 @@ public class TJsonArray implements Iterable<TJsonObject> {
      * @param obj 成员
      */
     public void add(String obj) {
-        jsonArray.add(obj);
+        jsonArray.add(new JsonPrimitive(obj));
     }
 
     /**

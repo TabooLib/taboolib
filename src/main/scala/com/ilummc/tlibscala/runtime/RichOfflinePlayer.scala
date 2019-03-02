@@ -1,4 +1,4 @@
-package com.ilummc.tlib.scala.runtime
+package com.ilummc.tlibscala.runtime
 
 import me.skymc.taboolib.Main
 import me.skymc.taboolib.economy.EcoUtils

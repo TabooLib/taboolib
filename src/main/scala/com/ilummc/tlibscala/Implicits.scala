@@ -1,6 +1,6 @@
-package com.ilummc.tlib.scala
+package com.ilummc.tlibscala
 
-import com.ilummc.tlib.scala.runtime.{RichLocation, RichOfflinePlayer, RichPlayer, RichVector}
+import com.ilummc.tlibscala.runtime.{RichLocation, RichOfflinePlayer, RichPlayer, RichVector}
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.bukkit.{Location, OfflinePlayer, World, util}
