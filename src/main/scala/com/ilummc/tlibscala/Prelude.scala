@@ -1,4 +1,4 @@
-package com.ilummc.tlib.scala
+package com.ilummc.tlibscala
 
 import com.ilummc.tlib.resources.TLocale.Logger
 import org.bukkit.Bukkit
