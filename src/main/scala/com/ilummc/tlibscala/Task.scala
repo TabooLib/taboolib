@@ -1,4 +1,4 @@
-package com.ilummc.tlib.scala
+package com.ilummc.tlibscala
 
 import org.bukkit.plugin.Plugin
 

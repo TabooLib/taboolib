@@ -1,4 +1,4 @@
-package com.ilummc.tlib.scala.runtime
+package com.ilummc.tlibscala.runtime
 
 import com.ilummc.tlib.resources.TLocale
 import me.skymc.taboolib.anvil.AnvilContainerAPI

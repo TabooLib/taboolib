@@ -1,8 +1,8 @@
-package com.ilummc.tlib.scala
+package com.ilummc.tlibscala
 
 import org.bukkit.scheduler.BukkitRunnable
 
-private[scala] class ScalaTaskExecutor(task: => Any) extends BukkitRunnable {
+private[tlibscala] class ScalaTaskExecutor(task: => Any) extends BukkitRunnable {
 
   override def run(): Unit = {
     try task catch {

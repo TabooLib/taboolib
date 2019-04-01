@@ -1,6 +1,6 @@
-package com.ilummc.tlib.scala
+package com.ilummc.tlibscala
 
-import com.ilummc.tlib.scala.Prelude._
+import Prelude._
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}
