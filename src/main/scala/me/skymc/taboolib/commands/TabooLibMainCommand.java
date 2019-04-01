@@ -117,6 +117,11 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand itemInfo = new BaseSubCommand() {
 
         @Override
+        public boolean hideInHelp() {
+            return true;
+        }
+
+        @Override
         public String getLabel() {
             return "itemInfo";
         }

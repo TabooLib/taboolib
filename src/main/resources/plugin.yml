@@ -1,6 +1,6 @@
 name: TabooLib
 main: me.skymc.taboolib.Main
-version: ${project.version}
+version: ${version}
 
 authors:
 - 坏黑

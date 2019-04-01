@@ -6,11 +6,11 @@ import com.google.gson.JsonParser;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
+import me.skymc.taboolib.common.schedule.TSchedule;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.player.PlayerUtils;
 import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
 
@@ -34,46 +34,41 @@ public class UpdateTask {
             }
     };
 
-    public UpdateTask() {
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK", true)) {
-                    return;
-                }
-                for (int i = 0; i < updateLocation.length; i++) {
-                    String[] location = updateLocation[i];
-                    String value = FileUtils.getStringFromURL(location[0], null);
-                    if (value == null) {
-                        continue;
-                    }
-                    JsonElement json = new JsonParser().parse(value);
-                    if (json.isJsonArray()) {
-                        JsonObject releaseData = json.getAsJsonArray().get(0).getAsJsonObject();
-                        updateLocationUsing = i;
-                        newVersion = releaseData.get("tag_name").getAsDouble();
-                        // 获取文件长度
-                        for (JsonElement assetData : releaseData.getAsJsonArray("assets")) {
-                            if (assetData instanceof JsonObject && ((JsonObject) assetData).get("name").getAsString().equals("TabooLib-" + newVersion + ".jar")) {
-                                length = ((JsonObject) assetData).get("size").getAsInt();
-                            }
-                        }
-                        if (TabooLib.getPluginVersion() >= newVersion) {
-                            TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
-                        } else {
-                            TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
-                            // 是否启用启动下载
-                            if (Main.getInst().getConfig().getBoolean("UPDATE-DOWNLOAD", false)) {
-                                Bukkit.getScheduler().runTask(TabooLib.instance(), () -> updatePlugin(true, false));
-                            }
-                        }
-                        return;
-                    }
-                }
-                TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
+    @TSchedule(async = true, delay = 100, period = 20 * 60 * 60 * 6)
+    static void update() {
+        if (!Main.getInst().getConfig().getBoolean("UPDATE-CHECK", true)) {
+            return;
+        }
+        for (int i = 0; i < updateLocation.length; i++) {
+            String[] location = updateLocation[i];
+            String value = FileUtils.getStringFromURL(location[0], null);
+            if (value == null) {
+                continue;
             }
-        }.runTaskTimerAsynchronously(Main.getInst(), 100, 20 * 60 * 60 * 6);
+            JsonElement json = new JsonParser().parse(value);
+            if (json.isJsonArray()) {
+                JsonObject releaseData = json.getAsJsonArray().get(0).getAsJsonObject();
+                updateLocationUsing = i;
+                newVersion = releaseData.get("tag_name").getAsDouble();
+                // 获取文件长度
+                for (JsonElement assetData : releaseData.getAsJsonArray("assets")) {
+                    if (assetData instanceof JsonObject && ((JsonObject) assetData).get("name").getAsString().equals("TabooLib-" + newVersion + ".jar")) {
+                        length = ((JsonObject) assetData).get("size").getAsInt();
+                    }
+                }
+                if (TabooLib.getPluginVersion() >= newVersion) {
+                    TLocale.Logger.info("UPDATETASK.VERSION-LATEST");
+                } else {
+                    TLocale.Logger.info("UPDATETASK.VERSION-OUTDATED", String.valueOf(TabooLib.getPluginVersion()), String.valueOf(newVersion));
+                    // 是否启用启动下载
+                    if (Main.getInst().getConfig().getBoolean("UPDATE-DOWNLOAD", false)) {
+                        Bukkit.getScheduler().runTask(TabooLib.instance(), () -> updatePlugin(true, false));
+                    }
+                }
+                return;
+            }
+        }
+        TLocale.Logger.error("UPDATETASK.VERSION-FAIL");
     }
 
     public static boolean isHaveUpdate() {

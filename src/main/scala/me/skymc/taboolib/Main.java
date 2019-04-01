@@ -17,7 +17,6 @@ import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.socket.TabooLibClient;
 import me.skymc.taboolib.socket.TabooLibServer;
 import me.skymc.taboolib.string.language2.Language2;
-import me.skymc.taboolib.update.UpdateTask;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -141,10 +140,6 @@ public class Main extends JavaPlugin {
         started = true;
         // 载入语言文件
         exampleLanguage2 = new Language2("Language2", this);
-        // 更新检测
-        if (!TabooLib.isSilent()) {
-            new UpdateTask();
-        }
     }
 
     @Override
