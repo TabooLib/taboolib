@@ -8,18 +8,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * @Author AgarthaLib
  */
 public class SupportWorldGuard {
+
+    public static final SupportWorldGuard INSTANCE = new SupportWorldGuard();
 
     private WorldGuardPlugin worldGuard;
 

@@ -1,6 +1,7 @@
 package me.skymc.taboolib.commands.builder;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import me.skymc.taboolib.commands.builder.type.CompleterCommand;
 import me.skymc.taboolib.commands.builder.type.CompleterTab;
 import me.skymc.taboolib.commands.internal.TCommandHandler;
@@ -119,8 +120,22 @@ public class SimpleCommandBuilder {
                 aliases,
                 permission,
                 permissionMessage,
-                (sender, command, s, args) -> completerCommand.execute(sender, args),
-                (sender, command, s, args) -> completerTab.execute(sender, args),
+                (sender, command, s, args) -> {
+                    try {
+                        return completerCommand.execute(sender, args);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                    return false;
+                },
+                (sender, command, s, args) -> {
+                    try {
+                        return completerTab.execute(sender, args);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                    return Lists.newArrayList();
+                },
                 silence);
         build = true;
         return this;
