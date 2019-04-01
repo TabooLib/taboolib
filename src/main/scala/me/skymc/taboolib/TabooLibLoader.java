@@ -154,15 +154,18 @@ public class TabooLibLoader implements Listener {
 
     static void setupDatabase() {
         DataUtils.addPluginData("TabooLibrary", null);
-        Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
-        TabooLibDatabase.init();
+        Main.setStorageType(Main.StorageType.LOCAL);
+//        Main.setStorageType(Main.getInst().getConfig().getBoolean("MYSQL.ENABLE") ? Main.StorageType.SQL : Main.StorageType.LOCAL);
+//        TabooLibDatabase.init();
     }
 
     static void setupAddons() {
         TabooLib.instance().saveResource("Addons/TabooLibDeprecated", true);
         // 傻逼 Gradle 的 shadow 插件会将所有 jar 排除
         // https://github.com/johnrengelman/shadow/issues/276
-        new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated").renameTo(new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated.jar"));
+        File from = new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated");
+        from.renameTo(new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated.jar"));
+        from.delete();
         File file = new File(TabooLib.instance().getDataFolder(), "Addons");
         if (file.exists()) {
             Arrays.stream(file.listFiles()).forEach(listFile -> TDependencyLoader.addToPath(TabooLib.instance(), listFile));

@@ -9,6 +9,7 @@ import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.cloud.expansion.Expansion;
 import me.skymc.taboolib.cloud.expansion.ExpansionType;
 import me.skymc.taboolib.common.function.TFunction;
+import me.skymc.taboolib.common.schedule.TSchedule;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.Bukkit;
@@ -41,6 +42,7 @@ public class TCloudLoader {
         }
     }
 
+    @TSchedule(async = true, period = 20 * 60 * 60)
     public static void refresh() {
         Bukkit.getScheduler().runTaskAsynchronously(TabooLib.instance(), () -> {
             long time = System.currentTimeMillis();
