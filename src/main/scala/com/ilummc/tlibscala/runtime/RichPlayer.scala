@@ -32,9 +32,9 @@ class RichPlayer(private val player: Player) extends RichOfflinePlayer(player) {
 
   def displaySidebarUnranked(title: String, elements: String*): Unit = ScoreboardUtil.unrankedSidebarDisplay(player, elements: _*)
 
-  @deprecated def openSign(block: Block): Unit = SignUtils.openSign(player, block)
+  def openSign(block: Block): Unit = SignUtils.openSign(player, block)
 
-  @deprecated def openSign(lines: Array[String], id: String): Unit = SignUtils.openSign(player, lines, id)
+  def openSign(lines: Array[String], id: String): Unit = SignUtils.openSign(player, lines, id)
 
   //todo TagDataHandler
 
@@ -42,11 +42,9 @@ class RichPlayer(private val player: Player) extends RichOfflinePlayer(player) {
 
   def removePermission(perm: String): Unit = PermissionUtils.removePermission(player, perm)
 
-  def sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int): Unit =
-    TitleUtils.sendTitle(player, title, subtitle, fadein, stay, fadeout)
+  def sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int): Unit = TitleUtils.sendTitle(player, title, subtitle, fadein, stay, fadeout)
 
-  def sendTitle(p: Player, title: String, fadeint: Int, stayt: Int, fadeoutt: Int, subtitle: String, fadeinst: Int, stayst: Int, fadeoutst: Int): Unit =
-    TitleUtils.sendTitle(p, title, fadeint, stayt, fadeoutt, subtitle, fadeinst, stayst, fadeoutst)
+  def sendTitle(p: Player, title: String, fadeint: Int, stayt: Int, fadeoutt: Int, subtitle: String, fadeinst: Int, stayst: Int, fadeoutst: Int): Unit = TitleUtils.sendTitle(p, title, fadeint, stayt, fadeoutt, subtitle, fadeinst, stayst, fadeoutst)
 
   def openAnvil(): Unit = AnvilContainerAPI.openAnvil(player)
 

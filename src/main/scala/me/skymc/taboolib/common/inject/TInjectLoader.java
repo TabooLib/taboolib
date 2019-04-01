@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class TInjectLoader implements TabooLibLoader.Loader {
 
-    private static Map<Class<?>, TInjectTask> injectTypes = Maps.newHashMap();
+    private static Map<Class<?>, TInjectTask> injectTypes = Maps.newLinkedHashMap();
 
     static {
         // Instance Inject
@@ -50,11 +50,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // TConfiguration Inject
         injectTypes.put(TConfiguration.class, (plugin, field, args, instance) -> {
             try {
-                if (args.length == 0) {
-                    TLogger.getGlobalLogger().error("Invalid inject arguments: " + field.getName() + " (" + field.getType().getName() + ")");
-                } else {
-                    field.set(instance, TConfiguration.createInResource(plugin, args[0]));
-                }
+                field.set(instance, TConfiguration.createInResource(plugin, args.length == 0 ? "config.yml" : args[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
