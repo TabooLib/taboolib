@@ -6,12 +6,15 @@ package me.skymc.taboolib.common.serialize;
  */
 public interface TSerializable {
 
-    void read(String fieldName, String value);
+    default void read(String fieldName, String value) {
+    }
 
-    String write(String fieldName, Object value);
+    default String write(String fieldName, Object value) {
+        return null;
+    }
 
-    default void read(String value) {
-        TSerializer.read(this, value);
+    default Object read(String value) {
+        return TSerializer.read(this, value);
     }
 
     default String write() {

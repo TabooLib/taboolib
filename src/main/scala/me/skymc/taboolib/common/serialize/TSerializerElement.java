@@ -8,7 +8,7 @@ public interface TSerializerElement<T> {
 
     T read(String value);
 
-    String write(Object value);
+    String write(T value);
 
     boolean matches(Class objectClass);
 
