@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 public class SoundPack {
 
     private Sound sound;
-    private float a;
-    private float b;
+    private Float a;
+    private Float b;
     private int delay;
 
     /**
@@ -70,11 +70,11 @@ public class SoundPack {
         return sound;
     }
 
-    public float getA() {
+    public Float getA() {
         return a;
     }
 
-    public float getB() {
+    public Float getB() {
         return b;
     }
 
