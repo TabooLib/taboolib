@@ -9,6 +9,7 @@
   + [TConfiguration](TConfiguration.md)
   + [TPacket](TPacket.md)
   + [TInject](TInject.md)
+  + [TSerializer](TSerializer.md)
   + [ItemBuilder](ItemBuilder.md)
   + [MenuBuilder](MenuBuilder.md)
   + [SimpleCommandBuilder](SimpleCommandBuilder.md)
