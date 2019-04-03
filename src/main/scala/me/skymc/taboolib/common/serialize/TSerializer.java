@@ -29,6 +29,9 @@ public class TSerializer {
                 for (Map.Entry<String, JsonElement> jsonElementEntry : serializeObject.entrySet()) {
                     try {
                         Field declaredField = serializable.getClass().getDeclaredField(jsonElementEntry.getKey());
+                        if (declaredField.isAnnotationPresent(DoNotSerialize.class)) {
+                            continue;
+                        }
                         declaredField.setAccessible(true);
                         Optional<TSerializerElementGeneral> serializer = Arrays.stream(TSerializerElementGeneral.values()).filter(serializerElements -> serializerElements.getSerializer().matches(declaredField.getType())).findFirst();
                         if (serializer.isPresent()) {
@@ -56,13 +59,13 @@ public class TSerializer {
         JsonObject serializeObject = new JsonObject();
         for (Field declaredField : serializable.getClass().getDeclaredFields()) {
             try {
-                if (!Modifier.isStatic(declaredField.getModifiers())) {
+                if (!declaredField.isAnnotationPresent(DoNotSerialize.class) && !Modifier.isStatic(declaredField.getModifiers())) {
                     declaredField.setAccessible(true);
-                    Optional<TSerializerElementGeneral> serializer = Arrays.stream(TSerializerElementGeneral.values()).filter(serializerElements -> serializerElements.getSerializer().matches(declaredField.getType())).findFirst();
                     Object o = declaredField.get(serializable);
                     if (o == null) {
                         continue;
                     }
+                    Optional<TSerializerElementGeneral> serializer = Arrays.stream(TSerializerElementGeneral.values()).filter(serializerElements -> serializerElements.getSerializer().matches(declaredField.getType())).findFirst();
                     if (serializer.isPresent()) {
                         serializeObject.addProperty(declaredField.getName(), serializer.get().getSerializer().write(o));
                     } else {
