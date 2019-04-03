@@ -38,13 +38,20 @@ public class TSerializerExample {
          * 基本类型不需要手动进行序列化
          * 包含: String、int、short、long、double、float、boolean、ItemStack、Location
          */
-        private String text;
-        private int number;
+        private String text = "123";
+        private int number = 100;
+
         /**
          * 特殊类型需要进行手动序列化
          * 本工具提供了基本容器的序列化方法
          */
-        private List<Double> list = Lists.newArrayList();
+        private List<Double> list = Lists.newArrayList(1.0, 2.0, 3.0);
+
+        /**
+         * 跳过序列化
+         */
+        @DoNotSerialize
+        private String ignoreSerialize = "aaa";
 
         /**
          * 基本类型不会执行以下两个方法
@@ -79,6 +86,7 @@ public class TSerializerExample {
                     "text='" + text + '\'' +
                     ", number=" + number +
                     ", list=" + list +
+                    ", ignoreSerialize='" + ignoreSerialize + '\'' +
                     '}';
         }
     }
