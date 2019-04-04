@@ -31,16 +31,6 @@ public class SQLiteColumn extends IColumn {
     }
 
     /**
-     * CHAR 类型常用构造器
-     *
-     * @param columnType
-     * @param columnName
-     */
-    public SQLiteColumn(SQLiteColumnType columnType, int m, String columnName) {
-        this(columnType, m, 0, columnName, null);
-    }
-
-    /**
      * 主键 类型常用构造器
      * new SQLColumn(SQLiteColumnType.TEXT, "username", SQLiteColumnOption.PRIMARY_KEY, SQLiteColumnOption.AUTO_INCREMENT);
      */
@@ -54,6 +44,10 @@ public class SQLiteColumn extends IColumn {
      */
     public SQLiteColumn(SQLiteColumnType columnType, String columnName, Object defaultValue) {
         this(columnType, 0, 0, columnName, defaultValue);
+    }
+
+    public SQLiteColumn(SQLiteColumnType columnType, String columnName, Object defaultValue, SQLiteColumnOption... columnOptions) {
+        this(columnType, 0, 0, columnName, defaultValue, columnOptions);
     }
 
     /**

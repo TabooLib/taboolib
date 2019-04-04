@@ -1,9 +1,11 @@
 package me.skymc.taboolib.common.serialize;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 坏黑
@@ -17,13 +19,13 @@ public class TSerializerExample {
         // 修改参数
         date.number = 100;
         // 序列化
-        String value = date.write();
+        String value = date.writeBase64();
         // 打印
         System.out.println(value);
         // 创建新的对象
         SimpleData dataCopy = new SimpleData();
         // 反序列化
-        dataCopy.read(value);
+        dataCopy.readBase64(value);
         // 打印
         System.out.println(dataCopy);
     }
@@ -43,9 +45,13 @@ public class TSerializerExample {
 
         /**
          * 特殊类型需要进行手动序列化
-         * 本工具提供了基本容器的序列化方法
+         * 标注 @TSerializeCollection 或 @TSerializeMap 来进行自动序列化（未完成）
          */
+//        @TSerializeCollection
         private List<Double> list = Lists.newArrayList(1.0, 2.0, 3.0);
+
+//        @TSerializeMap
+        private Map<String, String> map = ImmutableMap.of("abc", "def");
 
         /**
          * 跳过序列化
@@ -59,23 +65,16 @@ public class TSerializerExample {
          */
         @Override
         public void read(String fieldName, String value) {
-            switch (fieldName) {
-                case "list": {
-                    // List 类型可以直接通过 TSerializer 提供的预设方法进行反序列化
-                    TSerializer.readCollection(list, value, TSerializerElementGeneral.DOUBLE);
-                    break;
-                }
-                default:
+            if (fieldName.equals("list")) {
+                // List 类型可以直接通过 TSerializer 提供的预设方法进行反序列化
+                TSerializer.readCollection(list, value, TSerializerElementGeneral.DOUBLE);
             }
         }
 
         @Override
         public String write(String fieldName, Object value) {
-            switch (fieldName) {
-                case "list": {
-                    // 序列化同理
-                    return TSerializer.writeCollection((Collection) value, TSerializerElementGeneral.DOUBLE);
-                }
+            if (fieldName.equals("list")) {
+                return TSerializer.writeCollection((Collection) value, TSerializerElementGeneral.DOUBLE);
             }
             return null;
         }

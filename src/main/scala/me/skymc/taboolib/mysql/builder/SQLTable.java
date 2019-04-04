@@ -49,11 +49,11 @@ public class SQLTable {
     }
 
     public String deleteQuery() {
-        return Strings.replaceWithOrder("drop table if exists `{0}`" + tableName);
+        return Strings.replaceWithOrder("drop table if exists `{0}`", tableName);
     }
 
     public String cleanQuery() {
-        return Strings.replaceWithOrder("delete from `{0}`" + tableName);
+        return Strings.replaceWithOrder("delete from `{0}`", tableName);
     }
 
     public String truncateQuery() {

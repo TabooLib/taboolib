@@ -32,9 +32,7 @@ public class SQLColumn extends IColumn {
 
     /**
      * CHAR 类型常用构造器
-     *
-     * @param columnType
-     * @param columnName
+     * new SQLColumn(SQLColumnType.CHAR, 1, "data");
      */
     public SQLColumn(SQLColumnType columnType, int m, String columnName) {
         this(columnType, m, 0, columnName, null);
@@ -54,6 +52,10 @@ public class SQLColumn extends IColumn {
      */
     public SQLColumn(SQLColumnType columnType, String columnName, Object defaultValue) {
         this(columnType, 0, 0, columnName, defaultValue);
+    }
+
+    public SQLColumn(SQLColumnType columnType, String columnName, Object defaultValue, SQLColumnOption... columnOptions) {
+        this(columnType, 0, 0, columnName, defaultValue, columnOptions);
     }
 
     /**
