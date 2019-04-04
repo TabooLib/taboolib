@@ -29,10 +29,10 @@ public class TSerializer {
                 for (Map.Entry<String, JsonElement> jsonElementEntry : serializeObject.entrySet()) {
                     try {
                         Field declaredField = serializable.getClass().getDeclaredField(jsonElementEntry.getKey());
+                        declaredField.setAccessible(true);
                         if (declaredField.isAnnotationPresent(DoNotSerialize.class)) {
                             continue;
                         }
-                        declaredField.setAccessible(true);
                         Optional<TSerializerElementGeneral> serializer = Arrays.stream(TSerializerElementGeneral.values()).filter(serializerElements -> serializerElements.getSerializer().matches(declaredField.getType())).findFirst();
                         if (serializer.isPresent()) {
                             declaredField.set(serializable, serializer.get().getSerializer().read(jsonElementEntry.getValue().getAsString()));
