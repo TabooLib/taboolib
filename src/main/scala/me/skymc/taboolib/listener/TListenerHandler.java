@@ -47,7 +47,7 @@ public class TListenerHandler implements Listener {
      */
     public static void setupListener(Plugin plugin) {
         for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {
-            if (org.bukkit.event.Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
+            if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
                 try {
                     TListener tListener = pluginClass.getAnnotation(TListener.class);
                     // 检查注册条件

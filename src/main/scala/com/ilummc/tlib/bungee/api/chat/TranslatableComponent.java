@@ -69,11 +69,11 @@ public final class TranslatableComponent extends BaseComponent {
      * Creates a translatable component with the passed substitutions
      *
      * @param translate the translation key
-     * @param with      the {@link java.lang.String}s and
+     * @param with      the {@link String}s and
      *                  {@link BaseComponent}s to use into the
      *                  translation
      * @see #translate
-     * @see #setWith(java.util.List)
+     * @see #setWith(List)
      */
     public TranslatableComponent(String translate, Object... with) {
         setTranslate(translate);
