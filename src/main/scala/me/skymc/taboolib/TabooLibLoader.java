@@ -160,11 +160,13 @@ public class TabooLibLoader implements Listener {
     }
 
     static void setupAddons() {
-        TabooLib.instance().saveResource("Addons/TabooLibDeprecated", true);
+        File origin = new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated.jar");
+        origin.delete();
         // 傻逼 Gradle 的 shadow 插件会将所有 jar 排除
         // https://github.com/johnrengelman/shadow/issues/276
+        TabooLib.instance().saveResource("Addons/TabooLibDeprecated", true);
         File from = new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated");
-        from.renameTo(new File(TabooLib.instance().getDataFolder(), "Addons/TabooLibDeprecated.jar"));
+        from.renameTo(origin);
         from.delete();
         File file = new File(TabooLib.instance().getDataFolder(), "Addons");
         if (file.exists()) {

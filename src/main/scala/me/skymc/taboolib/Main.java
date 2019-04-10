@@ -7,6 +7,7 @@ import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
+import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListenerHandler;
@@ -16,8 +17,6 @@ import me.skymc.taboolib.other.NumberUtils;
 import me.skymc.taboolib.playerdata.DataUtils;
 import me.skymc.taboolib.socket.TabooLibClient;
 import me.skymc.taboolib.socket.TabooLibServer;
-import me.skymc.taboolib.string.language2.Language2;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -45,11 +44,9 @@ public class Main extends JavaPlugin {
     }
 
     private static Plugin inst;
-    private static Economy economy;
     private static File playerDataFolder;
     private static File serverDataFolder;
     private static StorageType storageType = StorageType.LOCAL;
-    private static Language2 exampleLanguage2;
     private static boolean disable = false;
     private static boolean started = false;
     private static boolean isInternetOnline = false;
@@ -138,8 +135,6 @@ public class Main extends JavaPlugin {
         }.runTask(this);
         // 启动
         started = true;
-        // 载入语言文件
-        exampleLanguage2 = new Language2("Language2", this);
     }
 
     @Override
@@ -198,14 +193,6 @@ public class Main extends JavaPlugin {
         return "§8[§3§lTabooLib§8] §7";
     }
 
-    public static net.milkbowl.vault.economy.Economy getEconomy() {
-        return economy;
-    }
-
-    public static void setEconomy(Economy economy) {
-        Main.economy = economy;
-    }
-
     public static File getPlayerDataFolder() {
         return playerDataFolder;
     }
@@ -222,24 +209,8 @@ public class Main extends JavaPlugin {
         return disable;
     }
 
-    public static MySQLConnection getConnection() {
-        return null;
-    }
-
-    public static Language2 getExampleLanguage2() {
-        return exampleLanguage2;
-    }
-
     public static boolean isStarted() {
         return started;
-    }
-
-    public static Random getRandom() {
-        return NumberUtils.getRandom();
-    }
-
-    public static String getTablePrefix() {
-        return inst.getConfig().getString("MYSQL.PREFIX");
     }
 
     public static boolean isInternetOnline() {
@@ -252,6 +223,26 @@ public class Main extends JavaPlugin {
 
     public static boolean isLibrariesExists() {
         return TLib.getTLib().getLibsFolder().listFiles().length > 0;
+    }
+
+    @Deprecated
+    public static Random getRandom() {
+        return NumberUtils.getRandom();
+    }
+
+    @Deprecated
+    public static String getTablePrefix() {
+        return inst.getConfig().getString("MYSQL.PREFIX");
+    }
+
+    @Deprecated
+    public static MySQLConnection getConnection() {
+        return null;
+    }
+
+    @Deprecated
+    public static net.milkbowl.vault.economy.Economy getEconomy() {
+        return EcoUtils.getEconomy();
     }
 
     // *********************************
