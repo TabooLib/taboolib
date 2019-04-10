@@ -19,6 +19,7 @@ public class RunnableQuery {
     private TaskStatement statement;
     private TaskResult result;
     private TaskResult resultNext;
+    private TaskResult resultAutoNext;
     private Connection connection;
     private boolean autoClose;
     private String query;
@@ -44,6 +45,11 @@ public class RunnableQuery {
 
     public RunnableQuery resultNext(TaskResult result) {
         this.resultNext = result;
+        return this;
+    }
+
+    public RunnableQuery resultAutoNext(TaskResult result) {
+        this.resultAutoNext = result;
         return this;
     }
 
@@ -113,6 +119,12 @@ public class RunnableQuery {
             return resultNext.execute(resultSet);
         } else if (result != null) {
             return result.execute(resultSet);
+        } else if (resultAutoNext != null) {
+            Object result = null;
+            while (resultSet.next()) {
+                result = resultAutoNext.execute(resultSet);
+            }
+            return result;
         } else {
             return null;
         }
