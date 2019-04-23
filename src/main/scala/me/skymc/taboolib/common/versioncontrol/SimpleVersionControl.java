@@ -116,7 +116,7 @@ public class SimpleVersionControl {
         ClassReader classReader = new ClassReader(FileUtils.getResource(plugin, target.replace(".", "/") + ".class"));
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
-        classReader.accept(classVisitor, 0);
+        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         classWriter.visitEnd();
         classVisitor.visitEnd();
         Class<?> newClass = AsmClassLoader.createNewClass(target, classWriter.toByteArray());
