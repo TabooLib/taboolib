@@ -6,6 +6,7 @@ import com.ilummc.tlib.resources.TLocale;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.string.ArrayUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -53,6 +54,14 @@ public class TellrawJson {
 
     public static TellrawJson create() {
         return new TellrawJson();
+    }
+
+    public void broadcast() {
+        Bukkit.getOnlinePlayers().forEach(player -> send(player, new String[0]));
+    }
+
+    public void broadcast(String... args) {
+        Bukkit.getOnlinePlayers().forEach(player -> send(player, args));
     }
 
     public void send(CommandSender sender) {

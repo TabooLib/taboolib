@@ -8,6 +8,8 @@ import me.skymc.taboolib.commands.builder.SimpleCommandBuilder;
 import me.skymc.taboolib.common.configuration.TConfiguration;
 import me.skymc.taboolib.common.packet.TPacketHandler;
 import me.skymc.taboolib.common.packet.TPacketListener;
+import me.skymc.taboolib.cooldown.seconds.CooldownPack2;
+import me.skymc.taboolib.cooldown.seconds.CooldownUtils2;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -70,6 +72,14 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        });
+        // CooldownPack Inject
+        injectTypes.put(CooldownPack2.class, (plugin, field, args, instance) -> {
+           try {
+               CooldownUtils2.register((CooldownPack2) field.get(instance), plugin);
+           } catch (Throwable t) {
+               t.printStackTrace();
+           }
         });
     }
 
