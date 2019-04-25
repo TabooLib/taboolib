@@ -52,6 +52,10 @@ public class TLocale {
         Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, sender, args, clazz));
     }
 
+    public static void broadcast(String path, String... args) {
+        Ref.getCallerClass(3).ifPresent(clazz -> Bukkit.getOnlinePlayers().forEach(player -> sendTo(path, player, args, clazz)));
+    }
+
     public static String asString(String path, String... args) {
         try {
             return asString(path, Ref.getCallerClass(3).orElse(Main.class), args);
@@ -117,6 +121,14 @@ public class TLocale {
 
         public static List<String> setColored(List<String> args) {
             return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
+        }
+
+        public static String setUncolored(String args) {
+            return ChatColor.stripColor(args);
+        }
+
+        public static List<String> setUncolored(List<String> args) {
+            return args.stream().map(ChatColor::stripColor).collect(Collectors.toList());
         }
 
         public static String setPlaceholders(CommandSender sender, String args) {
