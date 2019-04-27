@@ -16,99 +16,55 @@ import java.util.stream.IntStream;
  */
 public abstract class BaseSubCommand {
 
-    /**
-     * 指令名
-     *
-     * @return 文本
-     */
-    abstract public String getLabel();
+    private String label;
 
-    /**
-     * 指令描述
-     *
-     * @return 文本
-     */
-    abstract public String getDescription();
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-    /**
-     * 指令参数
-     *
-     * @return {@link CommandArgument}
-     */
-    abstract public CommandArgument[] getArguments();
+    public String getLabel() {
+        return label;
+    }
 
-    /**
-     * 指令执行方法
-     *
-     * @param sender  指令使用者
-     * @param command 指令对象
-     * @param label   主命令
-     * @param args    参数（不含主命令及子命令）
-     */
-    abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
+    public String getDescription() {
+        return null;
+    }
 
-    /**
-     * 指令执行者
-     *
-     * @return {@link CommandType}
-     */
+    public String[] getAliases() {
+        return new String[0];
+    }
+
+    public CommandArgument[] getArguments() {
+        return new CommandArgument[0];
+    }
+
     public CommandType getType() {
         return CommandType.ALL;
     }
 
-    /**
-     * 参数是否屏蔽子命令名
-     *
-     * @return boolean
-     */
     public boolean ignoredLabel() {
         return true;
     }
 
-    /**
-     * 是否需要玩家在线
-     *
-     * @return boolean
-     */
     public boolean requiredPlayer() {
         return false;
     }
 
-    /**
-     * 需要权限
-     *
-     * @return boolean
-     */
     public String getPermission() {
         return null;
     }
 
-    /**
-     * 参数是否符合
-     *
-     * @param args 参数
-     * @return boolean
-     */
+    public boolean hideInHelp() {
+        return false;
+    }
+
     public boolean isParameterConform(String[] args) {
         return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
     }
 
-    /**
-     * 获取帮助文本
-     *
-     * @param label 子命令标题
-     * @return String
-     */
     public String getCommandString(String label) {
-        return TLocale.asString("COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
+        return TLocale.asString(getDescription() == null ? "COMMANDS.INTERNAL.COMMAND-HELP-EMPTY" : "COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
     }
 
-    /**
-     * 是否在命令帮助中隐藏
-     *
-     * @return boolean
-     */
-    public boolean hideInHelp() {
-        return false;
-    }
+    abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
 }

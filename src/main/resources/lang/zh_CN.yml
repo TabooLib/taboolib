@@ -173,6 +173,7 @@ COMMANDS:
 #    COMMAND-CREATE: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册到服务器'
 #    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册 &f{2} &7条子命令'
     COMMAND-HELP: ' §f/{0} {1} {2}§6- §e{3}'
+    COMMAND-HELP-EMPTY: ' §f/{0} {1} {2}'
     COMMAND-ARGUMENT: '§7<§8{0}§7>'
     COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
   PARAMETER:
