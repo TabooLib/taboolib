@@ -31,13 +31,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     private List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
     private List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
 
-    /**
-     * 指令标题
-     *
-     * @return 文本
-     */
-    abstract public String getCommandTitle();
-
     public static BaseMainCommand createCommandExecutor(String command, BaseMainCommand baseMainCommand) {
         Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\" not found");
         Preconditions.checkArgument(baseMainCommand != null, "Executor cannot be null");
@@ -71,14 +64,16 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             fields.forEach(commandField -> {
                 try {
                     commandField.getField().setAccessible(true);
-                    baseMainCommand.registerSubCommand((BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance()));
+                    BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
+                    subCommand.setLabel(commandField.getField().getName());
+                    baseMainCommand.registerSubCommand(subCommand);
                 } catch (Exception ignored) {
                 }
             });
         }
         if (methods.size() + fields.size() > 0) {
             TabooLib.debug("Registered " + (methods.size() + fields.size()) + " sub-command with " + baseMainCommand.getRegisterCommand().getName() + " (" + baseMainCommand.getRegisterCommand().getPlugin().getName() + ")");
-//            TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size() + fields.size()));
+//          TLocale.Logger.info("COMMANDS.INTERNAL.COMMAND-REGISTER", baseMainCommand.getRegisterCommand().getPlugin().getName(), baseMainCommand.getRegisterCommand().getName(), String.valueOf(methods.size() + fields.size()));
         }
     }
 
@@ -107,6 +102,16 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         subCommands.add(subCommand);
     }
 
+    public void onCommandHelp(CommandSender sender, Command command, String label, String[] args) {
+        sender.sendMessage(getEmptyLine());
+        sender.sendMessage(getCommandTitle());
+        sender.sendMessage(getEmptyLine());
+        subCommands.stream().filter(subCommands -> !hideInHelp(subCommands) && hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
+        sender.sendMessage(getEmptyLine());
+    }
+
+    abstract public String getCommandTitle();
+
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
         return args.length == 1 ? subCommands.stream().filter(subCommand -> !hideInHelp(subCommand) && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList()) : null;
@@ -115,10 +120,10 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            helpCommand(sender, label);
+            onCommandHelp(sender, command, label, args);
         } else {
             for (BaseSubCommand subCommand : subCommands) {
-                if (subCommand == null || !args[0].equalsIgnoreCase(subCommand.getLabel()) || !hasPermission(sender, subCommand)) {
+                if (subCommand == null || !(args[0].equalsIgnoreCase(subCommand.getLabel()) || Arrays.stream(subCommand.getAliases()).anyMatch(args[0]::equalsIgnoreCase)) || !hasPermission(sender, subCommand)) {
                     continue;
                 }
                 if (!isConfirmType(sender, subCommand.getType())) {
@@ -183,14 +188,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         return commandType == CommandType.ALL
                 || (sender instanceof Player && commandType == CommandType.PLAYER)
                 || (sender instanceof ConsoleCommandSender && commandType == CommandType.CONSOLE);
-    }
-
-    private void helpCommand(CommandSender sender, String label) {
-        sender.sendMessage(getEmptyLine());
-        sender.sendMessage(getCommandTitle());
-        sender.sendMessage(getEmptyLine());
-        subCommands.stream().filter(subCommands -> !hideInHelp(subCommands) && hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
-        sender.sendMessage(getEmptyLine());
     }
 
     private void disguisedPlugin() {
