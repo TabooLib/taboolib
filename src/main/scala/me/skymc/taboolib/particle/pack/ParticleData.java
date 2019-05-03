@@ -40,7 +40,7 @@ public class ParticleData {
                 if (matcher.find()) {
                     particle = EffLib.fromName(matcher.group(1));
                     particleType = ParticleType.ITEM;
-                    particleData = particle.getName().startsWith("block") ? new EffLib.BlockData(ItemUtils.asMaterial(matcher.group(2).toUpperCase()), NumberConversions.toByte(matcher.group(3))) : new EffLib.ItemData(ItemUtils.asMaterial(matcher.group(2).toUpperCase()), NumberConversions.toByte(matcher.group(3)));
+                    particleData = isBlockParticle(particle.getName()) ? new EffLib.BlockData(ItemUtils.asMaterial(matcher.group(2).toUpperCase()), NumberConversions.toByte(matcher.group(3))) : new EffLib.ItemData(ItemUtils.asMaterial(matcher.group(2).toUpperCase()), NumberConversions.toByte(matcher.group(3)));
                 } else {
                     particle = EffLib.fromName(split[0]);
                 }
@@ -69,5 +69,9 @@ public class ParticleData {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    private boolean isBlockParticle(String name) {
+        return name.equalsIgnoreCase("blockdust") || name.equalsIgnoreCase("blockcrack") || name.equalsIgnoreCase("iconcrack") || name.equalsIgnoreCase("fallingdust");
     }
 }
