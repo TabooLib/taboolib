@@ -405,7 +405,7 @@ public enum EffLib {
     /**
      * 掉落方块
      */
-    FALLING_DUST("falling_dust", 46, 11, ParticleProperty.REQUIRES_DATA),
+    FALLING_DUST("fallingdust", 46, 11, ParticleProperty.REQUIRES_DATA),
 
     /**
      * 不死图腾
@@ -726,13 +726,15 @@ public enum EffLib {
      *
      * @param color  Color of the particle
      * @param center Center location of the effect
+     * @param speed     Display speed of the particle
+     * @param amount  Amount of particles
      * @param range  Range of the visibility
      * @throws ParticleVersionException If the particle effect is not supported by the server version
      * @throws ParticleColorException   If the particle effect is not colorable or the color type is incorrect
      * @see ParticlePacket#ParticlePacket(EffLib, ParticleColor, boolean)
      * @see ParticlePacket#sendTo(Location, double)
      */
-    public void display(ParticleColor color, Location center, double range) throws ParticleVersionException, ParticleColorException {
+    public void display(ParticleColor color, Location center, float speed, int amount, double range) throws ParticleVersionException, ParticleColorException {
         if (!isSupported()) {
             throw new ParticleVersionException("This particle effect is not supported by your server version");
         }
@@ -742,7 +744,7 @@ public enum EffLib {
         if (!isColorCorrect(this, color)) {
             throw new ParticleColorException("The particle color type is incorrect");
         }
-        new ParticlePacket(this, color, range > 256).sendTo(center, range);
+        new ParticlePacket(this, color, speed, amount, range > 256).sendTo(center, range);
     }
 
     /**
@@ -757,6 +759,23 @@ public enum EffLib {
      * @see ParticlePacket#sendTo(Location, List)
      */
     public void display(ParticleColor color, Location center, List<Player> players) throws ParticleVersionException, ParticleColorException {
+        display(color, center, 1, 0, players);
+    }
+
+    /**
+     * Displays a single particle which is colored and only visible for the specified players
+     *
+     * @param color   Color of the particle
+     * @param center  Center location of the effect
+     * @param speed     Display speed of the particle
+     * @param amount  Amount of particles
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleColorException   If the particle effect is not colorable or the color type is incorrect
+     * @see ParticlePacket#ParticlePacket(EffLib, ParticleColor, boolean)
+     * @see ParticlePacket#sendTo(Location, List)
+     */
+    public void display(ParticleColor color, Location center, float speed, int amount, List<Player> players) throws ParticleVersionException, ParticleColorException {
         if (!isSupported()) {
             throw new ParticleVersionException("This particle effect is not supported by your server version");
         }
@@ -781,6 +800,22 @@ public enum EffLib {
      */
     public void display(ParticleColor color, Location center, Player... players) throws ParticleVersionException, ParticleColorException {
         display(color, center, Arrays.asList(players));
+    }
+
+    /**
+     * Displays a single particle which is colored and only visible for the specified players
+     *
+     * @param color   Color of the particle
+     * @param center  Center location of the effect
+     * @param speed     Display speed of the particle
+     * @param amount  Amount of particles
+     * @param players Receivers of the effect
+     * @throws ParticleVersionException If the particle effect is not supported by the server version
+     * @throws ParticleColorException   If the particle effect is not colorable or the color type is incorrect
+     * @see #display(ParticleColor, Location, List)
+     */
+    public void display(ParticleColor color, Location center, float speed, int amount, Player... players) throws ParticleVersionException, ParticleColorException {
+        display(color, center, speed, amount, Arrays.asList(players));
     }
 
     /**
@@ -1409,7 +1444,20 @@ public enum EffLib {
          * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
          */
         public ParticlePacket(EffLib effect, ParticleColor color, boolean longDistance) {
-            this(effect, color.getValueX(), color.getValueY(), color.getValueZ(), 1, 0, longDistance, null);
+            this(effect, color, 1, 0, longDistance);
+        }
+
+        /**
+         * Construct a new particle packet of a single colored particle
+         *
+         * @param effect       Particle effect
+         * @param color        Color of the particle
+         * @param speed        Display speed of the particle
+         * @param amount       Amount of particles
+         * @param longDistance Indicates whether the maximum distance is increased from 256 to 65536
+         */
+        public ParticlePacket(EffLib effect, ParticleColor color, float speed, int amount, boolean longDistance) {
+            this(effect, color.getValueX(), color.getValueY(), color.getValueZ(), speed, amount, longDistance, null);
             if (effect == EffLib.REDSTONE && color instanceof OrdinaryColor && ((OrdinaryColor) color).getRed() == 0) {
                 offsetX = Float.MIN_NORMAL;
             }
