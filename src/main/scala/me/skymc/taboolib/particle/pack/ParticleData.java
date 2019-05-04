@@ -72,6 +72,6 @@ public class ParticleData {
     }
 
     private boolean isBlockParticle(String name) {
-        return name.equalsIgnoreCase("blockdust") || name.equalsIgnoreCase("blockcrack") || name.equalsIgnoreCase("iconcrack") || name.equalsIgnoreCase("fallingdust");
+        return name.equalsIgnoreCase("blockdust") || name.equalsIgnoreCase("blockcrack") || name.equalsIgnoreCase("fallingdust");
     }
 }

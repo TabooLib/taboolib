@@ -556,7 +556,7 @@ public enum EffLib {
      * @return Whether the data type is correct or not
      */
     private static boolean isDataCorrect(EffLib effect, ParticleData data) {
-        return ((effect == BLOCK_CRACK || effect == BLOCK_DUST) && data instanceof BlockData) || (effect == ITEM_CRACK && data instanceof ItemData);
+        return ((effect == BLOCK_CRACK || effect == BLOCK_DUST || effect == FALLING_DUST) && data instanceof BlockData) || ((effect == ITEM_CRACK) && data instanceof ItemData);
     }
 
     /**
