@@ -2,6 +2,8 @@ package me.skymc.taboolib.common.serialize;
 
 import ch.njol.skript.classes.ConfigurationSerializer;
 import com.google.gson.*;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.lang.reflect.Field;
@@ -148,5 +150,22 @@ public class TSerializer {
             }
         }
         return jsonArray.toString();
+    }
+
+    public static String serializeCS(ConfigurationSerializable o) {
+        YamlConfiguration y = new YamlConfiguration();
+        y.set("value", o);
+        return y.saveToString();
+    }
+
+    public static <T extends ConfigurationSerializable> T deserializeCS(String s, Class<T> c) {
+        YamlConfiguration y = new YamlConfiguration();
+        try {
+            y.loadFromString(s);
+        } catch (InvalidConfigurationException var4) {
+            return null;
+        }
+        Object o = y.get("value");
+        return !c.isInstance(o) ? null : (T) o;
     }
 }
