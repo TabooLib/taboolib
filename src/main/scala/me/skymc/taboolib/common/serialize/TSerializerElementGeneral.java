@@ -1,6 +1,5 @@
 package me.skymc.taboolib.common.serialize;
 
-import ch.njol.skript.classes.ConfigurationSerializer;
 import me.skymc.taboolib.other.NumberUtils;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -173,12 +172,12 @@ public enum TSerializerElementGeneral {
 
         @Override
         public ItemStack read(String value) {
-            return ConfigurationSerializer.deserializeCS(value, ItemStack.class);
+            return TSerializer.deserializeCS(value, ItemStack.class);
         }
 
         @Override
         public String write(Object value) {
-            return ConfigurationSerializer.serializeCS((ItemStack) value);
+            return TSerializer.serializeCS((ItemStack) value);
         }
 
         @Override
@@ -191,12 +190,12 @@ public enum TSerializerElementGeneral {
 
         @Override
         public Location read(String value) {
-            return ConfigurationSerializer.deserializeCS(value, Location.class);
+            return TSerializer.deserializeCS(value, Location.class);
         }
 
         @Override
         public String write(Object value) {
-            return ConfigurationSerializer.serializeCS((Location) value);
+            return TSerializer.serializeCS((Location) value);
         }
 
         @Override
