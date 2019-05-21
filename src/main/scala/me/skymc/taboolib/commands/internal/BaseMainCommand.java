@@ -96,7 +96,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public void registerSubCommand(BaseSubCommand subCommand) {
         if (subCommand != null) {
             Preconditions.checkArgument(subCommand.getLabel() != null, "Command label can not be null");
-            Preconditions.checkArgument(subCommand.getDescription() != null, "Command description can not be null");
             Preconditions.checkArgument(subCommand.getArguments() != null, "Command arguments can not be null");
         }
         subCommands.add(subCommand);
