@@ -15,6 +15,7 @@ import java.util.HashMap;
  * @Since 2018-08-22 13:40
  * @BuilderVersion 1.0
  */
+@Deprecated
 public class MenuBuilder {
 
     private boolean lock;
