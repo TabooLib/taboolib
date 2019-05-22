@@ -19,7 +19,6 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ConfigUtils {
@@ -199,7 +198,8 @@ public class ConfigUtils {
             configuration.loadFromString(yaml);
             return configuration;
         } catch (Exception e) {
-            TLocale.Logger.error("FILE-UTILS.FAIL-LOAD-CONFIGURATION", plugin.getName(), file.getName());
+            TLocale.Logger.error("FILE-UTILS.FAIL-LOAD-CONFIGURATION", plugin.getName(), file.getPath());
+            e.printStackTrace();
         }
         return configuration;
     }
