@@ -2,7 +2,9 @@ package me.skymc.taboolib.common.nms;
 
 import me.skymc.taboolib.common.function.TFunction;
 import me.skymc.taboolib.common.versioncontrol.SimpleVersionControl;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @Author 坏黑
@@ -20,6 +22,10 @@ public abstract class NMSHandler {
             e.printStackTrace();
         }
     }
+
+    abstract public String getName(ItemStack itemStack);
+
+    abstract public String getName(Entity entity);
 
     abstract public void sendTitle(Player player, String title, int titleFadein, int titleStay, int titleFadeout, String subtitle, int subtitleFadein, int subtitleStay, int subtitleFadeout);
 

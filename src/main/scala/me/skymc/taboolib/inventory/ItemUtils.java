@@ -4,8 +4,8 @@ import com.ilummc.tlib.resources.TLocale;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.common.configuration.TConfiguration;
 import me.skymc.taboolib.common.function.TFunction;
+import me.skymc.taboolib.common.util.SimpleI18n;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
 import me.skymc.taboolib.itemnbtapi.NBTList;
@@ -44,7 +44,6 @@ public class ItemUtils {
     private static File finalItemsFolder;
     private static FileConfiguration itemDir;
     private static FileConfiguration itemCache;
-    private static TConfiguration itemName;
     private static LinkedHashMap<String, String> itemLib = new LinkedHashMap<>();
     private static LinkedHashMap<String, ItemStack> itemCaches = new LinkedHashMap<>();
     private static LinkedHashMap<String, ItemStack> itemCachesFinal = new LinkedHashMap<>();
@@ -52,7 +51,6 @@ public class ItemUtils {
     public static void init() {
         try {
             reloadItemDir();
-            reloadItemName();
             reloadItemCache();
         } catch (Exception e) {
             TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ITEMS", e.toString());
@@ -64,15 +62,6 @@ public class ItemUtils {
         if (file.exists()) {
             itemDir = YamlConfiguration.loadConfiguration(file);
         }
-    }
-
-    public static void reloadItemName() {
-        itemName = TConfiguration.createInResource(Main.getInst(), "Language/ITEM_NAME.yml");
-        itemName.listener(() -> {
-            itemName.getConfigurationSection("").getKeys(false).forEach(a -> itemLib.put(a, itemName.getString(a)));
-            TabooLib.debug("Loaded " + itemLib.size() + " items name.");
-//            TLocale.Logger.info("ITEM-UTILS.SUCCESS-LOAD-NAMES", String.valueOf(itemLib.size()));
-        }).runListener();
     }
 
     public static void reloadItemCache() {
@@ -128,11 +117,7 @@ public class ItemUtils {
     }
 
     public static String getCustomName(ItemStack item) {
-        if (item == null || item.getType().equals(Material.AIR)) {
-            return TLocale.asString("ITEM-UTILS.EMPTY-ITEM");
-        }
-        int data = item.getType().getMaxDurability() == 0 ? item.getDurability() : 0;
-        return item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : itemLib.get(item.getType() + ":" + data) == null ? item.getType().toString() : itemLib.get(item.getType() + ":" + data);
+        return SimpleI18n.getCustomName(item);
     }
 
     public static ItemStack setName(ItemStack i, String n) {
@@ -157,7 +142,7 @@ public class ItemUtils {
     }
 
     public static boolean isNull(ItemStack item) {
-        return item == null || item.getType().equals(Material.AIR);
+        return item == null || item.getType() == Material.AIR;
     }
 
     public static boolean isName(ItemStack i, String a) {

@@ -202,7 +202,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
             ItemUtils.reloadItemCache();
-            ItemUtils.reloadItemName();
             TLocale.sendTo(sender, "COMMANDS.TABOOLIB.ITEMRELOAD.SUCCESS-RELOAD");
         }
     };
