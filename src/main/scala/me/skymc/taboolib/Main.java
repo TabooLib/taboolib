@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
         // 载入完成
         TLocale.Logger.info("NOTIFY.SUCCESS-LOADED", getDescription().getAuthors().toString(), getDescription().getVersion(), String.valueOf(TabooLib.getVersion()));
         // 文件保存
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, DataUtils::saveAllCaches, 20, 20 * 120);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> DataUtils.saveAllCaches(), 20, 20 * 120);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
         // 文件监控
         TLib.getTLib().getConfigWatcher().addSimpleListener(new File(getDataFolder(), "config.yml"), () -> {
