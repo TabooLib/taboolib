@@ -1,6 +1,8 @@
 package me.skymc.taboolib.support;
 
 import com.google.common.base.Preconditions;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -9,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,12 +22,20 @@ import java.util.stream.Collectors;
 public class SupportWorldGuard {
 
     public static final SupportWorldGuard INSTANCE = new SupportWorldGuard();
-
     private WorldGuardPlugin worldGuard;
+    private Method getRegionManager;
 
     public SupportWorldGuard() {
         Preconditions.checkNotNull(Bukkit.getServer().getPluginManager().getPlugin("WorldGuard"), "WorldGuard was not found.");
         worldGuard = WorldGuardPlugin.inst();
+        if (!worldGuard.getDescription().getVersion().startsWith("7")) {
+            try {
+                getRegionManager = WorldGuardPlugin.class.getDeclaredMethod("getRegionManager", World.class);
+                getRegionManager.setAccessible(true);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public WorldGuardPlugin getWorldGuard() {
@@ -32,7 +43,16 @@ public class SupportWorldGuard {
     }
 
     public RegionManager getRegionManager(World world) {
-        return this.worldGuard.getRegionManager(world);
+        if (worldGuard.getDescription().getVersion().startsWith("7")) {
+            return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+        } else {
+            try {
+                return (RegionManager) getRegionManager.invoke(worldGuard, world);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            return null;
+        }
     }
 
     public boolean isRegionManagerExists(World world) {
