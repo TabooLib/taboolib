@@ -1,6 +1,7 @@
 package me.skymc.taboolib.common.nms;
 
 import me.skymc.taboolib.common.function.TFunction;
+import me.skymc.taboolib.common.nms.nbt.NBTCompound;
 import me.skymc.taboolib.common.versioncontrol.SimpleVersionControl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -23,6 +24,8 @@ public abstract class NMSHandler {
         }
     }
 
+    abstract public double[] getTPS();
+
     abstract public String getName(ItemStack itemStack);
 
     abstract public String getName(Entity entity);
@@ -31,7 +34,13 @@ public abstract class NMSHandler {
 
     abstract public void sendActionBar(Player player, String text);
 
-    abstract public double[] getTPS();
+    abstract public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound);
+
+    abstract public Object _NBT(ItemStack itemStack);
+
+    public NBTCompound loadNBT(ItemStack itemStack) {
+        return (NBTCompound) _NBT(itemStack);
+    }
 
     public static NMSHandler getHandler() {
         return handler;
