@@ -19,6 +19,7 @@ public class NBTList extends NBTBase implements List<NBTBase> {
     public NBTList() {
         super(0);
         this.type = NBTType.LIST;
+        this.data = this;
     }
 
     @Override

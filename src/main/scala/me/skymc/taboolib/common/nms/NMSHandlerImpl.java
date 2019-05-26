@@ -175,10 +175,10 @@ public class NMSHandlerImpl extends NMSHandler {
     }
 
     @Override
-    public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound) {
+    public ItemStack _NBT(ItemStack itemStack, Object compound) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         try {
-            ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase(compound));
+            ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase((me.skymc.taboolib.common.nms.nbt.NBTBase) compound));
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -197,30 +197,30 @@ public class NMSHandlerImpl extends NMSHandler {
     }
 
     private Object toNBTBase(me.skymc.taboolib.common.nms.nbt.NBTBase base) {
-        switch (base.getType()) {
-            case INT:
-                return new NBTTagInt(base.asInt());
-            case BYTE:
+        switch (base.getType().getId()) {
+            case 1:
                 return new NBTTagByte(base.asByte());
-            case LONG:
-                return new NBTTagLong(base.asLong());
-            case FLOAT:
-                return new NBTTagFloat(base.asFloat());
-            case SHORT:
+            case 2:
                 return new NBTTagShort(base.asShort());
-            case DOUBLE:
+            case 3:
+                return new NBTTagInt(base.asInt());
+            case 4:
+                return new NBTTagLong(base.asLong());
+            case 5:
+                return new NBTTagFloat(base.asFloat());
+            case 6:
                 return new NBTTagDouble(base.asDouble());
-            case STRING:
-                return new NBTTagString(base.asString());
-            case INT_ARRAY:
-                return new NBTTagIntArray(base.asIntArray());
-            case BYTE_ARRAY:
+            case 7:
                 return new NBTTagByteArray(base.asByteArray());
-            case LIST:
+            case 11:
+                return new NBTTagIntArray(base.asIntArray());
+            case 8:
+                return new NBTTagString(base.asString());
+            case 9:
                 Object nmsList = new NBTTagList();
                 base.asList().forEach(value -> ((NBTTagList) nmsList).add((net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(value)));
                 return nmsList;
-            case COMPOUND:
+            case 10:
                 Object nmsTag = new net.minecraft.server.v1_8_R3.NBTTagCompound();
                 base.asCompound().forEach((k, v) -> ((net.minecraft.server.v1_8_R3.NBTTagCompound) nmsTag).set(k, (net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(v)));
                 return nmsTag;

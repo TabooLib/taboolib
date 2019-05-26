@@ -34,15 +34,15 @@ public abstract class NMSHandler {
 
     abstract public void sendActionBar(Player player, String text);
 
-    abstract public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound);
-
     abstract public Object _NBT(ItemStack itemStack);
+
+    abstract public ItemStack _NBT(ItemStack itemStack, Object compound);
 
     public NBTCompound loadNBT(ItemStack itemStack) {
         return (NBTCompound) _NBT(itemStack);
     }
 
-    public static NMSHandler getHandler() {
-        return handler;
+    public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound) {
+        return _NBT(itemStack, compound);
     }
 }

@@ -21,6 +21,7 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
     public NBTCompound() {
         super(0);
         this.type = NBTType.COMPOUND;
+        this.data = this;
     }
 
     @Override
