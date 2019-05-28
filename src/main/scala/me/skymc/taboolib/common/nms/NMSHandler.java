@@ -16,6 +16,10 @@ public abstract class NMSHandler {
 
     private static NMSHandler handler;
 
+    public static NMSHandler getHandler() {
+        return handler;
+    }
+
     static void init() {
         try {
             handler = (NMSHandler) SimpleVersionControl.createNMS("me.skymc.taboolib.common.nms.NMSHandlerImpl").translate().newInstance();
