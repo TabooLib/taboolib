@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -70,13 +69,7 @@ public class TellrawJson {
 
     public void send(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            if (TellrawCreator.isViaVersionLoaded()) {
-                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(Via.getAPI().getPlayerVersion(sender) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION), args));
-            } else if (TellrawCreator.isProtocolSupportLoaded()) {
-                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(ProtocolSupportAPI.getProtocolVersion((Player) sender).getId() > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION), args));
-            } else {
-                TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(), args));
-            }
+            TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage((Player) sender), args));
         } else {
             TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage(), args));
         }
@@ -95,6 +88,18 @@ public class TellrawJson {
             rawMessage = rawMessage.replace(stringEntry.getKey(), version == TellrawVersion.HIGH_VERSION ? stringEntry.getValue()[1] : stringEntry.getValue()[0]);
         }
         return rawMessage;
+    }
+
+    public String toRawMessage(Player player) {
+        // ViaVersion support!
+        if (TellrawCreator.isViaVersionLoaded()) {
+            return toRawMessage(Via.getAPI().getPlayerVersion(player) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
+        }
+        // ProtocolSupport support!
+        else if (TellrawCreator.isProtocolSupportLoaded()) {
+            return toRawMessage(ProtocolSupportAPI.getProtocolVersion(player).getId() > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
+        }
+        return toRawMessage();
     }
 
     public String toLegacyText() {
@@ -161,9 +166,8 @@ public class TellrawJson {
     }
 
     public BaseComponent[] getComponentsAll() {
-        List<BaseComponent> components = this.components.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).collect(Collectors.toList());
         this.componentsLatest.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).forEach(components::add);
-        return components.toArray(new BaseComponent[0]);
+        return this.components.stream().filter(component -> !(component instanceof TextComponent) || !((TextComponent) component).getText().isEmpty()).toArray(BaseComponent[]::new);
     }
 
     @Deprecated
