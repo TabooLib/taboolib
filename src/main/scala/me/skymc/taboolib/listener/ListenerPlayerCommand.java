@@ -55,8 +55,10 @@ public class ListenerPlayerCommand implements Listener {
             if (TabooLib.getVerint() > 10700) {
                 e.setCancelled(true);
             }
-            Bukkit.getScheduler().runTask(Main.getInst(), DataUtils::saveAllCaches);
-            Bukkit.getScheduler().runTask(Main.getInst(), () -> PlayerDataManager.saveAllCaches(true, false));
+            Bukkit.getScheduler().runTask(Main.getInst(), () -> {
+                DataUtils.saveAllCaches();
+                PlayerDataManager.saveAllCaches(true, false);
+            });
             TLogger.getGlobalLogger().info("Successfully.");
         } else if (e.getCommand().equalsIgnoreCase("tDebug")) {
             if (TabooLib.getVerint() > 10700) {
