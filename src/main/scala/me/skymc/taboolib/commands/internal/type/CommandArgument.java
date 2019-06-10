@@ -12,6 +12,7 @@ public class CommandArgument {
 
     private String name;
     private boolean required;
+    private CommandTab tab;
 
     public String getName() {
         return name;
@@ -21,13 +22,26 @@ public class CommandArgument {
         return required;
     }
 
+    public CommandTab getTab() {
+        return tab;
+    }
+
     public CommandArgument(String name) {
         this(name, true);
     }
 
+    public CommandArgument(String name, CommandTab tab) {
+        this(name, true, tab);
+    }
+
     public CommandArgument(String name, boolean required) {
+        this(name, required, null);
+    }
+
+    public CommandArgument(String name, boolean required, CommandTab tab) {
         this.name = name;
         this.required = required;
+        this.tab = tab;
     }
 
     @Override
@@ -44,11 +58,13 @@ public class CommandArgument {
             return false;
         }
         CommandArgument that = (CommandArgument) o;
-        return Objects.equals(getName(), that.getName()) && isRequired() == that.isRequired();
+        return isRequired() == that.isRequired() &&
+                Objects.equals(getName(), that.getName()) &&
+                Objects.equals(tab, that.tab);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), isRequired());
+        return Objects.hash(getName(), isRequired(), tab);
     }
 }

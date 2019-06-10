@@ -1,12 +1,11 @@
 package me.skymc.taboolib.commands.internal;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
-import me.skymc.taboolib.commands.internal.type.CommandField;
-import me.skymc.taboolib.commands.internal.type.CommandRegister;
-import me.skymc.taboolib.commands.internal.type.CommandType;
+import me.skymc.taboolib.commands.internal.type.*;
 import me.skymc.taboolib.string.ArrayUtils;
 import me.skymc.taboolib.string.StringUtils;
 import org.bukkit.Bukkit;
@@ -113,7 +112,24 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        return args.length == 1 ? subCommands.stream().filter(subCommand -> !hideInHelp(subCommand) && hasPermission(commandSender, subCommand) && (args[0].isEmpty() || subCommand.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList()) : null;
+        if (args.length == 1) {
+            List<String> label = Lists.newArrayList();
+            subCommands.stream().filter(subCommand -> !hideInHelp(subCommand) && hasPermission(commandSender, subCommand)).forEach(l -> {
+                label.add(l.getLabel());
+                label.addAll(Lists.newArrayList(l.getAliases()));
+            });
+            return label.stream().filter(l -> args[0].isEmpty() || l.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+        }
+        for (BaseSubCommand subCommand : subCommands) {
+            CommandArgument[] arguments = subCommand.getArguments();
+            if (args[0].equalsIgnoreCase(subCommand.getLabel()) && args.length - 1 <= arguments.length) {
+                CommandTab commandTab = arguments[args.length - 2].getTab();
+                if (commandTab != null) {
+                    return commandTab.run().stream().filter(l -> args[args.length - 1].isEmpty() || l.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).collect(Collectors.toList());
+                }
+            }
+        }
+        return null;
     }
 
     @Override

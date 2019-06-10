@@ -37,16 +37,16 @@ public class TabooLibPluginCommand extends BaseMainCommand {
         return TLocale.asString("COMMANDS.TPLUGIN.COMMAND-TITLE");
     }
 
-    @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
-        if (args.length == 1) {
-            return getSubCommands().stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList());
-        } else if (args.length > 1 && isPluginCommand(args[0])) {
-            return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(x -> !PluginUtils.isIgnored(x)).collect(Collectors.toList()).stream().filter(plugin -> args[1].isEmpty() || plugin.getName().toLowerCase().startsWith(args[1].toLowerCase())).map(Plugin::getName).collect(Collectors.toList());
-        } else {
-            return null;
-        }
-    }
+//    @Override
+//    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+//        if (args.length == 1) {
+//            return getSubCommands().stream().filter(internalCommandExecutor -> internalCommandExecutor != null && (args[0].isEmpty() || internalCommandExecutor.getLabel().toLowerCase().startsWith(args[0].toLowerCase()))).map(BaseSubCommand::getLabel).collect(Collectors.toList());
+//        } else if (args.length > 1 && isPluginCommand(args[0])) {
+//            return Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(x -> !PluginUtils.isIgnored(x)).collect(Collectors.toList()).stream().filter(plugin -> args[1].isEmpty() || plugin.getName().toLowerCase().startsWith(args[1].toLowerCase())).map(Plugin::getName).collect(Collectors.toList());
+//        } else {
+//            return null;
+//        }
+//    }
 
     @CommandRegister(priority = 1)
     BaseSubCommand load = new BaseSubCommand() {
@@ -113,7 +113,9 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.UNLOAD.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.UNLOAD.ARGUMENTS.0"), true, () -> {
+                return Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(Plugin::getName).collect(Collectors.toList());
+            })};
         }
 
         @Override
@@ -155,7 +157,9 @@ public class TabooLibPluginCommand extends BaseMainCommand {
 
         @Override
         public CommandArgument[] getArguments() {
-            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.RELOAD.ARGUMENTS.0"), true)};
+            return new CommandArgument[] {new CommandArgument(TLocale.asString("COMMANDS.TPLUGIN.RELOAD.ARGUMENTS.0"), true, () -> {
+                return Arrays.stream(Bukkit.getPluginManager().getPlugins()).map(Plugin::getName).collect(Collectors.toList());
+            })};
         }
 
         @Override
