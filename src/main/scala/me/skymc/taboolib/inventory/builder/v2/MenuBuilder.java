@@ -21,7 +21,7 @@ public class MenuBuilder {
     private Plugin plugin;
     private String title;
     private int rows;
-    private char[][] items;
+    private char[][] items ;
     private ClickTask clickTask;
     private CloseTask closeTask;
     private boolean lockHand;

@@ -8,7 +8,6 @@ import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -105,7 +104,7 @@ public class TabooLibLocaleCommand extends BaseMainCommand {
                 target.forEach(x -> TLocale.sendTo(x, args[1], arguments));
             }
 
-            if (sender instanceof Player && ((Player) sender).getItemInHand().getType().equals(Material.COMMAND)) {
+            if (sender instanceof Player && ((Player) sender).getItemInHand().getType().name().contains("COMMAND")) {
                 TLocale.sendTo(sender, "COMMANDS.TLOCALE.SEND.SUCCESS-SEND", String.valueOf(System.currentTimeMillis() - time));
             }
         }
