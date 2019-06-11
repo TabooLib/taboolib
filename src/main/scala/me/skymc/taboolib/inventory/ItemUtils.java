@@ -142,7 +142,7 @@ public class ItemUtils {
     }
 
     public static boolean isNull(ItemStack item) {
-        return item == null || item.getType() == Material.AIR;
+        return item == null || item.getType().equals(Material.AIR);
     }
 
     public static boolean isName(ItemStack i, String a) {
