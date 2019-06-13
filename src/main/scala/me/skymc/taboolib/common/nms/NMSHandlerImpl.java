@@ -2,6 +2,7 @@ package me.skymc.taboolib.common.nms;
 
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.nms.nbt.NBTCompound;
+import me.skymc.taboolib.common.nms.nbt.NBTList;
 import me.skymc.taboolib.common.packet.TPacketHandler;
 import me.skymc.taboolib.common.util.SimpleReflection;
 import me.skymc.taboolib.nms.NMSUtils;
@@ -21,8 +22,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * @Author 坏黑
@@ -44,6 +44,7 @@ public class NMSHandlerImpl extends NMSHandler {
         SimpleReflection.saveField(NBTTagIntArray.class);
         SimpleReflection.saveField(NBTTagByteArray.class);
         SimpleReflection.saveField(NBTTagList.class);
+        SimpleReflection.saveField(NBTTagCompound.class);
     }
 
     public NMSHandlerImpl() {
@@ -218,18 +219,34 @@ public class NMSHandlerImpl extends NMSHandler {
                 return new NBTTagString(base.asString());
             case 9:
                 Object nmsList = new NBTTagList();
-                base.asList().forEach(value -> ((NBTTagList) nmsList).add((net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(value)));
+                for (me.skymc.taboolib.common.nms.nbt.NBTBase value : base.asList()) {
+                    ((NBTTagList) nmsList).add((NBTBase) toNBTBase(value));
+                }
                 return nmsList;
             case 10:
                 Object nmsTag = new net.minecraft.server.v1_8_R3.NBTTagCompound();
-                base.asCompound().forEach((k, v) -> ((net.minecraft.server.v1_8_R3.NBTTagCompound) nmsTag).set(k, (net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(v)));
+                for (Map.Entry<String, me.skymc.taboolib.common.nms.nbt.NBTBase> entry : base.asCompound().entrySet()) {
+                    ((net.minecraft.server.v1_8_R3.NBTTagCompound) nmsTag).set(entry.getKey(), (NBTBase) toNBTBase(entry.getValue()));
+                }
                 return nmsTag;
         }
         return null;
     }
 
     private Object fromNBTBase(Object base) {
-        if (base instanceof NBTTagString) {
+        if (base instanceof net.minecraft.server.v1_8_R3.NBTTagCompound) {
+            NBTCompound nbtCompound = new NBTCompound();
+            for (Map.Entry<String, net.minecraft.server.v1_12_R1.NBTBase> entry : ((Map<String, net.minecraft.server.v1_12_R1.NBTBase>) SimpleReflection.getFieldValue(NBTTagCompound.class, base, "map")).entrySet()) {
+                nbtCompound.put(entry.getKey(), (me.skymc.taboolib.common.nms.nbt.NBTBase) fromNBTBase(entry.getValue()));
+            }
+            return nbtCompound;
+        } else if (base instanceof NBTTagList) {
+            NBTList nbtList = new NBTList();
+            for (Object v : (List) SimpleReflection.getFieldValue(NBTTagList.class, base, "list")) {
+                nbtList.add((me.skymc.taboolib.common.nms.nbt.NBTBase) fromNBTBase(v));
+            }
+            return nbtList;
+        } else if (base instanceof NBTTagString) {
             return new me.skymc.taboolib.common.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagString.class, base, "data", ""));
         } else if (base instanceof NBTTagDouble) {
             return new me.skymc.taboolib.common.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagDouble.class, base, "data", 0D));
@@ -247,12 +264,6 @@ public class NMSHandlerImpl extends NMSHandler {
             return new me.skymc.taboolib.common.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagIntArray.class, base, "data", new int[0]));
         } else if (base instanceof NBTTagByteArray) {
             return new me.skymc.taboolib.common.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagByteArray.class, base, "data", new byte[0]));
-        } else if (base instanceof net.minecraft.server.v1_8_R3.NBTTagCompound) {
-            Set<String> keys = VERSION >= 11300 ? ((net.minecraft.server.v1_13_R2.NBTTagCompound) base).getKeys() : ((net.minecraft.server.v1_8_R3.NBTTagCompound) base).c();
-            return keys.stream().collect(Collectors.toMap(key -> key, key -> (me.skymc.taboolib.common.nms.nbt.NBTBase) fromNBTBase(((net.minecraft.server.v1_13_R2.NBTTagCompound) base).get(key)), (a, b) -> b, me.skymc.taboolib.common.nms.nbt.NBTCompound::new));
-        } else if (base instanceof NBTTagList) {
-            List list = (List) SimpleReflection.getFieldValue(NBTTagList.class, base, "list");
-            return list.stream().map(this::fromNBTBase).collect(Collectors.toCollection(me.skymc.taboolib.common.nms.nbt.NBTList::new));
         }
         return null;
     }
