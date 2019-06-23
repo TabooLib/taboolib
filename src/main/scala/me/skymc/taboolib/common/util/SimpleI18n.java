@@ -1,10 +1,12 @@
 package me.skymc.taboolib.common.util;
 
 import com.ilummc.tlib.resources.TLocaleLoader;
+import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.function.TFunction;
 import me.skymc.taboolib.common.nms.NMSHandler;
 import me.skymc.taboolib.fileutils.ConfigUtils;
+import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class SimpleI18n {
 
     private static FileConfiguration lang;
+    private static boolean released;
 
     static void init() {
         File localeFile = getLocaleFile(TabooLib.instance());
@@ -31,6 +34,11 @@ public class SimpleI18n {
             lang = new YamlConfiguration();
         } else {
             lang = ConfigUtils.load(TabooLib.instance(), localeFile);
+        }
+        if (lang.getInt("version") < 2 && !released) {
+            released = true;
+            FileUtils.deleteAllFile(new File(Main.getInst().getDataFolder(), "simpleI18n"));
+            init();
         }
     }
 
@@ -47,7 +55,7 @@ public class SimpleI18n {
     }
 
     public static String getName(Entity entity) {
-        return entity == null ? "-" : lang.getString(NMSHandler.getHandler().getName(entity), entity.getName());
+        return entity == null ? "-" : lang.getString(NMSHandler.getHandler().getName(entity).replace(".", "_"), entity.getName());
     }
 
     public static String getName(ItemStack item) {
@@ -57,13 +65,13 @@ public class SimpleI18n {
         if (TabooLib.getVersionNumber() < 11300) {
             ItemMeta itemMeta = item.getItemMeta();
             if (itemMeta instanceof SpawnEggMeta) {
-                String spawnEggType = lang.getString("entity." + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName() + ".name");
+                String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {
-                    return lang.getString(NMSHandler.getHandler().getName(item), item.getType().name().toLowerCase().replace("_", "")) + " " + spawnEggType;
+                    return lang.getString(NMSHandler.getHandler().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", "")) + " " + spawnEggType;
                 }
             }
         }
-        return lang.getString(NMSHandler.getHandler().getName(item), item.getType().name().toLowerCase().replace("_", ""));
+        return lang.getString(NMSHandler.getHandler().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", ""));
     }
 
     private static void releaseLocales(Plugin plugin) {
