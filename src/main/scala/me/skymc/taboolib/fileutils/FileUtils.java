@@ -5,7 +5,7 @@ import com.ilummc.eagletdl.EagletTask;
 import com.ilummc.eagletdl.ProgressEvent;
 import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.Main;
-import org.apache.commons.io.IOUtils;
+import me.skymc.taboolib.common.io.IOUtils;
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
