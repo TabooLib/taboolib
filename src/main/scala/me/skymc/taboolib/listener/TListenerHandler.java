@@ -4,6 +4,7 @@ import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.TabooLibLoader;
+import me.skymc.taboolib.cronus.util.StringExpression;
 import me.skymc.taboolib.events.TPluginEnableEvent;
 import me.skymc.taboolib.methods.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -50,6 +51,10 @@ public class TListenerHandler implements Listener {
             if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
                 try {
                     TListener tListener = pluginClass.getAnnotation(TListener.class);
+                    // 检查版本
+                    if (!new StringExpression(tListener.version()).isSelect(TabooLib.getVersionNumber())) {
+                        continue;
+                    }
                     // 检查注册条件
                     if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
                         if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {

@@ -5,12 +5,13 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.function.TFunction;
+import me.skymc.taboolib.common.nms.NMSHandler;
+import me.skymc.taboolib.common.nms.nbt.NBTBase;
+import me.skymc.taboolib.common.nms.nbt.NBTCompound;
+import me.skymc.taboolib.common.nms.nbt.NBTList;
 import me.skymc.taboolib.common.util.SimpleI18n;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.itemnbtapi.NBTItem;
-import me.skymc.taboolib.itemnbtapi.NBTList;
-import me.skymc.taboolib.itemnbtapi.NBTListCompound;
-import me.skymc.taboolib.itemnbtapi.NBTType;
 import me.skymc.taboolib.other.NumberUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -27,6 +28,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.NumberConversions;
 
 import java.io.File;
 import java.util.Arrays;
@@ -361,47 +363,46 @@ public class ItemUtils {
         // 元数据
         item.setItemMeta(meta);
         // 数据
-        NBTItem nbt = new NBTItem(item);
+        NBTCompound nbt = NMSHandler.getHandler().loadNBT(item);
         // 物品标签
         if (section.contains("nbt")) {
             for (String name : section.getConfigurationSection("nbt").getKeys(false)) {
                 Object obj = section.get("nbt." + name);
                 if (obj instanceof String) {
-                    nbt.setString(name, obj.toString());
+                    nbt.put(name, new NBTBase(obj.toString()));
                 } else if (obj instanceof Double) {
-                    nbt.setDouble(name, Double.valueOf(obj.toString()));
+                    nbt.put(name, new NBTBase(NumberConversions.toDouble(obj)));
                 } else if (obj instanceof Integer) {
-                    nbt.setInteger(name, Integer.valueOf(obj.toString()));
+                    nbt.put(name, new NBTBase(NumberConversions.toInt(obj)));
                 } else if (obj instanceof Long) {
-                    nbt.setLong(name, Long.valueOf(obj.toString()));
-                } else {
-                    nbt.setObject(name, obj);
+                    nbt.put(name, new NBTBase(NumberConversions.toLong(obj)));
                 }
             }
         }
         // 物品属性
         if (section.contains("attributes")) {
-            NBTList attr = nbt.getList("AttributeModifiers", NBTType.NBTTagCompound);
+            NBTList attr = new NBTList();
             for (String hand : section.getConfigurationSection("attributes").getKeys(false)) {
                 for (String name : section.getConfigurationSection("attributes." + hand).getKeys(false)) {
                     if (asAttribute(name) != null) {
                         try {
-                            NBTListCompound _attr = attr.addCompound();
-                            Object num = section.get("attributes." + hand + "." + name);
-                            if (num.toString().contains("%")) {
-                                _attr.setDouble("Amount", Double.valueOf(num.toString().replace("%", "")) / 100D);
-                                _attr.setInteger("Operation", 1);
+                            NBTCompound a = new NBTCompound();
+                            String num = section.getString("attributes." + hand + "." + name);
+                            if (num.endsWith("%")) {
+                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num.substring(0, num.length() - 1)) / 100D));
+                                a.put("Operation", new NBTBase(1));
                             } else {
-                                _attr.setDouble("Amount", Double.valueOf(num.toString()));
-                                _attr.setInteger("Operation", 0);
+                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num) / 100D));
+                                a.put("Operation", new NBTBase(0));
                             }
-                            _attr.setString("AttributeName", asAttribute(name));
-                            _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
-                            _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
-                            _attr.setString("Name", asAttribute(name));
-                            if (!"all".equals(hand)) {
-                                _attr.setString("Slot", hand);
+                            a.put("AttributeName", new NBTBase(asAttribute(name)));
+                            a.put("UUIDMost", new NBTBase(NumberUtils.getRandom().nextInt(Integer.MAX_VALUE)));
+                            a.put("UUIDLeast", new NBTBase(NumberUtils.getRandom().nextInt(Integer.MAX_VALUE)));
+                            a.put("Name", new NBTBase(asAttribute(name)));
+                            if (!hand.equals("all")) {
+                                a.put("Slot", new NBTBase(hand));
                             }
+                            attr.add(a);
                         } catch (Exception ignored) {
                         }
                     } else {
@@ -409,44 +410,9 @@ public class ItemUtils {
                     }
                 }
             }
+            nbt.put("AttributeModifiers", attr);
         }
-        return nbt.getItem();
-    }
-
-    public static NBTItem setAttribute(NBTItem nbt, String name, Object num, String hand) {
-        NBTList attr = nbt.getList("AttributeModifiers", NBTType.NBTTagCompound);
-        if (asAttribute(name) != null) {
-            try {
-                NBTListCompound _attr = null;
-                for (int i = 0; i < attr.size(); i++) {
-                    NBTListCompound nlc = attr.getCompound(i);
-                    if (nlc.getString("AttributeName").equals(asAttribute(name))) {
-                        _attr = nlc;
-                    }
-                }
-                if (_attr == null) {
-                    _attr = attr.addCompound();
-                }
-                if (num.toString().contains("%")) {
-                    _attr.setDouble("Amount", Double.valueOf(num.toString().replace("%", "")) / 100D);
-                    _attr.setInteger("Operation", 1);
-                } else {
-                    _attr.setDouble("Amount", Double.valueOf(num.toString()));
-                    _attr.setInteger("Operation", 0);
-                }
-                _attr.setString("AttributeName", asAttribute(name));
-                _attr.setInteger("UUIDMost", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
-                _attr.setInteger("UUIDLeast", NumberUtils.getRandom().nextInt(Integer.MAX_VALUE));
-                _attr.setString("Name", asAttribute(name));
-                if (!"all".equals(hand)) {
-                    _attr.setString("Slot", hand);
-                }
-            } catch (NumberFormatException ignored) {
-            }
-        } else {
-            TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", name);
-        }
-        return nbt;
+        return NMSHandler.getHandler().saveNBT(item, nbt);
     }
 
     // *********************************
@@ -484,6 +450,11 @@ public class ItemUtils {
     //        Deprecated
     //
     // *********************************
+
+    @Deprecated
+    public static NBTItem setAttribute(NBTItem nbt, String name, Object num, String hand) {
+        return nbt;
+    }
 
     @Deprecated
     public static FileConfiguration getItemdir() {

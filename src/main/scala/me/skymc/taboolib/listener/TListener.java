@@ -14,31 +14,28 @@ import java.lang.annotation.Target;
 public @interface TListener {
 
     /**
-     * 注册时执行方法
-     *
-     * @return 方法名
+     * 注册时执行的方法名
      */
     String register() default "";
 
     /**
-     * 注销时执行方法
-     *
-     * @return 方法名
+     * 注销时执行的方法名
      */
     String cancel() default "";
 
     /**
-     * 注册时判断条件
-     *
-     * @return 方法名
+     * 注册时判断的方法名，需返回布尔值
      */
     String condition() default "";
 
     /**
      * 注册前判断依赖插件
-     *
-     * @return 依赖插件
      */
     String[] depend() default "";
+
+    /**
+     * 注册前判断依赖版本
+     */
+    String version() default ">0";
 
 }

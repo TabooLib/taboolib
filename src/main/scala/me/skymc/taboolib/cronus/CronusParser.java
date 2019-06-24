@@ -15,10 +15,25 @@ public class CronusParser {
 
     public static Location toLocation(Object in) {
         String str = String.valueOf(in);
-        if (str.toLowerCase().startsWith("area=")) {
-            String[] area = str.substring("area=".length()).split("~");
-            return new Location(Location.Mode.AREA, new org.bukkit.Location[] {toBukkitLocation(area[0]), toBukkitLocation(area[area.length > 1 ? 1 : 0])}, null);
-        } else {
+        // 区域
+        // world:0,80,0~0,90,0
+        if (str.contains(":") && str.contains("~")) {
+            String[] area = str.split("~");
+            try {
+                return new Location(Location.Mode.AREA, new org.bukkit.Location[] {toBukkitLocation(area[0].replace(":", ",")), toBukkitLocation(area[0].split(":")[0] + "," + area[1])}, null);
+            } catch (Throwable ignored) {
+                return new Location(Location.Mode.AREA, null, null);
+            }
+        }
+        // 范围
+        // world:0,80,0 r:10
+        else if (str.contains("r:")) {
+            String[] range = str.split("r:");
+            return new Location(Location.Mode.RANGE, new org.bukkit.Location[] {toBukkitLocation(range[0].replace(":", ","))}, NumberConversions.toInt(range[1]));
+        }
+        // 单项
+        // world,0,80,0;world,0,90,0
+        else {
             return new Location(Location.Mode.POINT, null, Arrays.stream(str.split(";")).map(CronusParser::toBukkitLocation).toArray(org.bukkit.Location[]::new));
         }
     }

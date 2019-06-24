@@ -37,7 +37,7 @@ public class SimpleI18n {
         } else {
             lang = ConfigUtils.load(TabooLib.instance(), localeFile);
         }
-        if (lang.getInt("version") < 2 && !released) {
+        if (lang.getInt("version") < 3 && !released) {
             released = true;
             FileUtils.deleteAllFile(new File(Main.getInst().getDataFolder(), "simpleI18n"));
             init();
