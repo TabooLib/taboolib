@@ -9,7 +9,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
  * @Author 坏黑
  * @Since 2019-05-21 22:04
  */
-@TListener
+@TListener(version = ">=10900")
 class ClickListener1_9 implements Listener {
 
     @EventHandler

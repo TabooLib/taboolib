@@ -30,6 +30,10 @@ public class CronusUtils {
         return player.getItemInHand().getType() == material ? player.getItemInHand() : player.getInventory().getItemInOffHand();
     }
 
+    public static boolean next(int page, int size, int entry) {
+        return size / (double) entry > page + 1;
+    }
+
     public static boolean isInt(String in) {
         try {
             Integer.parseInt(in);
