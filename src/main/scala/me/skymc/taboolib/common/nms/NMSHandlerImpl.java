@@ -73,10 +73,16 @@ public class NMSHandlerImpl extends NMSHandler {
                 name += ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("minecraft:(strong_|long_)?", "");
             }
             return name;
-        } else {
+        } else if (TabooLib.getVersionNumber() >= 11100) {
             String name = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a((net.minecraft.server.v1_12_R1.ItemStack) nmsItem);
             if (itemStack.getItemMeta() instanceof PotionMeta) {
-                return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("minecraft:(strong_|long_)?", "");
+                return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("(minecraft:)?(strong_|long_)?", "");
+            }
+            return name + ".name";
+        } else {
+            String name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
+            if (itemStack.getItemMeta() instanceof PotionMeta) {
+                return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("(minecraft:)?(strong_|long_)?", "");
             }
             return name + ".name";
         }

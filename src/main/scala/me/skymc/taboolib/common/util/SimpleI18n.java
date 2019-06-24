@@ -5,12 +5,14 @@ import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.common.function.TFunction;
 import me.skymc.taboolib.common.nms.NMSHandler;
+import me.skymc.taboolib.common.nms.nbt.NBTCompound;
 import me.skymc.taboolib.fileutils.ConfigUtils;
 import me.skymc.taboolib.fileutils.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.Plugin;
@@ -62,8 +64,19 @@ public class SimpleI18n {
         if (item == null) {
             return "-";
         }
-        if (TabooLib.getVersionNumber() < 11300) {
-            ItemMeta itemMeta = item.getItemMeta();
+        ItemMeta itemMeta = item.getItemMeta();
+        if (itemMeta instanceof BookMeta && ((BookMeta) itemMeta).getTitle() != null) {
+            return ((BookMeta) itemMeta).getTitle();
+        }
+        if (TabooLib.getVersionNumber() < 11100) {
+            if (item.getType().name().equals("MONSTER_EGG")) {
+                NBTCompound nbtCompound = NMSHandler.getHandler().loadNBT(item);
+                if (nbtCompound.containsKey("EntityTag")) {
+                    return lang.getString("item_monsterPlacer_name") + " " + lang.getString("entity_" + nbtCompound.get("EntityTag").asCompound().get("id").asString() + "_name");
+                }
+                return lang.getString("item_monsterPlacer_name");
+            }
+        } else if (TabooLib.getVersionNumber() < 11300) {
             if (itemMeta instanceof SpawnEggMeta) {
                 String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {

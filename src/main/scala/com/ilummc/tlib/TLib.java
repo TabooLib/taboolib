@@ -87,7 +87,7 @@ public class TLib {
 
     public static void injectPluginManager() {
         if (!tLib.isInjectEnabled() || tLib.isBlackListPluginExists()) {
-            TLocale.Logger.fatal("TLIB.INJECTION-DISABLED");
+            TLocale.Logger.warn("TLIB.INJECTION-DISABLED");
             Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(plugin -> plugin != Main.getInst()).forEach(plugin -> TDependencyInjector.inject(plugin, plugin));
             return;
         }
