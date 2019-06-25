@@ -192,7 +192,7 @@ public class NMSHandlerImpl extends NMSHandler {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
+        return  CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
     }
 
     @Override
@@ -229,7 +229,14 @@ public class NMSHandlerImpl extends NMSHandler {
             case 9:
                 Object nmsList = new NBTTagList();
                 for (me.skymc.taboolib.common.nms.nbt.NBTBase value : base.asList()) {
-                    ((List) SimpleReflection.getFieldValue(NBTTagList.class, nmsList, "list")).add(toNBTBase(value));
+                    // 1.14+
+                    if (TabooLib.getVersionNumber() >= 11400) {
+                        ((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).add(((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).size(), (net.minecraft.server.v1_14_R1.NBTBase) toNBTBase(value));
+                    }
+                    // 1.13-
+                    else {
+                        ((NBTTagList) nmsList).add((NBTBase) toNBTBase(value));
+                    }
                 }
                 return nmsList;
             case 10:

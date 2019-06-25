@@ -160,7 +160,9 @@ public class ItemUtils {
     }
 
     public static List<String> asString(List<String> args, Player placeholderPlayer) {
-        IntStream.range(0, args.size()).forEach(i -> args.set(i, asString(args.get(i), placeholderPlayer)));
+        for (int i = 0; i < args.size(); i++) {
+            args.set(i, asString(args.get(i), placeholderPlayer));
+        }
         return args;
     }
 
@@ -392,7 +394,7 @@ public class ItemUtils {
                                 a.put("Amount", new NBTBase(NumberConversions.toDouble(num.substring(0, num.length() - 1)) / 100D));
                                 a.put("Operation", new NBTBase(1));
                             } else {
-                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num) / 100D));
+                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num)));
                                 a.put("Operation", new NBTBase(0));
                             }
                             a.put("AttributeName", new NBTBase(asAttribute(name)));
