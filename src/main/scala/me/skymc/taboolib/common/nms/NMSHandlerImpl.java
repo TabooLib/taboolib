@@ -229,13 +229,13 @@ public class NMSHandlerImpl extends NMSHandler {
             case 9:
                 Object nmsList = new NBTTagList();
                 for (me.skymc.taboolib.common.nms.nbt.NBTBase value : base.asList()) {
-                    ((NBTTagList) nmsList).add((NBTBase) toNBTBase(value));
+                    ((List) SimpleReflection.getFieldValue(NBTTagList.class, nmsList, "list")).add(toNBTBase(value));
                 }
                 return nmsList;
             case 10:
                 Object nmsTag = new net.minecraft.server.v1_8_R3.NBTTagCompound();
                 for (Map.Entry<String, me.skymc.taboolib.common.nms.nbt.NBTBase> entry : base.asCompound().entrySet()) {
-                    ((net.minecraft.server.v1_8_R3.NBTTagCompound) nmsTag).set(entry.getKey(), (NBTBase) toNBTBase(entry.getValue()));
+                    ((Map) SimpleReflection.getFieldValue(NBTTagCompound.class, nmsTag, "map")).put(entry.getKey(), toNBTBase(entry.getValue()));
                 }
                 return nmsTag;
         }
