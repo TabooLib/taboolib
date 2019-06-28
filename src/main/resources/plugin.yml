@@ -1,7 +1,7 @@
 name: TabooLib
 main: me.skymc.taboolib.Main
 version: ${version}
-api-version: 1.14
+api-version: 1.13
 
 authors:
 - 坏黑
