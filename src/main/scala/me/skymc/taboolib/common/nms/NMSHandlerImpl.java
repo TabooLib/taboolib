@@ -192,7 +192,7 @@ public class NMSHandlerImpl extends NMSHandler {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        return  CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
+        return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
     }
 
     @Override
@@ -233,7 +233,11 @@ public class NMSHandlerImpl extends NMSHandler {
                     if (TabooLib.getVersionNumber() >= 11400) {
                         ((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).add(((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).size(), (net.minecraft.server.v1_14_R1.NBTBase) toNBTBase(value));
                     }
-                    // 1.13-
+                    // 1.13
+                    else if (TabooLib.getVersionNumber() == 11300) {
+                        ((net.minecraft.server.v1_13_R2.NBTTagList) nmsList).add((net.minecraft.server.v1_13_R2.NBTBase) toNBTBase(value));
+                    }
+                    // 1.12-
                     else {
                         ((NBTTagList) nmsList).add((NBTBase) toNBTBase(value));
                     }
