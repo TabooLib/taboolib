@@ -11,5 +11,4 @@ public interface TSerializerElement<T> {
     String write(T value);
 
     boolean matches(Class objectClass);
-
 }

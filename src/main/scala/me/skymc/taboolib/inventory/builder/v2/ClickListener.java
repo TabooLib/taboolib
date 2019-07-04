@@ -32,14 +32,14 @@ class ClickListener implements Listener {
             if (((MenuHolder) e.getInventory().getHolder()).getBuilder().isLockHand() && (e.getRawSlot() - e.getInventory().getSize() - 27 == e.getWhoClicked().getInventory().getHeldItemSlot() || (e.getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.getHotbarButton() == e.getWhoClicked().getInventory().getHeldItemSlot()))) {
                 e.setCancelled(true);
             }
-            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.CLICK, e)));
+            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.CLICK, e, ((MenuHolder) e.getInventory().getHolder()).getBuilder().getSlot(e.getRawSlot()))));
         }
     }
 
     @EventHandler
     public void onDrag(InventoryDragEvent e) {
         if (e.getInventory().getHolder() instanceof MenuHolder) {
-            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.DRAG, e)));
+            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.DRAG, e, ' ')));
         }
     }
 

@@ -14,10 +14,12 @@ public class ClickEvent {
 
     private ClickType clickType;
     private Event event;
+    private char slot;
 
-    public ClickEvent(ClickType clickType, Event event) {
+    public ClickEvent(ClickType clickType, Event event, char slot) {
         this.clickType = clickType;
         this.event = event;
+        this.slot = slot;
     }
 
     public InventoryClickEvent castClick() {
@@ -26,6 +28,10 @@ public class ClickEvent {
 
     public InventoryDragEvent castDrag() {
         return (InventoryDragEvent) event;
+    }
+
+    public char getSlot() {
+        return slot;
     }
 
     public ClickType getClickType() {

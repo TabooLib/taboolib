@@ -2,8 +2,9 @@ package me.skymc.taboolib.common.serialize;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import me.skymc.taboolib.string.ArrayUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -15,17 +16,19 @@ public class TSerializerExample {
 
     public static void main(String[] args) {
         // 创建对象
-        SimpleData date = new SimpleData();
+        SimpleData data = new SimpleData();
         // 修改参数
-        date.number = 100;
+        data.number = 9999;
+        data.list.addAll(ArrayUtils.asList(111D, 222D));
+        data.map.putAll(ImmutableMap.of("a", "b", "c", "d"));
         // 序列化
-        String value = date.writeBase64();
+        String value = data.write();
         // 打印
         System.out.println(value);
         // 创建新的对象
         SimpleData dataCopy = new SimpleData();
         // 反序列化
-        dataCopy.readBase64(value);
+        dataCopy.read(value);
         // 打印
         System.out.println(dataCopy);
     }
@@ -44,14 +47,13 @@ public class TSerializerExample {
         private int number = 100;
 
         /**
-         * 特殊类型需要进行手动序列化
-         * 标注 @TSerializeCollection 或 @TSerializeMap 来进行自动序列化（未完成）
+         * 包含基本类型的容器需要通过标注来完成序列化
          */
-//        @TSerializeCollection
-        private List<Double> list = Lists.newArrayList(1.0, 2.0, 3.0);
+        @TSerializeCollection
+        private List<Double> list = Lists.newArrayList();
 
-//        @TSerializeMap
-        private Map<String, String> map = ImmutableMap.of("abc", "def");
+        @TSerializeMap
+        private Map<String, String> map = Maps.newHashMap();
 
         /**
          * 跳过序列化
@@ -59,32 +61,13 @@ public class TSerializerExample {
         @DoNotSerialize
         private String ignoreSerialize = "aaa";
 
-        /**
-         * 基本类型不会执行以下两个方法
-         * 由 TSerializer 自动进行序列化和反序列化步骤
-         */
-        @Override
-        public void read(String fieldName, String value) {
-            if (fieldName.equals("list")) {
-                // List 类型可以直接通过 TSerializer 提供的预设方法进行反序列化
-                TSerializer.readCollection(list, value, TSerializerElementGeneral.DOUBLE);
-            }
-        }
-
-        @Override
-        public String write(String fieldName, Object value) {
-            if (fieldName.equals("list")) {
-                return TSerializer.writeCollection((Collection) value, TSerializerElementGeneral.DOUBLE);
-            }
-            return null;
-        }
-
         @Override
         public String toString() {
             return "SimpleData{" +
                     "text='" + text + '\'' +
                     ", number=" + number +
                     ", list=" + list +
+                    ", map=" + map +
                     ", ignoreSerialize='" + ignoreSerialize + '\'' +
                     '}';
         }

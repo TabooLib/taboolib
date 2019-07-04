@@ -182,7 +182,7 @@ public enum TSerializerElementGeneral {
 
         @Override
         public boolean matches(Class objectClass) {
-            return ItemStack.class.equals(objectClass);
+            return ItemStack.class.isAssignableFrom(objectClass);
         }
     }),
 
@@ -200,7 +200,25 @@ public enum TSerializerElementGeneral {
 
         @Override
         public boolean matches(Class objectClass) {
-            return Location.class.equals(objectClass);
+            return Location.class.isAssignableFrom(objectClass);
+        }
+    }),
+
+    CUSTOM(new TSerializerElement() {
+
+        @Override
+        public Object read(String value) {
+            return null;
+        }
+
+        @Override
+        public String write(Object value) {
+            return null;
+        }
+
+        @Override
+        public boolean matches(Class objectClass) {
+            return TSerializable.class.isAssignableFrom(objectClass);
         }
     });
 

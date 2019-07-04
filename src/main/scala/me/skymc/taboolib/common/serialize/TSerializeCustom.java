@@ -9,10 +9,10 @@ import java.lang.annotation.Target;
  * @Author sky
  * @Since 2018-10-05 12:11
  *
- * 用于标注不需要进行序列化的内容
+ * 用于标识 TSerializable 类型的字段
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DoNotSerialize {
+public @interface TSerializeCustom {
 
 }
