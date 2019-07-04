@@ -3,6 +3,8 @@ package me.skymc.taboolib.common.util;
 import com.google.common.collect.Maps;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -13,6 +15,24 @@ import java.util.Map;
 public class SimpleReflection {
 
     private static Map<String, Map<String, Field>> fieldCached = Maps.newHashMap();
+
+    public static boolean isExists(Class<?> nmsClass) {
+        return fieldCached.containsKey(nmsClass.getName());
+    }
+
+    public static Map<String, Field> getFields(Class<?> nmsClass) {
+        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap());
+    }
+
+    public static Field getField(Class<?> nmsClass, String fieldName) {
+        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(fieldName);
+    }
+
+    public static void checkAndSave(Class<?> nmsClass) {
+        if (!isExists(nmsClass)) {
+            saveField(nmsClass);
+        }
+    }
 
     public static void saveField(Class<?> nmsClass) {
         try {
@@ -82,4 +102,32 @@ public class SimpleReflection {
         return def;
     }
 
+    public static Class getListType(Field field)  {
+        Type genericType = field.getGenericType();
+        try {
+            if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
+                for (Type actualTypeArgument : ((ParameterizedType) genericType).getActualTypeArguments()) {
+                    return Class.forName(actualTypeArgument.getTypeName());
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Class[] getMapType(Field field)  {
+        Class[] mapType = new Class[2];
+        try {
+            Type genericType = field.getGenericType();
+            if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
+                for (Type actualTypeArgument : ((ParameterizedType) genericType).getActualTypeArguments()) {
+                    mapType[mapType[0] == null ? 0 : 1] = Class.forName(actualTypeArgument.getTypeName());
+                }
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return mapType[1] == null ? null : mapType ;
+    }
 }

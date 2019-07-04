@@ -86,6 +86,18 @@ public class MenuBuilder {
         }
         return inventory;
     }
+    
+    public char getSlot(int slot) {
+        for (int i = 0; i < items.length && i < rows; i++) {
+            char[] line = items[i];
+            for (int j = 0; j < line.length && j < 9; j++) {
+                if (i * 9 + j == slot) {
+                    return line[j];
+                }
+            }
+        }
+        return ' ';
+    }
 
     // *********************************
     //

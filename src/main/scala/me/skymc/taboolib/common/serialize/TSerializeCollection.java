@@ -1,20 +1,18 @@
-package me.skymc.taboolib.common.serialize.container;
+package me.skymc.taboolib.common.serialize;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author sky
  * @Since 2018-10-05 12:11
+ *
+ * 用于标识 Collection 类型的字段
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TSerializeMap {
-
-    Class<? extends Map> type() default HashMap.class;
+public @interface TSerializeCollection {
 
 }
