@@ -2,7 +2,7 @@
   <br>
   <br>
   <br>
-  TabooLib
+  <img src="https://i.loli.net/2019/07/06/5d1f802426f2a12175.png">
   <h4 align="center">
     <a href="#function">插件功能</a>&nbsp;&nbsp;
     <a href="#document">插件文档</a>&nbsp;&nbsp;
@@ -20,7 +20,7 @@
 <a name="function"></a>
 插件功能
 ---
-本插件包含大量常用开发工具及扩展工具，可以帮助入门开发者完成一些繁琐或是复杂的操作，在你没有自己的工具库时，这些工具可以大量提升你的而开发速度，本插件自带的大部分计算都是异步处理，不会影响服务器的正常运行，你只要不去使用我标注为过时的工具，那么我可以向你保证工具的运行效率。插件在 3.55 版本后开始逐渐将一些常用的工具添加到配置文件中, 来让不会开发的服主使用。
+5.0 重构，没有介绍。
 
 <br>
 
@@ -38,26 +38,16 @@
 ---
 | 命令 | 作用 | 权限 |
 | --- | --- | --- |
-| /taboolib | 插件主命令 | taboolib.admin |
-| /tabooliblocale | TLocale 工具主命令 | taboolib.admin |
-| /taboolibplugin | TPlugin 工具主命令 | taboolib.admin |
-| /taboolibexecute | TExecute 工具主命令 | taboolib.admin |
-| /tabooliblogs | TLogs 工具主命令 | taboolib.admin |
-| /taboolibcloud | TCLOUD 模块主命令 | taboolib.admin |
-| /taboolibrarymodule | TLM 模块主命令 | tlm.use |
-| /language2 | Language2 工具主命令 | taboolib.admin |
-| /translateuuid | TranslateUUID 工具主命令 | taboolib.admin |
-
+| /tabooliblocale | 语言文件 | taboolib.admin |
+| /taboolibplugin | 插件管理 | taboolib.admin |
+| /taboolibexecute | 命令执行 | taboolib.admin |
 
 <br>
 
 <a name="download"></a>
 插件下载
 ---
-[![](http://jenkins.mirez.cc/buildStatus/icon?job=TabooLib)](http://jenkins.mirez.cc/job/TabooLib/)
 [![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
-[![](https://img.shields.io/github/release/Bkm016/TabooLib.svg)](https://github.com/Bkm016/TabooLib/tags)
-[![](https://img.shields.io/github/stars/Bkm016/TabooLib.svg?style=flat-square&label=Stars)](https://github.com/Bkm016/TabooLib)
 [![](https://jitpack.io/v/Bkm016/TabooLib.svg)](https://jitpack.io/#Bkm016/TabooLib)
 
 你可以在 [**这里**](https://github.com/Bkm016/TabooLib/releases) 下载正式版本  
