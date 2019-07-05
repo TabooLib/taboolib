@@ -20,7 +20,7 @@
 <a name="function"></a>
 插件功能
 ---
-5.0 重构，没有介绍。
+还没有介绍。
 
 <br>
 
@@ -50,14 +50,7 @@
 [![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
 [![](https://jitpack.io/v/Bkm016/TabooLib.svg)](https://jitpack.io/#Bkm016/TabooLib)
 
-你可以在 [**这里**](https://github.com/Bkm016/TabooLib/releases) 下载正式版本  
-如果你的服务器没有连接互联网（内网跨服），请下载 **libs.rar** 文件并手动解压至服务端目录  
-
-如果你无法连接到 Github，可以在由 **Mirez** 服务器提供的 [**构建站**](http://jenkins.15imc.com:8080/job/TabooLib/) 下载最新版本  
-该网站下载到的插件有可能是 **正在测试** 的不稳定版本，最新版本以 Github 为准  
-
-从 **4.0** 版本起，不再对 **1.7.10** 进行支持与维护，部分功能在该版本可能会失效  
-如果你需要在 1.7.10 安装本插件，请在 [**这里**](https://pcd.ac.cn/2018/05/19/71/) 修复因 **SpecialSource** 版本过低导致插件无法载入的问题。
+还不能下载。
 
 <br>
 
