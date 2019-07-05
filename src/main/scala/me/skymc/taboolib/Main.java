@@ -3,13 +3,10 @@ package me.skymc.taboolib;
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.filter.TLoggerFilter;
 import com.ilummc.tlib.resources.TLocale;
-import com.ilummc.tlib.util.IO;
-import com.ilummc.tlib.util.Strings;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
 import me.skymc.taboolib.fileutils.ConfigUtils;
-import me.skymc.taboolib.fileutils.FileUtils;
 import me.skymc.taboolib.listener.TListenerHandler;
 import me.skymc.taboolib.mysql.hikari.HikariHandler;
 import me.skymc.taboolib.mysql.protect.MySQLConnection;
@@ -24,10 +21,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -114,17 +107,6 @@ public class Main extends JavaPlugin {
 
             @Override
             public void run() {
-                // 面子工程
-                if (!TabooLib.isSilent()) {
-                    InputStream inputStream = FileUtils.getResource("motd.txt");
-                    try {
-                        String text = new String(IO.readFully(inputStream), Charset.forName("utf-8"));
-                        if (text != null) {
-                            Arrays.stream(text.split("\n")).forEach(line -> Bukkit.getConsoleSender().sendMessage(Strings.replaceWithOrder(line, getDescription().getVersion())));
-                        }
-                    } catch (IOException ignored) {
-                    }
-                }
                 // 本地通讯网络终端
                 if (getConfig().getBoolean("SERVER")) {
                     TabooLibServer.main(new String[0]);

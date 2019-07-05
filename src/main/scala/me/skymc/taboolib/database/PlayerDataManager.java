@@ -180,15 +180,8 @@ public class PlayerDataManager implements Listener {
 
             @Override
             public void run() {
-                long time = System.currentTimeMillis();
                 // 保存
-                for (String name : PLAYER_DATA.keySet()) {
-                    savePlayerData(name, false);
-                }
-                // 提示
-                if (!Main.getInst().getConfig().getBoolean("HIDE-NOTIFY")) {
-                    TLocale.Logger.info("PLAYER-DATAMANAGER.SUCCESS-SAVE-DATA", String.valueOf(PLAYER_DATA.size()), String.valueOf(System.currentTimeMillis() - time));
-                }
+                PLAYER_DATA.keySet().forEach(name -> savePlayerData(name, false));
             }
         };
         // 如果异步

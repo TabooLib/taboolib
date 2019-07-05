@@ -46,13 +46,7 @@ public class DataUtils implements Listener {
     }
 
     public static void saveAllCaches(boolean remove) {
-        long time = System.currentTimeMillis();
-        for (String plugin : CACHE_DATA_PLUGIN.keySet()) {
-            saveAllCaches(getFixedPlugin(plugin), remove);
-        }
-        if (!Main.getInst().getConfig().getBoolean("HIDE-NOTIFY")) {
-            TLocale.Logger.info("DATA-UTILS.SUCCESS-SAVE-DATA", String.valueOf(DataUtils.CACHE_DATA_PLUGIN.size()), String.valueOf(System.currentTimeMillis() - time));
-        }
+        CACHE_DATA_PLUGIN.keySet().forEach(plugin -> saveAllCaches(getFixedPlugin(plugin), remove));
     }
 
     public static void saveConfiguration(FileConfiguration conf, File file) {
