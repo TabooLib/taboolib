@@ -1,6 +1,6 @@
 package io.izzel.taboolib;
 
-import io.izzel.taboolib.locale.TLocaleLoader;
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.dependency.Dependency;

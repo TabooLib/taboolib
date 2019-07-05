@@ -1,6 +1,6 @@
 package io.izzel.taboolib.origin.client.packet.impl;
 
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.origin.client.TabooLibServer;
 import io.izzel.taboolib.origin.client.packet.Packet;
 import io.izzel.taboolib.origin.client.packet.PacketType;

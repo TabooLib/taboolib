@@ -2,7 +2,7 @@ package io.izzel.taboolib.command;
 
 import com.google.common.base.Joiner;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.TCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;

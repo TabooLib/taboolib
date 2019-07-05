@@ -1,4 +1,4 @@
-package io.izzel.taboolib.locale;
+package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.logger.TLoggerManager;

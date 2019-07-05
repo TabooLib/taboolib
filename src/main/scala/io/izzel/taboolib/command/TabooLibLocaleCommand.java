@@ -1,7 +1,7 @@
 package io.izzel.taboolib.command;
 
-import io.izzel.taboolib.locale.TLocale;
-import io.izzel.taboolib.locale.TLocaleLoader;
+import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;
 import io.izzel.taboolib.module.command.TCommand;

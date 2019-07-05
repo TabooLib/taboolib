@@ -3,7 +3,7 @@ package io.izzel.taboolib.module.config;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.logger.TLogger;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Ref;

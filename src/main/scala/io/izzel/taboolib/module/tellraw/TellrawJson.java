@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.tellraw;
 
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.util.chat.*;

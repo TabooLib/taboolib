@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.lite;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.locale.TLocaleLoader;
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.nms.NMSHandler;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;

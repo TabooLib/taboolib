@@ -1,6 +1,6 @@
 package io.lzzel.tlibscala.runtime
 
-import io.izzel.taboolib.locale.TLocale
+import io.izzel.taboolib.module.locale.TLocale
 import io.izzel.taboolib.module.compat.PermissionHook
 import io.izzel.taboolib.origin.lite.Boards
 import org.bukkit.entity.Player

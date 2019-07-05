@@ -1,7 +1,7 @@
 package io.izzel.taboolib.origin.database;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;

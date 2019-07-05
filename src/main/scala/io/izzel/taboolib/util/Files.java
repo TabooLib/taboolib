@@ -1,7 +1,7 @@
 package io.izzel.taboolib.util;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.plugin.InternalPlugin;
 import io.izzel.taboolib.util.eagletdl.EagletTask;
 import io.izzel.taboolib.util.eagletdl.ProgressEvent;
