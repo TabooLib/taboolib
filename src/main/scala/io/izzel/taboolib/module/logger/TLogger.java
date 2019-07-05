@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.logger;
 
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Strings;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;

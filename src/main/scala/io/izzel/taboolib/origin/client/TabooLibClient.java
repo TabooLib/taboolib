@@ -1,7 +1,7 @@
 package io.izzel.taboolib.origin.client;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.lite.SimpleCommandBuilder;
 import io.izzel.taboolib.origin.client.packet.Packet;
 import io.izzel.taboolib.origin.client.packet.PacketSerializer;

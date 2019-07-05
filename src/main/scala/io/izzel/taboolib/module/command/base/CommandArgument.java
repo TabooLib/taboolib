@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.command.base;
 
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 
 import java.util.Objects;
 

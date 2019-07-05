@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.dependency;
 
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import org.bukkit.plugin.Plugin;
 
 /**

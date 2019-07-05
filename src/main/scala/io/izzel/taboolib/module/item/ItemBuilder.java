@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.item;
 
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import org.bukkit.Color;
 import org.bukkit.Material;

@@ -1,6 +1,6 @@
 package io.lzzel.tlibscala
 
-import io.izzel.taboolib.locale.TLocale.Logger
+import io.izzel.taboolib.module.locale.TLocale.Logger
 import org.bukkit.Bukkit
 import org.bukkit.event.{Event, EventException, EventPriority, Listener}
 import org.bukkit.plugin.{EventExecutor, Plugin}

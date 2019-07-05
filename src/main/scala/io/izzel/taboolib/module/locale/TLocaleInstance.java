@@ -1,8 +1,8 @@
-package io.izzel.taboolib.locale;
+package io.izzel.taboolib.module.locale;
 
 import com.google.common.collect.ImmutableList;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.locale.type.TLocaleText;
+import io.izzel.taboolib.module.locale.type.TLocaleText;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

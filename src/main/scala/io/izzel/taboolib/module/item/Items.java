@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.item;
 
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.lite.SimpleI18n;
 import io.izzel.taboolib.module.nms.NMSHandler;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;

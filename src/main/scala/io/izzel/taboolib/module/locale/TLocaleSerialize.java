@@ -1,4 +1,4 @@
-package io.izzel.taboolib.locale;
+package io.izzel.taboolib.module.locale;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;

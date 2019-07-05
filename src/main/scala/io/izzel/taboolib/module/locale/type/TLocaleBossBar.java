@@ -1,7 +1,7 @@
-package io.izzel.taboolib.locale.type;
+package io.izzel.taboolib.module.locale.type;
 
-import io.izzel.taboolib.locale.TLocale;
-import io.izzel.taboolib.locale.TLocaleSerialize;
+import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;

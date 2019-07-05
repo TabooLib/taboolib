@@ -1,8 +1,8 @@
-package io.izzel.taboolib.locale.type;
+package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
-import io.izzel.taboolib.locale.TLocale;
-import io.izzel.taboolib.locale.TLocaleSerialize;
+import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.SerializableAs;
