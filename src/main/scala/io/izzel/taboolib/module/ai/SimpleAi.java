@@ -1,0 +1,23 @@
+package io.izzel.taboolib.module.ai;
+
+/**
+ * @Author sky
+ * @Since 2018-09-19 19:42
+ */
+public abstract class SimpleAi {
+
+    public abstract boolean shouldExecute();
+
+    public boolean continueExecute() {
+        return shouldExecute();
+    }
+
+    public void startTask() {
+    }
+
+    public void resetTask() {
+    }
+
+    public void updateTask() {
+    }
+}

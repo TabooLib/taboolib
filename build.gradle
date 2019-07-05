@@ -5,7 +5,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 group = 'me.skymc'
-version = '4.86'
+version = '5.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -28,14 +28,11 @@ dependencies {
         exclude(module: 'log4j')
     }
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
-    shadow group: 'com.zaxxer', name: 'HikariCP', version: '3.1.0'
-    shadow group: 'org.javalite', name: 'activejdbc', version: '2.0'
     compile group: 'org.ow2.asm', name: 'asm', version: '7.0-beta'
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
-    shadow group: 'com.h2database', name: 'h2', version: '1.4.197'
-    shadow group: 'me.clip', name: 'placeholderapi', version: '2.8.4'
-    shadow group: 'net.objecthunter', name: 'exp4j', version: '0.4.8'
+    shadow group: 'com.zaxxer', name: 'HikariCP', version: '3.1.0'
     shadow group: 'org.scala-lang', name: 'scala-library', version: '2.12.8'
+    shadow group: 'me.clip', name: 'placeholderapi', version: '2.8.4'
     shadow fileTree(dir: 'libs', includes: ['*.jar'])
 }
 
@@ -48,11 +45,11 @@ processResources {
     inputs.property "version", project.version
 
     from(sourceSets.main.resources.srcDirs) {
-        include 'plugin.yml'
+        include 'version'
         expand 'version': project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'plugin.yml'
+        exclude 'version'
     }
 }
