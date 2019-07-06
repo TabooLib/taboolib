@@ -28,14 +28,14 @@ public class TSerializer {
     }
 
     public static TSerializable read(TSerializable serializable, String serializedString) {
-        SimpleReflection.checkAndSave(serializable.getClass());
         try {
             JsonObject jsonObject = (JsonObject) new JsonParser().parse(serializedString);
             if (jsonObject.has("serializeObject")) {
                 JsonObject serializeObject = jsonObject.getAsJsonObject("serializeObject");
                 for (Map.Entry<String, JsonElement> jsonElementEntry : serializeObject.entrySet()) {
                     try {
-                        Field declaredField = SimpleReflection.getField(serializable.getClass(), jsonElementEntry.getKey());
+                        Field declaredField = serializable.getClass().getDeclaredField(jsonElementEntry.getKey());
+                        declaredField.setAccessible(true);
                         if (declaredField.isAnnotationPresent(DoNotSerialize.class)) {
                             continue;
                         }
@@ -100,7 +100,8 @@ public class TSerializer {
         SimpleReflection.checkAndSave(serializable.getClass());
         JsonObject jsonObject = new JsonObject();
         JsonObject serializeObject = new JsonObject();
-        for (Field declaredField : SimpleReflection.getFields(serializable.getClass()).values()) {
+        for (Field declaredField : serializable.getClass().getDeclaredFields()) {
+            declaredField.setAccessible(true);
             try {
                 if (!declaredField.isAnnotationPresent(DoNotSerialize.class) && !Modifier.isStatic(declaredField.getModifiers())) {
                     Object fieldObject = declaredField.get(serializable);
