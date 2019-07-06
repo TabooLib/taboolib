@@ -6,7 +6,6 @@ import com.ilummc.tlib.logger.TLogger;
 import com.ilummc.tlib.resources.type.*;
 import com.ilummc.tlib.util.IO;
 import com.ilummc.tlib.util.Strings;
-import me.skymc.taboocode.TabooCodeLang;
 import me.skymc.taboolib.Main;
 import me.skymc.taboolib.TabooLib;
 import me.skymc.taboolib.fileutils.ConfigUtils;
@@ -82,24 +81,20 @@ public class TLocaleLoader {
                 if (localeFile == null) {
                     return;
                 }
-
                 // 加载文件
-                infoLogger("TRY-LOADING-LANG", plugin.getName(), localeFile.getName());
                 YamlConfiguration localeConfiguration = ConfigUtils.loadYaml(plugin, localeFile);
                 YamlConfiguration localeConfigurationAtStream = getLocaleAtStream(plugin, localeFile);
-
                 // 载入配置
                 loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream);
-
                 // 注册监听
                 TLib.getTLib().getConfigWatcher().removeListener(localeFile);
                 TLib.getTLib().getConfigWatcher().addListener(localeFile, null, obj -> {
-                    infoLogger("RELOADING-LANG", plugin.getName());
                     loadPluginLocale(plugin, localeFile, ConfigUtils.loadYaml(plugin, localeFile), getLocaleAtStream(plugin, localeFile));
                 });
             }
         } catch (Exception e) {
-            errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
+            errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString());
+            e.printStackTrace();
         }
     }
 
