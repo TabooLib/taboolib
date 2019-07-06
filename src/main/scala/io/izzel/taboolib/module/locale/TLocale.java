@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.logger.TLoggerManager;
+import io.izzel.taboolib.module.locale.logger.TLoggerManager;
 import io.izzel.taboolib.module.nms.NMSHandler;
 import io.izzel.taboolib.module.tellraw.TellrawCreator;
 import io.izzel.taboolib.util.Ref;

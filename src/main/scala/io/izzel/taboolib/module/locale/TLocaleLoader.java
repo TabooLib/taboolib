@@ -4,7 +4,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.locale.type.*;
 import io.izzel.taboolib.module.config.TConfigWatcher;
-import io.izzel.taboolib.module.logger.TLogger;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
 import io.izzel.taboolib.util.Strings;

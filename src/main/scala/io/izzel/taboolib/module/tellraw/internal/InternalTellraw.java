@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.tellraw.internal;
 
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.module.item.Items;
+import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.module.tellraw.TellrawVersion;

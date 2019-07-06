@@ -1,7 +1,7 @@
 package io.izzel.taboolib;
 
 import io.izzel.taboolib.module.nms.NMSHandler;
-import io.izzel.taboolib.origin.database.PluginDataManager;
+import io.izzel.taboolib.module.db.yaml.PluginDataManager;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

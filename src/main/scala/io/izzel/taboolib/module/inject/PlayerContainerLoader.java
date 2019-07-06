@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.logger.TLogger;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

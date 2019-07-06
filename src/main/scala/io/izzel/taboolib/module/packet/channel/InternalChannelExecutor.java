@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.packet.channel;
 
-import io.izzel.taboolib.module.logger.TLogger;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.netty.channel.Channel;
 import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;

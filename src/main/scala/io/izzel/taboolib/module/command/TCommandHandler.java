@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.inject.TFunction;
@@ -107,7 +108,7 @@ public class TCommandHandler {
      * @param baseMainCommand 命令对象
      * @return {@link BaseMainCommand}
      */
-    public static BaseMainCommand registerCommand(TCommand tCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
+    public static BaseMainCommand registerCommand(BaseCommand tCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
         if (Bukkit.getPluginCommand(command) == null) {
             registerPluginCommand(
                     plugin,
@@ -129,8 +130,8 @@ public class TCommandHandler {
      */
     public static void registerCommand(Plugin plugin) {
         for (Class pluginClass : Files.getClasses(plugin)) {
-            if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TCommand.class)) {
-                TCommand tCommand = (TCommand) pluginClass.getAnnotation(TCommand.class);
+            if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(BaseCommand.class)) {
+                BaseCommand tCommand = (BaseCommand) pluginClass.getAnnotation(BaseCommand.class);
                 try {
                     registerCommand(tCommand, tCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
                 } catch (Exception e) {

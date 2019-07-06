@@ -8,9 +8,9 @@ import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TListenerHandler;
-import io.izzel.taboolib.module.mysql.IHost;
-import io.izzel.taboolib.module.mysql.hikari.HikariHandler;
-import io.izzel.taboolib.origin.database.PluginDataManager;
+import io.izzel.taboolib.module.db.IHost;
+import io.izzel.taboolib.module.db.source.HikariHandler;
+import io.izzel.taboolib.module.db.yaml.PluginDataManager;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;

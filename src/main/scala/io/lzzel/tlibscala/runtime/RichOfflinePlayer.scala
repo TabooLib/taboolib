@@ -1,7 +1,7 @@
 package io.lzzel.tlibscala.runtime
 
 import io.izzel.taboolib.module.compat.EconomyHook
-import io.izzel.taboolib.module.item.ItemBuilder
+import io.izzel.taboolib.util.item.ItemBuilder
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 

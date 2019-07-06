@@ -2,18 +2,18 @@ package io.lzzel.tlibscala.runtime
 
 import io.izzel.taboolib.module.locale.TLocale
 import io.izzel.taboolib.module.compat.PermissionHook
-import io.izzel.taboolib.origin.lite.Boards
+import io.izzel.taboolib.util.lite.Scoreboards
 import org.bukkit.entity.Player
 
 class RichPlayer(private val player: Player) extends RichOfflinePlayer(player) {
 
   def sendActionBar(x: String): Unit = TLocale.Display.sendActionBar(player, x)
 
-  def displaySidebarUnranked(title: String, elements: Array[String]): Unit = Boards.display(player, elements: _*)
+  def displaySidebarUnranked(title: String, elements: Array[String]): Unit = Scoreboards.display(player, elements: _*)
 
-  def displaySidebarUnranked(title: String, elements: List[String]): Unit = Boards.display(player, elements: _*)
+  def displaySidebarUnranked(title: String, elements: List[String]): Unit = Scoreboards.display(player, elements: _*)
 
-  def displaySidebarUnranked(title: String, elements: String*): Unit = Boards.display(player, elements: _*)
+  def displaySidebarUnranked(title: String, elements: String*): Unit = Scoreboards.display(player, elements: _*)
 
   def addPermission(perm: String): Unit = PermissionHook.addPermission(player, perm)
 
