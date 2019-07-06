@@ -1,0 +1,29 @@
+# 语言文件相关设置
+LOCALE:
+  # 加载语言文件的顺序
+  PRIORITY:
+  - zh_CN
+  - en_US
+  # 默认是否启用语言文件中 PlaceholderAPI 的替换功能
+  # 关闭可提升性能
+  # 如果需要开启仍然可以在语言文件中加入 papi: true
+  USE_PAPI: false
+
+# 玩家数据储存位置
+# 如果服务器存在 TabooLib 的插件版本
+# 请设置相同路径
+LOCAL-PLAYER: 'plugins/TabooLib/playerdata/'
+
+# 是否以 UUID 的形式创建玩家数据
+# 如果服务器存在 TabooLib 的插件版本则不建议开启
+LOCAL-PLAYER-UUID: false
+
+# 是否在当前服务器启用交流网终端
+# 启用后将会收到大量调试信息, 不建议使用
+SERVER: false
+
+# 玩家列表（TAB-API）是否根据前缀排序
+TABLIST-SORT: true
+
+# 玩家列表（TAB-API）是否自动清理没有成员的队伍
+TABLIST-AUTO-CLEAN-TEAM: true

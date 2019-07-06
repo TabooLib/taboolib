@@ -1,21 +1,3 @@
-TLIB:
-  INJECTION-SUCCESS: '注入成功'
-  INJECTION-FAILED:
-  - '注入失败'
-  - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
-  INJECTION-DISABLED:
-  - '关闭注入'
-  - '&c提前加载依赖于 TabooLib 的所有插件的相关功能'
-  LOAD-FAIL-OFFLINE:
-  - '**********************************************'
-  - '** TabooLib-{0} 无法在您的服务器上使用'
-  - '**'
-  - '** 您的服务器尚未连接互联网导致本插件无法正常载入'
-  - '** 请使用离线版本或是手动下载依赖库文件'
-  - '**'
-  - '** 详情查阅: https://github.com/Bkm016/TabooLib'
-  - '**********************************************'
-
 DEPENDENCY:
   DOWNLOAD-OFFLINE: '已启用离线模式, 将不会下载第三方依赖库'
   DOWNLOAD-CONNECTED: '  正在下载 {0} 大小 {1}'
@@ -27,38 +9,7 @@ DEPENDENCY:
   PLUGIN-AUTOLOAD-FAIL: '{0} 所依赖的插件 {1} 尝试自动加载失败，请尝试手动下载'
   PLUGIN-LOAD-SUCCESS: '  {0} 请求的插件 {1} 加载成功'
   PLUGIN-LOAD-FAIL: '  {0} 请求的插件 {1} 加载失败'
-  LOADING-START: '正在加载 {0} 插件所需的依赖'
-#  LIBRARY-LOAD-SUCCESS: '  {0} 请求的库文件 {1} 加载成功'
   LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
-  LOAD-COMPLETE: '依赖加载完成'
-#  LOAD-CLASSES: '&7缓存 &f{0} &7插件的 &f{1} &7个类耗时&f {2} &7毫秒.'
-
-CONFIG:
-  LOAD-FAIL-NO-ANNOTATION: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
-  LOAD-FAIL: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
-  LOAD-FAIL-NO-FILE: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解或文件不存在'
-  LOAD-SUCCESS: '插件 {0} 的 {1} 配置文件成功加载'
-  SAVE-FAIL-NO-ANNOTATION: '插件 {0} 的配置类 {1} 序列化失败：没有 @Config 注解'
-  SAVE-FAIL: '插件 {0} 的配置类 {1} 加载失败：没有 @Config 注解'
-  SAVE-SUCCESS: '插件 {0} 的配置 {1} 已保存'
-  RELOAD-SUCCESS: '插件 {0} 的配置 {1} 成功重载'
-  RELOAD-FAIL: '插件 {0} 的配置 {1} 成功重载'
-  LISTEN-START: '开始监听 {0} 插件的 {1} 配置文件'
-
-NOTIFY:
-  ERROR-SERVER-KEY: '&4检测到本服序列号与其他服务器相同, 已重新生成!'
-  ERROR-CONNECTION-FAIL: '&4数据库连接失败, 请检查配置是否正确!'
-  SUCCESS-LOADED:
-  - '§7插件载入完成!'
-  - '§7插件作者: §f{0}'
-  - '§7插件版本: §f{1}'
-  - '§7游戏版本: §f{2}'
-  SUCCESS-DISABLE:
-  - '&c插件已卸载, 感谢您使用&4禁忌书库'
-  - '&c插件作者: &4坏黑'
-  FAIL-DISABLE:
-  - '&c插件尚未启动完成, 已跳过卸载代码'
-  - '&c插件作者: &4坏黑'
 
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
@@ -74,26 +25,9 @@ MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
 
-#COOLDOWNPACK:
-#  PACK-REGISTER: '注册冷却包: {0}, 时间: {1} 秒 ({2})'
-#  PACK-REGISTER-ANONYMOUS: '注册冷却包: {0}, 时间: {1} 秒 (匿名注册)'
-#  PACK-UNREGISTER: '注销冷却包: {0} (主动注销)'
-#  PACK-UNREGISTER-AUTO: '注销冷却包: {0} (自动注销)'
-
-GLOBAL-DATAMANAGER:
-  ERROR-CHECK-VARIABLE: '&4变量 &c{0} &4载入异常: &c{1}'
-  SUCCESS-LOADED-VARIABLE: '&7从数据库中获取 &f{0} &7个变量, 耗时: &f{1} &7(ms)'
-
 PLAYER-DATAMANAGER:
-  ERROR-STORAGE-SQL: '不允许在储存模式为数据库的情况下获取离线玩家数据'
   ERROR-PLAYER-DATA: '&4玩家 &c{0} &4的数据载入出现异常: &c{1}'
   SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条玩家数据, 耗时: &f{1} &7(ms)'
-
-ENTITY-UTILS:
-  NOTFOUND-PROTOCOLLIB: '缺少前置插件 ProtocolLib'
-
-FILE-UTILS:
-  FAIL-LOAD-CONFIGURATION: '&4配置文件载入失败!, 插件: &c{0}&4, 文件: &c{1}'
 
 DATA-UTILS:
   SUCCESS-SAVE-DATA: '&7保存 &f{0} &7条插件数据, 耗时: &f{1} &7(ms)'
@@ -106,52 +40,13 @@ ITEM-UTILS:
   FAIL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
   FAIL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
   FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
-#  SUCCESS-LOAD-CACHES: '&7载入 &f{0} &7项缓存物品'
-#  SUCCESS-LOAD-NAMES: '&7载入 &f{0} &7项物品名称'
   EMPTY-ITEM: '空'
-
-LANGUAGE2:
-  FAIL-NOTFOUND-FILE: '语言文件 {0} 不存在'
-
-TIMECYCLE:
-  FAIL-CYCLE-EXISTS: '注册周期管理器 &8{0}&c 失败, 原因: &4名称重复'
-
-UPDATETASK:
-  VERSION-FAIL: '&4更新记录获取失败, 请检查网络连接!'
-  VERSION-LATEST: '&7插件已是最新版, 无需更新!'
-  VERSION-OUTDATED:
-  - '&8####################################################'
-  - '&7 检测到有新的版本更新!'
-  - '&7 当前版本: &f{0}'
-  - '&7 最新版本: &f{1}'
-  - '&7 下载地址: &fhttp://www.mcbbs.net/thread-773065-1-1.html'
-  - '&7 开源地址: &fhttps://github.com/Bkm016/TabooLib/'
-  - '&8####################################################'
-
-MYSQL-CONNECTION:
-  FAIL-CONNECT: '&4数据库 &c{0} &4连接失败, 原因: &c{0}'
-  FAIL-NOTFOUND-DRIVE: '&7驱动器获取失败, 无法连接到数据库'
-  FAIL-NOTFOUND-CONNECTION: '&7警告! 数据库尚未连接, 请检查配置文件后重启服务器! ({0})'
-  FAIL-COMMAND-NORMAL: '&4数据库命令执行出错, 错误原因: &c{0}'
-  FAIL-COMMAND-DETAIL: '&4数据库命令执行出错, 错误代码: &c{0}&4, 错误原因: &c{1}'
-  FAIL-EXECUTE-TASK: '异步任务失败, 执行方式改为同步执行'
-  SUCCESS-REGISTERED: '&7插件 &f{0}&7 注册新的数据库连接'
-  SUCCESS-REGISTERED-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
-  SUCCESS-REGISTERED-LISTENER: '&7启动数据库连接监控'
-  SUCCESS-CONNECTION-CANCEL: '已停止插件 &f{0}&7 的 &f{1}&7 条数据库连接'
-  NOTIFY-CONNECTING: '&7正在连接数据库, 地址: &f{0}'
-  NOTIFY-CONNECTED: '&7数据库连接成功 ({0}ms)'
 
 MYSQL-HIKARI:
   CREATE-SUCCESS: '&7插件 &f{0}&7 注册新的数据库连接: &f{1}'
   CREATE-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
   CLOSE-SUCCESS: '&7插件 &f{0} &7注册的数据库连接 &f{1} &7已被注销!'
   CLOSE-FAIL: '&7插件 &f{0} &7注册的数据库连接正在被 &f{1} &7个插件使用, 无法注销!'
-
-TABOOLIB-MODULE:
-  SUCCESS-LOADED: '&7载入 &f{0} &7个 &fTLM &7模块'
-  FAIL-LOADED: '&4模块载入异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
-  FAIL-RUNTIME: '&4模块运行异常: &c{0}&4, 模块: &c{1}&4, 位于: &c{2}'
 
 COMMANDS:
   GLOBAL:
@@ -169,9 +64,7 @@ COMMANDS:
     - '&8[&3&lTabooLib&8] &7指令 &f{0} &7不存在'
     - '&8[&3&lTabooLib&8] &7你可能想要:'
     - '&8[&3&lTabooLib&8] &7{1}'
-    COMMAND-CREATE-FAILED: '&7插件 &f{0} &7的 &f{1} &7命令注册失败: &c{2}'
-#    COMMAND-CREATE: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册到服务器'
-#    COMMAND-REGISTER: '&7自动为插件 &f{0} &7的 &f{1} &7命令注册 &f{2} &7条子命令'
+    COMMAND-CREATE-FAILED: '&c插件 &7{0} &c的 &7{1} &c命令注册失败: &7{2}'
     COMMAND-HELP: ' §f/{0} {1} {2}§6- §e{3}'
     COMMAND-HELP-EMPTY: ' §f/{0} {1} {2}'
     COMMAND-ARGUMENT: '§7<§8{0}§7>'
@@ -179,285 +72,6 @@ COMMANDS:
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
     INSUFFICIENT: '&8[&3&lTabooLib&8] &4参数不足'
-  RELOAD:
-    LOADING: '&8[&3&lTabooLib&8] &7重载中...'
-    SUCCESS-NORMAL: '&8[&3&lTabooLib&8] &7重载成功'
-    SUCCESS-ELAPSED-TIME: '&8[&3&lTabooLib&8] &7重载成功, 耗时: &f{0} ms'
-  TABOOLIB:
-    COMMAND-TITLE: '&e&l----- &6&lTabooLib Commands &e&l-----'
-    SAVE:
-      DESCRIPTION: '载入插件'
-      ARGUMENTS:
-        0: '名称'
-      INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
-      INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
-      INVALID-ITEM-FINAL-EXISTS: '&8[&3&lTabooLib&8] &4该名称所对应的物品保存于固定物品库中, 无法覆盖'
-      GUIDE-EXISTS: '&8[&3&lTabooLib&8] &4你有一个正在进行的聊天引导, 请完成后在这么做'
-      GUIDE-BEFORE: '&8[&3&lTabooLib&8] &7物品 &f{0}&7 已存在, 如果你想要覆盖它, 请在聊天框中输入 "&fYES&7"'
-      GUIDE-QUIT: '&8[&3&lTabooLib&8] &7退出引导'
-      SUCCESS: '&8[&3&lTabooLib&8] &7物品 &f{0} &7已替换'
-    ITEM:
-      DESCRIPTION: '给予玩家物品'
-      ARGUMENTS:
-        0: '名称'
-        1: '玩家'
-        2: '数量'
-      INVALID-NAME: '&8[&3&lTabooLib&8] &4请输入正确的名称'
-      INVALID-ITEM: '&8[&3&lTabooLib&8] &4物品 &c{0} &4不存在'
-      INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
-      INVALID-NUMBER: '&8[&3&lTabooLib&8] &4数量必须大于0'
-      SUCCESS: '&8[&3&lTabooLib&8] &7物品已发送至玩家 &f{0} &7的背包中'
-    ITEMRELOAD:
-      DESCRIPTION: '重载物品缓存'
-      SUCCESS-RELOAD: '&8[&3&lTabooLib&8] &7重载成功'
-    VARIABLE:
-      DESCRIPTION:
-        GET: '查看变量'
-        SET: '设置变量'
-      ARGUMENTS:
-        GET:
-          0: '-s|-a'
-          1: '键'
-        SET:
-          0: '-s|-a'
-          1: '键'
-          2: '值'
-      WRITE-ERROR-TYPE: '&8[&3&lTabooLib&8] &4请输入正确的写入方式: &c-s&4、&c-a'
-      WRITE-SUCCESS: '&8[&3&lTabooLib&8] &7写入完成, 耗时: &f{0} &7(ms)'
-      READ-ERROR-TYPE: '&8[&3&lTabooLib&8] &4请输入正确的写入方式: &c-s&4、&c-a'
-      READ-RESULT: '&8[&3&lTabooLib&8] &7变量 &f{0} &7的值为: &f{1}'
-      READ-SUCCESS: '&8[&3&lTabooLib&8] &7写入完成, 耗时: &f{0} &7(ms)'
-    IMPORTDATA:
-      DESCRIPTION: '&4向数据库导入本地数据 &8(该操作将会清空数据库)'
-      CLEARING: '&8[&3&lTabooLib&8] &7正在清空数据库...'
-      EMPTYDATA: '&8[&3&lTabooLib&8] &4没有玩家数据可以导入'
-      IMPORTING-START: '&8[&3&lTabooLib&8] &7开始导入 &f{0} &7项玩家数据'
-      IMPORTING-PROGRESS: '&8[&3&lTabooLib&8] &7导入玩家数据: &f{0} &7进度: &f{1}/{2}'
-      SUCCESS: '&8[&3&lTabooLib&8] &7导入完成'
-    UPDATEPLUGIN:
-      DESCRIPTION: '&4更新插件 &8(谨防非正规途径的插件获取方式)'
-      UPDATE-NOT-FOUND: '&8[&3&lTabooLib&8] &7插件已是最新版, 无需更新!'
-      UPDATE-NOT-FOUND-SIZE: '&8[&3&lTabooLib&8] &4文件长度获取失败.'
-      UPDATE-NOT-SUPPORT: '&8[&3&lTabooLib&8] &4您的服务器不支持在线更新!'
-      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7最新版下载完成, 服务器即将重启!'
-      UPDATE-FAILED: '&8[&3&lTabooLib&8] &4最新版下载失败.'
-      FILE-NOT-FOUND: '&8[&3&lTabooLib&8] &4尚未寻找到插件文件.'
-      PLAYER-ONLINE: '&8[&3&lTabooLib&8] &4服务器有玩家在线无法更新插件.'
-      ARGUMENTS:
-        0: '-f'
-    PLAYERTAG:
-      DESCRIPTION:
-        DISPLAY: '设置玩家展示名称'
-        PREFIX: '设置玩家头顶前缀'
-        SUFFIX: '设置玩家头顶后缀'
-        DELETE: '删除玩家称号数据'
-      ARGUMENTS:
-        DISPLAY:
-          0: '玩家'
-          1: '文本'
-        PREFIX:
-          0: '玩家'
-          1: '文本'
-        SUFFIX:
-          0: '玩家'
-          1: '文本'
-        DELETE:
-          0: '玩家'
-      INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
-      SUCCESS-DISPLAY-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的名称为 &f{1}'
-      SUCCESS-PREFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的前缀为 &f{1}'
-      SUCCESS-SUFFIX-SET: '&8[&3&lTabooLib&8] &7设置玩家 &f{0} &7的后缀为 &f{1}'
-      SUCCESS-DELETE: '&8[&3&lTabooLib&8] &7删除玩家 &f{0} &7的称号数据'
-    LAGSERVER:
-      DESCRIPTION: '休眠主线程'
-      ARGUMENTS:
-        0: '毫秒'
-      INVALID-TIME: '&8[&3&lTabooLib&8] &4休眠时间不可超过 &c30000 &4毫秒'
-      START: '&8[&3&lTabooLib&8] &7线程休眠开始.'
-      STOP: '&8[&3&lTabooLib&8] &7线程休眠结束.'
-    INFO:
-      DESCRIPTION: '查看物品信息'
-      INVALID-ITEM: '&8[&3&lTabooLib&8] &4请手持正确的物品'
-      ITEM-INFO:
-      - ==: JSON
-        text:
-        - ''
-        - '&b&l----- &3&lItemStack Info &b&l-----'
-        - ''
-        - '&7 - 物品材质: &f<{0}@type>'
-        - '&7 - 物品名称: &f<{1}@name>'
-        - '&7 - 物品序号: &f<{2}@id>'
-        - '&7 - 物品数据: &f<NBT@nbt>'
-        - ''
-        args:
-          type:
-            hover: '&f点击复制'
-            suggest: '{0}'
-          name:
-            hover: '&f点击复制'
-            suggest: '{1}'
-          id:
-            hover: '&f点击复制'
-            suggest: '{2}'
-          nbt:
-            hover: '{3}'
-    ITEMLIST:
-      DESCRIPTION: '查看所有物品'
-      MENU:
-        TITLE: '物品库 {0}'
-        NEXT: '&f上一页'
-        BACK: '&f下一页'
-        LORE:
-        - ''
-        - '&f&m                  '
-        - '&f序列号: &8{0}'
-    SOUNDS:
-      DESCRIPTION: '查看所有音效'
-      MENU:
-        TITLE: '音效库 {0}'
-        NEXT: '&f上一页'
-        BACK: '&f下一页'
-        LORE:
-        - ''
-        - '&fQ键: &70 音调'
-        - '&f左键: &71 音调'
-        - '&f右键: &72 音调'
-        - '&f中键: &7复制名称'
-      RESULT:
-        SEARCH:
-        - '&7查询名称: &f{0}'
-        - '&7查询结果: &f{1}'
-        COPY:
-        - ==: JSON
-          text: '&7点击复制: <&f&n{0}@sound>'
-          args:
-            sound:
-              hover: 点击复制音效
-              suggest: '{0}'
-    TIMECYCLE:
-      DESCRIPTION:
-        LIST: '列出所有时间检查器'
-        INFO: '查询检查器信息'
-        RESET: '初始化时间检查器'
-        UPDATE: '更新时间检查器'
-      ARGUMENTS:
-        INFO:
-          0: '名称'
-        RESET:
-          0: '名称'
-        UPDATE:
-          0: '名称'
-      INVALID-CYCLE: '&8[&3&lTabooLib&8] &4检查器 &c{0} &4不存在'
-      CYCLE-UPDATE: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7已更新'
-      CYCLE-RESET: '&8[&3&lTabooLib&8] &7检查器 &f{0} &7初始化完成'
-      CYCLE-INFO:
-      - ''
-      - '&b&l----- &3&lTimeCycle Info &b&l-----'
-      - ''
-      - ' &f- &7注册周期: &f{0}'
-      - ' &f- &7注册插件: &f{1}'
-      - ' &f- &7上次刷新时间: &f{2}'
-      - ' &f- &7下次刷新时间: &f{3}'
-      - ''
-      LIST:
-        HEAD:
-        - ''
-        - '&b&l----- &3&lTimeCycle List &b&l-----'
-        - ''
-        BODY:
-        - ==: JSON
-          text: ' &7- &f{0} <&8(点击复制)@copy>'
-          args:
-            copy:
-              hover: '&f点击复制'
-              suggest: '{0}'
-        FOOT:
-        - ''
-    ATTRIBUTES:
-      DESCRIPTION: '查看所有属性'
-      HEAD:
-      - ''
-      - '&b&l----- &3&lItemStack Attributes &b&l-----'
-      - ''
-      BODY:
-      - ==: JSON
-        text: ' &7- &f{0} <&8(点击复制)@copy>'
-        args:
-          copy:
-            hover: '&f点击复制'
-            suggest: '{0}'
-      FOOT:
-      - ''
-    ENCHANTS:
-      DESCRIPTION: '查看所有附魔'
-      HEAD:
-      - ''
-      - '&b&l----- &3&lItemStack Enchantments &b&l-----'
-      - ''
-      BODY:
-      - ==: JSON
-        text: ' &7- &f{0}. {1} <&8(点击复制)@copy>'
-        args:
-          copy:
-            hover: '&f点击复制'
-            suggest: '{1}'
-      FOOT:
-      - ''
-    POTIONS:
-      DESCRIPTION: '查看所有药水'
-      HEAD:
-      - ''
-      - '&b&l----- &3&lItemStack PotionEffects &b&l-----'
-      - ''
-      BODY:
-      - ==: JSON
-        text: ' &7- &f{0}. {1} <&8(点击复制)@copy>'
-        args:
-          copy:
-            hover: '&f点击复制'
-            suggest: '{1}'
-      FOOT:
-      - ''
-    FLAGS:
-      DESCRIPTION: '查看所有标签'
-      HEAD:
-      - ''
-      - '&b&l----- &3&lItemStack Flags &b&l-----'
-      - ''
-      BODY:
-      - ==: JSON
-        text: ' &7- &f{0} <&8(点击复制)@copy>'
-        args:
-          copy:
-            hover: '&f点击复制'
-            suggest: '{0}'
-      FOOT:
-      - ''
-    SLOTS:
-      DESCRIPTION: '查看所有部位'
-      HEAD:
-      - ''
-      - '&b&l----- &3&lItemStack Slots &b&l-----'
-      - ''
-      BODY:
-      - ==: JSON
-        text: ' &7- &f{0} <&8(点击复制)@copy>'
-        args:
-          copy:
-            hover: '&f点击复制'
-            suggest: '{0}'
-      FOOT:
-      - ''
-  LANGUAGE2:
-    INVALID-PLAYER: '&8[&3&lTabooLib&8] &4玩家 &c{0} &4不在线'
-    SUCCESS-SEND: '&8[&3&lTabooLib&8] &7信息已发送, 耗时&f: {0}'
-    HELP:
-    - ''
-    - '&e&l----- &6&lLanguage2 Commands &e&l-----'
-    - ''
-    - '&f /{0} send &8[&7玩家/ALL&8] &8[&7语言&8] &8<&7变量&8> &6- &e发送语言提示'
-    - '&f /{0} reload &6- &e重载语言库'
-    - ''
   TLOCALE:
     COMMAND-TITLE: '&e&l----- &6&lTabooLibLoacle Commands &e&l-----'
     SEND:
@@ -517,15 +131,6 @@ COMMANDS:
       INVALID-PLUGIN: '&8[&3&lTabooLib&8] &4插件 &c{0} &4不存在'
       INVALID-PLUGIN-IGNORED: '&8[&3&lTabooLib&8] &4插件 &c{0} &4无法操作'
       TRY-RELOAD: '&8[&3&lTabooLib&8] &7尝试重载插件...'
-  TRANSLATE-UUID:
-    COMMAND-TITLE: '&e&l----- &6&lTranslateUUID Commands &e&l-----'
-    IMPORTLOCAL:
-      DESCRIPTION: '导入本地数据到数据库'
-      DISABLED: '&8[&3&lTabooLib&8] &4该功能尚未启用'
-      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送, 详细信息请查看控制台'
-    RELOAD:
-      DESCRIPTION: '重载配置及数据库'
-      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送, 详细信息请查看控制台'
   TEXECUTE:
     COMMAND-TITLE: '&e&l----- &6&lTabooLibExecute Commands &e&l-----'
     CHAT:
@@ -566,81 +171,6 @@ COMMANDS:
         0: '目录'
         1: '内容'
       SUCCESS: '&8[&3&lTabooLib&8] &7写入完成.'
-  TCLOUD:
-    COMMAND-TITLE: '&e&l----- &6&lTabooLibCloud Commands &e&l-----'
-    REFRESH:
-      DESCRIPTION: '刷新扩展列表'
-      SUCCESS: '&8[&3&lTabooLib&8] &7请求已发送. &8(详细信息请在控制台查看)'
-    STATUS:
-      DESCRIPTION: '查看扩展统计'
-      STATUS:
-      - '&8[&3&lTabooLib&8] &7当前总共 &f{0} &7项扩展被 &fTCLOUD &7录入, 其中包含:'
-      - '&8[&3&lTabooLib&8] &7内置扩展 &f{1} &7项'
-      - '&8[&3&lTabooLib&8] &7插件扩展 &f{2} &7项'
-      CONNECT-FAILED: '&8[&3&lTabooLib&8] &c尚未获取扩展列表.'
-    INFO:
-      DESCRIPTION: '查看扩展信息'
-      ARGUMENTS:
-        0: '名称'
-      EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在.'
-      EXPANSION-INFO:
-      - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7信息:'
-      - '&8[&3&lTabooLib&8] &7作者 &f{1}'
-      - '&8[&3&lTabooLib&8] &7版本 &f{2}'
-      - '&8[&3&lTabooLib&8] &7描述 &f{3}'
-      - '&8[&3&lTabooLib&8] &7最后更新时间 &f{4}'
-      - '&8[&3&lTabooLib&8] &7最后更新内容 &f{5}'
-      EXPANSION-INFO-DETAIL:
-        0: '&8[&3&lTabooLib&8] &7详细描述'
-        1: '&8[&3&lTabooLib&8] &7- &f{0}'
-    DOWNLOAD:
-      DESCRIPTION: '下载扩展'
-      ARGUMENTS:
-        0: '名称'
-      EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在.'
-      EXPANSION-EXISTS: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c已存在.'
-      EXPANSION-VERSION: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c需要 &4TabooLib v{1}&c 版本才可以使用!'
-      DOWNLOAD-START:
-      - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7开始下载:'
-      - '&8[&3&lTabooLib&8] &7地址 &f{1}'
-      DOWNLOAD-SUCCESS: '&8[&3&lTabooLib&8] &7扩展 &f{0} &7下载完成, 请重启服务器.'
-    UPDATE:
-      DESCRIPTION: '更新扩展'
-      ARGUMENTS:
-        0: '名称'
-      EXPANSION-NOT-FOUND: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c不存在.'
-      EXPANSION-NOT-EXISTS: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c尚未下载.'
-      EXPANSION-NO-UPDATE: '&8[&3&lTabooLib&8] &7扩展 &f{0} &7已是最新版本.'
-      EXPANSION-VERSION: '&8[&3&lTabooLib&8] &c扩展 &4{0} &c需要 &4TabooLib v{1}&c 版本才可以使用!'
-      UPDATE-START:
-      - '&8[&3&lTabooLib&8] &7扩展 &f{0} &7开始更新:'
-      - '&8[&3&lTabooLib&8] &7版本 &f{1}'
-      - '&8[&3&lTabooLib&8] &7地址 &f{2}'
-      UPDATE-SUCCESS: '&8[&3&lTabooLib&8] &7扩展 &f{0} &7更新完成, 请重启服务器.'
-    LIST:
-      DESCRIPTION: '查看扩展列表'
-      ARGUMENTS:
-        0: 'PLUGINS/INTERNAL'
-        1: '页数'
-      INVALID-TYPE:
-        0: '&8[&3&lTabooLib&8] &c错误的扩展类型. &4(PLUGINS、INTERNAL)'
-        1: '&8[&3&lTabooLib&8] &c错误的页数.'
-      LIST-HEAD:
-      - ''
-      - '&e&l----- &6&lTabooLibCloud Expansions : &f{0} &6&l: &f{1}/{2} &e&l-----'
-      - ''
-      LIST-EXPANSION:
-        0: '  &f{0}. &8{1} &7{2}'
-        1: '  &f{0}. &c{1} &7{2}'
-        2: '  &f{0}. &a{1} &7{2}'
-      LIST-BOTTOM:
-      - ''
-      - '  &f> &8[未安装] &a[已安装] &c[可更新]'
-      - ''
-
-DATABASE:
-  CONNECTION-ESTABLISHED: '成功连接到 {0} 数据库，连接池大小 {1}'
-  CONNECTION-ERROR: '连接到数据库错误：{0}'
 
 COMMUNICATION:
   FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
@@ -658,42 +188,3 @@ UTIL:
   DOWNLOAD-PROGRESS: '  下载速度 {0} 进度 {1}'
   DOWNLOAD-SUCCESS: '下载 {0} 完成!'
   DOWNLOAD-FAILED: '下载 {0} 失败!'
-
-TCLOUD:
-  LIST-LOAD-SUCCESS: '载入 &fTCLOUD &7扩展列表完成! 耗时 &f{0} &7毫秒'
-  LIST-LOAD-FAILED: '载入 &4{0} &c扩展数据失败: &4{1}'
-  LIST-PARSE-FAILED: '读取 &4TCLOUD &c扩展列表失败: &4{0}'
-  LIST-CONNECT-FAILED: '获取 &4TCLOUD &c扩展列表失败!'
-
-TFILTER:
-  EXCEPTION-MIRROR:
-    EVENT:
-      HEAD:
-      - '&c插件 &4{0} &c执行事件时出现异常! &7(处理耗时: {1}ms)'
-      - '&c异常事件: &4{2}'
-      - '&c异常类型: &4{3}'
-      - '&c异常内容: &4{4}'
-      - '&c异常位置:'
-      STACK-TRACE: '&7  {0}. &4{1}'
-    COMMAND:
-      HEAD:
-      - '&c插件 &4{0} &c执行命令时出现异常! &7(处理耗时: {1}ms)'
-      - '&c异常命令: &4{2}'
-      - '&c异常类型: &4{3}'
-      - '&c异常内容: &4{4}'
-      - '&c异常位置:'
-      STACK-TRACE: '&7  {0}. &4{1}'
-    SCHEDULE:
-      HEAD:
-      - '&c插件 &4{0} &c执行任务时出现异常! &7(处理耗时: {1}ms)'
-      - '&c异常类型: &4{2}'
-      - '&c异常内容: &4{3}'
-      - '&c异常位置:'
-      STACK-TRACE: '&7  {0}. &4{1}'
-    OTHER:
-      HEAD:
-      - '&c插件 &4{0} &c运行时出现异常! &7(处理耗时: {1}ms)'
-      - '&c异常类型: &4{2}'
-      - '&c异常内容: &4{3}'
-      - '&c异常位置:'
-      STACK-TRACE: '&7  {0}. &4{1}'
