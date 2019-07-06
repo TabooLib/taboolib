@@ -38,9 +38,9 @@
 ---
 | 命令 | 作用 | 权限 |
 | --- | --- | --- |
-| /tabooliblocale | 语言文件 | taboolib.admin |
-| /taboolibplugin | 插件管理 | taboolib.admin |
-| /taboolibexecute | 命令执行 | taboolib.admin |
+| /tLocale | 语言文件 | taboolib.admin |
+| /tPlugin | 插件管理 | taboolib.admin |
+| /tExecute | 命令执行 | taboolib.admin |
 
 <br>
 
