@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.db.local;
 
 import com.google.common.collect.Maps;
-import com.sun.istack.internal.NotNull;
 import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.util.Ref;
 
@@ -29,12 +28,10 @@ public class Local  {
         Optional.ofNullable(plugins.remove(name)).ifPresent(LocalPlugin::clearFiles);
     }
 
-    @NotNull
     public static LocalPlugin get(String name) {
         return plugins.computeIfAbsent(name, LocalPlugin::new);
     }
 
-    @NotNull
     public static LocalPlugin get() {
         Class<?> callerClass = Ref.getCallerClass(3).orElse(null);
         return get(callerClass == null ? "TabooLib" : Ref.getCallerPlugin(callerClass).getName());

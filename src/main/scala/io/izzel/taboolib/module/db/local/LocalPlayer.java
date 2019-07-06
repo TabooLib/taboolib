@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.db.local;
 
 import com.google.common.collect.Maps;
-import com.sun.istack.internal.NotNull;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.inject.TSchedule;
@@ -24,7 +23,6 @@ public class LocalPlayer {
 
     private static Map<String, FileConfiguration> files = Maps.newConcurrentMap();
 
-    @NotNull
     public static FileConfiguration get(OfflinePlayer player) {
         return TabooLibAPI.isOriginLoaded() ? PlayerDataManager.getPlayerData(player) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
     }
