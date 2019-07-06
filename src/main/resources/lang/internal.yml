@@ -1,3 +1,4 @@
+TRY-LOADING-LANG: '尝试为 {0} 加载 {1} 语言文件'
 SUCCESS-LOADING-LANG-NORMAL: '成功为 {0} 加载 {1} 语言文件, 共 {2} 项'
 SUCCESS-LOADING-LANG-UPDATE: '成功为 {0} 加载 {1} 语言文件, 共 {2} 项, 及 {3} 项新条目'
 ERROR-LOADING-LANG: '加载 {0} 插件的语言文件时发生异常：{1}'
