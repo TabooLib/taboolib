@@ -7,7 +7,6 @@ import me.skymc.taboolib.commands.internal.BaseSubCommand;
 import me.skymc.taboolib.commands.internal.TCommand;
 import me.skymc.taboolib.commands.internal.type.CommandArgument;
 import me.skymc.taboolib.commands.internal.type.CommandRegister;
-import me.skymc.taboolib.commands.internal.type.CommandType;
 import me.skymc.taboolib.commands.taboolib.*;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.inventory.ItemUtils;
@@ -17,7 +16,6 @@ import me.skymc.taboolib.timecycle.TimeCycle;
 import me.skymc.taboolib.timecycle.TimeCycleEvent;
 import me.skymc.taboolib.timecycle.TimeCycleInitializeEvent;
 import me.skymc.taboolib.timecycle.TimeCycleManager;
-import me.skymc.taboolib.update.UpdateTask;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -210,11 +208,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand attributes = new BaseSubCommand() {
 
         @Override
-        public boolean hideInHelp() {
-            return true;
-        }
-
-        @Override
         public String getLabel() {
             return "attributes";
         }
@@ -237,11 +230,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 7)
     BaseSubCommand enchants = new BaseSubCommand() {
-
-        @Override
-        public boolean hideInHelp() {
-            return true;
-        }
 
         @Override
         public String getLabel() {
@@ -268,11 +256,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand potions = new BaseSubCommand() {
 
         @Override
-        public boolean hideInHelp() {
-            return true;
-        }
-
-        @Override
         public String getLabel() {
             return "potions";
         }
@@ -295,11 +278,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 9)
     BaseSubCommand flags = new BaseSubCommand() {
-
-        @Override
-        public boolean hideInHelp() {
-            return true;
-        }
 
         @Override
         public String getLabel() {
@@ -326,11 +304,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
     BaseSubCommand slots = new BaseSubCommand() {
 
         @Override
-        public boolean hideInHelp() {
-            return true;
-        }
-
-        @Override
         public String getLabel() {
             return "slots";
         }
@@ -353,11 +326,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
 
     @CommandRegister(priority = 11)
     BaseSubCommand sounds = new BaseSubCommand() {
-
-        @Override
-        public boolean hideInHelp() {
-            return true;
-        }
 
         @Override
         public String getLabel() {
@@ -847,37 +815,6 @@ public class TabooLibMainCommand extends BaseMainCommand {
         @Override
         public void onCommand(CommandSender sender, Command command, String label, String[] args) {
             new ImportCommand(sender, args);
-        }
-    };
-
-    @CommandRegister(priority = 28)
-    BaseSubCommand updatePlugin = new BaseSubCommand() {
-
-        @Override
-        public String getLabel() {
-            return "updatePlugin";
-        }
-
-        @Override
-        public String getDescription() {
-            return TLocale.asString("COMMANDS.TABOOLIB.UPDATEPLUGIN.DESCRIPTION");
-        }
-
-        @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TABOOLIB.UPDATEPLUGIN.ARGUMENTS.0"), false)
-            };
-        }
-
-        @Override
-        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-            UpdateTask.updatePlugin(true, args.length > 0);
-        }
-
-        @Override
-        public CommandType getType() {
-            return CommandType.CONSOLE;
         }
     };
 }
