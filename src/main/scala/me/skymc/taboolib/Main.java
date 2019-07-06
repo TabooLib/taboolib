@@ -2,7 +2,6 @@ package me.skymc.taboolib;
 
 import com.ilummc.tlib.TLib;
 import com.ilummc.tlib.filter.TLoggerFilter;
-import com.ilummc.tlib.resources.TLocale;
 import me.skymc.taboolib.database.GlobalDataManager;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.economy.EcoUtils;
@@ -92,16 +91,11 @@ public class Main extends JavaPlugin {
         if (getStorageType() == StorageType.SQL) {
             GlobalDataManager.SQLMethod.startSQLMethod();
         }
-        // 载入完成
-        TLocale.Logger.info("NOTIFY.SUCCESS-LOADED", getDescription().getAuthors().toString(), getDescription().getVersion(), String.valueOf(TabooLib.getVersion()));
         // 文件保存
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> DataUtils.saveAllCaches(), 20, 20 * 120);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> PlayerDataManager.saveAllCaches(true, false), 20, 20 * 60);
         // 文件监控
-        TLib.getTLib().getConfigWatcher().addSimpleListener(new File(getDataFolder(), "config.yml"), () -> {
-            reloadConfig();
-            TLocale.Logger.info("CONFIG.RELOAD-SUCCESS", inst.getName(), "config.yml");
-        });
+        TLib.getTLib().getConfigWatcher().addSimpleListener(new File(getDataFolder(), "config.yml"), this::reloadConfig);
         // 插件联动
         new BukkitRunnable() {
 
@@ -122,11 +116,6 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         disable = true;
-        // 如果插件尚未启动完成
-        if (!started) {
-            TLocale.Logger.error("NOTIFY.FAIL-DISABLE");
-            return;
-        }
         // 注销插件
         TabooLibLoader.unregister();
         // 保存数据
@@ -153,8 +142,6 @@ public class Main extends JavaPlugin {
         if (getStorageType() == StorageType.SQL && getConfig().getBoolean("DELETE-VARIABLE")) {
             GlobalDataManager.clearInvalidVariables();
         }
-        // 提示信息
-        TLocale.Logger.info("NOTIFY.SUCCESS-DISABLE");
         // 卸载牛逼玩意儿
         TLib.unload();
         // 关闭服务器
