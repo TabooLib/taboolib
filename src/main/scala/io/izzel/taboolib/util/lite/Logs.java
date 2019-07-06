@@ -22,8 +22,7 @@ import java.text.SimpleDateFormat;
  * @author sky
  */
 @BaseCommand(
-        name = "tabooliblogs",
-        aliases = {"tlog", "tlogs"},
+        name = "tLogs",
         permission = "taboolib.admin"
 )
 public class Logs extends BaseMainCommand {
