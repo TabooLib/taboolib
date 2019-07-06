@@ -49,9 +49,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public static void loadCommandRegister(BaseMainCommand baseMainCommand) {
         List<Method> methods = new ArrayList<>();
         List<CommandField> fields = new ArrayList<>();
-        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.getAnnotation(CommandRegister.class) != null).forEach(methods::add));
+        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.getAnnotation(SubCommand.class) != null).forEach(methods::add));
         if (methods.size() > 0) {
-            methods.sort(Comparator.comparingDouble(a -> a.getAnnotation(CommandRegister.class).priority()));
+            methods.sort(Comparator.comparingDouble(a -> a.getAnnotation(SubCommand.class).priority()));
             methods.forEach(x -> {
                 try {
                     x.setAccessible(true);
@@ -60,9 +60,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 }
             });
         }
-        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(CommandRegister.class) != null && field.getType().equals(io.izzel.taboolib.module.command.base.BaseSubCommand.class)).forEach(field -> fields.add(new CommandField(field, clazz))));
+        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(SubCommand.class) != null && field.getType().equals(io.izzel.taboolib.module.command.base.BaseSubCommand.class)).forEach(field -> fields.add(new CommandField(field, clazz))));
         if (fields.size() > 0) {
-            fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(CommandRegister.class).priority()));
+            fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(SubCommand.class).priority()));
             fields.forEach(commandField -> {
                 try {
                     commandField.getField().setAccessible(true);
@@ -123,7 +123,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             return label.stream().filter(l -> args[0].isEmpty() || l.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
         for (io.izzel.taboolib.module.command.base.BaseSubCommand subCommand : subCommands) {
-            CommandArgument[] arguments = subCommand.getArguments();
+            Argument[] arguments = subCommand.getArguments();
             if (args[0].equalsIgnoreCase(subCommand.getLabel()) && args.length - 1 <= arguments.length) {
                 CommandTab commandTab = arguments[args.length - 2].getTab();
                 if (commandTab != null) {
@@ -208,7 +208,10 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     }
 
     private void disguisedPlugin() {
-        linkClasses.forEach(clazz -> disguisedPlugin(clazz, registerCommand.getPlugin()));
+        try {
+            linkClasses.forEach(clazz -> disguisedPlugin(clazz, registerCommand.getPlugin()));
+        } catch (Throwable ignored) {
+        }
     }
 
     private void disguisedPlugin(Class<?> targetClass, Plugin plugin) {

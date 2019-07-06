@@ -23,5 +23,5 @@ public @interface BaseCommand {
 
     String usage() default "";
 
-    String[] aliases() default "";
+    String[] aliases() default {};
 }

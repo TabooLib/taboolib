@@ -88,7 +88,6 @@ public class TSerializer {
     }
 
     public static String write(TSerializable serializable) {
-        SimpleReflection.checkAndSave(serializable.getClass());
         JsonObject jsonObject = new JsonObject();
         JsonObject serializeObject = new JsonObject();
         for (Field declaredField : serializable.getClass().getDeclaredFields()) {

@@ -5,8 +5,8 @@ import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;
 import io.izzel.taboolib.module.command.base.BaseCommand;
-import io.izzel.taboolib.module.command.base.CommandArgument;
-import io.izzel.taboolib.module.command.base.CommandRegister;
+import io.izzel.taboolib.module.command.base.Argument;
+import io.izzel.taboolib.module.command.base.SubCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -22,8 +22,7 @@ import java.util.stream.IntStream;
  * @since 2018-04-22 14:36:28
  */
 @BaseCommand(
-        name = "tabooliblocale",
-        aliases = {"taboolocale", "tlocale"},
+        name = "tLocale",
         permission = "taboolib.admin"
 )
 public class TabooLibLocaleCommand extends BaseMainCommand {
@@ -33,7 +32,7 @@ public class TabooLibLocaleCommand extends BaseMainCommand {
         return TLocale.asString("COMMANDS.TLOCALE.COMMAND-TITLE");
     }
 
-    @CommandRegister
+    @SubCommand
     BaseSubCommand send = new BaseSubCommand() {
 
         @Override
@@ -47,11 +46,11 @@ public class TabooLibLocaleCommand extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.1")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.2"), false)
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.1")),
+                    new Argument(TLocale.asString("COMMANDS.TLOCALE.SEND.ARGUMENTS.2"), false)
             };
         }
 

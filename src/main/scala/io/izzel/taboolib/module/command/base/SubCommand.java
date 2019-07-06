@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandRegister {
+public @interface SubCommand {
 
     double priority() default 0;
 

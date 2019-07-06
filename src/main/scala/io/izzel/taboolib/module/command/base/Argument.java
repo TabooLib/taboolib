@@ -8,10 +8,13 @@ import java.util.Objects;
  * @author Bkm016
  * @since 2018-04-17
  */
-public class CommandArgument {
+public class Argument {
 
+    // 参数名称
     private String name;
+    // 是否必须
     private boolean required;
+    // 参数补全
     private CommandTab tab;
 
     public String getName() {
@@ -26,19 +29,19 @@ public class CommandArgument {
         return tab;
     }
 
-    public CommandArgument(String name) {
+    public Argument(String name) {
         this(name, true);
     }
 
-    public CommandArgument(String name, CommandTab tab) {
+    public Argument(String name, CommandTab tab) {
         this(name, true, tab);
     }
 
-    public CommandArgument(String name, boolean required) {
+    public Argument(String name, boolean required) {
         this(name, required, null);
     }
 
-    public CommandArgument(String name, boolean required, CommandTab tab) {
+    public Argument(String name, boolean required, CommandTab tab) {
         this.name = name;
         this.required = required;
         this.tab = tab;
@@ -54,10 +57,10 @@ public class CommandArgument {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof CommandArgument)) {
+        if (!(o instanceof Argument)) {
             return false;
         }
-        CommandArgument that = (CommandArgument) o;
+        Argument that = (Argument) o;
         return isRequired() == that.isRequired() &&
                 Objects.equals(getName(), that.getName()) &&
                 Objects.equals(tab, that.tab);
