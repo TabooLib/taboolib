@@ -1,7 +1,7 @@
 package io.izzel.taboolib;
 
-import io.izzel.taboolib.module.nms.NMSHandler;
-import io.izzel.taboolib.module.db.yaml.PluginDataManager;
+import io.izzel.taboolib.module.db.local.Local;
+import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -42,15 +42,15 @@ public class TabooLibAPI {
     }
 
     public static double[] getTPS() {
-        return NMSHandler.getHandler().getTPS();
+        return NMS.getHandler().getTPS();
     }
 
     public static boolean isDebug() {
-        return PluginDataManager.getPluginData("TabooLibrary", TabooLib.getPlugin()).getBoolean("debug");
+        return Local.get().get("data").getBoolean("debug");
     }
 
     public static void setDebug(boolean debug) {
-        PluginDataManager.getPluginData("TabooLibrary", TabooLib.getPlugin()).set("debug", debug);
+        Local.get().get("data").set("debug", debug);
     }
 
     public static void debug(String... args) {

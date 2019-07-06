@@ -74,13 +74,13 @@ public class TLocaleLoader {
                     return;
                 }
                 // 加载文件
-                YamlConfiguration localeConfiguration = Files.loadYaml(plugin, localeFile);
+                YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
                 YamlConfiguration localeConfigurationAtStream = getLocaleAtStream(plugin, localeFile);
                 // 载入配置
                 loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream);
                 // 注册监听
                 TConfigWatcher.getInst().removeListener(localeFile);
-                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(plugin, localeFile), getLocaleAtStream(plugin, localeFile)));
+                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAtStream(plugin, localeFile)));
             }
         } catch (Exception e) {
             errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());

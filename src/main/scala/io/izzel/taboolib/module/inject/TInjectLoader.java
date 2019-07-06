@@ -103,7 +103,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 if (pluginClass.equals(plugin.getClass())) {
                     instance = plugin;
                 } else {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
+                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + pluginClass.getName() + ")");
                     continue;
                 }
             }
@@ -125,7 +125,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 if (pluginClass.equals(plugin.getClass())) {
                     instance = plugin;
                 } else {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + declaredField.getType().getName() + ")");
+                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + pluginClass.getName() + ")");
                     continue;
                 }
             }
@@ -133,7 +133,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             if (tInjectTask != null) {
                 inject(plugin, declaredField, instance, annotation, tInjectTask);
             } else {
-                TLogger.getGlobalLogger().error(declaredField.getName() + " is an invalid inject type. (" + declaredField.getType().getName() + ")");
+                TLogger.getGlobalLogger().error(declaredField.getName() + " is an invalid inject type. (" + pluginClass.getName() + ")");
             }
         }
     }

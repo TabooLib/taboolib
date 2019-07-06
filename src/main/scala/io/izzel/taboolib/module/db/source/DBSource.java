@@ -17,18 +17,18 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Author sky
  * @Since 2018-05-16 21:59
  */
-public class HikariHandler {
+public class DBSource {
 
     @TInject("datasource.yml")
     private static TConfig settings;
-    private static ConcurrentHashMap<IHost, MapDataSource> dataSource = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<IHost, DBSourceData> dataSource = new ConcurrentHashMap<>();
 
-    public static DataSource createDataSource(IHost host) {
-        return createDataSource(host, null);
+    public static DataSource create(IHost host) {
+        return create(host, null);
     }
 
-    public static HikariDataSource createDataSource(IHost host, HikariConfig hikariConfig) {
-        MapDataSource mapDataSource = dataSource.computeIfAbsent(host, x -> new MapDataSource(x, new HikariDataSource(hikariConfig == null ? createConfig(host) : hikariConfig)));
+    public static DataSource create(IHost host, HikariConfig hikariConfig) {
+        DBSourceData mapDataSource = dataSource.computeIfAbsent(host, x -> new DBSourceData(x, new HikariDataSource(hikariConfig == null ? createConfig(host) : hikariConfig)));
         mapDataSource.getActivePlugin().getAndIncrement();
         if (mapDataSource.getActivePlugin().get() == 1) {
             TLocale.Logger.info("MYSQL-HIKARI.CREATE-SUCCESS", host.getPlugin().getName(), host.getConnectionUrlSimple());
@@ -44,7 +44,7 @@ public class HikariHandler {
 
     public static void closeDataSource(IHost host) {
         if (host != null && dataSource.containsKey(host)) {
-            MapDataSource mapDataSource = dataSource.get(host);
+            DBSourceData mapDataSource = dataSource.get(host);
             if (mapDataSource.getActivePlugin().getAndDecrement() <= 1) {
                 mapDataSource.getHikariDataSource().close();
                 dataSource.remove(host);
@@ -89,7 +89,7 @@ public class HikariHandler {
     //
     // *********************************
 
-    public static ConcurrentHashMap<IHost, MapDataSource> getDataSource() {
+    public static ConcurrentHashMap<IHost, DBSourceData> getDataSource() {
         return dataSource;
     }
 

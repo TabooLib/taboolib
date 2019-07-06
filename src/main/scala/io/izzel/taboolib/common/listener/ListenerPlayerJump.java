@@ -36,7 +36,6 @@ public class ListenerPlayerJump implements Listener {
                 } else if (this.cooldown.get(event.getPlayer()) <= System.currentTimeMillis()) {
                     this.cooldown.put(event.getPlayer(), System.currentTimeMillis() + 350L);
                     PlayerJumpEvent evt = new PlayerJumpEvent(event.isCancelled(), event.getPlayer());
-
                     Bukkit.getPluginManager().callEvent(evt);
                     if (evt.isCancelled()) {
                         event.setTo(event.getFrom());

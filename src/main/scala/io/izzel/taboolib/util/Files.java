@@ -1,10 +1,7 @@
 package io.izzel.taboolib.util;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
-import io.izzel.taboolib.util.eagletdl.EagletTask;
-import io.izzel.taboolib.util.eagletdl.ProgressEvent;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -238,44 +235,19 @@ public class Files {
         return null;
     }
 
-    public static void download(String url, File file) {
-        download(url, file, false);
-    }
-
-    public static void download(String url, File file, boolean async) {
-        EagletTask eagletTask = new EagletTask()
-                .url(url)
-                .file(file)
-                .setThreads(8)
-                .setOnError(event -> {
-                })
-                .setOnConnected(event -> TLocale.Logger.info("UTIL.DOWNLOAD-CONNECTED", file.getName(), ProgressEvent.format(event.getContentLength())))
-                .setOnProgress(event -> TLocale.Logger.info("UTIL.DOWNLOAD-PROGRESS", event.getSpeedFormatted(), event.getPercentageFormatted()))
-                .setOnComplete(event -> {
-                    if (event.isSuccess()) {
-                        TLocale.Logger.info("UTIL.DOWNLOAD-SUCCESS", file.getName());
-                    } else {
-                        TLocale.Logger.error("UTIL.DOWNLOAD-FAILED", file.getName());
-                    }
-                }).start();
-        if (!async) {
-            eagletTask.waitUntil();
-        }
+    public static String encodeYAML(FileConfiguration file) {
+        return Base64Coder.encodeLines(file.saveToString().getBytes()).replaceAll("\\s+", "");
     }
 
     public static FileConfiguration decodeYAML(String args) {
         return YamlConfiguration.loadConfiguration(new StringReader(Base64Coder.decodeString(args)));
     }
 
-    public static String encodeYAML(FileConfiguration file) {
-        return Base64Coder.encodeLines(file.saveToString().getBytes()).replaceAll("\\s+", "");
+    public static FileConfiguration load(File file) {
+        return loadYaml(file);
     }
 
-    public static FileConfiguration load(Plugin plugin, File file) {
-        return loadYaml(plugin, file);
-    }
-
-    public static YamlConfiguration loadYaml(Plugin plugin, File file) {
+    public static YamlConfiguration loadYaml( File file) {
         YamlConfiguration configuration = new YamlConfiguration();
         try {
             String yaml = com.google.common.io.Files.toString(file, Charset.forName("utf-8"));
