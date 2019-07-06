@@ -1,12 +1,10 @@
 package io.izzel.taboolib.module.db.local;
 
 import com.google.common.collect.Maps;
-import com.sun.istack.internal.NotNull;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Map;
 
@@ -23,24 +21,20 @@ public class LocalPlugin {
         this.name = name;
     }
 
-    @NotNull
     public FileConfiguration get(String name) {
         return files.computeIfAbsent(fixName(name), n -> Files.load(toFile(n)));
     }
 
-    @NotNull
     public FileConfiguration getFile(String name) {
         return files.getOrDefault(fixName(name), new YamlConfiguration());
     }
 
-    @NotNull
     public FileConfiguration addFile(String name) {
         FileConfiguration file = Files.load(toFile(name));
         files.put(fixName(name), file);
         return file;
     }
 
-    @Nullable
     public FileConfiguration clearFile(String name) {
         return files.remove(fixName(name));
     }
