@@ -63,7 +63,7 @@ public class TabooLib {
         TabooLibLoader.init();
         // 创建线程检测服务器是否关闭
         Executors.newSingleThreadExecutor().submit(() -> {
-            while (NMS.getHandler().isRunning()) {
+            while (NMS.handle().isRunning()) {
             }
             // 保存数据
             Local.saveFiles();

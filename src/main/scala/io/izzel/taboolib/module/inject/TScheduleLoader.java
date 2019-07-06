@@ -21,6 +21,13 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
 
     static Map<String, List<TScheduleData>> schedules = Maps.newHashMap();
 
+    public static void run(Plugin plugin) {
+        List<TScheduleData> list = schedules.get(plugin.getName());
+        if (list != null) {
+            list.forEach(data -> run(plugin, data.getRunnable(), data.getAnnotation().delay(), data.getAnnotation().period(), data.getAnnotation().async()));
+        }
+    }
+
     public static void run(Plugin plugin, BukkitRunnable runnable, int delay, int period, boolean async) {
         if (async) {
             runnable.runTaskTimerAsynchronously(plugin, delay, period);

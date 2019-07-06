@@ -843,7 +843,7 @@ public enum Particles {
                         data = getDustColor((OrdinaryColor) data, size);
                     }
                 }
-                this.packet = NMS.getHandler().toPacketPlayOutWorldParticles(effect.getBukkitParticle(), longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, data);
+                this.packet = NMS.handle().toPacketPlayOutWorldParticles(effect.getBukkitParticle(), longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, data);
             } catch (Throwable exception) {
                 throw new PacketInstantiationException("Packet instantiation failed", exception);
             }

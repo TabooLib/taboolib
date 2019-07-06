@@ -10,6 +10,7 @@ import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TListenerHandler;
+import io.izzel.taboolib.module.inject.TScheduleLoader;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import org.bukkit.plugin.Plugin;
 
@@ -55,10 +56,14 @@ public abstract class PluginLoader {
             public void onActivated(Plugin plugin) {
                 // 注册监听器
                 TListenerHandler.registerListener(plugin);
+                // 注册调度器
+                TScheduleLoader.run(plugin);
             }
 
             @Override
             public void onStopping(Plugin plugin) {
+                // 卸载语言文件
+                TLocaleLoader.unload(plugin);
                 // 保存数据
                 Local.saveFiles(plugin.getName());
                 Local.clearFiles(plugin.getName());

@@ -56,7 +56,7 @@ public class SimpleI18n {
     }
 
     public static String getName(Entity entity) {
-        return entity == null ? "-" : lang.getString(NMS.getHandler().getName(entity).replace(".", "_"), entity.getName());
+        return entity == null ? "-" : lang.getString(NMS.handle().getName(entity).replace(".", "_"), entity.getName());
     }
 
     public static String getName(ItemStack item) {
@@ -69,7 +69,7 @@ public class SimpleI18n {
         }
         if (!Version.isAfter(Version.v1_11)) {
             if (item.getType().name().equals("MONSTER_EGG")) {
-                NBTCompound nbtCompound = NMS.getHandler().loadNBT(item);
+                NBTCompound nbtCompound = NMS.handle().loadNBT(item);
                 if (nbtCompound.containsKey("EntityTag")) {
                     return lang.getString("item_monsterPlacer_name") + " " + lang.getString("entity_" + nbtCompound.get("EntityTag").asCompound().get("id").asString() + "_name");
                 }
@@ -79,11 +79,11 @@ public class SimpleI18n {
             if (itemMeta instanceof SpawnEggMeta) {
                 String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {
-                    return lang.getString(NMS.getHandler().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", "")) + " " + spawnEggType;
+                    return lang.getString(NMS.handle().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", "")) + " " + spawnEggType;
                 }
             }
         }
-        return lang.getString(NMS.getHandler().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", ""));
+        return lang.getString(NMS.handle().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", ""));
     }
 
     private static void releaseLocales(Plugin plugin) {
