@@ -5,8 +5,8 @@ import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;
 import io.izzel.taboolib.module.command.base.BaseCommand;
-import io.izzel.taboolib.module.command.base.CommandArgument;
-import io.izzel.taboolib.module.command.base.CommandRegister;
+import io.izzel.taboolib.module.command.base.Argument;
+import io.izzel.taboolib.module.command.base.SubCommand;
 import io.izzel.taboolib.util.ArrayUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,8 +18,7 @@ import org.bukkit.entity.Player;
  * @Since 2018-07-04 21:32
  */
 @BaseCommand(
-        name = "taboolibexecute",
-        aliases = {"texecute"},
+        name = "tExecute",
         permission = "taboolib.admin"
 )
 public class TabooLibExecuteCommand extends BaseMainCommand {
@@ -29,7 +28,7 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         return TLocale.asString("COMMANDS.TEXECUTE.COMMAND-TITLE");
     }
 
-    @CommandRegister(priority = 1)
+    @SubCommand(priority = 1)
     BaseSubCommand chat = new BaseSubCommand() {
 
         @Override
@@ -43,10 +42,10 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.CHAT.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.CHAT.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.CHAT.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.CHAT.ARGUMENTS.1"))
             };
         }
 
@@ -61,7 +60,7 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 1)
+    @SubCommand(priority = 1)
     BaseSubCommand command = new BaseSubCommand() {
         @Override
         public String getLabel() {
@@ -79,10 +78,10 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND.ARGUMENTS.1"))
             };
         }
 
@@ -101,7 +100,7 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 2)
+    @SubCommand(priority = 2)
     BaseSubCommand commandAsOp = new BaseSubCommand() {
 
         @Override
@@ -120,10 +119,10 @@ public class TabooLibExecuteCommand extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TEXECUTE.COMMAND-AS-OP.ARGUMENTS.1"))
             };
         }
 

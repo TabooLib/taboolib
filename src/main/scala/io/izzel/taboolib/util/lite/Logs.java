@@ -5,8 +5,8 @@ import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;
-import io.izzel.taboolib.module.command.base.CommandArgument;
-import io.izzel.taboolib.module.command.base.CommandRegister;
+import io.izzel.taboolib.module.command.base.Argument;
+import io.izzel.taboolib.module.command.base.SubCommand;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
@@ -35,7 +35,7 @@ public class Logs extends BaseMainCommand {
         return TLocale.asString("COMMANDS.TLOGS.COMMAND-TITLE");
     }
 
-    @CommandRegister(priority = 0)
+    @SubCommand(priority = 0)
     BaseSubCommand info = new BaseSubCommand() {
         @Override
         public String getLabel() {
@@ -48,10 +48,10 @@ public class Logs extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.INFO.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.INFO.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.INFO.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.INFO.ARGUMENTS.1"))
             };
         }
 
@@ -64,7 +64,7 @@ public class Logs extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 1)
+    @SubCommand(priority = 1)
     BaseSubCommand error = new BaseSubCommand() {
         @Override
         public String getLabel() {
@@ -77,10 +77,10 @@ public class Logs extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.ERROR.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.ERROR.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.ERROR.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.ERROR.ARGUMENTS.1"))
             };
         }
 
@@ -93,7 +93,7 @@ public class Logs extends BaseMainCommand {
         }
     };
 
-    @CommandRegister(priority = 2)
+    @SubCommand(priority = 2)
     BaseSubCommand warning = new BaseSubCommand() {
         @Override
         public String getLabel() {
@@ -106,10 +106,10 @@ public class Logs extends BaseMainCommand {
         }
 
         @Override
-        public CommandArgument[] getArguments() {
-            return new CommandArgument[] {
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.WARNING.ARGUMENTS.0")),
-                    new CommandArgument(TLocale.asString("COMMANDS.TLOGS.WARNING.ARGUMENTS.1"))
+        public Argument[] getArguments() {
+            return new Argument[] {
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.WARNING.ARGUMENTS.0")),
+                    new Argument(TLocale.asString("COMMANDS.TLOGS.WARNING.ARGUMENTS.1"))
             };
         }
 

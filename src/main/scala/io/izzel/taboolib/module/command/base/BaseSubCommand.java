@@ -32,8 +32,8 @@ public abstract class BaseSubCommand {
         return new String[0];
     }
 
-    public CommandArgument[] getArguments() {
-        return new CommandArgument[0];
+    public Argument[] getArguments() {
+        return new Argument[0];
     }
 
     public CommandType getType() {
