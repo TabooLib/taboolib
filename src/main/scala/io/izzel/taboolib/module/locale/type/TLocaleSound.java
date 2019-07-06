@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
-import io.izzel.taboolib.origin.lite.Sounds;
+import io.izzel.taboolib.util.lite.SoundPack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
@@ -21,19 +21,19 @@ import java.util.stream.Collectors;
 @SerializableAs("ACTION")
 public class TLocaleSound extends TLocaleSerialize {
 
-    private final List<Sounds> soundPacks;
+    private final List<SoundPack> soundPacks;
 
-    public TLocaleSound(List<Sounds> soundPacks) {
+    public TLocaleSound(List<SoundPack> soundPacks) {
         this.soundPacks = soundPacks;
     }
 
     public static TLocaleSound valueOf(Map<String, Object> map) {
-        List<Sounds> soundPacks = new ArrayList<>();
+        List<SoundPack> soundPacks = new ArrayList<>();
         Object sounds = map.containsKey("sounds") ? map.get("sounds") : map.getOrDefault("sound", "");
         if (sounds instanceof List) {
-            soundPacks = ((List<String>) sounds).stream().map(Sounds::new).collect(Collectors.toList());
+            soundPacks = ((List<String>) sounds).stream().map(SoundPack::new).collect(Collectors.toList());
         } else {
-            soundPacks.add(new Sounds(sounds.toString()));
+            soundPacks.add(new SoundPack(sounds.toString()));
         }
         return new TLocaleSound(soundPacks);
     }
@@ -61,7 +61,7 @@ public class TLocaleSound extends TLocaleSerialize {
         if (soundPacks.size() == 1) {
             map.put("sounds", soundPacks.get(0).toString());
         } else if (soundPacks.size() > 1) {
-            map.put("sounds", soundPacks.stream().map(Sounds::toString).collect(Collectors.toList()));
+            map.put("sounds", soundPacks.stream().map(SoundPack::toString).collect(Collectors.toList()));
         }
         return map;
     }

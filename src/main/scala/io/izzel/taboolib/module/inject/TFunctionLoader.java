@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.logger.TLogger;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;

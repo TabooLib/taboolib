@@ -3,13 +3,13 @@ package io.izzel.taboolib.module.inject;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.command.lite.SimpleCommandBuilder;
+import io.izzel.taboolib.module.command.lite.CommandBuilder;
 import io.izzel.taboolib.module.config.TConfig;
-import io.izzel.taboolib.module.logger.TLogger;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.module.packet.TPacketListener;
-import io.izzel.taboolib.origin.lite.cooldown.Cooldown;
-import io.izzel.taboolib.origin.lite.cooldown.Cooldowns;
+import io.izzel.taboolib.util.lite.cooldown.Cooldown;
+import io.izzel.taboolib.util.lite.cooldown.Cooldowns;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -58,9 +58,9 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
         });
         // SimpleCommandBuilder Inject
-        injectTypes.put(SimpleCommandBuilder.class, (plugin, field, args, instance) -> {
+        injectTypes.put(CommandBuilder.class, (plugin, field, args, instance) -> {
             try {
-                SimpleCommandBuilder builder = (SimpleCommandBuilder) field.get(instance);
+                CommandBuilder builder = (CommandBuilder) field.get(instance);
                 if (builder.isBuild()) {
                     TLogger.getGlobalLogger().error("Command was registered.  (" + field.getType().getName() + ")");
                 } else {

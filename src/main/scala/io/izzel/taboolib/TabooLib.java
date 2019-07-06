@@ -4,12 +4,12 @@ import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.dependency.Dependency;
-import io.izzel.taboolib.module.logger.TLogger;
-import io.izzel.taboolib.module.mysql.hikari.HikariHandler;
+import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.db.source.HikariHandler;
 import io.izzel.taboolib.module.nms.NMSHandler;
-import io.izzel.taboolib.origin.database.PlayerDataManager;
-import io.izzel.taboolib.origin.database.PluginDataManager;
-import io.izzel.taboolib.plugin.InternalPlugin;
+import io.izzel.taboolib.module.db.yaml.PlayerDataManager;
+import io.izzel.taboolib.module.db.yaml.PluginDataManager;
+import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,10 +34,11 @@ public class TabooLib {
     private static TabooLib inst = new TabooLib();
     private static TLogger logger;
     private static TConfig config;
+
+    // 当前运行版本
     private static double version;
 
-    // 第三方依赖下载位置
-    private File libsFolder;
+    // 本地数据文件
     private File playerDataFolder;
     private File serverDataFolder;
 
@@ -45,11 +46,11 @@ public class TabooLib {
     private YamlConfiguration internal = new YamlConfiguration();
 
     public TabooLib() {
-        // 创建配置
         inst = this;
         logger = TLogger.getUnformatted("TabooLib");
-        config = TConfig.create(getPlugin(), "config.yml");
-        libsFolder = Files.folder("plugins/TabooLib/libs");
+        // 配置文件从 config.yml 修改为 settings.yml 防止与老版本插件冲突
+        config = TConfig.create(getPlugin(), "settings.yml");
+        // 数据文件
         playerDataFolder = Files.folder(config.getString("DATAURL.PLAYER-DATA"));
         serverDataFolder = Files.folder(config.getString("DATAURL.SERVER-DATA"));
         // 加载版本号
@@ -117,10 +118,6 @@ public class TabooLib {
 
     public static double getVersion() {
         return version;
-    }
-
-    public File getLibsFolder() {
-        return libsFolder;
     }
 
     public File getPlayerDataFolder() {

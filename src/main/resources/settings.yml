@@ -1,0 +1,42 @@
+# 数据储存地址
+# 该配置将在启用数据库储存时失效
+DATAURL:
+  # 玩家数据
+  PLAYER-DATA: 'plugins/TabooLib/playerdata/'
+  # 插件数据
+  SERVER-DATA: 'plugins/TabooLib/serverdata/'
+
+# 语言文件相关设置
+LOCALE:
+  # 加载语言文件的顺序
+  PRIORITY:
+  - zh_CN
+  - en_US
+  # 默认是否启用语言文件中 PlaceholderAPI 的替换功能
+  # 关闭可提升性能
+  # 如果需要开启仍然可以在语言文件中加入 papi: true
+  USE_PAPI: false
+
+# 是否在当前服务器启用交流网终端
+# 启用后将会收到大量调试信息, 不建议使用
+SERVER: false
+
+# 玩家列表（TAB-API）是否根据前缀排序
+TABLIST-SORT: true
+
+# 玩家列表（TAB-API）是否自动清理没有成员的队伍
+TABLIST-AUTO-CLEAN-TEAM: true
+
+# 是否在关闭服务器时清理玩家数据
+# 该配置将在启用数据库储存时失效
+DELETE-DATA: false
+
+# 是否在服务器关闭时清理无效变量
+# 该配置仅在启用数据库储存时有效
+# 该方法可能会导致数据丢失? 
+# 不建议开启
+DELETE-VARIABLE: false
+
+# 是否以 UUID 的形式创建玩家数据
+# 不建议开启！除非用 TabooLib 储存的插件支持新版储存方式！
+ENABLE-UUID: false
