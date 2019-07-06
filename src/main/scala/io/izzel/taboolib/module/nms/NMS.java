@@ -15,15 +15,15 @@ import org.bukkit.inventory.ItemStack;
 @TFunction(enable = "init")
 public abstract class NMS {
 
-    private static NMS handler;
+    private static NMS impl;
 
-    public static NMS getHandler() {
-        return handler;
+    public static NMS handle() {
+        return impl;
     }
 
     static void init() {
         try {
-            handler = (NMS) SimpleVersionControl.createNMS("io.izzel.taboolib.module.nms.NMSHandlerImpl").translate().newInstance();
+            impl = (NMS) SimpleVersionControl.createNMS("io.izzel.taboolib.module.nms.NMSImpl").translate().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

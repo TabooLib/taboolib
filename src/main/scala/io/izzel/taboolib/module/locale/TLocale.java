@@ -96,11 +96,11 @@ public class TLocale {
         }
 
         public static void sendTitle(Player player, String title, String subTitle, int fadein, int stay, int fadeout) {
-            NMS.getHandler().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
+            NMS.handle().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
         }
 
         public static void sendActionBar(Player player, String text) {
-            NMS.getHandler().sendActionBar(player, text);
+            NMS.handle().sendActionBar(player, text);
         }
     }
 

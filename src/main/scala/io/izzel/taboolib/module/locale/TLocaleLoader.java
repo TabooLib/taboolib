@@ -87,6 +87,10 @@ public class TLocaleLoader {
         }
     }
 
+    public static void unload(Plugin plugin) {
+        map.remove(plugin.getName());
+    }
+
     public static boolean isLocaleLoaded(Plugin plugin) {
         return map.containsKey(plugin.getName());
     }

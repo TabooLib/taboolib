@@ -42,7 +42,7 @@ public class TabooLibAPI {
     }
 
     public static double[] getTPS() {
-        return NMS.getHandler().getTPS();
+        return NMS.handle().getTPS();
     }
 
     public static boolean isDebug() {

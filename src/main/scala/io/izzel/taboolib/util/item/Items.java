@@ -232,7 +232,7 @@ public class Items {
         // 元数据
         item.setItemMeta(meta);
         // 数据
-        NBTCompound nbt = NMS.getHandler().loadNBT(item);
+        NBTCompound nbt = NMS.handle().loadNBT(item);
         // 物品标签
         if (section.contains("nbt")) {
             for (String name : section.getConfigurationSection("nbt").getKeys(false)) {
@@ -281,6 +281,6 @@ public class Items {
             }
             nbt.put("AttributeModifiers", attr);
         }
-        return NMS.getHandler().saveNBT(item, nbt);
+        return NMS.handle().saveNBT(item, nbt);
     }
 }
