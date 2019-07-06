@@ -2,12 +2,10 @@ package io.izzel.taboolib;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.izzel.taboolib.module.dependency.TDependencyInjector;
-import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.client.TabooLibClient;
 import io.izzel.taboolib.client.TabooLibServer;
-import io.izzel.taboolib.module.db.yaml.PlayerDataManager;
-import io.izzel.taboolib.module.db.yaml.PluginDataManager;
+import io.izzel.taboolib.module.dependency.TDependencyInjector;
+import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
@@ -28,12 +26,6 @@ public class TabooLibLoader {
 
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
-
-    @TSchedule(period = 20 * 60, async = true)
-    static void save() {
-        PluginDataManager.saveAllCaches();
-        PlayerDataManager.saveAllCaches(true, false);
-    }
 
     @TSchedule
     static void start() {

@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.locale.logger.TLoggerManager;
-import io.izzel.taboolib.module.nms.NMSHandler;
+import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.tellraw.TellrawCreator;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
@@ -96,11 +96,11 @@ public class TLocale {
         }
 
         public static void sendTitle(Player player, String title, String subTitle, int fadein, int stay, int fadeout) {
-            NMSHandler.getHandler().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
+            NMS.getHandler().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
         }
 
         public static void sendActionBar(Player player, String text) {
-            NMSHandler.getHandler().sendActionBar(player, text);
+            NMS.getHandler().sendActionBar(player, text);
         }
     }
 

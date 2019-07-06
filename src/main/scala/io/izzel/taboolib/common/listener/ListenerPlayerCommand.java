@@ -2,12 +2,12 @@ package io.izzel.taboolib.common.listener;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.module.db.local.Local;
+import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
-import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
-import io.izzel.taboolib.module.db.yaml.PlayerDataManager;
-import io.izzel.taboolib.module.db.yaml.PluginDataManager;
+import io.izzel.taboolib.util.item.Items;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -25,8 +25,8 @@ public class ListenerPlayerCommand implements Listener {
             if (Version.isAfter(Version.v1_8)) {
                 e.setCancelled(true);
             }
-            PluginDataManager.saveAllCaches();
-            PlayerDataManager.saveAllCaches(true, false);
+            Local.saveFiles();
+            LocalPlayer.saveFiles();
             TLogger.getGlobalLogger().info("Successfully.");
         } else if (e.getCommand().equalsIgnoreCase("tDebug")) {
             if (Version.isAfter(Version.v1_8)) {
@@ -39,9 +39,6 @@ public class ListenerPlayerCommand implements Listener {
                 TabooLibAPI.setDebug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
-        } else if (e.getCommand().equalsIgnoreCase("tExceptionEvent")) {
-            e.setCancelled(true);
-            throw new IllegalStateException("TabooLib Example Exception");
         }
     }
 

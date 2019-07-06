@@ -3,7 +3,7 @@ package io.izzel.taboolib.util.item;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.lite.SimpleI18n;
-import io.izzel.taboolib.module.nms.NMSHandler;
+import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
@@ -232,7 +232,7 @@ public class Items {
         // 元数据
         item.setItemMeta(meta);
         // 数据
-        NBTCompound nbt = NMSHandler.getHandler().loadNBT(item);
+        NBTCompound nbt = NMS.getHandler().loadNBT(item);
         // 物品标签
         if (section.contains("nbt")) {
             for (String name : section.getConfigurationSection("nbt").getKeys(false)) {
@@ -281,6 +281,6 @@ public class Items {
             }
             nbt.put("AttributeModifiers", attr);
         }
-        return NMSHandler.getHandler().saveNBT(item, nbt);
+        return NMS.getHandler().saveNBT(item, nbt);
     }
 }

@@ -1,7 +1,7 @@
 package io.izzel.taboolib.util.lite;
 
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.module.nms.NMSHandler;
+import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
@@ -843,7 +843,7 @@ public enum Particles {
                         data = getDustColor((OrdinaryColor) data, size);
                     }
                 }
-                this.packet = NMSHandler.getHandler().toPacketPlayOutWorldParticles(effect.getBukkitParticle(), longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, data);
+                this.packet = NMS.getHandler().toPacketPlayOutWorldParticles(effect.getBukkitParticle(), longDistance, (float) center.getX(), (float) center.getY(), (float) center.getZ(), offsetX, offsetY, offsetZ, speed, amount, data);
             } catch (Throwable exception) {
                 throw new PacketInstantiationException("Packet instantiation failed", exception);
             }

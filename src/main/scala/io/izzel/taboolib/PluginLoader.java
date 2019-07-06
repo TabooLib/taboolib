@@ -2,15 +2,15 @@ package io.izzel.taboolib;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
+import io.izzel.taboolib.module.db.IHost;
+import io.izzel.taboolib.module.db.local.Local;
+import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TListenerHandler;
-import io.izzel.taboolib.module.db.IHost;
-import io.izzel.taboolib.module.db.source.HikariHandler;
-import io.izzel.taboolib.module.db.yaml.PluginDataManager;
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
@@ -59,12 +59,15 @@ public abstract class PluginLoader {
 
             @Override
             public void onStopping(Plugin plugin) {
+                // 保存数据
+                Local.saveFiles(plugin.getName());
+                Local.clearFiles(plugin.getName());
                 // 注销监听器
                 TListenerHandler.cancelListener(plugin);
-                // 储存插件数据
-                PluginDataManager.saveAllCaches(plugin, true);
+                // 注销插件类
+                TabooLibLoader.getPluginClassSafely(plugin).forEach(c -> TabooLibLoader.unloadClass(plugin, c));
                 // 注销数据库连接
-                Sets.newHashSet(HikariHandler.getDataSource().keySet()).stream().filter(IHost::isAutoClose).forEach(HikariHandler::closeDataSource);
+                Sets.newHashSet(DBSource.getDataSource().keySet()).stream().filter(IHost::isAutoClose).forEach(DBSource::closeDataSource);
                 // 释放文检动态读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
             }

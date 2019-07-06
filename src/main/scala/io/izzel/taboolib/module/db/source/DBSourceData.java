@@ -9,13 +9,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Author sky
  * @Since 2018-05-17 23:47
  */
-public class MapDataSource {
+public class DBSourceData {
 
     private IHost host;
     private AtomicInteger activePlugin;
     private HikariDataSource hikariDataSource;
 
-    MapDataSource(IHost host, HikariDataSource hikariDataSource) {
+    DBSourceData(IHost host, HikariDataSource hikariDataSource) {
         this.host = host;
         this.activePlugin = new AtomicInteger();
         this.hikariDataSource = hikariDataSource;

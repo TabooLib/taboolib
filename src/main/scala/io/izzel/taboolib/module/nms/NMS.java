@@ -13,17 +13,17 @@ import org.bukkit.inventory.ItemStack;
  * @Since 2018-11-09 14:38
  */
 @TFunction(enable = "init")
-public abstract class NMSHandler {
+public abstract class NMS {
 
-    private static NMSHandler handler;
+    private static NMS handler;
 
-    public static NMSHandler getHandler() {
+    public static NMS getHandler() {
         return handler;
     }
 
     static void init() {
         try {
-            handler = (NMSHandler) SimpleVersionControl.createNMS("io.izzel.taboolib.module.nms.NMSHandlerImpl").translate().newInstance();
+            handler = (NMS) SimpleVersionControl.createNMS("io.izzel.taboolib.module.nms.NMSHandlerImpl").translate().newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }

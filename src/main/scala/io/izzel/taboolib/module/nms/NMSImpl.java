@@ -31,7 +31,7 @@ import java.util.Map;
  * @Author 坏黑
  * @Since 2018-11-09 14:42
  */
-public class NMSHandlerImpl extends NMSHandler {
+public class NMSImpl extends NMS {
 
     private Field entityTypesField;
 
@@ -49,7 +49,7 @@ public class NMSHandlerImpl extends NMSHandler {
         SimpleReflection.saveField(NBTTagCompound.class);
     }
 
-    public NMSHandlerImpl() {
+    public NMSImpl() {
         if (Version.isAfter(Version.v1_13)) {
             SimpleReflection.saveField(net.minecraft.server.v1_12_R1.Entity.class);
             for (Field declaredField : SimpleReflection.getFields(net.minecraft.server.v1_12_R1.Entity.class).values()) {
