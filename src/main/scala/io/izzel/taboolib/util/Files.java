@@ -10,12 +10,12 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -82,15 +82,17 @@ public class Files {
         }
     }
 
-    public static void toFile(String in, File file) {
+    public static File toFile(String in, File file) {
         try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(in);
             bufferedWriter.flush();
-        } catch (Exception ignored) {
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
+        return file;
     }
 
-    public static void toFile(InputStream inputStream, File file) {
+    public static File toFile(InputStream inputStream, File file) {
         try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             byte[] buf = new byte[1024];
             int len;
@@ -98,8 +100,10 @@ public class Files {
                 bos.write(buf, 0, len);
             }
             bos.flush();
-        } catch (Exception ignored) {
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
+        return file;
     }
 
     public static File file(File path, String filePath) {
@@ -192,22 +196,14 @@ public class Files {
     }
 
     public static String readFromURL(String url, String def) {
-        String s = readFromURL(url, 1024);
-        return s == null ? def : s;
+        return Optional.ofNullable(readFromURL(url)).orElse(def);
     }
 
-    public static String readFromURL(String url, int size) {
-        URLConnection conn = null;
-        BufferedInputStream bin = null;
-        try {
-            conn = new URL(url).openConnection();
-            bin = new BufferedInputStream(conn.getInputStream());
-            return readFromStream(bin, size, conn.getContentEncoding() == null ? "UTF-8" : conn.getContentEncoding());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            IO.close(conn);
-            IO.closeQuietly(bin);
+    public static String readFromURL(String url) {
+        try (InputStream inputStream = new URL(url).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            return new String(IO.readFully(bufferedInputStream));
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
         return null;
     }
@@ -247,7 +243,7 @@ public class Files {
         return loadYaml(file);
     }
 
-    public static YamlConfiguration loadYaml( File file) {
+    public static YamlConfiguration loadYaml(File file) {
         YamlConfiguration configuration = new YamlConfiguration();
         try {
             String yaml = com.google.common.io.Files.toString(file, Charset.forName("utf-8"));
