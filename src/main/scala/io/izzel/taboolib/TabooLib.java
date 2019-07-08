@@ -47,13 +47,13 @@ public class TabooLib {
         config = TConfig.create(getPlugin(), "settings.yml");
         // 加载版本号
         try {
-            version = NumberConversions.toDouble(IO.readFully(Files.getResource("version"), Charset.forName("utf-8")));
+            version = NumberConversions.toDouble(IO.readFully(Files.getResource("__resources__/version"), Charset.forName("utf-8")));
         } catch (Throwable t) {
             t.printStackTrace();
         }
         // 加载内部语言文件
         try {
-            internal.loadFromString(IO.readFully(Files.getResource("lang/internal.yml"), Charset.forName("utf-8")));
+            internal.loadFromString(IO.readFully(Files.getResource("__resources__/lang/internal.yml"), Charset.forName("utf-8")));
         } catch (Throwable t) {
             t.printStackTrace();
         }
