@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class SQLHost extends IHost {
 
     private String host;
-    private String user;
     private String port;
+    private String user;
     private String password;
     private String database;
     private List<String> flags = Arrays.asList("characterEncoding=utf-8", "useSSL=false");
@@ -28,23 +28,18 @@ public class SQLHost extends IHost {
     }
 
     public SQLHost(ConfigurationSection section, Plugin plugin, boolean autoClose) {
-        this(section.getString("host", "localhost"), section.getString("user", "root"), section.getString("port", "3306"), section.getString("password", ""), section.getString("database", "test"), plugin);
+        this(section.getString("host", "localhost"), section.getString("port", "3306"), section.getString("user", "root"), section.getString("password", ""), section.getString("database", "test"), plugin);
     }
 
-    public SQLHost(String host, int port, String user, String password, String database, Plugin plugin) {
-        this(host, user, String.valueOf(port), password, database, plugin, false);
+    public SQLHost(String host, String port, String user, String password, String database, Plugin plugin) {
+        this(host, port, user, password, database, plugin, false);
     }
 
-    @Deprecated
-    public SQLHost(String host, String user, String port, String password, String database, Plugin plugin) {
-        this(host, user, port, password, database, plugin, false);
-    }
-
-    public SQLHost(String host, String user, String port, String password, String database, Plugin plugin, boolean autoClose) {
+    public SQLHost(String host, String port, String user, String password, String database, Plugin plugin, boolean autoClose) {
         super(plugin, autoClose);
         this.host = host;
-        this.user = user;
         this.port = port;
+        this.user = user;
         this.password = password;
         this.database = database;
     }

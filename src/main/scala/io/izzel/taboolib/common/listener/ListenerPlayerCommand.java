@@ -5,6 +5,7 @@ import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.item.Items;
@@ -18,6 +19,22 @@ import org.bukkit.event.server.ServerCommandEvent;
  */
 @TListener
 public class ListenerPlayerCommand implements Listener {
+
+    @EventHandler
+    public void cmd(PlayerCommandPreprocessEvent e) {
+        if (e.getMessage().equalsIgnoreCase("/tabooLib")) {
+            e.setCancelled(true);
+            TLocale.Display.sendTitle(e.getPlayer(), "§fTabooLib", "§7TabooLib is enabled.");
+        }
+        if (e.getMessage().equalsIgnoreCase("/tellrawTest") && e.getPlayer().hasPermission("taboolib.tellraw")) {
+            e.setCancelled(true);
+            TellrawJson.create()
+                    .append("§8[§3§lTabooLib§8] §7TellrawJson Test: §f[")
+                    .append(Items.getName(e.getPlayer().getItemInHand())).hoverItem(e.getPlayer().getItemInHand())
+                    .append("§f]")
+                    .send(e.getPlayer());
+        }
+    }
 
     @EventHandler
     public void cmd(ServerCommandEvent e) {
@@ -39,18 +56,6 @@ public class ListenerPlayerCommand implements Listener {
                 TabooLibAPI.setDebug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
-        }
-    }
-
-    @EventHandler
-    public void cmd(PlayerCommandPreprocessEvent e) {
-        if (e.getMessage().equals("/tellrawTest") && e.getPlayer().hasPermission("taboolib.tellraw")) {
-            e.setCancelled(true);
-            TellrawJson.create()
-                    .append("§8[§3§lTabooLib§8] §7TellrawJson Test: §f[")
-                    .append(Items.getName(e.getPlayer().getItemInHand())).hoverItem(e.getPlayer().getItemInHand())
-                    .append("§f]")
-                    .send(e.getPlayer());
         }
     }
 }

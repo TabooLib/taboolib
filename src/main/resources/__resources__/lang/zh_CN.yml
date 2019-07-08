@@ -24,10 +24,10 @@ ITEM-UTILS:
   FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
 
 MYSQL-HIKARI:
-  CREATE-SUCCESS: '&7插件 &f{0}&7 注册新的数据库连接: &f{1}'
-  CREATE-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
-  CLOSE-SUCCESS: '&7插件 &f{0} &7注册的数据库连接 &f{1} &7已被注销!'
-  CLOSE-FAIL: '&7插件 &f{0} &7注册的数据库连接正在被 &f{1} &7个插件使用, 无法注销!'
+  CREATE-SUCCESS: '&7插件 &f{0} &7注册新的连接池: &f{1}'
+  CREATE-EXISTS: '&7插件 &f{0} &7引用插件 &f{1} &7注册的连接池.'
+  CLOSE-SUCCESS: '&7插件 &f{0} &7注册的连接池 &f{1} &7已被注销.'
+  CLOSE-FAIL: '&7插件 &f{0} &7注册的连接池正在被 &f{1} &7个插件使用, 无法注销!'
 
 COMMANDS:
   GLOBAL:
