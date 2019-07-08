@@ -1,6 +1,6 @@
-package io.lzzel.tlibscala
+package io.izzel.tlibscala
 
-import io.lzzel.tlibscala.runtime.{RichLocation, RichOfflinePlayer, RichPlayer, RichVector}
+import io.izzel.tlibscala.runtime.{RichLocation, RichOfflinePlayer, RichPlayer, RichVector}
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import org.bukkit.{Location, OfflinePlayer, World, util}

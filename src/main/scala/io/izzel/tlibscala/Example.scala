@@ -1,4 +1,4 @@
-package io.lzzel.tlibscala
+package io.izzel.tlibscala
 
 import Prelude._
 import org.bukkit.Material
