@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
@@ -70,9 +71,9 @@ public class Files {
     }
 
     public static InputStream getCanonicalResource(Plugin plugin, String filename) {
-        File file = Files.file(new File("plugins/TabooLib/temp/" + UUID.randomUUID()));
+        File file = file(new File("plugins/TabooLib/temp/" + UUID.randomUUID()));
         try {
-            ZipFile zipFile = new ZipFile(Files.toFile(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().openStream(), file));
+            ZipFile zipFile = new ZipFile(toFile(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().openStream(), file));
             ZipEntry entry = zipFile.getEntry(filename);
             if (entry != null) {
                 return zipFile.getInputStream(entry);
@@ -88,7 +89,7 @@ public class Files {
         if (!file.exists() || replace) {
             try (InputStream inputStream = getCanonicalResource(plugin, (plugin instanceof InternalPlugin ? "__resources__/" : "") + path)) {
                 if (inputStream != null) {
-                    toFile(inputStream, Files.file(file));
+                    toFile(inputStream, file(file));
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -118,6 +119,16 @@ public class Files {
             t.printStackTrace();
         }
         return file;
+    }
+
+    public static boolean downloadFile(String in, File file) {
+        try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            toFile(bufferedInputStream, file);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return false;
     }
 
     public static File file(File path, String filePath) {
@@ -161,18 +172,15 @@ public class Files {
         return file;
     }
 
-    public static void deepDelete(File file) {
-        if (!file.exists()) {
-            return;
+    public static void copy(File file1, File file2) {
+        try (FileInputStream fileIn = new FileInputStream(file1);
+             FileOutputStream fileOut = new FileOutputStream(file2);
+             FileChannel channelIn = fileIn.getChannel();
+             FileChannel channelOut = fileOut.getChannel()) {
+            channelIn.transferTo(0, channelIn.size(), channelOut);
+        } catch (IOException t) {
+            t.printStackTrace();
         }
-        if (file.isFile()) {
-            file.delete();
-            return;
-        }
-        for (File file1 : Objects.requireNonNull(file.listFiles())) {
-            deepDelete(file1);
-        }
-        file.delete();
     }
 
     public static void deepCopy(String originFileName, String targetFileName) {
@@ -190,23 +198,26 @@ public class Files {
                 if (file.isDirectory()) {
                     deepCopy(file.getAbsolutePath(), targetFileName + "/" + file.getName());
                 } else {
-                    weekCopy(file, new File(targetFileName + "/" + file.getName()));
+                    copy(file, new File(targetFileName + "/" + file.getName()));
                 }
             }
         } else {
-            weekCopy(originFile, targetFile);
+            copy(originFile, targetFile);
         }
     }
 
-    public static void weekCopy(File file1, File file2) {
-        try (FileInputStream fileIn = new FileInputStream(file1);
-             FileOutputStream fileOut = new FileOutputStream(file2);
-             FileChannel channelIn = fileIn.getChannel();
-             FileChannel channelOut = fileOut.getChannel()) {
-            channelIn.transferTo(0, channelIn.size(), channelOut);
-        } catch (IOException t) {
-            t.printStackTrace();
+    public static void deepDelete(File file) {
+        if (!file.exists()) {
+            return;
         }
+        if (file.isFile()) {
+            file.delete();
+            return;
+        }
+        for (File file1 : Objects.requireNonNull(file.listFiles())) {
+            deepDelete(file1);
+        }
+        file.delete();
     }
 
     public static String readFromURL(String url, String def) {
@@ -222,7 +233,15 @@ public class Files {
         return null;
     }
 
-    public static String readFromFile(File file, int size, String encode) {
+    public static String readFromFile(File file) {
+        return readFromFile(file, 1024, StandardCharsets.UTF_8);
+    }
+
+    public static String readFromFile(File file, int size) {
+        return readFromFile(file, size, StandardCharsets.UTF_8);
+    }
+
+    public static String readFromFile(File file, int size, Charset encode) {
         try (FileInputStream fin = new FileInputStream(file); BufferedInputStream bin = new BufferedInputStream(fin)) {
             return readFromStream(fin, size, encode);
         } catch (IOException e) {
@@ -231,7 +250,15 @@ public class Files {
         return null;
     }
 
-    public static String readFromStream(InputStream in, int size, String encode) {
+    public static String readFromStream(InputStream in) {
+        return readFromStream(in, 1024, StandardCharsets.UTF_8);
+    }
+
+    public static String readFromStream(InputStream in, int size) {
+        return readFromStream(in, size, StandardCharsets.UTF_8);
+    }
+
+    public static String readFromStream(InputStream in, int size, Charset encode) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             byte[] b = new byte[size];
             int i;
@@ -258,15 +285,12 @@ public class Files {
     }
 
     public static YamlConfiguration loadYaml(File file) {
-        YamlConfiguration configuration = new YamlConfiguration();
         try {
-            String yaml = com.google.common.io.Files.toString(file, Charset.forName("utf-8"));
-            configuration.loadFromString(yaml);
-            return configuration;
+           return YamlConfiguration.loadConfiguration(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return configuration;
+        return new YamlConfiguration();
     }
 
     private static Class getCaller(Class<?> obj) {

@@ -58,7 +58,6 @@ public class TDependency {
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
         TLocale.Logger.info("DEPENDENCY.DOWNLOAD-START", target.getName());
-        Files.toFile(Files.readFromURL(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl, ""), Files.file(target));
-        return target.length() > 0;
+        return Files.downloadFile(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl, Files.file(target));
     }
 }

@@ -26,15 +26,15 @@ public abstract class ChannelExecutor {
 
     public void addPlayerChannel(Player player) {
         addChannelService.submit(() -> {
-            getPlayerChannel(player).pipeline().addBefore("packet_handler", "taboolib_packet_handler", new ChannelHandler(player));
+            getPlayerChannel(player).pipeline().addBefore("packet_handler", "taboolib5_packet_handler", new ChannelHandler(player));
         });
     }
 
     public void removePlayerChannel(Player player) {
         removeChannelService.submit(() -> {
             Channel playerChannel = getPlayerChannel(player);
-            if (playerChannel.pipeline().get("taboolib_packet_handler") != null) {
-                playerChannel.pipeline().remove("taboolib_packet_handler");
+            if (playerChannel.pipeline().get("taboolib5_packet_handler") != null) {
+                playerChannel.pipeline().remove("taboolib5_packet_handler");
             }
         });
     }
