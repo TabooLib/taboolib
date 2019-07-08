@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.dependency;
 
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Files;
 
 import java.io.File;
@@ -56,6 +57,7 @@ public class TDependency {
     }
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) {
+        TLocale.Logger.info("DEPENDENCY.DOWNLOAD-START", target.getName());
         Files.toFile(Files.readFromURL(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl, ""), Files.file(target));
         return target.length() > 0;
     }
