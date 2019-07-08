@@ -1,4 +1,4 @@
-package io.lzzel.tlibscala.runtime
+package io.izzel.tlibscala.runtime
 
 import io.izzel.taboolib.module.compat.EconomyHook
 import io.izzel.taboolib.util.item.ItemBuilder

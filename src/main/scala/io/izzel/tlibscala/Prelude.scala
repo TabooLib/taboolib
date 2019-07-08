@@ -1,4 +1,4 @@
-package io.lzzel.tlibscala
+package io.izzel.tlibscala
 
 import io.izzel.taboolib.module.locale.TLocale.Logger
 import org.bukkit.Bukkit

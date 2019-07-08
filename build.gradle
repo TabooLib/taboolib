@@ -39,6 +39,10 @@ dependencies {
 shadowJar {
     // 免得 MANIFEST.MF 里面刷一堆 lib 难看
     taskActions.removeIf { it.actionClassName.contains 'configureShadowTask' }
+
+    relocate 'org.apache.commons', 'io.izzel.taboolib.internal.apache'
+    relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
+    relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
 }
 
 processResources {

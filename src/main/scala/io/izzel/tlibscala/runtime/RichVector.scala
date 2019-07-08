@@ -1,4 +1,4 @@
-package io.lzzel.tlibscala.runtime
+package io.izzel.tlibscala.runtime
 
 import org.bukkit.util.Vector
 

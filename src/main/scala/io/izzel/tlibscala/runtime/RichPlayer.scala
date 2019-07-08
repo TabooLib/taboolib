@@ -1,4 +1,4 @@
-package io.lzzel.tlibscala.runtime
+package io.izzel.tlibscala.runtime
 
 import io.izzel.taboolib.module.locale.TLocale
 import io.izzel.taboolib.module.compat.PermissionHook
