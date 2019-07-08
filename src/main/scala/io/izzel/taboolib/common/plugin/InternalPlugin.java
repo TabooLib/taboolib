@@ -50,7 +50,7 @@ public class InternalPlugin implements Plugin {
 
     @Override
     public InputStream getResource(String s) {
-        return Files.getResourceTabooLib(s);
+        return Files.getTabooLibResource(s);
     }
 
     @Override

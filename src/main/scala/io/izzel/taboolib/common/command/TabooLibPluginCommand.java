@@ -160,8 +160,8 @@ public class TabooLibPluginCommand extends BaseMainCommand {
             } else if (PluginUtils.isIgnored(plugin)) {
                 TLocale.sendTo(sender, "COMMANDS.TPLUGIN.RELOAD.INVALID-PLUGIN-IGNORED", name);
             } else {
-                TabooLibAPI.dispatchCommand(sender, "taboolibplugin unload " + plugin.getName());
-                TabooLibAPI.dispatchCommand(sender, "taboolibplugin load " + plugin.getName());
+                TabooLibAPI.dispatchCommand(sender, "tPlugin unload " + plugin.getName());
+                TabooLibAPI.dispatchCommand(sender, "tPlugin load " + plugin.getName());
             }
         }
     };

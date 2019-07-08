@@ -2,6 +2,7 @@ package io.izzel.taboolib.util;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
+import io.izzel.taboolib.module.inject.TSchedule;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -12,10 +13,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -54,31 +52,47 @@ public class Files {
         return classes;
     }
 
+    @TSchedule(period = 100, async = true)
+    public static void clearTempFiles() {
+        deepDelete(new File("plugins/TabooLib/temp"));
+    }
+
     public static InputStream getResource(String filename) {
         return getResource(TabooLib.getPlugin(), filename);
     }
 
     public static InputStream getResource(Plugin plugin, String filename) {
-        return plugin instanceof InternalPlugin ? getResourceTabooLib(filename) : plugin.getClass().getClassLoader().getResourceAsStream(filename);
+        return plugin instanceof InternalPlugin ? getTabooLibResource(filename) : plugin.getClass().getClassLoader().getResourceAsStream(filename);
     }
 
-    public static InputStream getResourceTabooLib(String filename) {
+    public static InputStream getTabooLibResource(String filename) {
+        return getCanonicalResource(TabooLib.getPlugin(), filename);
+    }
+
+    public static InputStream getCanonicalResource(Plugin plugin, String filename) {
+        File file = Files.file(new File("plugins/TabooLib/temp/" + UUID.randomUUID()));
         try {
-            ZipFile zipFile = new ZipFile(new File("TabooLib.jar"));
+            ZipFile zipFile = new ZipFile(Files.toFile(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().openStream(), file));
             ZipEntry entry = zipFile.getEntry(filename);
             if (entry != null) {
                 return zipFile.getInputStream(entry);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception t) {
+            t.printStackTrace();
         }
-        return TabooLib.class.getResourceAsStream(filename);
+        return null;
     }
 
     public static void releaseResource(Plugin plugin, String path, boolean replace) {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.exists() || replace) {
-            toFile(getResource(plugin, path), Files.file(file));
+            try (InputStream inputStream = getCanonicalResource(plugin, path)) {
+                if (inputStream != null) {
+                    toFile(inputStream, Files.file(file));
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
     }
 

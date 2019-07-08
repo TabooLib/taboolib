@@ -1,14 +1,5 @@
 DEPENDENCY:
-  DOWNLOAD-OFFLINE: '已启用离线模式, 将不会下载第三方依赖库'
-  DOWNLOAD-CONNECTED: '  正在下载 {0} 大小 {1}'
-  DOWNLOAD-PROGRESS: '    下载速度 {0} 进度 {1}'
-  DOWNLOAD-SUCCESS: '  下载 {0} 完成'
-  DOWNLOAD-FAILED:
-  - '  下载 {0} 失败'
-  - '  请手动下载 {1} 并重命名为 {2} 后放在 /{0}/libs 文件夹内'
-  PLUGIN-AUTOLOAD-FAIL: '{0} 所依赖的插件 {1} 尝试自动加载失败，请尝试手动下载'
-  PLUGIN-LOAD-SUCCESS: '  {0} 请求的插件 {1} 加载成功'
-  PLUGIN-LOAD-FAIL: '  {0} 请求的插件 {1} 加载失败'
+  DOWNLOAD-START: '  正在下载 {0} 库文件'
   LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
 
 LOCALE:

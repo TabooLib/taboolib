@@ -2,11 +2,10 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.module.locale.type.*;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.locale.type.*;
 import io.izzel.taboolib.util.Files;
-import io.izzel.taboolib.util.IO;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -75,12 +75,12 @@ public class TLocaleLoader {
                 }
                 // 加载文件
                 YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
-                YamlConfiguration localeConfigurationAtStream = getLocaleAtStream(plugin, localeFile);
+                YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, localeFile);
                 // 载入配置
                 loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream);
                 // 注册监听
                 TConfigWatcher.getInst().removeListener(localeFile);
-                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAtStream(plugin, localeFile)));
+                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAsPlugin(plugin, localeFile)));
             }
         } catch (Exception e) {
             errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
@@ -116,12 +116,8 @@ public class TLocaleLoader {
     }
 
     private static File getLocaleFile(Plugin plugin) {
-        releaseLocales(plugin);
+        getLocalePriority().forEach(localeName -> Files.releaseResource(plugin, "lang/" + localeName + ".yml", false));
         return getLocalePriority().stream().map(localeName -> new File("plugins/" + plugin.getName() + "/lang/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
-    }
-
-    private static void releaseLocales(Plugin plugin) {
-        getLocalePriority().stream().filter(localeName -> !new File("plugins/" + plugin.getName() + "/lang/" + localeName + ".yml").exists() && plugin.getResource("lang/" + localeName + ".yml") != null).forEach(localeName -> plugin.saveResource("lang/" + localeName + ".yml", true));
     }
 
     private static TLocaleInstance getLocaleInstance(Plugin plugin) {
@@ -130,15 +126,17 @@ public class TLocaleLoader {
         return instance;
     }
 
-    private static YamlConfiguration getLocaleAtStream(Plugin plugin, File localeFile) {
-        InputStream localeInputSteam = Files.getResource(plugin, "lang/" + localeFile.getName());
-        try {
-            YamlConfiguration yaml = new YamlConfiguration();
-            yaml.loadFromString(IO.readFully(localeInputSteam, Charset.forName("utf-8")));
-            return yaml;
-        } catch (Exception ignored) {
-            return null;
+    private static YamlConfiguration getLocaleAsPlugin(Plugin plugin, File localeFile) {
+        try (InputStream canonicalResource = Files.getCanonicalResource(plugin, "lang/" + localeFile.getName())) {
+            if (canonicalResource != null) {
+                return YamlConfiguration.loadConfiguration(new InputStreamReader(canonicalResource, StandardCharsets.UTF_8));
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            Files.clearTempFiles();
         }
+        return new YamlConfiguration();
     }
 
     private static void loadPluginLocale(Plugin plugin, File localeFile, YamlConfiguration localeConfiguration, YamlConfiguration localeConfigurationAtStream) {
