@@ -86,7 +86,7 @@ public class Files {
     public static void releaseResource(Plugin plugin, String path, boolean replace) {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.exists() || replace) {
-            try (InputStream inputStream = getCanonicalResource(plugin, path)) {
+            try (InputStream inputStream = getCanonicalResource(plugin, (plugin instanceof InternalPlugin ? "__resources__/" : "") + path)) {
                 if (inputStream != null) {
                     toFile(inputStream, Files.file(file));
                 }

@@ -1,0 +1,66 @@
+DEPENDENCY:
+  DOWNLOAD-START: '  正在下载 {0} 库文件'
+  LIBRARY-LOAD-FAIL: '  {0} 请求的库文件 {1} 加载失败'
+
+LOCALE:
+  TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
+  PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
+  BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook 的变量识别失败: {0}'
+  BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar 的颜色识别失败: {0}'
+  BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar 的类型识别失败: {0}'
+  BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
+  CALLER-PLUGIN-NOT-FOUND: '{0} 不是一个由插件加载的类'
+  STATIC-CLASS-LOADER: '{0} 由静态类加载器初始化，无法获得其从属的插件'
+
+MISC:
+  FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
+  FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
+
+ITEM-UTILS:
+  FAIL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
+  FAIL-LOAD-ENCHANT: '&c{0} &4不是一个有效的附魔名称, 输入 &c/tlib enchants&4 查看所有附魔'
+  FAIL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
+  FAIL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
+  FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
+
+MYSQL-HIKARI:
+  CREATE-SUCCESS: '&7插件 &f{0}&7 注册新的数据库连接: &f{1}'
+  CREATE-EXISTS: '&7插件 &f{0}&7 引用插件 &f{1}&7 注册的数据库连接'
+  CLOSE-SUCCESS: '&7插件 &f{0} &7注册的数据库连接 &f{1} &7已被注销!'
+  CLOSE-FAIL: '&7插件 &f{0} &7注册的数据库连接正在被 &f{1} &7个插件使用, 无法注销!'
+
+COMMANDS:
+  GLOBAL:
+    ONLY-PLAYER: '&8[&3&lTabooLib&8] &4控制台无法这么做'
+    ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4只有启用数据库储存时才能这么做'
+  INTERNAL:
+    TYPE-ERROR: '&8[&3&lTabooLib&8] &7指令 &f{0} &7只能由 &f{1} &7执行'
+    TYPE-PLAYER: '玩家'
+    TYPE-CONSOLE: '控制台'
+    ERROR-USAGE:
+    - '&8[&3&lTabooLib&8] &7指令 &f{0} &7参数不足'
+    - '&8[&3&lTabooLib&8] &7正确用法:'
+    - '&8[&3&lTabooLib&8] &7{1}'
+    ERROR-COMMAND:
+    - '&8[&3&lTabooLib&8] &7指令 &f{0} &7不存在'
+    - '&8[&3&lTabooLib&8] &7你可能想要:'
+    - '&8[&3&lTabooLib&8] &7{1}'
+    COMMAND-CREATE-FAILED: '&c插件 &7{0} &c的 &7{1} &c命令注册失败: &7{2}'
+    COMMAND-HELP: ' §f/{0} {1} {2}§6- §e{3}'
+    COMMAND-HELP-EMPTY: ' §f/{0} {1} {2}'
+    COMMAND-ARGUMENT: '§7<§8{0}§7>'
+    COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
+  PARAMETER:
+    UNKNOWN: '&8[&3&lTabooLib&8] &4指令错误'
+    INSUFFICIENT: '&8[&3&lTabooLib&8] &4参数不足'
+
+COMMUNICATION:
+  FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
+  FAILED-CONNECT-SERVER: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接失败.'
+  FAILED-CONNECT-CLIENT: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接出错: {0}'
+  FAILED-READING-PACKET: '§8[§3§lTabooLibClient§8] &4本地通讯网络数据包读取失败: {0}'
+  SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7本地通讯网络连接成功.'
+  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7加入本地通讯网络.'
+  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7退出本地通讯网络.'
+  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7发送信息: &f{1}'
+  PACKET-COMMAND: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7运行命令: &f{1}'

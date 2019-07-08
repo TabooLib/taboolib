@@ -86,12 +86,8 @@ public class SimpleI18n {
         return lang.getString(NMS.handle().getName(item).replace(".", "_"), item.getType().name().toLowerCase().replace("_", ""));
     }
 
-    private static void releaseLocales(Plugin plugin) {
-        TLocaleLoader.getLocalePriority().stream().filter(localeName -> !new File("plugins/TabooLib/simpleI18n/" + getVersion() + "/" + localeName + ".yml").exists() && plugin.getResource("simpleI18n/" + getVersion() + "/" + localeName + ".yml") != null).forEach(localeName -> plugin.saveResource("simpleI18n/" + getVersion() + "/" + localeName + ".yml", true));
-    }
-
     private static File getLocaleFile(Plugin plugin) {
-        releaseLocales(plugin);
+        TLocaleLoader.getLocalePriority().forEach(localeName -> Files.releaseResource(plugin, "simpleI18n/" + getVersion() + "/" + localeName + ".yml", false));
         return TLocaleLoader.getLocalePriority().stream().map(localeName -> new File("plugins/TabooLib/simpleI18n/" + getVersion() + "/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
     }
 

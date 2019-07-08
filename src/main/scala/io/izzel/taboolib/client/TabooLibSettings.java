@@ -29,7 +29,7 @@ public class TabooLibSettings {
 
     public static InputStream getSettingsInputStream() {
         try {
-            URL url = TabooLibServer.class.getClassLoader().getResource("settings.properties");
+            URL url = TabooLibServer.class.getClassLoader().getResource("__resources__/settings.properties");
             if (url == null) {
                 return null;
             } else {
