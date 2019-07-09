@@ -1,25 +1,22 @@
 package io.izzel.taboolib.module.compat;
 
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
-import io.izzel.taboolib.module.inject.TFunction;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@TFunction(enable = "init")
-public abstract class PlaceholderHook {
+import java.util.List;
 
-    private static boolean hooked;
-
-    static void init() {
-        hooked = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
-    }
+public class PlaceholderHook {
 
     public static String replace(CommandSender sender, String text) {
-        return sender instanceof Player && hooked ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
+        return sender instanceof Player ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
+    }
+
+    public static List<String> replace(CommandSender sender, List<String> text) {
+        return sender instanceof Player ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
     }
 
     public static boolean isHooked() {
-        return hooked;
+        return InternalPluginBridge.handle().placeholderHooked();
     }
 }
