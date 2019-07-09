@@ -1,10 +1,9 @@
 package io.izzel.taboolib.module.compat;
 
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.inject.TFunction;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.Arrays;
 
@@ -14,11 +13,7 @@ public class PermissionHook {
     private static Permission perms;
 
     static void init() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            return;
-        }
-        RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
-        perms = rsp.getProvider();
+        perms = InternalPluginBridge.handle().getPermission();
     }
 
     public static Permission getPermission() {

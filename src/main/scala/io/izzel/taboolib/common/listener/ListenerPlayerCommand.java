@@ -2,6 +2,7 @@ package io.izzel.taboolib.common.listener;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
@@ -26,13 +27,17 @@ public class ListenerPlayerCommand implements Listener {
             e.setCancelled(true);
             TLocale.Display.sendTitle(e.getPlayer(), "§fTabooLib", "§7TabooLib is enabled.");
         }
-        if (e.getMessage().equalsIgnoreCase("/tellrawTest") && e.getPlayer().hasPermission("taboolib.tellraw")) {
+        if (e.getMessage().equalsIgnoreCase("/tellrawTest") && e.getPlayer().hasPermission("*")) {
             e.setCancelled(true);
             TellrawJson.create()
                     .append("§8[§3§lTabooLib§8] §7TellrawJson Test: §f[")
                     .append(Items.getName(e.getPlayer().getItemInHand())).hoverItem(e.getPlayer().getItemInHand())
                     .append("§f]")
                     .send(e.getPlayer());
+        }
+        if (e.getMessage().equalsIgnoreCase("/placeholderTest") && e.getPlayer().hasPermission("*")) {
+            e.setCancelled(true);
+            e.getPlayer().sendMessage(InternalPluginBridge.handle().setPlaceholders(e.getPlayer(), "§8[§3§lTabooLib§8] §7PlaceholderAPI Test: §f%player_name%"));
         }
     }
 

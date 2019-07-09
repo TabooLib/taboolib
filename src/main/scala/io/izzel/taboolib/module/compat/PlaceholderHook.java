@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.compat;
 
-import me.clip.placeholderapi.PlaceholderAPI;
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.inject.TFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -9,36 +9,17 @@ import org.bukkit.entity.Player;
 @TFunction(enable = "init")
 public abstract class PlaceholderHook {
 
-    private static PlaceholderHook impl;
+    private static boolean hooked;
 
     static void init() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            impl = new PlaceholderImpl();
-        } else {
-            impl = new AbstractImpl();
-        }
+        hooked = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
     public static String replace(CommandSender sender, String text) {
-        return sender instanceof Player ? impl.replace(((Player) sender), text) : text;
+        return sender instanceof Player && hooked ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
     }
 
-    abstract String replace(Player player, String text);
-
-    private static class PlaceholderImpl extends PlaceholderHook {
-
-        @Override
-        String replace(Player player, String text) {
-            return PlaceholderAPI.setPlaceholders(player, text);
-        }
+    public static boolean isHooked() {
+        return hooked;
     }
-
-    private static class AbstractImpl extends PlaceholderHook {
-
-        @Override
-        String replace(Player player, String text) {
-            return text;
-        }
-    }
-
 }

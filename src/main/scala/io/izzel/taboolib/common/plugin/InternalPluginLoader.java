@@ -23,6 +23,10 @@ public class InternalPluginLoader implements PluginLoader {
         return loader;
     }
 
+    public static JavaPluginLoader getJavaLoader() {
+        return loader;
+    }
+
     static {
         loader = new JavaPluginLoader(Bukkit.getServer());
     }

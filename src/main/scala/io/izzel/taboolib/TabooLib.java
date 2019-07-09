@@ -15,6 +15,7 @@ import io.izzel.taboolib.util.IO;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.NumberConversions;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
@@ -75,6 +76,10 @@ public class TabooLib {
             // 关闭插件
             PluginLoader.stop(getPlugin());
         });
+    }
+
+    public static File getTabooLibFile() {
+        return new File("libs/TabooLib.jar");
     }
 
     public static InternalPlugin getPlugin() {

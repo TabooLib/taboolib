@@ -5,16 +5,17 @@ import com.google.common.collect.Sets;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
-import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TListenerHandler;
 import io.izzel.taboolib.module.inject.TScheduleLoader;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -71,10 +72,12 @@ public abstract class PluginLoader {
                 TListenerHandler.cancelListener(plugin);
                 // 注销插件类
                 TabooLibLoader.getPluginClassSafely(plugin).forEach(c -> TabooLibLoader.unloadClass(plugin, c));
-                // 注销数据库连接
-                Sets.newHashSet(DBSource.getDataSource().keySet()).stream().filter(IHost::isAutoClose).forEach(DBSource::closeDataSource);
-                // 释放文检动态读取
+                // 释放文检读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
+                // 注销数据库连接
+                DBSource.getDataSource().entrySet().stream().filter(dataEntry -> dataEntry.getKey().getPlugin().equals(plugin)).map(Map.Entry::getKey).forEach(DBSource::closeDataSource);
+                // 注销调度器
+                Bukkit.getScheduler().cancelTasks(plugin);
             }
         });
     }

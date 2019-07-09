@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.logger.TLoggerManager;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.tellraw.TellrawCreator;
@@ -9,7 +10,6 @@ import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.util.chat.ChatColor;
 import io.izzel.taboolib.util.chat.ComponentSerializer;
 import io.izzel.taboolib.util.chat.TextComponent;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -111,7 +111,7 @@ public class TLocale {
         }
 
         public static boolean isPlaceholderPluginEnabled() {
-            return Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null && Bukkit.getPluginManager().getPlugin("PlaceholderAPI").isEnabled();
+            return PlaceholderHook.isHooked();
         }
 
         public static String setColored(String args) {
@@ -131,11 +131,11 @@ public class TLocale {
         }
 
         public static String setPlaceholders(CommandSender sender, String args) {
-            return isPlaceholderPluginEnabled() ? sender instanceof Player ? PlaceholderAPI.setPlaceholders((Player) sender, args) : args : args;
+            return PlaceholderHook.replace(sender, args);
         }
 
         public static List<String> setPlaceholders(CommandSender sender, List<String> args) {
-            return isPlaceholderPluginEnabled() ? sender instanceof Player ? PlaceholderAPI.setPlaceholders((Player) sender, args) : args : args;
+            return args.stream().map(var -> PlaceholderHook.replace(sender, var)).collect(Collectors.toList());
         }
     }
 

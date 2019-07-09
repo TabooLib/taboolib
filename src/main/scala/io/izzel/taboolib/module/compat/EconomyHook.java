@@ -1,10 +1,9 @@
 package io.izzel.taboolib.module.compat;
 
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.inject.TFunction;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  * @Author 坏黑
@@ -16,13 +15,7 @@ public class EconomyHook {
     private static Economy economy;
 
     static void init() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            return;
-        }
-        RegisteredServiceProvider<Economy> l = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
-        if (l != null) {
-            economy = l.getProvider();
-        }
+        economy = InternalPluginBridge.handle().getEconomy();
     }
 
     public static void remove(OfflinePlayer p, double d) {
