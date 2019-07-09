@@ -15,9 +15,9 @@ class RichPlayer(private val player: Player) extends RichOfflinePlayer(player) {
 
   def displaySidebarUnranked(title: String, elements: String*): Unit = Scoreboards.display(player, elements: _*)
 
-  def addPermission(perm: String): Unit = PermissionHook.addPermission(player, perm)
+  def addPermission(perm: String): Unit = PermissionHook.add(player, perm)
 
-  def removePermission(perm: String): Unit = PermissionHook.removePermission(player, perm)
+  def removePermission(perm: String): Unit = PermissionHook.remove(player, perm)
 
   def sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int): Unit = TLocale.Display.sendTitle(player, title, subtitle, fadein, stay, fadeout)
 

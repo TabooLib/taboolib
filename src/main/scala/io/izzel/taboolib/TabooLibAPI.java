@@ -1,14 +1,12 @@
 package io.izzel.taboolib;
 
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.nms.NMS;
-import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.plugin.Plugin;
+
+import java.util.Arrays;
 
 /**
  * @Author 坏黑
@@ -27,6 +25,10 @@ public class TabooLibAPI {
             originLoaded = Bukkit.getPluginManager().getPlugin("TabooLib") != null;
         } catch (Exception ignored) {
         }
+    }
+
+    public static InternalPluginBridge getPluginBridge() {
+        return InternalPluginBridge.handle();
     }
 
     public static boolean isBukkit() {
@@ -49,7 +51,7 @@ public class TabooLibAPI {
         return Local.get().get("data").getBoolean("debug");
     }
 
-    public static void setDebug(boolean debug) {
+    public static void debug(boolean debug) {
         Local.get().get("data").set("debug", debug);
     }
 
@@ -58,34 +60,8 @@ public class TabooLibAPI {
     }
 
     public static void debug(Plugin plugin, String... args) {
-        if (!isDebug()) {
-            return;
+        if (isDebug()) {
+            Arrays.stream(args).forEach(line -> Bukkit.getConsoleSender().sendMessage("§4[" + plugin.getName() + "][DEBUG] §c" + line));
         }
-        for (String line : args) {
-            Bukkit.getConsoleSender().sendMessage("§4[" + plugin.getName() + "][DEBUG] §c" + line);
-        }
-    }
-
-    public static boolean dispatchCommand(CommandSender sender, String command) {
-        try {
-            if ((sender instanceof Player)) {
-                PlayerCommandPreprocessEvent e = new PlayerCommandPreprocessEvent((Player) sender, "/" + command);
-                Bukkit.getPluginManager().callEvent(e);
-                if (e.isCancelled() || Strings.isBlank(e.getMessage()) || !e.getMessage().startsWith("/")) {
-                    return false;
-                }
-                return Bukkit.dispatchCommand(e.getPlayer(), e.getMessage().substring(1));
-            } else {
-                ServerCommandEvent e = new ServerCommandEvent(sender, command);
-                Bukkit.getPluginManager().callEvent(e);
-                if (e.isCancelled() || Strings.isBlank(e.getCommand())) {
-                    return false;
-                }
-                return Bukkit.dispatchCommand(e.getSender(), e.getCommand());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 }

@@ -55,10 +55,10 @@ public class ListenerPlayerCommand implements Listener {
                 e.setCancelled(true);
             }
             if (TabooLibAPI.isDebug()) {
-                TabooLibAPI.setDebug(false);
+                TabooLibAPI.debug(false);
                 TLogger.getGlobalLogger().info("&cDisabled.");
             } else {
-                TabooLibAPI.setDebug(true);
+                TabooLibAPI.debug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
         }
