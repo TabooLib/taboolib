@@ -224,9 +224,22 @@ public class Files {
         return Optional.ofNullable(readFromURL(url)).orElse(def);
     }
 
+    public static String readFromURL(String url,  Charset charset, String def) {
+        return Optional.ofNullable(readFromURL(url, charset)).orElse(def);
+    }
+
     public static String readFromURL(String url) {
         try (InputStream inputStream = new URL(url).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             return new String(IO.readFully(bufferedInputStream));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String readFromURL(String url, Charset charset) {
+        try (InputStream inputStream = new URL(url).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+            return new String(IO.readFully(bufferedInputStream), charset);
         } catch (Throwable t) {
             t.printStackTrace();
         }
