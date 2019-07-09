@@ -2,12 +2,12 @@ package io.izzel.taboolib.module.db.source;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.config.TConfig;
-import io.izzel.taboolib.module.inject.TInject;
 import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.module.db.sql.SQLHost;
 import io.izzel.taboolib.module.db.sqlite.SQLiteHost;
+import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.locale.TLocale;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.sql.DataSource;

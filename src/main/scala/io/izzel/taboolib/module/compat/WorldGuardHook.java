@@ -1,12 +1,10 @@
 package io.izzel.taboolib.module.compat;
 
-import com.google.common.base.Preconditions;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import org.bukkit.Bukkit;
+import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -26,8 +24,7 @@ public class WorldGuardHook {
     private Method getRegionManager;
 
     public WorldGuardHook() {
-        Preconditions.checkNotNull(Bukkit.getServer().getPluginManager().getPlugin("WorldGuard"), "WorldGuard was not found.");
-        worldGuard = WorldGuardPlugin.inst();
+        worldGuard = InternalPluginBridge.handle().getWorldGuardPlugin();
         if (!worldGuard.getDescription().getVersion().startsWith("7")) {
             try {
                 getRegionManager = WorldGuardPlugin.class.getDeclaredMethod("getRegionManager", World.class);
@@ -44,7 +41,7 @@ public class WorldGuardHook {
 
     public RegionManager getRegionManager(World world) {
         if (worldGuard.getDescription().getVersion().startsWith("7")) {
-            return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+            return InternalPluginBridge.handle().getWorldGuard().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
         } else {
             try {
                 return (RegionManager) getRegionManager.invoke(worldGuard, world);

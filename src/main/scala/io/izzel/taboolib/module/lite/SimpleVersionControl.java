@@ -3,7 +3,9 @@ package io.izzel.taboolib.module.lite;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.common.plugin.bridge.BridgeLoader;
 import io.izzel.taboolib.util.Files;
+import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.asm.AsmClassLoader;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
@@ -124,6 +126,20 @@ public class SimpleVersionControl {
             cacheClasses.put(target, newClass);
         }
         return newClass;
+    }
+
+    public Class<?> translateBridge() throws IOException {
+        Class<?> callerClass = Ref.getCallerClass(3).orElse(null);
+        if (callerClass != null && !callerClass.getName().startsWith("io.izzel")) {
+            throw new IllegalStateException();
+        }
+        ClassReader classReader = new ClassReader(Files.getTabooLibResource(target.replace(".", "/") + ".class"));
+        ClassWriter classWriter = new ClassWriter(0);
+        ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
+        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
+        classWriter.visitEnd();
+        classVisitor.visitEnd();
+        return BridgeLoader.createNewClass(target, classWriter.toByteArray());
     }
 
     // *********************************

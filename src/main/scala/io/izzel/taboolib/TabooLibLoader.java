@@ -27,17 +27,6 @@ public class TabooLibLoader {
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
 
-    @TSchedule
-    static void start() {
-        PluginLoader.active(TabooLib.getPlugin());
-        // 通讯网络服务器
-        if (TabooLib.getConfig().getBoolean("SERVER")) {
-            TabooLibServer.main(new String[0]);
-        }
-        // 通讯网络客户端
-        TabooLibClient.init();
-    }
-
     static void init() {
         // 加载依赖
         TDependencyInjector.inject("TabooLib", TabooLib.class);
@@ -71,6 +60,17 @@ public class TabooLibLoader {
 
     static boolean isLoader(Class pluginClass) {
         return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
+    }
+
+    @TSchedule
+    static void start() {
+        PluginLoader.active(TabooLib.getPlugin());
+        // 通讯网络服务器
+        if (TabooLib.getConfig().getBoolean("SERVER")) {
+            TabooLibServer.main(new String[0]);
+        }
+        // 通讯网络客户端
+        TabooLibClient.init();
     }
 
     static void setupClasses(Plugin plugin) {
