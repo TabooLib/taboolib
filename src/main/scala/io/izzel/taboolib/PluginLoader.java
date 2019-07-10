@@ -85,13 +85,22 @@ public abstract class PluginLoader {
     public void onLoading(Plugin plugin) {
     }
 
+    public void postLoading(Plugin plugin) {
+    }
+
     public void onStarting(Plugin plugin) {
+    }
+
+    public void postStarting(Plugin plugin) {
     }
 
     public void onActivated(Plugin plugin) {
     }
 
     public void onStopping(Plugin plugin) {
+    }
+
+    public void postStopping(Plugin plugin) {
     }
 
     public static void addPlugin(Plugin plugin) {
@@ -102,8 +111,16 @@ public abstract class PluginLoader {
         registerLoader.forEach(loader -> loader.onLoading(plugin));
     }
 
+    public static void postLoad(Plugin plugin) {
+        registerLoader.forEach(loader -> loader.postLoading(plugin));
+    }
+
     public static void start(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onStarting(plugin));
+    }
+
+    public static void postStart(Plugin plugin) {
+        registerLoader.forEach(loader -> loader.postStarting(plugin));
     }
 
     public static void active(Plugin plugin) {
@@ -112,6 +129,10 @@ public abstract class PluginLoader {
 
     public static void stop(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onStopping(plugin));
+    }
+
+    public static void postStop(Plugin plugin) {
+        registerLoader.forEach(loader -> loader.postStopping(plugin));
     }
 
     public static boolean isPlugin(Plugin plugin) {
