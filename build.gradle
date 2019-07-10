@@ -37,6 +37,9 @@ dependencies {
 }
 
 shadowJar {
+
+    // 免得 MANIFEST.MF 里面刷一堆 lib 难看
+    taskActions.removeIf { it.actionClassName.contains 'configureShadowTask' }
     
     dependencies {
         it.include it.dependency('org.apache.commons:.*')
