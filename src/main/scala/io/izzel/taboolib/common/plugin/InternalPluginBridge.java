@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 坏黑
@@ -63,4 +64,6 @@ public abstract class InternalPluginBridge {
     abstract public boolean placeholderHooked();
 
     abstract public boolean worldguardHooked();
+
+    abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 }

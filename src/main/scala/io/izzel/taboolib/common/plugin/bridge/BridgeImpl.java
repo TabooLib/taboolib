@@ -1,5 +1,6 @@
 package io.izzel.taboolib.common.plugin.bridge;
 
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -8,6 +9,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.util.Reflection;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.skymc.taboolib.sound.SoundPack;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -20,6 +22,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BridgeImpl extends InternalPluginBridge {
@@ -51,7 +54,7 @@ public class BridgeImpl extends InternalPluginBridge {
     @Override
     public <T> T getRegisteredService(Class<? extends T> clazz) {
         RegisteredServiceProvider registeredServiceProvider = Bukkit.getServer().getServicesManager().getRegistration(clazz);
-        return (T) registeredServiceProvider.getProvider();
+        return registeredServiceProvider == null ? null : (T) registeredServiceProvider.getProvider();
     }
 
     @Override
@@ -153,4 +156,45 @@ public class BridgeImpl extends InternalPluginBridge {
         return worldguard;
     }
 
+    @Override
+    public Map<String, Object> taboolibTLocaleSerialize(Object in) {
+        switch (in.getClass().getSimpleName()) {
+            case "TLocaleText": {
+                Map<String, Object> map = Maps.newHashMap();
+                try {
+                    map.put("text", Reflection.getValue(in, true, "text"));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                return map;
+            }
+            case "TLocaleSound": {
+                Map<String, Object> map = Maps.newHashMap();
+                try {
+                    List<SoundPack> sounds = (List<SoundPack>) Reflection.getValue(in, true, "soundPacks");
+                    map.put("sounds", sounds.stream().map(s -> s.getSound() + "-" + s.getA() + "-" + s.getB() + "-" + s.getDelay()).collect(Collectors.toList()));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                return map;
+            }
+            case "TLocaleBossBar": {
+                Map<String, Object> map = Maps.newHashMap();
+                try {
+                    map.put("text", Reflection.getValue(in, true, "text"));
+                    map.put("color", Reflection.getValue(in, true, "color"));
+                    map.put("style", Reflection.getValue(in, true, "style"));
+                    map.put("progress", Reflection.getValue(in, true, "progress"));
+                    map.put("timeout", Reflection.getValue(in, true, "timeout"));
+                    map.put("timeoutInterval", Reflection.getValue(in, true, "timeoutInterval"));
+                    map.put("papi", Reflection.getValue(in, true, "papi"));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+                return map;
+            }
+            default:
+                return ((com.ilummc.tlib.resources.TLocaleSerialize) in).serialize();
+        }
+    }
 }
