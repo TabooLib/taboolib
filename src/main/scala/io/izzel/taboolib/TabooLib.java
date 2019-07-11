@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.slf4j:slf4j-api:1.7.25", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "com.zaxxer:HikariCP:3.1.0", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar")
 @Dependency(type = Dependency.Type.LIBRARY, maven = "org.scala-lang:scala-library:2.12.8", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar")
+@Dependency(type = Dependency.Type.LIBRARY, maven = "com.google.inject:guice:4.2.2", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/guice-4.2.2.jar")
 public class TabooLib {
 
     private static TabooLib inst = new TabooLib();
