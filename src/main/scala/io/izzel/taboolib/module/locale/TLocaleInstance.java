@@ -2,7 +2,8 @@ package io.izzel.taboolib.module.locale;
 
 import com.google.common.collect.ImmutableList;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.locale.type.TLocaleText;
+import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.module.locale.type.*;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -11,10 +12,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import javax.annotation.concurrent.ThreadSafe;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -54,7 +52,7 @@ class TLocaleInstance {
     public void sendTo(String path, CommandSender sender, String... args) {
         try {
             map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).forEach(tSender -> {
-                if (Bukkit.isPrimaryThread() || "true".equals(System.getProperty("tlib.forceAsync"))) {
+                if (Bukkit.isPrimaryThread() || Objects.equals(System.getProperty("tlib.forceAsync"), "true")) {
                     tSender.sendTo(sender, args);
                 } else {
                     Bukkit.getScheduler().runTask(plugin, () -> tSender.sendTo(sender, args));
@@ -98,11 +96,24 @@ class TLocaleInstance {
             Object value = configuration.get(s);
             if (value instanceof TLocaleSerialize) {
                 updated = map.put(s, Collections.singletonList((TLocaleSerialize) value)) != null;
+            }
+            // TabooLib 4.x 兼容
+            else if (TabooLibAPI.isOriginLoaded() && value.getClass().getName().startsWith("com.ilummc.tlib.resources.type")) {
+                updated = map.put(s, Collections.singletonList(fromPluginVersion(value))) != null;
             } else if (value instanceof List && !((List) value).isEmpty()) {
                 if (isListString((List) value)) {
                     updated = map.put(s, Collections.singletonList(TLocaleText.of(value))) != null;
                 } else {
-                    updated = map.put(s, ((List<?>) value).stream().map(o -> o instanceof TLocaleSerialize ? (TLocaleSerialize) o : TLocaleText.of(String.valueOf(o))).collect(Collectors.toList())) != null;
+                    updated = map.put(s, ((List<?>) value).stream().map(o -> {
+                        if (o instanceof TLocaleSerialize) {
+                            return (TLocaleSerialize) o;
+                        }
+                        // TabooLib 4.x 兼容
+                        else if (TabooLibAPI.isOriginLoaded() && o.getClass().getName().startsWith("com.ilummc.tlib.resources.type")) {
+                            return fromPluginVersion(o);
+                        }
+                        return TLocaleText.of(String.valueOf(o));
+                    }).collect(Collectors.toList())) != null;
                 }
             } else if (!(value instanceof ConfigurationSection)) {
                 String str = String.valueOf(value);
@@ -113,5 +124,24 @@ class TLocaleInstance {
             }
         }
         latestUpdateNodes.set(originNodes - updateNodes);
+    }
+
+    private TLocaleSerialize fromPluginVersion(Object in) {
+        switch (in.getClass().getSimpleName()) {
+            case "TLocaleActionBar":
+                return TLocaleActionBar.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            case "TLocaleBook":
+                return TLocaleBook.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            case "TLocaleBossBar":
+                return TLocaleBossBar.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            case "TLocaleJson":
+                return TLocaleJson.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            case "TLocaleSound":
+                return TLocaleSound.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            case "TLocaleTitle":
+                return TLocaleTitle.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+            default:
+                return TLocaleText.valueOf(TabooLibAPI.getPluginBridge().taboolibTLocaleSerialize(in));
+        }
     }
 }

@@ -15,14 +15,11 @@ import java.util.Arrays;
 public class TabooLibAPI {
 
     private static boolean bukkit;
-    private static boolean originLoaded;
 
     static {
         try {
             // 判断是否基于 Bukkit 运行
             bukkit = Class.forName("org.bukkit.Bukkit") != null;
-            // 获取 TabooLib4.x 版本是否载入
-            originLoaded = Bukkit.getPluginManager().getPlugin("TabooLib") != null;
         } catch (Exception ignored) {
         }
     }
@@ -36,7 +33,7 @@ public class TabooLibAPI {
     }
 
     public static boolean isOriginLoaded() {
-        return originLoaded;
+        return Bukkit.getPluginManager().getPlugin("TabooLib") != null;
     }
 
     public static boolean isDependTabooLib(Plugin plugin) {

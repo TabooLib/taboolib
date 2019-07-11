@@ -24,6 +24,10 @@ public class TLocaleLoader {
 
     private static final Map<String, TLocaleInstance> map = new ConcurrentHashMap<>();
 
+    /**
+     * 因插件版载入慢于非插件版，所以语言文件类型会被插件版本覆盖
+     * 解决方案：主动兼容插件版本
+     */
     static {
         ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
         ConfigurationSerialization.registerClass(TLocaleJson.class, "JSON");
