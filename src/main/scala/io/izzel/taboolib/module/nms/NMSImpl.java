@@ -104,8 +104,8 @@ public class NMSImpl extends NMS {
     @Override
     public String getName(Entity entity) {
         if (Version.isAfter(Version.v1_14)) {
-            net.minecraft.server.v1_14_R1.MinecraftKey minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getEntityType());
-            return "entity.minecraft." + minecraftKey.getKey();
+            Object minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getEntityType());
+            return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
         } else if (Version.isAfter(Version.v1_13)) {
             try {
                 String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey((net.minecraft.server.v1_13_R2.EntityTypes<?>) entityTypesField.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle())).getKey();
