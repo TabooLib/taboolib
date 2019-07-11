@@ -1,7 +1,8 @@
 package io.izzel.taboolib.module.dependency;
 
+import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.util.Strings;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -32,7 +33,7 @@ public class TDependencyInjector {
                 if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url())) {
                     TabooLibAPI.debug("  Loaded " + String.join(":", dependency.maven()) + " (" + name + ")");
                 } else {
-                    TLocale.Logger.warn("DEPENDENCY.LIBRARY-LOAD-FAIL", name, String.join(":", dependency.maven()));
+                    TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-LOAD-FAIL"), name, String.join(":", dependency.maven())));
                 }
             }
         }
