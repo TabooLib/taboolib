@@ -1,8 +1,9 @@
 package io.izzel.taboolib.util.item;
 
+import com.google.common.collect.ImmutableMap;
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.lite.SimpleI18n;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
@@ -24,6 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.NumberConversions;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author 坏黑
@@ -67,6 +69,22 @@ public class Items {
         }
     }
 
+    public static ItemFlag asItemFlag(String flag) {
+        try {
+            return ItemFlag.valueOf(flag);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Color asColor(String color) {
+        try {
+            return Color.fromBGR(Integer.valueOf(color.split("-")[0]), Integer.valueOf(color.split("-")[1]), Integer.valueOf(color.split("-")[2]));
+        } catch (Exception e) {
+            return Color.fromBGR(0, 0, 0);
+        }
+    }
+
     public static Enchantment asEnchantment(String enchant) {
         try {
             Enchantment enchantment = Enchantment.getByName(enchant);
@@ -82,22 +100,6 @@ public class Items {
             return type != null ? type : PotionEffectType.getById(Integer.valueOf(potion));
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    public static ItemFlag asItemFlag(String flag) {
-        try {
-            return ItemFlag.valueOf(flag);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static Color asColor(String color) {
-        try {
-            return Color.fromBGR(Integer.valueOf(color.split("-")[0]), Integer.valueOf(color.split("-")[1]), Integer.valueOf(color.split("-")[2]));
-        } catch (Exception e) {
-            return Color.fromBGR(0, 0, 0);
         }
     }
 
@@ -122,12 +124,37 @@ public class Items {
         }
     }
 
+    public static ItemStack replaceName(ItemStack item, String nameOld, String nameNew) {
+        return replaceLore(item, ImmutableMap.of(nameOld, nameNew));
+    }
+
     public static ItemStack replaceLore(ItemStack item, String loreOld, String loreNew) {
+        return replaceLore(item, ImmutableMap.of(loreOld, loreNew));
+    }
+
+    public static ItemStack replaceName(ItemStack item, Map<String, String> map) {
+        if (hasName(item)) {
+            ItemMeta meta = item.getItemMeta();
+            String name = meta.getDisplayName();
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                name = name.replace(entry.getKey(), entry.getValue());
+            }
+            meta.setDisplayName(name);
+            item.setItemMeta(meta);
+        }
+        return item;
+    }
+
+    public static ItemStack replaceLore(ItemStack item, Map<String, String> map) {
         if (hasLore(item)) {
             ItemMeta meta = item.getItemMeta();
             List<String> lore = meta.getLore();
             for (int i = 0; i < lore.size(); i++) {
-                lore.set(i, lore.get(i).replace(loreOld, loreNew));
+                String line = lore.get(i);
+                for (Map.Entry<String, String> entry : map.entrySet()) {
+                    line = line.replace(entry.getKey(), entry.getValue());
+                }
+                lore.set(i, line);
             }
             meta.setLore(lore);
             item.setItemMeta(meta);
@@ -182,11 +209,11 @@ public class Items {
         ItemMeta meta = item.getItemMeta();
         // 展示名
         if (section.contains("name")) {
-            meta.setDisplayName(section.getString("name"));
+            meta.setDisplayName(TLocale.Translate.setColored(section.getString("name")));
         }
         // 描述
         if (section.contains("lore")) {
-            meta.setLore(section.getStringList("lore"));
+            meta.setLore(TLocale.Translate.setColored(section.getStringList("lore")));
         }
         // 附魔
         if (section.contains("enchant")) {
