@@ -22,7 +22,7 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
     static Map<String, List<TScheduleData>> schedules = Maps.newHashMap();
 
     public static void run(Plugin plugin) {
-        List<TScheduleData> list = schedules.get(plugin.getName());
+        List<TScheduleData> list = schedules.remove(plugin.getName());
         if (list != null) {
             list.forEach(data -> run(plugin, data.getRunnable(), data.getAnnotation().delay(), data.getAnnotation().period(), data.getAnnotation().async()));
         }
