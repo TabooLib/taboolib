@@ -27,6 +27,10 @@ public class TLocale {
         throw new AssertionError();
     }
 
+    static void sendTo(String path, CommandSender sender, String[] args, Class<?> callerClass) {
+        TLocaleLoader.sendTo(Ref.getCallerPlugin(callerClass), path, sender, args);
+    }
+
     static String asString(String path, Class<?> callerClass, String... args) {
         return TLocaleLoader.asString(Ref.getCallerPlugin(callerClass), path, args);
     }
@@ -35,20 +39,12 @@ public class TLocale {
         return TLocaleLoader.asStringList(Ref.getCallerPlugin(callerClass), path, args);
     }
 
-    private static void sendTo(String path, CommandSender sender, String[] args, Class<?> callerClass) {
-        TLocaleLoader.sendTo(Ref.getCallerPlugin(callerClass), path, sender, args);
-    }
-
-    public static void sendToConsole(String path, String... args) {
-        Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, Bukkit.getConsoleSender(), args, clazz));
-    }
-
     public static void sendTo(CommandSender sender, String path, String... args) {
         Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, sender, args, clazz));
     }
 
-    public static void sendTo(String path, CommandSender sender, String... args) {
-        Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, sender, args, clazz));
+    public static void sendToConsole(String path, String... args) {
+        Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, Bukkit.getConsoleSender(), args, clazz));
     }
 
     public static void broadcast(String path, String... args) {
