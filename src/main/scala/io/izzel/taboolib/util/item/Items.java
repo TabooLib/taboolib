@@ -125,7 +125,7 @@ public class Items {
     }
 
     public static ItemStack replaceName(ItemStack item, String nameOld, String nameNew) {
-        return replaceLore(item, ImmutableMap.of(nameOld, nameNew));
+        return replaceName(item, ImmutableMap.of(nameOld, nameNew));
     }
 
     public static ItemStack replaceLore(ItemStack item, String loreOld, String loreNew) {
