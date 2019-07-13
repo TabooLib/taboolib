@@ -24,18 +24,22 @@ public class TLocaleLoader {
 
     private static final Map<String, TLocaleInstance> map = new ConcurrentHashMap<>();
 
-    /**
-     * 因插件版载入慢于非插件版，所以语言文件类型会被插件版本覆盖
-     * 解决方案：主动兼容插件版本
-     */
     static {
-        ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
-        ConfigurationSerialization.registerClass(TLocaleJson.class, "JSON");
-        ConfigurationSerialization.registerClass(TLocaleBook.class, "BOOK");
-        ConfigurationSerialization.registerClass(TLocaleSound.class, "SOUND");
-        ConfigurationSerialization.registerClass(TLocaleTitle.class, "TITLE");
-        ConfigurationSerialization.registerClass(TLocaleBossBar.class, "BAR");
-        ConfigurationSerialization.registerClass(TLocaleActionBar.class, "ACTION");
+        // 插件版载入 > 非插件版（导致非插件版语言文件类型被覆盖）
+        // 解决方案：识别插件版语言文件类型转换为非插件版
+        // 发现于： 2019年7月13日
+        // 非插件版载入 > 插件版（导致插件版语言文件类型被覆盖）
+        // 解决方案：检测插件版是否已经被加载
+        // 发现于： 2019年7月14日
+        if (!TabooLibAPI.isOriginLoaded()) {
+            ConfigurationSerialization.registerClass(TLocaleText.class, "TEXT");
+            ConfigurationSerialization.registerClass(TLocaleJson.class, "JSON");
+            ConfigurationSerialization.registerClass(TLocaleBook.class, "BOOK");
+            ConfigurationSerialization.registerClass(TLocaleSound.class, "SOUND");
+            ConfigurationSerialization.registerClass(TLocaleTitle.class, "TITLE");
+            ConfigurationSerialization.registerClass(TLocaleBossBar.class, "BAR");
+            ConfigurationSerialization.registerClass(TLocaleActionBar.class, "ACTION");
+        }
     }
 
     public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
