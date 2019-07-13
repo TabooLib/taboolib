@@ -29,7 +29,7 @@ public class TabooLibLoader {
 
     static void init() {
         // 加载依赖
-        TDependencyInjector.inject("TabooLib", TabooLib.class);
+        TDependencyInjector.inject(TabooLib.getPlugin(), TabooLib.class);
         // 插件统计
         Metrics metrics = new Metrics(TabooLib.getPlugin());
         metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(TabooLibAPI::isDependTabooLib).count())));

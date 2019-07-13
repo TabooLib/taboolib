@@ -1,40 +1,31 @@
 package io.izzel.taboolib.module.dependency;
 
-import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.util.Strings;
+import io.izzel.taboolib.util.Files;
 import org.bukkit.plugin.Plugin;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
 
 /**
  * @author Izzel_Aliz
  */
 public class TDependencyInjector {
 
-    public static Dependency[] getDependencies(Class<?> clazz) {
-        Dependency[] dependencies = new Dependency[0];
-        Dependencies d = clazz.getAnnotation(Dependencies.class);
-        if (d != null) {
-            dependencies = d.value();
-        }
-        Dependency d2 = clazz.getAnnotation(Dependency.class);
-        if (d2 != null) {
-            dependencies = new Dependency[] {d2};
-        }
-        return dependencies;
-    }
+    private static boolean libInjected;
 
     public static void inject(Plugin plugin, Class<?> clazz) {
-        inject(plugin.getName(), clazz);
-    }
-
-    public static void inject(String name, Class<?> clazz) {
-        for (Dependency dependency : getDependencies(clazz)) {
-            if (dependency.type() == Dependency.Type.LIBRARY) {
-                if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url())) {
-                    TabooLibAPI.debug("  Loaded " + String.join(":", dependency.maven()) + " (" + name + ")");
-                } else {
-                    TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-LOAD-FAIL"), name, String.join(":", dependency.maven())));
-                }
+        if (!plugin.getName().equals("TabooLib") || !libInjected) {
+            try {
+                ClassReader classReader = new ClassReader(Files.getResource(plugin, clazz.getName().replace(".", "/") + ".class"));
+                ClassWriter classWriter = new ClassWriter(0);
+                ClassVisitor classVisitor = new DependencyClassVisitor(plugin, classWriter);
+                classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
+                classWriter.visitEnd();
+                classVisitor.visitEnd();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            } finally {
+                libInjected = true;
             }
         }
     }
