@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.dependency;
 
+import io.izzel.taboolib.common.plugin.InternalPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -16,7 +17,7 @@ public class TDependencyLoader {
         try {
             Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
             method.setAccessible(true);
-            method.invoke(Bukkit.class.getClassLoader(), url);
+            method.invoke(plugin instanceof InternalPlugin ? Bukkit.class.getClassLoader() : plugin.getClass().getClassLoader(), url);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -29,5 +30,4 @@ public class TDependencyLoader {
             e.printStackTrace();
         }
     }
-
 }
