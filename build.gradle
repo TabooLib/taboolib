@@ -62,11 +62,11 @@ processResources {
     inputs.property "version", project.version
 
     from(sourceSets.main.resources.srcDirs) {
-        include 'version'
+        include '__resources__/version'
         expand 'version': project.version
     }
 
     from(sourceSets.main.resources.srcDirs) {
-        exclude 'version'
+        exclude '__resources__/version'
     }
 }
