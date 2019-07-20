@@ -69,19 +69,20 @@ public class Items {
         }
     }
 
+    public static Color asColor(String color) {
+        try {
+            String[] v = color.split("-");
+            return Color.fromBGR(Integer.valueOf(v[0]), Integer.valueOf(v[1]), Integer.valueOf(v[2]));
+        } catch (Exception e) {
+            return Color.fromBGR(0, 0, 0);
+        }
+    }
+
     public static ItemFlag asItemFlag(String flag) {
         try {
             return ItemFlag.valueOf(flag);
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    public static Color asColor(String color) {
-        try {
-            return Color.fromBGR(Integer.valueOf(color.split("-")[0]), Integer.valueOf(color.split("-")[1]), Integer.valueOf(color.split("-")[2]));
-        } catch (Exception e) {
-            return Color.fromBGR(0, 0, 0);
         }
     }
 
@@ -163,36 +164,45 @@ public class Items {
     }
 
     public static boolean checkItem(Player player, ItemStack item, int amount, boolean remove) {
-        return checkItem(player.getInventory(), item, amount, remove);
+        return hasItem(player.getInventory(), i -> i.isSimilar(item), amount);
     }
 
     public static boolean checkItem(Inventory inventory, ItemStack item, int amount, boolean remove) {
-        int hasAmount = 0;
-        for (ItemStack _item : inventory) {
-            if (item.isSimilar(_item)) {
-                hasAmount += _item.getAmount();
-            }
-        }
-        if (hasAmount < amount) {
-            return false;
-        }
-        int requireAmount = amount;
-        for (int i = 0; i < inventory.getSize() && remove; i++) {
-            ItemStack _item = inventory.getItem(i);
-            if (_item != null && _item.isSimilar(item)) {
-                if (_item.getAmount() < requireAmount) {
-                    inventory.setItem(i, null);
-                    requireAmount -= _item.getAmount();
-                } else if (_item.getAmount() == requireAmount) {
-                    inventory.setItem(i, null);
-                    return true;
-                } else {
-                    _item.setAmount(_item.getAmount() - requireAmount);
+        return hasItem(inventory, i -> i.isSimilar(item), amount) && (!remove || takeItem(inventory, i -> i.isSimilar(item), amount));
+    }
+
+    public static boolean hasItem(Inventory inventory, Matcher matcher, int amount) {
+        int checkAmount = amount;
+        for (org.bukkit.inventory.ItemStack itemStack : inventory.getContents()) {
+            if (!isNull(itemStack) && matcher.match(itemStack)) {
+                checkAmount -= itemStack.getAmount();
+                if (checkAmount <= 0) {
                     return true;
                 }
             }
         }
-        return true;
+        return false;
+    }
+
+    public static boolean takeItem(Inventory inventory, Matcher matcher, int amount) {
+        int takeAmount = amount;
+        ItemStack[] contents = inventory.getContents();
+        for (int i = 0; i < contents.length; i++) {
+            ItemStack itemStack = contents[i];
+            if (!isNull(itemStack) && matcher.match(itemStack)) {
+                takeAmount -= itemStack.getAmount();
+                if (takeAmount < 0) {
+                    itemStack.setAmount(itemStack.getAmount() - (takeAmount + itemStack.getAmount()));
+                    return true;
+                } else {
+                    inventory.setItem(i, null);
+                    if (takeAmount == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static ItemStack loadItem(ConfigurationSection section) {
@@ -309,5 +319,10 @@ public class Items {
             nbt.put("AttributeModifiers", attr);
         }
         return NMS.handle().saveNBT(item, nbt);
+    }
+
+    interface Matcher {
+
+        boolean match(ItemStack item);
     }
 }
