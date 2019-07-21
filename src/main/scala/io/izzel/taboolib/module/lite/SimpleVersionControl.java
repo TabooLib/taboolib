@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.lite;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.common.plugin.bridge.BridgeLoader;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Ref;
@@ -121,7 +122,7 @@ public class SimpleVersionControl {
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         classWriter.visitEnd();
         classVisitor.visitEnd();
-        Class<?> newClass = AsmClassLoader.createNewClass(target, classWriter.toByteArray());
+        Class<?> newClass = plugin instanceof InternalPlugin ? AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
         if (useCache) {
             cacheClasses.put(target, newClass);
         }
