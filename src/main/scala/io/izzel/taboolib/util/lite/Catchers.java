@@ -1,18 +1,21 @@
 package io.izzel.taboolib.util.lite;
 
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.module.inject.PlayerContainer;
+import io.izzel.taboolib.module.inject.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
+@TListener
 public class Catchers implements Listener {
 
+    @PlayerContainer
     private static HashMap<String, LinkedList<Catcher>> playerdata = new HashMap<>();
 
     public static HashMap<String, LinkedList<Catcher>> getPlayerdata() {
@@ -28,11 +31,6 @@ public class Catchers implements Listener {
             playerdata.put(player.getName(), new LinkedList<>());
         }
         playerdata.get(player.getName()).add(catcher.before());
-    }
-
-    @EventHandler
-    public void quit(PlayerQuitEvent e) {
-        playerdata.remove(e.getPlayer().getName());
     }
 
     @EventHandler
