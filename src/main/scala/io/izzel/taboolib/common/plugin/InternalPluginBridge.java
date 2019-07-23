@@ -68,7 +68,7 @@ public abstract class InternalPluginBridge {
 
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 
-    abstract public FileConfiguration taboolibGetPlayerData(OfflinePlayer player);
+    abstract public FileConfiguration taboolibGetPlayerData(String username);
 
     abstract public int protocolSupportPlayerVersion(Player player);
 
