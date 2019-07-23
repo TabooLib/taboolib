@@ -20,6 +20,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import protocolsupport.api.ProtocolSupportAPI;
+import us.myles.ViaVersion.api.Via;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -204,5 +206,20 @@ public class BridgeImpl extends InternalPluginBridge {
     @Override
     public FileConfiguration taboolibGetPlayerData(OfflinePlayer player) {
         return PlayerDataManager.getPlayerData(player);
+    }
+
+    @Override
+    public int protocolSupportPlayerVersion(Player player) {
+        return ProtocolSupportAPI.getProtocolVersion(player).getId();
+    }
+
+    @Override
+    public int viaVersionPlayerVersion(Player player) {
+        return Via.getAPI().getPlayerVersion(player);
+    }
+
+    @Override
+    public Class getClass(String name) throws ClassNotFoundException {
+        return Class.forName(name);
     }
 }

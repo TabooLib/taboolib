@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.TabooLibAPI;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -107,7 +108,7 @@ public class SimpleReflection {
         try {
             if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
                 for (Type actualTypeArgument : ((ParameterizedType) genericType).getActualTypeArguments()) {
-                    return Class.forName(actualTypeArgument.getTypeName());
+                    return TabooLibAPI.getPluginBridge().getClass(actualTypeArgument.getTypeName());
                 }
             }
         } catch (Throwable t) {
@@ -122,7 +123,7 @@ public class SimpleReflection {
             Type genericType = field.getGenericType();
             if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
                 for (Type actualTypeArgument : ((ParameterizedType) genericType).getActualTypeArguments()) {
-                    mapType[mapType[0] == null ? 0 : 1] = Class.forName(actualTypeArgument.getTypeName());
+                    mapType[mapType[0] == null ? 0 : 1] = TabooLibAPI.getPluginBridge().getClass(actualTypeArgument.getTypeName());
                 }
             }
         } catch (Throwable t) {
