@@ -5,7 +5,6 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.util.Files;
-import me.skymc.taboolib.database.PlayerDataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -24,7 +23,7 @@ public class LocalPlayer {
     private static Map<String, FileConfiguration> files = Maps.newConcurrentMap();
 
     public static FileConfiguration get(OfflinePlayer player) {
-        return TabooLibAPI.isOriginLoaded() ? PlayerDataManager.getPlayerData(player) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
+        return TabooLibAPI.isOriginLoaded() ? TabooLibAPI.getPluginBridge().taboolibGetPlayerData(player) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
     }
 
     @TSchedule(delay = 20 * 30, period = 20 * 30, async = true)

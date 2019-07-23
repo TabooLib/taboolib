@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.util.Reflection;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.sound.SoundPack;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
@@ -16,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -41,7 +43,8 @@ public class BridgeImpl extends InternalPluginBridge {
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
             if (!WorldGuardPlugin.inst().getDescription().getVersion().startsWith("7")) {
                 try {
-                    getRegionManager = Reflection.getMethod(WorldGuardPlugin.class, "worldguardRegionManager", World.class);
+                    getRegionManager = WorldGuardPlugin.class.getDeclaredMethod("getRegionManager", World.class);
+                    getRegionManager.setAccessible(true);
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
                 }
@@ -196,5 +199,10 @@ public class BridgeImpl extends InternalPluginBridge {
             default:
                 return ((com.ilummc.tlib.resources.TLocaleSerialize) in).serialize();
         }
+    }
+
+    @Override
+    public FileConfiguration taboolibGetPlayerData(OfflinePlayer player) {
+        return PlayerDataManager.getPlayerData(player);
     }
 }
