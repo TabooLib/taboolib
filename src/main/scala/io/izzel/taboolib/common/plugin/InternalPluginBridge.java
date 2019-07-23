@@ -5,6 +5,7 @@ import io.izzel.taboolib.module.lite.SimpleVersionControl;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -66,4 +67,6 @@ public abstract class InternalPluginBridge {
     abstract public boolean worldguardHooked();
 
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
+
+    abstract public FileConfiguration taboolibGetPlayerData(OfflinePlayer player);
 }
