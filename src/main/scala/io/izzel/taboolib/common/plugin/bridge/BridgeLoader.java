@@ -14,10 +14,6 @@ public class BridgeLoader extends ClassLoader {
     private static Method findClass;
     private static ClassLoader pluginClassLoader;
 
-    public static BridgeLoader getInstance() {
-        return new BridgeLoader();
-    }
-
     private BridgeLoader() {
         super(BridgeLoader.class.getClassLoader());
         try {
@@ -41,6 +37,6 @@ public class BridgeLoader extends ClassLoader {
     }
 
     public static Class<?> createNewClass(String name, byte[] arr) {
-        return getInstance().defineClass(name, arr, 0, arr.length, BridgeLoader.class.getProtectionDomain());
+        return new BridgeLoader().defineClass(name, arr, 0, arr.length, BridgeLoader.class.getProtectionDomain());
     }
 }
