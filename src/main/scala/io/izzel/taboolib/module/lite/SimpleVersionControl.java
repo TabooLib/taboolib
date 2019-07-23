@@ -6,6 +6,7 @@ import io.izzel.taboolib.Version;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.common.plugin.bridge.BridgeLoader;
 import io.izzel.taboolib.util.Files;
+import io.izzel.taboolib.util.IO;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.asm.AsmClassLoader;
 import org.bukkit.plugin.Plugin;
@@ -13,7 +14,9 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +28,7 @@ import java.util.Map;
  */
 public class SimpleVersionControl {
 
-    private static Map<String, Class<?>> cacheClasses = new HashMap<>();
+    private static Map<String, byte[]> cacheClasses = new HashMap<>();
     private String target;
     private String to;
     private List<String> from = Lists.newArrayList();
@@ -113,20 +116,23 @@ public class SimpleVersionControl {
     }
 
     public Class<?> translate(Plugin plugin) throws IOException {
+        InputStream inputStream;
         if (useCache && cacheClasses.containsKey(target)) {
-            return cacheClasses.get(target);
+            inputStream = new ByteArrayInputStream(cacheClasses.get(target));
+        } else {
+            inputStream = Files.getResource(plugin, target.replace(".", "/") + ".class");
+            if (useCache) {
+                cacheClasses.put(target, IO.readFully(inputStream));
+            }
         }
-        ClassReader classReader = new ClassReader(Files.getResource(plugin, target.replace(".", "/") + ".class"));
+        ClassReader classReader = new ClassReader(inputStream);
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         classWriter.visitEnd();
         classVisitor.visitEnd();
-        Class<?> newClass = plugin instanceof InternalPlugin ? AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
-        if (useCache) {
-            cacheClasses.put(target, newClass);
-        }
-        return newClass;
+        // 因第三方插件调用该方法时会出现找不到类，所以第三方插件使用 BridgeLoader 加载类
+        return plugin instanceof InternalPlugin ?  AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
     }
 
     public Class<?> translateBridge() throws IOException {
