@@ -71,6 +71,7 @@ public class SimpleVersionControl {
         this.from.add(from.startsWith("v") ? from : "v" + from);
         return this;
     }
+
     /**
      * 设置原版本，写法如：v1_8_R3, v1_12_R1
      */
@@ -80,7 +81,7 @@ public class SimpleVersionControl {
     }
 
     /**
-     *  设置目标版本
+     * 设置目标版本
      */
     public SimpleVersionControl to(String to) {
         this.to = to.startsWith("v") ? to : "v" + to;
@@ -116,15 +117,16 @@ public class SimpleVersionControl {
     }
 
     public Class<?> translate(Plugin plugin) throws IOException {
-        InputStream inputStream;
-        if (useCache && cacheClasses.containsKey(target)) {
-            inputStream = new ByteArrayInputStream(cacheClasses.get(target));
-        } else {
-            inputStream = Files.getResource(plugin, target.replace(".", "/") + ".class");
-            if (useCache) {
-                cacheClasses.put(target, IO.readFully(inputStream));
+        // 防止出现 Class not found 的奇葩问题，使用缓存（目的是兼容热重载）
+        InputStream inputStream = useCache ? new ByteArrayInputStream(cacheClasses.computeIfAbsent(target, n -> {
+            try {
+                return IO.readFully(Files.getResource(plugin, target.replace(".", "/") + ".class"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
+            return new byte[0];
+        })) : Files.getResource(plugin, target.replace(".", "/") + ".class");
+        // 读取
         ClassReader classReader = new ClassReader(inputStream);
         ClassWriter classWriter = new ClassWriter(0);
         ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
@@ -132,7 +134,7 @@ public class SimpleVersionControl {
         classWriter.visitEnd();
         classVisitor.visitEnd();
         // 因第三方插件调用该方法时会出现找不到类，所以第三方插件使用 BridgeLoader 加载类
-        return plugin instanceof InternalPlugin ?  AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
+        return plugin instanceof InternalPlugin ? AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
     }
 
     public Class<?> translateBridge() throws IOException {

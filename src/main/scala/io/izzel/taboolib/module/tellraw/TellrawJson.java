@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.tellraw;
 
+import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Strings;
@@ -8,8 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import protocolsupport.api.ProtocolSupportAPI;
-import us.myles.ViaVersion.api.Via;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,11 +87,11 @@ public class TellrawJson {
     public String toRawMessage(Player player) {
         // ViaVersion support!
         if (TellrawCreator.isViaVersionLoaded()) {
-            return toRawMessage(Via.getAPI().getPlayerVersion(player) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
+            return toRawMessage(TabooLibAPI.getPluginBridge().viaVersionPlayerVersion(player) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
         }
         // ProtocolSupport support!
         else if (TellrawCreator.isProtocolSupportLoaded()) {
-            return toRawMessage(ProtocolSupportAPI.getProtocolVersion(player).getId() > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
+            return toRawMessage(TabooLibAPI.getPluginBridge().protocolSupportPlayerVersion(player) > 316 ? TellrawVersion.HIGH_VERSION : TellrawVersion.LOW_VERSION);
         }
         return toRawMessage();
     }
