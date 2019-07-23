@@ -204,8 +204,8 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public FileConfiguration taboolibGetPlayerData(OfflinePlayer player) {
-        return PlayerDataManager.getPlayerData(player);
+    public FileConfiguration taboolibGetPlayerData(String username) {
+        return PlayerDataManager.getPlayerData(username, true);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class LocalPlayer {
     private static Map<String, FileConfiguration> files = Maps.newConcurrentMap();
 
     public static FileConfiguration get(OfflinePlayer player) {
-        return TabooLibAPI.isOriginLoaded() ? TabooLibAPI.getPluginBridge().taboolibGetPlayerData(player) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
+        return TabooLibAPI.isOriginLoaded() ? TabooLibAPI.getPluginBridge().taboolibGetPlayerData(toName(player)) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
     }
 
     @TSchedule(delay = 20 * 30, period = 20 * 30, async = true)
