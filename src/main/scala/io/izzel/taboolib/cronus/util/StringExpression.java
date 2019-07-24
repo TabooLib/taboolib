@@ -15,7 +15,7 @@ public class StringExpression {
 
     @TInject
     private static TLogger logger;
-    private static Pattern pattern = Pattern.compile("(?<symbol>>|>=|<|<=|==|=|!=|≈≈|≈|!≈)[ ]?(?<number>.+)");
+    private static Pattern pattern = Pattern.compile("(?<symbol>>=|>|<=|<|==|=|!=|≈≈|≈|!≈)[ ]?(?<number>.+)");
     private String symbol;
     private StringNumber number;
 
