@@ -3,6 +3,7 @@ package io.izzel.taboolib.util;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.inject.TSchedule;
+import io.izzel.taboolib.util.plugin.PluginUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -73,7 +74,8 @@ public class Files {
     public static InputStream getCanonicalResource(Plugin plugin, String filename) {
         File file = file(new File("plugins/TabooLib/temp/" + UUID.randomUUID()));
         try {
-            ZipFile zipFile = new ZipFile(toFile(plugin.getClass().getProtectionDomain().getCodeSource().getLocation().openStream(), file));
+            copy(plugin instanceof InternalPlugin ? new File("libs/TabooLib.jar") : PluginUtils.getPluginFile(plugin), file);
+            ZipFile zipFile = new ZipFile(file);
             ZipEntry entry = zipFile.getEntry(filename);
             if (entry != null) {
                 return zipFile.getInputStream(entry);
