@@ -74,6 +74,10 @@ public class SQLTable {
         return executeUpdate("insert into " + tableName + " values(" + queryValues + ")");
     }
 
+    public RunnableUpdate executeUpdateIfDuplicate(String queryValues, String queryUpdate) {
+        return executeUpdate("insert into " + tableName + " values(" + queryValues + ") on duplicate key update " + queryUpdate);
+    }
+
     public RunnableUpdate executeUpdate(String query) {
         return new RunnableUpdate(query);
     }
