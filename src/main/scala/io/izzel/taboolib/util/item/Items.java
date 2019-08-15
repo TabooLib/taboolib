@@ -164,7 +164,7 @@ public class Items {
     }
 
     public static boolean checkItem(Player player, ItemStack item, int amount, boolean remove) {
-        return hasItem(player.getInventory(), i -> i.isSimilar(item), amount);
+        return remove ? takeItem(player.getInventory(), i -> i.isSimilar(item), amount) : hasItem(player.getInventory(), i -> i.isSimilar(item), amount);
     }
 
     public static boolean checkItem(Inventory inventory, ItemStack item, int amount, boolean remove) {
@@ -321,7 +321,7 @@ public class Items {
         return NMS.handle().saveNBT(item, nbt);
     }
 
-    interface Matcher {
+    public interface Matcher {
 
         boolean match(ItemStack item);
     }
