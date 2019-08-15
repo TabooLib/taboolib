@@ -1,7 +1,6 @@
 package io.izzel.taboolib.cronus.bukkit;
 
 import io.izzel.taboolib.util.item.Items;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 /**
@@ -49,37 +48,11 @@ public class ItemStack {
     }
 
     public boolean hasItem(Player player) {
-        int checkAmount = amount;
-        for (org.bukkit.inventory.ItemStack itemStack : player.getInventory().getContents()) {
-            if (itemStack != null && !itemStack.getType().equals(Material.AIR) && isItem(itemStack)) {
-                checkAmount -= itemStack.getAmount();
-                if (checkAmount <= 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return Items.hasItem(player.getInventory(), this::isItem, amount);
     }
 
     public boolean takeItem(Player player) {
-        int takeAmount = amount;
-        org.bukkit.inventory.ItemStack[] contents = player.getInventory().getContents();
-        for (int i = 0; i < contents.length; i++) {
-            org.bukkit.inventory.ItemStack itemStack = contents[i];
-            if (itemStack != null && !itemStack.getType().equals(Material.AIR) && isItem(itemStack)) {
-                takeAmount -= itemStack.getAmount();
-                if (takeAmount < 0) {
-                    itemStack.setAmount(itemStack.getAmount() - (takeAmount + itemStack.getAmount()));
-                    return true;
-                } else {
-                    player.getInventory().setItem(i, null);
-                    if (takeAmount == 0) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return Items.takeItem(player.getInventory(), this::isItem, amount);
     }
 
     public String getType() {
