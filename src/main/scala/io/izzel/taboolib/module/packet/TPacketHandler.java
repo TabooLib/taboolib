@@ -2,9 +2,9 @@ package io.izzel.taboolib.module.packet;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.izzel.taboolib.module.packet.channel.ChannelExecutor;
-import io.izzel.taboolib.module.lite.SimpleVersionControl;
+import io.izzel.taboolib.module.inject.TInject;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.module.packet.channel.ChannelExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,16 +25,9 @@ import java.util.Optional;
 @TListener
 public class TPacketHandler implements Listener {
 
-    private static Map<String, List<TPacketListener>> packetListeners = Maps.newHashMap();
+    @TInject(asm = "io.izzel.taboolib.module.packet.channel.InternalChannelExecutor")
     private static ChannelExecutor channelExecutor;
-
-    public TPacketHandler() {
-        try {
-            channelExecutor = (ChannelExecutor) SimpleVersionControl.createNMS("io.izzel.taboolib.module.packet.channel.InternalChannelExecutor").translate().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    private static Map<String, List<TPacketListener>> packetListeners = Maps.newHashMap();
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {

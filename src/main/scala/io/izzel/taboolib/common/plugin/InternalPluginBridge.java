@@ -1,6 +1,5 @@
 package io.izzel.taboolib.common.plugin;
 
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import io.izzel.taboolib.module.lite.SimpleVersionControl;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -51,8 +50,6 @@ public abstract class InternalPluginBridge {
     abstract public void permissionRemove(Player player, String perm);
 
     abstract public boolean permissionHas(Player player, String perm);
-
-    abstract public RegionManager worldguardRegionManager(World world);
 
     abstract public Collection<String> worldguardGetRegions(World world);
 
