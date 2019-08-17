@@ -66,6 +66,10 @@ public abstract class InternalPluginBridge {
 
     abstract public boolean worldguardHooked();
 
+    abstract public boolean isPlaceholderExpansion(Class pluginClass);
+
+    abstract public void registerExpansion(Class pluginClass);
+
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 
     abstract public FileConfiguration taboolibGetPlayerData(String username);

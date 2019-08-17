@@ -1,0 +1,156 @@
+package io.izzel.taboolib.module.inject;
+
+import com.google.common.collect.Maps;
+import io.izzel.taboolib.TabooLibLoader;
+import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Reflection;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.Objects;
+
+/**
+ * @Author sky
+ * @Since 2019-08-17 22:50
+ */
+public class TInjectCreator implements TabooLibLoader.Loader {
+
+    private static Map<ClassData, InstanceData> instanceMap = Maps.newHashMap();
+
+    @Override
+    public int priority() {
+        return 999;
+    }
+
+    @Override
+    public void preLoad(Plugin plugin, Class<?> pluginClass) {
+        instance(plugin, pluginClass, TInject.State.LOADING);
+        eval(pluginClass, TInjectHelper.State.PRE);
+    }
+
+    @Override
+    public void postLoad(Plugin plugin, Class<?> pluginClass) {
+        instance(plugin, pluginClass, TInject.State.STARTING);
+        eval(pluginClass, TInjectHelper.State.POST);
+    }
+
+    @Override
+    public void activeLoad(Plugin plugin, Class<?> pluginClass) {
+        instance(plugin, pluginClass, TInject.State.ACTIVATED);
+        eval(pluginClass, TInjectHelper.State.ACTIVE);
+    }
+
+    @Override
+    public void unload(Plugin plugin, Class<?> pluginClass) {
+        eval(pluginClass, TInjectHelper.State.CANCEL);
+    }
+
+    public void instance(Plugin plugin, Class<?> loadClass, TInject.State state) {
+        for (Field declaredField : loadClass.getDeclaredFields()) {
+            TInject annotation = declaredField.getAnnotation(TInject.class);
+            if (annotation == null || annotation.state() != state) {
+                continue;
+            }
+            ClassData classData = new ClassData(loadClass, declaredField.getType());
+            Object instance = null;
+            // 非静态类型
+            if (!Modifier.isStatic(declaredField.getModifiers())) {
+                // 在插件主类
+                if (loadClass.equals(plugin.getClass())) {
+                    instance = plugin;
+                }
+                // 判断 pluginCLass 是否为 TInject 创建
+                else if (instanceMap.containsKey(classData)) {
+                    instance = instanceMap.get(classData).getInstance();
+                } else {
+                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + loadClass.getName() + ")");
+                    continue;
+                }
+            }
+            declaredField.setAccessible(true);
+            try {
+                InstanceData instanceData = new InstanceData(declaredField.getType().newInstance(), annotation);
+                declaredField.set(instance, instanceData.getInstance());
+                instanceMap.put(classData, instanceData);
+            } catch (Throwable t) {
+                TLogger.getGlobalLogger().error(declaredField.getName() + " instantiation failed: " + t.getMessage());
+            }
+        }
+    }
+
+    public void eval(Class<?> loadClass, TInjectHelper.State state) {
+        for (Map.Entry<ClassData, InstanceData> entry : instanceMap.entrySet()) {
+            if (entry.getKey().getParent().equals(loadClass) && !TInjectHelper.fromState(entry.getValue().getInject(), state).isEmpty()) {
+                try {
+                    Reflection.invokeMethod(entry.getValue().getInstance(), TInjectHelper.fromState(entry.getValue().getInject(), state));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static Map<ClassData, InstanceData> getInstanceMap() {
+        return instanceMap;
+    }
+
+    /**
+     * 用于防止多个类使用同一个类型
+     */
+    public class ClassData {
+
+        private Class parent;
+        private Class type;
+
+        public ClassData(Class parent, Class type) {
+            this.parent = parent;
+            this.type = type;
+        }
+
+        public Class getParent() {
+            return parent;
+        }
+
+        public Class getType() {
+            return type;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof ClassData)) {
+                return false;
+            }
+            ClassData classData = (ClassData) o;
+            return Objects.equals(getParent(), classData.getParent()) && Objects.equals(getType(), classData.getType());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getParent(), getType());
+        }
+    }
+
+    public class InstanceData {
+
+        private Object instance;
+        private TInject inject;
+
+        public InstanceData(Object instance, TInject inject) {
+            this.instance = instance;
+            this.inject = inject;
+        }
+
+        public Object getInstance() {
+            return instance;
+        }
+
+        public TInject getInject() {
+            return inject;
+        }
+    }
+}

@@ -40,7 +40,7 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
     }
 
     @Override
-    public void unload(Plugin plugin, Class<?> cancelClass) {
+    public void unload(Plugin plugin, Class<?> pluginClass) {
         pluginContainer.remove(plugin.getName());
     }
 

@@ -1,5 +1,7 @@
 package io.izzel.taboolib.cronus.util;
 
+import io.izzel.taboolib.cronus.CronusUtils;
+
 /**
  * @Author 坏黑
  * @Since 2019-05-29 21:43
@@ -23,30 +25,21 @@ public class StringNumber {
     public StringNumber(String source) {
         this.source = source;
         try {
-            number = Long.valueOf(source);
-            type = NumberType.INT;
+            this.number = Double.parseDouble(this.source);
+            this.type = CronusUtils.isInt(this.number.doubleValue()) ? NumberType.INT : NumberType.DOUBLE;
         } catch (Throwable ignored) {
-            try {
-                number = Double.valueOf(source);
-                type = NumberType.DOUBLE;
-            } catch (Throwable ignored2) {
-                type = NumberType.STRING;
-            }
+            this.type = NumberType.STRING;
         }
     }
 
     public StringNumber add(String v) {
         StringNumber numberFormat = new StringNumber(v);
         if (isNumber() && numberFormat.isNumber()) {
-            if (type == NumberType.INT && numberFormat.getType() == NumberType.INT) {
-                number = number.longValue() + numberFormat.getNumber().longValue();
-            } else {
-                number = number.doubleValue() + numberFormat.getNumber().doubleValue();
-                type = NumberType.DOUBLE;
-            }
+            this.number = this.number.doubleValue() + numberFormat.getNumber().doubleValue();
+            this.type = CronusUtils.isInt(this.number.doubleValue()) ? NumberType.INT : NumberType.DOUBLE;
         } else {
-            source += numberFormat.getSource();
-            type = NumberType.STRING;
+            this.source += numberFormat.getSource();
+            this.type = NumberType.STRING;
         }
         return this;
     }
@@ -54,39 +47,8 @@ public class StringNumber {
     public StringNumber subtract(String v) {
         StringNumber numberFormat = new StringNumber(v);
         if (isNumber() && numberFormat.isNumber()) {
-            if (type == NumberType.INT && numberFormat.getType() == NumberType.INT) {
-                number = number.longValue() - numberFormat.getNumber().longValue();
-            } else {
-                number = number.doubleValue() - numberFormat.getNumber().doubleValue();
-                type = NumberType.DOUBLE;
-            }
-        }
-        return this;
-    }
-
-    public StringNumber multiply(String v) {
-        StringNumber numberFormat = new StringNumber(v);
-        if (isNumber() && numberFormat.isNumber()) {
-            if (type == NumberType.INT && numberFormat.getType() == NumberType.INT) {
-                number = number.longValue() * numberFormat.getNumber().longValue();
-            } else {
-                number = number.doubleValue() * numberFormat.getNumber().doubleValue();
-                type = NumberType.DOUBLE;
-            }
-        }
-        return this;
-    }
-
-    public StringNumber division(String v) {
-        StringNumber numberFormat = new StringNumber(v);
-        if (isNumber() && numberFormat.isNumber()) {
-            if (type == NumberType.INT && numberFormat.getType() == NumberType.INT) {
-                number = number.longValue() / numberFormat.getNumber().longValue();
-            } else {
-                number = number.doubleValue() / numberFormat.getNumber().doubleValue();
-                type = NumberType.DOUBLE;
-            }
-
+            this.number = this.number.doubleValue() - numberFormat.getNumber().doubleValue();
+            this.type = CronusUtils.isInt(this.number.doubleValue()) ? NumberType.INT : NumberType.DOUBLE;
         }
         return this;
     }
@@ -121,7 +83,6 @@ public class StringNumber {
     public enum NumberType {
 
         DOUBLE, INT, STRING
-
     }
 
     @Override

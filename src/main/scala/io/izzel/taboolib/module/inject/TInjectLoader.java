@@ -13,6 +13,7 @@ import io.izzel.taboolib.util.lite.cooldown.Cooldowns;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
 
     static {
         // Instance Inject
-        injectTypes.put(Plugin.class, (plugin, field, args, instance) -> {
+        injectTypes.put(Plugin.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 field.set(instance, plugin);
             } catch (Exception e) {
@@ -34,15 +35,15 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
         });
         // TLogger Inject
-        injectTypes.put(TLogger.class, (plugin, field, args, instance) -> {
+        injectTypes.put(TLogger.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                field.set(instance, args.length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args[0]));
+                field.set(instance, args.value().length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args.value()[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // TPacketListener Inject
-        injectTypes.put(TPacketListener.class, (plugin, field, args, instance) -> {
+        injectTypes.put(TPacketListener.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 TPacketHandler.addListener(plugin, ((TPacketListener) field.get(instance)));
             } catch (Exception e) {
@@ -50,20 +51,35 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
         });
         // TConfiguration Inject
-        injectTypes.put(TConfig.class, (plugin, field, args, instance) -> {
+        injectTypes.put(TConfig.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                field.set(instance, TConfig.create(plugin, args.length == 0 ? "config.yml" : args[0]));
+                TConfig config = TConfig.create(plugin, args.value().length == 0 ? "config.yml" : args.value()[0]);
+                if (!args.reload().isEmpty()) {
+                    try {
+                        Method declaredMethod = pluginClass.getDeclaredMethod(args.reload());
+                        declaredMethod.setAccessible(true);
+                        config.listener(() -> {
+                            try {
+                                declaredMethod.invoke(null);
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
+                        });
+                        TabooLibLoader.runTask(config::runListener);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+                field.set(instance, config);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
         // SimpleCommandBuilder Inject
-        injectTypes.put(CommandBuilder.class, (plugin, field, args, instance) -> {
+        injectTypes.put(CommandBuilder.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 CommandBuilder builder = (CommandBuilder) field.get(instance);
-                if (builder.isBuild()) {
-                    TLogger.getGlobalLogger().error("Command was registered.  (" + field.getType().getName() + ")");
-                } else {
+                if (!builder.isBuild()) {
                     if (builder.getPlugin() == null) {
                         builder.plugin(plugin);
                     }
@@ -74,12 +90,12 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
         });
         // CooldownPack Inject
-        injectTypes.put(Cooldown.class, (plugin, field, args, instance) -> {
-           try {
-               Cooldowns.register((Cooldown) field.get(instance), plugin);
-           } catch (Throwable t) {
-               t.printStackTrace();
-           }
+        injectTypes.put(Cooldown.class, (plugin, field, args, pluginClass, instance) -> {
+            try {
+                Cooldowns.register((Cooldown) field.get(instance), plugin);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         });
     }
 
@@ -107,7 +123,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                     continue;
                 }
             }
-            inject(plugin, declaredField, instance, annotation, injectTypes.get(Plugin.class));
+            inject(plugin, declaredField, instance, annotation, injectTypes.get(Plugin.class), pluginClass);
         }
     }
 
@@ -131,17 +147,17 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             }
             TInjectTask tInjectTask = injectTypes.get(declaredField.getType());
             if (tInjectTask != null) {
-                inject(plugin, declaredField, instance, annotation, tInjectTask);
-            } else {
+                inject(plugin, declaredField, instance, annotation, tInjectTask, pluginClass);
+            } else if (annotation.state() == TInject.State.NONE) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " is an invalid inject type. (" + pluginClass.getName() + ")");
             }
         }
     }
 
-    public void inject(Plugin plugin, Field field, Object instance, TInject annotation, TInjectTask injectTask) {
+    public void inject(Plugin plugin, Field field, Object instance, TInject annotation, TInjectTask injectTask, Class pluginClass) {
         try {
             field.setAccessible(true);
-            injectTask.run(plugin, field, annotation.value(), instance);
+            injectTask.run(plugin, field, annotation, pluginClass, instance);
             TabooLibAPI.debug(field.getName() + " injected. (" + field.getType().getName() + ")");
         } catch (Throwable e) {
             TLogger.getGlobalLogger().error(field.getName() + " inject failed: " + e.getMessage() + " (" + field.getType().getName() + ")");

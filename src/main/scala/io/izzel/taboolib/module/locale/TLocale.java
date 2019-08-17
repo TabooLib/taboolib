@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,10 @@ public class TLocale {
 
     private TLocale() {
         throw new AssertionError();
+    }
+
+    static String[] toArray(Object... obj) {
+        return Arrays.stream(obj).map(String::valueOf).toArray(String[]::new);
     }
 
     static void sendTo(String path, CommandSender sender, String[] args, Class<?> callerClass) {
@@ -39,16 +44,38 @@ public class TLocale {
         return TLocaleLoader.asStringList(Ref.getCallerPlugin(callerClass), path, args);
     }
 
+    public static void sendTo(CommandSender sender, String path, Object... args) {
+        Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, sender, toArray(args), clazz));
+    }
+
     public static void sendTo(CommandSender sender, String path, String... args) {
         Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, sender, args, clazz));
+    }
+
+    public static void sendToConsole(String path, Object... args) {
+        Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, Bukkit.getConsoleSender(), toArray(args), clazz));
     }
 
     public static void sendToConsole(String path, String... args) {
         Ref.getCallerClass(3).ifPresent(clazz -> sendTo(path, Bukkit.getConsoleSender(), args, clazz));
     }
 
+    public static void broadcast(String path, Object... args) {
+        Ref.getCallerClass(3).ifPresent(clazz -> Bukkit.getOnlinePlayers().forEach(player -> sendTo(path, player, toArray(args), clazz)));
+    }
+
     public static void broadcast(String path, String... args) {
         Ref.getCallerClass(3).ifPresent(clazz -> Bukkit.getOnlinePlayers().forEach(player -> sendTo(path, player, args, clazz)));
+    }
+
+    public static String asString(String path, Object... args) {
+        try {
+            return asString(path, Ref.getCallerClass(3).orElse(TabooLib.class), toArray(args));
+        } catch (Exception e) {
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("FETCH-LOCALE-ERROR"), path));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            return "§4<" + path + "§4>";
+        }
     }
 
     public static String asString(String path, String... args) {
@@ -61,10 +88,21 @@ public class TLocale {
         }
     }
 
+    public static List<String> asStringList(String path, Object... args) {
+        try {
+            return asStringList(path, Ref.getCallerClass(3).orElse(TabooLib.class), toArray(args));
+        } catch (Exception e) {
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("FETCH-LOCALE-ERROR"), path));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            return Collections.singletonList("§4<" + path + "§4>");
+        }
+    }
+
     public static List<String> asStringList(String path, String... args) {
         try {
             return asStringList(path, Ref.getCallerClass(3).orElse(TabooLib.class), args);
         } catch (Exception e) {
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("FETCH-LOCALE-ERROR"), path));
             TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return Collections.singletonList("§4<" + path + "§4>");
         }
