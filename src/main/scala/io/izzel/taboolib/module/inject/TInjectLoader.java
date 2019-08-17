@@ -148,8 +148,6 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             TInjectTask tInjectTask = injectTypes.get(declaredField.getType());
             if (tInjectTask != null) {
                 inject(plugin, declaredField, instance, annotation, tInjectTask, pluginClass);
-            } else if (annotation.state() == TInject.State.NONE) {
-                TLogger.getGlobalLogger().error(declaredField.getName() + " is an invalid inject type. (" + pluginClass.getName() + ")");
             }
         }
     }
@@ -160,7 +158,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             injectTask.run(plugin, field, annotation, pluginClass, instance);
             TabooLibAPI.debug(field.getName() + " injected. (" + field.getType().getName() + ")");
         } catch (Throwable e) {
-            TLogger.getGlobalLogger().error(field.getName() + " inject failed: " + e.getMessage() + " (" + field.getType().getName() + ")");
+            TLogger.getGlobalLogger().error(field.getName() + " inject failed: " + e.getMessage() + " (" + field.getName() + ")");
             if (e.getMessage() == null) {
                 e.printStackTrace();
             }

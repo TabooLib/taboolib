@@ -129,20 +129,6 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public RegionManager worldguardRegionManager(World world) {
-        if (WorldGuardPlugin.inst().getDescription().getVersion().startsWith("7")) {
-            return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
-        } else {
-            try {
-                return (RegionManager) getRegionManager.invoke(WorldGuardPlugin.inst(), world);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-            return null;
-        }
-    }
-
-    @Override
     public boolean economyHooked() {
         return economy != null;
     }
@@ -236,5 +222,18 @@ public class BridgeImpl extends InternalPluginBridge {
     @Override
     public Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
+    }
+
+    private RegionManager worldguardRegionManager(World world) {
+        if (WorldGuardPlugin.inst().getDescription().getVersion().startsWith("7")) {
+            return WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(world));
+        } else {
+            try {
+                return (RegionManager) getRegionManager.invoke(WorldGuardPlugin.inst(), world);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            return null;
+        }
     }
 }
