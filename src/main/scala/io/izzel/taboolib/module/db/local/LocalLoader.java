@@ -14,8 +14,8 @@ import java.lang.reflect.Modifier;
 public class LocalLoader implements TabooLibLoader.Loader {
 
     @Override
-    public void preLoad(Plugin plugin, Class<?> loadClass) {
-        for (Field field : loadClass.getDeclaredFields()) {
+    public void preLoad(Plugin plugin, Class<?> pluginClass) {
+        for (Field field : pluginClass.getDeclaredFields()) {
             LocalFile annotation = field.getAnnotation(LocalFile.class);
             if (annotation == null) {
                 continue;
@@ -24,10 +24,10 @@ public class LocalLoader implements TabooLibLoader.Loader {
             // 如果是非静态类型
             if (!Modifier.isStatic(field.getModifiers())) {
                 // 是否为主类
-                if (loadClass.equals(plugin.getClass())) {
+                if (pluginClass.equals(plugin.getClass())) {
                     instance = plugin;
                 } else {
-                    TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + loadClass.getName() + ")");
+                    TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + pluginClass.getName() + ")");
                     continue;
                 }
             }

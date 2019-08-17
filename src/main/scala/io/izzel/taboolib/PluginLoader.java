@@ -40,7 +40,7 @@ public abstract class PluginLoader {
                 // 读取插件类
                 TabooLibLoader.setupClasses(plugin);
                 // 加载插件类
-                TabooLibLoader.getPluginClassSafely(plugin).forEach(c -> TabooLibLoader.preLoadClass(plugin, c));
+                TabooLibLoader.preLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
             }
 
             @Override
@@ -48,7 +48,7 @@ public abstract class PluginLoader {
                 // 加载监听器
                 TListenerHandler.setupListener(plugin);
                 // 加载插件类
-                TabooLibLoader.getPluginClassSafely(plugin).forEach(c -> TabooLibLoader.postLoadClass(plugin, c));
+                TabooLibLoader.postLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册插件命令
                 TCommandHandler.registerCommand(plugin);
             }
@@ -57,6 +57,8 @@ public abstract class PluginLoader {
             public void onActivated(Plugin plugin) {
                 // 注册监听器
                 TListenerHandler.registerListener(plugin);
+                // 加载插件类
+                TabooLibLoader.activeLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册调度器
                 TScheduleLoader.run(plugin);
             }
@@ -71,7 +73,7 @@ public abstract class PluginLoader {
                 // 注销监听器
                 TListenerHandler.cancelListener(plugin);
                 // 注销插件类
-                TabooLibLoader.getPluginClassSafely(plugin).forEach(c -> TabooLibLoader.unloadClass(plugin, c));
+                TabooLibLoader.unloadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 释放文检读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
                 // 注销数据库连接

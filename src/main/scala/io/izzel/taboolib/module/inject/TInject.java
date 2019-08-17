@@ -15,4 +15,22 @@ public @interface TInject {
 
     String[] value() default {};
 
+    String asm() default "";
+
+    String load() default "";
+
+    String init() default "";
+
+    String active() default "";
+
+    String cancel() default "";
+
+    String reload() default "";
+
+    State state() default State.NONE;
+
+    enum State {
+
+        LOADING, STARTING, ACTIVATED, NONE
+    }
 }

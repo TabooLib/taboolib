@@ -10,6 +10,6 @@ import java.lang.reflect.Field;
  */
 public interface TInjectTask {
 
-    void run(Plugin plugin, Field field, String[] args, Object instance);
+    void run(Plugin plugin, Field field, TInject inject, Class pluginClass, Object instance);
 
 }

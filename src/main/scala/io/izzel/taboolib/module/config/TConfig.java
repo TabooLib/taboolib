@@ -81,6 +81,14 @@ public class TConfig extends YamlConfiguration {
         }
     }
 
+    public void saveToFile() {
+        try {
+            save(file);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
     // *********************************
     //
     //        Getter and Setter
@@ -89,6 +97,10 @@ public class TConfig extends YamlConfiguration {
 
     public File getFile() {
         return file;
+    }
+
+    public Runnable getListener() {
+        return runnable;
     }
 
     public TConfig listener(Runnable runnable) {

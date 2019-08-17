@@ -9,6 +9,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.util.Reflection;
 import me.clip.placeholderapi.PlaceholderAPI;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.skymc.taboolib.database.PlayerDataManager;
 import me.skymc.taboolib.sound.SoundPack;
 import net.milkbowl.vault.economy.Economy;
@@ -159,6 +160,20 @@ public class BridgeImpl extends InternalPluginBridge {
     @Override
     public boolean worldguardHooked() {
         return worldguard;
+    }
+
+    @Override
+    public boolean isPlaceholderExpansion(Class pluginClass) {
+        return PlaceholderExpansion.class.isAssignableFrom(pluginClass);
+    }
+
+    @Override
+    public void registerExpansion(Class pluginClass) {
+        try {
+            ((PlaceholderExpansion) pluginClass.newInstance()).register();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     @Override

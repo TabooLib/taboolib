@@ -26,6 +26,8 @@ public class TabooLibLoader {
 
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
+    static List<Runnable> runnables = Lists.newArrayList();
+    static boolean started;
 
     static void init() {
         // 加载依赖
@@ -58,6 +60,14 @@ public class TabooLibLoader {
         return classes == null ? new ArrayList<>() : new ArrayList<>(classes);
     }
 
+    public static void runTask(Runnable runnable) {
+        if (started) {
+            runnable.run();
+        } else {
+            runnables.add(runnable);
+        }
+    }
+
     static boolean isLoader(Class pluginClass) {
         return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
     }
@@ -71,6 +81,15 @@ public class TabooLibLoader {
         }
         // 通讯网络客户端
         TabooLibClient.init();
+        // 执行动作
+        for (Runnable runnable : runnables) {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        started = true;
     }
 
     static void setupClasses(Plugin plugin) {
@@ -92,48 +111,70 @@ public class TabooLibLoader {
         }
     }
 
-    static void preLoadClass(Plugin plugin, Class<?> loadClass) {
+    static void preLoadClass(Plugin plugin, List<Class> loadClass) {
         loaders.forEach(loader -> {
-            try {
-                loader.preLoad(plugin, loadClass);
-            } catch (NoClassDefFoundError ignore) {
-            } catch (Throwable e) {
-                e.printStackTrace();
+            for (Class pluginClass : loadClass) {
+                try {
+                    loader.preLoad(plugin, pluginClass);
+                } catch (NoClassDefFoundError ignore) {
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
-    static void postLoadClass(Plugin plugin, Class<?> loadClass) {
+    static void postLoadClass(Plugin plugin, List<Class> loadClass) {
         loaders.forEach(loader -> {
-            try {
-                loader.postLoad(plugin, loadClass);
-            } catch (NoClassDefFoundError ignore) {
-            } catch (Throwable e) {
-                e.printStackTrace();
+            for (Class pluginClass : loadClass) {
+                try {
+                    loader.postLoad(plugin, pluginClass);
+                } catch (NoClassDefFoundError ignore) {
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
-    static void unloadClass(Plugin plugin, Class<?> loadClass) {
+    static void activeLoadClass(Plugin plugin, List<Class> loadClass) {
         loaders.forEach(loader -> {
-            try {
-                loader.unload(plugin, loadClass);
-            } catch (NoClassDefFoundError ignore) {
-            } catch (Throwable e) {
-                e.printStackTrace();
+            for (Class pluginClass : loadClass) {
+                try {
+                    loader.activeLoad(plugin, pluginClass);
+                } catch (NoClassDefFoundError ignore) {
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    static void unloadClass(Plugin plugin, List<Class> loadClass) {
+        loaders.forEach(loader -> {
+            for (Class pluginClass : loadClass) {
+                try {
+                    loader.unload(plugin, pluginClass);
+                } catch (NoClassDefFoundError ignore) {
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
     public interface Loader {
 
-        default void preLoad(org.bukkit.plugin.Plugin plugin, Class<?> loadClass) {
+        default void preLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
         }
 
-        default void postLoad(org.bukkit.plugin.Plugin plugin, Class<?> loadClass) {
+        default void postLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
         }
 
-        default void unload(Plugin plugin, Class<?> cancelClass) {
+        default void activeLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
+        }
+
+        default void unload(Plugin plugin, Class<?> pluginClass) {
         }
 
         default int priority() {

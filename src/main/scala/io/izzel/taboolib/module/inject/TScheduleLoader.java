@@ -37,13 +37,13 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
     }
 
     @Override
-    public void postLoad(Plugin plugin, Class<?> loadClass) {
-        for (Method method : loadClass.getDeclaredMethods()) {
+    public void postLoad(Plugin plugin, Class<?> pluginClass) {
+        for (Method method : pluginClass.getDeclaredMethods()) {
             TSchedule annotation = method.getAnnotation(TSchedule.class);
             if (annotation == null) {
                 continue;
             }
-            Object instance = loadClass.equals(plugin.getClass()) ? plugin : null;
+            Object instance = pluginClass.equals(plugin.getClass()) ? plugin : null;
             // 如果是非静态类型
             if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
                 // 是否为主类
