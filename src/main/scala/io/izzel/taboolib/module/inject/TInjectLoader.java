@@ -60,7 +60,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                         declaredMethod.setAccessible(true);
                         config.listener(() -> {
                             try {
-                                declaredMethod.invoke(null);
+                                declaredMethod.invoke(instance);
                             } catch (Throwable t) {
                                 t.printStackTrace();
                             }
