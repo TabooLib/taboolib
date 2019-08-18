@@ -1,7 +1,7 @@
 package io.izzel.taboolib.util.book.builder;
 
+import io.izzel.taboolib.util.book.BookAsm;
 import io.izzel.taboolib.util.chat.BaseComponent;
-import io.izzel.taboolib.util.book.BookReflection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -93,7 +93,7 @@ public class BookBuilder {
      * @return the BookBuilder's calling instance
      */
     public BookBuilder pages(BaseComponent[]... pages) {
-        io.izzel.taboolib.util.book.BookReflection.setPages(meta, pages);
+        BookAsm.getHandle().setPages(meta, pages);
         return this;
     }
 
@@ -103,7 +103,7 @@ public class BookBuilder {
      * @return the BookBuilder's calling instance
      */
     public BookBuilder pages(List<BaseComponent[]> pages) {
-        io.izzel.taboolib.util.book.BookReflection.setPages(meta, pages.toArray(new BaseComponent[0][]));
+        BookAsm.getHandle().setPages(meta, pages.toArray(new BaseComponent[0][]));
         return this;
     }
     
@@ -113,7 +113,7 @@ public class BookBuilder {
      * @return the BookBuilder's calling instance
      */
     public BookBuilder addPages(BaseComponent[]... pages) {
-    	BookReflection.addPages(meta, pages);
+        BookAsm.getHandle().addPages(meta, pages);
         return this;
     }
 
@@ -125,13 +125,6 @@ public class BookBuilder {
         book.setItemMeta(meta);
         return book;
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
 
     public BookMeta getMeta() {
         return meta;

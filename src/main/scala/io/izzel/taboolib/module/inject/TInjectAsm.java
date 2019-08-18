@@ -36,7 +36,7 @@ public class TInjectAsm implements TabooLibLoader.Loader {
                 declaredField.setAccessible(true);
                 declaredField.set(instance, SimpleVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
             } catch (Throwable t) {
-                t.printStackTrace();
+                TLogger.getGlobalLogger().warn("Cannot translate class \"" + declaredField.getType().getName() + "\": " + t.getMessage());
             }
         }
     }

@@ -1,11 +1,9 @@
 package io.izzel.taboolib.util.book.action;
 
+import io.izzel.taboolib.module.tellraw.TellrawCreator;
 import io.izzel.taboolib.util.chat.BaseComponent;
 import io.izzel.taboolib.util.chat.HoverEvent;
 import io.izzel.taboolib.util.chat.TextComponent;
-import io.izzel.taboolib.util.book.BookAchievement;
-import io.izzel.taboolib.util.book.BookReflection;
-import org.bukkit.Achievement;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,7 +53,7 @@ public interface HoverAction {
      * @return a new HoverAction instance
      */
     static HoverAction showItem(ItemStack item) {
-        return new SimpleHoverAction(HoverEvent.Action.SHOW_ITEM, io.izzel.taboolib.util.book.BookReflection.itemToComponents(item));
+        return new SimpleHoverAction(HoverEvent.Action.SHOW_ITEM, new TextComponent(TellrawCreator.getAbstractTellraw().getItemComponent(item)));
     }
 
     /**
@@ -77,11 +75,7 @@ public interface HoverAction {
      * @return a new HoverAction instance
      */
     static HoverAction showEntity(UUID uuid, String type, String name) {
-        return new SimpleHoverAction(HoverEvent.Action.SHOW_ENTITY,
-                BookReflection.jsonToComponents(
-                        "{id:\"" + uuid + "\",type:\"" + type + "\"name:\"" + name + "\"}"
-                )
-        );
+        return new SimpleHoverAction(HoverEvent.Action.SHOW_ENTITY, new TextComponent("{id:\"" + uuid + "\",type:\"" + type + "\"name:\"" + name + "\"}"));
     }
 
     /**
@@ -102,16 +96,6 @@ public interface HoverAction {
      */
     static HoverAction showAchievement(String achievementId) {
         return new SimpleHoverAction(HoverEvent.Action.SHOW_ACHIEVEMENT, new TextComponent("achievement." + achievementId));
-    }
-
-    /**
-     * Creates a show_achievement action: when the component is hovered the achievement information will be displayed
-     *
-     * @param achievement the achievement to display
-     * @return a new HoverAction instance
-     */
-    static HoverAction showAchievement(Achievement achievement) {
-        return showAchievement(BookAchievement.toId(achievement));
     }
 
     /**
