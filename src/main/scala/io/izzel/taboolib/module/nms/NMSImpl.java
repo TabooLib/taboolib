@@ -9,12 +9,14 @@ import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
+import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -60,6 +62,20 @@ public class NMSImpl extends NMS {
             }
         }
         SimpleReflection.saveField(MinecraftServer.class);
+    }
+
+    @Override
+    public void openBook(Player player, ItemStack book) {
+        // 你妈 1.14.3 的 a() 到 1.14.4 的 openBook() 不改 nms 版本号？都是 1_14_R1？神经病吧
+        Object bookItem = org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack.asNMSCopy(book);
+        try {
+            ((CraftPlayer) player).getHandle().a((net.minecraft.server.v1_13_R2.ItemStack) bookItem, EnumHand.MAIN_HAND);
+        } catch (Throwable ignored) {
+            try {
+                ((org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer) player).getHandle().openBook((net.minecraft.server.v1_14_R1.ItemStack) bookItem, net.minecraft.server.v1_14_R1.EnumHand.MAIN_HAND);
+            } catch (Throwable ignored2) {
+            }
+        }
     }
 
     @Override

@@ -20,6 +20,8 @@ public abstract class NMS {
         return impl;
     }
 
+    abstract public void openBook(Player player, ItemStack book);
+
     abstract public boolean isRunning();
 
     abstract public Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11);

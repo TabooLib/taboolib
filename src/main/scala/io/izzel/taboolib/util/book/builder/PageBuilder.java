@@ -9,11 +9,12 @@ import io.izzel.taboolib.util.chat.TextComponent;
  * @since 2018-03-08 22:36:58
  */
 public class PageBuilder {
-	
+
     private BaseComponent[] text = TextComponent.fromLegacyText("");
 
     /**
      * Adds a simple black-colored text to the page
+     *
      * @param text the text to add
      * @return the PageBuilder's calling instance
      */
@@ -24,6 +25,7 @@ public class PageBuilder {
 
     /**
      * Adds a component to the page
+     *
      * @param component the component to add
      * @return the PageBuilder's calling instance
      */
@@ -34,6 +36,7 @@ public class PageBuilder {
 
     /**
      * Adds one or more components to the page
+     *
      * @param components the components to add
      * @return the PageBuilder's calling instance
      */
@@ -44,14 +47,16 @@ public class PageBuilder {
 
     /**
      * Adds a newline to the page (equivalent of adding \n to the previous component)
+     *
      * @return the PageBuilder's calling instance
      */
     public PageBuilder newLine() {
         return add("\n");
     }
-    
+
     /**
      * Another way of newLine(), better resolution (equivalent of adding \n to the previous component)
+     *
      * @return the PageBuilder's calling instance
      */
     public PageBuilder endLine() {
@@ -60,6 +65,7 @@ public class PageBuilder {
 
     /**
      * Builds the page
+     *
      * @return an array of BaseComponents representing the page
      */
     public BaseComponent[] build() {
@@ -68,6 +74,7 @@ public class PageBuilder {
 
     /**
      * Creates a new PageBuilder instance wih the parameter as the initial text
+     *
      * @param text the initial text of the page
      * @return a new PageBuilder with the parameter as the initial text
      */
@@ -77,6 +84,7 @@ public class PageBuilder {
 
     /**
      * Creates a new PageBuilder instance wih the parameter as the initial component
+     *
      * @param text the initial component of the page
      * @return a new PageBuilder with the parameter as the initial component
      */
@@ -86,12 +94,13 @@ public class PageBuilder {
 
     /**
      * Creates a new PageBuilder instance wih the parameter as the initial components
+     *
      * @param text the initial components of the page
      * @return a new PageBuilder with the parameter as the initial components
      */
     public static PageBuilder of(BaseComponent... text) {
         PageBuilder res = new PageBuilder();
-        for(BaseComponent b : text) {
+        for (BaseComponent b : text) {
             res.add(b);
         }
         return res;
