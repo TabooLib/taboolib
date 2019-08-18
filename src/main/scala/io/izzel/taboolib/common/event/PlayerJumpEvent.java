@@ -1,5 +1,6 @@
 package io.izzel.taboolib.common.event;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -11,8 +12,7 @@ public class PlayerJumpEvent extends Event implements Cancellable {
     private boolean isCancelled;
     private Player player;
 
-    public PlayerJumpEvent(boolean b, Player player) {
-        this.isCancelled = false;
+    public PlayerJumpEvent(Player player) {
         this.player = player;
     }
 
@@ -22,6 +22,11 @@ public class PlayerJumpEvent extends Event implements Cancellable {
 
     public Player getPlayer() {
         return this.player;
+    }
+
+    public PlayerJumpEvent call() {
+        Bukkit.getPluginManager().callEvent(this);
+        return this;
     }
 
     @Override

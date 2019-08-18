@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2018-05-23 2:43
  */
-@TFunction(enable = "init")
 public class TCommandHandler {
 
     private static SimpleCommandMap commandMap;
     private static Map<String, Command> knownCommands;
 
+    @TFunction.Init
     static void init() {
         SimpleReflection.saveField(SimplePluginManager.class, "commandMap");
         SimpleReflection.saveField(SimpleCommandMap.class, "knownCommands");
