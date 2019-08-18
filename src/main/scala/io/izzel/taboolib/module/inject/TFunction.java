@@ -14,6 +14,24 @@ import java.lang.annotation.Target;
 public @interface TFunction {
 
     String enable() default "onEnable";
+
     String disable() default "onDisable";
 
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Load {
+
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Init {
+
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Cancel {
+
+    }
 }

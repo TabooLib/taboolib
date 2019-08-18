@@ -23,12 +23,12 @@ import java.util.Optional;
  * @Author 坏黑
  * @Since 2019-05-22 1:16
  */
-@TFunction(enable = "init")
 public class SimpleI18n {
 
     private static FileConfiguration lang;
     private static boolean released;
 
+    @TFunction.Init
     static void init() {
         File localeFile = getLocaleFile(TabooLib.getPlugin());
         if (localeFile == null) {

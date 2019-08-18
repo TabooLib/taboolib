@@ -1,10 +1,10 @@
 package io.izzel.taboolib.module.inject;
 
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -15,43 +15,53 @@ import java.lang.reflect.Modifier;
 public class TFunctionLoader implements TabooLibLoader.Loader {
 
     @Override
+    public void preLoad(Plugin plugin, Class<?> pluginClass) {
+        invokeMethods(pluginClass, TFunction.Load.class);
+    }
+
+    @Override
     public void postLoad(Plugin plugin, Class<?> pluginClass) {
+        invokeMethods(pluginClass, true);
+        invokeMethods(pluginClass, TFunction.Init.class);
+    }
+
+    @Override
+    public void unload(Plugin plugin, Class<?> pluginClass) {
+        invokeMethods(pluginClass, false);
+        invokeMethods(pluginClass, TFunction.Cancel.class);
+    }
+
+    public void invokeMethods(Class<?> pluginClass, boolean enable) {
         if (pluginClass.isAnnotationPresent(TFunction.class)) {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
-                Method method = pluginClass.getDeclaredMethod(function.enable());
+                Method method = pluginClass.getDeclaredMethod(enable ? function.enable() : function.disable());
                 if (!Modifier.isStatic(method.getModifiers())) {
                     TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
                     return;
                 }
                 method.setAccessible(true);
                 method.invoke(null);
-                TabooLibAPI.debug("Function " + pluginClass.getSimpleName() + " loaded. (" + plugin.getName() + ")");
             } catch (NoSuchMethodException ignore) {
             } catch (Exception e) {
-                TLogger.getGlobalLogger().warn("TFunction load Failed: " + pluginClass.getName());
                 e.printStackTrace();
             }
         }
     }
 
-    @Override
-    public void unload(Plugin plugin, Class<?> pluginClass) {
-        if (pluginClass.isAnnotationPresent(TFunction.class)) {
-            TFunction function = pluginClass.getAnnotation(TFunction.class);
-            try {
-                Method method = pluginClass.getDeclaredMethod(function.disable());
-                if (!Modifier.isStatic(method.getModifiers())) {
-                    TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
-                    return;
+    public void invokeMethods(Class<?> pluginClass, Class<? extends Annotation> a) {
+        for (Method declaredMethod : pluginClass.getDeclaredMethods()) {
+            if (declaredMethod.isAnnotationPresent(a)) {
+                try {
+                    if (!Modifier.isStatic(declaredMethod.getModifiers())) {
+                        TLogger.getGlobalLogger().error(declaredMethod.getName() + " is not a static method.");
+                        return;
+                    }
+                    declaredMethod.setAccessible(true);
+                    declaredMethod.invoke(null);
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
-                method.setAccessible(true);
-                method.invoke(null);
-                TabooLibAPI.debug("Function " + pluginClass.getSimpleName() + " unloaded. (" + plugin.getName() + ")");
-            } catch (NoSuchMethodException ignore) {
-            } catch (Exception e) {
-                TLogger.getGlobalLogger().warn("TFunction unload Failed: " + pluginClass.getName());
-                e.printStackTrace();
             }
         }
     }

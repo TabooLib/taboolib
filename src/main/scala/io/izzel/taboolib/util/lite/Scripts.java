@@ -1,8 +1,8 @@
 package io.izzel.taboolib.util.lite;
 
+import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory;
-import io.izzel.taboolib.module.inject.TFunction;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -14,12 +14,12 @@ import java.util.Objects;
  * @Author sky
  * @Since 2018-06-02 22:48
  */
-@TFunction(enable = "init")
 public class Scripts {
 
     private static ScriptEngine scriptEngine;
     private static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
+    @TFunction.Init
     static void init() {
         try {
             NashornScriptEngineFactory factory = (NashornScriptEngineFactory) scriptEngineManager.getEngineFactories().stream().filter(factories -> "Oracle Nashorn".equalsIgnoreCase(factories.getEngineName())).findFirst().orElse(null);

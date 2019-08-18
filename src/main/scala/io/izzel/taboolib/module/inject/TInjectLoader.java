@@ -10,7 +10,9 @@ import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.module.packet.TPacketListener;
 import io.izzel.taboolib.util.lite.cooldown.Cooldown;
 import io.izzel.taboolib.util.lite.cooldown.Cooldowns;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -66,6 +68,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                             }
                         });
                         TabooLibLoader.runTask(config::runListener);
+                    } catch (NoSuchMethodException ignore) {
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
@@ -93,6 +96,26 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         injectTypes.put(Cooldown.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 Cooldowns.register((Cooldown) field.get(instance), plugin);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+        // PluginExists Inject
+        injectTypes.put(Boolean.TYPE, (plugin, field, args, pluginClass, instance) -> {
+            try {
+                if (args.value().length > 0) {
+                    field.set(instance, Bukkit.getPluginManager().getPlugin(args.value()[0]) != null);
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+        // PluginHook Inject
+        injectTypes.put(JavaPlugin.class, (plugin, field, args, pluginClass, instance) -> {
+            try {
+                if (args.value().length > 0) {
+                    field.set(instance, Bukkit.getPluginManager().getPlugin(args.value()[0]));
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }

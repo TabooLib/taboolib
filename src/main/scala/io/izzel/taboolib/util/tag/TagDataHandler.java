@@ -1,7 +1,6 @@
 package io.izzel.taboolib.util.tag;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.inject.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,7 +19,6 @@ import java.util.UUID;
  * @Author sky
  * @Since 2018-05-23 0:37
  */
-@TFunction(enable = "init")
 @TListener
 public class TagDataHandler implements Listener {
 

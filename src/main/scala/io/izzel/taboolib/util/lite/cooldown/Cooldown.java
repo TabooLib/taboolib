@@ -69,4 +69,8 @@ public class Cooldown {
 		}
 		return true;
 	}
+
+	public void reset(String player) {
+		data.remove(player);
+	}
 }

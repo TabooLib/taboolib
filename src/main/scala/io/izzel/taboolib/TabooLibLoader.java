@@ -26,7 +26,7 @@ public class TabooLibLoader {
 
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
     static List<Loader> loaders = Lists.newArrayList();
-    static List<Runnable> runnables = Lists.newArrayList();
+    static List<Runnable> tasks = Lists.newArrayList();
     static boolean started;
 
     static void init() {
@@ -60,16 +60,28 @@ public class TabooLibLoader {
         return classes == null ? new ArrayList<>() : new ArrayList<>(classes);
     }
 
+    public static Map<String, List<Class>> getPluginClasses() {
+        return pluginClasses;
+    }
+
+    public static List<Loader> getLoaders() {
+        return loaders;
+    }
+
+    public static List<Runnable> getTasks() {
+        return tasks;
+    }
+
+    public static boolean isStarted() {
+        return started;
+    }
+
     public static void runTask(Runnable runnable) {
         if (started) {
             runnable.run();
         } else {
-            runnables.add(runnable);
+            tasks.add(runnable);
         }
-    }
-
-    static boolean isLoader(Class pluginClass) {
-        return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
     }
 
     @TSchedule
@@ -82,7 +94,7 @@ public class TabooLibLoader {
         // 通讯网络客户端
         TabooLibClient.init();
         // 执行动作
-        for (Runnable runnable : runnables) {
+        for (Runnable runnable : tasks) {
             try {
                 runnable.run();
             } catch (Throwable t) {
@@ -161,6 +173,10 @@ public class TabooLibLoader {
                 }
             }
         });
+    }
+
+    static boolean isLoader(Class pluginClass) {
+        return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
     }
 
     public interface Loader {
