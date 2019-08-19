@@ -26,6 +26,8 @@ public class TellrawJson {
     private List<String> nbtWhitelist = ArrayUtil.asList(
             // 附魔
             "ench",
+            // 附魔 1.14
+            "Enchantments",
             // 附魔书
             "StoredEnchantments",
             // 展示
