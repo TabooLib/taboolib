@@ -1,5 +1,6 @@
 * 开始
-  + [添加 TabooLib 为库](start.md)
+  + [准备工作](start-0.md)
+  + [<s>添加 TabooLib 为库</s>](start.md)
 
 * 便捷工具
   + [TLocale](tlocale.md)
