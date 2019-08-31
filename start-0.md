@@ -9,32 +9,3 @@
 + TabooLibExample-gradle-5.05
 
 > 在 TabooLib SDK 中内置了坏黑的高速远程仓库，包含所有版本的 Spigot 核心。
-
-## Maven
-
-```
-    <repositories>
-        <repository>
-            <id>Purtmars Mirror-nms</id>
-            <url>http://ptms.ink:8081/repository/codemc-nms/</url>
-        </repository>
-        <repository>
-            <id>Purtmars Mirror</id>
-            <url>http://ptms.ink:8081/repository/maven-releases/</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <dependency>
-            <groupId>io.izzel.taboolib</groupId>
-            <artifactId>TabooLib</artifactId>
-            <version>5.05</version>
-            <classifier>all</classifier>
-        </dependency>
-        <dependency>
-            <groupId>io.izzel.taboolib.loader</groupId>
-            <artifactId>TabooLibloader</artifactId>
-            <version>1.1</version>
-            <classifier>all</classifier>
-        </dependency>
-    </dependencies>
-```
