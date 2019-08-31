@@ -1,37 +1,26 @@
 * 开始
   + [准备工作](start-0.md)
-  + [<s>添加 TabooLib 为库</s>](start.md)
 
-* 便捷工具
-  + [TLocale](tlocale.md)
-  + [TDependency](dependency.md)
-  + [TListener](TListener.md)
-  + [TFunction](TFunction.md)
-  + [TConfiguration](TConfiguration.md)
-  + [TPacket](TPacket.md)
-  + [TInject](TInject.md)
-  + [TSerializer](TSerializer.md)
-  + [ItemBuilder](ItemBuilder.md)
-  + [MenuBuilder](MenuBuilder.md)
-  + [SimpleCommandBuilder](SimpleCommandBuilder.md)
-  + [SimpleVersionControl](SimpleVersionControl.md)
-  + [SimpleAi](SimpleAi.md)
-  + [TellrawJson](tellrawjson.md)
-  
-* 一般工具
-  + [Ref](ref.md)
-  + [ArrayUtils](arrayutils.md)
-  + [FileUtils](FileUtils.md) [暂无文档]
-  + [ConfigUtils](ConfigUtils.md) [暂无文档]
-  + [ConfigWatcher](ConfigWatcher.md)
-  + [TagDataHandler](TagDataHandler.md) [暂无文档]
+* io.izzel.taboolib.module
+  + ai
+  + command.base
+  + command.lite
+  + config
+  + db.local
+  + db.sql
+  + db.sqlite
+  + dependency
+  + inject
+  + lite
+  + locale
+  + nms
+  + nms.nbt
+  + packet
+  + tellraw
 
-* 引入工具
-  + [ScoreboardUtil](ScoreboardUtil.md) [暂无文档]
-  + [exp4j](exp4j.md) [暂无文档]
-  
-+ 数据库
-  + [SQLHost](SQLHost.md)
-  + [SQLTable](SQLTable.md)
-  + [SQLColumn](SQLColumn.md)
-  + [HikariHandler](HikariHandler.md)
+* io.izzel.taboolib.util
+  + item
+  + item.inventory
+  + lite
+  + lite.cooldown
+  + serialize
