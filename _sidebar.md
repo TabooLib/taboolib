@@ -3,24 +3,92 @@
 
 * io.izzel.taboolib.module
   + ai
+    - SimpleAi
+    - SimpleAiSelector
   + command.base
+    - BaseMainCommand
+    - BaseSubCommand
+    - @BaseCommand
+    - @SubCommand
   + command.lite
+    - CommandBuilder
   + config
+    - TConfig
+    - TConfigWatcher
   + db.local
+    - Local
+    - LocalPlayer
+    - @LocalFile
+  + db.source
+    - DBSource
   + db.sql
+    - SQLColumn
+    - SQLColumnOption
+    - SQLColumnType
+    - SQLHost
+    - SQLTable
   + db.sqlite
+    - SQLiteColumn
+    - SQLiteColumnOption
+    - SQLiteColumnType
+    - SQLiteHost
   + dependency
+    - TDependency
+    - @Dependency
   + inject
+    - @PlayerContainer
+    - @TFunction
+    - @THook
+    - @TInject
+    - @TListener
+    - @TSchedule
+    - @TService
   + lite
+    - SimpleCounter
+    - SimpleEquip
+    - SimpleI8n
+    - SImpleIterator
+    - SimpleReflection
+    - SimpleVersionControl
   + locale
+    - TLocale
+  + locale.logger
+    - TLogger
   + nms
-  + nms.nbt
+    - NMS
   + packet
+    - TPacketHandler
+    - TPacketListener
   + tellraw
+    - TellrawJson
+    - TellrawCreator
 
 * io.izzel.taboolib.util
+  + book
+    - BookFormatter
   + item
+    - ItemBuilder
+    - Items
   + item.inventory
+    - MenuBuilder
   + lite
+    - Catchers
+    - Materials
+    - Numbers
+    - Particles
+    - Scoreboards
+    - Scripts
+    - Servers
+    - Weights
   + lite.cooldown
+    - Cooldown
+    - Cooldowns
   + serialize
+    - TSerializable
+    - TSerializer
+    - TSerializerElement
+    - TSerializerElementGeneral
+    - @TSerializeCollection
+    - @TSerializeCustom
+    - @TSerializeMap
+    - @DoNotSerialize
