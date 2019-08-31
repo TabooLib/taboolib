@@ -10,7 +10,31 @@
 
 > 在 TabooLib SDK 中内置了坏黑的高速远程仓库，包含所有版本的 Spigot 核心。
 
-## 为什么不推荐直接添加到库?
+## Maven
 
-在第五代版本的更新中，除了 TabooLib 的本体外还需要在项目中添加 TabooLibLoader 基础类  
-这将会导致在项目的准备工作下浪费很多时间且配置对新手来说较为复杂  
+```
+    <repositories>
+        <repository>
+            <id>Purtmars Mirror-nms</id>
+            <url>http://ptms.ink:8081/repository/codemc-nms/</url>
+        </repository>
+        <repository>
+            <id>Purtmars Mirror</id>
+            <url>http://ptms.ink:8081/repository/maven-releases/</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>io.izzel.taboolib</groupId>
+            <artifactId>TabooLib</artifactId>
+            <version>5.05</version>
+            <classifier>all</classifier>
+        </dependency>
+        <dependency>
+            <groupId>io.izzel.taboolib.loader</groupId>
+            <artifactId>TabooLibloader</artifactId>
+            <version>1.1</version>
+            <classifier>all</classifier>
+        </dependency>
+    </dependencies>
+```
