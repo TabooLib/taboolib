@@ -11,7 +11,7 @@
 
 ## 1. 行为方法
 
-在一个标准的生物行为类（SimpleAi）中共有五个基本方法：
+在一个标准的生物行为类中共有五个基本方法：
 
 ```java
 public abstract class SimpleAi {
@@ -40,7 +40,7 @@ public abstract class SimpleAi {
 
 ## 2. 创建行为
 
-创建生物行为类并继承 SimpleAi 抽象类。
+创建生物行为类并继承 ``SimpleAi`` 抽象类。
 
 ```java
 public class FollowAi extends SimpleAi {
