@@ -2,7 +2,7 @@
 > 坏黑开发插件所使用的标准指令工具中的注册方式
 
 ## 0. 作用
-用于将 ``BaseSubCommand`` 注册到服务器中
+用于将 ``BaseSubCommand`` 所实现的指令注册到服务器中
 
 ## 1. 使用
 将注解 ``@BaseCommand`` 添加至标准指令类
@@ -20,7 +20,7 @@ public class ExampleCommand extends BaseMainCommand {
 ```
 
 ## 2. 参数
-在 BaseCommand 中还提供了其他相关功能
+在 ``@BaseCommand`` 中还提供了其他相关功能
 ```java
 public @interface BaseCommand {
 
