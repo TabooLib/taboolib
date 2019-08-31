@@ -56,6 +56,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         injectTypes.put(TConfig.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 TConfig config = TConfig.create(plugin, args.value().length == 0 ? "config.yml" : args.value()[0]);
+                field.set(instance, config);
                 if (!args.reload().isEmpty()) {
                     try {
                         Method declaredMethod = pluginClass.getDeclaredMethod(args.reload());
@@ -73,7 +74,6 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                         t.printStackTrace();
                     }
                 }
-                field.set(instance, config);
             } catch (Exception e) {
                 e.printStackTrace();
             }
