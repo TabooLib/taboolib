@@ -110,15 +110,15 @@ this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 6
 this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 ```
 
-生物行为会按照优先级来运行，数值越小优先级越高。
+> 生物行为会按照优先级来运行，数值越小优先级越高。
 
 ```java
+// 生成生物
 LivingEntity entity = (LivingEntity) player.getWorld().spawnEntity(player.getLocation(), EntityType.PIG);
+// 生物必须在完全生成后才可以被赋予行为
 Bukkit.getScheduler().runTask(SpecialPet.getInst(), () -> {
     SimpleAiSelector.getExecutor().setGoalAi(entity, new FollowAi(player, entity, 1), 3);
 });
 ```
 
 在生物生成后，为该生物赋予优先级为 ``3`` 的跟随行为。
-
-!> 注意生物必须在完全生成后才可以赋予行为。
