@@ -6,6 +6,7 @@
     - [SimpleAi](v5/SimpleAi.md)
     - [SimpleAiSelector](v5/SimpleAiSelector.md)
   + command.base
+    - [Argument](v5/Argument.md)
     - [BaseMainCommand](v5/BaseMainCommand.md)
     - [BaseSubCommand](v5/BaseSubCommand.md)
     - [@BaseCommand](v5/BaseCommand.md)
