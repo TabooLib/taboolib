@@ -1,10 +1,16 @@
 package io.izzel.taboolib.util.item.inventory;
 
+import com.google.common.collect.Lists;
+import io.izzel.taboolib.util.lite.Servers;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 /**
  * @Author 坏黑
@@ -30,6 +36,10 @@ public class ClickEvent {
         return (InventoryDragEvent) event;
     }
 
+    public int getRawSlot() {
+        return clickType == ClickType.CLICK ? castClick().getRawSlot() : -1;
+    }
+
     public char getSlot() {
         return slot;
     }
@@ -40,5 +50,17 @@ public class ClickEvent {
 
     public Player getClicker() {
         return (Player) ((InventoryInteractEvent) event).getWhoClicked();
+    }
+
+    public List<ItemStack> getAffectItems() {
+        return clickType == ClickType.CLICK ? Servers.getAffectItemInClickEvent((InventoryClickEvent) event) : Lists.newArrayList();
+    }
+
+    public void setCancelled(boolean c) {
+        ((Cancellable) event).setCancelled(true);
+    }
+
+    public boolean isCancelled() {
+        return ((Cancellable) event).isCancelled();
     }
 }

@@ -21,7 +21,7 @@ public class MenuBuilder {
     private Plugin plugin;
     private String title;
     private int rows;
-    private char[][] items ;
+    private char[][] items = new char[0][0];
     private ClickTask clickTask;
     private CloseTask closeTask;
     private boolean lockHand;
@@ -86,7 +86,7 @@ public class MenuBuilder {
         }
         return inventory;
     }
-    
+
     public char getSlot(int slot) {
         for (int i = 0; i < items.length && i < rows; i++) {
             char[] line = items[i];

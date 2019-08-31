@@ -31,7 +31,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     private PluginCommand registerCommand;
     private List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
-    private List<io.izzel.taboolib.module.command.base.BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
+    private List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
 
     public static BaseMainCommand createCommandExecutor(String command, BaseMainCommand baseMainCommand) {
         Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\" not found");
@@ -147,7 +147,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                     TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()));
                     return true;
                 }
-                String[] subCommandArgs = ArrayUtil.removeFirst(args);
+                String[] subCommandArgs = removeFirst(args);
                 if (subCommand.isParameterConform(subCommandArgs)) {
                     subCommand.onCommand(sender, command, label, subCommand.ignoredLabel() ? subCommandArgs : args);
                 } else {
@@ -229,5 +229,14 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     private boolean hasPermission(CommandSender sender, BaseSubCommand baseSubCommand) {
         return baseSubCommand == null || baseSubCommand.getPermission() == null || sender.hasPermission(baseSubCommand.getPermission());
+    }
+
+    private String[] removeFirst(String[] args) {
+        if (args.length <= 1) {
+            return new String[0];
+        }
+        List<String> list = ArrayUtil.asList(args);
+        list.remove(0);
+        return list.toArray(new String[0]);
     }
 }
