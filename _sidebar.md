@@ -1,4 +1,5 @@
- [准备工作](start-0.md)
+* io
+  + [准备工作](start-0.md)
 
 * io.izzel.taboolib.module
   + ai
