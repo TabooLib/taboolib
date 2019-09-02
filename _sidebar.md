@@ -1,7 +1,7 @@
 * io
   + [准备工作](start-0.md)
   + [我是 IntelliJ IDEA](start-idea.md)
-  + [我是 Eclipse](start-idea.md)
+  + [我是 Eclipse](start-eclipse.md)
   + [我是 NetBeans](start-netbeans.md)
   + [我是 Visual Studio](start-vs.md)
   + [我是 Notepad(++)](start-notepad.md)
