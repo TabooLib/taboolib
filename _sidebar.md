@@ -81,7 +81,7 @@
     - [Scripts](v5/Scripts.md)
     - [Servers](v5/Servers.md)
     - [Weights](v5/Weights.md)
-  + lite.cooldown]
+  + lite.cooldown
     - [Cooldown](v5/Cooldown.md)
     - [Cooldowns](v5/Cooldowns.md)
   + serialize
