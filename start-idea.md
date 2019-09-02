@@ -1,3 +1,6 @@
+# 如何使用 TabooLib SDK
+> 推荐使用 IntelliJ IDEA
+
 ## 0. 将 TabooLib SDK 解压至工作目录
 <a href="https://sm.ms/image/Ws81btZOKB9LEn5" target="_blank"><img src="https://i.loli.net/2019/09/02/Ws81btZOKB9LEn5.png" ></a>
 
