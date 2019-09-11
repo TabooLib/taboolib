@@ -14,5 +14,4 @@ import java.lang.annotation.Target;
 public @interface SubCommand {
 
     double priority() default 0;
-
 }

@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.command.base;
 
 import io.izzel.taboolib.module.locale.TLocale;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -69,5 +70,9 @@ public class Argument {
     @Override
     public int hashCode() {
         return Objects.hash(getName(), isRequired(), tab);
+    }
+
+    public static Argument[] of(String expression) {
+        return Arrays.stream(expression.split("[,;]")).map(s -> s.endsWith("?") ? new Argument(s.substring(0, s.length() - 1), false) : new Argument(s)).toArray(Argument[]::new);
     }
 }
