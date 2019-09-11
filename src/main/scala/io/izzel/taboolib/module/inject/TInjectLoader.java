@@ -83,6 +83,9 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             try {
                 CommandBuilder builder = (CommandBuilder) field.get(instance);
                 if (!builder.isBuild()) {
+                    if (builder.isSimpleMode()) {
+                        builder.command(field.getName());
+                    }
                     if (builder.getPlugin() == null) {
                         builder.plugin(plugin);
                     }

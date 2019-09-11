@@ -1,12 +1,15 @@
 package io.izzel.taboolib.module.command.lite;
 
 import com.google.common.base.Preconditions;
+import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author sky
@@ -29,6 +32,7 @@ public class CommandBuilder {
     private CompleterCommand completerCommand = EMPTY_COMPLETER_COMMAND;
     private boolean forceRegister;
     private boolean build;
+    private boolean simpleMode;
 
     CommandBuilder(String command, Plugin plugin) {
         this.command = command;
@@ -37,6 +41,11 @@ public class CommandBuilder {
         this.usage = "/" + command;
         this.aliases = new ArrayList<>();
         this.build = false;
+    }
+
+    public static CommandBuilder create() {
+        Class<?> callerClass = Ref.getCallerClass(3).orElse(null);
+        return new CommandBuilder(UUID.randomUUID().toString(), null).plugin(callerClass == null ? TabooLib.getPlugin() : Ref.getCallerPlugin(callerClass));
     }
 
     public static CommandBuilder create(String command, Plugin plugin) {
@@ -173,5 +182,9 @@ public class CommandBuilder {
 
     public boolean isBuild() {
         return build;
+    }
+
+    public boolean isSimpleMode() {
+        return simpleMode;
     }
 }
