@@ -33,7 +33,7 @@ Local.get().addFile("data.yml");
 
 ## 4. 函数
 
-在 Local  中还提供了一些独特的方法
+在 `Local` 中还提供了一些独特的方法
 
 ```java
 /**
