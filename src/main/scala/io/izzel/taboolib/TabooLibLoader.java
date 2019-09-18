@@ -181,13 +181,13 @@ public class TabooLibLoader {
 
     public interface Loader {
 
-        default void preLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
+        default void preLoad(Plugin plugin, Class<?> pluginClass) {
         }
 
-        default void postLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
+        default void postLoad(Plugin plugin, Class<?> pluginClass) {
         }
 
-        default void activeLoad(org.bukkit.plugin.Plugin plugin, Class<?> pluginClass) {
+        default void activeLoad(Plugin plugin, Class<?> pluginClass) {
         }
 
         default void unload(Plugin plugin, Class<?> pluginClass) {

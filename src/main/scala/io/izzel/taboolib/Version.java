@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
  */
 public enum Version {
 
-    v1_7(10700), v1_8(10800), v1_9(10900), v1_10(11000), v1_11(11100), v1_12(11200), v1_13(11300), v1_14(11400), vNull(0);
+    v1_7(10700), v1_8(10800), v1_9(10900), v1_10(11000), v1_11(11100), v1_12(11200), v1_13(11300), v1_14(11400), v1_15(11500), vNull(0);
 
     private int versionInt;
 
@@ -50,6 +50,8 @@ public enum Version {
             return v1_13;
         } else if (nmsVersion.startsWith("v1_14")) {
             return v1_14;
+        } else if (nmsVersion.startsWith("v1_15")) {
+            return v1_15;
         } else {
             return vNull;
         }

@@ -287,6 +287,40 @@ public class Files {
         return null;
     }
 
+    public static void read(File file, ReadHandle readHandle) {
+        try (FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+            readHandle.read(bufferedReader);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static void read(InputStream in, ReadHandle readHandle) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(in); BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+            readHandle.read(bufferedReader);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static void write(File file, WriteHandle writeHandle) {
+        try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            writeHandle.write(bufferedWriter);
+            bufferedWriter.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static void write(OutputStream out, WriteHandle writeHandle) {
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(out); BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
+            writeHandle.write(bufferedWriter);
+            bufferedWriter.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
     public static String encodeYAML(FileConfiguration file) {
         return Base64Coder.encodeLines(file.saveToString().getBytes()).replaceAll("\\s+", "");
     }
@@ -314,5 +348,15 @@ public class Files {
         } catch (ClassNotFoundException ignored) {
         }
         return null;
+    }
+
+    public interface ReadHandle {
+
+        void read(BufferedReader reader) throws IOException;
+    }
+
+    public interface WriteHandle {
+
+        void write(BufferedWriter writer) throws IOException;
     }
 }

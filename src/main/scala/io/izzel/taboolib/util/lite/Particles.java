@@ -649,7 +649,7 @@ public enum Particles {
                     effect.display(color, offX, offY, offZ, amount, lc, p);
                     break;
                 case 2:
-                    Particles.NOTE.display(new Particles.NoteColor(random.nextInt(24)), offX, offY, offZ, amount, lc, /*p.getPlayer(),*/ p);
+                    Particles.NOTE.display(new NoteColor(random.nextInt(24)), offX, offY, offZ, amount, lc, /*p.getPlayer(),*/ p);
                     break;
                 case 0:
                     effect.display(offX, offY, offZ, 0.001, amount, lc, p);
