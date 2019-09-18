@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.inject;
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.lite.SimpleVersionControl;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -32,8 +33,8 @@ public class TInjectAsm implements TabooLibLoader.Loader {
                     continue;
                 }
             }
+            Ref.forcedAccess(declaredField);
             try {
-                declaredField.setAccessible(true);
                 declaredField.set(instance, SimpleVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
             } catch (Throwable t) {
                 TLogger.getGlobalLogger().warn("Cannot translate class \"" + declaredField.getType().getName() + "\": " + t.getMessage());

@@ -8,6 +8,7 @@ import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.module.packet.TPacketListener;
+import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.lite.cooldown.Cooldown;
 import io.izzel.taboolib.util.lite.cooldown.Cooldowns;
 import org.bukkit.Bukkit;
@@ -179,8 +180,8 @@ public class TInjectLoader implements TabooLibLoader.Loader {
     }
 
     public void inject(Plugin plugin, Field field, Object instance, TInject annotation, TInjectTask injectTask, Class pluginClass) {
+        Ref.forcedAccess(field);
         try {
-            field.setAccessible(true);
             injectTask.run(plugin, field, annotation, pluginClass, instance);
             TabooLibAPI.debug(field.getName() + " injected. (" + field.getType().getName() + ")");
         } catch (Throwable e) {
