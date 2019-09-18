@@ -11,6 +11,7 @@ import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -108,6 +109,17 @@ public class Ref {
             } catch (Exception e) {
                 return TabooLib.getPlugin();
             }
+        }
+    }
+
+    public static void forcedAccess(Field field) {
+        try {
+            field.setAccessible(true);
+            Field modifiersField = Field.class.getDeclaredField("modifiers");
+            modifiersField.setAccessible(true);
+            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 

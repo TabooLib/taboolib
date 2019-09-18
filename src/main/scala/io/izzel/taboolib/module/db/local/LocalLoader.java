@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.db.local;
 
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -31,7 +32,7 @@ public class LocalLoader implements TabooLibLoader.Loader {
                     continue;
                 }
             }
-            field.setAccessible(true);
+            Ref.forcedAccess(field);
             try {
                 field.set(instance, Local.get(plugin.getName()).get(annotation.value()));
             } catch (IllegalAccessException ignored) {

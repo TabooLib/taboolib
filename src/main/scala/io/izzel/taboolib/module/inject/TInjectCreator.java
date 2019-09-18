@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.inject;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.plugin.Plugin;
 
@@ -69,7 +70,7 @@ public class TInjectCreator implements TabooLibLoader.Loader {
                     continue;
                 }
             }
-            declaredField.setAccessible(true);
+            Ref.forcedAccess(declaredField);
             try {
                 InstanceData instanceData = new InstanceData(declaredField.getType().newInstance(), annotation);
                 declaredField.set(instance, instanceData.getInstance());

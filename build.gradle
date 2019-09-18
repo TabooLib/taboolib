@@ -4,6 +4,7 @@ plugins {
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
+
 group = 'me.skymc'
 version = '5.06'
 

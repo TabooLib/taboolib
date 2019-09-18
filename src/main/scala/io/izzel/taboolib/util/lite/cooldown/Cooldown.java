@@ -3,13 +3,13 @@ package io.izzel.taboolib.util.lite.cooldown;
 import java.util.HashMap;
 
 public class Cooldown {
-	
+
 	private String plugin;
 	private String name;
 	private long seconds;
-	
+
 	private HashMap<String, Long> data = new HashMap<>();
-	
+
 	public Cooldown(String n, int s) {
 		this.name = n;
 		this.seconds = s;
@@ -21,23 +21,23 @@ public class Cooldown {
 		this.seconds = s;
 		this.plugin = "null";
 	}
-	
+
 	public String getPackName() {
 		return name;
 	}
-	
+
 	public long getPackSeconds() {
 		return seconds;
 	}
-	
+
 	public String getPlugin() {
 		return plugin;
 	}
-	
+
 	public void setPlugin(String p) {
 		this.plugin = p;
 	}
-	
+
 	public void unRegister(String player) {
 		data.remove(player);
 	}
