@@ -116,11 +116,11 @@ public class TLocaleLoader {
     }
 
     private static void infoLogger(String path, String... args) {
-        TLogger.getGlobalLogger().info(Strings.replaceWithOrder(io.izzel.taboolib.TabooLib.getInst().getInternal().getString(path), args));
+        TLogger.getGlobalLogger().info(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString(path), args));
     }
 
     private static void errorLogger(String path, String... args) {
-        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(io.izzel.taboolib.TabooLib.getInst().getInternal().getString(path), args));
+        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString(path), args));
     }
 
     private static File getLocaleFile(Plugin plugin) {

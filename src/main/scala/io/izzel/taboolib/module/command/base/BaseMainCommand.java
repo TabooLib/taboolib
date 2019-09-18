@@ -60,13 +60,13 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 }
             });
         }
-        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(SubCommand.class) != null && field.getType().equals(io.izzel.taboolib.module.command.base.BaseSubCommand.class)).forEach(field -> fields.add(new CommandField(field, clazz))));
+        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredFields()).filter(field -> field.getAnnotation(SubCommand.class) != null && field.getType().equals(BaseSubCommand.class)).forEach(field -> fields.add(new CommandField(field, clazz))));
         if (fields.size() > 0) {
             fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(SubCommand.class).priority()));
             fields.forEach(commandField -> {
                 try {
                     commandField.getField().setAccessible(true);
-                    io.izzel.taboolib.module.command.base.BaseSubCommand subCommand = (io.izzel.taboolib.module.command.base.BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
+                    BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
                     subCommand.setLabel(commandField.getField().getName());
                     baseMainCommand.registerSubCommand(subCommand);
                 } catch (Exception ignored) {
@@ -90,11 +90,11 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         return linkClasses;
     }
 
-    public List<io.izzel.taboolib.module.command.base.BaseSubCommand> getSubCommands() {
+    public List<BaseSubCommand> getSubCommands() {
         return subCommands;
     }
 
-    public void registerSubCommand(io.izzel.taboolib.module.command.base.BaseSubCommand subCommand) {
+    public void registerSubCommand(BaseSubCommand subCommand) {
         if (subCommand != null) {
             Preconditions.checkArgument(subCommand.getLabel() != null, "Command label can not be null");
             Preconditions.checkArgument(subCommand.getArguments() != null, "Command arguments can not be null");
@@ -122,7 +122,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             });
             return label.stream().filter(l -> args[0].isEmpty() || l.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
-        for (io.izzel.taboolib.module.command.base.BaseSubCommand subCommand : subCommands) {
+        for (BaseSubCommand subCommand : subCommands) {
             Argument[] arguments = subCommand.getArguments();
             if (args[0].equalsIgnoreCase(subCommand.getLabel()) && args.length - 1 <= arguments.length) {
                 CommandTab commandTab = arguments[args.length - 2].getTab();
@@ -139,7 +139,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         if (args.length == 0) {
             onCommandHelp(sender, command, label, args);
         } else {
-            for (io.izzel.taboolib.module.command.base.BaseSubCommand subCommand : subCommands) {
+            for (BaseSubCommand subCommand : subCommands) {
                 if (subCommand == null || !(args[0].equalsIgnoreCase(subCommand.getLabel()) || java.util.Arrays.stream(subCommand.getAliases()).anyMatch(args[0]::equalsIgnoreCase)) || !hasPermission(sender, subCommand)) {
                     continue;
                 }
@@ -159,7 +159,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
                 @Override
                 public void run() {
-                    List<io.izzel.taboolib.module.command.base.BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && hasPermission(sender, x)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
+                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && hasPermission(sender, x)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
                     if (commandCompute.size() > 0) {
                         TLocale.sendTo(sender, "COMMANDS.INTERNAL.ERROR-COMMAND", args[0], commandCompute.get(0).getCommandString(label).trim());
                     }
@@ -223,7 +223,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         }
     }
 
-    private boolean hideInHelp(io.izzel.taboolib.module.command.base.BaseSubCommand baseSubCommand) {
+    private boolean hideInHelp(BaseSubCommand baseSubCommand) {
         return baseSubCommand != null && baseSubCommand.hideInHelp();
     }
 

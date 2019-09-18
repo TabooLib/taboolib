@@ -26,7 +26,7 @@ public class CronusUtils {
         return Optional.ofNullable(itemStack).orElse(new ItemStack(Material.STONE));
     }
 
-    public static org.bukkit.inventory.ItemStack getUsingItem(Player player, Material material) {
+    public static ItemStack getUsingItem(Player player, Material material) {
         return player.getItemInHand().getType() == material ? player.getItemInHand() : player.getInventory().getItemInOffHand();
     }
 

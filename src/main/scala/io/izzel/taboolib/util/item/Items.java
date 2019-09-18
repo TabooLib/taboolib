@@ -173,7 +173,7 @@ public class Items {
 
     public static boolean hasItem(Inventory inventory, Matcher matcher, int amount) {
         int checkAmount = amount;
-        for (org.bukkit.inventory.ItemStack itemStack : inventory.getContents()) {
+        for (ItemStack itemStack : inventory.getContents()) {
             if (!isNull(itemStack) && matcher.match(itemStack)) {
                 checkAmount -= itemStack.getAmount();
                 if (checkAmount <= 0) {

@@ -7,6 +7,7 @@ import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.common.plugin.bridge.BridgeLoader;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
+import io.izzel.taboolib.util.KV;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.asm.AsmClassLoader;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +22,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Author sky
@@ -35,6 +38,9 @@ public class SimpleVersionControl {
     private Plugin plugin;
     private boolean useCache;
     private boolean useNMS;
+    private boolean mapping;
+    private List<KV<String, String>> mappingList = Lists.newArrayList();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     SimpleVersionControl() {
         useCache = false;
@@ -112,6 +118,14 @@ public class SimpleVersionControl {
         return this;
     }
 
+    /**
+     * 将转换结果打印至 plugins/TabooLib/asm-mapping
+     */
+    public SimpleVersionControl mapping() {
+        this.mapping = true;
+        return this;
+    }
+
     public Class<?> translate() throws IOException {
         return translate(plugin);
     }
@@ -133,6 +147,10 @@ public class SimpleVersionControl {
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         classWriter.visitEnd();
         classVisitor.visitEnd();
+        // 打印
+        if (mapping || plugin instanceof InternalPlugin) {
+            executorService.submit(this::printMapping);
+        }
         // 因第三方插件调用该方法时会出现找不到类，所以第三方插件使用 BridgeLoader 加载类
         return plugin instanceof InternalPlugin ? AsmClassLoader.createNewClass(target, classWriter.toByteArray()) : BridgeLoader.createNewClass(target, classWriter.toByteArray());
     }
@@ -148,7 +166,45 @@ public class SimpleVersionControl {
         classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
         classWriter.visitEnd();
         classVisitor.visitEnd();
+        if (mapping || plugin instanceof InternalPlugin) {
+            executorService.submit(this::printMapping);
+        }
         return BridgeLoader.createNewClass(target, classWriter.toByteArray());
+    }
+
+    public String replace(String origin) {
+        String replace = origin;
+        if (useNMS) {
+            replace = replace
+                    .replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/")
+                    .replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
+        }
+        for (String from : from) {
+            replace = replace.replace("/" + from + "/", "/" + to + "/");
+        }
+        if ((mapping || plugin instanceof InternalPlugin) && !replace.equals(origin)) {
+            mappingList.add(new KV<>(origin, replace));
+        }
+        return replace;
+    }
+
+    public void printMapping() {
+        if (mappingList.isEmpty()) {
+            return;
+        }
+        List<KV<String, String>> list = Lists.newArrayList(mappingList);
+        list.sort((b, a) -> Integer.compare(a.getKey().length(), b.getKey().length()));
+        int length = list.get(0).getKey().length();
+        Files.write(Files.file(TabooLib.getPlugin().getDataFolder(), "asm-mapping/" + target.replace("/", ".") + ".txt"), b -> {
+            for (KV<String, String> kv : mappingList) {
+                StringBuilder builder = new StringBuilder(kv.getKey());
+                for (int i = kv.getKey().length(); i < length; i++) {
+                    builder.append(" ");
+                }
+                b.write(builder.toString() + " -> " + kv.getValue());
+                b.newLine();
+            }
+        });
     }
 
     // *********************************
@@ -169,13 +225,23 @@ public class SimpleVersionControl {
         return to;
     }
 
-    public String replace(String origin) {
-        if (useNMS) {
-            origin = origin.replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/").replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
-        }
-        for (String from : from) {
-            origin = origin.replace("/" + from + "/", "/" + to + "/");
-        }
-        return origin;
+    public Plugin getPlugin() {
+        return plugin;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
+    }
+
+    public boolean isUseNMS() {
+        return useNMS;
+    }
+
+    public boolean isMapping() {
+        return mapping;
+    }
+
+    public List<KV<String, String>> getMappingList() {
+        return mappingList;
     }
 }
