@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibLoader;
+import io.izzel.taboolib.compat.kotlin.CompatKotlin;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
 
@@ -35,13 +36,20 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
         if (pluginClass.isAnnotationPresent(TFunction.class)) {
             TFunction function = pluginClass.getAnnotation(TFunction.class);
             try {
+                Object instance = null;
                 Method method = pluginClass.getDeclaredMethod(enable ? function.enable() : function.disable());
-                if (!Modifier.isStatic(method.getModifiers())) {
+                if (CompatKotlin.isCompanion(pluginClass)) {
+                    instance = CompatKotlin.getCompanion(pluginClass);
+                    if (instance == null) {
+                        TLogger.getGlobalLogger().error(method.getName() + " required @JvmStatic.");
+                        return;
+                    }
+                } else if (!Modifier.isStatic(method.getModifiers())) {
                     TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
                     return;
                 }
                 method.setAccessible(true);
-                method.invoke(null);
+                method.invoke(instance);
             } catch (NoSuchMethodException ignore) {
             } catch (Exception e) {
                 e.printStackTrace();
@@ -53,12 +61,19 @@ public class TFunctionLoader implements TabooLibLoader.Loader {
         for (Method declaredMethod : pluginClass.getDeclaredMethods()) {
             if (declaredMethod.isAnnotationPresent(a)) {
                 try {
-                    if (!Modifier.isStatic(declaredMethod.getModifiers())) {
+                    Object instance = null;
+                    if (CompatKotlin.isCompanion(pluginClass)) {
+                        instance = CompatKotlin.getCompanion(pluginClass);
+                        if (instance == null) {
+                            TLogger.getGlobalLogger().error(declaredMethod.getName() + " required @JvmStatic.");
+                            return;
+                        }
+                    } else if (!Modifier.isStatic(declaredMethod.getModifiers())) {
                         TLogger.getGlobalLogger().error(declaredMethod.getName() + " is not a static method.");
                         return;
                     }
                     declaredMethod.setAccessible(true);
-                    declaredMethod.invoke(null);
+                    declaredMethod.invoke(instance);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
