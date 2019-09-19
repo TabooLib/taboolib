@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibLoader;
+import io.izzel.taboolib.compat.kotlin.CompatKotlin;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -43,36 +44,38 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
-            Object instance = pluginClass.equals(plugin.getClass()) ? plugin : null;
-            // 如果是非静态类型
-            if (!Modifier.isStatic(method.getModifiers()) && instance == null) {
-                // 是否为主类
+            Object[] instance = new Object[] {pluginClass.equals(plugin.getClass()) ? plugin : null};
+            if (CompatKotlin.isCompanion(pluginClass)) {
+                instance[0] = CompatKotlin.getCompanion(pluginClass);
+                if (instance[0] == null) {
+                    TLogger.getGlobalLogger().error(method.getName() + " required @JvmStatic.");
+                    return;
+                }
+            } else if (!Modifier.isStatic(method.getModifiers()) && instance[0] == null) {
                 TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
                 continue;
             }
-            method.setAccessible(true);
-            //  如果是本插件
             if (plugin.equals(TabooLib.getPlugin())) {
                 run(plugin, new BukkitRunnable() {
 
                     @Override
                     public void run() {
                         try {
-                            method.invoke(instance);
+                            method.setAccessible(true);
+                            method.invoke(instance[0]);
                         } catch (Throwable t) {
                             t.printStackTrace();
                         }
                     }
                 }, annotation.delay(), annotation.period(), annotation.async());
-            }
-            // 其他插件则添加到列队
-            else {
+            } else {
                 schedules.computeIfAbsent(plugin.getName(), n -> Lists.newArrayList()).add(new TScheduleData(annotation, new BukkitRunnable() {
 
                     @Override
                     public void run() {
                         try {
-                            method.invoke(instance);
+                            method.setAccessible(true);
+                            method.invoke(instance[0]);
                         } catch (Throwable t) {
                             t.printStackTrace();
                         }
