@@ -25,7 +25,6 @@
 
 package io.izzel.taboolib.util.lite;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -1150,7 +1149,6 @@ public enum Materials {
      * @return a Materials from the enum (with the same legacy name and data if in older versions.)
      */
     public static Materials matchMaterials(String name, byte data) {
-        Validate.notEmpty(name, "Material name cannot be null or empty");
         name = format(name);
 
         if ((contains(name) && data <= 0) && (isNewVersion() || !isDuplicated(name))) {

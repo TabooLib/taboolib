@@ -30,6 +30,10 @@ import java.util.concurrent.Executors;
 @Dependency(maven = "com.zaxxer:HikariCP:3.1.0", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar")
 @Dependency(maven = "org.scala-lang:scala-library:2.12.8", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar")
 @Dependency(maven = "org:kotlinlang:kotlin-stdlib:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.3.50.jar")
+@Dependency(maven = "org:kotlinlang:kotlin-stdlib-jdk7:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7.jar")
+@Dependency(maven = "org:kotlinlang:kotlin-stdlib-jdk8:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8.jar")
+@Dependency(maven = "org:kotlinlang:kotlin-reflect:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect.jar")
+@Dependency(maven = "org:kotlinlang:kotlin-test:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test.jar")
 @Dependency(maven = "com.google.inject:guice:4.2.2", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/guice-4.2.2.jar")
 public class TabooLib {
 
