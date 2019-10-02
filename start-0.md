@@ -5,7 +5,7 @@
 
 使用 TabooLib SDK 来跳过项目的准备工作
 
-+ [TabooLibExample-maven-5.06](https://skymc.oss-cn-shanghai.aliyuncs.com/i/TabooLibExample-maven-5.06.rar)
-+ [TabooLibExample-gradle-5.06](https://skymc.oss-cn-shanghai.aliyuncs.com/i/TabooLibExample-gradle-5.06.rar)
++ [TabooLibExample-maven-5.07](https://skymc.oss-cn-shanghai.aliyuncs.com/i/TabooLibExample-maven-5.07.rar)
++ [TabooLibExample-gradle-5.07](https://skymc.oss-cn-shanghai.aliyuncs.com/i/TabooLibExample-gradle-5.07.rar)
 
 > 在 TabooLib SDK 中内置了坏黑的高速远程仓库，包含所有版本的 Spigot 核心。
