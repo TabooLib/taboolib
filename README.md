@@ -1,23 +1,37 @@
-![](https://i.loli.net/2019/07/06/5d1f802426f2a12175.png)
 
-插件文档
+<p align="center">
+  <img src="https://i.loli.net/2019/07/06/5d1f802426f2a12175.png">
+</p>
+<h3 align="center"><i>Built-in Bukkit-API Expansion @since 2017</i></h3>
+<p align="center">
+  <a>
+    <img src="https://img.shields.io/github/license/bkm016/taboolib.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/github/release/Bkm016/TabooLib.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.14-blue.svg">
+  </a>
+</p>
+
 ---
-| 文档 | 地址 |
-| --- | --- |
-| 主文档 | https://bkm016.github.io/TabooLib/#/ |
+# Features
 
-<br>
++ **Built-in expansion**：Load in a unique way, doesn't need to download any plugin.
++ **Silently running**：No redundant console logs.
++ **Lightweight**：More tools and only tools.
 
-插件下载
----
-[![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
-[![](https://jitpack.io/v/Bkm016/TabooLib.svg)](https://jitpack.io/#Bkm016/TabooLib)
+# how to use TabooLib?
 
-第五代版本不再是插件，不需要手动下载。
+![https://bkm016.github.io/TabooLib/#/](https://i.loli.net/2019/10/06/aPimqXFnGRDeMbv.jpg)
 
-<br>
+# Who is useing TabooLib?
 
-MCBBS
----
-本插件仅在 [**MCBBS**](http://www.mcbbs.net/thread-773065-1-1.html) 发布
-<hr>
+[Cronus](https://www.mcbbs.net/thread-894452-1-1.html), [CNTrans](https://www.mcbbs.net/thread-904556-1-1.html), [TrMenu](https://www.mcbbs.net/thread-918078-1-1.html), [LiteChat](https://www.mcbbs.net/thread-903335-1-1.html), [Uncrafter](https://www.mcbbs.net/thread-903916-1-1.html), [PurtmarsEditor*](https://www.mcbbs.net/thread-850862-1-1.html), [PurtmarsArea*](https://www.mcbbs.net/thread-840912-1-1.html), [<s>TabooMenu</s>](https://www.mcbbs.net/thread-798904-1-1.html)...
