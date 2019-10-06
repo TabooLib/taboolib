@@ -1,56 +1,37 @@
 
 <p align="center">
-<img src="./examples/favicon.ico" alt="mark text" width="100" height="100">
+  <img src="https://i.loli.net/2019/07/06/5d1f802426f2a12175.png">
 </p>
-
-<h3 align="center">v-charts</h3>
-
+<h3 align="center"><i>Built-in Bukkit-API Expansion @since 2017</i></h3>
 <p align="center">
-  <a href="https://travis-ci.org/ElemeFE/v-charts">
-    <img src="https://travis-ci.org/ElemeFE/v-charts.svg?branch=master" alt="Build Status">
-  </a>
-  <a href="https://npmjs.org/package/v-charts">
-    <img src="http://img.shields.io/npm/dm/v-charts.svg" alt="NPM downloads">
-  </a>
-  <a href="https://www.npmjs.org/package/v-charts">
-    <img src="https://img.shields.io/npm/v/v-charts.svg" alt="Npm package">
+  <a>
+    <img src="https://img.shields.io/github/license/bkm016/taboolib.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/language-javascript-yellow.svg" alt="Language">
+    <img src="https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/license-MIT-000000.svg" alt="License">
+    <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib.svg">
   </a>
-  <a href="https://gitter.im/ElemeFE/v-charts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
-    <img src="https://badges.gitter.im/ElemeFE/v-charts.svg" alt="Join the chat">
+  <a>
+    <img src="https://img.shields.io/github/release/Bkm016/TabooLib.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.14-blue.svg">
   </a>
 </p>
 
-![](https://i.loli.net/2019/07/06/5d1f802426f2a12175.png)
-
-![](https://img.shields.io/github/license/bkm016/taboolib.svg)
-![](https://img.shields.io/github/release/Bkm016/TabooLib.svg)
-![](https://img.shields.io/github/languages/code-size/bkm016/taboolib.svg)
-![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)
-
-插件文档
 ---
-| 文档 | 地址 |
-| --- | --- |
-| 主文档 | https://bkm016.github.io/TabooLib/#/ |
+# Features
 
-<br>
++ **Built-in expansion**：Load in a unique way, doesn't need to download any plugin.
++ **Silently running**：No redundant console logs.
++ **Lightweight**：More tools and only tools.
 
-插件下载
----
-[![](https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg)](https://github.com/Bkm016/TabooLib/releases)
-[![](https://jitpack.io/v/Bkm016/TabooLib.svg)](https://jitpack.io/#Bkm016/TabooLib)
+# How to use TabooLib?
 
-第五代版本不再是插件，不需要手动下载。
+[![](https://i.loli.net/2019/10/06/aPimqXFnGRDeMbv.jpg)](https://bkm016.github.io/TabooLib/#/)
 
-<br>
+# Who is using TabooLib?
 
-MCBBS
----
-本插件仅在 [**MCBBS**](http://www.mcbbs.net/thread-773065-1-1.html) 发布
-<hr>
+[Cronus](https://www.mcbbs.net/thread-894452-1-1.html), [CNTrans](https://www.mcbbs.net/thread-904556-1-1.html), [TrMenu](https://www.mcbbs.net/thread-918078-1-1.html), [LiteChat](https://www.mcbbs.net/thread-903335-1-1.html), [Uncrafter](https://www.mcbbs.net/thread-903916-1-1.html), [PurtmarsEditor*](https://www.mcbbs.net/thread-850862-1-1.html), [PurtmarsArea*](https://www.mcbbs.net/thread-840912-1-1.html), [<s>TabooMenu</s>](https://www.mcbbs.net/thread-798904-1-1.html)...
