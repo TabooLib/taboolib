@@ -1,6 +1,7 @@
 package io.izzel.taboolib.util.lite;
 
 import com.google.common.collect.Lists;
+import io.izzel.taboolib.util.Reflection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -10,7 +11,6 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +22,9 @@ public class Servers {
 
     public static void setEnchantmentAcceptingNew(boolean value) {
         try {
-            Field f = Enchantment.class.getDeclaredField("acceptingNew");
-            f.setAccessible(true);
-            f.set(null, value);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Reflection.setValue(null, Enchantment.class, true, "acceptingNew", value);
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
