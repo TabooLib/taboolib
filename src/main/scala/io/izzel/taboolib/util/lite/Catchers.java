@@ -59,10 +59,13 @@ public class Catchers implements Listener {
 
     public interface Catcher {
 
-        Catcher before();
+        default Catcher before() {
+            return this;
+        }
 
         boolean after(String message);
 
-        void cancel();
+        default void cancel() {
+        }
     }
 }
