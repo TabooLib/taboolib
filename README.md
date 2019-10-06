@@ -30,7 +30,7 @@
 
 # how to use TabooLib?
 
-![https://bkm016.github.io/TabooLib/#/](https://i.loli.net/2019/10/06/aPimqXFnGRDeMbv.jpg)
+[![](https://i.loli.net/2019/10/06/aPimqXFnGRDeMbv.jpg)](https://bkm016.github.io/TabooLib/#/)
 
 # Who is useing TabooLib?
 
