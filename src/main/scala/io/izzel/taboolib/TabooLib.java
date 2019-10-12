@@ -71,6 +71,11 @@ public class TabooLib {
         // 创建线程检测服务器是否关闭
         Executors.newSingleThreadExecutor().submit(() -> {
             while (NMS.handle().isRunning()) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             // 保存数据
             Local.saveFiles();

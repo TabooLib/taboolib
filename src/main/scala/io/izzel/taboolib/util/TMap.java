@@ -56,11 +56,11 @@ public class TMap {
     }
 
     public static TMap parse(String in) {
-        Matcher matcher = Pattern.compile("(?<name>[^{}]+)?\\{(?<content>[^<>]+)}").matcher(in);
+        Matcher matcher = Pattern.compile("(?<name>[^{}]+)?\\{(?<content>[^<>]+)}").matcher(in.replaceAll("[\r\n]", ""));
         if (matcher.find()) {
             TMap map = new TMap(matcher.group("name"));
             for (String content : matcher.group("content").split(";")) {
-                String[] v = content.split("=");
+                String[] v = parsePair(content);
                 if (v.length == 2) {
                     map.content.put(v[0].toLowerCase().trim(), v[1].trim());
                 }
@@ -68,6 +68,18 @@ public class TMap {
             return map;
         }
         return new TMap(null);
+    }
+
+    public static String[] parsePair(String in) {
+        String[] v = in.split("=");
+        StringBuilder r = new StringBuilder();
+        for (int i = 1; i < v.length; i++) {
+            if (i > 1) {
+                r.append("=");
+            }
+            r.append(v[i]);
+        }
+        return new String[] {v[0], r.toString().replace("`", "")};
     }
 
     @Override
