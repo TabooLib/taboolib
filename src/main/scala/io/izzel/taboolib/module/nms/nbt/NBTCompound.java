@@ -64,6 +64,14 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         return this.value.put(key, value);
     }
 
+    public NBTBase put(String key, Object value) {
+        return this.value.put(key, NBTBase.toNBT(value));
+    }
+
+    public NBTBase putDeep(String key, Object value) {
+        return putDeep(key, NBTBase.toNBT(value));
+    }
+
     public NBTBase putDeep(String key, NBTBase value) {
         NBTBase compound = this, temp;
         String[] keySplit = key.split("\\.");
@@ -112,7 +120,7 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 
     @Override
     public NBTBase getOrDefault(Object key, NBTBase defaultValue) {
-        return this.value.getOrDefault(key, defaultValue);
+        return this.value.getOrDefault(String.valueOf(key), defaultValue);
     }
 
     @Override
