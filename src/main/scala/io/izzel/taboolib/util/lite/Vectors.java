@@ -15,6 +15,10 @@ import java.util.stream.IntStream;
  */
 public class Vectors {
 
+    public static Item itemDrop(Player player, ItemStack itemStack) {
+        return itemDrop(player, itemStack, 0.0, 0.4);
+    }
+
     public static Item itemDrop(Player player, ItemStack itemStack, double bulletSpread, double radius) {
         Location location = player.getLocation().add(0.0D, 1.5D, 0.0D);
         Item item = player.getWorld().dropItem(location, itemStack);

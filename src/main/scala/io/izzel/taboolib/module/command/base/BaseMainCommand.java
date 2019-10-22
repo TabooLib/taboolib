@@ -110,7 +110,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         sender.sendMessage(getEmptyLine());
     }
 
-    abstract public String getCommandTitle();
+    public String getCommandTitle() {
+        return "§e§l----- §6§l" + registerCommand.getPlugin().getName() + " Commands §e§l-----";
+    }
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {

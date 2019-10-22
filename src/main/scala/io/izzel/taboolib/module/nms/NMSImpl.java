@@ -1,9 +1,13 @@
 package io.izzel.taboolib.module.nms;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
+import io.izzel.taboolib.module.nms.nbt.NBTOperation;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.EntityVillager;
@@ -28,6 +32,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Author 坏黑
@@ -233,6 +238,29 @@ public class NMSImpl extends NMS {
             t.printStackTrace();
         }
         return new NBTCompound();
+    }
+
+    @Override
+    public List<NBTAttribute> getBaseAttribute(ItemStack item) {
+        List<NBTAttribute> list = Lists.newArrayList();
+        Object nmsItem = CraftItemStack.asNMSCopy(item);
+        Object attr;
+        if (Version.isAfter(Version.v1_9)) {
+            attr = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a(net.minecraft.server.v1_12_R1.EnumItemSlot.MAINHAND);
+        } else {
+            attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i();
+        }
+        ((Multimap) attr).forEach((k, v) -> {
+            Object nbt = net.minecraft.server.v1_12_R1.GenericAttributes.a((net.minecraft.server.v1_12_R1.AttributeModifier) v);
+            list.add(new NBTAttribute(
+                    new UUID(((NBTTagCompound) nbt).getLong("UUIDMost"), ((NBTTagCompound) nbt).getLong("UUIDLeast")),
+                    String.valueOf(k),
+                    ((NBTTagCompound) nbt).getString("Name"),
+                    ((NBTTagCompound) nbt).getDouble("Amount"),
+                    NBTOperation.fromIndex(((NBTTagCompound) nbt).getInt("Operation"))
+            ));
+        });
+        return list;
     }
 
     private Object toNBTBase(io.izzel.taboolib.module.nms.nbt.NBTBase base) {

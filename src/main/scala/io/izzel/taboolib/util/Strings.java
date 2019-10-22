@@ -7,8 +7,16 @@ import java.security.NoSuchAlgorithmException;
 
 public class Strings {
 
+    public static boolean nonBlack(String var) {
+        return !isBlank(var);
+    }
+
     public static boolean isBlank(String var) {
         return var == null || var.trim().isEmpty();
+    }
+
+    public static boolean nonEmpty(CharSequence var) {
+        return !isEmpty(var);
     }
 
     public static boolean isEmpty(CharSequence var) {
@@ -90,13 +98,13 @@ public class Strings {
     }
 
     private static String removeSign(String str) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         for (char item : str.toCharArray()) {
             if (charReg(item)){
-                sb.append(item);
+                builder.append(item);
             }
         }
-        return sb.toString();
+        return builder.toString();
     }
 
     private static boolean charReg(char charValue) {
