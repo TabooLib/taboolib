@@ -49,9 +49,35 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         return value.get(key);
     }
 
+    public NBTBase getDeep(String key) {
+        NBTBase value = this;
+        for (String keyStr : key.split("\\.")) {
+            if ((value = value.asCompound().get(keyStr)) == null) {
+                return null;
+            }
+        }
+        return value;
+    }
+
     @Override
     public NBTBase put(String key, NBTBase value) {
         return this.value.put(key, value);
+    }
+
+    public NBTBase putDeep(String key, NBTBase value) {
+        NBTBase compound = this, temp;
+        String[] keySplit = key.split("\\.");
+        for (String keyStr : keySplit) {
+            if (keyStr.equalsIgnoreCase(keySplit[keySplit.length - 1])) {
+                return ((NBTCompound) compound).put(keyStr, value);
+            }
+            if ((temp = compound.asCompound().get(keyStr)) == null) {
+                temp = new NBTCompound();
+                compound.asCompound().put(keyStr, temp);
+            }
+            compound = temp;
+        }
+        return null;
     }
 
     @Override

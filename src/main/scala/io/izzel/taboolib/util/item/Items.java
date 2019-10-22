@@ -2,13 +2,13 @@ package io.izzel.taboolib.util.item;
 
 import com.google.common.collect.ImmutableMap;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.module.lite.SimpleEquip;
 import io.izzel.taboolib.module.lite.SimpleI18n;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
-import io.izzel.taboolib.util.lite.Numbers;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,6 +26,8 @@ import org.bukkit.util.NumberConversions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @Author 坏黑
@@ -46,6 +48,10 @@ public class Items {
 
     public static boolean isNull(ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
+    }
+
+    public static boolean nonNull(ItemStack item) {
+        return !isNull(item);
     }
 
     public static boolean hasLore(ItemStack i, String a) {
@@ -210,11 +216,11 @@ public class Items {
             return section.getItemStack("bukkit");
         }
         // 材质
-        ItemStack item = new ItemStack(asMaterial(section.getString("material")));
+        ItemStack item = new ItemStack(asMaterial(section.contains("material") ? section.getString("material") : section.getString("type")));
         // 数量
-        item.setAmount(section.contains("amount") ? section.getInt("amount") : 1);
+        item.setAmount(section.contains("amount") ? section.getInt("amount") : section.getInt("count", 1));
         // 耐久
-        item.setDurability((short) section.getInt("data"));
+        item.setDurability((short) (section.contains("data") ? section.getInt("data") : section.getInt("damage")));
         // 元数据
         ItemMeta meta = item.getItemMeta();
         // 展示名
@@ -272,18 +278,7 @@ public class Items {
         NBTCompound nbt = NMS.handle().loadNBT(item);
         // 物品标签
         if (section.contains("nbt")) {
-            for (String name : section.getConfigurationSection("nbt").getKeys(false)) {
-                Object obj = section.get("nbt." + name);
-                if (obj instanceof String) {
-                    nbt.put(name, new NBTBase(obj.toString()));
-                } else if (obj instanceof Double) {
-                    nbt.put(name, new NBTBase(NumberConversions.toDouble(obj)));
-                } else if (obj instanceof Integer) {
-                    nbt.put(name, new NBTBase(NumberConversions.toInt(obj)));
-                } else if (obj instanceof Long) {
-                    nbt.put(name, new NBTBase(NumberConversions.toLong(obj)));
-                }
-            }
+            NBTBase.translateSection(nbt, section.getConfigurationSection("nbt"));
         }
         // 物品属性
         if (section.contains("attributes")) {
@@ -292,6 +287,7 @@ public class Items {
                 for (String name : section.getConfigurationSection("attributes." + hand).getKeys(false)) {
                     if (asAttribute(name) != null) {
                         try {
+                            UUID uuid = UUID.randomUUID();
                             NBTCompound a = new NBTCompound();
                             String num = section.getString("attributes." + hand + "." + name);
                             if (num.endsWith("%")) {
@@ -302,11 +298,11 @@ public class Items {
                                 a.put("Operation", new NBTBase(0));
                             }
                             a.put("AttributeName", new NBTBase(asAttribute(name)));
-                            a.put("UUIDMost", new NBTBase(Numbers.getRandom().nextInt(Integer.MAX_VALUE)));
-                            a.put("UUIDLeast", new NBTBase(Numbers.getRandom().nextInt(Integer.MAX_VALUE)));
+                            a.put("UUIDMost", new NBTBase(uuid.getMostSignificantBits()));
+                            a.put("UUIDLeast", new NBTBase(uuid.getLeastSignificantBits()));
                             a.put("Name", new NBTBase(asAttribute(name)));
                             if (!hand.equals("all")) {
-                                a.put("Slot", new NBTBase(hand));
+                                Optional.ofNullable(SimpleEquip.fromNMS(hand)).ifPresent(e -> a.put("Slot", new NBTBase(e.getNMS())));
                             }
                             attr.add(a);
                         } catch (Exception ignored) {

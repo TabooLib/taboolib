@@ -1,11 +1,18 @@
 package io.izzel.taboolib.module.nms;
 
+import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
+import io.izzel.taboolib.module.nms.nbt.NBTList;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * @Author 坏黑
@@ -47,4 +54,17 @@ public abstract class NMS {
     public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound) {
         return _NBT(itemStack, compound);
     }
+
+    public List<NBTAttribute> getAttribute(ItemStack item) {
+        NBTCompound nbt = loadNBT(item);
+        return !nbt.containsKey("AttributeModifiers") ? Lists.newCopyOnWriteArrayList() : nbt.get("AttributeModifiers").asList().stream().map(element -> NBTAttribute.fromNBT(element.asCompound())).collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+    }
+
+    public ItemStack setAttribute(ItemStack item, List<NBTAttribute> attributes) {
+        NBTCompound nbt = loadNBT(item);
+        nbt.put("AttributeModifiers", attributes.stream().map(NBTAttribute::toNBT).collect(Collectors.toCollection(NBTList::new)));
+        return saveNBT(item, nbt);
+    }
+
+    abstract public List<NBTAttribute> getBaseAttribute(ItemStack item);
 }

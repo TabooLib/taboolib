@@ -1,7 +1,13 @@
 package io.izzel.taboolib.module.nms.nbt;
 
+import io.izzel.taboolib.TabooLib;
+import org.bukkit.configuration.ConfigurationSection;
+
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * @Author 坏黑
@@ -9,6 +15,7 @@ import java.util.Objects;
  */
 public class NBTBase {
 
+    protected static final Pattern SHORT_PATTERN = Pattern.compile("\\d+s");
     protected NBTType type;
     protected Object data;
 
@@ -113,6 +120,65 @@ public class NBTBase {
 
     public NBTType getType() {
         return type;
+    }
+
+    public static NBTBase formNBTBase(Object obj) {
+        if (obj instanceof String) {
+            if (SHORT_PATTERN.matcher(obj.toString()).matches()) {
+                return formNBTBase(Short.valueOf(obj.toString().substring(0, obj.toString().length() - 1)));
+            }
+            return new NBTBase((String) obj);
+        } else if (obj instanceof Integer) {
+            return new NBTBase((int) obj);
+        } else if (obj instanceof Double) {
+            return new NBTBase((double) obj);
+        } else if (obj instanceof Float) {
+            return new NBTBase((float) obj);
+        } else if (obj instanceof Short) {
+            return new NBTBase((short) obj);
+        } else if (obj instanceof Long) {
+            return new NBTBase((long) obj);
+        } else if (obj instanceof Byte) {
+            return new NBTBase((byte) obj);
+        } else if (obj instanceof List) {
+            return translateList(new NBTList(), (List) obj);
+        } else if (obj instanceof Map) {
+            NBTCompound nbtCompound = new NBTCompound();
+            ((Map) obj).forEach((key, value) -> nbtCompound.put(key.toString(), formNBTBase(value)));
+            return nbtCompound;
+        } else if (obj instanceof ConfigurationSection) {
+            NBTCompound nbtCompound = new NBTCompound();
+            ((ConfigurationSection) obj).getValues(false).forEach((key, value) -> nbtCompound.put(key, formNBTBase(value)));
+            return nbtCompound;
+        }
+        return new NBTBase("error: " + obj);
+    }
+
+    public static NBTList translateList(NBTList nbtListBase, List list) {
+        for (Object obj : list) {
+            NBTBase base = formNBTBase(obj);
+            if (base == null) {
+                TabooLib.getLogger().warn("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
+                continue;
+            }
+            nbtListBase.add(base);
+        }
+        return nbtListBase;
+    }
+
+    public static NBTCompound translateSection(NBTCompound nbt, ConfigurationSection section) {
+        for (String key : section.getKeys(false)) {
+            Object obj = section.get(key);
+            NBTBase base;
+            if (obj instanceof ConfigurationSection) {
+                base = translateSection(new NBTCompound(), section.getConfigurationSection(key));
+            } else if ((base = formNBTBase(obj)) == null) {
+                TabooLib.getLogger().warn("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
+                continue;
+            }
+            nbt.put(key, base);
+        }
+        return nbt;
     }
 
     @Override

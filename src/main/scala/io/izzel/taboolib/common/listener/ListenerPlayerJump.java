@@ -28,13 +28,12 @@ public class ListenerPlayerJump implements Listener {
                 // 不在冷却
                 && !cooldown.isCooldown(e.getPlayer().getName())) {
 
-            PlayerJumpEvent event = new PlayerJumpEvent(e.getPlayer()).call();
-            if (event.isCancelled()) {
+            new PlayerJumpEvent(e.getPlayer()).call().ifCancelled(() -> {
                 // 返回位置
                 e.setTo(e.getFrom());
                 // 重置冷却
                 cooldown.reset(e.getPlayer().getName());
-            }
+            });
         }
     }
 }
