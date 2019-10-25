@@ -1,5 +1,15 @@
 package io.izzel.taboolib.module.inject;
 
+import com.google.common.collect.Lists;
+import io.izzel.taboolib.compat.kotlin.CompatKotlin;
+import io.izzel.taboolib.module.locale.logger.TLogger;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+
 /**
  * @Author sky
  * @Since 2019-08-17 23:22
@@ -22,5 +32,61 @@ public class TInjectHelper {
             default:
                 return inject.cancel();
         }
+    }
+
+    public static List<Object> getInstance(Field field, Class<?> pluginClass, Plugin plugin) {
+        List<Object> instance = Lists.newArrayList();
+        // Static
+        if (Modifier.isStatic(field.getModifiers())) {
+            instance.add(null);
+        }
+        // No Static
+        else if (!Modifier.isStatic(field.getModifiers())) {
+            // Main
+            if (pluginClass.equals(plugin.getClass())) {
+                instance.add(plugin);
+            }
+            // TInject
+            else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
+                TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
+            }
+        }
+        // Nothing
+        else if (instance.isEmpty()) {
+            TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + pluginClass.getName() + ")");
+        }
+        return instance;
+    }
+
+    public static List<Object> getInstance(Method method, Class<?> pluginClass, Plugin plugin) {
+        List<Object> instance = Lists.newArrayList();
+        // Object
+        if (CompatKotlin.getInstance(pluginClass) != null) {
+            instance.add(CompatKotlin.getInstance(pluginClass));
+        }
+        // Companion Object
+        else if (CompatKotlin.isCompanion(pluginClass)) {
+            instance.add(CompatKotlin.getCompanion(pluginClass));
+        }
+        // Static
+        else if (Modifier.isStatic(method.getModifiers())) {
+            instance.add(null);
+        }
+        // No Static
+        else if (!Modifier.isStatic(method.getModifiers())) {
+            // Main
+            if (pluginClass.equals(plugin.getClass())) {
+                instance.add(plugin);
+            }
+            // TInject
+            else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
+                TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
+            }
+        }
+        // Nothing
+        else if (instance.isEmpty()) {
+            TLogger.getGlobalLogger().error(method.getName() + " is not a static method. (" + pluginClass.getName() + ")");
+        }
+        return instance;
     }
 }

@@ -32,9 +32,12 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
                 continue;
             }
             field.setAccessible(true);
-            try {
-                pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(field.get(pluginClass), annotation.uniqueId()));
-            } catch (IllegalAccessException ignored) {
+            for (Object instance : TInjectHelper.getInstance(field, pluginClass, plugin)) {
+                try {
+                    pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(field.get(instance), annotation.uniqueId()));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
             }
         }
     }

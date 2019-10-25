@@ -8,7 +8,7 @@ import io.izzel.taboolib.util.Reflection;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -54,27 +54,15 @@ public class TInjectCreator implements TabooLibLoader.Loader {
             if (annotation == null || annotation.state() != state) {
                 continue;
             }
-            ClassData classData = new ClassData(loadClass, declaredField.getType());
-            Object instance = null;
-            // 非静态类型
-            if (!Modifier.isStatic(declaredField.getModifiers())) {
-                // 在插件主类
-                if (loadClass.equals(plugin.getClass())) {
-                    instance = plugin;
-                }
-                // 判断 pluginCLass 是否为 TInject 创建
-                else if (instanceMap.containsKey(classData)) {
-                    instance = instanceMap.get(classData).getInstance();
-                } else {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + loadClass.getName() + ")");
-                    continue;
-                }
+            List<Object> instance = TInjectHelper.getInstance(declaredField, loadClass, plugin);
+            if (instance.isEmpty()) {
+                continue;
             }
             Ref.forcedAccess(declaredField);
             try {
                 InstanceData instanceData = new InstanceData(declaredField.getType().newInstance(), annotation);
                 declaredField.set(instance, instanceData.getInstance());
-                instanceMap.put(classData, instanceData);
+                instanceMap.put(new ClassData(loadClass, declaredField.getType()), instanceData);
             } catch (Throwable t) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " instantiation failed: " + t.getMessage());
             }

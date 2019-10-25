@@ -9,15 +9,23 @@ import io.izzel.taboolib.util.Reflection;
  */
 public class CompatKotlin {
 
-    public static boolean isCompanion(Class clazz) {
-        return clazz.getName().endsWith("$Companion");
+    public static boolean isCompanion(Class<?> pluginClass) {
+        return pluginClass.getName().endsWith("$Companion");
     }
 
-    public static Object getCompanion(Class clazz)  {
+    public static Object getCompanion(Class<?> pluginClass)  {
         try {
-            return Reflection.getValue(null, TabooLibAPI.getPluginBridge().getClass(clazz.getName().substring(0, clazz.getName().indexOf("$Companion"))), true, "Companion");
+            return Reflection.getValue(null, TabooLibAPI.getPluginBridge().getClass(pluginClass.getName().substring(0, pluginClass.getName().indexOf("$Companion"))), true, "Companion");
         } catch (Throwable t) {
             t.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Object getInstance(Class<?> pluginClass)  {
+        try {
+            return Reflection.getValue(null, pluginClass, true, "INSTANCE");
+        } catch (Throwable ignored) {
         }
         return null;
     }

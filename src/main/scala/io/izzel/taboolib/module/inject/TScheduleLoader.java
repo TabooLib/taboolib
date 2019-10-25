@@ -4,13 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.compat.kotlin.CompatKotlin;
-import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
@@ -44,27 +41,18 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
-            Object[] instance = new Object[] {pluginClass.equals(plugin.getClass()) ? plugin : null};
-            if (CompatKotlin.isCompanion(pluginClass)) {
-                instance[0] = CompatKotlin.getCompanion(pluginClass);
-                if (instance[0] == null) {
-                    TLogger.getGlobalLogger().error(method.getName() + " required @JvmStatic.");
-                    return;
-                }
-            } else if (!Modifier.isStatic(method.getModifiers()) && instance[0] == null) {
-                TLogger.getGlobalLogger().error(method.getName() + " is not a static method.");
-                continue;
-            }
+            method.setAccessible(true);
             if (plugin.equals(TabooLib.getPlugin())) {
                 run(plugin, new BukkitRunnable() {
 
                     @Override
                     public void run() {
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(instance[0]);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
+                        for (Object i : TInjectHelper.getInstance(method, pluginClass, plugin)) {
+                            try {
+                                method.invoke(i);
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
                         }
                     }
                 }, annotation.delay(), annotation.period(), annotation.async());
@@ -73,11 +61,12 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
 
                     @Override
                     public void run() {
-                        try {
-                            method.setAccessible(true);
-                            method.invoke(instance[0]);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
+                        for (Object i : TInjectHelper.getInstance(method, pluginClass, plugin)) {
+                            try {
+                                method.invoke(i);
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
                         }
                     }
                 }));
