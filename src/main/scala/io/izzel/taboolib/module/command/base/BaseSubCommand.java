@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.command.base;
 
 import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -15,6 +16,11 @@ import java.util.stream.IntStream;
 public abstract class BaseSubCommand {
 
     private String label;
+    private SubCommand annotation;
+
+    public void setAnnotation(SubCommand annotation) {
+        this.annotation = annotation;
+    }
 
     public void setLabel(String label) {
         this.label = label;
@@ -25,35 +31,35 @@ public abstract class BaseSubCommand {
     }
 
     public String getDescription() {
-        return null;
+        return annotation.description();
     }
 
     public String[] getAliases() {
-        return new String[0];
+        return annotation.aliases();
     }
 
     public Argument[] getArguments() {
-        return new Argument[0];
+        return Arrays.stream(annotation.aliases()).map(a -> a.endsWith("?") ? new Argument(a.substring(0, a.length() - 1), false) : new Argument(a)).toArray(Argument[]::new);
     }
 
     public CommandType getType() {
-        return CommandType.ALL;
+        return annotation.type();
     }
 
     public boolean ignoredLabel() {
-        return true;
+        return annotation.ignoredLabel();
     }
 
     public boolean requiredPlayer() {
-        return false;
+        return annotation.requiredPlayer();
     }
 
     public String getPermission() {
-        return null;
+        return annotation.permission();
     }
 
     public boolean hideInHelp() {
-        return false;
+        return annotation.hideInHelp();
     }
 
     public boolean isParameterConform(String[] args) {
@@ -61,7 +67,7 @@ public abstract class BaseSubCommand {
     }
 
     public String getCommandString(String label) {
-        return TLocale.asString(getDescription() == null ? "COMMANDS.INTERNAL.COMMAND-HELP-EMPTY" : "COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
+        return TLocale.asString(Strings.isEmpty(getDescription()) ? "COMMANDS.INTERNAL.COMMAND-HELP-EMPTY" : "COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
     }
 
     abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
