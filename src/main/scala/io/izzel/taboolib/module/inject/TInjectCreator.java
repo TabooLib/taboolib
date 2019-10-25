@@ -100,7 +100,7 @@ public class TInjectCreator implements TabooLibLoader.Loader {
     /**
      * 用于防止多个类使用同一个类型
      */
-    public class ClassData {
+    public static class ClassData {
 
         private Class parent;
         private Class type;

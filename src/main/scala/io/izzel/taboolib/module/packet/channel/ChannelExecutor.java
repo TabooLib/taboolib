@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.packet.channel;
 
+import io.izzel.taboolib.module.packet.Packet;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -50,7 +51,7 @@ public abstract class ChannelExecutor {
         @Override
         public void write(ChannelHandlerContext channelHandlerContext, Object o, ChannelPromise channelPromise) throws Exception {
             try {
-                if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onSend(player, o))) {
+                if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onSend(player, o) || !packetListener.onSend(player, new Packet(o)))) {
                     return;
                 }
             } catch (Exception e) {
@@ -62,7 +63,7 @@ public abstract class ChannelExecutor {
         @Override
         public void channelRead(ChannelHandlerContext channelHandlerContext, Object o) throws Exception {
             try {
-                if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onReceive(player, o))) {
+                if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onReceive(player, o) || !packetListener.onReceive(player, new Packet(o)))) {
                     return;
                 }
             } catch (Exception e) {

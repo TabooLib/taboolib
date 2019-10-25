@@ -12,8 +12,15 @@ public abstract class TPacketListener {
         return true;
     }
 
+    public boolean onSend(Player player, Packet packet) {
+        return true;
+    }
+
     public boolean onReceive(Player player, Object packet) {
         return true;
     }
 
+    public boolean onReceive(Player player, Packet packet) {
+        return true;
+    }
 }
