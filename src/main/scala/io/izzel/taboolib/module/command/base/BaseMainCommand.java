@@ -16,10 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -52,11 +49,42 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.getAnnotation(SubCommand.class) != null).forEach(methods::add));
         if (methods.size() > 0) {
             methods.sort(Comparator.comparingDouble(a -> a.getAnnotation(SubCommand.class).priority()));
-            methods.forEach(x -> {
+            methods.forEach(method -> {
+                BaseSubCommand subCommand = null;
                 try {
-                    x.setAccessible(true);
-                    x.invoke(baseMainCommand);
-                } catch (Exception ignored) {
+                    method.setAccessible(true);
+                    // lite parameter
+                    if (Arrays.equals(method.getParameterTypes(), new Class[] {CommandSender.class, String[].class})) {
+                        subCommand = new BaseSubCommand() {
+                            @Override
+                            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+                                try {
+                                    method.invoke(baseMainCommand, sender, args);
+                                } catch (Throwable t) {
+                                    t.printStackTrace();
+                                }
+                            }
+                        };
+                    }
+                    // fully parameter
+                    else if (Arrays.equals(method.getParameterTypes(), new Class[] {CommandSender.class, Command.class, String.class, String[].class})) {
+                        subCommand = new BaseSubCommand() {
+                            @Override
+                            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+                                try {
+                                    method.invoke(baseMainCommand, sender, command, label, args);
+                                } catch (Throwable t) {
+                                    t.printStackTrace();
+                                }
+                            }
+                        };
+                    }
+                    if (subCommand != null) {
+                        subCommand.setLabel(method.getName());
+                        subCommand.setAnnotation(method.getAnnotation(SubCommand.class));
+                        baseMainCommand.registerSubCommand(subCommand);
+                    }
+                } catch (Throwable ignored) {
                 }
             });
         }
@@ -68,8 +96,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                     commandField.getField().setAccessible(true);
                     BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
                     subCommand.setLabel(commandField.getField().getName());
+                    subCommand.setAnnotation(commandField.getField().getAnnotation(SubCommand.class));
                     baseMainCommand.registerSubCommand(subCommand);
-                } catch (Exception ignored) {
+                } catch (Throwable ignored) {
                 }
             });
         }
@@ -230,7 +259,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     }
 
     private boolean hasPermission(CommandSender sender, BaseSubCommand baseSubCommand) {
-        return baseSubCommand == null || baseSubCommand.getPermission() == null || sender.hasPermission(baseSubCommand.getPermission());
+        return baseSubCommand == null || Strings.isEmpty(baseSubCommand.getPermission()) || sender.hasPermission(baseSubCommand.getPermission());
     }
 
     private String[] removeFirst(String[] args) {

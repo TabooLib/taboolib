@@ -14,4 +14,20 @@ import java.lang.annotation.Target;
 public @interface SubCommand {
 
     double priority() default 0;
+
+    String permission() default "";
+
+    String description() default "";
+
+    String[] aliases() default {};
+
+    String[] arguments() default {};
+
+    boolean ignoredLabel() default true;
+
+    boolean requiredPlayer() default false;
+
+    boolean hideInHelp() default false;
+
+    CommandType type() default CommandType.ALL;
 }
