@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.util.Ref;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -29,10 +30,18 @@ public class SimpleReflection {
         return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(fieldName);
     }
 
+    public static void checkAndSave(Class<?>... nmsClass) {
+        Arrays.stream(nmsClass).forEach(SimpleReflection::checkAndSave);
+    }
+
     public static void checkAndSave(Class<?> nmsClass) {
         if (!isExists(nmsClass)) {
             saveField(nmsClass);
         }
+    }
+
+    public static void saveField(Class<?>... nmsClass) {
+        Arrays.stream(nmsClass).forEach(SimpleReflection::saveField);
     }
 
     public static void saveField(Class<?> nmsClass) {
@@ -46,7 +55,7 @@ public class SimpleReflection {
     public static void saveField(Class<?> nmsClass, String fieldName) {
         try {
             Field declaredField = nmsClass.getDeclaredField(fieldName);
-            declaredField.setAccessible(true);
+            Ref.forcedAccess(declaredField);
             fieldCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(fieldName, declaredField);
         } catch (Exception e) {
             e.printStackTrace();
