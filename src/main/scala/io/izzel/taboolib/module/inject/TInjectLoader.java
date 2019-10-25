@@ -17,7 +17,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
@@ -135,22 +134,11 @@ public class TInjectLoader implements TabooLibLoader.Loader {
     public void preLoad(Plugin plugin, Class<?> pluginClass) {
         for (Field declaredField : pluginClass.getDeclaredFields()) {
             TInject annotation = declaredField.getAnnotation(TInject.class);
-            // 是否为主类类型
             if (annotation == null || !declaredField.getType().equals(plugin.getClass())) {
                 continue;
             }
-            Object instance = null;
-            // 如果是非静态类型
-            if (!Modifier.isStatic(declaredField.getModifiers())) {
-                // 是否为主类
-                if (pluginClass.equals(plugin.getClass())) {
-                    instance = plugin;
-                } else {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + pluginClass.getName() + ")");
-                    continue;
-                }
-            }
-            inject(plugin, declaredField, instance, annotation, injectTypes.get(Plugin.class), pluginClass);
+            Ref.forcedAccess(declaredField);
+            TInjectHelper.getInstance(declaredField, pluginClass, plugin).forEach(instance -> inject(plugin, declaredField, instance, annotation, injectTypes.get(Plugin.class), pluginClass));
         }
     }
 
@@ -161,26 +149,15 @@ public class TInjectLoader implements TabooLibLoader.Loader {
             if (annotation == null || declaredField.getType().equals(plugin.getClass())) {
                 continue;
             }
-            Object instance = null;
-            // 如果是非静态类型
-            if (!Modifier.isStatic(declaredField.getModifiers())) {
-                // 是否为主类
-                if (pluginClass.equals(plugin.getClass())) {
-                    instance = plugin;
-                } else {
-                    TLogger.getGlobalLogger().error(declaredField.getName() + " is not a static field. (" + pluginClass.getName() + ")");
-                    continue;
-                }
-            }
+            Ref.forcedAccess(declaredField);
             TInjectTask tInjectTask = injectTypes.get(declaredField.getType());
             if (tInjectTask != null) {
-                inject(plugin, declaredField, instance, annotation, tInjectTask, pluginClass);
+                TInjectHelper.getInstance(declaredField, pluginClass, plugin).forEach(instance -> inject(plugin, declaredField, instance, annotation, tInjectTask, pluginClass));
             }
         }
     }
 
     public void inject(Plugin plugin, Field field, Object instance, TInject annotation, TInjectTask injectTask, Class pluginClass) {
-        Ref.forcedAccess(field);
         try {
             injectTask.run(plugin, field, annotation, pluginClass, instance);
             TabooLibAPI.debug(field.getName() + " injected. (" + field.getType().getName() + ")");

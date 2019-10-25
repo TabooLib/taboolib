@@ -1,12 +1,11 @@
 package io.izzel.taboolib.module.db.local;
 
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.inject.TInjectHelper;
 import io.izzel.taboolib.util.Ref;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 /**
  * @Author 坏黑
@@ -21,21 +20,13 @@ public class LocalLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
-            Object instance = null;
-            // 如果是非静态类型
-            if (!Modifier.isStatic(field.getModifiers())) {
-                // 是否为主类
-                if (pluginClass.equals(plugin.getClass())) {
-                    instance = plugin;
-                } else {
-                    TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + pluginClass.getName() + ")");
-                    continue;
-                }
-            }
             Ref.forcedAccess(field);
-            try {
-                field.set(instance, Local.get(plugin.getName()).get(annotation.value()));
-            } catch (IllegalAccessException ignored) {
+            for (Object instance : TInjectHelper.getInstance(field, pluginClass, plugin)) {
+                try {
+                    field.set(instance, Local.get(plugin.getName()).get(annotation.value()));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
             }
         }
     }
