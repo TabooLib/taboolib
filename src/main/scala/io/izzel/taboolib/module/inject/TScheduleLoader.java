@@ -41,35 +41,32 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
-            method.setAccessible(true);
             if (plugin.equals(TabooLib.getPlugin())) {
-                run(plugin, new BukkitRunnable() {
+                method.setAccessible(true);
+                TInjectHelper.getInstance(method, pluginClass, plugin).forEach(instance -> run(plugin, new BukkitRunnable() {
 
                     @Override
                     public void run() {
-                        for (Object i : TInjectHelper.getInstance(method, pluginClass, plugin)) {
-                            try {
-                                method.invoke(i);
-                            } catch (Throwable t) {
-                                t.printStackTrace();
-                            }
+                        try {
+                            method.invoke(instance);
+                        } catch (Throwable t) {
+                            t.printStackTrace();
                         }
                     }
-                }, annotation.delay(), annotation.period(), annotation.async());
+                }, annotation.delay(), annotation.period(), annotation.async()));
             } else {
-                schedules.computeIfAbsent(plugin.getName(), n -> Lists.newArrayList()).add(new TScheduleData(annotation, new BukkitRunnable() {
+                method.setAccessible(true);
+                TInjectHelper.getInstance(method, pluginClass, plugin).forEach(instance -> schedules.computeIfAbsent(plugin.getName(), n -> Lists.newArrayList()).add(new TScheduleData(annotation, new BukkitRunnable() {
 
                     @Override
                     public void run() {
-                        for (Object i : TInjectHelper.getInstance(method, pluginClass, plugin)) {
-                            try {
-                                method.invoke(i);
-                            } catch (Throwable t) {
-                                t.printStackTrace();
-                            }
+                        try {
+                            method.invoke(instance);
+                        } catch (Throwable t) {
+                            t.printStackTrace();
                         }
                     }
-                }));
+                })));
             }
         }
     }
