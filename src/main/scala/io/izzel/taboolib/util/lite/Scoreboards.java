@@ -3,6 +3,7 @@ package io.izzel.taboolib.util.lite;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -57,7 +58,7 @@ public class Scoreboards {
         return elements;
     }
 
-    public static org.bukkit.scoreboard.Scoreboard display(Player p, String... elements) {
+    public static Scoreboard display(Player p, String... elements) {
         elements = fixLines(elements);
         try {
             if (p.getScoreboard() == null || p.getScoreboard() == Bukkit.getScoreboardManager().getMainScoreboard() || p.getScoreboard().getObjectives().size() != 1) {
