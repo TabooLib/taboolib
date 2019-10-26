@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
-import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.db.sql.SQLExecutor;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -68,6 +68,11 @@ public class RunnableQuery {
         return object == null ? def == null ? null : (T) def : (T) object;
     }
 
+    public <T> T run(Object def, Class<? extends T> translate) {
+        Object object = run(def);
+        return object == null ? def == null ? null : (T) def : (T) object;
+    }
+
     public Object run() {
         return run(null);
     }
@@ -106,6 +111,11 @@ public class RunnableQuery {
             }
         }
         return def;
+    }
+
+    public boolean find() {
+        this.resultNext = r -> true;
+        return run(false, false);
     }
 
     private void printException(Exception e) {
