@@ -38,6 +38,10 @@ public class QueryUpdate {
         return this;
     }
 
+    public void run(DataSource dataSource) {
+        this.to(dataSource).run();
+    }
+
     public RunnableUpdate to(DataSource dataSource) {
         return new RunnableUpdate(toQuery()).dataSource(dataSource).statement(s -> {
             int index = 1;

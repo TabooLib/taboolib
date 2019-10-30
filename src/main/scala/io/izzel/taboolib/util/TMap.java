@@ -56,7 +56,7 @@ public class TMap {
     }
 
     public static TMap parse(String in) {
-        Matcher matcher = Pattern.compile("(?<name>[^{}]+)?\\{(?<content>[^<>]+)}").matcher(in.replaceAll("[\r\n]", ""));
+        Matcher matcher = Pattern.compile("(?<name>.+)?\\{(?<content>.+)}").matcher(in.replaceAll("[\r\n]", ""));
         if (matcher.find()) {
             TMap map = new TMap(matcher.group("name"));
             for (String content : matcher.group("content").split(";")) {
