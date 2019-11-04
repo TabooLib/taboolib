@@ -52,7 +52,7 @@ public class TInjectHelper {
             }
         }
         // Nothing
-        else if (instance.isEmpty()) {
+        if (instance.isEmpty()) {
             TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + pluginClass.getName() + ")");
         }
         return instance;
@@ -60,22 +60,22 @@ public class TInjectHelper {
 
     public static List<Object> getInstance(Method method, Class<?> pluginClass, Plugin plugin) {
         List<Object> instance = Lists.newArrayList();
-        // Object
-        if (CompatKotlin.getInstance(pluginClass) != null) {
-            instance.add(CompatKotlin.getInstance(pluginClass));
-        }
-        // Companion Object
-        else if (CompatKotlin.isCompanion(pluginClass)) {
-            instance.add(CompatKotlin.getCompanion(pluginClass));
-        }
         // Static
-        else if (Modifier.isStatic(method.getModifiers())) {
+        if (Modifier.isStatic(method.getModifiers())) {
             instance.add(null);
         }
         // No Static
         else if (!Modifier.isStatic(method.getModifiers())) {
+            // Object
+            if (CompatKotlin.getInstance(pluginClass) != null) {
+                instance.add(CompatKotlin.getInstance(pluginClass));
+            }
+            // Companion Object
+            else if (CompatKotlin.isCompanion(pluginClass)) {
+                instance.add(CompatKotlin.getCompanion(pluginClass));
+            }
             // Main
-            if (pluginClass.equals(plugin.getClass())) {
+            else if (pluginClass.equals(plugin.getClass())) {
                 instance.add(plugin);
             }
             // TInject
@@ -84,7 +84,7 @@ public class TInjectHelper {
             }
         }
         // Nothing
-        else if (instance.isEmpty()) {
+        if (instance.isEmpty()) {
             TLogger.getGlobalLogger().error(method.getName() + " is not a static method. (" + pluginClass.getName() + ")");
         }
         return instance;

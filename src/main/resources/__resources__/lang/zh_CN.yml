@@ -12,13 +12,6 @@ MISC:
   FIELD-COPY-FAILED: '拷贝 {0} 对象失败'
   FIELD-COPY-ERROR: '拷贝 {0} 对象出错：{1}'
 
-ITEM-UTILS:
-  FAIL-LOAD-ATTRIBUTE: '&c{0} &4不是一个有效的属性名称, 输入 &c/tlib attributes&4 查看所有属性'
-  FAIL-LOAD-ENCHANT: '&c{0} &4不是一个有效的附魔名称, 输入 &c/tlib enchants&4 查看所有附魔'
-  FAIL-LOAD-POTION: '&c{0} &4不是一个有效的药水名称, 输入 &c/tlib potions&4 查看所有药水'
-  FAIL-LOAD-FLAG: '&c{0} &4不是一个有效的标签名称, 输入 &c/tlib flags&4 查看所有标签'
-  FAIL-SAVE-EXISTS: '无法载入载入物品 &4{0}&c, 因为它已经存在了'
-
 MYSQL-HIKARI:
   CREATE-SUCCESS: '&7插件 &f{0} &7注册新的连接池: &f{1}'
   CREATE-EXISTS: '&7插件 &f{0} &7引用插件 &f{1} &7注册的连接池.'

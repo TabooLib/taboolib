@@ -16,7 +16,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -59,17 +58,19 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 field.set(instance, config);
                 if (!args.reload().isEmpty()) {
                     try {
-                        Method declaredMethod = pluginClass.getDeclaredMethod(args.reload());
-                        declaredMethod.setAccessible(true);
-                        config.listener(() -> {
-                            try {
-                                declaredMethod.invoke(instance);
-                            } catch (Throwable t) {
-                                t.printStackTrace();
+                        Ref.getDeclaredMethods(pluginClass).forEach(method -> {
+                            if (method.getName().equals(args.reload())) {
+                                method.setAccessible(true);
+                                config.listener(() -> {
+                                    try {
+                                        method.invoke(instance);
+                                    } catch (Throwable t) {
+                                        t.printStackTrace();
+                                    }
+                                });
+                                TabooLibLoader.runTask(config::runListener);
                             }
                         });
-                        TabooLibLoader.runTask(config::runListener);
-                    } catch (NoSuchMethodException ignore) {
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }

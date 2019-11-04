@@ -51,7 +51,7 @@ class TLocaleInstance {
 
     public void sendTo(String path, CommandSender sender, String... args) {
         try {
-            map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).forEach(tSender -> {
+            map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(plugin, path))).forEach(tSender -> {
                 if (Bukkit.isPrimaryThread() || Objects.equals(System.getProperty("tlib.forceAsync"), "true")) {
                     tSender.sendTo(sender, args);
                 } else {
@@ -65,11 +65,11 @@ class TLocaleInstance {
     }
 
     public String asString(String path, String... args) {
-        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).get(0).asString(args);
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(plugin, path))).get(0).asString(args);
     }
 
     public List<String> asStringList(String path, String... args) {
-        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(path))).get(0).asStringList(args);
+        return map.getOrDefault(path, ImmutableList.of(TLocaleSerialize.getEmpty(plugin, path))).get(0).asStringList(args);
     }
 
     private static boolean isListString(List list) {
