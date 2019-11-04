@@ -1,7 +1,10 @@
 package io.izzel.taboolib.module.locale;
 
+import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.TabooLibAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +50,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
         };
     }
 
-    static TLocaleSerialize getEmpty(String path) {
+    static TLocaleSerialize getEmpty(Plugin plugin, String path) {
         return new TLocaleSerialize() {
 
             @Override
@@ -57,17 +60,29 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
 
             @Override
             public void sendTo(CommandSender sender, String... args) {
-                sender.sendMessage("§8<" + path + "§8>");
+                if (TabooLibAPI.isDependTabooLib(plugin)) {
+                    TLocaleLoader.sendTo(TabooLib.getPlugin(), path, sender, args);
+                } else {
+                    sender.sendMessage("§8Notfound: " + path);
+                }
             }
 
             @Override
             public String asString(String... args) {
-                return "§8<" + path + "§8>";
+                if (TabooLibAPI.isDependTabooLib(plugin)) {
+                    return TLocaleLoader.asString(TabooLib.getPlugin(), path, args);
+                } else {
+                    return "§8Notfound: " + path;
+                }
             }
 
             @Override
             public List<String> asStringList(String... args) {
-                return Collections.singletonList("§4<" + path + "§4>");
+                if (TabooLibAPI.isDependTabooLib(plugin)) {
+                    return TLocaleLoader.asStringList(TabooLib.getPlugin(), path, args);
+                } else {
+                    return Collections.singletonList("§8Notfound: " + path);
+                }
             }
         };
     }

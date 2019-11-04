@@ -33,11 +33,11 @@ public class TLogger {
     }
 
     public static TLogger getUnformatted(Plugin plugin) {
-        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", plugin, TLogger.FINE);
+        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", plugin, TLogger.VERBOSE);
     }
 
     public static TLogger getUnformatted(String name) {
-        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", name, TLogger.FINE);
+        return new TLogger("§8[§3§l{0}§8][§r{1}§8] §f{2}", name, TLogger.VERBOSE);
     }
 
     public String getPattern() {

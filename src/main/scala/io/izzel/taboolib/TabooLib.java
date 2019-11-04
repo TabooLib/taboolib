@@ -5,7 +5,6 @@ import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
-import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.dependency.Dependency;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
@@ -82,8 +81,6 @@ public class TabooLib {
             LocalPlayer.saveFiles();
             // 关闭文件监听
             TConfigWatcher.getInst().unregisterAll();
-            // 关闭连接池
-            DBSource.closeDataSourceForce();
             // 关闭插件
             PluginLoader.stop(getPlugin());
         });

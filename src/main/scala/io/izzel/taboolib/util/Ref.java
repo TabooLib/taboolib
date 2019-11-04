@@ -2,15 +2,18 @@ package io.izzel.taboolib.util;
 
 import com.google.gson.annotations.SerializedName;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.util.asm.AsmAnalyser;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import sun.misc.Unsafe;
 import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,9 +23,21 @@ import java.util.stream.Collectors;
 public class Ref {
 
     private static final Map<String, List<Field>> cachedFields = new ConcurrentHashMap<>();
+    private static final Map<String, List<Method>> cacheMethods = new ConcurrentHashMap<>();
+    private static final Map<String, Plugin> cachePlugin = new ConcurrentHashMap<>();
 
     public static final int ACC_BRIDGE = 0x0040;
     public static final int ACC_SYNTHETIC = 0x1000;
+    public static final Unsafe UNSAFE = getUnsafe();
+
+    static Unsafe getUnsafe() {
+        try {
+            return (Unsafe) io.izzel.taboolib.util.Reflection.getValue(null, Unsafe.class, true, "theUnsafe");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
+    }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
         return getDeclaredFields(clazz, 0, true);
@@ -68,6 +83,50 @@ public class Ref {
         }
     }
 
+    public static List<Method> getDeclaredMethods(Class<?> clazz) {
+        return getDeclaredMethods(clazz, 0, true);
+    }
+
+    public static List<Method> getDeclaredMethods(String clazz, int excludeModifiers, boolean cache) {
+        try {
+            return getDeclaredMethods(Class.forName(clazz), excludeModifiers, cache);
+        } catch (ClassNotFoundException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public static List<Method> getDeclaredMethods(Class<?> clazz, int excludeModifiers, boolean cache) {
+        try {
+            List<Method> methods;
+            if ((methods = cacheMethods.get(clazz.getName())) != null) {
+                return methods;
+            }
+            ClassReader classReader = new ClassReader(clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class"));
+            AsmAnalyser analyser = new AsmAnalyser(new ClassWriter(ClassWriter.COMPUTE_MAXS), excludeModifiers);
+            classReader.accept(analyser, ClassReader.SKIP_DEBUG);
+            methods = analyser.getMethods().stream().map(name -> {
+                try {
+                    return clazz.getDeclaredMethod(name);
+                } catch (Throwable ignored) {
+                    return null;
+                }
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+            if (cache) {
+                cacheMethods.putIfAbsent(clazz.getName(), methods);
+            }
+            return methods;
+        } catch (Exception | Error e) {
+            try {
+                List<Method> list = Arrays.stream(clazz.getDeclaredMethods())
+                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                cacheMethods.putIfAbsent(clazz.getName(), list);
+                return list;
+            } catch (Error err) {
+                return Collections.emptyList();
+            }
+        }
+    }
+
     public static Optional<Class<?>> getCallerClass(int depth) {
         return Optional.ofNullable(CallerClass.impl.getCallerClass(depth + 1));
     }
@@ -93,23 +152,43 @@ public class Ref {
         return Optional.empty();
     }
 
+    public static Plugin getCallerPlugin() {
+        return getCallerPlugin(getCallerClass());
+    }
+
     public static Plugin getCallerPlugin(Class<?> callerClass) {
         if (callerClass.getName().startsWith("io.izzel.taboolib") || callerClass.getName().startsWith("io.izzel.tlibscala")) {
             return TabooLib.getPlugin();
         }
         try {
-            return JavaPlugin.getProvidingPlugin(callerClass);
+            return cachePlugin.computeIfAbsent(callerClass.getName(), n -> JavaPlugin.getProvidingPlugin(callerClass));
         } catch (Exception ignored) {
+            return cachePlugin.computeIfAbsent(callerClass.getName(), n -> {
+                try {
+                    ClassLoader loader = callerClass.getClassLoader();
+                    Field pluginF = loader.getClass().getDeclaredField("plugin");
+                    pluginF.setAccessible(true);
+                    Object o = pluginF.get(loader);
+                    return (JavaPlugin) o;
+                } catch (Exception e) {
+                    return TabooLib.getPlugin();
+                }
+            });
+        }
+    }
+
+    public static Class<?> getCallerClass() {
+        StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : elements) {
             try {
-                ClassLoader loader = callerClass.getClassLoader();
-                Field pluginF = loader.getClass().getDeclaredField("plugin");
-                pluginF.setAccessible(true);
-                Object o = pluginF.get(loader);
-                return (JavaPlugin) o;
-            } catch (Exception e) {
-                return TabooLib.getPlugin();
+                Class<?> clazz = TabooLibAPI.getPluginBridge().getClass(element.getClassName());
+                if (TabooLibAPI.isDependTabooLib(getCallerPlugin(clazz))) {
+                    return clazz;
+                }
+            } catch (Throwable ignored) {
             }
         }
+        return TabooLib.class;
     }
 
     public static void forcedAccess(Field field) {
@@ -160,5 +239,4 @@ public class Ref {
             }
         }
     }
-
 }

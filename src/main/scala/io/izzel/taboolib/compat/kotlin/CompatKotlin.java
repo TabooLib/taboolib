@@ -16,8 +16,7 @@ public class CompatKotlin {
     public static Object getCompanion(Class<?> pluginClass)  {
         try {
             return Reflection.getValue(null, TabooLibAPI.getPluginBridge().getClass(pluginClass.getName().substring(0, pluginClass.getName().indexOf("$Companion"))), true, "Companion");
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Throwable ignored) {
         }
         return null;
     }

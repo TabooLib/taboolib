@@ -2,6 +2,7 @@ package io.izzel.taboolib.util.asm;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 public class AsmAnalyser extends ClassVisitor implements Opcodes {
 
     private final List<String> fields = new ArrayList<>();
+    private final List<String> methods = new ArrayList<>();
 
     private final int excludeModifier;
 
@@ -26,7 +28,19 @@ public class AsmAnalyser extends ClassVisitor implements Opcodes {
         return super.visitField(access, name, descriptor, signature, value);
     }
 
+    @Override
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+        if ((access & excludeModifier) == 0) {
+            methods.add(name);
+        }
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+
     public List<String> getFields() {
         return fields;
+    }
+
+    public List<String> getMethods() {
+        return methods;
     }
 }
