@@ -35,7 +35,15 @@ public class Where {
         return new Where(row, "=", value);
     }
 
+    public static Where equals(String row, Object value) {
+        return new Where(row, "=", value);
+    }
+
     public static Where isNot(String row, Object value) {
+        return new Where(row, "<>", value);
+    }
+
+    public static Where equalsNot(String row, Object value) {
         return new Where(row, "<>", value);
     }
 
