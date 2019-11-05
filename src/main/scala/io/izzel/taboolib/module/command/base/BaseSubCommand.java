@@ -39,7 +39,7 @@ public abstract class BaseSubCommand {
     }
 
     public Argument[] getArguments() {
-        return Arrays.stream(annotation.aliases()).map(a -> a.endsWith("?") ? new Argument(a.substring(0, a.length() - 1), false) : new Argument(a)).toArray(Argument[]::new);
+        return Arrays.stream(annotation.arguments()).map(a -> a.endsWith("?") ? new Argument(a.substring(0, a.length() - 1), false) : new Argument(a)).toArray(Argument[]::new);
     }
 
     public CommandType getType() {
