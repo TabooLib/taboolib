@@ -1,7 +1,11 @@
 package io.izzel.taboolib.util;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.util.item.ItemBuilder;
+import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Numbers;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
 
 import java.util.Arrays;
@@ -80,6 +84,24 @@ public class TMap {
             r.append(v[i]);
         }
         return new String[] {v[0], r.toString().replace("`", "")};
+    }
+
+    public static ItemStack parseItem(String source) {
+        TMap map = TMap.parse(source);
+        ItemBuilder builder = new ItemBuilder(Items.asMaterial(map.get("material", "m", "type", "t")))
+                .amount(map.getInt(new String[]{"amount", "a"}, 1))
+                .damage(map.getInt("damage", "data", "d"))
+                .name(map.get("displayname", "display", "name", "n"));
+        if (map.getBoolean("shiny", "glowing", "glow")) {
+            builder.shiny();
+        }
+        if (map.get("lore", "l") != null) {
+            builder.lore(map.get("lore", "l").split("\\n"));
+        }
+        if (map.get("flag", "f") != null) {
+            builder.flags(Arrays.stream(map.get("flag", "f").split("\\n")).map(Items::asItemFlag).filter(Objects::nonNull).toArray(ItemFlag[]::new));
+        }
+        return builder.colored().build();
     }
 
     @Override

@@ -1,3 +1,4 @@
+
 package io.izzel.taboolib.util.lite;
 
 import com.google.common.collect.Lists;
