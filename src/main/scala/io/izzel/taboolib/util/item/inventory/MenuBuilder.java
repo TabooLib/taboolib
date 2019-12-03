@@ -5,6 +5,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -24,6 +25,8 @@ public class MenuBuilder {
     private char[][] items = new char[0][0];
     private ClickTask clickTask;
     private CloseTask closeTask;
+    private BuildTask buildTask;
+    private BuildTask buildTaskAsync;
     private boolean lockHand;
 
     public MenuBuilder(Plugin plugin) {
@@ -43,6 +46,11 @@ public class MenuBuilder {
         return this;
     }
 
+    public MenuBuilder lockHand(boolean value) {
+        this.lockHand = value;
+        return this;
+    }
+
     public MenuBuilder event(ClickTask clickTask) {
         this.clickTask = clickTask;
         return this;
@@ -50,6 +58,16 @@ public class MenuBuilder {
 
     public MenuBuilder close(CloseTask closeTask) {
         this.closeTask = closeTask;
+        return this;
+    }
+
+    public MenuBuilder build(BuildTask buildTask) {
+        this.buildTask = buildTask;
+        return this;
+    }
+
+    public MenuBuilder buildAsync(BuildTask buildTask) {
+        this.buildTaskAsync = buildTask;
         return this;
     }
 
@@ -74,6 +92,10 @@ public class MenuBuilder {
             items[i] = placeholder[i].toCharArray();
         }
         return this;
+    }
+
+    public void open(Player player) {
+        player.openInventory(build());
     }
 
     public Inventory build() {

@@ -56,4 +56,8 @@ public enum Version {
             return vNull;
         }
     }
+
+    public static int getCurrentVersionInt() {
+        return getCurrentVersion().versionInt;
+    }
 }
