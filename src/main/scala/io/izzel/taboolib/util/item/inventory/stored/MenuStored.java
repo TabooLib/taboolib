@@ -62,7 +62,7 @@ public abstract class MenuStored {
             }
             // 手动装填
             else {
-                Action action = null;
+                Action action;
                 if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= 0 && e.getRawSlot() < e.getInventory().getSize()) {
                     action = new ActionQuickTake();
                 } else if (e.castClick().getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
@@ -74,7 +74,7 @@ public abstract class MenuStored {
                 if (isIntoSlot(e.getInventory(), action.getCurrent(e), action.getCurrentSlot(e))) {
                     e.setCancelled(true);
                     // 提取动作
-                    if (Items.isNull(action.getCurrent(e)) && !existsItem(e.getInventory(), action.getCurrentSlot(e))) {
+                    if (Items.isNull(action.getCurrent(e)) && existsItem(e.getInventory(), action.getCurrentSlot(e))) {
                         // 提取物品
                         action.setCurrent(e, getItem(e.getInventory(), action.getCurrentSlot(e)));
                         // 删除物品
