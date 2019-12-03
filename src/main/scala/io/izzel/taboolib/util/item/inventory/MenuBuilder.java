@@ -155,6 +155,14 @@ public class MenuBuilder {
         return closeTask;
     }
 
+    public BuildTask getBuildTask() {
+        return buildTask;
+    }
+
+    public BuildTask getBuildTaskAsync() {
+        return buildTaskAsync;
+    }
+
     public boolean isLockHand() {
         return lockHand;
     }

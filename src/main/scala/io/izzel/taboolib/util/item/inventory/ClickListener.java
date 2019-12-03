@@ -36,8 +36,8 @@ class ClickListener implements Listener {
     @EventHandler
     public void e(InventoryOpenEvent e) {
         if (e.getInventory().getHolder() instanceof MenuHolder) {
-            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().open((OpenTask) -> e.getInventory()));
-            Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().openAsync((OpenTask) -> e.getInventory()));
+            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTask().run(e.getInventory()));
+            Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTaskAsync().run(e.getInventory()));
         }
     }
 
