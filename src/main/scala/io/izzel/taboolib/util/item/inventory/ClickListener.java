@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.server.PluginDisableEvent;
@@ -30,6 +31,14 @@ class ClickListener implements Listener {
     @EventHandler
     public void e(PluginDisableEvent e) {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder && e.getPlugin().equals(((MenuHolder) player.getOpenInventory().getTopInventory().getHolder()).getBuilder().getPlugin())).forEach(HumanEntity::closeInventory);
+    }
+
+    @EventHandler
+    public void e(InventoryOpenEvent e) {
+        if (e.getInventory().getHolder() instanceof MenuHolder) {
+            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTask().run(e.getInventory()));
+            Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTaskAsync().run(e.getInventory()));
+        }
     }
 
     @EventHandler
