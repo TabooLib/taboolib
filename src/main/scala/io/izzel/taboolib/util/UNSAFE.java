@@ -1,7 +1,6 @@
 package io.izzel.taboolib.util;
 
 import sun.misc.Unsafe;
-import sun.reflect.CallerSensitive;
 
 import java.lang.reflect.Field;
 import java.security.ProtectionDomain;
@@ -18,11 +17,6 @@ public class UNSAFE {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @CallerSensitive
-    public static Unsafe getUnsafe() {
-        return Unsafe.getUnsafe();
     }
 
     public static int getInt(Object o, long offset) {
