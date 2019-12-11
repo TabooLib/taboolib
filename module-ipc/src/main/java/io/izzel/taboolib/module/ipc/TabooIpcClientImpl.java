@@ -52,7 +52,7 @@ public class TabooIpcClientImpl implements TabooIpcClient {
     public boolean readMessage(byte[] buf) {
         if (!available) throw new IllegalStateException();
         if (this.block.getInt(16) == 2) {
-            this.block.getBytes(64, buf, 0, (int) this.block.getPayloadSize());
+            this.block.getBytes(64, buf, 0, Math.min((int) this.block.getPayloadSize(), buf.length));
             return this.block.compareAndSwapInt(16, 2, 0);
         } else return false;
     }
