@@ -16,15 +16,10 @@ import java.util.stream.IntStream;
 public abstract class BaseSubCommand {
 
     private String label;
+    private boolean player;
     private SubCommand annotation;
 
-    public void setAnnotation(SubCommand annotation) {
-        this.annotation = annotation;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
+    abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
 
     public String getLabel() {
         return label;
@@ -43,7 +38,7 @@ public abstract class BaseSubCommand {
     }
 
     public CommandType getType() {
-        return annotation.type();
+        return player ? CommandType.PLAYER : annotation.type();
     }
 
     public boolean ignoredLabel() {
@@ -70,5 +65,18 @@ public abstract class BaseSubCommand {
         return TLocale.asString(Strings.isEmpty(getDescription()) ? "COMMANDS.INTERNAL.COMMAND-HELP-EMPTY" : "COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
     }
 
-    abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
+    protected BaseSubCommand label(String label) {
+        this.label = label;
+        return this;
+    }
+
+    protected BaseSubCommand player() {
+        player = true;
+        return this;
+    }
+
+    protected BaseSubCommand annotation(SubCommand annotation) {
+        this.annotation = annotation;
+        return this;
+    }
 }

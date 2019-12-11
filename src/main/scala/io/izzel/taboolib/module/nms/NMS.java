@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
@@ -67,4 +68,6 @@ public abstract class NMS {
     }
 
     abstract public List<NBTAttribute> getBaseAttribute(ItemStack item);
+
+    abstract public Object toNMS(Attribute attribute);
 }
