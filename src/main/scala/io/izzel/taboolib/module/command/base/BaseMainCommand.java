@@ -46,42 +46,31 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public static void loadCommandRegister(BaseMainCommand baseMainCommand) {
         List<Method> methods = new ArrayList<>();
         List<CommandField> fields = new ArrayList<>();
-        baseMainCommand.getLinkClasses().forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredMethods()).filter(method -> method.getAnnotation(SubCommand.class) != null).forEach(methods::add));
+        baseMainCommand.getLinkClasses()
+                .forEach(clazz -> java.util.Arrays.stream(clazz.getDeclaredMethods())
+                        .filter(method -> method.getAnnotation(SubCommand.class) != null).forEach(m -> {
+                            m.setAccessible(true);
+                            methods.add(m);
+                        }));
         if (methods.size() > 0) {
             methods.sort(Comparator.comparingDouble(a -> a.getAnnotation(SubCommand.class).priority()));
             methods.forEach(method -> {
-                BaseSubCommand subCommand = null;
                 try {
-                    method.setAccessible(true);
+                    BaseSubCommand subCommand = null;
                     // lite parameter
                     if (Arrays.equals(method.getParameterTypes(), new Class[] {CommandSender.class, String[].class})) {
-                        subCommand = new BaseSubCommand() {
-                            @Override
-                            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-                                try {
-                                    method.invoke(baseMainCommand, sender, args);
-                                } catch (Throwable t) {
-                                    t.printStackTrace();
-                                }
-                            }
-                        };
+                        subCommand = buildSubCommand(baseMainCommand, method)
+                                .label(method.getName())
+                                .annotation(method.getAnnotation(SubCommand.class));
                     }
-                    // fully parameter
-                    else if (Arrays.equals(method.getParameterTypes(), new Class[] {CommandSender.class, Command.class, String.class, String[].class})) {
-                        subCommand = new BaseSubCommand() {
-                            @Override
-                            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
-                                try {
-                                    method.invoke(baseMainCommand, sender, command, label, args);
-                                } catch (Throwable t) {
-                                    t.printStackTrace();
-                                }
-                            }
-                        };
+                    // player only parameter
+                    else if (Arrays.equals(method.getParameterTypes(), new Class[] {Player.class, String[].class})) {
+                        subCommand = buildSubCommand(baseMainCommand, method)
+                                .player()
+                                .label(method.getName())
+                                .annotation(method.getAnnotation(SubCommand.class));
                     }
                     if (subCommand != null) {
-                        subCommand.setLabel(method.getName());
-                        subCommand.setAnnotation(method.getAnnotation(SubCommand.class));
                         baseMainCommand.registerSubCommand(subCommand);
                     }
                 } catch (Throwable ignored) {
@@ -95,8 +84,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 try {
                     commandField.getField().setAccessible(true);
                     BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
-                    subCommand.setLabel(commandField.getField().getName());
-                    subCommand.setAnnotation(commandField.getField().getAnnotation(SubCommand.class));
+                    subCommand.label(commandField.getField().getName()).annotation(commandField.getField().getAnnotation(SubCommand.class));
                     baseMainCommand.registerSubCommand(subCommand);
                 } catch (Throwable ignored) {
                 }
@@ -105,6 +93,19 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         if (methods.size() + fields.size() > 0) {
             TabooLibAPI.debug("Registered " + (methods.size() + fields.size()) + " sub-command with " + baseMainCommand.getRegisterCommand().getName() + " (" + baseMainCommand.getRegisterCommand().getPlugin().getName() + ")");
         }
+    }
+
+    private static BaseSubCommand buildSubCommand(BaseMainCommand baseMainCommand, Method method) {
+        return new BaseSubCommand() {
+            @Override
+            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+                try {
+                    method.invoke(baseMainCommand, sender, args);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        };
     }
 
     public void setRegisterCommand(PluginCommand registerCommand) {

@@ -23,4 +23,8 @@ class MenuHolder implements InventoryHolder {
     public Inventory getInventory() {
         return null;
     }
+
+    public static MenuBuilder get(Inventory inventory) {
+        return inventory.getHolder() instanceof MenuHolder ? ((MenuHolder) inventory.getHolder()).getBuilder() : null;
+    }
 }

@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.lite.SimpleReflection;
-import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
-import io.izzel.taboolib.module.nms.nbt.NBTCompound;
-import io.izzel.taboolib.module.nms.nbt.NBTList;
-import io.izzel.taboolib.module.nms.nbt.NBTOperation;
+import io.izzel.taboolib.module.nms.nbt.*;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.EntityVillager;
@@ -16,6 +13,7 @@ import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.NBTBase;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
@@ -261,6 +259,12 @@ public class NMSImpl extends NMS {
             ));
         });
         return list;
+    }
+
+    @Override
+    public Object toNMS(Attribute attribute) {
+        SimpleReflection.checkAndSave(GenericAttributes.class);
+        return SimpleReflection.getFieldValue(GenericAttributes.class, null, attribute.name());
     }
 
     private Object toNBTBase(io.izzel.taboolib.module.nms.nbt.NBTBase base) {

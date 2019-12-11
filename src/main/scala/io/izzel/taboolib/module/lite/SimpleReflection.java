@@ -66,11 +66,11 @@ public class SimpleReflection {
         try {
             Map<String, Field> fields = fieldCached.get(nmsClass.getName());
             if (fields == null) {
-                return;
+                throw new RuntimeException("Not Found Cache.");
             }
             Field field = fields.get(fieldName);
             if (value == null) {
-                return;
+                throw new RuntimeException("Not Found Field.");
             }
             field.set(instance, value);
         } catch (Exception e) {
@@ -82,11 +82,11 @@ public class SimpleReflection {
         try {
             Map<String, Field> fields = fieldCached.get(nmsClass.getName());
             if (fields == null) {
-                return null;
+                throw new RuntimeException("Not Found Cache.");
             }
             Field field = fields.get(fieldName);
             if (field == null) {
-                return null;
+                throw new RuntimeException("Not Found Field.");
             }
             return field.get(instance);
         } catch (Exception e) {
@@ -99,11 +99,11 @@ public class SimpleReflection {
         try {
             Map<String, Field> fields = fieldCached.get(nmsClass.getName());
             if (fields == null) {
-                return def;
+                throw new RuntimeException("Not Found Cache.");
             }
             Field field = fields.get(fieldName);
             if (field == null) {
-                return def;
+                throw new RuntimeException("Not Found Field.");
             }
             return (T) field.get(instance);
         } catch (Exception e) {

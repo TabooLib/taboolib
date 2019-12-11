@@ -23,10 +23,14 @@ public class MenuBuilder {
     private String title;
     private int rows;
     private char[][] items = new char[0][0];
-    private ClickTask clickTask;
-    private CloseTask closeTask;
-    private BuildTask buildTask;
-    private BuildTask buildTaskAsync;
+    private ClickTask clickTask = r -> {
+    };
+    private CloseTask closeTask = r -> {
+    };
+    private BuildTask buildTask = r -> {
+    };
+    private BuildTask buildTaskAsync = r -> {
+    };
     private boolean lockHand;
 
     public MenuBuilder(Plugin plugin) {
@@ -39,6 +43,10 @@ public class MenuBuilder {
 
     public static MenuBuilder builder() {
         return new MenuBuilder(Ref.getCallerPlugin(Ref.getCallerClass(3).orElse(TabooLib.class)));
+    }
+
+    public void open(Player player) {
+        player.openInventory(build());
     }
 
     public MenuBuilder lockHand() {
@@ -92,10 +100,6 @@ public class MenuBuilder {
             items[i] = placeholder[i].toCharArray();
         }
         return this;
-    }
-
-    public void open(Player player) {
-        player.openInventory(build());
     }
 
     public Inventory build() {
