@@ -13,9 +13,10 @@ public class MessageBlock {
     }
 
     public void reset() {
-        int id = getId();
-        file.setMemory(baseOffset, size, (byte) 0x00);
-        putInt(0, id);
+        file.setMemory(mapAddress(64), getPayloadSize(), (byte) 0x00);
+        updateTimestamp();
+        putInt(12, 0);
+        putInt(16, 0);
     }
 
     public int getId() {
