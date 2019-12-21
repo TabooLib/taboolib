@@ -63,50 +63,50 @@ public class SimpleReflection {
     }
 
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
+        Map<String, Field> fields = fieldCached.get(nmsClass.getName());
+        if (fields == null) {
+            throw new RuntimeException("Not Found Cache.");
+        }
+        Field field = fields.get(fieldName);
+        if (value == null) {
+            throw new RuntimeException("Not Found Field.");
+        }
         try {
-            Map<String, Field> fields = fieldCached.get(nmsClass.getName());
-            if (fields == null) {
-                throw new RuntimeException("Not Found Cache.");
-            }
-            Field field = fields.get(fieldName);
-            if (value == null) {
-                throw new RuntimeException("Not Found Field.");
-            }
             field.set(instance, value);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
+        Map<String, Field> fields = fieldCached.get(nmsClass.getName());
+        if (fields == null) {
+            throw new RuntimeException("Not Found Cache.");
+        }
+        Field field = fields.get(fieldName);
+        if (field == null) {
+            throw new RuntimeException("Not Found Field.");
+        }
         try {
-            Map<String, Field> fields = fieldCached.get(nmsClass.getName());
-            if (fields == null) {
-                throw new RuntimeException("Not Found Cache.");
-            }
-            Field field = fields.get(fieldName);
-            if (field == null) {
-                throw new RuntimeException("Not Found Field.");
-            }
             return field.get(instance);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
     }
 
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
+        Map<String, Field> fields = fieldCached.get(nmsClass.getName());
+        if (fields == null) {
+            throw new RuntimeException("Not Found Cache.");
+        }
+        Field field = fields.get(fieldName);
+        if (field == null) {
+            throw new RuntimeException("Not Found Field.");
+        }
         try {
-            Map<String, Field> fields = fieldCached.get(nmsClass.getName());
-            if (fields == null) {
-                throw new RuntimeException("Not Found Cache.");
-            }
-            Field field = fields.get(fieldName);
-            if (field == null) {
-                throw new RuntimeException("Not Found Field.");
-            }
             return (T) field.get(instance);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         return def;
