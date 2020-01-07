@@ -29,5 +29,4 @@ class Example extends JavaPlugin with Listener {
     class a
     assert(this == JavaPlugin.getProvidingPlugin(classOf[a]))
   }
-
 }

@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.nms.nbt;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.module.nms.NMS;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,6 +24,10 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         super(0);
         this.type = NBTType.COMPOUND;
         this.data = this;
+    }
+
+    public void saveTo(ItemStack item) {
+        item.setItemMeta(NMS.handle().saveNBT(item, this).getItemMeta());
     }
 
     @Override

@@ -30,25 +30,27 @@ class ClickListener implements Listener {
 
     @EventHandler
     public void e(PluginDisableEvent e) {
-        Bukkit.getOnlinePlayers().stream().filter(player -> player.getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder && e.getPlugin().equals(((MenuHolder) player.getOpenInventory().getTopInventory().getHolder()).getBuilder().getPlugin())).forEach(HumanEntity::closeInventory);
+        Bukkit.getOnlinePlayers().stream().filter(player -> MenuHolder.get(player.getOpenInventory().getTopInventory()) != null).forEach(HumanEntity::closeInventory);
     }
 
     @EventHandler
     public void e(InventoryOpenEvent e) {
-        if (e.getInventory().getHolder() instanceof MenuHolder) {
-            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTask().run(e.getInventory()));
-            Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> ((MenuHolder) e.getInventory().getHolder()).getBuilder().getBuildTaskAsync().run(e.getInventory()));
+        MenuBuilder builder = MenuHolder.get(e.getInventory());
+        if (builder != null) {
+            Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> builder.getBuildTask().run(e.getInventory()), 1);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(TabooLib.getPlugin(), () -> builder.getBuildTaskAsync().run(e.getInventory()), 1);
         }
     }
 
     @EventHandler
     public void e(InventoryClickEvent e) {
-        if (e.getInventory().getHolder() instanceof MenuHolder) {
+        MenuBuilder builder = MenuHolder.get(e.getInventory());
+        if (builder != null) {
             // lock hand
-            if (((MenuHolder) e.getInventory().getHolder()).getBuilder().isLockHand() && (e.getRawSlot() - e.getInventory().getSize() - 27 == e.getWhoClicked().getInventory().getHeldItemSlot() || (e.getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.getHotbarButton() == e.getWhoClicked().getInventory().getHeldItemSlot()))) {
+            if (builder.isLockHand() && (e.getRawSlot() - e.getInventory().getSize() - 27 == e.getWhoClicked().getInventory().getHeldItemSlot() || (e.getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.getHotbarButton() == e.getWhoClicked().getInventory().getHeldItemSlot()))) {
                 e.setCancelled(true);
             }
-            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.CLICK, e, ((MenuHolder) e.getInventory().getHolder()).getBuilder().getSlot(e.getRawSlot()))));
+            Optional.ofNullable(builder.getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.CLICK, e, builder.getSlot(e.getRawSlot()))));
             // drop on empty area
             if (!e.isCancelled() && Items.nonNull(e.getCurrentItem()) && e.getClick() == org.bukkit.event.inventory.ClickType.DROP) {
                 Item item = Vectors.itemDrop((Player) e.getWhoClicked(), e.getCurrentItem());
@@ -78,15 +80,17 @@ class ClickListener implements Listener {
 
     @EventHandler
     public void e(InventoryDragEvent e) {
-        if (e.getInventory().getHolder() instanceof MenuHolder) {
-            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getClickTask()).ifPresent(t -> t.run(new ClickEvent(ClickType.DRAG, e, ' ')));
+        MenuBuilder builder = MenuHolder.get(e.getInventory());
+        if (builder != null) {
+            builder.getClickTask().run(new ClickEvent(ClickType.DRAG, e, ' '));
         }
     }
 
     @EventHandler
     public void e(InventoryCloseEvent e) {
-        if (e.getInventory().getHolder() instanceof MenuHolder) {
-            Optional.ofNullable(((MenuHolder) e.getInventory().getHolder()).getBuilder().getCloseTask()).ifPresent(t -> t.run(e));
+        MenuBuilder builder = MenuHolder.get(e.getInventory());
+        if (builder != null) {
+            builder.getCloseTask().run(e);
         }
     }
 
