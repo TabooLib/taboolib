@@ -266,23 +266,51 @@ public class NMSImpl extends NMS {
     private Object toNBTBase(io.izzel.taboolib.module.nms.nbt.NBTBase base) {
         switch (base.getType().getId()) {
             case 1:
-                return new NBTTagByte(base.asByte());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagByte.a(base.asByte());
+                } else {
+                    return new NBTTagByte(base.asByte());
+                }
             case 2:
-                return new NBTTagShort(base.asShort());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagShort.a(base.asShort());
+                } else {
+                    return new NBTTagShort(base.asShort());
+                }
             case 3:
-                return new NBTTagInt(base.asInt());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagInt.a(base.asInt());
+                } else {
+                    return new NBTTagInt(base.asInt());
+                }
             case 4:
-                return new NBTTagLong(base.asLong());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagLong.a(base.asLong());
+                } else {
+                    return new NBTTagLong(base.asLong());
+                }
             case 5:
-                return new NBTTagFloat(base.asFloat());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagFloat.a(base.asFloat());
+                } else {
+                    return new NBTTagFloat(base.asFloat());
+                }
             case 6:
-                return new NBTTagDouble(base.asDouble());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagDouble.a(base.asDouble());
+                } else {
+                    return new NBTTagDouble(base.asDouble());
+                }
             case 7:
                 return new NBTTagByteArray(base.asByteArray());
             case 11:
                 return new NBTTagIntArray(base.asIntArray());
             case 8:
-                return new NBTTagString(base.asString());
+                if (Version.isAfter(Version.v1_15)) {
+                    return net.minecraft.server.v1_15_R1.NBTTagString.a(base.asString());
+                } else {
+                    return new NBTTagString(base.asString());
+                }
             case 9:
                 Object nmsList = new NBTTagList();
                 for (io.izzel.taboolib.module.nms.nbt.NBTBase value : base.asList()) {
