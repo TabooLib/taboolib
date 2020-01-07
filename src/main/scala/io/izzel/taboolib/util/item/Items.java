@@ -6,6 +6,7 @@ import io.izzel.taboolib.module.lite.SimpleEquip;
 import io.izzel.taboolib.module.lite.SimpleI18n;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.nms.NMS;
+import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
@@ -54,16 +55,20 @@ public class Items {
         return !isNull(item);
     }
 
+    public static boolean hasName(ItemStack i) {
+        return !isNull(i) && i.getItemMeta().hasDisplayName();
+    }
+
+    public static boolean hasName(ItemStack i, String a) {
+        return hasName(i) && getName(i).contains(a);
+    }
+
     public static boolean hasLore(ItemStack i, String a) {
         return hasLore(i) && i.getItemMeta().getLore().toString().contains(a);
     }
 
     public static boolean hasLore(ItemStack i) {
         return !isNull(i) && i.getItemMeta().hasLore();
-    }
-
-    public static boolean hasName(ItemStack i) {
-        return !isNull(i) && i.getItemMeta().hasDisplayName();
     }
 
     public static Material asMaterial(String args) {
@@ -111,24 +116,7 @@ public class Items {
     }
 
     public static String asAttribute(String name) {
-        switch (name.toLowerCase()) {
-            case "damage":
-                return "generic.attackDamage";
-            case "attackspeed":
-                return "generic.attackSpeed";
-            case "health":
-                return "generic.maxHealth";
-            case "speed":
-                return "generic.movementSpeed";
-            case "knockback":
-                return "generic.knockbackResistance";
-            case "armor":
-                return "generic.armor";
-            case "luck":
-                return "generic.luck";
-            default:
-                return null;
-        }
+        return Attribute.parse(name).getMinecraftKey();
     }
 
     public static ItemStack replaceName(ItemStack item, String nameOld, String nameNew) {

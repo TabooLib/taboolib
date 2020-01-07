@@ -31,6 +31,7 @@ public class LocalPlayer {
         files.forEach((name, file) -> {
             try {
                 file.save(toFile(name));
+            } catch (NullPointerException ignored) {
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -43,6 +44,7 @@ public class LocalPlayer {
             if (toPlayer(name) == null) {
                 try {
                     files.remove(name).save(toFile(name));
+                } catch (NullPointerException ignored) {
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

@@ -15,5 +15,4 @@ object AsyncTask {
   def apply(init: Long, period: Long)(task: => Any)(implicit plugin: Plugin): Int = {
     ScalaTaskExecutor(task).runTaskTimerAsynchronously(plugin, init, period).getTaskId
   }
-
 }
