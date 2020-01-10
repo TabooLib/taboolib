@@ -47,12 +47,16 @@ public class ItemStack {
         return isType(itemStack) && isName(itemStack) && isLore(itemStack) && isDamage(itemStack) && isAmount(itemStack);
     }
 
+    public boolean isSimilar(org.bukkit.inventory.ItemStack itemStack) {
+        return isType(itemStack) && isName(itemStack) && isLore(itemStack) && isDamage(itemStack);
+    }
+
     public boolean hasItem(Player player) {
-        return Items.hasItem(player.getInventory(), this::isItem, amount);
+        return Items.hasItem(player.getInventory(), this::isSimilar, amount);
     }
 
     public boolean takeItem(Player player) {
-        return Items.takeItem(player.getInventory(), this::isItem, amount);
+        return Items.takeItem(player.getInventory(), this::isSimilar, amount);
     }
 
     public String getType() {
