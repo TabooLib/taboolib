@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TLocaleLoader {
 
+    private static final Map<String, List<String>> localePriority = new HashMap<>();
     private static final Map<String, TLocaleInstance> map = new ConcurrentHashMap<>();
 
     static {
@@ -76,6 +78,12 @@ public class TLocaleLoader {
     public static void load(Plugin plugin, boolean isCover) {
         try {
             if (isLoadLocale(plugin, isCover)) {
+                // 启用插件指定的独立语言加载顺序
+                File settings = new File("plugins/" + plugin.getName() + "/settings.yml");
+                List<String> priority = settings.exists() ? YamlConfiguration.loadConfiguration(settings).getStringList("LOCALE-PRIORITY") : plugin.getResource("settings.yml") != null ? YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(plugin.getResource("settings.yml")))).getStringList("LOCALE-PRIORITY") : new ArrayList<>();
+                if (!priority.isEmpty()) {
+                    setLocalePriority(plugin, priority);
+                }
                 // 获取文件
                 File localeFile = getLocaleFile(plugin);
                 if (localeFile == null) {
@@ -107,8 +115,12 @@ public class TLocaleLoader {
         return plugin.getClass().getSuperclass().getSimpleName().equals("TabooPlugin");
     }
 
-    public static List<String> getLocalePriority() {
-        return TabooLib.getConfig().contains("LOCALE.PRIORITY") ? TabooLib.getConfig().getStringList("LOCALE.PRIORITY") : Collections.singletonList("zh_CN");
+    public static List<String> getLocalePriority(Plugin plugin) {
+        return localePriority.getOrDefault(plugin.getName(), TabooLib.getConfig().contains("LOCALE.PRIORITY") ? TabooLib.getConfig().getStringList("LOCALE.PRIORITY") : Collections.singletonList("zh_CN"));
+    }
+
+    public static List<String> setLocalePriority(Plugin plugin, List<String> priority) {
+        return localePriority.put(plugin.getName(), priority);
     }
 
     private static boolean isLoadLocale(Plugin plugin, boolean isCover) {
@@ -124,8 +136,8 @@ public class TLocaleLoader {
     }
 
     private static File getLocaleFile(Plugin plugin) {
-        getLocalePriority().forEach(localeName -> Files.releaseResource(plugin, "lang/" + localeName + ".yml", false));
-        return getLocalePriority().stream().map(localeName -> new File("plugins/" + plugin.getName() + "/lang/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
+        getLocalePriority(plugin).forEach(localeName -> Files.releaseResource(plugin, "lang/" + localeName + ".yml", false));
+        return getLocalePriority(plugin).stream().map(localeName -> new File("plugins/" + plugin.getName() + "/lang/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
     }
 
     private static TLocaleInstance getLocaleInstance(Plugin plugin) {
