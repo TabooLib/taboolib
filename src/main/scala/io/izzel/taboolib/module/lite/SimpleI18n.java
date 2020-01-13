@@ -87,8 +87,8 @@ public class SimpleI18n {
     }
 
     private static File getLocaleFile(Plugin plugin) {
-        TLocaleLoader.getLocalePriority().forEach(localeName -> Files.releaseResource(plugin, "simpleI18n/" + getVersion() + "/" + localeName + ".yml", false));
-        return TLocaleLoader.getLocalePriority().stream().map(localeName -> new File("plugins/TabooLib/simpleI18n/" + getVersion() + "/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
+        TLocaleLoader.getLocalePriority(plugin).forEach(localeName -> Files.releaseResource(plugin, "simpleI18n/" + getVersion() + "/" + localeName + ".yml", false));
+        return TLocaleLoader.getLocalePriority(plugin).stream().map(localeName -> new File("plugins/TabooLib/simpleI18n/" + getVersion() + "/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
     }
 
     private static String getVersion() {
