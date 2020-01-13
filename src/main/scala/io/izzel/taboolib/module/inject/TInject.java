@@ -27,6 +27,8 @@ public @interface TInject {
 
     String reload() default "";
 
+    String locale() default "";
+
     State state() default State.NONE;
 
     enum State {

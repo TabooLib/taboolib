@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.config;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * @Author sky
@@ -26,7 +26,7 @@ public class TConfig extends YamlConfiguration {
 
     private static Map<String, List<File>> files = Maps.newHashMap();
     private File file;
-    private Runnable runnable;
+    private List<Runnable> runnable = Lists.newArrayList();
 
     private TConfig(File file, Plugin plugin) {
         files.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(file);
@@ -100,19 +100,25 @@ public class TConfig extends YamlConfiguration {
     }
 
     public Runnable getListener() {
+        return runnable.get(0);
+    }
+
+    public List<Runnable> getListeners() {
         return runnable;
     }
 
     public TConfig listener(Runnable runnable) {
-        this.runnable = runnable;
+        this.runnable.add(runnable);
         return this;
     }
 
     public void runListener() {
-        try {
-            Optional.ofNullable(runnable).ifPresent(Runnable::run);
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (Runnable listener : runnable) {
+            try {
+                listener.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
     }
 }
