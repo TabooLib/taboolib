@@ -118,7 +118,7 @@ public class TLocale {
     }
 
     public static void reload() {
-        Ref.getCallerClass(3).ifPresent(clazz -> TLocaleLoader.load(Ref.getCallerPlugin(clazz), false));
+        Ref.getCallerClass(3).ifPresent(clazz -> TLocaleLoader.load(Ref.getCallerPlugin(clazz), true));
     }
 
     public static final class Tellraw extends TLocale {
