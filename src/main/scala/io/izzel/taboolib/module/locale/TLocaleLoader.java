@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,14 +75,12 @@ public class TLocaleLoader {
     }
 
     public static void load(Plugin plugin, boolean isCover) {
+        load(plugin, isCover, false);
+    }
+
+    public static void load(Plugin plugin, boolean isCover, boolean hideMessage) {
         try {
             if (isLoadLocale(plugin, isCover)) {
-                // 启用插件指定的独立语言加载顺序
-                File settings = new File("plugins/" + plugin.getName() + "/settings.yml");
-                List<String> priority = settings.exists() ? YamlConfiguration.loadConfiguration(settings).getStringList("LOCALE-PRIORITY") : plugin.getResource("settings.yml") != null ? YamlConfiguration.loadConfiguration(new BufferedReader(new InputStreamReader(plugin.getResource("settings.yml")))).getStringList("LOCALE-PRIORITY") : new ArrayList<>();
-                if (!priority.isEmpty()) {
-                    setLocalePriority(plugin, priority);
-                }
                 // 获取文件
                 File localeFile = getLocaleFile(plugin);
                 if (localeFile == null) {
@@ -93,10 +90,10 @@ public class TLocaleLoader {
                 YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
                 YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, localeFile);
                 // 载入配置
-                loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream);
+                loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream, hideMessage);
                 // 注册监听
                 TConfigWatcher.getInst().removeListener(localeFile);
-                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAsPlugin(plugin, localeFile)));
+                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAsPlugin(plugin, localeFile), false));
             }
         } catch (Exception e) {
             errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
@@ -159,12 +156,15 @@ public class TLocaleLoader {
         return new YamlConfiguration();
     }
 
-    private static void loadPluginLocale(Plugin plugin, File localeFile, YamlConfiguration localeConfiguration, YamlConfiguration localeConfigurationAtStream) {
+    private static void loadPluginLocale(Plugin plugin, File localeFile, YamlConfiguration localeConfiguration, YamlConfiguration localeConfigurationAtStream, boolean hideMessage) {
         TLocaleInstance localeInstance = getLocaleInstance(plugin);
         if (localeConfigurationAtStream != null) {
             localeInstance.load(localeConfigurationAtStream);
         }
         localeInstance.load(localeConfiguration);
+        if (hideMessage) {
+            return;
+        }
         if (localeInstance.getLatestUpdateNodes().get() <= 0) {
             infoLogger("SUCCESS-LOADING-LANG-NORMAL", plugin.getName(), localeFile.getName().split("\\.")[0], String.valueOf(localeInstance.size()));
         } else {

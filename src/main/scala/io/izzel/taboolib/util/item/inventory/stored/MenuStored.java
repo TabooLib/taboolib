@@ -5,6 +5,7 @@ import io.izzel.taboolib.util.item.inventory.ClickEvent;
 import io.izzel.taboolib.util.item.inventory.ClickType;
 import io.izzel.taboolib.util.item.inventory.MenuBuilder;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -62,6 +63,11 @@ public abstract class MenuStored {
             }
             // 手动装填
             else {
+                // todo 合并物品
+                if (e.castClick().getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+                    e.setCancelled(true);
+                    return;
+                }
                 Action action;
                 if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= 0 && e.getRawSlot() < e.getInventory().getSize()) {
                     action = new ActionQuickTake();
