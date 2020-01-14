@@ -35,3 +35,9 @@
 # Who is using TabooLib?
 
 [Cronus](https://www.mcbbs.net/thread-894452-1-1.html), [CNTrans](https://www.mcbbs.net/thread-904556-1-1.html), [TrMenu](https://www.mcbbs.net/thread-918078-1-1.html), [LiteChat](https://www.mcbbs.net/thread-903335-1-1.html), [Uncrafter](https://www.mcbbs.net/thread-903916-1-1.html), [PurtmarsEditor*](https://www.mcbbs.net/thread-850862-1-1.html), [PurtmarsArea*](https://www.mcbbs.net/thread-840912-1-1.html), [<s>TabooMenu</s>](https://www.mcbbs.net/thread-798904-1-1.html)...
+
+---
+
+# Quick start
+
+[TabooLibExample-gradle-5.14.rar](https://skymc.oss-cn-shanghai.aliyuncs.com/i/TabooLibExample-gradle-5.14.rar)
