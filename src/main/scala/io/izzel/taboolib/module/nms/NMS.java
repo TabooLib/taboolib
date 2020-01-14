@@ -2,11 +2,13 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
 import org.bukkit.Particle;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -70,4 +72,10 @@ public abstract class NMS {
     abstract public List<NBTAttribute> getBaseAttribute(ItemStack item);
 
     abstract public Object toNMS(Attribute attribute);
+
+    abstract public Entity getEntityById(int id);
+
+    abstract public Position fromBlockPosition(Object blockPosition);
+
+    abstract public void openSignEditor(Player player, Block block);
 }
