@@ -23,9 +23,9 @@ import com.google.common.base.Enums;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Note;
@@ -916,6 +916,11 @@ public enum Sounds {
         this.legacy = legacy;
     }
 
+    public static Optional<Sound> parseSound(String sound) {
+        Optional<Sounds> sounds = matchSounds(sound);
+        return sounds.map(Sounds::parseSound);
+    }
+
     /**
      * Attempts to build the string like an enum name.<br>
      * Removes all the spaces, numbers and extra non-English characters. Also removes some config/in-game based strings.
@@ -941,8 +946,11 @@ public enum Sounds {
         Validate.notEmpty(sound, "Cannot check for null or empty sound name");
         sound = format(sound);
 
-        for (Sounds sounds : VALUES)
-            if (sounds.name().equals(sound) || sounds.anyMatchLegacy(sound)) return true;
+        for (Sounds sounds : VALUES) {
+            if (sounds.name().equals(sound) || sounds.anyMatchLegacy(sound)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -958,8 +966,11 @@ public enum Sounds {
         Validate.notEmpty(sound, "Cannot match Sounds of a null or empty sound name");
         sound = format(sound);
 
-        for (Sounds sounds : VALUES)
-            if (sounds.name().equals(sound) || sounds.anyMatchLegacy(sound)) return Optional.of(sounds);
+        for (Sounds sounds : VALUES) {
+            if (sounds.name().equals(sound) || sounds.anyMatchLegacy(sound)) {
+                return Optional.of(sounds);
+            }
+        }
         return Optional.empty();
     }
 
@@ -974,8 +985,7 @@ public enum Sounds {
     @Nonnull
     public static Sounds matchSounds(@Nonnull Sound sound) {
         Objects.requireNonNull(sound, "Cannot match Sounds of a null sound");
-        return matchSounds(sound.name())
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported Sound: " + sound.name()));
+        return matchSounds(sound.name()).orElseThrow(() -> new IllegalArgumentException("Unsupported Sound: " + sound.name()));
     }
 
     /**
@@ -1004,7 +1014,9 @@ public enum Sounds {
     public static CompletableFuture<Void> playSoundFromString(@Nonnull Player player, @Nullable String sound) {
         Objects.requireNonNull(player, "Cannot play sound to null player");
         return CompletableFuture.runAsync(() -> {
-            if (Strings.isNullOrEmpty(sound) || sound.equalsIgnoreCase("none")) return;
+            if (Strings.isNullOrEmpty(sound) || sound.equalsIgnoreCase("none")) {
+                return;
+            }
 
             String[] split = StringUtils.contains(sound, ',') ?
                     StringUtils.split(StringUtils.deleteWhitespace(sound), ',') :
@@ -1015,9 +1027,13 @@ public enum Sounds {
 
             String name = split[0];
             Optional<Sounds> typeOpt = matchSounds(name);
-            if (!typeOpt.isPresent()) return;
+            if (!typeOpt.isPresent()) {
+                return;
+            }
             Sound type = typeOpt.get().parseSound();
-            if (type == null) return;
+            if (type == null) {
+                return;
+            }
 
             float volume = 1.0f;
             float pitch = 1.0f;
@@ -1025,12 +1041,16 @@ public enum Sounds {
             try {
                 if (split.length > 1) {
                     volume = Float.parseFloat(split[1]);
-                    if (split.length > 2) pitch = Float.parseFloat(split[2]);
+                    if (split.length > 2) {
+                        pitch = Float.parseFloat(split[2]);
+                    }
                 }
             } catch (NumberFormatException ignored) {
             }
 
-            if (player.isOnline()) player.playSound(player.getLocation(), type, volume, pitch);
+            if (player.isOnline()) {
+                player.playSound(player.getLocation(), type, volume, pitch);
+            }
         });
     }
 
@@ -1059,7 +1079,9 @@ public enum Sounds {
         return CompletableFuture.runAsync(() -> {
             for (Sounds music : musics) {
                 Sound sound = music.parseSound();
-                if (sound != null) player.stopSound(sound);
+                if (sound != null) {
+                    player.stopSound(sound);
+                }
             }
         });
     }
@@ -1095,7 +1117,9 @@ public enum Sounds {
     @SuppressWarnings({"Guava", "OptionalAssignedToNull"})
     public Sound parseSound() {
         com.google.common.base.Optional<Sound> cachedSound = CACHE.getIfPresent(this);
-        if (cachedSound != null) return cachedSound.orNull();
+        if (cachedSound != null) {
+            return cachedSound.orNull();
+        }
         com.google.common.base.Optional<Sound> sound;
 
         // Since Sound class doesn't have a getSound() method we'll use Guava so
@@ -1105,7 +1129,9 @@ public enum Sounds {
         if (!sound.isPresent()) {
             for (String legacy : this.legacy) {
                 sound = Enums.getIfPresent(Sound.class, legacy);
-                if (sound.isPresent()) break;
+                if (sound.isPresent()) {
+                    break;
+                }
             }
         }
 
@@ -1167,7 +1193,9 @@ public enum Sounds {
             @Override
             public void run() {
                 playSound(entity.getLocation(), volume, pitch);
-                if (repeating-- == 0) cancel();
+                if (repeating-- == 0) {
+                    cancel();
+                }
             }
         }.runTaskTimer(plugin, 0, delay);
     }
@@ -1198,7 +1226,9 @@ public enum Sounds {
             @Override
             public void run() {
                 player.playNote(playTo.getLocation(), instrument, Note.natural(1, Note.Tone.values()[ascendLevel - repeating]));
-                if (repeating-- == 0) cancel();
+                if (repeating-- == 0) {
+                    cancel();
+                }
             }
         }.runTaskTimerAsynchronously(plugin, 0, delay);
     }
@@ -1214,7 +1244,9 @@ public enum Sounds {
         Objects.requireNonNull(player, "Cannot stop playing sound from null player");
 
         Sound sound = this.parseSound();
-        if (sound != null) player.stopSound(sound);
+        if (sound != null) {
+            player.stopSound(sound);
+        }
     }
 
     /**

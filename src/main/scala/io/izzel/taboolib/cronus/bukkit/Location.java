@@ -60,12 +60,10 @@ public class Location {
     }
 
     public boolean isSelectWorld(org.bukkit.Location location) {
-        switch (mode) {
-            case AREA:
-                return area != null && location.getWorld().equals(area[0].getWorld());
-            default:
-                return points != null && Arrays.stream(points).anyMatch(p -> p.getWorld().equals(location.getWorld()));
+        if (mode == Mode.AREA) {
+            return area != null && location.getWorld().equals(area[0].getWorld());
         }
+        return points != null && Arrays.stream(points).anyMatch(p -> p.getWorld().equals(location.getWorld()));
     }
 
     @Override

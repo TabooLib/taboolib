@@ -74,6 +74,14 @@ public class NBTBase {
         this.data = data;
     }
 
+    public String toJsonSimplified() {
+        return toJsonSimplified(0);
+    }
+
+    public String toJsonSimplified(int index) {
+        return data instanceof String ? "\"" + data + "\"" : String.valueOf(data);
+    }
+
     public String asString() {
         return (String) data;
     }
@@ -123,11 +131,14 @@ public class NBTBase {
     }
 
     public static NBTBase toNBT(Object obj) {
-        if (obj instanceof String) {
+        if (obj instanceof NBTBase) {
+            return (NBTBase) obj;
+        } else if (obj instanceof String) {
             if (SHORT_PATTERN.matcher(obj.toString()).matches()) {
                 return toNBT(Short.valueOf(obj.toString().substring(0, obj.toString().length() - 1)));
+            } else {
+                return new NBTBase((String) obj);
             }
-            return new NBTBase((String) obj);
         } else if (obj instanceof Integer) {
             return new NBTBase((int) obj);
         } else if (obj instanceof Double) {

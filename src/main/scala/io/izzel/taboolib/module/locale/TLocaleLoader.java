@@ -75,7 +75,7 @@ public class TLocaleLoader {
     }
 
     public static void load(Plugin plugin, boolean isCover) {
-        load(plugin, isCover, false);
+        load(plugin, isCover, true);
     }
 
     public static void load(Plugin plugin, boolean isCover, boolean hideMessage) {

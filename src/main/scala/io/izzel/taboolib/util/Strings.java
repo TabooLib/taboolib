@@ -4,8 +4,14 @@ import com.google.common.collect.Lists;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Strings {
+
+    public static String copy(String text, int count) {
+        return IntStream.range(0, count).mapToObj(i -> text).collect(Collectors.joining());
+    }
 
     public static boolean nonBlack(String var) {
         return !isBlank(var);

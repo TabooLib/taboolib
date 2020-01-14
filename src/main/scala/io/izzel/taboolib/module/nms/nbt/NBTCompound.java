@@ -1,7 +1,10 @@
 package io.izzel.taboolib.module.nms.nbt;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.izzel.taboolib.module.nms.NMS;
+import io.izzel.taboolib.util.Strings;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
@@ -28,6 +31,40 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 
     public void saveTo(ItemStack item) {
         item.setItemMeta(NMS.handle().saveNBT(item, this).getItemMeta());
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
+
+    public String toJsonFormatted() {
+        return new GsonBuilder().setPrettyPrinting().create().toJson(new Gson().toJsonTree(this));
+    }
+
+    @Override
+    public String toJsonSimplified() {
+        return toJsonSimplified(0);
+    }
+
+    @Override
+    public String toJsonSimplified(int index) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
+        value.forEach((k, v) -> {
+            builder.append(Strings.copy("  ", index + 1))
+                    .append("\"")
+                    .append(k)
+                    .append("\"")
+                    .append(": ")
+                    .append(v.toJsonSimplified(index + 1))
+                    .append("\n");
+        });
+        builder.append(Strings.copy("  ", index)).append("}");
+        return builder.toString();
+    }
+
+    public static NBTCompound fromJson(String json) {
+        return new Gson().fromJson(json, NBTCompound.class);
     }
 
     @Override
