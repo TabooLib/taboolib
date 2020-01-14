@@ -74,6 +74,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                         TLocaleLoader.setLocalePriority(plugin, localePriority);
                         TLocaleLoader.load(plugin, true, true);
                     });
+                    config.runListener();
                 }
                 if (Strings.nonEmpty(args.reload())) {
                     try {

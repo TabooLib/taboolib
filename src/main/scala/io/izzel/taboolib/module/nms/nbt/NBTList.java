@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.nms.nbt;
 
+import io.izzel.taboolib.util.Strings;
+
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
@@ -19,6 +21,38 @@ public class NBTList extends NBTBase implements List<NBTBase> {
         super(0);
         this.type = NBTType.LIST;
         this.data = this;
+    }
+
+    public static NBTList of(NBTBase... base) {
+        NBTList list = new NBTList();
+        list.addAll(Arrays.asList(base));
+        return list;
+    }
+
+    public static NBTList of(Object... base) {
+        NBTList list = new NBTList();
+        for (Object obj : base) {
+            list.add(NBTBase.toNBT(obj));
+        }
+        return list;
+    }
+
+    @Override
+    public String toJsonSimplified() {
+        return toJsonSimplified(0);
+    }
+
+    @Override
+    public String toJsonSimplified(int index) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[\n");
+        value.forEach(v -> {
+            builder.append(Strings.copy("  ", index + 1))
+                    .append(v.toJsonSimplified(index + 1))
+                    .append("\n");
+        });
+        builder.append(Strings.copy("  ", index)).append("]");
+        return builder.toString();
     }
 
     @Override
