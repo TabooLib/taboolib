@@ -9,11 +9,15 @@ import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
+import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.item.Items;
+import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+
+import java.util.Arrays;
 
 /**
  * @author sky
@@ -38,6 +42,12 @@ public class ListenerPlayerCommand implements Listener {
         if (e.getMessage().equalsIgnoreCase("/placeholderTest") && e.getPlayer().hasPermission("*")) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(InternalPluginBridge.handle().setPlaceholders(e.getPlayer(), "§8[§3§lTabooLib§8] §7PlaceholderAPI Test: §f%player_name%"));
+        }
+        if (e.getMessage().equalsIgnoreCase("/fakesignTest") && e.getPlayer().hasPermission("&")) {
+            e.setCancelled(true);
+            Signs.fakeSign(e.getPlayer(), ArrayUtil.asArray("§nFakeSign Test"), lines -> {
+                e.getPlayer().sendMessage("§8[§3§lTabooLib§8] §7FakeSign Lines: §f" + Arrays.toString(lines));
+            });
         }
     }
 

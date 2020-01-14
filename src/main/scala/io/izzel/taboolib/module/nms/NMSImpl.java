@@ -12,12 +12,15 @@ import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
-import net.minecraft.server.v1_8_R3.*;
 import net.minecraft.server.v1_8_R3.NBTBase;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -265,6 +268,31 @@ public class NMSImpl extends NMS {
     public Object toNMS(Attribute attribute) {
         SimpleReflection.checkAndSave(GenericAttributes.class);
         return SimpleReflection.getFieldValue(GenericAttributes.class, null, attribute.name());
+    }
+
+    @Override
+    public Entity getEntityById(int id) {
+        for (World world : Bukkit.getServer().getWorlds()) {
+            net.minecraft.server.v1_13_R2.Entity entity = ((CraftWorld) world).getHandle().getEntity(id);
+            if (entity != null) {
+                return entity.getBukkitEntity();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public io.izzel.taboolib.module.nms.impl.Position fromBlockPosition(Object blockPosition) {
+        return blockPosition instanceof net.minecraft.server.v1_12_R1.BlockPosition ? new io.izzel.taboolib.module.nms.impl.Position(((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getX(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getY(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getZ()) : null;
+    }
+
+    @Override
+    public void openSignEditor(Player player, Block block) {
+        try {
+            ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer) player).getHandle().playerConnection.sendPacket(new net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ())));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private Object toNBTBase(io.izzel.taboolib.module.nms.nbt.NBTBase base) {
