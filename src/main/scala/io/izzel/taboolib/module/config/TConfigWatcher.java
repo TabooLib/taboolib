@@ -64,10 +64,22 @@ public class TConfigWatcher {
         addOnListen(file, obj, (Consumer<Object>) consumer);
     }
 
+    public boolean hasListener(File file) {
+        synchronized (map) {
+            return map.values().stream().anyMatch(t -> t.getLeft().getPath().equals(file.getPath()));
+        }
+    }
+
+    public void runListener(File file) {
+        synchronized (map) {
+            map.values().stream().filter(t -> t.getLeft().getPath().equals(file.getPath())).forEach(f -> f.getRight().accept(null));
+        }
+    }
+
     public void removeListener(File file) {
         synchronized (map) {
             map.entrySet().removeIf(entry -> {
-                if (entry.getValue().getLeft().equals(file)) {
+                if (entry.getValue().getLeft().getPath().equals(file.getPath())) {
                     try {
                         entry.getKey().close();
                     } catch (IOException ignored) {

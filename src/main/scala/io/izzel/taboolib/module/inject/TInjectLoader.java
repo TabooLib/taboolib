@@ -68,13 +68,9 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                         } else {
                             localePriority.add(String.valueOf(config.get(args.locale())));
                         }
-                        if (TLocaleLoader.getLocalePriority(plugin).equals(localePriority)) {
-                            return;
-                        }
                         TLocaleLoader.setLocalePriority(plugin, localePriority);
                         TLocaleLoader.load(plugin, true, true);
-                    });
-                    config.runListener();
+                    }).runListener();
                 }
                 if (Strings.nonEmpty(args.reload())) {
                     try {

@@ -86,6 +86,11 @@ public class Files {
         return null;
     }
 
+    public static File releaseResource(Plugin plugin, String path) {
+        releaseResource(plugin, path, false);
+        return new File(plugin.getDataFolder(), path);
+    }
+
     public static void releaseResource(Plugin plugin, String path, boolean replace) {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.exists() || replace) {

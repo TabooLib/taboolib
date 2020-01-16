@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class TLocaleLoader {
 
@@ -81,22 +82,22 @@ public class TLocaleLoader {
     public static void load(Plugin plugin, boolean isCover, boolean hideMessage) {
         try {
             if (isLoadLocale(plugin, isCover)) {
-                // 获取文件
-                File localeFile = getLocaleFile(plugin);
-                if (localeFile == null) {
-                    return;
+                for (File localeFile : getLocaleFile(plugin)) {
+                    if (!TConfigWatcher.getInst().hasListener(localeFile)) {
+                        Runnable listener = () -> {
+                            if (localeFile.getName().equals(getLocalPriorityFirst(plugin) + ".yml")) {
+                                YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
+                                YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, localeFile);
+                                loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream, hideMessage);
+                            }
+                        };
+                        TConfigWatcher.getInst().addListener(localeFile, null, obj -> listener.run());
+                    }
+                    TConfigWatcher.getInst().runListener(localeFile);
                 }
-                // 加载文件
-                YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
-                YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, localeFile);
-                // 载入配置
-                loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream, hideMessage);
-                // 注册监听
-                TConfigWatcher.getInst().removeListener(localeFile);
-                TConfigWatcher.getInst().addListener(localeFile, null, obj -> loadPluginLocale(plugin, localeFile, Files.loadYaml(localeFile), getLocaleAsPlugin(plugin, localeFile), false));
             }
         } catch (Exception e) {
-            errorLogger("ERROR-LOADING-LANG", plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
+            errorLogger(plugin.getName(), e.toString() + "\n" + e.getStackTrace()[0].toString());
         }
     }
 
@@ -110,6 +111,11 @@ public class TLocaleLoader {
 
     public static boolean isDependWithTabooLib(Plugin plugin) {
         return plugin.getClass().getSuperclass().getSimpleName().equals("TabooPlugin");
+    }
+
+    public static String getLocalPriorityFirst(Plugin plugin) {
+        List<String> localePriority = getLocalePriority(plugin);
+        return localePriority.isEmpty() ? "zh_CN" : localePriority.get(0);
     }
 
     public static List<String> getLocalePriority(Plugin plugin) {
@@ -128,13 +134,17 @@ public class TLocaleLoader {
         TLogger.getGlobalLogger().info(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString(path), args));
     }
 
-    private static void errorLogger(String path, String... args) {
-        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString(path), args));
+    private static void errorLogger(String... args) {
+        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("ERROR-LOADING-LANG"), args));
     }
 
-    private static File getLocaleFile(Plugin plugin) {
-        getLocalePriority(plugin).forEach(localeName -> Files.releaseResource(plugin, "lang/" + localeName + ".yml", false));
-        return getLocalePriority(plugin).stream().map(localeName -> new File("plugins/" + plugin.getName() + "/lang/" + localeName + ".yml")).filter(File::exists).findFirst().orElse(null);
+    private static File getLocalFile(Plugin plugin, String locale) {
+        List<File> localeFile = getLocaleFile(plugin);
+        return localeFile.stream().filter(f -> f.getName().equals(localeFile + ".yml")).findFirst().orElse(null);
+    }
+
+    private static List<File> getLocaleFile(Plugin plugin) {
+        return getLocalePriority(plugin).stream().map(file -> Files.releaseResource(plugin, "lang/" + file + ".yml")).filter(File::exists).collect(Collectors.toList());
     }
 
     private static TLocaleInstance getLocaleInstance(Plugin plugin) {
