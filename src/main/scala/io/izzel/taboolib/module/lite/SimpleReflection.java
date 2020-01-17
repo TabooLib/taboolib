@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Ref;
 
 import java.lang.reflect.Field;
@@ -65,11 +66,11 @@ public class SimpleReflection {
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            throw new RuntimeException("Not Found Cache.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (value == null) {
-            throw new RuntimeException("Not Found Field.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         try {
             field.set(instance, value);
@@ -81,11 +82,11 @@ public class SimpleReflection {
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            throw new RuntimeException("Not Found Cache.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (field == null) {
-            throw new RuntimeException("Not Found Field.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         try {
             return field.get(instance);
@@ -98,11 +99,11 @@ public class SimpleReflection {
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            throw new RuntimeException("Not Found Cache.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (field == null) {
-            throw new RuntimeException("Not Found Field.");
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         try {
             return (T) field.get(instance);

@@ -10,7 +10,6 @@ import io.izzel.taboolib.module.packet.TPacket;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class Signs {
         Location location = player.getLocation();
         location.setY(0);
         try {
-            player.sendBlockChange(location, Material.WALL_SIGN, (byte) 0);
+            player.sendBlockChange(location, Materials.OAK_WALL_SIGN.parseMaterial(), (byte) 0);
             player.sendSignChange(location, format(origin));
         } catch (Throwable t) {
             t.printStackTrace();
