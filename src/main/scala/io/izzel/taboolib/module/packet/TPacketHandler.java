@@ -49,7 +49,7 @@ public class TPacketHandler implements Listener {
     }
 
     public static void addListener(Plugin plugin, TPacketListener listener) {
-        packetListeners.computeIfAbsent(plugin.getName(), name -> Lists.newArrayList()).add(listener);
+        packetListeners.computeIfAbsent(plugin.getName(), name -> Lists.newCopyOnWriteArrayList()).add(listener);
     }
 
     public static void removeListener(Plugin plugin) {
