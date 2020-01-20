@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.nms.nbt;
 
 import io.izzel.taboolib.TabooLib;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.util.NumberConversions;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,11 +84,11 @@ public class NBTBase {
     }
 
     public String asString() {
-        return (String) data;
+        return String.valueOf(data);
     }
 
     public byte asByte() {
-        return (byte) data;
+        return NumberConversions.toByte(data);
     }
 
     public byte[] asByteArray() {
@@ -95,7 +96,7 @@ public class NBTBase {
     }
 
     public int asInt() {
-        return (int) data;
+        return NumberConversions.toInt(data);
     }
 
     public int[] asIntArray() {
@@ -103,19 +104,19 @@ public class NBTBase {
     }
 
     public double asDouble() {
-        return (double) data;
+        return NumberConversions.toDouble(data);
     }
 
     public float asFloat() {
-        return (float) data;
+        return NumberConversions.toFloat(data);
     }
 
     public short asShort() {
-        return (short) data;
+        return NumberConversions.toShort(data);
     }
 
     public long asLong() {
-        return (long) data;
+        return NumberConversions.toLong(data);
     }
 
     public NBTCompound asCompound() {

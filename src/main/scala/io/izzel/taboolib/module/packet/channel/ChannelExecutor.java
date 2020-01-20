@@ -1,11 +1,11 @@
 package io.izzel.taboolib.module.packet.channel;
 
 import io.izzel.taboolib.module.packet.Packet;
+import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.izzel.taboolib.module.packet.TPacketHandler;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
