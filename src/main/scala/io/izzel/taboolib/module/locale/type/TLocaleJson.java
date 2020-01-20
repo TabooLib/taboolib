@@ -74,9 +74,11 @@ public class TLocaleJson extends TLocaleSerialize {
                         BaseComponent[] component = TextComponent.fromLegacyText(text);
                         arg.forEach((key, value) -> {
                             if (key.equalsIgnoreCase("suggest")) {
-                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value))));
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent. setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("command") || "commands".equalsIgnoreCase(key)) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value))));
+                            } else if (key.equalsIgnoreCase("url")) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("hover")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
                             }
