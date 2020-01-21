@@ -39,13 +39,13 @@ public class Catchers implements Listener {
             e.setCancelled(true);
             // 1.14 supported.
             Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> {
+                Catcher catcher = playerdata.get(e.getPlayer().getName()).getFirst();
                 // 退出
-                if (e.getMessage().equalsIgnoreCase("quit()")) {
+                if (e.getMessage().split(" ")[0].matches(catcher.quit())) {
                     playerdata.get(e.getPlayer().getName()).removeFirst().cancel();
                 }
                 // 默认
                 else {
-                    Catcher catcher = playerdata.get(e.getPlayer().getName()).getFirst();
                     // 如果终止引导
                     if (!catcher.after(e.getMessage())) {
                         playerdata.get(e.getPlayer().getName()).removeFirst();
@@ -59,6 +59,10 @@ public class Catchers implements Listener {
 
     public interface Catcher {
 
+        default String quit() {
+            return "(?i)quit|cancel|exit";
+        }
+
         default Catcher before() {
             return this;
         }
@@ -67,5 +71,6 @@ public class Catchers implements Listener {
 
         default void cancel() {
         }
+
     }
 }
