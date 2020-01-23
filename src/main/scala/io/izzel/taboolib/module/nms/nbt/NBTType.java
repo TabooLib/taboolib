@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.nms.nbt;
 
+import com.google.common.base.Enums;
+
 /**
  * @Author 坏黑
  * @Since 2019-05-24 17:46
@@ -38,5 +40,9 @@ public enum NBTType {
 
     public int getId() {
         return this.id;
+    }
+
+    public static NBTType parse(String in) {
+        return Enums.getIfPresent(NBTType.class, in).or(END);
     }
 }

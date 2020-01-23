@@ -10,11 +10,13 @@ import org.bukkit.plugin.Plugin;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
@@ -345,6 +347,22 @@ public class Files {
             e.printStackTrace();
         }
         return new YamlConfiguration();
+    }
+
+    public static String getFileHash(File file, String algorithm) {
+        try(FileInputStream fileInputStream = new FileInputStream(file)) {
+            MessageDigest digest = MessageDigest.getInstance(algorithm);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = fileInputStream.read(buffer, 0, 1024)) != -1) {
+                digest.update(buffer, 0, length);
+            }
+            byte[] md5Bytes  = digest.digest();
+            return new BigInteger(1, md5Bytes).toString(16);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
     }
 
     private static Class getCaller(Class<?> obj) {

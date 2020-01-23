@@ -80,7 +80,7 @@ public class NBTBase {
     }
 
     public String toJsonSimplified(int index) {
-        return data instanceof String ? "\"" + data + "\"" : String.valueOf(data);
+        return data instanceof String ? "\"" + data + "\"" : toString();
     }
 
     public String asString() {
@@ -152,6 +152,10 @@ public class NBTBase {
             return new NBTBase((long) obj);
         } else if (obj instanceof Byte) {
             return new NBTBase((byte) obj);
+        } else if (obj instanceof byte[]) {
+            return new NBTBase((byte[]) obj);
+        } else if (obj instanceof int[]) {
+            return new NBTBase((int[]) obj);
         } else if (obj instanceof List) {
             return translateList(new NBTList(), (List) obj);
         } else if (obj instanceof Map) {
