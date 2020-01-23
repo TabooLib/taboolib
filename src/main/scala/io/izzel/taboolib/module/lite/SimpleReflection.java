@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Ref;
@@ -11,7 +10,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @Author 坏黑
@@ -20,7 +18,6 @@ import java.util.Set;
 public class SimpleReflection {
 
     private static Map<String, Map<String, Field>> fieldCached = Maps.newHashMap();
-    private static Set<String> fieldLogger = Sets.newHashSet();
 
     public static boolean isExists(Class<?> nmsClass) {
         return fieldCached.containsKey(nmsClass.getName());
@@ -69,15 +66,11 @@ public class SimpleReflection {
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (value == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            return;
         }
         try {
             field.set(instance, value);
@@ -89,15 +82,11 @@ public class SimpleReflection {
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (field == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            return null;
         }
         try {
             return field.get(instance);
@@ -110,15 +99,11 @@ public class SimpleReflection {
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
         }
         Field field = fields.get(fieldName);
         if (field == null) {
-            if (fieldLogger.add(nmsClass.getName() + "$" + fieldName)) {
-                TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName() + "$" + fieldName);
-            }
+            return null;
         }
         try {
             return (T) field.get(instance);
@@ -128,7 +113,7 @@ public class SimpleReflection {
         return def;
     }
 
-    public static Class getListType(Field field)  {
+    public static Class getListType(Field field) {
         Type genericType = field.getGenericType();
         try {
             if (ParameterizedType.class.isAssignableFrom(genericType.getClass())) {
@@ -142,7 +127,7 @@ public class SimpleReflection {
         return null;
     }
 
-    public static Class[] getMapType(Field field)  {
+    public static Class[] getMapType(Field field) {
         Class[] mapType = new Class[2];
         try {
             Type genericType = field.getGenericType();
@@ -154,6 +139,6 @@ public class SimpleReflection {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        return mapType[1] == null ? null : mapType ;
+        return mapType[1] == null ? null : mapType;
     }
 }
