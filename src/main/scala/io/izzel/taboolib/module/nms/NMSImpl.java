@@ -195,8 +195,7 @@ public class NMSImpl extends NMS {
                     return "entity.Villager." + name;
                 }
                 return "entity." + entity.getType().getEntityClass().getSimpleName() + ".name";
-            } catch (Throwable t) {
-                t.printStackTrace();
+            } catch (Throwable ignore) {
             }
             return "entity.null";
         }

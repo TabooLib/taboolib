@@ -1,8 +1,7 @@
 package io.izzel.taboolib.module.nms.nbt;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +63,67 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
     }
 
     public static NBTCompound fromJson(String json) {
-        return new Gson().fromJson(json, NBTCompound.class);
+        return (NBTCompound) fromJson(new JsonParser().parse(json));
+    }
+
+    static NBTBase fromJson(JsonElement element) {
+        if (element instanceof JsonObject) {
+            JsonObject json = (JsonObject) element;
+            // base
+            if (json.has("type") && json.has("data") && json.size() == 2) {
+                switch (NBTType.parse(json.get("type").getAsString())) {
+                    case BYTE:
+                        return new NBTBase(json.get("data").getAsByte());
+                    case SHORT:
+                        return new NBTBase(json.get("data").getAsShort());
+                    case INT:
+                        return new NBTBase(json.get("data").getAsInt());
+                    case LONG:
+                        return new NBTBase(json.get("data").getAsLong());
+                    case FLOAT:
+                        return new NBTBase(json.get("data").getAsFloat());
+                    case DOUBLE:
+                        return new NBTBase(json.get("data").getAsDouble());
+                    case STRING:
+                        return new NBTBase(json.get("data").getAsString());
+                    case BYTE_ARRAY: {
+                        JsonArray array = json.get("data").getAsJsonArray();
+                        byte[] bytes = new byte[array.size()];
+                        for (int i = 0; i < array.size(); i++) {
+                            bytes[i] = array.get(i).getAsByte();
+                        }
+                        return new NBTBase(bytes);
+                    }
+                    case INT_ARRAY: {
+                        JsonArray array = json.get("data").getAsJsonArray();
+                        int[] ints = new int[array.size()];
+                        for (int i = 0; i < array.size(); i++) {
+                            ints[i] = array.get(i).getAsInt();
+                        }
+                        return new NBTBase(ints);
+                    }
+                    default:
+                        return new NBTBase("error: " + element);
+                }
+            }
+            // compound
+            else {
+                NBTCompound compound = new NBTCompound();
+                for (Entry<String, JsonElement> elementEntry : json.entrySet()) {
+                    compound.put(elementEntry.getKey(), fromJson(elementEntry.getValue()));
+                }
+                return compound;
+            }
+        }
+        // list
+        else if (element instanceof JsonArray) {
+            NBTList list = new NBTList();
+            for (JsonElement jsonElement : (JsonArray) element) {
+                list.add(fromJson(jsonElement));
+            }
+            return list;
+        }
+        return new NBTBase("error: " + element);
     }
 
     @Override

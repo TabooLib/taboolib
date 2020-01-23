@@ -2,34 +2,35 @@ package io.izzel.taboolib.common.listener;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
-import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Signs;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
+import java.io.File;
 import java.util.Arrays;
 
 /**
  * @author sky
  */
 @TListener
-public class ListenerPlayerCommand implements Listener {
+public class ListenerCommand implements Listener {
 
     @EventHandler
     public void cmd(PlayerCommandPreprocessEvent e) {
         if (e.getMessage().equalsIgnoreCase("/tabooLib")) {
             e.setCancelled(true);
-            TLocale.Display.sendTitle(e.getPlayer(), "§fTabooLib", "§7TabooLib is enabled.");
+            TLocale.Display.sendTitle(e.getPlayer(), "§fTabooLib", "§7TabooLib Enabled.");
         }
         if (e.getMessage().equalsIgnoreCase("/tellrawTest") && e.getPlayer().hasPermission("*")) {
             e.setCancelled(true);
@@ -39,13 +40,9 @@ public class ListenerPlayerCommand implements Listener {
                     .append("§f]")
                     .send(e.getPlayer());
         }
-        if (e.getMessage().equalsIgnoreCase("/placeholderTest") && e.getPlayer().hasPermission("*")) {
+        if (e.getMessage().equalsIgnoreCase("/fakesignTest") && e.getPlayer().hasPermission("*")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(InternalPluginBridge.handle().setPlaceholders(e.getPlayer(), "§8[§3§lTabooLib§8] §7PlaceholderAPI Test: §f%player_name%"));
-        }
-        if (e.getMessage().equalsIgnoreCase("/fakesignTest") && e.getPlayer().hasPermission("&")) {
-            e.setCancelled(true);
-            Signs.fakeSign(e.getPlayer(), ArrayUtil.asArray("§nFakeSign Test"), lines -> {
+            Signs.fakeSign(e.getPlayer(), lines -> {
                 e.getPlayer().sendMessage("§8[§3§lTabooLib§8] §7FakeSign Lines: §f" + Arrays.toString(lines));
             });
         }
@@ -71,6 +68,19 @@ public class ListenerPlayerCommand implements Listener {
                 TabooLibAPI.debug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
+        } else if (e.getCommand().equalsIgnoreCase("libUpdateConfirm")) {
+            if (Version.isAfter(Version.v1_8)) {
+                e.setCancelled(true);
+            }
+            Bukkit.getConsoleSender().sendMessage("§f[TabooLib] §7正在下载资源文件...");
+            Files.downloadFile("https://skymc.oss-cn-shanghai.aliyuncs.com/plugins/TabooLib.jar", new File("libs/TabooLib.jar"));
+            Bukkit.getConsoleSender().sendMessage("§f[TabooLib] §7资源文件下载完成! 服务器即将重启...");
+            try {
+                Thread.sleep(3000L);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            Bukkit.shutdown();
         }
     }
 }
