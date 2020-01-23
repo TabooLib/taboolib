@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
-import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.util.Variables;
@@ -77,6 +77,8 @@ public class TLocaleJson extends TLocaleSerialize {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("command") || "commands".equalsIgnoreCase(key)) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.valueOf(value))));
+                            } else if (key.equalsIgnoreCase("url")) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("hover")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
                             }
