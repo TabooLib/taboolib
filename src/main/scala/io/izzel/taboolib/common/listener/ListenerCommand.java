@@ -1,7 +1,6 @@
 package io.izzel.taboolib.common.listener;
 
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
@@ -13,6 +12,7 @@ import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
@@ -48,19 +48,13 @@ public class ListenerCommand implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void cmd(ServerCommandEvent e) {
         if (e.getCommand().equalsIgnoreCase("saveFiles")) {
-            if (Version.isAfter(Version.v1_8)) {
-                e.setCancelled(true);
-            }
             Local.saveFiles();
             LocalPlayer.saveFiles();
             TLogger.getGlobalLogger().info("Successfully.");
         } else if (e.getCommand().equalsIgnoreCase("tDebug")) {
-            if (Version.isAfter(Version.v1_8)) {
-                e.setCancelled(true);
-            }
             if (TabooLibAPI.isDebug()) {
                 TabooLibAPI.debug(false);
                 TLogger.getGlobalLogger().info("&cDisabled.");
@@ -68,13 +62,13 @@ public class ListenerCommand implements Listener {
                 TabooLibAPI.debug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
-        } else if (e.getCommand().equalsIgnoreCase("libUpdateConfirm")) {
-            if (Version.isAfter(Version.v1_8)) {
-                e.setCancelled(true);
-            }
-            Bukkit.getConsoleSender().sendMessage("§f[TabooLib] §7正在下载资源文件...");
+        } else if ("libupdate".equalsIgnoreCase(e.getCommand())) {
+            e.setCancelled(true);
+            e.getSender().sendMessage("§8[§fTabooLib§8] §cWARNING §7| §4Update TabooLib will force to restart your server. Please confirm this action by type §c/libupdateConfirm");
+        } else if ("libupdateConfirm".equalsIgnoreCase(e.getCommand()) || "libupdate confirm".equalsIgnoreCase(e.getCommand())) {
+            e.getSender().sendMessage("§8[§fTabooLib§8] §7Downloading TabooLib file...");
             Files.downloadFile("https://skymc.oss-cn-shanghai.aliyuncs.com/plugins/TabooLib.jar", new File("libs/TabooLib.jar"));
-            Bukkit.getConsoleSender().sendMessage("§f[TabooLib] §7资源文件下载完成! 服务器即将重启...");
+            e.getSender().sendMessage("§8[§fTabooLib§8] §2Download completed, the server will restart in 3 secs");
             try {
                 Thread.sleep(3000L);
             } catch (InterruptedException e1) {
