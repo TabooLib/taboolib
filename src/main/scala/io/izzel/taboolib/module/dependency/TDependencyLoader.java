@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,11 +21,11 @@ public class TDependencyLoader {
         try {
             ClassLoader loader = plugin instanceof InternalPlugin ? Bukkit.class.getClassLoader() : plugin.getClass().getClassLoader();
             Field ucpField = loader.getClass().getDeclaredField("ucp");
-            long ucpOffset = Ref.UNSAFE.objectFieldOffset(ucpField);
-            Object ucp = Ref.UNSAFE.getObject(loader, ucpOffset);
-            Method addURL = ucp.getClass().getMethod("addURL", URL.class);
-            addURL.invoke(ucp, url);
-        } catch (Exception e) {
+            long ucpOffset = Ref.getUnsafe().objectFieldOffset(ucpField);
+            Object ucp = Ref.getUnsafe().getObject(loader, ucpOffset);
+            MethodHandle methodHandle = Ref.lookup().findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));
+            methodHandle.invoke(ucp, url);
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
