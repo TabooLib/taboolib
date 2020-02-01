@@ -34,9 +34,8 @@ public class Ref {
         try {
             return (Unsafe) io.izzel.taboolib.util.Reflection.getValue(null, Unsafe.class, true, "theUnsafe");
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw new IllegalStateException("Unsafe not found");
         }
-        return null;
     }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
