@@ -15,23 +15,15 @@ import java.net.URLClassLoader;
 
 public class TDependencyLoader {
 
-    private static final long ucpOffset;
-
-    static {
-        try {
-            Field ucp = Bukkit.class.getClassLoader().getClass().getDeclaredField("ucp");
-            ucpOffset = Ref.UNSAFE.objectFieldOffset(ucp);
-        } catch (Exception e) {
-            throw new IllegalStateException();
-        }
-    }
-
     public static synchronized void addToPath(Plugin plugin, URL url) {
         try {
-            Object ucp = Ref.UNSAFE.getObject(plugin instanceof InternalPlugin ? Bukkit.class.getClassLoader() : plugin.getClass().getClassLoader(), ucpOffset);
+            ClassLoader loader = plugin instanceof InternalPlugin ? Bukkit.class.getClassLoader() : plugin.getClass().getClassLoader();
+            Field ucpField = loader.getClass().getDeclaredField("ucp");
+            long ucpOffset = Ref.UNSAFE.objectFieldOffset(ucpField);
+            Object ucp = Ref.UNSAFE.getObject(loader, ucpOffset);
             Method addURL = ucp.getClass().getMethod("addURL", URL.class);
             addURL.invoke(ucp, url);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
