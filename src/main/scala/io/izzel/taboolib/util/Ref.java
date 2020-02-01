@@ -12,6 +12,7 @@ import sun.misc.Unsafe;
 import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,6 +20,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("restriction")
 @ThreadSafe
 public class Ref {
 
@@ -28,14 +30,27 @@ public class Ref {
 
     public static final int ACC_BRIDGE = 0x0040;
     public static final int ACC_SYNTHETIC = 0x1000;
-    public static final Unsafe UNSAFE = getUnsafe();
+    private static final Unsafe UNSAFE;
+    private static final MethodHandles.Lookup LOOKUP;
 
-    static Unsafe getUnsafe() {
+    static {
         try {
-            return (Unsafe) io.izzel.taboolib.util.Reflection.getValue(null, Unsafe.class, true, "theUnsafe");
+            UNSAFE = (Unsafe) io.izzel.taboolib.util.Reflection.getValue(null, Unsafe.class, true, "theUnsafe");
+            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            Object lookupBase = UNSAFE.staticFieldBase(lookupField);
+            long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
+            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(lookupBase, lookupOffset);
         } catch (Throwable t) {
             throw new IllegalStateException("Unsafe not found");
         }
+    }
+
+    public static Unsafe getUnsafe() {
+        return UNSAFE;
+    }
+
+    public static MethodHandles.Lookup lookup() {
+        return LOOKUP;
     }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
@@ -73,7 +88,7 @@ public class Ref {
         } catch (Exception | Error e) {
             try {
                 List<Field> list = Arrays.stream(clazz.getDeclaredFields())
-                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                    .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
                 cachedFields.putIfAbsent(clazz.getName(), list);
                 return list;
             } catch (Error err) {
@@ -117,7 +132,7 @@ public class Ref {
         } catch (Exception | Error e) {
             try {
                 List<Method> list = Arrays.stream(clazz.getDeclaredMethods())
-                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                    .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
                 cacheMethods.putIfAbsent(clazz.getName(), list);
                 return list;
             } catch (Error err) {
