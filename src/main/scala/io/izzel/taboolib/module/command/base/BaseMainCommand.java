@@ -7,6 +7,7 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -249,8 +250,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     private void disguisedPlugin(Class<?> targetClass, Plugin plugin) {
         try {
             Field pluginField = targetClass.getClassLoader().getClass().getDeclaredField("plugin");
-            pluginField.setAccessible(true);
-            pluginField.set(targetClass.newInstance(), plugin);
+            Ref.putField(targetClass.newInstance(), pluginField, plugin);
         } catch (Exception ignored) {
         }
     }
