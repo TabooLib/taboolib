@@ -4,6 +4,7 @@ import io.izzel.taboolib.module.ai.PathfinderExecutor;
 import io.izzel.taboolib.module.ai.SimpleAi;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.util.Ref;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -95,7 +96,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setPathEntity(LivingEntity entity, Object pathEntity) {
         try {
-            this.pathEntity.set(getNavigation(entity), pathEntity);
+            Ref.putField(getNavigation(entity), this.pathEntity, pathEntity);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,7 +153,8 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setGoalAi(LivingEntity entity, Iterable ai) {
         try {
-            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).goalSelector, ai);
+            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).goalSelector,
+                this.pathfinderGoalSelectorSet, ai);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -161,7 +163,8 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setTargetAi(LivingEntity entity, Iterable ai) {
         try {
-            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).targetSelector, ai);
+            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).targetSelector,
+                this.pathfinderGoalSelectorSet, ai);
         } catch (Throwable t) {
             t.printStackTrace();
         }

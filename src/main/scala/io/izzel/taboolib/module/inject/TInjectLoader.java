@@ -34,7 +34,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // Instance Inject
         injectTypes.put(Plugin.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                field.set(instance, plugin);
+                Ref.putField(instance, field, plugin);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -42,7 +42,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // TLogger Inject
         injectTypes.put(TLogger.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                field.set(instance, args.value().length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args.value()[0]));
+                Ref.putField(instance, field, args.value().length == 0 ? TLogger.getUnformatted(plugin) : TLogger.getUnformatted(args.value()[0]));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -50,7 +50,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // TPacketListener Inject
         injectTypes.put(TPacketListener.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                TPacketHandler.addListener(plugin, ((TPacketListener) field.get(instance)));
+                TPacketHandler.addListener(plugin, ((TPacketListener) Ref.getField(instance, field)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -59,7 +59,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         injectTypes.put(TConfig.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 TConfig config = TConfig.create(plugin, args.value().length == 0 ? "config.yml" : args.value()[0]);
-                field.set(instance, config);
+                Ref.putField(instance, field, config);
                 if (Strings.nonEmpty(args.locale())) {
                     config.listener(() -> {
                         List<String> localePriority = Lists.newArrayList();
@@ -124,7 +124,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         injectTypes.put(Boolean.TYPE, (plugin, field, args, pluginClass, instance) -> {
             try {
                 if (args.value().length > 0) {
-                    field.set(instance, Bukkit.getPluginManager().getPlugin(args.value()[0]) != null);
+                    Ref.putField(instance, field, Bukkit.getPluginManager().getPlugin(args.value()[0]) != null);
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
@@ -134,7 +134,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         injectTypes.put(JavaPlugin.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 if (args.value().length > 0) {
-                    field.set(instance, Bukkit.getPluginManager().getPlugin(args.value()[0]));
+                    Ref.putField(instance, field, Bukkit.getPluginManager().getPlugin(args.value()[0]));
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
