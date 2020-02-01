@@ -32,6 +32,7 @@ public class Ref {
     public static final int ACC_SYNTHETIC = 0x1000;
     private static final Unsafe UNSAFE;
     private static final MethodHandles.Lookup LOOKUP;
+    private static final long modifiersOffset;
 
     static {
         try {
@@ -40,6 +41,7 @@ public class Ref {
             Object lookupBase = UNSAFE.staticFieldBase(lookupField);
             long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
             LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(lookupBase, lookupOffset);
+            modifiersOffset = UNSAFE.objectFieldOffset(Field.class.getDeclaredField("modifiers"));
         } catch (Throwable t) {
             throw new IllegalStateException("Unsafe not found");
         }
@@ -208,9 +210,7 @@ public class Ref {
     public static void forcedAccess(Field field) {
         try {
             field.setAccessible(true);
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+            getUnsafe().putInt(field, modifiersOffset, field.getModifiers() & ~Modifier.FINAL);
         } catch (Throwable t) {
             t.printStackTrace();
         }
