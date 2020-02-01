@@ -32,7 +32,6 @@ public class Ref {
     public static final int ACC_SYNTHETIC = 0x1000;
     private static final Unsafe UNSAFE;
     private static final MethodHandles.Lookup LOOKUP;
-    private static final long modifiersOffset;
 
     static {
         try {
@@ -41,7 +40,6 @@ public class Ref {
             Object lookupBase = UNSAFE.staticFieldBase(lookupField);
             long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
             LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(lookupBase, lookupOffset);
-            modifiersOffset = UNSAFE.objectFieldOffset(Field.class.getDeclaredField("modifiers"));
         } catch (Throwable t) {
             throw new IllegalStateException("Unsafe not found");
         }
@@ -53,6 +51,17 @@ public class Ref {
 
     public static MethodHandles.Lookup lookup() {
         return LOOKUP;
+    }
+
+    public static void putField(Object src, Field field, Object value) {
+        if (Modifier.isStatic(field.getModifiers())) {
+            Object base = getUnsafe().staticFieldBase(field);
+            long offset = getUnsafe().staticFieldOffset(field);
+            getUnsafe().putObject(base, offset, value);
+        } else {
+            long offset = getUnsafe().objectFieldOffset(field);
+            getUnsafe().putObject(src, offset, value);
+        }
     }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
@@ -210,7 +219,6 @@ public class Ref {
     public static void forcedAccess(Field field) {
         try {
             field.setAccessible(true);
-            getUnsafe().putInt(field, modifiersOffset, field.getModifiers() & ~Modifier.FINAL);
         } catch (Throwable t) {
             t.printStackTrace();
         }

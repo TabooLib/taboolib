@@ -58,10 +58,9 @@ public class TInjectCreator implements TabooLibLoader.Loader {
             if (instance.isEmpty()) {
                 continue;
             }
-            Ref.forcedAccess(declaredField);
             try {
                 InstanceData instanceData = new InstanceData(declaredField.getType().newInstance(), annotation);
-                declaredField.set(instance, instanceData.getInstance());
+                Ref.putField(instance, declaredField, instanceData.getInstance());
                 instanceMap.put(new ClassData(loadClass, declaredField.getType()), instanceData);
             } catch (Throwable t) {
                 TLogger.getGlobalLogger().error(declaredField.getName() + " instantiation failed: " + t.getMessage());
