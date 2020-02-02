@@ -1,6 +1,5 @@
 package io.izzel.taboolib.util;
 
-import com.google.common.primitives.Primitives;
 import com.google.gson.annotations.SerializedName;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
@@ -92,6 +91,11 @@ public class Ref {
         }
     }
 
+    public static <T> T getField(Object src, Field field, Class<T> cast) {
+        Object obj = getField(src, field);
+        return obj == null ? null : (T) obj;
+    }
+
     public static Object getField(Object src, Field field) {
         if (Modifier.isStatic(field.getModifiers())) {
             Object base = getUnsafe().staticFieldBase(field);
@@ -165,7 +169,7 @@ public class Ref {
         } catch (Exception | Error e) {
             try {
                 List<Field> list = Arrays.stream(clazz.getDeclaredFields())
-                    .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
                 cachedFields.putIfAbsent(clazz.getName(), list);
                 return list;
             } catch (Error err) {
@@ -209,7 +213,7 @@ public class Ref {
         } catch (Exception | Error e) {
             try {
                 List<Method> list = Arrays.stream(clazz.getDeclaredMethods())
-                    .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
                 cacheMethods.putIfAbsent(clazz.getName(), list);
                 return list;
             } catch (Error err) {
@@ -257,10 +261,8 @@ public class Ref {
             return cachePlugin.computeIfAbsent(callerClass.getName(), n -> {
                 try {
                     ClassLoader loader = callerClass.getClassLoader();
-                    Field pluginF = loader.getClass().getDeclaredField("plugin");
-                    pluginF.setAccessible(true);
-                    Object o = pluginF.get(loader);
-                    return (JavaPlugin) o;
+                    Object instance = getField(loader, loader.getClass().getDeclaredField("plugin"));
+                    return (JavaPlugin) instance;
                 } catch (Exception e) {
                     return TabooLib.getPlugin();
                 }

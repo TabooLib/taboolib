@@ -6,6 +6,7 @@ import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.nms.nbt.*;
 import io.izzel.taboolib.module.packet.TPacketHandler;
+import io.izzel.taboolib.util.Ref;
 import net.minecraft.server.v1_12_R1.ChatMessageType;
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.MinecraftServer;
@@ -130,7 +131,7 @@ public class NMSImpl extends NMS {
             return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
         } else if (Version.isAfter(Version.v1_13)) {
             try {
-                String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey((net.minecraft.server.v1_13_R2.EntityTypes<?>) entityTypesField.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle())).getKey();
+                String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey((net.minecraft.server.v1_13_R2.EntityTypes<?>) Ref.getField(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
                 if (entity instanceof Villager && ((CraftVillager) entity).getCareer() != null) {
                     name += "." + String.valueOf(((CraftVillager) entity).getCareer()).toLowerCase();
                 }

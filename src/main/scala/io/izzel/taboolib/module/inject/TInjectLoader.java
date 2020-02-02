@@ -98,7 +98,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // SimpleCommandBuilder Inject
         injectTypes.put(CommandBuilder.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                CommandBuilder builder = (CommandBuilder) field.get(instance);
+                CommandBuilder builder = Ref.getField(instance, field, CommandBuilder.class);
                 if (!builder.isBuild()) {
                     if (builder.isSimpleMode()) {
                         builder.command(field.getName());
@@ -115,7 +115,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // CooldownPack Inject
         injectTypes.put(Cooldown.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                Cooldowns.register((Cooldown) field.get(instance), plugin);
+                Cooldowns.register((Cooldown) Ref.getField(instance, field), plugin);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
