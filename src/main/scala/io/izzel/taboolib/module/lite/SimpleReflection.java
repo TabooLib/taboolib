@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Ref;
 
 import java.lang.reflect.Field;
@@ -65,7 +64,7 @@ public class SimpleReflection {
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return;
         }
         Field field = fields.get(fieldName);
         if (value == null) {
@@ -81,7 +80,7 @@ public class SimpleReflection {
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return null;
         }
         Field field = fields.get(fieldName);
         if (field == null) {
@@ -99,7 +98,7 @@ public class SimpleReflection {
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return null;
         }
         Field field = fields.get(fieldName);
         if (field == null) {

@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util.item;
 
+import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -161,7 +162,10 @@ public class MapBuilder {
 
         if (isNewVersion) {
             MapMeta mapMeta = (MapMeta) item.getItemMeta();
-            mapMeta.setMapView(map);
+            try {
+                Reflection.invokeMethod(mapMeta, "setMapView", map);
+            } catch (Throwable ignored) {
+            }
             item.setItemMeta(mapMeta);
         } else {
             item.setDurability(getMapId(map));

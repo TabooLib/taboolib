@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
@@ -56,6 +57,7 @@ public class Ref {
     }
 
     public static void putField(Object src, Field field, Object value) {
+        Preconditions.checkNotNull(field);
         if (Modifier.isStatic(field.getModifiers())) {
             Object base = getUnsafe().staticFieldBase(field);
             long offset = getUnsafe().staticFieldOffset(field);
@@ -97,6 +99,8 @@ public class Ref {
     }
 
     public static Object getField(Object src, Field field) {
+        Preconditions.checkNotNull(field);
+        getUnsafe().ensureClassInitialized(field.getDeclaringClass());
         if (Modifier.isStatic(field.getModifiers())) {
             Object base = getUnsafe().staticFieldBase(field);
             long offset = getUnsafe().staticFieldOffset(field);
