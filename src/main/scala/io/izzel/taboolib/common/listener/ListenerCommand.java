@@ -62,10 +62,10 @@ public class ListenerCommand implements Listener {
                 TabooLibAPI.debug(true);
                 TLogger.getGlobalLogger().info("&aEnabled.");
             }
-        } else if ("libupdate".equalsIgnoreCase(e.getCommand())) {
+        } else if (e.getCommand().equalsIgnoreCase("libUpdate")) {
             e.setCancelled(true);
-            e.getSender().sendMessage("§8[§fTabooLib§8] §cWARNING §7| §4Update TabooLib will force to restart your server. Please confirm this action by type §c/libupdateConfirm");
-        } else if ("libupdateConfirm".equalsIgnoreCase(e.getCommand()) || "libupdate confirm".equalsIgnoreCase(e.getCommand())) {
+            e.getSender().sendMessage("§8[§fTabooLib§8] §cWARNING §7| §4Update TabooLib will force to restart your server. Please confirm this action by type §c/libupdateconfirm");
+        } else if (e.getCommand().equalsIgnoreCase("libUpdateConfirm") || e.getCommand().equalsIgnoreCase("libUpdate confirm")) {
             e.getSender().sendMessage("§8[§fTabooLib§8] §7Downloading TabooLib file...");
             Files.downloadFile("https://skymc.oss-cn-shanghai.aliyuncs.com/plugins/TabooLib.jar", new File("libs/TabooLib.jar"));
             e.getSender().sendMessage("§8[§fTabooLib§8] §2Download completed, the server will restart in 3 secs");
