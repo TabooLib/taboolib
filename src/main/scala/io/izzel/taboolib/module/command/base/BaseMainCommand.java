@@ -83,8 +83,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(SubCommand.class).priority()));
             fields.forEach(commandField -> {
                 try {
-                    commandField.getField().setAccessible(true);
-                    BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
+                    BaseSubCommand subCommand = Ref.getField(commandField.getParent().newInstance(), commandField.getField(), BaseSubCommand.class);
                     subCommand.label(commandField.getField().getName()).annotation(commandField.getField().getAnnotation(SubCommand.class));
                     baseMainCommand.registerSubCommand(subCommand);
                 } catch (Throwable ignored) {

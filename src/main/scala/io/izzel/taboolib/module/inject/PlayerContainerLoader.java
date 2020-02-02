@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,7 +35,7 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
             field.setAccessible(true);
             for (Object instance : TInjectHelper.getInstance(field, pluginClass, plugin)) {
                 try {
-                    pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(field.get(instance), annotation.uniqueId()));
+                    pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(Ref.getField(instance, field), annotation.uniqueId()));
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

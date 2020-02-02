@@ -50,7 +50,7 @@ public class TSerializer {
                             if (serializer == null) {
                                 serializable.read(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                             } else {
-                                readCollection((Collection) declaredField.get(serializable), jsonElementEntry.getValue().getAsString(), checkCustom(listType, serializer));
+                                readCollection((Collection) Ref.getField(serializable, declaredField), jsonElementEntry.getValue().getAsString(), checkCustom(listType, serializer));
                             }
                         }
                         // Map
@@ -65,7 +65,7 @@ public class TSerializer {
                             if (serializerK == null || serializerV == null) {
                                 serializable.read(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                             } else {
-                                readMap((Map) declaredField.get(serializable), jsonElementEntry.getValue().getAsString(), checkCustom(mapType[0], serializerK), checkCustom(mapType[1], serializerV));
+                                readMap((Map) Ref.getField(serializable, declaredField), jsonElementEntry.getValue().getAsString(), checkCustom(mapType[0], serializerK), checkCustom(mapType[1], serializerV));
                             }
                         }
                         // 未声明类型
@@ -95,7 +95,7 @@ public class TSerializer {
             declaredField.setAccessible(true);
             try {
                 if (!declaredField.isAnnotationPresent(DoNotSerialize.class) && !Modifier.isStatic(declaredField.getModifiers())) {
-                    Object fieldObject = declaredField.get(serializable);
+                    Object fieldObject = Ref.getField(serializable, declaredField);
                     if (fieldObject == null) {
                         continue;
                     }
