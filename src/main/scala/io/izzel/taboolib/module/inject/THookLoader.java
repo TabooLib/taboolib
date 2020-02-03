@@ -27,10 +27,9 @@ public class THookLoader implements TabooLibLoader.Loader {
             if (Plugin.class.isAssignableFrom(declaredField.getType()) && declaredField.isAnnotationPresent(THook.class)) {
                 THook hook = declaredField.getAnnotation(THook.class);
                 if (Strings.nonEmpty(hook.plugin())) {
-                    Ref.forcedAccess(declaredField);
                     for (Object instance : TInjectHelper.getInstance(declaredField, pluginClass, plugin)) {
                         try {
-                            declaredField.set(instance, Bukkit.getPluginManager().getPlugin(hook.plugin()));
+                            Ref.putField(instance, declaredField, Bukkit.getPluginManager().getPlugin(hook.plugin()));
                         } catch (Throwable t) {
                             t.printStackTrace();
                         }

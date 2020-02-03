@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
@@ -12,6 +13,7 @@ import sun.misc.Unsafe;
 import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -19,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("restriction")
 @ThreadSafe
 public class Ref {
 
@@ -28,15 +31,111 @@ public class Ref {
 
     public static final int ACC_BRIDGE = 0x0040;
     public static final int ACC_SYNTHETIC = 0x1000;
-    public static final Unsafe UNSAFE = getUnsafe();
+    private static final Unsafe UNSAFE;
+    private static final MethodHandles.Lookup LOOKUP;
 
-    static Unsafe getUnsafe() {
+    static {
         try {
-            return (Unsafe) io.izzel.taboolib.util.Reflection.getValue(null, Unsafe.class, true, "theUnsafe");
+            Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
+            theUnsafe.setAccessible(true);
+            UNSAFE = (Unsafe) theUnsafe.get(null);
+            Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            Object lookupBase = UNSAFE.staticFieldBase(lookupField);
+            long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
+            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(lookupBase, lookupOffset);
         } catch (Throwable t) {
-            t.printStackTrace();
+            throw new IllegalStateException("Unsafe not found");
         }
-        return null;
+    }
+
+    public static Unsafe getUnsafe() {
+        return UNSAFE;
+    }
+
+    public static MethodHandles.Lookup lookup() {
+        return LOOKUP;
+    }
+
+    public static void putField(Object src, Field field, Object value) {
+        Preconditions.checkNotNull(field);
+        if (Modifier.isStatic(field.getModifiers())) {
+            Object base = getUnsafe().staticFieldBase(field);
+            long offset = getUnsafe().staticFieldOffset(field);
+            put(field, base, offset, value);
+        } else {
+            long offset = getUnsafe().objectFieldOffset(field);
+            put(field, src, offset, value);
+        }
+    }
+
+    private static void put(Field field, Object base, long offset, Object value) {
+        Class<?> type = field.getType();
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
+                getUnsafe().putBoolean(base, offset, (Boolean) value);
+            } else if (type == int.class) {
+                getUnsafe().putInt(base, offset, ((Number) value).intValue());
+            } else if (type == double.class) {
+                getUnsafe().putDouble(base, offset, ((Number) value).doubleValue());
+            } else if (type == long.class) {
+                getUnsafe().putLong(base, offset, ((Number) value).longValue());
+            } else if (type == float.class) {
+                getUnsafe().putFloat(base, offset, ((Number) value).floatValue());
+            } else if (type == short.class) {
+                getUnsafe().putShort(base, offset, ((Number) value).shortValue());
+            } else if (type == byte.class) {
+                getUnsafe().putByte(base, offset, ((Number) value).byteValue());
+            } else if (type == char.class) {
+                getUnsafe().putChar(base, offset, ((Character) value));
+            }
+        } else {
+            getUnsafe().putObject(base, offset, value);
+        }
+    }
+
+    public static <T> T getField(Object src, Field field, Class<T> cast) {
+        Object obj = getField(src, field);
+        return obj == null ? null : (T) obj;
+    }
+
+    public static Object getField(Object src, Field field) {
+        Preconditions.checkNotNull(field);
+        getUnsafe().ensureClassInitialized(field.getDeclaringClass());
+        if (Modifier.isStatic(field.getModifiers())) {
+            Object base = getUnsafe().staticFieldBase(field);
+            long offset = getUnsafe().staticFieldOffset(field);
+            return get(field, base, offset);
+        } else {
+            long offset = getUnsafe().objectFieldOffset(field);
+            return get(field, src, offset);
+        }
+    }
+
+    private static Object get(Field field, Object base, long offset) {
+        Class<?> type = field.getType();
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
+                return getUnsafe().getBoolean(base, offset);
+            } else if (type == int.class) {
+                return getUnsafe().getInt(base, offset);
+            } else if (type == double.class) {
+                return getUnsafe().getDouble(base, offset);
+            } else if (type == long.class) {
+                return getUnsafe().getLong(base, offset);
+            } else if (type == float.class) {
+                return getUnsafe().getFloat(base, offset);
+            } else if (type == short.class) {
+                return getUnsafe().getShort(base, offset);
+            } else if (type == byte.class) {
+                return getUnsafe().getByte(base, offset);
+            } else if (type == char.class) {
+                return getUnsafe().getChar(base, offset);
+            } else {
+                return null;
+            }
+        } else {
+            return getUnsafe().getObject(base, offset);
+        }
     }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
@@ -166,10 +265,8 @@ public class Ref {
             return cachePlugin.computeIfAbsent(callerClass.getName(), n -> {
                 try {
                     ClassLoader loader = callerClass.getClassLoader();
-                    Field pluginF = loader.getClass().getDeclaredField("plugin");
-                    pluginF.setAccessible(true);
-                    Object o = pluginF.get(loader);
-                    return (JavaPlugin) o;
+                    Object instance = getField(loader, loader.getClass().getDeclaredField("plugin"));
+                    return (JavaPlugin) instance;
                 } catch (Exception e) {
                     return TabooLib.getPlugin();
                 }
@@ -194,9 +291,6 @@ public class Ref {
     public static void forcedAccess(Field field) {
         try {
             field.setAccessible(true);
-            Field modifiersField = Field.class.getDeclaredField("modifiers");
-            modifiersField.setAccessible(true);
-            modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
         } catch (Throwable t) {
             t.printStackTrace();
         }

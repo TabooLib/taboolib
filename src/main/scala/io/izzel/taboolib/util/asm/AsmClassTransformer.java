@@ -1,6 +1,7 @@
 package io.izzel.taboolib.util.asm;
 
 
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.objectweb.asm.*;
 
@@ -36,7 +37,7 @@ public class AsmClassTransformer extends ClassVisitor implements Opcodes {
             Class<?> clazz = AsmClassLoader.createNewClass(newClassName, writer.toByteArray());
             Field field = from.getClassLoader().getClass().getDeclaredField("classes");
             field.setAccessible(true);
-            ((Map<String, Class<?>>) field.get(from.getClassLoader())).put(newClassName, clazz);
+            Ref.getField(from.getClassLoader(), field, Map.class).put(newClassName, clazz);
             Constructor<?> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             return constructor.newInstance();

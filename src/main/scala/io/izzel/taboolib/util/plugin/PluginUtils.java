@@ -2,6 +2,7 @@ package io.izzel.taboolib.util.plugin;
 
 import com.google.common.base.Joiner;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -248,26 +249,26 @@ public class PluginUtils {
             try {
                 Field pluginsField = Bukkit.getPluginManager().getClass().getDeclaredField("plugins");
                 pluginsField.setAccessible(true);
-                plugins = (List) pluginsField.get(pluginManager);
+                plugins = (List) Ref.getField(pluginManager, pluginsField);
                 Field lookupNamesField = Bukkit.getPluginManager().getClass().getDeclaredField("lookupNames");
                 lookupNamesField.setAccessible(true);
-                names = (Map) lookupNamesField.get(pluginManager);
+                names = (Map) Ref.getField(pluginManager, lookupNamesField);
 
                 Field commandMapField;
                 try {
                     commandMapField = Bukkit.getPluginManager().getClass().getDeclaredField("listeners");
                     commandMapField.setAccessible(true);
-                    listeners = (Map) commandMapField.get(pluginManager);
+                    listeners = (Map) Ref.getField(pluginManager, commandMapField);
                 } catch (Exception ignored) {
                 }
 
                 commandMapField = Bukkit.getPluginManager().getClass().getDeclaredField("commandMap");
                 commandMapField.setAccessible(true);
-                commandMap = (SimpleCommandMap) commandMapField.get(pluginManager);
+                commandMap = (SimpleCommandMap) Ref.getField(pluginManager, commandMapField);
                 Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
                 knownCommandsField.setAccessible(true);
-                commands = (Map) knownCommandsField.get(commandMap);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
+                commands = (Map) Ref.getField(commandMap, knownCommandsField);
+            } catch (NoSuchFieldException e) {
                 return new PluginUnloadState(true, e.toString());
             }
         }

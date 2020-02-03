@@ -65,7 +65,7 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
                             method.invoke(instance);
                         } catch (Throwable t) {
                             try {
-                                method.invoke(Ref.UNSAFE.allocateInstance(pluginClass));
+                                method.invoke(Ref.getUnsafe().allocateInstance(pluginClass));
                             } catch (Throwable t2) {
                                 t.printStackTrace();
                                 t2.printStackTrace();

@@ -247,7 +247,7 @@ public final class Reflection {
      * @see #getField(Class, boolean, String)
      */
     public static Object getValue(Object instance, Class<?> clazz, boolean declared, String fieldName) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        return getField(clazz, declared, fieldName).get(instance);
+        return Ref.getField(instance, getField(clazz, declared, fieldName));
     }
 
     /**
@@ -302,7 +302,7 @@ public final class Reflection {
      * @see #getField(Class, boolean, String)
      */
     public static void setValue(Object instance, Class<?> clazz, boolean declared, String fieldName, Object value) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        getField(clazz, declared, fieldName).set(instance, value);
+        Ref.putField(instance, getField(clazz, declared, fieldName), value);
     }
 
     /**

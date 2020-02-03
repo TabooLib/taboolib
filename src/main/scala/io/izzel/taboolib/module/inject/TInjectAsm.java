@@ -20,10 +20,9 @@ public class TInjectAsm implements TabooLibLoader.Loader {
             if (annotation == null || annotation.asm().isEmpty()) {
                 continue;
             }
-            Ref.forcedAccess(declaredField);
             for (Object instance : TInjectHelper.getInstance(declaredField, pluginClass, plugin)) {
                 try {
-                    declaredField.set(instance, SimpleVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
+                    Ref.putField(instance, declaredField, SimpleVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

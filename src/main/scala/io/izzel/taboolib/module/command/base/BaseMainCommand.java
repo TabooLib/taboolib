@@ -7,6 +7,7 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
@@ -82,8 +83,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             fields.sort(Comparator.comparingDouble(commandField -> commandField.getField().getAnnotation(SubCommand.class).priority()));
             fields.forEach(commandField -> {
                 try {
-                    commandField.getField().setAccessible(true);
-                    BaseSubCommand subCommand = (BaseSubCommand) commandField.getField().get(commandField.getParent().newInstance());
+                    BaseSubCommand subCommand = Ref.getField(commandField.getParent().newInstance(), commandField.getField(), BaseSubCommand.class);
                     subCommand.label(commandField.getField().getName()).annotation(commandField.getField().getAnnotation(SubCommand.class));
                     baseMainCommand.registerSubCommand(subCommand);
                 } catch (Throwable ignored) {
@@ -249,8 +249,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     private void disguisedPlugin(Class<?> targetClass, Plugin plugin) {
         try {
             Field pluginField = targetClass.getClassLoader().getClass().getDeclaredField("plugin");
-            pluginField.setAccessible(true);
-            pluginField.set(targetClass.newInstance(), plugin);
+            Ref.putField(targetClass.newInstance(), pluginField, plugin);
         } catch (Exception ignored) {
         }
     }
