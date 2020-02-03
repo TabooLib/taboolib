@@ -7,6 +7,7 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.client.packet.impl.PacketEmpty;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,7 +69,7 @@ public class PacketSerializer implements Listener {
         Arrays.stream(packet.getClass().getDeclaredFields()).filter(field -> field.isAnnotationPresent(PacketValue.class)).forEach(field -> {
             field.setAccessible(true);
             try {
-                Object obj = field.get(packet);
+                Object obj = Ref.getField(packet, field);
                 if (obj instanceof Number) {
                     json.addProperty(field.getName(), (Number) obj);
                 } else if (obj instanceof Boolean) {

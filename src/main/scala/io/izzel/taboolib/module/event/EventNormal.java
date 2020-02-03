@@ -32,8 +32,7 @@ public abstract class EventNormal<T extends EventNormal> extends Event {
     public T async(boolean value) {
         try {
             Field asyncField = Reflection.getField(Event.class, true, "async");
-            Ref.forcedAccess(asyncField);
-            asyncField.setBoolean(this, value);
+            Ref.putField(this, asyncField, value);
         } catch (Throwable t) {
             t.printStackTrace();
         }

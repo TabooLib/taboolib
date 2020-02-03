@@ -4,6 +4,7 @@ import io.izzel.taboolib.module.ai.PathfinderExecutor;
 import io.izzel.taboolib.module.ai.SimpleAi;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.util.Ref;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -29,7 +30,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
         try {
             SimpleReflection.saveField(PathfinderGoalSelector.class);
             SimpleReflection.saveField(ControllerJump.class);
-            pathfinderGoalSelectorSet =SimpleReflection.getField(PathfinderGoalSelector.class, "b");
+            pathfinderGoalSelectorSet = SimpleReflection.getField(PathfinderGoalSelector.class, "b");
             controllerJumpCurrent = SimpleReflection.getField(ControllerJump.class, "a");
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,7 +86,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public Object getPathEntity(LivingEntity entity) {
         try {
-            return pathEntity.get(getNavigation(entity));
+            return Ref.getField(getNavigation(entity), pathEntity);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,7 +96,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setPathEntity(LivingEntity entity, Object pathEntity) {
         try {
-            this.pathEntity.set(getNavigation(entity), pathEntity);
+            Ref.putField(getNavigation(entity), this.pathEntity, pathEntity);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,7 +115,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void clearGoalAi(LivingEntity entity) {
         try {
-            ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).goalSelector)).clear();
+            ((Collection) Ref.getField(((EntityInsentient) getEntityInsentient(entity)).goalSelector, pathfinderGoalSelectorSet)).clear();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,7 +124,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void clearTargetAi(LivingEntity entity) {
         try {
-            ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).targetSelector)).clear();
+            ((Collection) Ref.getField(((EntityInsentient) getEntityInsentient(entity)).targetSelector, pathfinderGoalSelectorSet)).clear();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,7 +133,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public Iterable getGoalAi(LivingEntity entity) {
         try {
-            return ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).goalSelector));
+            return ((Collection) Ref.getField(((EntityInsentient) getEntityInsentient(entity)).goalSelector, pathfinderGoalSelectorSet));
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -142,7 +143,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public Iterable getTargetAi(LivingEntity entity) {
         try {
-            return ((Collection) pathfinderGoalSelectorSet.get(((EntityInsentient) getEntityInsentient(entity)).targetSelector));
+            return ((Collection) Ref.getField(((EntityInsentient) getEntityInsentient(entity)).targetSelector, pathfinderGoalSelectorSet));
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -152,7 +153,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setGoalAi(LivingEntity entity, Iterable ai) {
         try {
-            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).goalSelector, ai);
+            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).goalSelector, this.pathfinderGoalSelectorSet, ai);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -161,7 +162,8 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setTargetAi(LivingEntity entity, Iterable ai) {
         try {
-            pathfinderGoalSelectorSet.set(((EntityInsentient) getEntityInsentient(entity)).targetSelector, ai);
+            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).targetSelector,
+                    this.pathfinderGoalSelectorSet, ai);
         } catch (Throwable t) {
             t.printStackTrace();
         }

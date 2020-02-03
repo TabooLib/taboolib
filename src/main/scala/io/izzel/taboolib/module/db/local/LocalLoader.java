@@ -20,10 +20,9 @@ public class LocalLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
-            Ref.forcedAccess(field);
             for (Object instance : TInjectHelper.getInstance(field, pluginClass, plugin)) {
                 try {
-                    field.set(instance, Local.get(plugin.getName()).get(annotation.value()));
+                    Ref.putField(instance, field, Local.get(plugin.getName()).get(annotation.value()));
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

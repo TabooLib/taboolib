@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.lite;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Ref;
 
 import java.lang.reflect.Field;
@@ -56,7 +55,6 @@ public class SimpleReflection {
     public static void saveField(Class<?> nmsClass, String fieldName) {
         try {
             Field declaredField = nmsClass.getDeclaredField(fieldName);
-            Ref.forcedAccess(declaredField);
             fieldCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(fieldName, declaredField);
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,15 +64,15 @@ public class SimpleReflection {
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return;
         }
         Field field = fields.get(fieldName);
         if (value == null) {
             return;
         }
         try {
-            field.set(instance, value);
-        } catch (IllegalAccessException e) {
+            Ref.putField(instance, field, value);
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
@@ -82,32 +80,33 @@ public class SimpleReflection {
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return null;
         }
         Field field = fields.get(fieldName);
         if (field == null) {
             return null;
         }
         try {
-            return field.get(instance);
-        } catch (IllegalAccessException e) {
+            return Ref.getField(instance, field);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
-            TLogger.getGlobalLogger().error("Field Not Found: " + nmsClass.getName());
+            return null;
         }
         Field field = fields.get(fieldName);
         if (field == null) {
             return null;
         }
         try {
-            return (T) field.get(instance);
-        } catch (IllegalAccessException e) {
+            return (T) Ref.getField(instance, field);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return def;

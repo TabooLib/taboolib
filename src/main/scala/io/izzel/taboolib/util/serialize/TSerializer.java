@@ -3,6 +3,7 @@ package io.izzel.taboolib.util.serialize;
 import com.google.common.collect.Maps;
 import com.google.gson.*;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -36,7 +37,7 @@ public class TSerializer {
                         }
                         // Serializable
                         if (declaredField.isAnnotationPresent(TSerializeCustom.class) && TSerializable.class.isAssignableFrom(declaredField.getType())) {
-                            declaredField.set(serializable, generateElement((Class<? extends TSerializable>) declaredField.getType()).read(jsonElementEntry.getValue().getAsString()));
+                            Ref.putField(serializable, declaredField, generateElement((Class<? extends TSerializable>) declaredField.getType()).read(jsonElementEntry.getValue().getAsString()));
                         }
                         // List
                         else if (declaredField.isAnnotationPresent(TSerializeCollection.class) && Collection.class.isAssignableFrom(declaredField.getType())) {
@@ -49,7 +50,7 @@ public class TSerializer {
                             if (serializer == null) {
                                 serializable.read(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                             } else {
-                                readCollection((Collection) declaredField.get(serializable), jsonElementEntry.getValue().getAsString(), checkCustom(listType, serializer));
+                                readCollection((Collection) Ref.getField(serializable, declaredField), jsonElementEntry.getValue().getAsString(), checkCustom(listType, serializer));
                             }
                         }
                         // Map
@@ -64,7 +65,7 @@ public class TSerializer {
                             if (serializerK == null || serializerV == null) {
                                 serializable.read(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                             } else {
-                                readMap((Map) declaredField.get(serializable), jsonElementEntry.getValue().getAsString(), checkCustom(mapType[0], serializerK), checkCustom(mapType[1], serializerV));
+                                readMap((Map) Ref.getField(serializable, declaredField), jsonElementEntry.getValue().getAsString(), checkCustom(mapType[0], serializerK), checkCustom(mapType[1], serializerV));
                             }
                         }
                         // 未声明类型
@@ -73,7 +74,7 @@ public class TSerializer {
                             if (serializer == null) {
                                 serializable.read(jsonElementEntry.getKey(), jsonElementEntry.getValue().getAsString());
                             } else {
-                                declaredField.set(serializable, serializer.getSerializer().read(jsonElementEntry.getValue().getAsString()));
+                                Ref.putField(serializable, declaredField, serializer.getSerializer().read(jsonElementEntry.getValue().getAsString()));
                             }
                         }
                     } catch (Throwable t) {
@@ -94,7 +95,7 @@ public class TSerializer {
             declaredField.setAccessible(true);
             try {
                 if (!declaredField.isAnnotationPresent(DoNotSerialize.class) && !Modifier.isStatic(declaredField.getModifiers())) {
-                    Object fieldObject = declaredField.get(serializable);
+                    Object fieldObject = Ref.getField(serializable, declaredField);
                     if (fieldObject == null) {
                         continue;
                     }
