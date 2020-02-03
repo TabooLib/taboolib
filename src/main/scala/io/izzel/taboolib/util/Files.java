@@ -319,8 +319,8 @@ public class Files {
         }
     }
 
-    public static void write(File file, WriteHandle writeHandle, boolean append) {
-        try (FileWriter fileWriter = new FileWriter(file, append); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+    public static void writeAppend(File file, WriteHandle writeHandle) {
+        try (FileWriter fileWriter = new FileWriter(file, true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             writeHandle.write(bufferedWriter);
             bufferedWriter.flush();
         } catch (Throwable t) {
