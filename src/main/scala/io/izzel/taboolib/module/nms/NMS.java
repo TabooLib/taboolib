@@ -7,11 +7,14 @@ import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -78,4 +81,8 @@ public abstract class NMS {
     abstract public Position fromBlockPosition(Object blockPosition);
 
     abstract public void openSignEditor(Player player, Block block);
+
+    abstract public boolean inBoundingBox(Entity entity, Vector vector);
+
+    abstract public Location getLastLocation(ProjectileHitEvent event);
 }
