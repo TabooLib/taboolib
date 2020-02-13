@@ -16,6 +16,7 @@ import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_8_R3.NBTBase;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -28,8 +29,10 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -401,6 +404,45 @@ public class NMSImpl extends NMS {
             return new io.izzel.taboolib.module.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagIntArray.class, base, "data", new int[0]));
         } else if (base instanceof NBTTagByteArray) {
             return new io.izzel.taboolib.module.nms.nbt.NBTBase(SimpleReflection.getFieldValue(NBTTagByteArray.class, base, "data", new byte[0]));
+        }
+        return null;
+    }
+
+    @Override
+    public boolean inBoundingBox(Entity entity, Vector vector) {
+        if (Version.isAfter(Version.v1_14)) {
+            return ((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getBoundingBox().c(new net.minecraft.server.v1_14_R1.Vec3D(vector.getX(), vector.getY(), vector.getZ()));
+        } else {
+            return ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity) entity).getHandle().getBoundingBox().b(new net.minecraft.server.v1_12_R1.Vec3D(vector.getX(), vector.getY(), vector.getZ()));
+        }
+    }
+
+    @Override
+    public Location getLastLocation(ProjectileHitEvent event) {
+        Vector vector = event.getEntity().getVelocity().normalize().multiply(0.1);
+        Vector vectorEntity = event.getEntity().getLocation().toVector();
+        if (event.getHitBlock() != null) {
+            double i = 0;
+            double length = event.getHitBlock().getLocation().add(0.5, 0.5, 0.5).distance(event.getEntity().getLocation()) * 2;
+            while (i < length) {
+                Location location = vectorEntity.toLocation(event.getHitBlock().getWorld());
+                if (location.getBlock().getLocation().equals(event.getHitBlock().getLocation())) {
+                    return location;
+                }
+                vectorEntity.add(vector);
+                i += 0.1;
+            }
+        }
+        if (event.getHitEntity() != null) {
+            double i = 0;
+            double length = event.getHitEntity().getLocation().distance(event.getEntity().getLocation()) * 2;
+            while (i < length) {
+                if (inBoundingBox(event.getHitEntity(), vectorEntity)) {
+                    return vectorEntity.toLocation(event.getHitEntity().getWorld());
+                }
+                vectorEntity.add(vector);
+                i += 0.1;
+            }
         }
         return null;
     }
