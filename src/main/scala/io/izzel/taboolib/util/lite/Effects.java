@@ -10,11 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.NumberConversions;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @Author sky
@@ -79,6 +81,28 @@ public class Effects {
         } catch (Throwable ignored) {
         }
         return Particle.FLAME;
+    }
+
+    public static void buildLine(Location locA, Location locB, Consumer<Location> action) {
+        buildLine(locA, locB, action, 0.25);
+    }
+
+    public static void buildLine(Location locA, Location locB, Consumer<Location> action, double interval) {
+        Vector vectorAB = locB.clone().subtract(locA).toVector();
+        double vectorLength = vectorAB.length();
+        vectorAB.normalize();
+        for (double i = 0; i < vectorLength; i += interval) {
+            action.accept(locA.clone().add(vectorAB.clone().multiply(i)));
+        }
+    }
+
+    public static void buildPolygon(Location center, double range, double interval, Consumer<Location> action) {
+        for (double i = 0; i < 360; i += (360 / interval)) {
+            double radians = Math.toRadians(i);
+            double cos = Math.cos(radians) * range;
+            double sin = Math.sin(radians) * range;
+            action.accept(center.clone().add(cos, 0, sin));
+        }
     }
 
     Effects() {

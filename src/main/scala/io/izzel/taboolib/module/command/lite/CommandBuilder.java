@@ -18,8 +18,8 @@ import java.util.UUID;
  */
 public class CommandBuilder {
 
-    public static final CompleterTab EMPTY_COMPLETER_TAB = ((sender, args) -> new ArrayList<>());
-    public static final CompleterCommand EMPTY_COMPLETER_COMMAND = ((sender, args) -> {});
+    public static final CompleterCommand EMPTY_COMPLETER_COMMAND = ((sender, args) -> {
+    });
 
     private String command;
     private Plugin plugin;
@@ -28,7 +28,7 @@ public class CommandBuilder {
     private List<String> aliases;
     private String permission;
     private String permissionMessage;
-    private CompleterTab completerTab = EMPTY_COMPLETER_TAB;
+    private CompleterTab completerTab;
     private CompleterCommand completerCommand = EMPTY_COMPLETER_COMMAND;
     private boolean forceRegister;
     private boolean build;
@@ -106,7 +106,6 @@ public class CommandBuilder {
         Preconditions.checkNotNull(plugin, "缺少 \"plugin\" 部分");
         Preconditions.checkNotNull(command, "缺少 \"command\" 部分");
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
-        Preconditions.checkNotNull(completerTab, "缺少 \"CompleterTab\" 部分");
         if (forceRegister) {
             TCommandHandler.getKnownCommands().remove(command);
         }
@@ -118,18 +117,20 @@ public class CommandBuilder {
                 aliases,
                 permission,
                 permissionMessage,
-                (sender, command, s, args) -> {
-                    completerCommand.execute(sender, args);
-                    return true;
-                },
-                (sender, command, s, args) -> {
-                    try {
-                        return completerTab.execute(sender, args);
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-                    return null;
-                });
+                completerCommand == null ? null :
+                        (sender, command, s, args) -> {
+                            completerCommand.execute(sender, args);
+                            return true;
+                        },
+                completerTab == null ? null :
+                        (sender, command, s, args) -> {
+                            try {
+                                return completerTab.execute(sender, args);
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
+                            return null;
+                        });
         build = true;
         return this;
     }

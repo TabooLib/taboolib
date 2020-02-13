@@ -319,6 +319,15 @@ public class Files {
         }
     }
 
+    public static void writeAppend(File file, WriteHandle writeHandle) {
+        try (FileWriter fileWriter = new FileWriter(file, true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            writeHandle.write(bufferedWriter);
+            bufferedWriter.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
     public static void write(OutputStream out, WriteHandle writeHandle) {
         try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(out); BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
             writeHandle.write(bufferedWriter);
