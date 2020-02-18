@@ -20,11 +20,16 @@ public class TDependencyLoader {
     public static synchronized void addToPath(Plugin plugin, URL url) {
         try {
             ClassLoader loader = plugin instanceof InternalPlugin ? Bukkit.class.getClassLoader() : plugin.getClass().getClassLoader();
-            Field ucpField = loader.getClass().getDeclaredField("ucp");
-            long ucpOffset = Ref.getUnsafe().objectFieldOffset(ucpField);
-            Object ucp = Ref.getUnsafe().getObject(loader, ucpOffset);
-            MethodHandle methodHandle = Ref.lookup().findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));
-            methodHandle.invoke(ucp, url);
+            if ("LaunchClassLoader".equals(loader.getClass().getSimpleName())) {
+                MethodHandle methodHandle = Ref.lookup().findVirtual(loader.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));
+                methodHandle.invoke(loader, url);
+            } else {
+                Field ucpField = loader.getClass().getDeclaredField("ucp");
+                long ucpOffset = Ref.getUnsafe().objectFieldOffset(ucpField);
+                Object ucp = Ref.getUnsafe().getObject(loader, ucpOffset);
+                MethodHandle methodHandle = Ref.lookup().findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));
+                methodHandle.invoke(ucp, url);
+            }
         } catch (Throwable e) {
             e.printStackTrace();
         }
