@@ -97,7 +97,7 @@ public class Effects {
     }
 
     public static void buildPolygon(Location center, double range, double interval, Consumer<Location> action) {
-        for (double i = 0; i < 360; i += (360 / interval)) {
+        for (double i = 0; i < 360; i += interval) {
             double radians = Math.toRadians(i);
             double cos = Math.cos(radians) * range;
             double sin = Math.sin(radians) * range;

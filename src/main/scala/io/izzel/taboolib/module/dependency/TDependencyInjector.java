@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.dependency;
 
+import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
@@ -11,10 +12,16 @@ import org.objectweb.asm.ClassWriter;
  */
 public class TDependencyInjector {
 
-    private static boolean libInjected;
-
     public static void inject(Plugin plugin, Class<?> clazz) {
-        if (!plugin.getName().equals("TabooLib") || !libInjected) {
+        if (clazz.equals(TabooLib.class)) {
+            for (Dependency dependency : TabooLib.class.getAnnotationsByType(Dependency.class)) {
+                try {
+                    TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url());
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        } else {
             try {
                 ClassReader classReader = new ClassReader(Files.getResource(plugin, clazz.getName().replace(".", "/") + ".class"));
                 ClassWriter classWriter = new ClassWriter(0);
@@ -24,8 +31,6 @@ public class TDependencyInjector {
                 classVisitor.visitEnd();
             } catch (Throwable t) {
                 t.printStackTrace();
-            } finally {
-                libInjected = true;
             }
         }
     }
