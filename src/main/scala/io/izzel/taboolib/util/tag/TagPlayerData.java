@@ -28,7 +28,11 @@ public class TagPlayerData {
     }
 
     public String getTeamHash() {
-        return TabooLib.getPlugin().getConfig().getBoolean("TABLIST-SORT") ? String.valueOf(Objects.hash(prefix)) : nameOrigin;
+        try {
+            return TabooLib.getConfig().getBoolean("TABLIST-SORT") ? String.valueOf(Objects.hash(String.valueOf(prefix))) : nameOrigin;
+        } catch (Throwable ignore) {
+        }
+        return "null";
     }
 
     public TagPlayerData reset() {
