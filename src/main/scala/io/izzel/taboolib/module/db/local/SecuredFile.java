@@ -1,4 +1,4 @@
-1package io.izzel.taboolib.module.db.local;
+package io.izzel.taboolib.module.db.local;
 
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
