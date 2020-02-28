@@ -9,6 +9,7 @@ import io.netty.channel.ChannelPromise;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -54,6 +55,7 @@ public abstract class ChannelExecutor {
                 if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onSend(player, o) || !packetListener.onSend(player, new Packet(o)))) {
                     return;
                 }
+            } catch (ConcurrentModificationException ignore) {
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -66,6 +68,7 @@ public abstract class ChannelExecutor {
                 if (TPacketHandler.getListeners().stream().flatMap(Collection::stream).anyMatch(packetListener -> !packetListener.onReceive(player, o) || !packetListener.onReceive(player, new Packet(o)))) {
                     return;
                 }
+            } catch (ConcurrentModificationException ignore) {
             } catch (Exception e) {
                 e.printStackTrace();
             }
