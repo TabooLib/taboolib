@@ -2,6 +2,7 @@ package io.izzel.taboolib.util;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
+import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.util.plugin.PluginUtils;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -342,7 +343,7 @@ public class Files {
     }
 
     public static FileConfiguration decodeYAML(String args) {
-        return YamlConfiguration.loadConfiguration(new StringReader(Base64Coder.decodeString(args)));
+        return SecuredFile.loadConfiguration(Base64Coder.decodeString(args));
     }
 
     public static FileConfiguration load(File file) {
@@ -350,12 +351,7 @@ public class Files {
     }
 
     public static YamlConfiguration loadYaml(File file) {
-        try {
-           return YamlConfiguration.loadConfiguration(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new YamlConfiguration();
+        return SecuredFile.loadConfiguration(file);
     }
 
     public static String getFileHash(File file, String algorithm) {
