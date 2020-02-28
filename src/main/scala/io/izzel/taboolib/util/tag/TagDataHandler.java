@@ -95,10 +95,15 @@ public class TagDataHandler implements Listener {
 
     private void updateTeamVariable(Scoreboard scoreboard, TagPlayerData playerData) {
         Team entryTeam = TagUtils.getTeamComputeIfAbsent(scoreboard, playerData.getTeamHash());
-        entryTeam.addEntry(playerData.getNameDisplay());
-        entryTeam.setPrefix(playerData.getPrefix());
-        entryTeam.setSuffix(playerData.getSuffix());
-        // 傻逼 BedWarsRel 我草你妈的
+        if (!entryTeam.getEntries().contains(playerData.getNameDisplay())) {
+            entryTeam.addEntry(playerData.getNameDisplay());
+        }
+        if (entryTeam.getPrefix() == null || !entryTeam.getPrefix().equals(playerData.getPrefix())) {
+            entryTeam.setPrefix(playerData.getPrefix());
+        }
+        if (entryTeam.getSuffix() == null || !entryTeam.getSuffix().equals(playerData.getSuffix())) {
+            entryTeam.setSuffix(playerData.getSuffix());
+        }
         if (TabooLib.getConfig().getBoolean("TABLIST-AUTO-CLEAN-TEAM", true)) {
             TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
         }
