@@ -92,7 +92,7 @@ public class PacketSerializer implements Listener {
         Packet packet = null;
         try {
             packet = parser.parser((JsonObject) new JsonParser().parse(origin));
-        } catch (JsonSyntaxException ignore) {
+        } catch (NullPointerException | JsonSyntaxException ignore) {
         } catch (Throwable t) {
             t.printStackTrace();
         }

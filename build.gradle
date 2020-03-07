@@ -37,6 +37,7 @@ dependencies {
     shadow group: 'me.clip', name: 'placeholderapi', version: '2.10.4'
     shadow group: 'com.google.inject', name: 'guice', version: '4.2.2'
     shadow fileTree(dir: 'libs', includes: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
 shadowJar {
