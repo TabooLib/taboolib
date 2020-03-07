@@ -46,7 +46,11 @@ public class TConfigWatcher {
     }
 
     public void addSimpleListener(File file, Runnable runnable) {
-        addListener(file, null, obj -> runnable.run());
+        try {
+            addListener(file, null, obj -> runnable.run());
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     public void addOnListen(File file, Object obj, Consumer<Object> consumer) {

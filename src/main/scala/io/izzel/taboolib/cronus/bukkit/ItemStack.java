@@ -1,7 +1,10 @@
 package io.izzel.taboolib.cronus.bukkit;
 
+import com.google.common.collect.Lists;
 import io.izzel.taboolib.util.item.Items;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * @Author 坏黑
@@ -9,14 +12,14 @@ import org.bukkit.entity.Player;
  */
 public class ItemStack {
 
-    private String type;
+    private List<String> type;
     private String name;
     private String lore;
     private int damage;
     private int amount;
 
     public ItemStack(String type, String name, String lore, int damage, int amount) {
-        this.type = type;
+        this.type = type == null ? null : Lists.newArrayList(type.split("\\|"));
         this.name = name;
         this.lore = lore;
         this.damage = damage;
@@ -24,7 +27,7 @@ public class ItemStack {
     }
 
     public boolean isType(org.bukkit.inventory.ItemStack itemStack) {
-        return type == null || itemStack.getType().name().equalsIgnoreCase(type);
+        return type == null || type.stream().anyMatch(e -> e.equalsIgnoreCase(itemStack.getType().name()));
     }
 
     public boolean isName(org.bukkit.inventory.ItemStack itemStack) {
@@ -59,8 +62,8 @@ public class ItemStack {
         return Items.takeItem(player.getInventory(), this::isSimilar, amount);
     }
 
-    public String getType() {
-        return type;
+    public List<String> getType() {
+        return Lists.newArrayList(type);
     }
 
     public String getName() {

@@ -446,4 +446,20 @@ public class NMSImpl extends NMS {
         }
         return null;
     }
+
+    @Override
+    public void sendPacketEntityDestroy(Player player, int entity) {
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy(entity));
+    }
+
+    @Override
+    public void sendPacketEntityTeleport(Player player, int entity, Location location) {
+        Object teleport = new net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport();
+        SimpleReflection.checkAndSave(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class);
+        SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "a", entity);
+        SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "b", location.getX());
+        SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "c", location.getY());
+        SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "d", location.getZ());
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket((net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport) teleport);
+    }
 }

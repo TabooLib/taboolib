@@ -85,4 +85,9 @@ public abstract class NMS {
     abstract public boolean inBoundingBox(Entity entity, Vector vector);
 
     abstract public Location getLastLocation(ProjectileHitEvent event);
+
+    abstract public void sendPacketEntityDestroy(Player player, int entity);
+
+    abstract public void sendPacketEntityTeleport(Player player, int entity, Location location);
+
 }

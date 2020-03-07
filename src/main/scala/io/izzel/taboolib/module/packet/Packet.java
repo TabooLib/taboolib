@@ -52,6 +52,20 @@ public class Packet {
         SimpleReflection.setFieldValue(this.packetClass, origin, key, value);
     }
 
+    public Packet copy(String... copyField) {
+        Object packet;
+        try {
+            packet = packetClass.newInstance();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return null;
+        }
+        for (String field : copyField) {
+            SimpleReflection.setFieldValue(this.packetClass, packet, field, SimpleReflection.getFieldValue(this.packetClass, origin, field));
+        }
+        return new Packet(packet);
+    }
+
     public Object get() {
         return origin;
     }
