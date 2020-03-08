@@ -80,8 +80,8 @@ public class TInjectHelper {
                 instance.add(CompatKotlin.getCompanion(pluginClass));
             }
             // Main
-            else if (pluginClass.equals(plugin.getClass())) {
-                instance.add(plugin);
+            if (pluginClass.equals(PluginLoader.get(plugin).getClass())) {
+                instance.add(PluginLoader.get(plugin));
             }
             // TInject
             else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
