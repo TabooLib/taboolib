@@ -11,6 +11,7 @@ import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
+import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -75,7 +76,11 @@ public class Items {
     public static Material asMaterial(String args) {
         try {
             Material material = Material.getMaterial(args.toUpperCase());
-            return material != null ? material : Material.getMaterial(Integer.valueOf(args));
+            if (material != null) {
+                return material;
+            }
+            Object getById = Reflection.invokeMethod(Material.class, "getMaterial", NumberConversions.toInt(args));
+            return getById != null ? (Material) getById : null;
         } catch (Exception e) {
             return Material.STONE;
         }
@@ -101,7 +106,11 @@ public class Items {
     public static Enchantment asEnchantment(String enchant) {
         try {
             Enchantment enchantment = Enchantment.getByName(enchant);
-            return enchantment != null ? enchantment : Enchantment.getById(Integer.valueOf(enchant));
+            if (enchantment != null) {
+                return enchantment;
+            }
+            Object getById = Reflection.invokeMethod(Enchantment.class, "getById", NumberConversions.toInt(enchant));
+            return getById != null ? (Enchantment) getById : null;
         } catch (Exception e) {
             return null;
         }

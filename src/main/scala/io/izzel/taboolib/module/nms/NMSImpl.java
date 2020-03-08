@@ -254,7 +254,7 @@ public class NMSImpl extends NMS {
         } else {
             attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i();
         }
-        ((Multimap) attr).forEach((k, v) -> {
+        ((Multimap) attr).asMap().forEach((k, v) -> {
             Object nbt = net.minecraft.server.v1_12_R1.GenericAttributes.a((net.minecraft.server.v1_12_R1.AttributeModifier) v);
             list.add(new NBTAttribute(
                     new UUID(((NBTTagCompound) nbt).getLong("UUIDMost"), ((NBTTagCompound) nbt).getLong("UUIDLeast")),

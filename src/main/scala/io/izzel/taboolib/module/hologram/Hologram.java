@@ -1,13 +1,16 @@
 package io.izzel.taboolib.module.hologram;
 
 import com.google.common.collect.Sets;
+import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @Author sky
@@ -22,6 +25,7 @@ public class Hologram {
     private boolean deleted = false;
     private boolean autoDelete = false;
     private int viewDistance = 50;
+    private Consumer<Player> event;
 
     Hologram(Location location, String text, Player... viewers) {
         THologram.getHolograms().add(this);
@@ -41,6 +45,11 @@ public class Hologram {
         this.autoDelete = true;
         return this;
     }
+
+//    public Hologram onClick(Consumer<Player> event) {
+//        this.event = event;
+//        return this;
+//    }
 
     public Hologram refresh() {
         if (deleted) {
@@ -75,6 +84,14 @@ public class Hologram {
         return this;
     }
 
+    public Hologram flash(List<String> text, int period) {
+        for (int i = 0; i < text.size(); i++) {
+            String line = text.get(i);
+            Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> flash(line), period * i);
+        }
+        return this;
+    }
+
     public Hologram flash(String text) {
         if (deleted) {
             return this;
@@ -96,6 +113,11 @@ public class Hologram {
     public Hologram delete() {
         destroy();
         deleted = true;
+        return this;
+    }
+
+    public Hologram deleteOn(int delay) {
+        Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), this::delete, delay);
         return this;
     }
 
@@ -179,6 +201,10 @@ public class Hologram {
 
     public int getViewDistance() {
         return viewDistance;
+    }
+
+    public Consumer<Player> getEvent() {
+        return event;
     }
 
     public void setText(String text) {

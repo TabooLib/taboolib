@@ -70,7 +70,7 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         if (element instanceof JsonObject) {
             JsonObject json = (JsonObject) element;
             // base
-            if (json.has("type") && json.has("data") && json.size() == 2) {
+            if (json.has("type") && json.has("data") && json.entrySet().size() == 2) {
                 switch (NBTType.parse(json.get("type").getAsString())) {
                     case BYTE:
                         return new NBTBase(json.get("data").getAsByte());

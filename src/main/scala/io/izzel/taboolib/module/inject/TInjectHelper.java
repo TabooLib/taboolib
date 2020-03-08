@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.inject;
 
 import com.google.common.collect.Lists;
+import io.izzel.taboolib.PluginLoader;
 import io.izzel.taboolib.compat.kotlin.CompatKotlin;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import org.bukkit.plugin.Plugin;
@@ -43,12 +44,16 @@ public class TInjectHelper {
         // No Static
         else if (!Modifier.isStatic(field.getModifiers())) {
             // Main
-            if (pluginClass.equals(plugin.getClass())) {
-                instance.add(plugin);
+            if (pluginClass.equals(PluginLoader.get(plugin).getClass())) {
+                instance.add(PluginLoader.get(plugin));
             }
             // TInject
             else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
                 TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
+            }
+            // TListener
+            else {
+                instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
             }
         }
         // Nothing

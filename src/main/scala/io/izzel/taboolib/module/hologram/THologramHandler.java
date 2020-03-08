@@ -44,6 +44,15 @@ class THologramHandler implements Listener {
             learned = true;
             Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> learn(player));
         }
+        if (packet.is("PacketPlayInUseEntity")) {
+            int id = packet.read("a", Integer.TYPE);
+            for (Hologram hologram : THologram.getHolograms()) {
+                HologramViewer viewer = hologram.getViewer(player);
+                if (viewer != null && viewer.getId() == id) {
+                    hologram.getEvent().accept(player);
+                }
+            }
+        }
         return true;
     }
 
@@ -134,7 +143,6 @@ class THologramHandler implements Listener {
     public static void learn(Player player) {
         player.getWorld().spawn(player.getLocation(), ArmorStand.class, c -> {
             learnTarget = c;
-            learnTarget.setSmall(true);
             learnTarget.setMarker(true);
             learnTarget.setVisible(false);
             learnTarget.setCustomName(" ");

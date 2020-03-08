@@ -1,8 +1,11 @@
 package io.izzel.taboolib.common.listener;
 
+import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
+import io.izzel.taboolib.module.hologram.Hologram;
+import io.izzel.taboolib.module.hologram.THologram;
 import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
@@ -11,6 +14,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,6 +49,30 @@ public class ListenerCommand implements Listener {
             Signs.fakeSign(e.getPlayer(), lines -> {
                 e.getPlayer().sendMessage("§8[§3§lTabooLib§8] §7FakeSign Lines: §f" + Arrays.toString(lines));
             });
+        }
+        if (e.getMessage().equalsIgnoreCase("/hologramTest") && e.getPlayer().hasPermission("*")) {
+            e.setCancelled(true);
+            e.getPlayer().sendMessage("§8[§3§lTabooLib§8] §7Hologram Test.");
+            Location location = e.getPlayer().getEyeLocation().add(e.getPlayer().getLocation().getDirection());
+            Hologram hologram = THologram.create(location, "TabooLib", e.getPlayer())
+                    .flash(Lists.newArrayList(
+                            "§bT§fabooLib",
+                            "§bTa§fbooLib",
+                            "§bTab§fooLib",
+                            "§bTabo§foLib",
+                            "§bTaboo§fLib",
+                            "§bTabooL§fib",
+                            "§bTabooLi§fb",
+                            "§bTabooLib",
+                            "§bTabooLi§fb",
+                            "§bTabooL§fib",
+                            "§bTaboo§fLib",
+                            "§bTabo§foLib",
+                            "§bTab§fooLib",
+                            "§bTa§fbooLib",
+                            "§bT§fabooLib",
+                            "§fTabooLib"
+                    ), 1).deleteOn(30);
         }
     }
 
