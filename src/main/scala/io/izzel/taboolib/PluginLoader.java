@@ -1,6 +1,7 @@
 package io.izzel.taboolib;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.module.config.TConfig;
@@ -27,6 +28,7 @@ public abstract class PluginLoader {
 
     private static List<PluginLoader> registerLoader = Lists.newArrayList();
     private static Set<String> plugins = Sets.newHashSet();
+    private static Map<String, Object> redefine = Maps.newHashMap();
 
     static {
         registerLoader.add(new PluginLoader() {
@@ -65,8 +67,6 @@ public abstract class PluginLoader {
 
             @Override
             public void onStopping(Plugin plugin) {
-                // 卸载语言文件
-                TLocaleLoader.unload(plugin);
                 // 保存数据
                 Local.saveFiles(plugin.getName());
                 Local.clearFiles(plugin.getName());
@@ -80,6 +80,8 @@ public abstract class PluginLoader {
                 DBSource.getDataSource().entrySet().stream().filter(dataEntry -> dataEntry.getKey().getPlugin().equals(plugin)).map(Map.Entry::getKey).forEach(DBSource::closeDataSource);
                 // 注销调度器
                 Bukkit.getScheduler().cancelTasks(plugin);
+                // 卸载语言文件
+                TLocaleLoader.unload(plugin);
             }
         });
     }
@@ -139,5 +141,13 @@ public abstract class PluginLoader {
 
     public static boolean isPlugin(Plugin plugin) {
         return plugins.contains(plugin.getName());
+    }
+
+    public static void redefine(Plugin origin, Object instance) {
+        redefine.put(origin.getName(), instance);
+    }
+
+    public static Object get(Plugin plugin) {
+        return redefine.getOrDefault(plugin.getName(), plugin);
     }
 }

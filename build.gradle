@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'me.skymc'
-version = '5.18'
+version = '5.19'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,28 +19,42 @@ tasks.withType(ScalaCompile) {
 }
 
 repositories {
-    mavenCentral()
+    maven { url "http://ptms.ink:8081/repository/codemc-nms/" }
+    maven { url "http://ptms.ink:8081/repository/maven-releases/" }
     maven { url "http://repo.extendedclip.com/content/repositories/placeholderapi/" }
+    mavenCentral()
 }
 
 dependencies {
-    shadow(group: 'org.apache.cassandra', name: 'cassandra-all', version: '0.8.1') {
+    shadow('org.apache.cassandra:cassandra-all:0.8.1') {
         exclude(module: 'slf4j-log4j12')
         exclude(module: 'log4j')
     }
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8'
-    compile group: 'org.ow2.asm', name: 'asm', version: '7.0-beta'
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.6'
-    compile subprojects
-    shadow group: 'com.zaxxer', name: 'HikariCP', version: '3.1.0'
-    shadow group: 'org.scala-lang', name: 'scala-library', version: '2.12.8'
-    shadow group: 'me.clip', name: 'placeholderapi', version: '2.10.4'
-    shadow group: 'com.google.inject', name: 'guice', version: '4.2.2'
+    compile 'ink.ptms.core:v11200:11200:all'
+    compile 'ink.ptms.core:v11500:11500:all'
+    compile 'ink.ptms.core:v11400:11400:all'
+    compile 'ink.ptms.core:v11300:11300:all'
+    compile 'ink.ptms.core:v10800:10800:all'
+    compile 'net.md_5.bungee:BungeeCord:1:all'
+    compile 'org.apache.commons:commons-lang3:3.8'
+    compile 'com.google.code.gson:gson:2.8.6'
+    compile 'org.ow2.asm:asm:7.0-beta'
+    shadow 'com.zaxxer:HikariCP:3.1.0'
+    shadow 'com.google.inject:guice:4.2.2'
+    shadow 'org.scala-lang:scala-library:2.12.8'
+    shadow 'pw.yumc.Yum:Yum:1:all'
+    shadow 'me.clip:placeholderapi:2.10.4'
+    shadow 'net.milkbowl.vault:Vault:1:all'
+    shadow 'me.skymc.taboolib:TabooLib:4.9:all'
+    shadow 'us.myles.ViaVersion:ViaVersion:1:all'
+    shadow 'protocolsupport:ProtocolSupport:1:all'
+    shadow 'com.sk89q.worldedit:WorldEdit:7:all'
+    shadow 'com.sk89q.worldguard:WorldGuard:7:all'
+    shadow 'org.inventivetalent.bossbar:BossBar:1:all'
     shadow fileTree(dir: 'libs', includes: ['*.jar'])
 }
 
 shadowJar {
-
     // 免得 MANIFEST.MF 里面刷一堆 lib 难看
     taskActions.removeIf { it.actionClassName.contains 'configureShadowTask' }
 
@@ -48,7 +62,6 @@ shadowJar {
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
         it.include it.dependency('com.google.code.gson:.*')
-        it.include it.dependency('me.skymc:.*')
     }
 
     relocate 'org.apache.commons', 'io.izzel.taboolib.internal.apache'
@@ -57,8 +70,6 @@ shadowJar {
 }
 
 processResources {
-    inputs.property "version", project.version
-
     from(sourceSets.main.resources.srcDirs) {
         include '__resources__/version'
         include 'plugin.yml'

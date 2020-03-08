@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -39,8 +40,6 @@ public class TListenerHandler {
     /**
      * 初始化插件的所有监听器
      * 该操作会执行无参构造方法
-     *
-     * @param plugin 插件
      */
     public static void setupListener(Plugin plugin) {
         for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {
@@ -89,8 +88,6 @@ public class TListenerHandler {
     /**
      * 注册插件的所有监听器
      * 该操作会执行 TListener 注解中的 register() 对应方法
-     *
-     * @param plugin 插件
      */
     public static void registerListener(Plugin plugin) {
         Optional.ofNullable(listeners.get(plugin.getName())).ifPresent(listeners -> {
@@ -141,8 +138,6 @@ public class TListenerHandler {
     /**
      * 注销插件的所有监听器
      * 该操作会执行 TListener 注解中的 cancel() 对应方法
-     *
-     * @param plugin 插件
      */
     public static void cancelListener(Plugin plugin) {
         Optional.ofNullable(listeners.remove(plugin.getName())).ifPresent(listeners -> {
@@ -160,6 +155,11 @@ public class TListenerHandler {
                 }
             }
         });
+    }
+
+    public static List<Listener> getInstance(Plugin plugin, Class pluginClass) {
+        List<Listener> list = TListenerHandler.listeners.get(plugin.getName());
+        return list == null ? Collections.emptyList() : list.stream().filter(listener -> pluginClass.equals(listener.getClass())).collect(Collectors.toList());
     }
 
     public static HashMap<String, List<Listener>> getListeners() {
