@@ -12,7 +12,9 @@ public class TabooIpcClientImpl implements TabooIpcClient {
 
     @Override
     public synchronized boolean connect(TabooIpcConfig config) throws Exception {
-        if (available) throw new IllegalStateException();
+        if (available) {
+            throw new IllegalStateException();
+        }
         long size = round(config.memorySize());
         long blockSize = round(config.blockSize());
         if (blockSize < 128 || size < (blockSize << 1) || size % blockSize != 0) return false;
