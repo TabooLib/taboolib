@@ -48,13 +48,11 @@ public class TInjectHelper {
                 instance.add(PluginLoader.get(plugin));
             }
             // TInject
-            else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
+            if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
                 TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
             }
             // TListener
-            else {
-                instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
-            }
+            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
         }
         // Nothing
         if (instance.isEmpty()) {
@@ -84,9 +82,11 @@ public class TInjectHelper {
                 instance.add(PluginLoader.get(plugin));
             }
             // TInject
-            else if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
+            if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
                 TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
             }
+            // TListener
+            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
         }
         // Nothing
         if (instance.isEmpty()) {

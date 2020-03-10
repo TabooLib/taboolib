@@ -48,8 +48,7 @@ public class TConfigWatcher {
     public void addSimpleListener(File file, Runnable runnable) {
         try {
             addListener(file, null, obj -> runnable.run());
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Throwable ignored) {
         }
     }
 
