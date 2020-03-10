@@ -18,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -89,5 +90,7 @@ public abstract class NMS {
     abstract public void sendPacketEntityDestroy(Player player, int entity);
 
     abstract public void sendPacketEntityTeleport(Player player, int entity, Location location);
+
+    abstract public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e);
 
 }

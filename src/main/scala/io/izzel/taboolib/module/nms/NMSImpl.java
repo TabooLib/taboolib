@@ -29,6 +29,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -38,6 +39,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * @Author 坏黑
@@ -461,5 +463,20 @@ public class NMSImpl extends NMS {
         SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "c", location.getY());
         SimpleReflection.setFieldValue(net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport.class, teleport, "d", location.getZ());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket((net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport) teleport);
+    }
+
+    @Override
+    public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e) {
+        if (Version.isAfter(Version.v1_12)) {
+            return location.getWorld().spawn(location, entity, e::accept);
+        } else {
+            Object createEntity = ((CraftWorld) location.getWorld()).createEntity(location, entity);
+            try {
+                e.accept((T) createEntity);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            return ((CraftWorld) location.getWorld()).addEntity((net.minecraft.server.v1_13_R2.Entity) createEntity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        }
     }
 }
