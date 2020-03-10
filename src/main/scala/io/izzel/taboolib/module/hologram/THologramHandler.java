@@ -6,6 +6,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.packet.Packet;
 import io.izzel.taboolib.module.packet.TPacket;
 import io.izzel.taboolib.util.Ref;
@@ -141,7 +142,7 @@ class THologramHandler implements Listener {
     }
 
     public static void learn(Player player) {
-        player.getWorld().spawn(player.getLocation(), ArmorStand.class, c -> {
+        NMS.handle().spawn(player.getLocation(), ArmorStand.class, c -> {
             learnTarget = c;
             learnTarget.setMarker(true);
             learnTarget.setVisible(false);
