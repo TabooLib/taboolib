@@ -89,6 +89,10 @@ public class TSerializer {
     }
 
     public static String write(TSerializable serializable) {
+        return writeJson(serializable).toString();
+    }
+
+    public static JsonObject writeJson(TSerializable serializable) {
         JsonObject jsonObject = new JsonObject();
         JsonObject serializeObject = new JsonObject();
         for (Field declaredField : serializable.getClass().getDeclaredFields()) {
@@ -147,7 +151,7 @@ public class TSerializer {
             }
         }
         jsonObject.add("serializeObject", serializeObject);
-        return jsonObject.toString();
+        return jsonObject;
     }
 
     public static void readMap(Map map, String serializedString, TSerializerElementGeneral elementKey, TSerializerElementGeneral elementValue) {

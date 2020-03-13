@@ -110,16 +110,32 @@ class THologramHandler implements Listener {
         List item = THologramHandler.getPacketName().read("b", List.class);
         for (Object element : item) {
             SimpleReflection.checkAndSave(element.getClass());
-            Object a = SimpleReflection.getFieldValue(element.getClass(), element, "a");
-            Object c = SimpleReflection.getFieldValue(element.getClass(), element, "c");
-            try {
-                Object i = Ref.getUnsafe().allocateInstance(element.getClass());
-                SimpleReflection.setFieldValue(element.getClass(), i, "a", a);
-                SimpleReflection.setFieldValue(element.getClass(), i, "b", name);
-                SimpleReflection.setFieldValue(element.getClass(), i, "c", c);
-                copy.add(i);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
+            if (Version.isAfter(Version.v1_9)) {
+                Object a = SimpleReflection.getFieldValue(element.getClass(), element, "a");
+                Object c = SimpleReflection.getFieldValue(element.getClass(), element, "c");
+                try {
+                    Object i = Ref.getUnsafe().allocateInstance(element.getClass());
+                    SimpleReflection.setFieldValue(element.getClass(), i, "a", a);
+                    SimpleReflection.setFieldValue(element.getClass(), i, "b", name);
+                    SimpleReflection.setFieldValue(element.getClass(), i, "c", c);
+                    copy.add(i);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Object a = SimpleReflection.getFieldValue(element.getClass(), element, "a");
+                Object b = SimpleReflection.getFieldValue(element.getClass(), element, "b");
+                Object d = SimpleReflection.getFieldValue(element.getClass(), element, "d");
+                try {
+                    Object i = Ref.getUnsafe().allocateInstance(element.getClass());
+                    SimpleReflection.setFieldValue(element.getClass(), i, "a", a);
+                    SimpleReflection.setFieldValue(element.getClass(), i, "b", b);
+                    SimpleReflection.setFieldValue(element.getClass(), i, "c", name);
+                    SimpleReflection.setFieldValue(element.getClass(), i, "d", d);
+                    copy.add(i);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                }
             }
         }
         packet.write("b", copy);

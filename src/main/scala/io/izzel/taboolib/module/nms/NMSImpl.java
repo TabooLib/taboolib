@@ -472,7 +472,7 @@ public class NMSImpl extends NMS {
         } else {
             Object createEntity = ((CraftWorld) location.getWorld()).createEntity(location, entity);
             try {
-                e.accept((T) createEntity);
+                e.accept((T) ((net.minecraft.server.v1_13_R2.Entity) createEntity).getBukkitEntity());
             } catch (Throwable t) {
                 t.printStackTrace();
             }
