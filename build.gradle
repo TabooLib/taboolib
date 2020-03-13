@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'me.skymc'
-version = '5.2'
+version = '5.21'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -19,8 +19,8 @@ tasks.withType(ScalaCompile) {
 }
 
 repositories {
-    maven { url "http://ptms.ink:8081/repository/codemc-nms/" }
-    maven { url "http://ptms.ink:8081/repository/maven-releases/" }
+    maven { url "http://repo.ptms.ink/repository/codemc-nms/" }
+    maven { url "http://repo.ptms.ink/repository/maven-releases/" }
     maven { url "http://repo.extendedclip.com/content/repositories/placeholderapi/" }
     mavenCentral()
 }
@@ -34,6 +34,7 @@ dependencies {
     compile 'ink.ptms.core:v11500:11500:all'
     compile 'ink.ptms.core:v11400:11400:all'
     compile 'ink.ptms.core:v11300:11300:all'
+    compile 'ink.ptms.core:v10900:10900:all'
     compile 'ink.ptms.core:v10800:10800:all'
     compile 'net.md_5.bungee:BungeeCord:1:all'
     compile 'org.apache.commons:commons-lang3:3.8'
