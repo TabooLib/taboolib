@@ -212,7 +212,7 @@ class THologramHandler implements Listener {
     }
 
     @TSchedule(period = 200, async = true)
-    public void e(PlayerMoveEvent e) {
+    public void e() {
         Bukkit.getOnlinePlayers().forEach(THologram::refresh);
     }
 
