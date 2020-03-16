@@ -93,4 +93,10 @@ public abstract class NMS {
 
     abstract public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e);
 
+    abstract public Object ofChatComponentText(String source);
+
+    abstract public Class<?> asNMS(String name);
+
+    abstract public Object asEntityType(String name);
+
 }

@@ -479,4 +479,27 @@ public class NMSImpl extends NMS {
             return ((CraftWorld) location.getWorld()).addEntity((net.minecraft.server.v1_13_R2.Entity) createEntity, CreatureSpawnEvent.SpawnReason.CUSTOM);
         }
     }
+
+    @Override
+    public Object ofChatComponentText(String source) {
+        return new net.minecraft.server.v1_12_R1.ChatComponentText(source);
+    }
+
+    @Override
+    public Class<?> asNMS(String name) {
+        try {
+            return Class.forName("net.minecraft.server." + Version.getBukkitVersion() + "." + name);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
+    @Override
+    public Object asEntityType(String name) {
+        if (Version.isAfter(Version.v1_14)) {
+            return net.minecraft.server.v1_14_R1.EntityTypes.a(name).orElse(null);
+        } else {
+            return net.minecraft.server.v1_13_R2.EntityTypes.a(name);
+        }
+    }
 }
