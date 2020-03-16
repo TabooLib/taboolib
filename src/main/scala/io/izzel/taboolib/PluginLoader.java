@@ -70,10 +70,10 @@ public abstract class PluginLoader {
                 // 保存数据
                 Local.saveFiles(plugin.getName());
                 Local.clearFiles(plugin.getName());
-                // 注销监听器
-                TListenerHandler.cancelListener(plugin);
                 // 注销插件类
                 TabooLibLoader.unloadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
+                // 注销监听器
+                TListenerHandler.cancelListener(plugin);
                 // 释放文检读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
                 // 注销数据库连接
