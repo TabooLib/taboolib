@@ -54,6 +54,8 @@ public class THologram {
             HologramViewer viewer = hologram.getViewer(player);
             if (viewer != null) {
                 hologram.refresh(viewer);
+            } else if (hologram.isViewAll()) {
+                hologram.addViewer(player);
             }
         }
     }
