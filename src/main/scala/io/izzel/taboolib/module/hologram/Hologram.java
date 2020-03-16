@@ -7,6 +7,7 @@ import io.izzel.taboolib.module.packet.TPacketHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.Set;
@@ -36,13 +37,28 @@ public class Hologram {
         }
     }
 
+    public Hologram autoDelete() {
+        this.autoDelete = true;
+        return this;
+    }
+
     public Hologram toAll() {
         this.viewAll = true;
         return refresh();
     }
 
-    public Hologram autoDelete() {
-        this.autoDelete = true;
+    public Hologram hideAll() {
+        this.viewAll = false;
+        return removeViewers();
+    }
+
+    public Hologram viewAll(Boolean viewAll) {
+        if (!this.viewAll && viewAll) {
+            toAll();
+        }
+        if (this.viewAll && !viewAll) {
+            hideAll();
+        }
         return this;
     }
 
@@ -111,6 +127,13 @@ public class Hologram {
         return this;
     }
 
+    public Hologram flash(Vector vector, int period, int times) {
+        for (int i = 0; i < times; i++) {
+            Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> flash(location.add(vector)), period * i);
+        }
+        return this;
+    }
+
     public Hologram flash(Location location) {
         if (deleted) {
             return this;
@@ -160,27 +183,39 @@ public class Hologram {
         return this;
     }
 
-    public void addViewer(Player player) {
+    public Hologram addViewer(Player player) {
         if (deleted) {
-            return;
+            return this;
         }
         if (!isViewer(player)) {
             HologramViewer viewer = new HologramViewer(player);
             viewers.add(viewer);
             refresh(viewer);
         }
+        return this;
     }
 
-    public void removeViewer(Player player) {
+    public Hologram removeViewer(Player player) {
         if (deleted) {
-            return;
+            return this;
         }
         HologramViewer viewer = getViewer(player);
         viewers.remove(viewer);
         destroy(viewer);
-        if (viewers.isEmpty() && autoDelete) {
-            deleted = true;
+        if (viewers.isEmpty()) {
+            deleted = autoDelete;
         }
+        return this;
+    }
+
+    public Hologram removeViewers() {
+        if (deleted) {
+            return this;
+        }
+        destroy();
+        viewers.clear();
+        deleted = autoDelete;
+        return this;
     }
 
     public boolean isViewer(Player player) {
