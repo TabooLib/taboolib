@@ -53,15 +53,22 @@ public class Packet {
     }
 
     public Packet copy(String... copyField) {
+        return copy(packetClass, copyField);
+    }
+
+    public Packet copy(Class clazz, String... copyField) {
+        if (clazz == null) {
+            clazz = this.packetClass;
+        }
         Object packet;
         try {
-            packet = packetClass.newInstance();
+            packet = clazz.newInstance();
         } catch (Throwable t) {
             t.printStackTrace();
             return null;
         }
         for (String field : copyField) {
-            SimpleReflection.setFieldValue(this.packetClass, packet, field, SimpleReflection.getFieldValue(this.packetClass, origin, field));
+            SimpleReflection.setFieldValue(clazz, packet, field, SimpleReflection.getFieldValue(clazz, origin, field));
         }
         return new Packet(packet);
     }

@@ -38,7 +38,7 @@ public class Hologram {
 
     public Hologram toAll() {
         this.viewAll = true;
-        return this;
+        return refresh();
     }
 
     public Hologram autoDelete() {
@@ -69,14 +69,18 @@ public class Hologram {
         viewer.setVisible(location.getWorld().equals(viewer.getPlayer().getWorld()) && location.distance(viewer.getPlayer().getLocation()) < viewDistance);
         if (viewer.isVisible()) {
             THologram.submit(() -> {
-                if (viewer.isSpawned()) {
-                    NMS.handle().sendPacketEntityTeleport(viewer.getPlayer(), viewer.getId(), location);
-                } else {
-                    viewer.setSpawned(true);
-                    TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), location).get());
-                    TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId()).get());
+                try {
+                    if (viewer.isSpawned()) {
+                        NMS.handle().sendPacketEntityTeleport(viewer.getPlayer(), viewer.getId(), location);
+                    } else {
+                        viewer.setSpawned(true);
+                        TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), location).get());
+                        TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId()).get());
+                    }
+                    TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), text).get());
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
-                TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), text).get());
             });
         } else {
             destroy(viewer);
@@ -97,7 +101,13 @@ public class Hologram {
             return this;
         }
         this.text = text;
-        THologram.submit(() -> viewers.forEach(v -> TPacketHandler.sendPacket(v.getPlayer(), THologramHandler.copy(v.getId(), text).get())));
+        THologram.submit(() -> {
+            try {
+                viewers.forEach(v -> TPacketHandler.sendPacket(v.getPlayer(), THologramHandler.copy(v.getId(), text).get()));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
         return this;
     }
 
@@ -106,7 +116,13 @@ public class Hologram {
             return this;
         }
         this.location = location.clone();
-        THologram.submit(() -> viewers.forEach(v -> NMS.handle().sendPacketEntityTeleport(v.getPlayer(), v.getId(), location)));
+        THologram.submit(() -> {
+            try {
+                viewers.forEach(v -> NMS.handle().sendPacketEntityTeleport(v.getPlayer(), v.getId(), location));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
         return this;
     }
 
@@ -134,7 +150,13 @@ public class Hologram {
             return this;
         }
         viewer.setSpawned(false);
-        THologram.submit(() -> NMS.handle().sendPacketEntityDestroy(viewer.getPlayer(), viewer.getId()));
+        THologram.submit(() -> {
+            try {
+                NMS.handle().sendPacketEntityDestroy(viewer.getPlayer(), viewer.getId());
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
         return this;
     }
 

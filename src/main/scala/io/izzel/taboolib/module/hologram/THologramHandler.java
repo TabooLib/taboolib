@@ -20,6 +20,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 
@@ -62,7 +63,7 @@ class THologramHandler implements Listener {
         if (learnTarget == null) {
             return true;
         }
-        if (packet.is("PacketPlayOutSpawnEntity") && packet.read("a", Integer.TYPE) == learnTarget.getEntityId()) {
+        if ((packet.is("PacketPlayOutSpawnEntity") || packet.is("PacketPlayOutSpawnEntityLiving")) && packet.read("a", Integer.TYPE) == learnTarget.getEntityId()) {
             packetSpawn = packet;
             return false;
         }
@@ -82,8 +83,11 @@ class THologramHandler implements Listener {
     }
 
     public static Packet copy(int id, Location location) {
-        Packet packet = THologramHandler.getPacketSpawn().copy("e", "f", "j", "h", "i", "j", "k", "l");
+        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntity"), "e", "f", "j", "h", "i", "j", "k", "l");
         packet.write("a", id);
+        if (Version.isAfter(Version.v1_14)) {
+            packet.write("k", NMS.handle().asEntityType("armor_stand"));
+        }
         if (Version.isAfter(Version.v1_9)) {
             packet.write("b", UUID.randomUUID());
             packet.write("c", location.getX());
@@ -116,8 +120,12 @@ class THologramHandler implements Listener {
                 try {
                     Object i = Ref.getUnsafe().allocateInstance(element.getClass());
                     SimpleReflection.setFieldValue(element.getClass(), i, "a", a);
-                    SimpleReflection.setFieldValue(element.getClass(), i, "b", name);
                     SimpleReflection.setFieldValue(element.getClass(), i, "c", c);
+                    if (Version.isAfter(Version.v1_14)) {
+                        SimpleReflection.setFieldValue(element.getClass(), i, "b", Optional.of(NMS.handle().ofChatComponentText(name)));
+                    } else {
+                        SimpleReflection.setFieldValue(element.getClass(), i, "b", name);
+                    }
                     copy.add(i);
                 } catch (InstantiationException e) {
                     e.printStackTrace();
