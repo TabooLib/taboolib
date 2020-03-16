@@ -5,6 +5,7 @@ import com.google.common.collect.Queues;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.packet.Packet;
@@ -210,11 +211,9 @@ class THologramHandler implements Listener {
         THologram.refresh(e.getPlayer());
     }
 
-    @EventHandler
+    @TSchedule(period = 200, async = true)
     public void e(PlayerMoveEvent e) {
-        if (!e.getFrom().getBlock().equals(e.getTo().getBlock())) {
-            Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> THologram.refresh(e.getPlayer()));
-        }
+        Bukkit.getOnlinePlayers().forEach(THologram::refresh);
     }
 
     // *********************************
