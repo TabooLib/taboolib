@@ -3,6 +3,7 @@ package io.izzel.taboolib;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import io.izzel.taboolib.common.loader.StartupLoader;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
@@ -29,6 +30,8 @@ public abstract class PluginLoader {
     private static List<PluginLoader> registerLoader = Lists.newArrayList();
     private static Set<String> plugins = Sets.newHashSet();
     private static Map<String, Object> redefine = Maps.newHashMap();
+    private static boolean firstLoading = false;
+    private static boolean firstStarting = false;
 
     static {
         registerLoader.add(new PluginLoader() {
@@ -43,6 +46,11 @@ public abstract class PluginLoader {
                 TabooLibLoader.setupClasses(plugin);
                 // 加载插件类
                 TabooLibLoader.preLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
+                // 首次运行
+                if (!firstLoading) {
+                    firstLoading = true;
+                    StartupLoader.onLoading();
+                }
             }
 
             @Override
@@ -53,6 +61,11 @@ public abstract class PluginLoader {
                 TabooLibLoader.postLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册插件命令
                 TCommandHandler.registerCommand(plugin);
+                // 首次运行
+                if (!firstStarting) {
+                    firstStarting = true;
+                    StartupLoader.onStarting();
+                }
             }
 
             @Override

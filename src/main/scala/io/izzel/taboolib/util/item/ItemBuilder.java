@@ -3,6 +3,7 @@ package io.izzel.taboolib.util.item;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.lite.Materials;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -46,12 +47,12 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(OfflinePlayer player) {
-        this(Material.SKULL_ITEM, 1, 3);
+        this(Materials.PLAYER_HEAD.parseMaterial(), 1, 3);
         this.skullOwner(player.getName());
     }
 
     public ItemBuilder material(int id) {
-        itemStack.setType(Material.getMaterial(id));
+        itemStack.setType(Items.asMaterial(String.valueOf(id)));
         return this;
     }
 

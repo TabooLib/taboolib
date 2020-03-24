@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'me.skymc'
-version = '5.22'
+version = '5.23'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
