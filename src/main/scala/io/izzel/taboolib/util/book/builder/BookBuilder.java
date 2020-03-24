@@ -1,7 +1,9 @@
 package io.izzel.taboolib.util.book.builder;
 
+import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.book.BookAsm;
 import io.izzel.taboolib.util.chat.BaseComponent;
+import io.izzel.taboolib.util.chat.ComponentSerializer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -104,6 +106,11 @@ public class BookBuilder {
      */
     public BookBuilder pages(List<BaseComponent[]> pages) {
         BookAsm.getHandle().setPages(meta, pages.toArray(new BaseComponent[0][]));
+        return this;
+    }
+
+    public BookBuilder addPage(TellrawJson json) {
+        addPages(ComponentSerializer.parse(json.toRawMessage()));
         return this;
     }
     

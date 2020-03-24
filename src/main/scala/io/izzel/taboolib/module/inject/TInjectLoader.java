@@ -80,6 +80,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                                 config.listener(() -> {
                                     try {
                                         method.invoke(instance);
+                                    } catch (NullPointerException ignored) {
                                     } catch (Throwable t) {
                                         t.printStackTrace();
                                     }
