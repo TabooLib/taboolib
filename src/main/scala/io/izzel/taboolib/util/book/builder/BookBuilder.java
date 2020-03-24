@@ -2,8 +2,10 @@ package io.izzel.taboolib.util.book.builder;
 
 import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.book.BookAsm;
+import io.izzel.taboolib.util.book.BookFormatter;
 import io.izzel.taboolib.util.chat.BaseComponent;
 import io.izzel.taboolib.util.chat.ComponentSerializer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
@@ -131,6 +133,14 @@ public class BookBuilder {
     public ItemStack build() {
         book.setItemMeta(meta);
         return book;
+    }
+
+    public BookBuilder open(Player... players) {
+        ItemStack build = build();
+        for (Player player : players) {
+            BookFormatter.forceOpen(player, build);
+        }
+        return this;
     }
 
     public BookMeta getMeta() {
