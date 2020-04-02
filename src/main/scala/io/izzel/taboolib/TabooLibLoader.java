@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import io.izzel.taboolib.client.TabooLibClient;
 import io.izzel.taboolib.client.TabooLibServer;
 import io.izzel.taboolib.metrics.BStats;
-import io.izzel.taboolib.metrics.CStats;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.util.Files;
@@ -36,7 +35,6 @@ public class TabooLibLoader {
         TDependencyInjector.inject(TabooLib.getPlugin(), TabooLib.class);
         // 插件统计
         BStats bStats = new BStats(TabooLib.getPlugin());
-        CStats cStats = new CStats(TabooLib.getPlugin());
         bStats.addCustomChart(new BStats.SingleLineChart("plugins_using_taboolib", () -> Math.toIntExact(Arrays.stream(Bukkit.getPluginManager().getPlugins()).filter(TabooLibAPI::isDependTabooLib).count())));
         // 读取插件类
         setupClasses(TabooLib.getPlugin());

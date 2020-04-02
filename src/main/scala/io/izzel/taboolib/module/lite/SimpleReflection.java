@@ -5,29 +5,48 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.util.Ref;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Map;
 
 /**
- * @Author 坏黑
+ * @Author sky
  * @Since 2018-10-25 22:51
  */
 public class SimpleReflection {
 
     private static Map<String, Map<String, Field>> fieldCached = Maps.newHashMap();
+    private static Map<String, Map<String, Method>> methodCached = Maps.newHashMap();
 
+    @Deprecated
     public static boolean isExists(Class<?> nmsClass) {
         return fieldCached.containsKey(nmsClass.getName());
+    }
+
+    public static boolean isFieldExists(Class<?> nmsClass) {
+        return fieldCached.containsKey(nmsClass.getName());
+    }
+
+    public static boolean isMethodExists(Class<?> nmsClass) {
+        return methodCached.containsKey(nmsClass.getName());
     }
 
     public static Map<String, Field> getFields(Class<?> nmsClass) {
         return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap());
     }
 
+    public static Map<String, Method> getMethods(Class<?> nmsClass) {
+        return methodCached.getOrDefault(nmsClass.getName(), Maps.newHashMap());
+    }
+
     public static Field getField(Class<?> nmsClass, String fieldName) {
         return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(fieldName);
+    }
+
+    public static Method getMethod(Class<?> nmsClass, String methodName) {
+        return methodCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(methodName);
     }
 
     public static void checkAndSave(Class<?>... nmsClass) {
@@ -35,8 +54,11 @@ public class SimpleReflection {
     }
 
     public static void checkAndSave(Class<?> nmsClass) {
-        if (!isExists(nmsClass)) {
+        if (!isFieldExists(nmsClass)) {
             saveField(nmsClass);
+        }
+        if (!isMethodExists(nmsClass)) {
+            saveMethod(nmsClass);
         }
     }
 
@@ -44,9 +66,21 @@ public class SimpleReflection {
         Arrays.stream(nmsClass).forEach(SimpleReflection::saveField);
     }
 
+    public static void saveMethod(Class<?>... nmsClass) {
+        Arrays.stream(nmsClass).forEach(SimpleReflection::saveMethod);
+    }
+
     public static void saveField(Class<?> nmsClass) {
         try {
             Arrays.stream(nmsClass.getDeclaredFields()).forEach(declaredField -> saveField(nmsClass, declaredField.getName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveMethod(Class<?> nmsClass) {
+        try {
+            Ref.getDeclaredMethods(nmsClass).forEach(declaredMethod -> saveMethod(nmsClass, declaredMethod.getName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,7 +95,23 @@ public class SimpleReflection {
         }
     }
 
+    public static void saveMethod(Class<?> nmsClass, String methodName) {
+        try {
+            Method declaredMethod = nmsClass.getDeclaredMethod(methodName);
+            methodCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(methodName, declaredMethod);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value) {
+        setFieldValue(nmsClass, instance, fieldName, value, false);
+    }
+
+    public static void setFieldValue(Class<?> nmsClass, Object instance, String fieldName, Object value, boolean check) {
+        if (check) {
+            checkAndSave(nmsClass);
+        }
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
             return;
@@ -78,6 +128,13 @@ public class SimpleReflection {
     }
 
     public static Object getFieldValue(Class<?> nmsClass, Object instance, String fieldName) {
+        return getFieldValueChecked(nmsClass, instance, fieldName, false);
+    }
+
+    public static Object getFieldValueChecked(Class<?> nmsClass, Object instance, String fieldName, boolean check) {
+        if (check) {
+            checkAndSave(nmsClass);
+        }
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
             return null;
@@ -94,8 +151,14 @@ public class SimpleReflection {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def) {
+        return getFieldValue(nmsClass, instance, fieldName, def, false);
+    }
+
+    public static <T> T getFieldValue(Class<?> nmsClass, Object instance, String fieldName, T def, boolean check) {
+        if (check) {
+            checkAndSave(nmsClass);
+        }
         Map<String, Field> fields = fieldCached.get(nmsClass.getName());
         if (fields == null) {
             return null;
@@ -110,6 +173,31 @@ public class SimpleReflection {
             e.printStackTrace();
         }
         return def;
+    }
+
+    public static Object invokeMethod(Class<?> nmsClass, Object instance, String methodName, Object[] arguments) {
+        return invokeMethod(nmsClass, instance, methodName, arguments, false);
+    }
+
+    public static Object invokeMethod(Class<?> nmsClass, Object instance, String methodName, Object[] arguments, boolean check) {
+        if (check) {
+            checkAndSave(nmsClass);
+        }
+        Map<String, Method> methods = methodCached.get(nmsClass.getName());
+        if (methods == null) {
+            return null;
+        }
+        Method method = methods.get(methodName);
+        if (method == null) {
+            return null;
+        }
+        try {
+            method.setAccessible(true);
+            return method.invoke(instance, arguments);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return null;
     }
 
     public static Class getListType(Field field) {

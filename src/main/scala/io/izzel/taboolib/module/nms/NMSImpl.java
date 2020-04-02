@@ -3,7 +3,10 @@ package io.izzel.taboolib.module.nms;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.nms.nbt.NBTList;
 import io.izzel.taboolib.module.nms.nbt.*;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.util.Ref;
@@ -13,12 +16,26 @@ import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
-import net.minecraft.server.v1_8_R3.NBTBase;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import net.minecraft.server.v1_14_R1.*;
+import net.minecraft.server.v1_15_R1.LightEngineThreaded;
+import net.minecraft.server.v1_8_R3.ChatComponentText;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.NBTTagByte;
+import net.minecraft.server.v1_8_R3.NBTTagByteArray;
+import net.minecraft.server.v1_8_R3.NBTTagDouble;
+import net.minecraft.server.v1_8_R3.NBTTagFloat;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagIntArray;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagLong;
+import net.minecraft.server.v1_8_R3.NBTTagShort;
+import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import org.bukkit.Chunk;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
@@ -31,7 +48,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.util.Vector;
 
@@ -39,6 +55,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -48,6 +65,8 @@ import java.util.function.Consumer;
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
+    private boolean is11400 = Version.isAfter(Version.v1_14);
+    private boolean is11500 = Version.isAfter(Version.v1_15);
 
     static {
         SimpleReflection.saveField(NBTTagString.class);
@@ -77,7 +96,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public void openBook(Player player, ItemStack book) {
+    public void openBook(Player player, org.bukkit.inventory.ItemStack book) {
         // 你妈 1.14.3 的 a() 到 1.14.4 的 openBook() 不改 nms 版本号？都是 1_14_R1？神经病吧
         Object bookItem = org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack.asNMSCopy(book);
         try {
@@ -106,7 +125,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public String getName(ItemStack itemStack) {
+    public String getName(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (Version.isAfter(Version.v1_13)) {
             String name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
@@ -225,7 +244,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public ItemStack _NBT(ItemStack itemStack, Object compound) {
+    public org.bukkit.inventory.ItemStack _NBT(org.bukkit.inventory.ItemStack itemStack, Object compound) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         try {
             ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase((io.izzel.taboolib.module.nms.nbt.NBTBase) compound));
@@ -236,7 +255,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public Object _NBT(ItemStack itemStack) {
+    public Object _NBT(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         try {
             return ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).hasTag() ? fromNBTBase(((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag()) : new NBTCompound();
@@ -247,7 +266,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public List<NBTAttribute> getBaseAttribute(ItemStack item) {
+    public List<NBTAttribute> getBaseAttribute(org.bukkit.inventory.ItemStack item) {
         List<NBTAttribute> list = Lists.newArrayList();
         Object nmsItem = CraftItemStack.asNMSCopy(item);
         Object attr;
@@ -361,7 +380,7 @@ public class NMSImpl extends NMS {
                     }
                     // 1.12-
                     else {
-                        ((NBTTagList) nmsList).add((NBTBase) toNBTBase(value));
+                        ((NBTTagList) nmsList).add((net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(value));
                     }
                 }
                 return nmsList;
@@ -500,6 +519,208 @@ public class NMSImpl extends NMS {
             return net.minecraft.server.v1_14_R1.EntityTypes.a(name).orElse(null);
         } else {
             return net.minecraft.server.v1_13_R2.EntityTypes.a(name);
+        }
+    }
+
+    @Override
+    public boolean createLight(Block block, Type lightType, int lightLevel) {
+        int level = getRawLightLevel(block, lightType);
+        setRawLightLevel(block, lightType, lightLevel);
+        recalculate(block, lightType);
+        return getRawLightLevel(block, lightType) >= level;
+    }
+
+    @Override
+    public boolean deleteLight(Block block, Type lightType) {
+        int level = getRawLightLevel(block, lightType);
+        setRawLightLevel(block, lightType, 0);
+        recalculate(block, lightType);
+        return getRawLightLevel(block, lightType) != level;
+    }
+
+    @Override
+    public void setRawLightLevel(Block block, Type lightType, int lightLevel) {
+        int level = Math.max(Math.min(lightLevel, 15), 0);
+        Object world = ((CraftWorld) block.getWorld()).getHandle();
+        Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
+        if (is11400) {
+            sync(((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine(), lightEngine -> {
+                if (lightType == Type.BLOCK) {
+                    Object lightEngineLayer = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK);
+                    setRawLightLevelBlock(level, position, lightEngineLayer);
+                } else if (lightType == Type.SKY) {
+                    Object lightEngineLayer = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY);
+                    setRawLightLevelSky(level, position, lightEngineLayer);
+                } else {
+                    Object lightEngineLayer1 = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK);
+                    Object lightEngineLayer2 = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY);
+                    setRawLightLevelBlock(level, position, lightEngineLayer1);
+                    setRawLightLevelSky(level, position, lightEngineLayer2);
+                }
+            });
+        } else {
+            if (lightType == Type.BLOCK) {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
+            } else if (lightType == Type.SKY) {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
+            } else {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
+            }
+        }
+    }
+
+    @Override
+    public int getRawLightLevel(Block block, Type lightType) {
+        Object world = ((CraftWorld) block.getWorld()).getHandle();
+        Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
+        if (lightType == Type.BLOCK) {
+            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+        } else if (lightType == Type.SKY) {
+            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+        } else {
+            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getLightLevel((net.minecraft.server.v1_13_R2.BlockPosition) position);
+        }
+    }
+
+    @Override
+    public void recalculate(Block block, Type lightType) {
+        Object world = ((CraftWorld) block.getWorld()).getHandle();
+        Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
+        if (is11400) {
+            Object lightEngine = ((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine();
+            if (((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a()) {
+                sync(lightEngine, e -> {
+                    Object[] lightEngineLayers;
+                    if (lightType == Type.BLOCK) {
+                        ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK)).a(Integer.MAX_VALUE, true, true);
+                    } else if (lightType == Type.SKY) {
+                        ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY)).a(Integer.MAX_VALUE, true, true);
+                    } else {
+                        Object b = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK);
+                        Object s = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY);
+                        int maxUpdateCount = Integer.MAX_VALUE;
+                        int integer4 = maxUpdateCount / 2;
+                        int integer5 = ((LightEngineLayer) b).a(integer4, true, true);
+                        int integer6 = maxUpdateCount - integer4 + integer5;
+                        int integer7 = ((LightEngineLayer) s).a(integer6, true, true);
+                        if (integer5 == 0 && integer7 > 0) {
+                            ((LightEngineLayer) b).a(integer7, true, true);
+                        }
+                    }
+                });
+            }
+        } else {
+            if (lightType == Type.SKY) {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+            } else if (lightType == Type.BLOCK) {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+            } else {
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+                ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+            }
+        }
+    }
+
+    @Override
+    public void update(Chunk chunk) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
+            Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
+            Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).world.getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
+            if (distance(chunk2, chunk1) < distance(human)) {
+                if (is11400) {
+                    TPacketHandler.sendPacket(player, new PacketPlayOutLightUpdate(((net.minecraft.server.v1_14_R1.Chunk) chunk1).getPos(), ((net.minecraft.server.v1_14_R1.Chunk) chunk1).e()));
+                } else {
+                    TPacketHandler.sendPacket(player, new net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk((net.minecraft.server.v1_14_R1.Chunk) chunk1, 0x1ffff));
+                }
+            }
+        }
+    }
+
+    public int distance(Object player) {
+        int viewDistance = Bukkit.getViewDistance();
+        try {
+            int playerViewDistance = ((net.minecraft.server.v1_14_R1.EntityPlayer) player).clientViewDistance;
+            if (playerViewDistance < viewDistance) {
+                viewDistance = playerViewDistance;
+            }
+        } catch (Exception ignored) {
+        }
+        return viewDistance;
+    }
+
+    private int distance(Object from, Object to) {
+        if (!((net.minecraft.server.v1_14_R1.Chunk) from).world.getWorldData().getName().equals(((net.minecraft.server.v1_14_R1.Chunk) to).world.getWorldData().getName())) {
+            return 100;
+        }
+        double var2 = ((net.minecraft.server.v1_14_R1.Chunk) to).getPos().x - ((net.minecraft.server.v1_14_R1.Chunk) from).getPos().x;
+        double var4 = ((net.minecraft.server.v1_14_R1.Chunk) to).getPos().z - ((net.minecraft.server.v1_14_R1.Chunk) from).getPos().z;
+        return (int) Math.sqrt(var2 * var2 + var4 * var4);
+    }
+
+    public void sync(Object lightEngine, Consumer<Object> task) {
+        try {
+            Object b = SimpleReflection.getFieldValueChecked(LightEngineThreaded.class, lightEngine, "b", true);
+            Object c = SimpleReflection.getFieldValueChecked(ThreadedMailbox.class, b, "c", true);
+
+            int flags;
+            long wait = -1L;
+
+            while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get() & ~2, flags | 2)) {
+                if ((flags & 1) != 0) {
+                    if (wait == -1) {
+                        wait = System.currentTimeMillis() + 3 * 1000;
+                        TLogger.getGlobalLogger().info("ThreadedMailbox is closing. Will wait...");
+                    } else if (System.currentTimeMillis() >= wait) {
+                        TLogger.getGlobalLogger().warn("Failed to enter critical section while ThreadedMailbox is closing");
+                    }
+                    try {
+                        Thread.sleep(50);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+
+            try {
+                task.accept(lightEngine);
+            } finally {
+                while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get(), flags & ~2))
+                    ;
+                SimpleReflection.invokeMethod(ThreadedMailbox.class, b, "f", new Object[0], true);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    private void setRawLightLevelBlock(int level, Object position, Object lightEngineLayer) {
+        if (level == 0) {
+            ((LightEngineBlock) lightEngineLayer).a((BlockPosition) position);
+        } else if (((LightEngineLayer) lightEngineLayer).a(SectionPosition.a((net.minecraft.server.v1_14_R1.BlockPosition) position)) != null) {
+            try {
+                ((LightEngineLayer) lightEngineLayer).a((net.minecraft.server.v1_14_R1.BlockPosition) position, level);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+    }
+
+    private void setRawLightLevelSky(int level, Object position, Object lightEngineLayer) {
+        if (level == 0) {
+            ((LightEngineSky) lightEngineLayer).a((BlockPosition) position);
+        } else if (((LightEngineLayer) lightEngineLayer).a(SectionPosition.a((net.minecraft.server.v1_14_R1.BlockPosition) position)) != null) {
+            try {
+                Object s = SimpleReflection.getFieldValueChecked(LightEngineLayer.class, lightEngineLayer, "c", true);
+                if (is11500) {
+                    SimpleReflection.invokeMethod(LightEngineStorage.class, s, "d", new Object[0], true);
+                } else {
+                    SimpleReflection.invokeMethod(LightEngineStorage.class, s, "c", new Object[0], true);
+                }
+                SimpleReflection.invokeMethod(LightEngineGraph.class, lightEngineLayer, "a", new Object[] {9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true}, true);
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
     }
 }
