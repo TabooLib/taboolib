@@ -2,11 +2,13 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
@@ -98,5 +100,17 @@ public abstract class NMS {
     abstract public Class<?> asNMS(String name);
 
     abstract public Object asEntityType(String name);
+
+    abstract public boolean createLight(Block block, Type lightType, int lightLevel);
+
+    abstract public boolean deleteLight(Block block, Type lightType);
+
+    abstract public void setRawLightLevel(Block block, Type lightType, int lightLevel);
+
+    abstract public int getRawLightLevel(Block block, Type lightType);
+
+    abstract public void recalculate(Block block, Type lightType);
+
+    abstract public void update(Chunk chunk);
 
 }

@@ -11,7 +11,9 @@ import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.hologram.Hologram;
 import io.izzel.taboolib.module.hologram.THologram;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.module.light.TLight;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.book.BookFormatter;
@@ -121,7 +123,28 @@ public class ListenerCommand implements Listener {
                                     .hoverText("HoverText"))
                             .open(player);
                 }
+            },
+            new Module() {
+                @Override
+                public String[] name() {
+                    return new String[] {"light"};
+                }
+
+                @Override
+                public void run(Player player) {
+                    player.sendMessage("§8[§fTabooLib§8] §7Lighting. §a(+)");
+                    TLight.create(player.getLocation().getBlock(), Type.BLOCK, 15);
+                    Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> {
+                        TLight.create(player.getLocation().getBlock(), Type.BLOCK, 5);
+                        player.sendMessage("§8[§fTabooLib§8] §7Lighting. §c(-)");
+                    }, 20);
+                    Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> {
+                        TLight.delete(player.getLocation().getBlock(), Type.BLOCK);
+                        player.sendMessage("§8[§fTabooLib§8] §7Lighting. §8(-)");
+                    }, 40);
+                }
             });
+
 
     @Startup.Starting
     public void init() {
