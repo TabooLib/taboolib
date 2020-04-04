@@ -4,7 +4,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.Version;
+import io.izzel.taboolib.module.command.base.display.DisplayBase;
+import io.izzel.taboolib.module.command.base.display.DisplayFlat;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Ref;
@@ -17,7 +18,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
  */
 public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
+    private DisplayBase display = new DisplayFlat();
     private PluginCommand registerCommand;
     private List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
     private List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
@@ -95,7 +100,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         }
     }
 
-    private static BaseSubCommand buildSubCommand(BaseMainCommand baseMainCommand, Method method) {
+    public static BaseSubCommand buildSubCommand(BaseMainCommand baseMainCommand, Method method) {
         return new BaseSubCommand() {
             @Override
             public void onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -108,47 +113,24 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         };
     }
 
-    public void setRegisterCommand(PluginCommand registerCommand) {
-        this.registerCommand = registerCommand;
-    }
-
-    public PluginCommand getRegisterCommand() {
-        return registerCommand;
-    }
-
-    public List<Class<?>> getLinkClasses() {
-        return linkClasses;
-    }
-
-    public List<BaseSubCommand> getSubCommands() {
-        return subCommands;
-    }
-
     public void registerSubCommand(BaseSubCommand subCommand) {
-        if (subCommand != null) {
-            Preconditions.checkArgument(subCommand.getLabel() != null, "Command label can not be null");
-            Preconditions.checkArgument(subCommand.getArguments() != null, "Command arguments can not be null");
-        }
-        subCommands.add(subCommand);
+        Preconditions.checkNotNull(subCommand);
+        Preconditions.checkArgument(subCommand.getLabel() != null, "Command label can not be null");
+        Preconditions.checkArgument(subCommand.getArguments() != null, "Command arguments can not be null");
+        subCommands.add(subCommand.mainCommand(this));
     }
 
     public void onCommandHelp(CommandSender sender, Command command, String label, String[] args) {
-        sender.sendMessage(getEmptyLine());
-        sender.sendMessage(getCommandTitle());
-        sender.sendMessage(getEmptyLine());
-        subCommands.stream().filter(subCommands -> !hideInHelp(subCommands) && hasPermission(sender, subCommands)).map(subCommand -> subCommand == null ? getEmptyLine() : subCommand.getCommandString(label)).forEach(sender::sendMessage);
-        sender.sendMessage(getEmptyLine());
-    }
-
-    public String getCommandTitle() {
-        return "§e§l----- §6§l" + registerCommand.getPlugin().getName() + " Commands §e§l-----";
+        display.displayHead(sender, this, label);
+        subCommands.forEach(s -> display.displayParameters(sender, s, label));
+        display.displayBottom(sender, this, label);
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         if (args.length == 1) {
             List<String> label = Lists.newArrayList();
-            subCommands.stream().filter(subCommand -> !hideInHelp(subCommand) && hasPermission(commandSender, subCommand)).forEach(l -> {
+            subCommands.stream().filter(subCommand -> subCommand != null && !subCommand.hideInHelp() && subCommand.hasPermission(sender)).forEach(l -> {
                 label.add(l.getLabel());
                 label.addAll(Lists.newArrayList(l.getAliases()));
             });
@@ -172,18 +154,18 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             onCommandHelp(sender, command, label, args);
         } else {
             for (BaseSubCommand subCommand : subCommands) {
-                if (subCommand == null || !(args[0].equalsIgnoreCase(subCommand.getLabel()) || java.util.Arrays.stream(subCommand.getAliases()).anyMatch(args[0]::equalsIgnoreCase)) || !hasPermission(sender, subCommand)) {
+                if (subCommand == null || !(args[0].equalsIgnoreCase(subCommand.getLabel()) || java.util.Arrays.stream(subCommand.getAliases()).anyMatch(args[0]::equalsIgnoreCase)) || !subCommand.hasPermission(sender)) {
                     continue;
                 }
                 if (!isConfirmType(sender, subCommand.getType())) {
-                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()));
+                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()), registerCommand.getPlugin().getName());
                     return true;
                 }
                 String[] subCommandArgs = removeFirst(args);
                 if (subCommand.isParameterConform(subCommandArgs)) {
                     subCommand.onCommand(sender, command, label, subCommand.ignoredLabel() ? subCommandArgs : args);
                 } else {
-                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.ERROR-USAGE", args[0], subCommand.getCommandString(label));
+                    display.displayErrorUsage(sender, this, args[0], subCommand.getCommandString(sender, label));
                 }
                 return true;
             }
@@ -191,9 +173,9 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
                 @Override
                 public void run() {
-                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && hasPermission(sender, x)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
+                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && x.hasPermission(sender)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
                     if (commandCompute.size() > 0) {
-                        TLocale.sendTo(sender, "COMMANDS.INTERNAL.ERROR-COMMAND", args[0], commandCompute.get(0).getCommandString(label).trim());
+                        display.displayErrorCommand(sender, BaseMainCommand.this, args[0], commandCompute.get(0).getCommandString(sender, label));
                     }
                 }
             }.runTaskAsynchronously(TabooLib.getPlugin());
@@ -203,24 +185,48 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     @Override
     public String toString() {
-        return "registerCommand=" + "BaseMainCommand{" + registerCommand + ", linkClasses=" + linkClasses + ", subCommands=" + subCommands + '}';
+        return "BaseMainCommand{" +
+                "display=" + display +
+                ", registerCommand=" + registerCommand +
+                ", linkClasses=" + linkClasses +
+                ", subCommands=" + subCommands +
+                '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof BaseMainCommand)) {
-            return false;
-        }
-        BaseMainCommand that = (BaseMainCommand) o;
-        return Objects.equals(getLinkClasses(), that.getLinkClasses()) && Objects.equals(getRegisterCommand(), that.getRegisterCommand()) && Objects.equals(getSubCommands(), that.getSubCommands());
+    // *********************************
+    //
+    //        Getter and Setter
+    //
+    // *********************************
+
+    public String getCommandTitle() {
+        return "§e§l----- §6§l" + registerCommand.getPlugin().getName() + " Commands §e§l-----";
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getRegisterCommand(), getLinkClasses(), getSubCommands());
+    public void setRegisterCommand(PluginCommand registerCommand) {
+        Preconditions.checkNotNull(registerCommand);
+        this.registerCommand = registerCommand;
+    }
+
+    public PluginCommand getRegisterCommand() {
+        return registerCommand;
+    }
+
+    public List<Class<?>> getLinkClasses() {
+        return linkClasses;
+    }
+
+    public List<BaseSubCommand> getSubCommands() {
+        return subCommands;
+    }
+
+    public DisplayBase getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(DisplayBase display) {
+        Preconditions.checkNotNull(display);
+        this.display = display;
     }
 
     // *********************************
@@ -228,10 +234,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     //        Private Methods
     //
     // *********************************
-
-    private String getEmptyLine() {
-        return Version.isAfter(Version.v1_8) ? "" : "~";
-    }
 
     private boolean isConfirmType(CommandSender sender, CommandType commandType) {
         return commandType == CommandType.ALL
@@ -252,14 +254,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             Ref.putField(targetClass.newInstance(), pluginField, plugin);
         } catch (Exception ignored) {
         }
-    }
-
-    private boolean hideInHelp(BaseSubCommand baseSubCommand) {
-        return baseSubCommand != null && baseSubCommand.hideInHelp();
-    }
-
-    private boolean hasPermission(CommandSender sender, BaseSubCommand baseSubCommand) {
-        return baseSubCommand == null || Strings.isEmpty(baseSubCommand.getPermission()) || sender.hasPermission(baseSubCommand.getPermission());
     }
 
     private String[] removeFirst(String[] args) {

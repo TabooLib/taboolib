@@ -1,12 +1,10 @@
 package io.izzel.taboolib.module.command.base;
 
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -18,8 +16,13 @@ public abstract class BaseSubCommand {
     private String label;
     private boolean player;
     private SubCommand annotation;
+    private BaseMainCommand mainCommand;
 
     abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
+
+    public BaseMainCommand getMainCommand() {
+        return mainCommand;
+    }
 
     public String getLabel() {
         return label;
@@ -61,8 +64,12 @@ public abstract class BaseSubCommand {
         return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
     }
 
-    public String getCommandString(String label) {
-        return TLocale.asString(Strings.isEmpty(getDescription()) ? "COMMANDS.INTERNAL.COMMAND-HELP-EMPTY" : "COMMANDS.INTERNAL.COMMAND-HELP", label, getLabel(), Arrays.stream(getArguments()).map(parameter -> parameter.toString() + " ").collect(Collectors.joining()), getDescription());
+    public String getCommandString(CommandSender sender, String label) {
+        return mainCommand.getDisplay().displayHelp(sender, this, label);
+    }
+
+    public boolean hasPermission(CommandSender sender) {
+        return Strings.isBlank(getPermission()) || sender.hasPermission(getPermission());
     }
 
     protected BaseSubCommand label(String label) {
@@ -77,6 +84,11 @@ public abstract class BaseSubCommand {
 
     protected BaseSubCommand annotation(SubCommand annotation) {
         this.annotation = annotation;
+        return this;
+    }
+
+    protected BaseSubCommand mainCommand(BaseMainCommand mainCommand) {
+        this.mainCommand = mainCommand;
         return this;
     }
 }

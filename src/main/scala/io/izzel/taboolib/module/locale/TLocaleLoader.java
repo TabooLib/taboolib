@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.locale.type.*;
@@ -154,7 +155,7 @@ public class TLocaleLoader {
     }
 
     private static YamlConfiguration getLocaleAsPlugin(Plugin plugin, File localeFile) {
-        try (InputStream canonicalResource = Files.getCanonicalResource(plugin, "lang/" + localeFile.getName())) {
+        try (InputStream canonicalResource = Files.getCanonicalResource(plugin, (plugin instanceof InternalPlugin ? "__resources__/" : "") + "lang/" + localeFile.getName())) {
             if (canonicalResource != null) {
                 return YamlConfiguration.loadConfiguration(new InputStreamReader(canonicalResource, StandardCharsets.UTF_8));
             }

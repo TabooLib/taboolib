@@ -1,7 +1,5 @@
 package io.izzel.taboolib.module.command.base;
 
-import io.izzel.taboolib.module.locale.TLocale;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -46,11 +44,6 @@ public class Argument {
         this.name = name;
         this.required = required;
         this.tab = tab;
-    }
-
-    @Override
-    public String toString() {
-        return required ? TLocale.asString("COMMANDS.INTERNAL.COMMAND-ARGUMENT-REQUIRE", name) : TLocale.asString("COMMANDS.INTERNAL.COMMAND-ARGUMENT", name);
     }
 
     @Override
