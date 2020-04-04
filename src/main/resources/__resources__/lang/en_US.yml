@@ -19,29 +19,66 @@ MYSQL-HIKARI:
   CLOSE-FAIL: '&7Plugin &f{0} &7Try to deregister connection used by &f{1} &7plugins.'
 
 COMMANDS:
-  GLOBAL:
-    ONLY-PLAYER: '&8[&3&lTabooLib&8] &4This is only for player.'
-    ONLY-STORAGE-SQL: '&8[&3&lTabooLib&8] &4Can only be done when SQL-Mode is enabled.'
   INTERNAL:
+    COMMAND-CREATE-FAILED: '&c插件 &7{0} &c的 &7{1} &c命令注册失败: &7{2}'
     TYPE-ERROR: '&8[&3&lTabooLib&8] &7Command &f{0} &7can only be executed by &f{1} &7.'
     TYPE-PLAYER: 'Player'
     TYPE-CONSOLE: 'Console'
-    ERROR-USAGE:
-      - '&8[&3&lTabooLib&8] &7Command &f{0} &7'
-      - '&8[&3&lTabooLib&8] &7Usage:'
-      - '&8[&3&lTabooLib&8] &7{1}'
-    ERROR-COMMAND:
-      - '&8[&3&lTabooLib&8] &7Command &f{0} &7not found'
-      - '&8[&3&lTabooLib&8] &7Maybe:'
-      - '&8[&3&lTabooLib&8] &7{1}'
-    COMMAND-CREATE-FAILED: '&c插件 &7{0} &c的 &7{1} &c命令注册失败: &7{2}'
-    COMMAND-HELP: ' §f/{0} {1} {2}§6- §e{3}'
-    COMMAND-HELP-EMPTY: ' §f/{0} {1} {2}'
-    COMMAND-ARGUMENT: '§7<§8{0}§7>'
-    COMMAND-ARGUMENT-REQUIRE: '§7[§8{0}§7]'
   PARAMETER:
     UNKNOWN: '&8[&3&lTabooLib&8] &4Invalid command.'
     INSUFFICIENT: '&8[&3&lTabooLib&8] &4Invalid arguments.'
+  DISPLAY:
+    CLASSIC:
+      HELP: '§f/{0} {1} {2} §6- §e{3}'
+      HELP-EMPTY: '§f/{0} {1} {2}'
+      ARGUMENT-REQUIRED: '§7[§8{0}§7]'
+      ARGUMENT-OPTIONAL: '§7<§8{0}§7>'
+      ERROR-USAGE:
+        - '&8[&3&l{2}&8] &7Command &f{0} &7is missing parameters'
+        - '&8[&3&l{2}&8] &7Usage:'
+        - '&8[&3&l{2}&8] &7{1}'
+      ERROR-COMMAND:
+        - '&8[&3&l{2}&8] &7Command &f{0} &7not found'
+        - '&8[&3&l{2}&8] &7Usage:'
+        - '&8[&3&l{3}&8] &7{1}'
+    FLAT:
+      HELP: '§f/{0} {1} {2} §8- §7{3}'
+      HELP-EMPTY: '§f/{0} {1} {2}'
+      ARGUMENT-REQUIRED: '§7[§8{0}§7]'
+      ARGUMENT-OPTIONAL: '§7<§8{0}§7>'
+      ERROR-USAGE:
+        - '&8[&3&l{2}&8] &7Command &f{0} &7is missing parameters'
+        - '&8[&3&l{2}&8] &7Usage:'
+        - '&8[&3&l{2}&8] &7{1}'
+      ERROR-COMMAND:
+        - '&8[&3&l{2}&8] &7Command &f{0} &7not found'
+        - '&8[&3&l{2}&8] &7Usage:'
+        - '&8[&3&l{3}&8] &7{1}'
+      HEAD:
+        - ' '
+        - ' &f&l{0}&7 v{1}'
+        - ' '
+        - ' &7命令: &f/{2} &8[...]'
+        - ' &7参数:'
+      BOTTOM:
+        - ' '
+      PARAMETERS:
+        ==: JSON
+        text:
+          - '   &8- &f<{0}@0>'
+          - '   &8  &7{1}'
+        args:
+          0:
+            hover: '{2}'
+            suggest: '{3}'
+      PARAMETERS-EMPTY:
+        ==: JSON
+        text:
+          - '   &8- &f<{0}@0>'
+        args:
+          0:
+            hover: '{2}'
+            suggest: '{3}'
 
 COMMUNICATION:
   FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
