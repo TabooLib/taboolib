@@ -99,6 +99,7 @@ public class SimpleReflection {
         try {
             Method declaredMethod = nmsClass.getDeclaredMethod(methodName);
             methodCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(methodName, declaredMethod);
+        } catch (NoSuchMethodException | NoSuchMethodError ignored) {
         } catch (Exception e) {
             e.printStackTrace();
         }
