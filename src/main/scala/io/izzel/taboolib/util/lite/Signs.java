@@ -8,7 +8,6 @@ import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.packet.Packet;
 import io.izzel.taboolib.module.packet.TPacket;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -80,12 +79,8 @@ public class Signs {
                 if (data == null) {
                     return true;
                 }
-                Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> {
-                    try {
-                        data.catcher.accept(packet.read("b", new String[0]));
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
+                TabooLib.getPlugin().runTask(() -> {
+                    data.catcher.accept(packet.read("b", new String[0]));
                 });
                 signs.remove(data);
             } catch (Throwable t) {
