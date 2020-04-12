@@ -1,7 +1,6 @@
 package io.izzel.taboolib.util.lite;
 
 import io.izzel.taboolib.TabooLib;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -37,11 +36,11 @@ public class SoundPack {
     }
 
     public void play(Player p) {
-        Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> p.playSound(p.getLocation(), this.sound, this.a, this.b), delay);
+        TabooLib.getPlugin().runTask(() -> p.playSound(p.getLocation(), this.sound, this.a, this.b), delay);
     }
 
     public void play(Location l) {
-        Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> l.getWorld().playSound(l, this.sound, this.a, this.b), delay);
+        TabooLib.getPlugin().runTask(() -> l.getWorld().playSound(l, this.sound, this.a, this.b), delay);
     }
 
     public void parse(String s) {

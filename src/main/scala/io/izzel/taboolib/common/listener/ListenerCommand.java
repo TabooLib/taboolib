@@ -134,11 +134,11 @@ public class ListenerCommand implements Listener {
                 public void run(Player player) {
                     player.sendMessage("§8[§fTabooLib§8] §7Lighting. §a(+)");
                     TLight.create(player.getLocation().getBlock(), Type.BLOCK, 15);
-                    Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> {
+                    TabooLib.getPlugin().runTask(() -> {
                         TLight.create(player.getLocation().getBlock(), Type.BLOCK, 5);
                         player.sendMessage("§8[§fTabooLib§8] §7Lighting. §c(-)");
                     }, 20);
-                    Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> {
+                    TabooLib.getPlugin().runTask(() -> {
                         TLight.delete(player.getLocation().getBlock(), Type.BLOCK);
                         player.sendMessage("§8[§fTabooLib§8] §7Lighting. §8(-)");
                     }, 40);

@@ -45,7 +45,7 @@ class THologramHandler implements Listener {
     static boolean d(Player player, Packet packet) {
         if (packet.is("PacketPlayInPosition") && !learned) {
             learned = true;
-            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> learn(player));
+            TabooLib.getPlugin().runTask(() -> learn(player));
         }
         if (packet.is("PacketPlayInUseEntity")) {
             int id = packet.read("a", Integer.TYPE);

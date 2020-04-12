@@ -3,7 +3,6 @@ package io.izzel.taboolib.util.lite;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.inject.PlayerContainer;
 import io.izzel.taboolib.module.inject.TListener;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,7 +37,7 @@ public class Catchers implements Listener {
         if (playerdata.containsKey(e.getPlayer().getName()) && contains(e.getPlayer())) {
             e.setCancelled(true);
             // 1.14 supported.
-            Bukkit.getScheduler().runTask(TabooLib.getPlugin(), () -> {
+            TabooLib.getPlugin().runTask(() -> {
                 Catcher catcher = playerdata.get(e.getPlayer().getName()).getFirst();
                 // 退出
                 if (e.getMessage().split(" ")[0].matches(catcher.quit())) {

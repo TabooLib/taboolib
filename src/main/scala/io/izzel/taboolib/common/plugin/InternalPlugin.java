@@ -137,4 +137,64 @@ public class InternalPlugin implements Plugin {
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;
     }
+
+    public void runTask(Runnable runnable) {
+        Bukkit.getScheduler().runTask(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void runTaskAsync(Runnable runnable) {
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    public void runTask(Runnable runnable, long delay) {
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }, delay);
+    }
+
+    public void runTaskAsync(Runnable runnable, long delay) {
+        Bukkit.getScheduler().runTaskLaterAsynchronously(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }, delay);
+    }
+
+    public void runTask(Runnable runnable, long delay, long period) {
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }, delay, period);
+    }
+
+    public void runTaskAsync(Runnable runnable, long delay, long period) {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
+            try {
+                runnable.run();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }, delay, period);
+    }
 }

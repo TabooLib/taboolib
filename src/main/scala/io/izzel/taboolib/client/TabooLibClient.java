@@ -2,13 +2,12 @@ package io.izzel.taboolib.client;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.client.packet.Packet;
+import io.izzel.taboolib.client.packet.PacketSerializer;
 import io.izzel.taboolib.client.packet.impl.PacketCommand;
 import io.izzel.taboolib.client.packet.impl.PacketMessage;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
-import io.izzel.taboolib.client.packet.PacketSerializer;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.util.NumberConversions;
 
 import java.io.*;
@@ -34,7 +33,7 @@ public class TabooLibClient {
     public static void init() {
         if (TabooLibSettings.load()) {
             connect();
-            Bukkit.getScheduler().runTaskTimerAsynchronously(TabooLib.getPlugin(), TabooLibClient::reconnect, 0, 100);
+            TabooLib.getPlugin().runTaskAsync(TabooLibClient::reconnect, 0, 100);
         } else {
             TLocale.sendToConsole("COMMUNICATION.FAILED-LOAD-SETTINGS", TabooLibSettings.getThrowable().toString());
         }

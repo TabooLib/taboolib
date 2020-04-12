@@ -107,7 +107,7 @@ public class Hologram {
     public Hologram flash(List<String> text, int period) {
         for (int i = 0; i < text.size(); i++) {
             String line = text.get(i);
-            Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> flash(line), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(line), period * i);
         }
         return this;
     }
@@ -129,7 +129,7 @@ public class Hologram {
 
     public Hologram flash(Vector vector, int period, int times) {
         for (int i = 0; i < times; i++) {
-            Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), () -> flash(location.add(vector)), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(location.add(vector)), period * i);
         }
         return this;
     }
@@ -156,7 +156,7 @@ public class Hologram {
     }
 
     public Hologram deleteOn(int delay) {
-        Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), this::delete, delay);
+        TabooLib.getPlugin().runTask(this::delete, delay);
         return this;
     }
 
