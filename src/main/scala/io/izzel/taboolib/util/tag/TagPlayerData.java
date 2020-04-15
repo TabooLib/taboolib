@@ -1,7 +1,6 @@
 package io.izzel.taboolib.util.tag;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.util.Strings;
 import org.bukkit.entity.Player;
 
 import java.util.Objects;
@@ -18,6 +17,7 @@ public class TagPlayerData {
     private String nameDisplay;
     private String prefix;
     private String suffix;
+    private boolean nameAllow;
 
     public TagPlayerData(Player player) {
         this.uuid = player.getUniqueId();
@@ -25,6 +25,7 @@ public class TagPlayerData {
         this.nameDisplay = player.getName();
         this.prefix = "";
         this.suffix = "";
+        this.nameAllow = true;
     }
 
     public String getTeamHash() {
@@ -39,12 +40,20 @@ public class TagPlayerData {
         this.nameDisplay = getNameOrigin();
         this.prefix = "";
         this.suffix = "";
+        this.nameAllow = true;
         return this;
     }
 
     @Override
     public String toString() {
-        return Strings.replaceWithOrder("TagPlayerData'{'uuid={0}, nameOrigin=''{1}'', nameDisplay=''{2}'', prefix=''{3}'', suffix=''{4}'''}'", uuid, nameOrigin, nameDisplay, prefix, suffix);
+        return "TagPlayerData{" +
+                "uuid=" + uuid +
+                ", nameOrigin='" + nameOrigin + '\'' +
+                ", nameDisplay='" + nameDisplay + '\'' +
+                ", prefix='" + prefix + '\'' +
+                ", suffix='" + suffix + '\'' +
+                ", nameAllow=" + nameAllow +
+                '}';
     }
 
     // *********************************
@@ -71,6 +80,15 @@ public class TagPlayerData {
 
     public String getSuffix() {
         return suffix == null ? "" : suffix;
+    }
+
+    public boolean isNameVisibility() {
+        return nameAllow;
+    }
+
+    public TagPlayerData setNameVisibility(boolean nameAllow) {
+        this.nameAllow = nameAllow;
+        return this;
     }
 
     public TagPlayerData setNameDisplay(String nameDisplay) {

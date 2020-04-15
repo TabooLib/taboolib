@@ -12,12 +12,16 @@ public class Numbers {
     private static Random random = new Random();
     private static DecimalFormat doubleFormat = new DecimalFormat("#.##");
 
+    public static Random getRandom() {
+        return random;
+    }
+
     public static boolean random(double v) {
         return random.nextDouble() <= v;
     }
 
-    public static Random getRandom() {
-        return random;
+    public static int random(int v) {
+        return random.nextInt(v);
     }
 
     public static Double format(Double num) {
