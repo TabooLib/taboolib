@@ -49,6 +49,10 @@ public class TagDataHandler implements Listener {
         return getPlayerDataComputeIfAbsent(player).getNameDisplay();
     }
 
+    public boolean isNameVisibility(Player player) {
+        return getPlayerDataComputeIfAbsent(player).isNameVisibility();
+    }
+
     public void setPrefix(Player player, String prefix) {
         updatePlayerVariable(getPlayerDataComputeIfAbsent(player).setPrefix(prefix));
         updatePlayerListName(player);
@@ -61,6 +65,11 @@ public class TagDataHandler implements Listener {
 
     public void setPrefixAndSuffix(Player player, String prefix, String suffix) {
         updatePlayerVariable(getPlayerDataComputeIfAbsent(player).setPrefix(prefix).setSuffix(suffix));
+        updatePlayerListName(player);
+    }
+
+    public void setNameVisibility(Player player, boolean v) {
+        updatePlayerVariable(getPlayerDataComputeIfAbsent(player).setNameVisibility(v));
         updatePlayerListName(player);
     }
 
@@ -103,6 +112,12 @@ public class TagDataHandler implements Listener {
         }
         if (entryTeam.getSuffix() == null || !entryTeam.getSuffix().equals(playerData.getSuffix())) {
             entryTeam.setSuffix(playerData.getSuffix());
+        }
+        Team.OptionStatus option = entryTeam.getOption(Team.Option.NAME_TAG_VISIBILITY);
+        if (option == Team.OptionStatus.ALWAYS && !playerData.isNameVisibility()) {
+            entryTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        } else if (option == Team.OptionStatus.NEVER && playerData.isNameVisibility()) {
+            entryTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
         }
         if (TabooLib.getConfig().getBoolean("TABLIST-AUTO-CLEAN-TEAM", true)) {
             TagUtils.cleanEmptyTeamInScoreboard(scoreboard);
