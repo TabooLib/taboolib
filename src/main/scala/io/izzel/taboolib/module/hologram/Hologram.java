@@ -200,6 +200,9 @@ public class Hologram {
             return this;
         }
         HologramViewer viewer = getViewer(player);
+        if (viewer == null) {
+            return this;
+        }
         viewers.remove(viewer);
         destroy(viewer);
         if (viewers.isEmpty()) {
