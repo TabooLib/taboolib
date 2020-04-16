@@ -46,13 +46,13 @@ public abstract class PathfinderExecutor {
 
     public abstract void replaceTargetAi(LivingEntity entity, SimpleAi ai, int priority, String name);
 
-    public abstract void removeGoalAi(LivingEntity entity, SimpleAi ai, int priority);
+    public abstract void removeGoalAi(LivingEntity entity, int priority);
 
-    public abstract void removeTargetAi(LivingEntity entity, SimpleAi ai, int priority);
+    public abstract void removeTargetAi(LivingEntity entity, int priority);
 
-    public abstract void removeGoalAi(LivingEntity entity, SimpleAi ai, String name);
+    public abstract void removeGoalAi(LivingEntity entity, String name);
 
-    public abstract void removeTargetAi(LivingEntity entity, SimpleAi ai, String name);
+    public abstract void removeTargetAi(LivingEntity entity, String name);
 
     public abstract void clearGoalAi(LivingEntity entity);
 
