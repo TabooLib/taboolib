@@ -33,7 +33,11 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
         try {
             SimpleReflection.saveField(PathfinderGoalSelector.class);
             SimpleReflection.saveField(ControllerJump.class);
-            pathfinderGoalSelectorSet = SimpleReflection.getField(PathfinderGoalSelector.class, "b");
+            if (v11400) {
+                pathfinderGoalSelectorSet = SimpleReflection.getField(PathfinderGoalSelector.class, "d");
+            } else {
+                pathfinderGoalSelectorSet = SimpleReflection.getField(PathfinderGoalSelector.class, "b");
+            }
             controllerJumpCurrent = SimpleReflection.getField(ControllerJump.class, "a");
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,22 +160,22 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     }
 
     @Override
-    public void removeGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
+    public void removeGoalAi(LivingEntity entity, int priority) {
         removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
     }
 
     @Override
-    public void removeTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
+    public void removeTargetAi(LivingEntity entity, int priority) {
         removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
     }
 
     @Override
-    public void removeGoalAi(LivingEntity entity, SimpleAi ai, String name) {
+    public void removeGoalAi(LivingEntity entity, String name) {
         removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
     }
 
     @Override
-    public void removeTargetAi(LivingEntity entity, SimpleAi ai, String name) {
+    public void removeTargetAi(LivingEntity entity, String name) {
         removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
     }
 
@@ -196,9 +200,9 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     private Collection getGoal(Object targetSelector) {
         Collection c;
         if (v11400) {
-            c = (Collection) SimpleReflection.getFieldValueChecked(PathfinderGoalSelector.class, targetSelector, "b", true);
-        } else {
             c = (Collection) SimpleReflection.getFieldValueChecked(PathfinderGoalSelector.class, targetSelector, "d", true);
+        } else {
+            c = (Collection) SimpleReflection.getFieldValueChecked(PathfinderGoalSelector.class, targetSelector, "b", true);
         }
         return c;
     }
