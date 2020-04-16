@@ -28,9 +28,31 @@ public abstract class PathfinderExecutor {
 
     public abstract void setPathEntity(LivingEntity entity, Object pathEntity);
 
+    @Deprecated
     public abstract void setGoalAi(LivingEntity entity, SimpleAi ai, int priority);
 
+    @Deprecated
     public abstract void setTargetAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void addGoalAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void addTargetAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void replaceGoalAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void replaceTargetAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void replaceGoalAi(LivingEntity entity, SimpleAi ai, int priority, String name);
+
+    public abstract void replaceTargetAi(LivingEntity entity, SimpleAi ai, int priority, String name);
+
+    public abstract void removeGoalAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void removeTargetAi(LivingEntity entity, SimpleAi ai, int priority);
+
+    public abstract void removeGoalAi(LivingEntity entity, SimpleAi ai, String name);
+
+    public abstract void removeTargetAi(LivingEntity entity, SimpleAi ai, String name);
 
     public abstract void clearGoalAi(LivingEntity entity);
 
