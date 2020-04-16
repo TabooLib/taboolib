@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.ai.internal;
 
+import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.ai.PathfinderExecutor;
 import io.izzel.taboolib.module.ai.SimpleAi;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -25,6 +27,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     private Field pathEntity;
     private Field pathfinderGoalSelectorSet;
     private Field controllerJumpCurrent;
+    private boolean v11400 = Version.isAfter(Version.v1_14);
 
     public InternalPathfinderExecutor() {
         try {
@@ -104,12 +107,100 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
 
     @Override
     public void setGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
-        ((EntityInsentient) getEntityInsentient(entity)).goalSelector.a(priority, (PathfinderGoal) SimpleAiSelector.getCreator().createPathfinderGoal(ai));
+        addGoalAi(entity, ai, priority);
     }
 
     @Override
     public void setTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
+        addTargetAi(entity, ai, priority);
+    }
+
+    @Override
+    public void addGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
+        ((EntityInsentient) getEntityInsentient(entity)).goalSelector.a(priority, (PathfinderGoal) SimpleAiSelector.getCreator().createPathfinderGoal(ai));
+    }
+
+    @Override
+    public void addTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
         ((EntityInsentient) getEntityInsentient(entity)).targetSelector.a(priority, (PathfinderGoal) SimpleAiSelector.getCreator().createPathfinderGoal(ai));
+    }
+
+    @Override
+    public void replaceGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
+        replaceGoalAi(entity, ai, priority, null);
+    }
+
+    @Override
+    public void replaceTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
+        replaceTargetAi(entity, ai, priority, null);
+    }
+
+    @Override
+    public void replaceGoalAi(LivingEntity entity, SimpleAi ai, int priority, String name) {
+        if (name == null) {
+            removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
+        } else {
+            removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
+        }
+        addGoalAi(entity, ai, priority);
+    }
+
+    @Override
+    public void replaceTargetAi(LivingEntity entity, SimpleAi ai, int priority, String name) {
+        if (name == null) {
+            removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
+        } else {
+            removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
+        }
+        addTargetAi(entity, ai, priority);
+    }
+
+    @Override
+    public void removeGoalAi(LivingEntity entity, SimpleAi ai, int priority) {
+        removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
+    }
+
+    @Override
+    public void removeTargetAi(LivingEntity entity, SimpleAi ai, int priority) {
+        removeGoal(priority, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
+    }
+
+    @Override
+    public void removeGoalAi(LivingEntity entity, SimpleAi ai, String name) {
+        removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).goalSelector);
+    }
+
+    @Override
+    public void removeTargetAi(LivingEntity entity, SimpleAi ai, String name) {
+        removeGoal(name, ((EntityInsentient) getEntityInsentient(entity)).targetSelector);
+    }
+
+    private void removeGoal(String name, Object targetSelector) {
+        Collection c = getGoal(targetSelector);
+        for (Object element : new ArrayList<>(c)) {
+            if (SimpleReflection.getFieldValueChecked(element.getClass(), element, "a", true).getClass().getName().contains(name)) {
+                c.remove(element);
+            }
+        }
+    }
+
+    private void removeGoal(int priority, Object targetSelector) {
+        Collection c = getGoal(targetSelector);
+        for (Object element : new ArrayList<>(c)) {
+            if ((int) SimpleReflection.getFieldValueChecked(element.getClass(), element, "b", true) == priority) {
+                c.remove(element);
+            }
+        }
+    }
+
+    private Collection getGoal(Object targetSelector) {
+        Collection c;
+        if (v11400) {
+            c = (Collection) SimpleReflection.getFieldValueChecked(PathfinderGoalSelector.class, targetSelector, "b", true);
+        } else {
+            c = (Collection) SimpleReflection.getFieldValueChecked(PathfinderGoalSelector.class, targetSelector, "d", true);
+        }
+        return c;
     }
 
     @Override
@@ -162,8 +253,7 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     @Override
     public void setTargetAi(LivingEntity entity, Iterable ai) {
         try {
-            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).targetSelector,
-                    this.pathfinderGoalSelectorSet, ai);
+            Ref.putField(((EntityInsentient) getEntityInsentient(entity)).targetSelector, this.pathfinderGoalSelectorSet, ai);
         } catch (Throwable t) {
             t.printStackTrace();
         }
