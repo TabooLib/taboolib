@@ -27,9 +27,9 @@ import java.util.Set;
  */
 public abstract class PluginLoader {
 
-    private static List<PluginLoader> registerLoader = Lists.newArrayList();
-    private static Set<String> plugins = Sets.newHashSet();
-    private static Map<String, Object> redefine = Maps.newHashMap();
+    private static final List<PluginLoader> registerLoader = Lists.newArrayList();
+    private static final Map<String, Object> redefine = Maps.newHashMap();
+    private static final Set<String> plugins = Sets.newHashSet();
     private static boolean firstLoading = false;
     private static boolean firstStarting = false;
 
