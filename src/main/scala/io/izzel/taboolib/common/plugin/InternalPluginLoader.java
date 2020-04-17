@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class InternalPluginLoader implements PluginLoader {
 
-    private static JavaPluginLoader loader;
+    private static final JavaPluginLoader loader;
 
     public static PluginLoader getLoader() {
         return loader;

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  */
 public class InternalPlugin implements Plugin {
 
-    private static InternalPlugin plugin;
+    private static final InternalPlugin plugin;
 
     public static InternalPlugin getPlugin() {
         return plugin;

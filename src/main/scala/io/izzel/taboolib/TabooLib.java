@@ -15,7 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.NumberConversions;
 
 import java.io.File;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 
 /**
@@ -44,8 +44,9 @@ public class TabooLib {
     private static double version;
 
     // 内部语言文件
-    private YamlConfiguration internal = new YamlConfiguration();
+    private final YamlConfiguration internal = new YamlConfiguration();
 
+    @SuppressWarnings("BusyWait")
     public TabooLib() {
         inst = this;
         logger = TLogger.getUnformatted("TabooLib");
@@ -53,13 +54,13 @@ public class TabooLib {
         config = TConfig.create(getPlugin(), "settings.yml");
         // 加载版本号
         try {
-            version = NumberConversions.toDouble(IO.readFully(Files.getResource("__resources__/version"), Charset.forName("utf-8")));
+            version = NumberConversions.toDouble(IO.readFully(Files.getResource("__resources__/version"), StandardCharsets.UTF_8));
         } catch (Throwable t) {
             t.printStackTrace();
         }
         // 加载内部语言文件
         try {
-            internal.loadFromString(IO.readFully(Files.getResource("__resources__/lang/internal.yml"), Charset.forName("utf-8")));
+            internal.loadFromString(IO.readFully(Files.getResource("__resources__/lang/internal.yml"), StandardCharsets.UTF_8));
         } catch (Throwable t) {
             t.printStackTrace();
         }

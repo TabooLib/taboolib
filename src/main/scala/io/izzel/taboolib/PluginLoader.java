@@ -90,7 +90,7 @@ public abstract class PluginLoader {
                 // 释放文检读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
                 // 注销数据库连接
-                DBSource.getDataSource().entrySet().stream().filter(dataEntry -> dataEntry.getKey().getPlugin().equals(plugin)).map(Map.Entry::getKey).forEach(DBSource::closeDataSource);
+                DBSource.getDataSource().keySet().stream().filter(dbSourceData -> dbSourceData.getPlugin().equals(plugin)).forEach(DBSource::closeDataSource);
                 // 注销调度器
                 Bukkit.getScheduler().cancelTasks(plugin);
                 // 卸载语言文件

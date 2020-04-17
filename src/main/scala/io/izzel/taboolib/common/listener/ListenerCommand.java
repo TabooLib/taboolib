@@ -46,7 +46,7 @@ public class ListenerCommand implements Listener {
         StartupLoader.register(ListenerCommand.class);
     }
 
-    abstract class Module {
+    abstract static class Module {
 
         abstract public String[] name();
 

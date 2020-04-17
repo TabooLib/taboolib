@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * @Author 坏黑
  * @Since 2019-07-05 15:30
  */
+@SuppressWarnings("rawtypes")
 public class TabooLibLoader {
 
     static Map<String, List<Class>> pluginClasses = Maps.newHashMap();

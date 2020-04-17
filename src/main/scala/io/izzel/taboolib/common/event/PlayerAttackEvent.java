@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 
 public class PlayerAttackEvent extends EventCancellable<PlayerAttackEvent> {
 
-    private Player player;
-    private Entity target;
+    private final Player player;
+    private final Entity target;
 
     public PlayerAttackEvent(Player player, Entity target) {
         this.player = player;

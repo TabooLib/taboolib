@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class ListenerPlayerJump implements Listener {
 
     @TInject
-    private static Cooldown cooldown = new Cooldown("taboolib:jump", 350);
+    private static final Cooldown cooldown = new Cooldown("taboolib:jump", 350);
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onJump(PlayerMoveEvent e) {
