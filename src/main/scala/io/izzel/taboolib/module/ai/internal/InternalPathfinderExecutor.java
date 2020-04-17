@@ -22,12 +22,13 @@ import java.util.Collection;
  * @Author sky
  * @Since 2018-09-20 20:57
  */
+@SuppressWarnings("rawtypes")
 public class InternalPathfinderExecutor extends PathfinderExecutor {
 
     private Field pathEntity;
     private Field pathfinderGoalSelectorSet;
     private Field controllerJumpCurrent;
-    private boolean v11400 = Version.isAfter(Version.v1_14);
+    private final boolean v11400 = Version.isAfter(Version.v1_14);
 
     public InternalPathfinderExecutor() {
         try {

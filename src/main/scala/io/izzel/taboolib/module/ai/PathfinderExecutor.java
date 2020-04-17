@@ -8,6 +8,7 @@ import org.bukkit.entity.LivingEntity;
  * @Author sky
  * @Since 2018-09-20 20:47
  */
+@SuppressWarnings("rawtypes")
 public abstract class PathfinderExecutor {
 
     public abstract Object getEntityInsentient(LivingEntity entity);

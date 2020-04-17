@@ -12,11 +12,11 @@ import java.util.List;
  */
 public class ItemStack {
 
-    private List<String> type;
-    private String name;
-    private String lore;
-    private int damage;
-    private int amount;
+    private final List<String> type;
+    private final String name;
+    private final String lore;
+    private final int damage;
+    private final int amount;
 
     public ItemStack(String type, String name, String lore, int damage, int amount) {
         this.type = type == null ? null : Lists.newArrayList(type.split("\\|"));

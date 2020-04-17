@@ -30,12 +30,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("rawtypes")
 public class BridgeImpl extends InternalPluginBridge {
 
     private Object economy;
     private Object permission;
     private Method getRegionManager;
-    private boolean placeholder;
+    private final boolean placeholder;
     private boolean worldguard;
 
     public BridgeImpl() {

@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 
 public class PlayerJumpEvent extends EventCancellable<PlayerJumpEvent> {
 
-    private Player player;
+    private final Player player;
 
     public PlayerJumpEvent(Player player) {
         this.player = player;
