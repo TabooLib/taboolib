@@ -2,15 +2,17 @@ package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.command.base.BaseCommand;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
 
@@ -110,6 +112,21 @@ public class TCommandHandler {
      */
     public static BaseMainCommand registerCommand(BaseCommand tCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
         if (Bukkit.getPluginCommand(command) == null) {
+            String permission = tCommand.permission();
+            if (tCommand.permissionDefault() == PermissionDefault.TRUE || tCommand.permissionDefault() == PermissionDefault.NOT_OP) {
+                if (permission == null || permission.isEmpty()) {
+                    permission = plugin.getName().toLowerCase() + ".command.use";
+                }
+                if (Bukkit.getPluginManager().getPermission(permission) != null) {
+                    try {
+                        Permission p = new Permission(permission, tCommand.permissionDefault());
+                        Bukkit.getPluginManager().addPermission(p);
+                        Bukkit.getPluginManager().recalculatePermissionDefaults(p);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
+            }
             registerPluginCommand(
                     plugin,
                     command,
