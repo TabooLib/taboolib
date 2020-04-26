@@ -5,6 +5,9 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.command.TCommandHandler;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Ref;
+import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -33,6 +36,7 @@ public class CommandBuilder {
     private boolean forceRegister;
     private boolean build;
     private boolean simpleMode;
+    private PermissionDefault permissionDefault = PermissionDefault.OP;
 
     CommandBuilder(String command, Plugin plugin) {
         this.command = command;
@@ -87,6 +91,11 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder permissionDefault(PermissionDefault permissionDefault) {
+        this.permissionDefault = permissionDefault;
+        return this;
+    }
+
     public CommandBuilder execute(CompleterCommand completerCommand) {
         this.completerCommand = completerCommand;
         return this;
@@ -108,6 +117,20 @@ public class CommandBuilder {
         Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
         if (forceRegister) {
             TCommandHandler.getKnownCommands().remove(command);
+        }
+        if (permissionDefault == PermissionDefault.TRUE || permissionDefault == PermissionDefault.NOT_OP) {
+            if (permission == null) {
+                permission = plugin.getName().toLowerCase() + ".command.use";
+            }
+            if (Bukkit.getPluginManager().getPermission(permission) != null) {
+                try {
+                    Permission p = new Permission(permission, permissionDefault);
+                    Bukkit.getPluginManager().addPermission(p);
+                    Bukkit.getPluginManager().recalculatePermissionDefaults(p);
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
         }
         TCommandHandler.registerPluginCommand(
                 plugin,

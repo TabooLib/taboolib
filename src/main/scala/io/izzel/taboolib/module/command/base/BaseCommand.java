@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.command.base;
 
+import org.bukkit.permissions.PermissionDefault;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -24,4 +26,6 @@ public @interface BaseCommand {
     String usage() default "";
 
     String[] aliases() default {};
+
+    PermissionDefault permissionDefault() default PermissionDefault.OP;
 }
