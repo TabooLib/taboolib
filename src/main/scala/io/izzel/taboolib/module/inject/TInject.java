@@ -31,7 +31,7 @@ public @interface TInject {
 
     State state() default State.NONE;
 
-    boolean autoMigrate() default false;
+    boolean migrate() default false;
 
     enum State {
 
