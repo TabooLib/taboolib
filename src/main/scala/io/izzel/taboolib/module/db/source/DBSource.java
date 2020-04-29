@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DBSource {
 
-    @TInject("datasource.yml")
+    @TInject(value = "datasource.yml", migrate = true)
     private static TConfig settings;
-    private static ConcurrentHashMap<IHost, DBSourceData> dataSource = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<IHost, DBSourceData> dataSource = new ConcurrentHashMap<>();
 
     public static DataSource create(IHost host) {
         return create(host, null);
