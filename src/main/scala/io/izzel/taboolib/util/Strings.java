@@ -60,9 +60,13 @@ public class Strings {
     }
 
     public static String hashKeyForDisk(String key) {
+        return hashKeyForDisk(key, "MD5");
+    }
+
+    public static String hashKeyForDisk(String key, String type) {
         String cacheKey;
         try {
-            final MessageDigest mDigest = MessageDigest.getInstance("MD5");
+            final MessageDigest mDigest = MessageDigest.getInstance(type);
             mDigest.update(key.getBytes());
             cacheKey = bytesToHexString(mDigest.digest());
         } catch (NoSuchAlgorithmException e) {

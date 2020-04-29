@@ -21,6 +21,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -68,6 +69,10 @@ public class Files {
 
     public static InputStream getResource(Plugin plugin, String filename) {
         return plugin instanceof InternalPlugin ? getTabooLibResource(filename) : plugin.getClass().getClassLoader().getResourceAsStream(filename);
+    }
+
+    public static InputStream getResourceChecked(Plugin plugin, String filename) {
+        return plugin instanceof InternalPlugin ? getResource(plugin, "__resources__/" + filename) : getResource(filename);
     }
 
     public static InputStream getTabooLibResource(String filename) {
@@ -234,7 +239,7 @@ public class Files {
         return Optional.ofNullable(readFromURL(url)).orElse(def);
     }
 
-    public static String readFromURL(String url,  Charset charset, String def) {
+    public static String readFromURL(String url, Charset charset, String def) {
         return Optional.ofNullable(readFromURL(url, charset)).orElse(def);
     }
 
@@ -273,6 +278,24 @@ public class Files {
         return null;
     }
 
+    public static List<String> readToList(File file) {
+        try (FileInputStream fin = new FileInputStream(file); InputStreamReader isr = new InputStreamReader(fin, StandardCharsets.UTF_8); BufferedReader bin = new BufferedReader(isr)) {
+            return bin.lines().collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
+    public static List<String> readToList(InputStream inputStream) {
+        try (InputStreamReader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8); BufferedReader bin = new BufferedReader(isr)) {
+            return bin.lines().collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
+    }
+
     public static String readFromStream(InputStream in) {
         return readFromStream(in, 1024, StandardCharsets.UTF_8);
     }
@@ -296,7 +319,9 @@ public class Files {
     }
 
     public static void read(File file, ReadHandle readHandle) {
-        try (FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+        try (FileInputStream fileInputStream = new FileInputStream(file);
+             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             readHandle.read(bufferedReader);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -304,7 +329,8 @@ public class Files {
     }
 
     public static void read(InputStream in, ReadHandle readHandle) {
-        try (InputStreamReader inputStreamReader = new InputStreamReader(in); BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+        try (InputStreamReader inputStreamReader = new InputStreamReader(in, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             readHandle.read(bufferedReader);
         } catch (Throwable t) {
             t.printStackTrace();
@@ -312,7 +338,9 @@ public class Files {
     }
 
     public static void write(File file, WriteHandle writeHandle) {
-        try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
             writeHandle.write(bufferedWriter);
             bufferedWriter.flush();
         } catch (Throwable t) {
@@ -321,7 +349,9 @@ public class Files {
     }
 
     public static void writeAppend(File file, WriteHandle writeHandle) {
-        try (FileWriter fileWriter = new FileWriter(file, true); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file, true);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
             writeHandle.write(bufferedWriter);
             bufferedWriter.flush();
         } catch (Throwable t) {
@@ -330,7 +360,8 @@ public class Files {
     }
 
     public static void write(OutputStream out, WriteHandle writeHandle) {
-        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(out); BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter)) {
             writeHandle.write(bufferedWriter);
             bufferedWriter.flush();
         } catch (Throwable t) {
@@ -355,14 +386,14 @@ public class Files {
     }
 
     public static String getFileHash(File file, String algorithm) {
-        try(FileInputStream fileInputStream = new FileInputStream(file)) {
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
             MessageDigest digest = MessageDigest.getInstance(algorithm);
             byte[] buffer = new byte[1024];
             int length;
             while ((length = fileInputStream.read(buffer, 0, 1024)) != -1) {
                 digest.update(buffer, 0, length);
             }
-            byte[] md5Bytes  = digest.digest();
+            byte[] md5Bytes = digest.digest();
             return new BigInteger(1, md5Bytes).toString(16);
         } catch (Throwable t) {
             t.printStackTrace();

@@ -18,7 +18,7 @@ public class ArrayUtil {
     public static <T> boolean contains(T[] array, T obj) {
         return indexOf(array, obj) != -1;
     }
-    
+
     public static <T> int indexOf(T[] array, T obj) {
         return array == null || array.length == 0 ? -1 : IntStream.range(0, array.length).filter(i -> array[i] != null && array[i].equals(obj)).findFirst().orElse(-1);
     }
@@ -71,6 +71,22 @@ public class ArrayUtil {
         T[] arrayNew = arrayExpandAtFirst(array, 1);
         arrayNew[0] = obj;
         return arrayNew;
+    }
+
+    public static <T> List<T> setAutoExpand(List<T> list, int index, T element, T def) {
+        while (list.size() <= index) {
+            list.add(def);
+        }
+        list.set(index, element);
+        return list;
+    }
+
+    public static <T> List<T> addAutoExpand(List<T> list, int index, T element, T def) {
+        while (list.size() <= index) {
+            list.add(def);
+        }
+        list.add(index, element);
+        return list;
     }
 
     @SuppressWarnings("SuspiciousSystemArraycopy")
