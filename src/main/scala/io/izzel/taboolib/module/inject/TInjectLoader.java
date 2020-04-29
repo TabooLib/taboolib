@@ -91,7 +91,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                         t.printStackTrace();
                     }
                 }
-                if (args.autoMigrate()) {
+                if (args.migrate()) {
                     config.migrate();
                 }
                 TabooLibLoader.runTask(config::runListener);
