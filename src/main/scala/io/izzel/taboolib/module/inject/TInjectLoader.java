@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class TInjectLoader implements TabooLibLoader.Loader {
 
-    private static Map<Class<?>, TInjectTask> injectTypes = Maps.newLinkedHashMap();
+    private static final Map<Class<?>, TInjectTask> injectTypes = Maps.newLinkedHashMap();
 
     static {
         // Instance Inject
@@ -90,6 +90,9 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
+                }
+                if (args.autoMigrate()) {
+                    config.migrate();
                 }
                 TabooLibLoader.runTask(config::runListener);
             } catch (Exception e) {

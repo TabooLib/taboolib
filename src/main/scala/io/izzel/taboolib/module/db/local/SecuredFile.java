@@ -1,9 +1,11 @@
 package io.izzel.taboolib.module.db.local;
 
+import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 
 /**
- * @Author sky
+ * @Author sky, yumc
  * @Since 2020-02-28 11:14
  */
 public class SecuredFile extends YamlConfiguration {
@@ -39,7 +41,7 @@ public class SecuredFile extends YamlConfiguration {
     public void load(File file) throws InvalidConfigurationException {
         String content = Files.readFromFile(file);
         try {
-            super.loadFromString(Files.readFromFile(file));
+            loadFromString(content);
         } catch (InvalidConfigurationException t) {
             Files.copy(file, new File(file.getParent(), file.getName() + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()) + ".bak"));
             throw t;
@@ -58,6 +60,21 @@ public class SecuredFile extends YamlConfiguration {
             System.out.println("Source: \n" + contents);
             throw t;
         }
+    }
+
+    @Override
+    public String saveToString() {
+        return super.saveToString();
+    }
+
+    public static String dump(Object data) {
+        Yaml yaml = (Yaml) SimpleReflection.getFieldValueChecked(YamlConfiguration.class, new YamlConfiguration(), "yaml", true);
+        try {
+            return yaml.dump(data);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return "";
     }
 
     public static SecuredFile loadConfiguration(String contents) {

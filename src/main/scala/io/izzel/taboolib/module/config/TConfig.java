@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.config;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
@@ -7,12 +8,14 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Files;
+import io.izzel.taboolib.util.KV;
 import io.izzel.taboolib.util.Ref;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +27,16 @@ import java.util.Map;
  */
 public class TConfig extends YamlConfiguration {
 
-    private static Map<String, List<File>> files = Maps.newHashMap();
-    private File file;
-    private List<Runnable> runnable = Lists.newArrayList();
+    private static final Map<String, List<File>> files = Maps.newHashMap();
+    private final Plugin plugin;
+    private final File file;
+    private final List<Runnable> runnable = Lists.newArrayList();
+    private final List<KV<String, String[]>> migrate = Lists.newArrayList();
+    private String path;
 
     private TConfig(File file, Plugin plugin) {
         files.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(file);
+        this.plugin = plugin;
         this.file = file;
         reload();
         TConfigWatcher.getInst().addSimpleListener(this.file, this::reload);
@@ -53,7 +60,9 @@ public class TConfig extends YamlConfiguration {
         if (!file.exists()) {
             Files.releaseResource(plugin, path, false);
         }
-        return create(file, plugin);
+        TConfig conf = create(file, plugin);
+        conf.path = path;
+        return conf;
     }
 
     public String getStringColored(String path) {
@@ -87,6 +96,25 @@ public class TConfig extends YamlConfiguration {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public TConfig migrate() {
+        Preconditions.checkNotNull(path, "path not exists");
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            List<String> migrate = TConfigMigrate.migrate(fileInputStream, Files.getResourceChecked(plugin, path));
+            if (migrate != null) {
+                Files.write(file, w -> {
+                    for (String line : migrate) {
+                        w.write(line);
+                        w.newLine();
+                    }
+                });
+                load(file);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return this;
     }
 
     // *********************************

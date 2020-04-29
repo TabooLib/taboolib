@@ -31,6 +31,8 @@ public @interface TInject {
 
     State state() default State.NONE;
 
+    boolean autoMigrate() default false;
+
     enum State {
 
         LOADING, STARTING, ACTIVATED, NONE

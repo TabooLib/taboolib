@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  */
 public class TConfigWatcher {
 
-    private static TConfigWatcher configWatcher = new TConfigWatcher();
+    private final static TConfigWatcher configWatcher = new TConfigWatcher();
     private final ScheduledExecutorService service = Executors.newScheduledThreadPool(1, new BasicThreadFactory.Builder().namingPattern("TConfigWatcherService-%d").build());
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 

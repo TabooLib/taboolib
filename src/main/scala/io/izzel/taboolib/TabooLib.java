@@ -52,6 +52,12 @@ public class TabooLib {
         logger = TLogger.getUnformatted("TabooLib");
         // 配置文件从 config.yml 修改为 settings.yml 防止与老版本插件冲突
         config = TConfig.create(getPlugin(), "settings.yml");
+        // 配置更新
+        try {
+            config.migrate();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         // 加载版本号
         try {
             version = NumberConversions.toDouble(IO.readFully(Files.getResource("__resources__/version"), StandardCharsets.UTF_8));
