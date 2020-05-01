@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 public class LocalPlayer {
 
-    private static Map<String, FileConfiguration> files = Maps.newConcurrentMap();
+    private static final Map<String, FileConfiguration> files = Maps.newConcurrentMap();
 
     public static FileConfiguration get(OfflinePlayer player) {
         return TabooLibAPI.isOriginLoaded() ? TabooLibAPI.getPluginBridge().taboolibGetPlayerData(toName(player)) : files.computeIfAbsent(toName(player), n -> Files.load(toFile(n)));
@@ -56,19 +56,19 @@ public class LocalPlayer {
         return Files.folder(TabooLib.getConfig().getString("LOCAL-PLAYER"));
     }
 
-    private static File toFile(String name) {
+    public static File toFile(String name) {
         return Files.file(getFolder(), name + ".yml");
     }
 
-    private static String toName(OfflinePlayer player) {
+    public static String toName(OfflinePlayer player) {
         return isUniqueIdMode() ? player.getUniqueId().toString() : player.getName();
     }
 
-    private static boolean isUniqueIdMode() {
+    public static boolean isUniqueIdMode() {
         return TabooLib.getConfig().getBoolean("LOCAL-PLAYER-UUID");
     }
 
-    private static Player toPlayer(String name) {
+    public static Player toPlayer(String name) {
         return isUniqueIdMode() ? Bukkit.getPlayer(UUID.fromString(name)) : Bukkit.getPlayerExact(name);
     }
 }

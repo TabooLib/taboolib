@@ -43,7 +43,9 @@ public class SecuredFile extends YamlConfiguration {
         try {
             loadFromString(content);
         } catch (InvalidConfigurationException t) {
-            Files.copy(file, new File(file.getParent(), file.getName() + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()) + ".bak"));
+            if (!file.getName().endsWith(".bak")) {
+                Files.copy(file, new File(file.getParent(), file.getName() + "_" + new SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()) + ".bak"));
+            }
             throw t;
         }
     }
