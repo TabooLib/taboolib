@@ -14,6 +14,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -244,17 +245,13 @@ public class Files {
     }
 
     public static String readFromURL(String url) {
-        try (InputStream inputStream = new URL(url).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
-            return new String(IO.readFully(bufferedInputStream));
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-        return null;
+        return readFromURL(url, StandardCharsets.UTF_8);
     }
 
     public static String readFromURL(String url, Charset charset) {
         try (InputStream inputStream = new URL(url).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             return new String(IO.readFully(bufferedInputStream), charset);
+        } catch (UnknownHostException ignored) {
         } catch (Throwable t) {
             t.printStackTrace();
         }

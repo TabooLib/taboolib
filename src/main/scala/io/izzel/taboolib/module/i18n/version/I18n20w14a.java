@@ -16,6 +16,8 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Author sky
@@ -38,26 +40,30 @@ public class I18n20w14a extends I18nBase {
             }
     };
 
-    private File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/20w14a");
-    private Map<String, JsonObject> cache = Maps.newHashMap();
+    private final File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/20w14a");
+    private final Map<String, JsonObject> cache = Maps.newHashMap();
+
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public void init() {
-        if (folder.exists() && folder.isDirectory()) {
-            load();
-        } else {
-            long time = System.currentTimeMillis();
-            System.out.println("[TabooLib] Loading Assets...");
-            try {
-                for (String[] locale : LOCALE) {
-                    Files.toFile(Files.readFromURL("https://resources.download.minecraft.net/" + locale[1].substring(0, 2) + "/" + locale[1], StandardCharsets.UTF_8, "{}"), Files.file(folder, locale[0]));
-                }
+        executor.submit(() -> {
+            if (folder.exists() && folder.isDirectory()) {
                 load();
-                System.out.println("[TabooLib] Loading Successfully. (" + (System.currentTimeMillis() - time + "ms)"));
-            } catch (Throwable ignored) {
-                System.out.println("[TabooLib] Loading Failed. (" + (System.currentTimeMillis() - time + "ms)"));
+            } else {
+                System.out.println("[TabooLib] Loading Assets...");
+                long time = System.currentTimeMillis();
+                try {
+                    for (String[] locale : LOCALE) {
+                        Files.toFile(Files.readFromURL("https://resources.download.minecraft.net/" + locale[1].substring(0, 2) + "/" + locale[1], StandardCharsets.UTF_8, "{}"), Files.file(folder, locale[0]));
+                    }
+                    load();
+                    System.out.println("[TabooLib] Loading Successfully. (" + (System.currentTimeMillis() - time + "ms)"));
+                } catch (Throwable ignored) {
+                    System.out.println("[TabooLib] Loading Failed. (" + (System.currentTimeMillis() - time + "ms)"));
+                }
             }
-        }
+        });
     }
 
     @Override
