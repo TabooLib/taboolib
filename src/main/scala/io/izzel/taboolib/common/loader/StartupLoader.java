@@ -2,7 +2,7 @@ package io.izzel.taboolib.common.loader;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.common.listener.ListenerCommand;
+import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TInjectHelper;
 
 import java.lang.annotation.Annotation;
@@ -19,7 +19,7 @@ public class StartupLoader {
     static List<Class<?>> classList = Lists.newArrayList();
 
     static {
-        StartupLoader.register(ListenerCommand.class);
+        StartupLoader.register(LocalPlayer.class);
     }
 
     public static void register(Class<?> clazz) {
