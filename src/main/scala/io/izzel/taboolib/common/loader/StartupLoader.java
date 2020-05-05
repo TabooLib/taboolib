@@ -2,6 +2,7 @@ package io.izzel.taboolib.common.loader;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.common.listener.ListenerCommand;
 import io.izzel.taboolib.module.inject.TInjectHelper;
 
 import java.lang.annotation.Annotation;
@@ -16,6 +17,10 @@ import java.util.List;
 public class StartupLoader {
 
     static List<Class<?>> classList = Lists.newArrayList();
+
+    static {
+        StartupLoader.register(ListenerCommand.class);
+    }
 
     public static void register(Class<?> clazz) {
         classList.add(clazz);

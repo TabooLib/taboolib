@@ -36,22 +36,26 @@ public final class ClickEvent {
          * {@link ClickEvent#value}
          */
         OPEN_URL,
+
         /**
          * Open a file at the path given by
          * {@link ClickEvent#value}
          */
         OPEN_FILE,
+
         /**
          * Run the command given by
          * {@link ClickEvent#value}
          */
         RUN_COMMAND,
+
         /**
          * Inserts the string given by
          * {@link ClickEvent#value} into the players
          * text box
          */
         SUGGEST_COMMAND,
+
         /**
          * Change to the page number given by
          * {@link ClickEvent#value} in a book

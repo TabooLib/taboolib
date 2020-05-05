@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.common.loader.Startup;
-import io.izzel.taboolib.common.loader.StartupLoader;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
 import io.izzel.taboolib.module.db.local.Local;
@@ -41,10 +40,6 @@ import java.util.stream.Collectors;
  */
 @TListener
 public class ListenerCommand implements Listener {
-
-    static {
-        StartupLoader.register(ListenerCommand.class);
-    }
 
     abstract static class Module {
 
@@ -169,6 +164,17 @@ public class ListenerCommand implements Listener {
                             player.sendMessage("§8[§fTabooLib§8] §7AI (After): §8" + SimpleReflection.getFieldValueChecked(ai.getClass(), ai, "a", true));
                         });
                     }, 20);
+                }
+            },
+            new Module() {
+                @Override
+                public String[] name() {
+                    return new String[] {"local"};
+                }
+
+                @Override
+                public void run(Player player) {
+                    TellrawJson.create().append("§8[§fTabooLib§8] §7LocalPlayer: ").append("§c[...]").hoverText(LocalPlayer.get(player).saveToString()).send(player);
                 }
             });
 

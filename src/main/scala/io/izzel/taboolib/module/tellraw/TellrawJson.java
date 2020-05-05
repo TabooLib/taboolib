@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 public class TellrawJson {
 
     private List<BaseComponent> components = new ArrayList<>();
-    private List<BaseComponent> componentsLatest = new ArrayList<>();
-    private Map<String, String[]> itemTag = new HashMap<>();
-    private List<String> nbtWhitelist = ArrayUtil.asList(
+    private final List<BaseComponent> componentsLatest = new ArrayList<>();
+    private final Map<String, String[]> itemTag = new HashMap<>();
+    private final List<String> nbtWhitelist = ArrayUtil.asList(
             // 附魔
             "ench",
             // 附魔 1.14
@@ -138,6 +138,11 @@ public class TellrawJson {
                     ComponentSerializer.toString(new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.HIGH_VERSION)).create())
             });
         }
+        return this;
+    }
+
+    public TellrawJson clickInsertion(String command) {
+        getLatestComponent().forEach(component -> component.setInsertion(command));
         return this;
     }
 

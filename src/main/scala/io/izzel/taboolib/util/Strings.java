@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -71,6 +72,18 @@ public class Strings {
             cacheKey = bytesToHexString(mDigest.digest());
         } catch (NoSuchAlgorithmException e) {
             cacheKey = String.valueOf(key.hashCode());
+        }
+        return cacheKey;
+    }
+
+    public static String hashKeyForDisk(byte[] key, String type) {
+        String cacheKey;
+        try {
+            final MessageDigest mDigest = MessageDigest.getInstance(type);
+            mDigest.update(key);
+            cacheKey = bytesToHexString(mDigest.digest());
+        } catch (NoSuchAlgorithmException e) {
+            cacheKey = String.valueOf(Arrays.hashCode(key));
         }
         return cacheKey;
     }
