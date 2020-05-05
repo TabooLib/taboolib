@@ -25,6 +25,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author sky
@@ -113,6 +114,16 @@ public class Files {
         }
     }
 
+    public static File toFile(byte[] in, File file) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file); BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)) {
+            bufferedOutputStream.write(in);
+            bufferedOutputStream.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return file;
+    }
+
     public static File toFile(String in, File file) {
         try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
             bufferedWriter.write(in);
@@ -189,10 +200,7 @@ public class Files {
     }
 
     public static void copy(File file1, File file2) {
-        try (FileInputStream fileIn = new FileInputStream(file1);
-             FileOutputStream fileOut = new FileOutputStream(file2);
-             FileChannel channelIn = fileIn.getChannel();
-             FileChannel channelOut = fileOut.getChannel()) {
+        try (FileInputStream fileIn = new FileInputStream(file1); FileOutputStream fileOut = new FileOutputStream(file2); FileChannel channelIn = fileIn.getChannel(); FileChannel channelOut = fileOut.getChannel()) {
             channelIn.transferTo(0, channelIn.size(), channelOut);
         } catch (IOException t) {
             t.printStackTrace();
@@ -210,13 +218,13 @@ public class Files {
             }
         }
         if (originFile.isDirectory()) {
-            for (File file : Objects.requireNonNull(originFile.listFiles())) {
+            Arrays.stream(originFile.listFiles()).parallel().forEach(file -> {
                 if (file.isDirectory()) {
                     deepCopy(file.getAbsolutePath(), targetFileName + "/" + file.getName());
                 } else {
                     copy(file, new File(targetFileName + "/" + file.getName()));
                 }
-            }
+            });
         } else {
             copy(originFile, targetFile);
         }
@@ -230,9 +238,7 @@ public class Files {
             file.delete();
             return;
         }
-        for (File file1 : Objects.requireNonNull(file.listFiles())) {
-            deepDelete(file1);
-        }
+        Arrays.stream(file.listFiles()).parallel().forEach(Files::deepDelete);
         file.delete();
     }
 
@@ -396,6 +402,58 @@ public class Files {
             t.printStackTrace();
         }
         return null;
+    }
+
+    public static void toZip(File source, File target) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(target); ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
+            toZip(zipOutputStream, source, "");
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static void toZipSkipDirectory(File source, File target) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(target); ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
+            if (source.isDirectory()) {
+                Arrays.stream(source.listFiles()).forEach(f -> toZip(zipOutputStream, f, ""));
+            } else {
+                toZip(zipOutputStream, source, "");
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public static void toZip(ZipOutputStream zipOutputStream, File file, String path) {
+        if (file.isDirectory()) {
+            Arrays.stream(file.listFiles()).forEach(f -> toZip(zipOutputStream, f, path + file.getName() + "/"));
+        } else {
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                zipOutputStream.putNextEntry(new ZipEntry(path + file.getName()));
+                zipOutputStream.write(IO.readFully(fileInputStream));
+                zipOutputStream.flush();
+                zipOutputStream.closeEntry();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
+    }
+
+    public static void fromZip(File source, File target) {
+        try (ZipFile zipFile = new ZipFile(source)) {
+            zipFile.stream().parallel().forEach(e -> {
+                if (e.isDirectory()) {
+                    return;
+                }
+                try {
+                    Files.toFile(zipFile.getInputStream(e), Files.file(target, e.getName()));
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     private static Class getCaller(Class<?> obj) {

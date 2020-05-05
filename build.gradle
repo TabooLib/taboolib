@@ -5,8 +5,8 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
-group = 'me.skymc'
-version = '5.27'
+group = 'io.izzel'
+version = '5.28'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

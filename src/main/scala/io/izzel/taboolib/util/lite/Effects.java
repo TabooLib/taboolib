@@ -1,9 +1,12 @@
 package io.izzel.taboolib.util.lite;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Reflection;
 import io.izzel.taboolib.util.TMap;
 import io.izzel.taboolib.util.item.Items;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
@@ -68,6 +71,8 @@ public class Effects {
                         effects.data(new ItemStack(Items.asMaterial(data[0]), 1, data.length > 1 ? NumberConversions.toShort(data[1]) : 0));
                     } else if (effects.particle.getDataType().equals(MaterialData.class)) {
                         effects.data(new MaterialData(Items.asMaterial(data[0]), data.length > 1 ? NumberConversions.toByte(data[1]) : 0));
+                    } else if (effects.particle == Particle.REDSTONE) {
+                        effects.data(new ColorData(Color.fromRGB(NumberConversions.toInt(data[0])), NumberConversions.toInt(data[1])));
                     }
                     break;
             }
@@ -114,6 +119,9 @@ public class Effects {
     }
 
     public void play() {
+        if (data instanceof ColorData) {
+            data = ((ColorData) data).instance();
+        }
         if (player.size() > 0) {
             player.forEach(p -> p.spawnParticle(particle, Optional.ofNullable(center).orElse(p.getLocation()), count, offset[0], offset[1], offset[2], speed, data));
         }
@@ -172,4 +180,36 @@ public class Effects {
         return this;
     }
 
+    public Effects data(ColorData data) {
+        this.data = data;
+        return this;
+    }
+
+    public static class ColorData {
+
+        private final Color color;
+        private final float size;
+
+        public ColorData(Color color, float size) {
+            Preconditions.checkArgument(color != null, "color");
+            this.color = color;
+            this.size = size;
+        }
+
+        public Color getColor() {
+            return this.color;
+        }
+
+        public float getSize() {
+            return this.size;
+        }
+
+        public Object instance() {
+            try {
+                return Reflection.instantiateObject(Class.forName("org.bukkit.Particle$DustOptions"), color, size);
+            } catch (Throwable ignored) {
+            }
+            return null;
+        }
+    }
 }

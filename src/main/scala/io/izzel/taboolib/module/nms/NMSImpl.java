@@ -65,8 +65,8 @@ import java.util.function.Consumer;
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
-    private boolean is11400 = Version.isAfter(Version.v1_14);
-    private boolean is11500 = Version.isAfter(Version.v1_15);
+    private final boolean is11400 = Version.isAfter(Version.v1_14);
+    private final boolean is11500 = Version.isAfter(Version.v1_15);
 
     static {
         SimpleReflection.saveField(NBTTagString.class);

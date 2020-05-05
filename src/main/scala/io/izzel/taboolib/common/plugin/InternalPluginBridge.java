@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.lang.instrument.ClassFileTransformer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -76,5 +77,11 @@ public abstract class InternalPluginBridge {
     abstract public int viaVersionPlayerVersion(Player player);
 
     abstract public Class getClass(String name) throws ClassNotFoundException;
+
+    abstract public ClassLoader getClassLoader();
+
+    abstract public void attach(ClassFileTransformer transformer, List<String> c);
+
+    abstract public void test();
 
 }

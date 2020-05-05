@@ -1,6 +1,7 @@
 package io.izzel.taboolib.common.plugin.bridge;
 
 import com.google.common.collect.Maps;
+import com.ilummc.tlib.dependency.TDependency;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -24,6 +25,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import protocolsupport.api.ProtocolSupportAPI;
 import us.myles.ViaVersion.api.Via;
 
+import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
@@ -223,6 +225,37 @@ public class BridgeImpl extends InternalPluginBridge {
     @Override
     public Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        return this.getClass().getClassLoader();
+    }
+
+    @Override
+    public void attach(ClassFileTransformer transformer, List<String> c) {
+//        Class<?>[] classes = new Class[c.size()];
+//        for (int i = 0; i < c.size(); i++) {
+//            try {
+//                classes[i] = Class.forName(c.get(i));
+//            } catch (ClassNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        Instrumentation instrumentation = Attacher.instrumentation();
+//        try {
+//            instrumentation.addTransformer(transformer, true);
+//            instrumentation.retransformClasses(classes);
+//        } catch (UnmodifiableClassException e) {
+//            e.printStackTrace();
+//        } finally {
+//            instrumentation.removeTransformer(transformer);
+//        }
+    }
+
+    @Override
+    public void test() {
+        TDependency.requestPlugin("");
     }
 
     private RegionManager worldguardRegionManager(World world) {
