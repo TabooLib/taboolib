@@ -3,7 +3,6 @@ package io.izzel.taboolib.module.db.local;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.loader.Startup;
-import io.izzel.taboolib.common.loader.StartupLoader;
 import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.db.sql.SQLTable;
@@ -21,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @Author 坏黑
@@ -28,32 +29,25 @@ import java.util.UUID;
  */
 public class LocalPlayer {
 
-    static {
-        StartupLoader.register(LocalPlayer.class);
-    }
-
     private static final Map<String, FileConfiguration> files = Maps.newConcurrentMap();
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static IHost host;
     private static SQLTable table;
     private static DataSource dataSource;
 
     @Startup.Starting
     public static void init() {
-        host = new SQLiteHost(new File(LocalPlayer.getFolder(), "v2/data.db"), TabooLib.getPlugin());
+        host = new SQLiteHost(Files.file(LocalPlayer.getFolder(), "v2/data.db"), TabooLib.getPlugin());
         table = new SQLTable("player_data");
         try {
             dataSource = DBSource.create(host);
-            table.executeUpdate("create table if not exists player_data (id integer not null primary key autoincrement, name text not null primary key, data text)").dataSource(dataSource).run();
+            table.executeUpdate("create table if not exists player_data (name text primary key, data text)").dataSource(dataSource).run();
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
-    public static synchronized boolean find0(OfflinePlayer player) {
-        return table.select(Where.equals("name", LocalPlayer.toName(player))).find(dataSource);
-    }
-
-    public static synchronized FileConfiguration get0(OfflinePlayer player) {
+    public static FileConfiguration get0(OfflinePlayer player) {
         File file = toFile(toName(player));
         if (file.exists()) {
             try {
@@ -63,15 +57,22 @@ public class LocalPlayer {
                 Files.deepDelete(file);
             }
         }
-        return table.select(Where.equals("name", LocalPlayer.toName(player))).to(dataSource).resultNext(r -> SecuredFile.loadConfiguration(new String(Base64.getDecoder().decode(r.getString("data")), StandardCharsets.UTF_8))).run(new SecuredFile(), SecuredFile.class);
+        try {
+            return executor.submit(() -> table.select(Where.equals("name", LocalPlayer.toName(player))).to(dataSource).resultNext(r -> SecuredFile.loadConfiguration(new String(Base64.getDecoder().decode(r.getString("data")), StandardCharsets.UTF_8))).run(new SecuredFile(), SecuredFile.class)).get();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        return new SecuredFile();
     }
 
-    public static synchronized void set0(OfflinePlayer player, FileConfiguration data) {
-        if (find0(player)) {
-            table.update(Where.equals("name", LocalPlayer.toName(player))).set("data", Base64.getEncoder().encodeToString(data.saveToString().getBytes(StandardCharsets.UTF_8))).run(dataSource);
-        } else {
-            table.insert(null, LocalPlayer.toName(player), Base64.getEncoder().encodeToString(data.saveToString().getBytes(StandardCharsets.UTF_8))).run(dataSource);
-        }
+    public static void set0(OfflinePlayer player, FileConfiguration data) {
+        executor.submit(() -> {
+            if (table.select(Where.equals("name", LocalPlayer.toName(player))).find(dataSource)) {
+                table.update(Where.equals("name", LocalPlayer.toName(player))).set("data", Base64.getEncoder().encodeToString(data.saveToString().getBytes(StandardCharsets.UTF_8))).run(dataSource);
+            } else {
+                table.insert(LocalPlayer.toName(player), Base64.getEncoder().encodeToString(data.saveToString().getBytes(StandardCharsets.UTF_8))).run(dataSource);
+            }
+        });
     }
 
     public static FileConfiguration get(OfflinePlayer player) {

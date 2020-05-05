@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.common.loader.Startup;
+import io.izzel.taboolib.common.loader.StartupLoader;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
 import io.izzel.taboolib.module.db.local.Local;
@@ -22,6 +23,7 @@ import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
 import org.bukkit.event.EventHandler;
@@ -40,6 +42,10 @@ import java.util.stream.Collectors;
  */
 @TListener
 public class ListenerCommand implements Listener {
+
+    static {
+        StartupLoader.register(ListenerCommand.class);
+    }
 
     abstract static class Module {
 
@@ -175,6 +181,12 @@ public class ListenerCommand implements Listener {
                 @Override
                 public void run(Player player) {
                     TellrawJson.create().append("§8[§fTabooLib§8] §7LocalPlayer: ").append("§c[...]").hoverText(LocalPlayer.get(player).saveToString()).send(player);
+                    long time = System.currentTimeMillis();
+                    FileConfiguration conf = LocalPlayer.get0(player);
+                    player.sendMessage("§8[§fTabooLib§8] §7get: " + (System.currentTimeMillis() - time) + "ms");
+                    time = System.currentTimeMillis();
+                    LocalPlayer.set0(player, conf);
+                    player.sendMessage("§8[§fTabooLib§8] §7set: " + (System.currentTimeMillis() - time) + "ms");
                 }
             });
 
