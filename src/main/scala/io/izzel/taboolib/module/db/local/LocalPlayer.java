@@ -79,7 +79,7 @@ public class LocalPlayer {
         return files.computeIfAbsent(toName(player), n -> get0(player));
     }
 
-    @TSchedule(delay = 1200, period = 1200, async = true)
+    @TSchedule(delay = 20 * 180, period = 20 * 180, async = true)
     public static void saveFiles() {
         files.forEach((name, file) -> {
             OfflinePlayer player = toPlayer(name);
