@@ -15,10 +15,14 @@ public class TDependencyInjector {
     public static void inject(Plugin plugin, Class<?> clazz) {
         if (clazz.equals(TabooLib.class)) {
             for (Dependency dependency : TabooLib.class.getAnnotationsByType(Dependency.class)) {
-                try {
-                    TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), dependency.url());
-                } catch (Throwable t) {
-                    t.printStackTrace();
+                for (String url : dependency.url().split(";")) {
+                    try {
+                        if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), url)) {
+                            break;
+                        }
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
                 }
             }
         } else {
