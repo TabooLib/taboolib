@@ -25,15 +25,42 @@ import java.util.concurrent.Executors;
  * 注意与 TabooLib4.x 版本的兼容
  * 可能存在同时运行的情况
  */
-@Dependency(maven = "org.slf4j:slf4j-api:1.7.25", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar")
-@Dependency(maven = "com.zaxxer:HikariCP:3.1.0", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar")
-@Dependency(maven = "org.scala-lang:scala-library:2.12.8", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar")
-@Dependency(maven = "org:kotlinlang:kotlin-stdlib:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.3.50.jar")
-@Dependency(maven = "org:kotlinlang:kotlin-stdlib-jdk7:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7.jar")
-@Dependency(maven = "org:kotlinlang:kotlin-stdlib-jdk8:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8.jar")
-@Dependency(maven = "org:kotlinlang:kotlin-reflect:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect.jar")
-@Dependency(maven = "org:kotlinlang:kotlin-test:1.3.50", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test.jar")
-@Dependency(maven = "com.google.inject:guice:4.2.2", url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/guice-4.2.2.jar")
+@Dependency(
+        maven = "org.slf4j:slf4j-api:1.7.25",
+        url = "http://repo.ptms.ink/repository/maven-public/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar"
+)
+@Dependency(
+        maven = "com.zaxxer:HikariCP:3.1.0",
+        url = "http://repo.ptms.ink/repository/maven-releases/com/zaxxer/HikariCP/3.1.0/HikariCP-3.1.0.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar"
+)
+@Dependency(
+        maven = "org.scala-lang:scala-library:2.12.8",
+        url = "http://repo.ptms.ink/repository/maven-public/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
+)
+@Dependency(
+        maven = "org.kotlinlang:kotlin-stdlib:1.3.50",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib/1.3.50/kotlin-stdlib-1.3.50.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.3.50.jar"
+)
+@Dependency(
+        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.3.50",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk7/1.3.50/kotlin-stdlib-jdk7-1.3.50.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7.jar"
+)
+@Dependency(
+        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.3.50",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk8/1.3.50/kotlin-stdlib-jdk8-1.3.50.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8.jar"
+)
+@Dependency(
+        maven = "org.kotlinlang:kotlin-reflect:1.3.50",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-reflect/1.3.50/kotlin-reflect-1.3.50.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect.jar"
+)
+@Dependency(
+        maven = "org.kotlinlang:kotlin-test:1.3.50",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-test/1.3.50/kotlin-test-1.3.50.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test.jar"
+)
+@Dependency(
+        maven = "com.google.inject:guice:4.2.2",
+        url = "http://repo.ptms.ink/repository/maven-releases/com/google/inject/guice/4.2.2/guice-4.2.2.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/guice-4.2.2.jar"
+)
 public class TabooLib {
 
     private static TabooLib inst = new TabooLib();
