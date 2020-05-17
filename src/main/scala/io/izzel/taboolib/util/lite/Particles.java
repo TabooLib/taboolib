@@ -46,6 +46,7 @@ import java.util.Random;
  * @author DarkBlade12
  * @version 1.8
  */
+@Deprecated
 public enum Particles {
 
     BARRIER,
@@ -105,10 +106,11 @@ public enum Particles {
     WATER_WAKE,
     ;
 
-    private static int mcVersion = NumberConversions.toInt(Version.getBukkitVersion().split("_")[1]);
+    private static final int mcVersion = NumberConversions.toInt(Version.getBukkitVersion().split("_")[1]);
     private org.bukkit.Particle bukkitParticle;
     private final List<ParticleProperty> properties;
-    private int min, max;
+    private final int min;
+    private final int max;
 
     Particles(ParticleProperty... properties) {
         this(0, 0, properties);
@@ -597,13 +599,13 @@ public enum Particles {
     }
 
     public static class Particle {
-        private static Random random = new Random();
+        private static final Random random = new Random();
 
-        private Particles effect;
-        private ParticleShape shape;
-        private OrdinaryColor color;
+        private final Particles effect;
+        private final ParticleShape shape;
+        private final OrdinaryColor color;
 
-        private byte typeCode;
+        private final byte typeCode;
 
         public Particle(Particles effect, ParticleShape shape, OrdinaryColor color) {
             this.effect = effect;
@@ -742,7 +744,7 @@ public enum Particles {
         private float offsetZ;
         private final float speed;
         private int amount;
-        private int size = 1;
+        private final int size = 1;
         private final boolean longDistance;
         private Object data;
         private Object packet;

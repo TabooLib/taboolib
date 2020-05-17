@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util.item;
 
+import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import io.izzel.taboolib.Version;
@@ -75,7 +76,7 @@ public class Items {
     public static Material asMaterial(String args) {
         try {
             Material material = Material.getMaterial(args.toUpperCase());
-            return material != null ? material : Material.getMaterial(Integer.parseInt(args));
+            return material != null ? material : Material.getMaterial(NumberConversions.toInt(args));
         } catch (Exception e) {
             return Material.STONE;
         }
@@ -84,24 +85,16 @@ public class Items {
     public static Color asColor(String color) {
         try {
             String[] v = color.split("-");
-            return Color.fromBGR(Integer.parseInt(v[0]), Integer.parseInt(v[1]), Integer.parseInt(v[2]));
+            return Color.fromRGB(NumberConversions.toInt(v[0]), NumberConversions.toInt(v[1]), NumberConversions.toInt(v[2]));
         } catch (Exception e) {
-            return Color.fromBGR(0, 0, 0);
-        }
-    }
-
-    public static ItemFlag asItemFlag(String flag) {
-        try {
-            return ItemFlag.valueOf(flag);
-        } catch (Exception e) {
-            return null;
+            return Color.fromRGB(0, 0, 0);
         }
     }
 
     public static Enchantment asEnchantment(String enchant) {
         try {
             Enchantment enchantment = Enchantment.getByName(enchant);
-            return enchantment != null ? enchantment : Enchantment.getById(Integer.parseInt(enchant));
+            return enchantment != null ? enchantment : Enchantment.getById(NumberConversions.toInt(enchant));
         } catch (Exception e) {
             return null;
         }
@@ -110,10 +103,14 @@ public class Items {
     public static PotionEffectType asPotionEffectType(String potion) {
         try {
             PotionEffectType type = PotionEffectType.getByName(potion);
-            return type != null ? type : PotionEffectType.getById(Integer.parseInt(potion));
+            return type != null ? type : PotionEffectType.getById(NumberConversions.toInt(potion));
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static ItemFlag asItemFlag(String flag) {
+        return Enums.getIfPresent(ItemFlag.class, flag).orNull();
     }
 
     public static String asAttribute(String name) {

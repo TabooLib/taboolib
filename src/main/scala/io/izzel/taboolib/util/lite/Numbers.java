@@ -1,7 +1,10 @@
 package io.izzel.taboolib.util.lite;
 
+import org.bukkit.util.NumberConversions;
+
 import java.text.DecimalFormat;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author 坏黑
@@ -9,19 +12,42 @@ import java.util.Random;
  */
 public class Numbers {
 
-    private static Random random = new Random();
-    private static DecimalFormat doubleFormat = new DecimalFormat("#.##");
+    private static final DecimalFormat doubleFormat = new DecimalFormat("#.##");
+
+    public static int toInt(Object in) {
+        return NumberConversions.toInt(in);
+    }
+
+    public static long toLong(Object in) {
+        return NumberConversions.toLong(in);
+    }
+
+    public static short toShort(Object in) {
+        return NumberConversions.toShort(in);
+    }
+
+    public static float toFloat(Object in) {
+        return NumberConversions.toFloat(in);
+    }
+
+    public static double toDouble(Object in) {
+        return NumberConversions.toDouble(in);
+    }
+
+    public static byte toByte(Object in) {
+        return NumberConversions.toByte(in);
+    }
 
     public static Random getRandom() {
-        return random;
+        return ThreadLocalRandom.current();
     }
 
     public static boolean random(double v) {
-        return random.nextDouble() <= v;
+        return ThreadLocalRandom.current().nextDouble() <= v;
     }
 
     public static int random(int v) {
-        return random.nextInt(v);
+        return ThreadLocalRandom.current().nextInt(v);
     }
 
     public static Double format(Double num) {
@@ -29,15 +55,11 @@ public class Numbers {
     }
 
     public static int getRandomInteger(Number num1, Number num2) {
-        int min = Math.min(num1.intValue(), num2.intValue());
-        int max = Math.max(num1.intValue(), num2.intValue());
-        return (int) (random.nextDouble() * (max - min) + min);
+        return ThreadLocalRandom.current().nextInt(num1.intValue(), num2.intValue() + 1);
     }
 
     public static double getRandomDouble(Number num1, Number num2) {
-        double min = Math.min(num1.doubleValue(), num2.doubleValue());
-        double max = Math.max(num1.doubleValue(), num2.doubleValue());
-        return random.nextDouble() * (max - min) + min;
+        return ThreadLocalRandom.current().nextDouble(num1.doubleValue(), num2.doubleValue());
     }
 
     public static Boolean getBoolean(String str) {

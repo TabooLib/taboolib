@@ -20,9 +20,11 @@ import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.book.BookFormatter;
 import io.izzel.taboolib.util.item.Items;
+import io.izzel.taboolib.util.lite.Effects;
 import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
@@ -31,10 +33,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.util.NumberConversions;
+import org.bukkit.util.Vector;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -51,7 +56,7 @@ public class ListenerCommand implements Listener {
 
         abstract public String[] name();
 
-        abstract public void run(Player player);
+        abstract public void run(Player player, String[] args);
     }
 
     List<Module> testUtil = Lists.newArrayList(
@@ -62,7 +67,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     TellrawJson.create()
                             .append("§8[§fTabooLib§8] §7TellrawJson: §f[")
                             .append(Items.getName(player.getItemInHand())).hoverItem(player.getItemInHand())
@@ -77,7 +82,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     Signs.fakeSign(player, lines -> player.sendMessage("§8[§fTabooLib§8] §7FakeSign: §f" + Arrays.toString(lines)));
                 }
             },
@@ -88,7 +93,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     player.sendMessage("§8[§fTabooLib§8] §7Hologram.");
                     Location location = player.getEyeLocation().add(player.getLocation().getDirection());
                     Hologram hologram = THologram.create(location, "TabooLib", player)
@@ -119,7 +124,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     BookFormatter.writtenBook()
                             .generation(BookMeta.Generation.COPY_OF_COPY)
                             .addPage(TellrawJson.create()
@@ -135,7 +140,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     player.sendMessage("§8[§fTabooLib§8] §7Lighting. §a(+)");
                     TLight.create(player.getLocation().getBlock(), Type.BLOCK, 15);
                     TabooLib.getPlugin().runTask(() -> {
@@ -155,7 +160,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     player.sendMessage("§8[§fTabooLib§8] §7SimpleAI.");
                     Skeleton skeleton = player.getWorld().spawn(player.getLocation(), Skeleton.class, c -> {
                         c.setCustomName("Fearless Skeleton");
@@ -179,7 +184,7 @@ public class ListenerCommand implements Listener {
                 }
 
                 @Override
-                public void run(Player player) {
+                public void run(Player player, String[] args) {
                     TellrawJson.create().append("§8[§fTabooLib§8] §7LocalPlayer: ").append("§c[...]").hoverText(LocalPlayer.get(player).saveToString()).send(player);
                     long time = System.currentTimeMillis();
                     FileConfiguration conf = LocalPlayer.get0(player);
@@ -187,6 +192,135 @@ public class ListenerCommand implements Listener {
                     time = System.currentTimeMillis();
                     LocalPlayer.set0(player, conf);
                     player.sendMessage("§8[§fTabooLib§8] §7set: " + (System.currentTimeMillis() - time) + "ms");
+                }
+            },
+            new Module() {
+                @Override
+                public String[] name() {
+                    return new String[] {"effects", "effect"};
+                }
+
+                @Override
+                public void run(Player player, String[] args) {
+                    if (args.length < 2) {
+                        player.sendMessage("§8[§fTabooLib§8] §7Effects:");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f LINE-[interval]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f POLYGON-[radius]-[interval]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CIRCLE-[radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CONE-[height]-[radius]-[rate]-[circle rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f ATOM-[orbits]-[radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f ELLIPSE-[radius]-[other radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f INFINITY-[radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CRESCENT-[radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f WARE_FUNCTION-[extend]-[height range]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CYLINDER-[height]-[radius]-[rate]-[interval]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f SPHERE-[radius]-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f SPHERE_SPIKE-[radius]-[rate]-[chance]-[min]-[max]-[interval]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f RING-[rate]-[tube rate]-[radius]-[tube radius]");
+                        TellrawJson.create().append("§8[§fTabooLib§8] §7-§f LIGHTING-").append("§c[...]").hoverText("[rate]-[direction]-[entries]-[branches]-[radius]-[offset]-[offset rate]-[length]-[length rate]-[branch]-[branch rate]").send(player);
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f DNA-[radius]-[rate]-[extension]-[height]-[hydrogen bond dist]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f RECTANGLE-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CAGE-[rate]-[bar rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CUBE-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CUBE_FILLED-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f CUBE_STRUCTURED-[rate]");
+                        player.sendMessage("§8[§fTabooLib§8] §7-§f HYPERCUBE-[rate]-[size rate]-[cubes]");
+                        return;
+                    }
+                    List<String> a = Lists.newArrayList(args[1].toUpperCase().split("-"));
+                    Location locA = player.getEyeLocation();
+                    Location locB = player.getEyeLocation().add(player.getLocation().getDirection().multiply(10)).add(Vector.getRandom().multiply(5));
+                    Consumer<Location> action1 = loc -> Effects.create(Particle.FLAME, loc).count(1).player(player).play();
+                    Consumer<Location> action2 = loc -> Effects.create(Particle.VILLAGER_HAPPY, loc).count(1).player(player).play();
+                    switch (a.get(0)) {
+                        case "LINE": {
+                            Effects.buildLine(locA, locB, action1, orDob(a, 1, 0.1));
+                            break;
+                        }
+                        case "POLYGON": {
+                            Effects.buildPolygon(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "CIRCLE": {
+                            Effects.buildCircle(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "CONE": {
+                            Effects.buildCone(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), orDob(a, 4, 10D), action1);
+                            break;
+                        }
+                        case "ATOM": {
+                            Effects.buildAtom(locA, orInt(a, 1, 10), orDob(a, 2, 10D), orDob(a, 3, 10D), action1, action2);
+                            break;
+                        }
+                        case "ELLIPSE": {
+                            Effects.buildEllipse(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), action1);
+                            break;
+                        }
+                        case "INFINITY": {
+                            Effects.buildInfinity(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "CRESCENT": {
+                            Effects.buildCrescent(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "WARE_FUNCTION": {
+                            Effects.buildWaveFunction(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), orDob(a, 4, 10D), action1);
+                            break;
+                        }
+                        case "CYLINDER": {
+                            Effects.buildCylinder(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), orDob(a, 4, 10D), action1);
+                            break;
+                        }
+                        case "SPHERE": {
+                            Effects.buildSphere(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "SPHERE_SPIKE": {
+                            Effects.buildSphereSpike(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orInt(a, 3, 10), orDob(a, 4, 10D), orDob(a, 5, 10D), orDob(a, 6, 10D), action1);
+                            break;
+                        }
+                        case "RING": {
+                            Effects.buildRing(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), orDob(a, 4, 10D), action1);
+                            break;
+                        }
+                        case "LIGHTING": {
+                            Effects.buildLightning(locA, locA.getDirection(), orInt(a, 1, 10), orInt(a, 2, 10), orDob(a, 3, 10), orDob(a, 4, 10D), orDob(a, 5, 10D), orDob(a, 6, 10D), orDob(a, 7, 10D), orDob(a, 8, 10D), orDob(a, 9, 10D), action1);
+                            break;
+                        }
+                        case "DNA": {
+                            Effects.buildDNA(locA, orDob(a, 1, 10D), orDob(a, 2, 10D), orDob(a, 3, 10D), orInt(a, 4, 10), orInt(a, 5, 10), action1, action2);
+                            break;
+                        }
+                        case "RECTANGLE": {
+                            Effects.buildRectangle(locA, locB, orDob(a, 1, 10D), action1);
+                            break;
+                        }
+                        case "CAGE": {
+                            Effects.buildCage(locA, locB, orDob(a, 1, 10D), orDob(a, 2, 10D), action1);
+                            break;
+                        }
+                        case "CUBE": {
+                            Effects.buildCube(locA, locB, orDob(a, 1, 10D), action1);
+                            break;
+                        }
+                        case "CUBE_FILLED": {
+                            Effects.buildCubeFilled(locA, locB, orDob(a, 1, 10D), action1);
+                            break;
+                        }
+                        case "CUBE_STRUCTURED": {
+                            Effects.buildCubeStructured(locA, locB, orDob(a, 1, 10D), action1);
+                            break;
+                        }
+                        case "HYPERCUBE": {
+                            Effects.buildHypercube(locA, locB, orDob(a, 1, 10D), orDob(a, 2, 10D), orInt(a, 3, 10), action1);
+                            break;
+                        }
+                        default:
+                            player.sendMessage("§8[§fTabooLib§8] §7No Effect.");
+                            break;
+                    }
                 }
             });
 
@@ -213,11 +347,12 @@ public class ListenerCommand implements Listener {
                         for (Module module : testUtil) {
                             for (String name : module.name()) {
                                 if (name.equalsIgnoreCase(args[0])) {
-                                    module.run((Player) sender);
+                                    module.run((Player) sender, args);
                                     return;
                                 }
                             }
                         }
+                        sender.sendMessage("§8[§fTabooLib§8] §7Test: §f" + testUtil.stream().map(i -> i.name()[0]).collect(Collectors.joining(", ")));
                     }
                 }).build();
     }
@@ -250,5 +385,13 @@ public class ListenerCommand implements Listener {
             }
             Bukkit.shutdown();
         }
+    }
+
+    private static int orInt(List<String> list, int index, int def) {
+        return list.size() > index ? NumberConversions.toInt(list.get(index)) : def;
+    }
+
+    private static double orDob(List<String> list, int index, double def) {
+        return list.size() > index ? NumberConversions.toDouble(list.get(index)) : def;
     }
 }

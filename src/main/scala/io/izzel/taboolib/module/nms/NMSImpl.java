@@ -65,6 +65,7 @@ import java.util.function.Consumer;
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
+    private final boolean is11300 = Version.isAfter(Version.v1_13);
     private final boolean is11400 = Version.isAfter(Version.v1_14);
     private final boolean is11500 = Version.isAfter(Version.v1_15);
 
@@ -116,7 +117,11 @@ public class NMSImpl extends NMS {
 
     @Override
     public Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11) {
-        return new net.minecraft.server.v1_12_R1.PacketPlayOutWorldParticles(CraftParticle.toNMS(var1), var2, var3, var4, var5, var6, var7, var8, var9, var10, CraftParticle.toData(var1, var11));
+        if (is11300) {
+            return new net.minecraft.server.v1_13_R2.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_13_R2.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);
+        } else {
+            return new net.minecraft.server.v1_12_R1.PacketPlayOutWorldParticles(CraftParticle.toNMS(var1), var2, var3, var4, var5, var6, var7, var8, var9, var10, CraftParticle.toData(var1, var11));
+        }
     }
 
     @Override
