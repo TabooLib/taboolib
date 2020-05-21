@@ -20,8 +20,7 @@ public class TDependencyInjector {
                         if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), url)) {
                             break;
                         }
-                    } catch (Throwable t) {
-                        t.printStackTrace();
+                    } catch (Throwable ignored) {
                     }
                 }
             }
