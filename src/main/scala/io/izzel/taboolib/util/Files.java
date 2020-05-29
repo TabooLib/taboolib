@@ -74,7 +74,7 @@ public class Files {
     }
 
     public static InputStream getResourceChecked(Plugin plugin, String filename) {
-        return plugin instanceof InternalPlugin ? getResource(plugin, "__resources__/" + filename) : getResource(filename);
+        return plugin instanceof InternalPlugin ? getResource(plugin, "__resources__/" + filename) : getResource(plugin, filename);
     }
 
     public static InputStream getTabooLibResource(String filename) {

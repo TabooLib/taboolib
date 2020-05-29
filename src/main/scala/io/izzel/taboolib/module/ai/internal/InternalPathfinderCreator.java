@@ -49,4 +49,8 @@ public class InternalPathfinderCreator extends net.minecraft.server.v1_8_R3.Path
     public void e() {
         simpleAI.updateTask();
     }
+
+    public SimpleAi getSimpleAI() {
+        return simpleAI;
+    }
 }
