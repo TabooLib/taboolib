@@ -183,12 +183,16 @@ public class InternalPathfinderExecutor extends PathfinderExecutor {
     private void removeGoal(String name, Object targetSelector) {
         Collection c = getGoal(targetSelector);
         for (Object element : new ArrayList<>(c)) {
-            Object a = SimpleReflection.getFieldValueChecked(element.getClass(), element, "a", true);
-            if (a.getClass().getName().contains(name)) {
-                c.remove(element);
-            }
-            if (a instanceof InternalPathfinderCreator && ((InternalPathfinderCreator) a).getSimpleAI().getClass().getName().contains(name)) {
-                c.remove(element);
+            try {
+                Object a = SimpleReflection.getFieldValueChecked(element.getClass(), element, "a", true);
+                if (a.getClass().getName().contains(name)) {
+                    c.remove(element);
+                }
+                if (a.getClass().getSimpleName().equals("InternalPathfinderCreator") && SimpleReflection.getFieldValueChecked(a.getClass(), a, "simpleAI", true).getClass().getName().contains(name)) {
+                    c.remove(element);
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
         }
     }
