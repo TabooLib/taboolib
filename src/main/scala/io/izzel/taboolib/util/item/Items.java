@@ -4,6 +4,7 @@ import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.cronus.CronusUtils;
 import io.izzel.taboolib.module.lite.SimpleEquip;
 import io.izzel.taboolib.module.lite.SimpleI18n;
 import io.izzel.taboolib.module.locale.TLocale;
@@ -12,6 +13,7 @@ import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
+import io.izzel.taboolib.util.lite.Materials;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -74,11 +76,10 @@ public class Items {
     }
 
     public static Material asMaterial(String args) {
-        try {
-            Material material = Material.getMaterial(args.toUpperCase());
-            return material != null ? material : Material.getMaterial(NumberConversions.toInt(args));
-        } catch (Exception e) {
-            return Material.STONE;
+        if (CronusUtils.isInt(args)) {
+            return Materials.matchMaterials(NumberConversions.toInt(args), (byte) -1).orElse(Materials.STONE).parseMaterial();
+        } else {
+            return Materials.matchMaterials(args.toUpperCase()).orElse(Materials.STONE).parseMaterial();
         }
     }
 
@@ -86,7 +87,7 @@ public class Items {
         try {
             String[] v = color.split("-");
             return Color.fromRGB(NumberConversions.toInt(v[0]), NumberConversions.toInt(v[1]), NumberConversions.toInt(v[2]));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return Color.fromRGB(0, 0, 0);
         }
     }
@@ -95,7 +96,7 @@ public class Items {
         try {
             Enchantment enchantment = Enchantment.getByName(enchant);
             return enchantment != null ? enchantment : Enchantment.getById(NumberConversions.toInt(enchant));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return null;
         }
     }
@@ -104,7 +105,7 @@ public class Items {
         try {
             PotionEffectType type = PotionEffectType.getByName(potion);
             return type != null ? type : PotionEffectType.getById(NumberConversions.toInt(potion));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             return null;
         }
     }

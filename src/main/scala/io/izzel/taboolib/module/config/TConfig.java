@@ -111,6 +111,7 @@ public class TConfig extends YamlConfiguration {
                 });
                 load(file);
             }
+        } catch (NullPointerException ignored) {
         } catch (Throwable t) {
             t.printStackTrace();
         }
