@@ -27,6 +27,7 @@ public class PluginPatch {
     static {
         patch("TabooLib", "me/skymc/taboolib/database/PlayerDataManager");
         patch("TabooLib", "com/ilummc/tlib/dependency/TDependency");
+        patch("TabooLib", "com/ilummc/tlib/inject/TConfigWatcher");
     }
 
     public static void patch(String plugin, String path) {
