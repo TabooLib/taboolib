@@ -55,11 +55,15 @@ public class Numbers {
     }
 
     public static int getRandomInteger(Number num1, Number num2) {
-        return ThreadLocalRandom.current().nextInt(num1.intValue(), num2.intValue() + 1);
+        int min = Math.min(num1.intValue(), num2.intValue());
+        int max = Math.max(num1.intValue(), num2.intValue());
+        return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
     public static double getRandomDouble(Number num1, Number num2) {
-        return ThreadLocalRandom.current().nextDouble(num1.doubleValue(), num2.doubleValue());
+        double min = Math.min(num1.doubleValue(), num2.doubleValue());
+        double max = Math.max(num1.doubleValue(), num2.doubleValue());
+        return ThreadLocalRandom.current().nextDouble(min, max);
     }
 
     public static Boolean getBoolean(String str) {
