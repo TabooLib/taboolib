@@ -3,13 +3,16 @@ package io.izzel.taboolib.module.db.local;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
@@ -18,19 +21,37 @@ import java.util.logging.Level;
  */
 public class SecuredFile extends YamlConfiguration {
 
+    public SecuredFile() {
+        SimpleReflection.setFieldValue(MemorySection.class, this, "map", new ConcurrentHashMap<>(map), true);
+    }
+
     @Override
-    public synchronized void set(String path, Object value) {
+    public void set(String path, Object value) {
         super.set(path, value);
     }
 
     @Override
-    public synchronized void save(File file) throws IOException {
+    public void save(File file) throws IOException {
         super.save(file);
     }
 
     @Override
-    public synchronized void save(String file) throws IOException {
+    public void save(String file) throws IOException {
         super.save(file);
+    }
+
+    @Override
+    public String saveToString() {
+        return super.saveToString();
+    }
+
+    @Override
+    public ConfigurationSection createSection(String path) {
+        ConfigurationSection section = super.createSection(path);
+        if (section instanceof MemorySection) {
+            SimpleReflection.setFieldValue(MemorySection.class, section, "map", new ConcurrentHashMap<>(), true);
+        }
+        return section;
     }
 
     /**
@@ -62,11 +83,6 @@ public class SecuredFile extends YamlConfiguration {
             System.out.println("Source: \n" + contents);
             throw t;
         }
-    }
-
-    @Override
-    public String saveToString() {
-        return super.saveToString();
     }
 
     public static String dump(Object data) {
