@@ -77,7 +77,11 @@ public class Items {
 
     public static Material asMaterial(String args) {
         if (CronusUtils.isInt(args)) {
-            return Materials.matchMaterials(NumberConversions.toInt(args), (byte) -1).orElse(Materials.STONE).parseMaterial();
+            try {
+                return Material.getMaterial(NumberConversions.toInt(args));
+            } catch (Throwable ignored) {
+                return Materials.matchMaterials(NumberConversions.toInt(args), (byte) -1).orElse(Materials.STONE).parseMaterial();
+            }
         } else {
             return Materials.matchMaterials(args.toUpperCase()).orElse(Materials.STONE).parseMaterial();
         }
