@@ -3,9 +3,6 @@ package io.izzel.taboolib.util.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author md_5
- */
 public abstract class BaseComponent {
 
     BaseComponent parent;
@@ -14,6 +11,10 @@ public abstract class BaseComponent {
      * The color of this component and any child components (unless overridden)
      */
     private ChatColor color;
+    /**
+     * The font of this component and any child components (unless overridden)
+     */
+    private String font;
     /**
      * Whether this component and any child components (unless overridden) is
      * bold
@@ -61,68 +62,13 @@ public abstract class BaseComponent {
      */
     private HoverEvent hoverEvent;
 
-    public String getInsertion() {
-        return insertion;
-    }
-
-    public List<BaseComponent> getExtra() {
-        return extra;
-    }
-
-    public ClickEvent getClickEvent() {
-        return clickEvent;
-    }
-
-    public HoverEvent getHoverEvent() {
-        return hoverEvent;
-    }
-
-    public void setParent(BaseComponent parent) {
-        this.parent = parent;
-    }
-
-    public void setColor(ChatColor color) {
-        this.color = color;
-    }
-
-    public void setBold(Boolean bold) {
-        this.bold = bold;
-    }
-
-    public void setItalic(Boolean italic) {
-        this.italic = italic;
-    }
-
-    public void setUnderlined(Boolean underlined) {
-        this.underlined = underlined;
-    }
-
-    public void setStrikethrough(Boolean strikethrough) {
-        this.strikethrough = strikethrough;
-    }
-
-    public void setObfuscated(Boolean obfuscated) {
-        this.obfuscated = obfuscated;
-    }
-
-    public void setInsertion(String insertion) {
-        this.insertion = insertion;
-    }
-
-    public void setClickEvent(ClickEvent clickEvent) {
-        this.clickEvent = clickEvent;
-    }
-
-    public void setHoverEvent(HoverEvent hoverEvent) {
-        this.hoverEvent = hoverEvent;
-    }
-
-    @Override
-    public String toString() {
-        return "parent=" + "BaseComponent{" + parent + ", color=" + color + ", bold=" + bold + ", italic=" + italic + ", underlined=" + underlined + ", strikethrough=" + strikethrough + ", obfuscated=" + obfuscated + ", insertion='" + insertion + '\'' + ", extra=" + extra + ", clickEvent=" + clickEvent + ", hoverEvent=" + hoverEvent + '}';
-    }
-
-    BaseComponent() {
+    /**
+     * Default constructor.
+     *
+     * @deprecated for use by internal classes only, will be removed.
+     */
+    @Deprecated
+    public BaseComponent() {
     }
 
     BaseComponent(BaseComponent old) {
@@ -176,6 +122,9 @@ public abstract class BaseComponent {
         if (retention == ComponentBuilder.FormatRetention.FORMATTING || retention == ComponentBuilder.FormatRetention.ALL) {
             if (replace || color == null) {
                 setColor(component.getColorRaw());
+            }
+            if (replace || font == null) {
+                setFont(component.getFontRaw());
             }
             if (replace || bold == null) {
                 setBold(component.isBoldRaw());
@@ -293,6 +242,32 @@ public abstract class BaseComponent {
      */
     public ChatColor getColorRaw() {
         return color;
+    }
+
+    /**
+     * Returns the font of this component. This uses the parent's font if this
+     * component doesn't have one.
+     *
+     * @return the font of this component, or null if default font
+     */
+    public String getFont() {
+        if (color == null) {
+            if (parent == null) {
+                return null;
+            }
+            return parent.getFont();
+        }
+        return font;
+    }
+
+    /**
+     * Returns the font of this component without checking the parents font. May
+     * return null
+     *
+     * @return the font of this component
+     */
+    public String getFontRaw() {
+        return font;
     }
 
     /**
@@ -416,7 +391,9 @@ public abstract class BaseComponent {
     }
 
     public void setExtra(List<BaseComponent> components) {
-        components.forEach(component -> component.parent = this);
+        for (BaseComponent component : components) {
+            component.parent = this;
+        }
         extra = components;
     }
 
@@ -438,7 +415,7 @@ public abstract class BaseComponent {
      */
     public void addExtra(BaseComponent component) {
         if (extra == null) {
-            extra = new ArrayList<>();
+            extra = new ArrayList<BaseComponent>();
         }
         component.parent = this;
         extra.add(component);
@@ -450,7 +427,10 @@ public abstract class BaseComponent {
      * @return Whether any formatting or events are applied
      */
     public boolean hasFormatting() {
-        return color != null || italic != null || bold != null || underlined != null || strikethrough != null || obfuscated != null || insertion != null || hoverEvent != null || clickEvent != null;
+        return color != null || font != null || bold != null
+                || italic != null || underlined != null
+                || strikethrough != null || obfuscated != null
+                || insertion != null || hoverEvent != null || clickEvent != null;
     }
 
     /**
@@ -466,7 +446,9 @@ public abstract class BaseComponent {
 
     void toPlainText(StringBuilder builder) {
         if (extra != null) {
-            extra.forEach(e -> e.toPlainText(builder));
+            for (BaseComponent e : extra) {
+                e.toPlainText(builder);
+            }
         }
     }
 
@@ -484,7 +466,168 @@ public abstract class BaseComponent {
 
     void toLegacyText(StringBuilder builder) {
         if (extra != null) {
-            extra.forEach(e -> e.toLegacyText(builder));
+            for (BaseComponent e : extra) {
+                e.toLegacyText(builder);
+            }
         }
+    }
+
+    void addFormat(StringBuilder builder) {
+        builder.append(getColor());
+        if (isBold()) {
+            builder.append(ChatColor.BOLD);
+        }
+        if (isItalic()) {
+            builder.append(ChatColor.ITALIC);
+        }
+        if (isUnderlined()) {
+            builder.append(ChatColor.UNDERLINE);
+        }
+        if (isStrikethrough()) {
+            builder.append(ChatColor.STRIKETHROUGH);
+        }
+        if (isObfuscated()) {
+            builder.append(ChatColor.MAGIC);
+        }
+    }
+
+    public void setColor(ChatColor color) {
+        this.color = color;
+    }
+
+    public void setFont(String font) {
+        this.font = font;
+    }
+
+    public void setBold(Boolean bold) {
+        this.bold = bold;
+    }
+
+    public void setItalic(Boolean italic) {
+        this.italic = italic;
+    }
+
+    public void setUnderlined(Boolean underlined) {
+        this.underlined = underlined;
+    }
+
+    public void setStrikethrough(Boolean strikethrough) {
+        this.strikethrough = strikethrough;
+    }
+
+    public void setObfuscated(Boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    public void setInsertion(String insertion) {
+        this.insertion = insertion;
+    }
+
+    public void setClickEvent(ClickEvent clickEvent) {
+        this.clickEvent = clickEvent;
+    }
+
+    public void setHoverEvent(HoverEvent hoverEvent) {
+        this.hoverEvent = hoverEvent;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof BaseComponent)) return false;
+        final BaseComponent other = (BaseComponent) o;
+        if (!other.canEqual(this)) return false;
+        final Object this$color = this.getColor();
+        final Object other$color = other.getColor();
+        if (this$color == null ? other$color != null : !this$color.equals(other$color)) return false;
+        final Object this$font = this.getFont();
+        final Object other$font = other.getFont();
+        if (this$font == null ? other$font != null : !this$font.equals(other$font)) return false;
+        final Object this$bold = this.bold;
+        final Object other$bold = other.bold;
+        if (this$bold == null ? other$bold != null : !this$bold.equals(other$bold)) return false;
+        final Object this$italic = this.italic;
+        final Object other$italic = other.italic;
+        if (this$italic == null ? other$italic != null : !this$italic.equals(other$italic)) return false;
+        final Object this$underlined = this.underlined;
+        final Object other$underlined = other.underlined;
+        if (this$underlined == null ? other$underlined != null : !this$underlined.equals(other$underlined))
+            return false;
+        final Object this$strikethrough = this.strikethrough;
+        final Object other$strikethrough = other.strikethrough;
+        if (this$strikethrough == null ? other$strikethrough != null : !this$strikethrough.equals(other$strikethrough))
+            return false;
+        final Object this$obfuscated = this.obfuscated;
+        final Object other$obfuscated = other.obfuscated;
+        if (this$obfuscated == null ? other$obfuscated != null : !this$obfuscated.equals(other$obfuscated))
+            return false;
+        final Object this$insertion = this.insertion;
+        final Object other$insertion = other.insertion;
+        if (this$insertion == null ? other$insertion != null : !this$insertion.equals(other$insertion)) return false;
+        final Object this$extra = this.extra;
+        final Object other$extra = other.extra;
+        if (this$extra == null ? other$extra != null : !this$extra.equals(other$extra)) return false;
+        final Object this$clickEvent = this.clickEvent;
+        final Object other$clickEvent = other.clickEvent;
+        if (this$clickEvent == null ? other$clickEvent != null : !this$clickEvent.equals(other$clickEvent))
+            return false;
+        final Object this$hoverEvent = this.hoverEvent;
+        final Object other$hoverEvent = other.hoverEvent;
+        return this$hoverEvent == null ? other$hoverEvent == null : this$hoverEvent.equals(other$hoverEvent);
+    }
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof BaseComponent;
+    }
+
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        final Object $color = this.getColor();
+        result = result * PRIME + ($color == null ? 43 : $color.hashCode());
+        final Object $font = this.getFont();
+        result = result * PRIME + ($font == null ? 43 : $font.hashCode());
+        final Object $bold = this.bold;
+        result = result * PRIME + ($bold == null ? 43 : $bold.hashCode());
+        final Object $italic = this.italic;
+        result = result * PRIME + ($italic == null ? 43 : $italic.hashCode());
+        final Object $underlined = this.underlined;
+        result = result * PRIME + ($underlined == null ? 43 : $underlined.hashCode());
+        final Object $strikethrough = this.strikethrough;
+        result = result * PRIME + ($strikethrough == null ? 43 : $strikethrough.hashCode());
+        final Object $obfuscated = this.obfuscated;
+        result = result * PRIME + ($obfuscated == null ? 43 : $obfuscated.hashCode());
+        final Object $insertion = this.insertion;
+        result = result * PRIME + ($insertion == null ? 43 : $insertion.hashCode());
+        final Object $extra = this.extra;
+        result = result * PRIME + ($extra == null ? 43 : $extra.hashCode());
+        final Object $clickEvent = this.clickEvent;
+        result = result * PRIME + ($clickEvent == null ? 43 : $clickEvent.hashCode());
+        final Object $hoverEvent = this.hoverEvent;
+        result = result * PRIME + ($hoverEvent == null ? 43 : $hoverEvent.hashCode());
+        return result;
+    }
+
+    public String toString() {
+        return "BaseComponent(color=" + this.getColor() + ", font=" + this.getFont() + ", bold=" + this.bold + ", italic=" + this.italic + ", underlined=" + this.underlined + ", strikethrough=" + this.strikethrough + ", obfuscated=" + this.obfuscated + ", insertion=" + this.insertion + ", extra=" + this.extra + ", clickEvent=" + this.clickEvent + ", hoverEvent=" + this.hoverEvent + ")";
+    }
+
+    public String getInsertion() {
+        return this.insertion;
+    }
+
+    public List<BaseComponent> getExtra() {
+        return this.extra;
+    }
+
+    public ClickEvent getClickEvent() {
+        return this.clickEvent;
+    }
+
+    public HoverEvent getHoverEvent() {
+        return this.hoverEvent;
+    }
+
+    public void setParent(BaseComponent parent) {
+        this.parent = parent;
     }
 }

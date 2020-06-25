@@ -6,17 +6,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Locale;
 
-/**
- * @author md_5
- */
 public class BaseComponentSerializer {
 
     protected void deserialize(JsonObject object, BaseComponent component, JsonDeserializationContext context) {
         if (object.has("color")) {
-            component.setColor(ChatColor.valueOf(object.get("color").getAsString().toUpperCase(Locale.ROOT)));
+            component.setColor(ChatColor.of(object.get("color").getAsString()));
+        }
+        if (object.has("font")) {
+            component.setFont(object.get("font").getAsString());
         }
         if (object.has("bold")) {
             component.setBold(object.get("bold").getAsBoolean());
@@ -53,7 +54,7 @@ public class BaseComponentSerializer {
             if (event.get("value").isJsonArray()) {
                 res = context.deserialize(event.get("value"), BaseComponent[].class);
             } else {
-                res = new BaseComponent[]{context.deserialize(event.get("value"), BaseComponent.class)};
+                res = new BaseComponent[] {context.deserialize(event.get("value"), BaseComponent.class)};
             }
             component.setHoverEvent(new HoverEvent(HoverEvent.Action.valueOf(event.get("action").getAsString().toUpperCase(Locale.ROOT)), res));
         }
@@ -63,13 +64,16 @@ public class BaseComponentSerializer {
         boolean first = false;
         if (ComponentSerializer.serializedComponents.get() == null) {
             first = true;
-            ComponentSerializer.serializedComponents.set(new HashSet<>());
+            ComponentSerializer.serializedComponents.set(Collections.newSetFromMap(new IdentityHashMap<BaseComponent, Boolean>()));
         }
         try {
             Preconditions.checkArgument(!ComponentSerializer.serializedComponents.get().contains(component), "Component loop");
             ComponentSerializer.serializedComponents.get().add(component);
             if (component.getColorRaw() != null) {
                 object.addProperty("color", component.getColorRaw().getName());
+            }
+            if (component.getFontRaw() != null) {
+                object.addProperty("font", component.getFontRaw());
             }
             if (component.isBoldRaw() != null) {
                 object.addProperty("bold", component.isBoldRaw());

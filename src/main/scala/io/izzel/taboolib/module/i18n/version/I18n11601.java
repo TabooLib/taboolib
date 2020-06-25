@@ -25,24 +25,24 @@ import java.util.concurrent.Executors;
  * @Author sky
  * @Since 2020-04-04 19:51
  */
-public class I18n20w14a extends I18nBase {
+public class I18n11601 extends I18nBase {
 
-    public static final I18n20w14a INSTANCE = new I18n20w14a();
+    public static final I18n11601 INSTANCE = new I18n11601();
 
-    // 20w14a
+    // 1。16.1
     public static final String[][] LOCALE = {
             {
-                    "zh_cn", "5797b76621b4b335527cda6f903a1bb3d9b7ffa3"
+                    "zh_cn", "207c12360216c9222878b8c2b6ac0660d8a7f7bb"
             },
             {
-                    "zh_tw", "71be70e62f4cf7e98c6bcb32d57d7ef66614853b"
+                    "zh_tw", "e3721a0efb6077faa7d5525c189a36485ce1366c"
             },
             {
-                    "en_gb", "0f679e66f50f1dea4749cac3882cf5c6857bbfc3",
+                    "en_gb", "7697b4bfb780270caad749f38abb9007fc1bd976",
             }
     };
 
-    private final File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/20w14a");
+    private final File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/1.16.1");
     private final Map<String, JsonObject> cache = Maps.newHashMap();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();

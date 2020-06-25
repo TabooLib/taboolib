@@ -18,6 +18,7 @@ import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_14_R1.*;
 import net.minecraft.server.v1_15_R1.LightEngineThreaded;
+import net.minecraft.server.v1_16_R1.WorldDataServer;
 import net.minecraft.server.v1_8_R3.ChatComponentText;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.NBTTagByte;
@@ -65,9 +66,11 @@ import java.util.function.Consumer;
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
+    private final boolean is11200 = Version.isAfter(Version.v1_12);
     private final boolean is11300 = Version.isAfter(Version.v1_13);
     private final boolean is11400 = Version.isAfter(Version.v1_14);
     private final boolean is11500 = Version.isAfter(Version.v1_15);
+    private final boolean is11600 = Version.isAfter(Version.v1_16);
 
     static {
         SimpleReflection.saveField(NBTTagString.class);
@@ -241,7 +244,9 @@ public class NMSImpl extends NMS {
 
     @Override
     public void sendActionBar(Player player, String text) {
-        if (Version.isAfter(Version.v1_12)) {
+        if (is11600) {
+            TPacketHandler.sendPacket(player, new net.minecraft.server.v1_16_R1.PacketPlayOutChat(new net.minecraft.server.v1_16_R1.ChatComponentText(String.valueOf(text)), net.minecraft.server.v1_16_R1.ChatMessageType.GAME_INFO, UUID.randomUUID()));
+        } else if (is11200) {
             TPacketHandler.sendPacket(player, new net.minecraft.server.v1_12_R1.PacketPlayOutChat(new net.minecraft.server.v1_12_R1.ChatComponentText(String.valueOf(text)), ChatMessageType.GAME_INFO));
         } else {
             TPacketHandler.sendPacket(player, new PacketPlayOutChat(new ChatComponentText(String.valueOf(text)), (byte) 2));
@@ -313,6 +318,11 @@ public class NMSImpl extends NMS {
     @Override
     public io.izzel.taboolib.module.nms.impl.Position fromBlockPosition(Object blockPosition) {
         return blockPosition instanceof net.minecraft.server.v1_12_R1.BlockPosition ? new io.izzel.taboolib.module.nms.impl.Position(((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getX(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getY(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getZ()) : null;
+    }
+
+    @Override
+    public Object toBlockPosition(io.izzel.taboolib.module.nms.impl.Position blockPosition) {
+        return new net.minecraft.server.v1_12_R1.BlockPosition(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
     }
 
     @Override
@@ -634,7 +644,9 @@ public class NMSImpl extends NMS {
             Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
             Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).world.getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
             if (distance(chunk2, chunk1) < distance(human)) {
-                if (is11400) {
+                if (is11600) {
+                    TPacketHandler.sendPacket(player, new net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate(((net.minecraft.server.v1_16_R1.Chunk) chunk1).getPos(), ((net.minecraft.server.v1_16_R1.Chunk) chunk1).e(), true));
+                } else if (is11400) {
                     TPacketHandler.sendPacket(player, new PacketPlayOutLightUpdate(((net.minecraft.server.v1_14_R1.Chunk) chunk1).getPos(), ((net.minecraft.server.v1_14_R1.Chunk) chunk1).e()));
                 } else {
                     TPacketHandler.sendPacket(player, new net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk((net.minecraft.server.v1_14_R1.Chunk) chunk1, 0x1ffff));
@@ -656,8 +668,16 @@ public class NMSImpl extends NMS {
     }
 
     private int distance(Object from, Object to) {
-        if (!((net.minecraft.server.v1_14_R1.Chunk) from).world.getWorldData().getName().equals(((net.minecraft.server.v1_14_R1.Chunk) to).world.getWorldData().getName())) {
-            return 100;
+        if (is11600) {
+            String name1 = ((WorldDataServer) ((net.minecraft.server.v1_16_R1.Chunk) from).world.getWorldData()).getName();
+            String name2 = ((WorldDataServer) ((net.minecraft.server.v1_16_R1.Chunk) to).world.getWorldData()).getName();
+            if (!name1.equals(name2)) {
+                return 100;
+            }
+        } else {
+            if (!((net.minecraft.server.v1_14_R1.Chunk) from).world.getWorldData().getName().equals(((net.minecraft.server.v1_14_R1.Chunk) to).world.getWorldData().getName())) {
+                return 100;
+            }
         }
         double var2 = ((net.minecraft.server.v1_14_R1.Chunk) to).getPos().x - ((net.minecraft.server.v1_14_R1.Chunk) from).getPos().x;
         double var4 = ((net.minecraft.server.v1_14_R1.Chunk) to).getPos().z - ((net.minecraft.server.v1_14_R1.Chunk) from).getPos().z;

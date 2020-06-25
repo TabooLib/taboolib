@@ -3,21 +3,21 @@ package io.izzel.taboolib.util.chat;
 import com.google.gson.*;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
+import java.util.Set;
 
-/**
- * @author md_5
- */
 public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
 
-    private final static JsonParser JSON_PARSER = new JsonParser();
-    private final static Gson gson = new GsonBuilder().
+    private static final JsonParser JSON_PARSER = new JsonParser();
+    private static final Gson gson = new GsonBuilder().
             registerTypeAdapter(BaseComponent.class, new ComponentSerializer()).
             registerTypeAdapter(TextComponent.class, new TextComponentSerializer()).
             registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer()).
+            registerTypeAdapter(KeybindComponent.class, new KeybindComponentSerializer()).
+            registerTypeAdapter(ScoreComponent.class, new ScoreComponentSerializer()).
+            registerTypeAdapter(SelectorComponent.class, new SelectorComponentSerializer()).
             create();
 
-    public final static ThreadLocal<HashSet<BaseComponent>> serializedComponents = new ThreadLocal<>();
+    public static final ThreadLocal<Set<BaseComponent>> serializedComponents = new ThreadLocal<Set<BaseComponent>>();
 
     public static BaseComponent[] parse(String json) {
         JsonElement jsonElement = JSON_PARSER.parse(json);
@@ -25,7 +25,10 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
         if (jsonElement.isJsonArray()) {
             return gson.fromJson(jsonElement, BaseComponent[].class);
         } else {
-            return new BaseComponent[]{gson.fromJson(jsonElement, BaseComponent.class)};
+            return new BaseComponent[]
+                    {
+                            gson.fromJson(jsonElement, BaseComponent.class)
+                    };
         }
     }
 
@@ -49,6 +52,15 @@ public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
         JsonObject object = json.getAsJsonObject();
         if (object.has("translate")) {
             return context.deserialize(json, TranslatableComponent.class);
+        }
+        if (object.has("keybind")) {
+            return context.deserialize(json, KeybindComponent.class);
+        }
+        if (object.has("score")) {
+            return context.deserialize(json, ScoreComponent.class);
+        }
+        if (object.has("selector")) {
+            return context.deserialize(json, SelectorComponent.class);
         }
         return context.deserialize(json, TextComponent.class);
     }

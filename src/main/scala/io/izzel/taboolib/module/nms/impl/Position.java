@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.nms.impl;
 
+import java.util.Objects;
+
 /**
  * @Author sky
  * @Since 2020-01-14 22:02
@@ -36,5 +38,33 @@ public class Position {
 
     public void setZ(int z) {
         this.z = z;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Position)) {
+            return false;
+        }
+        Position position = (Position) o;
+        return getX() == position.getX() &&
+                getY() == position.getY() &&
+                getZ() == position.getZ();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getX(), getY(), getZ());
+    }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
     }
 }

@@ -19,12 +19,14 @@ import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.book.BookFormatter;
+import io.izzel.taboolib.util.chat.ChatColor;
 import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Effects;
 import io.izzel.taboolib.util.lite.Signs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton;
@@ -36,6 +38,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
+import java.awt.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -141,14 +144,15 @@ public class ListenerCommand implements Listener {
 
                 @Override
                 public void run(Player player, String[] args) {
+                    Block block = player.getLocation().getBlock();
                     player.sendMessage("§8[§fTabooLib§8] §7Lighting. §a(+)");
-                    TLight.create(player.getLocation().getBlock(), Type.BLOCK, 15);
+                    TLight.create(block, Type.BLOCK, 15);
                     TabooLib.getPlugin().runTask(() -> {
-                        TLight.create(player.getLocation().getBlock(), Type.BLOCK, 5);
+                        TLight.create(block, Type.BLOCK, 5);
                         player.sendMessage("§8[§fTabooLib§8] §7Lighting. §c(-)");
                     }, 20);
                     TabooLib.getPlugin().runTask(() -> {
-                        TLight.delete(player.getLocation().getBlock(), Type.BLOCK);
+                        TLight.delete(block, Type.BLOCK);
                         player.sendMessage("§8[§fTabooLib§8] §7Lighting. §8(-)");
                     }, 40);
                 }
@@ -320,6 +324,19 @@ public class ListenerCommand implements Listener {
                         default:
                             player.sendMessage("§8[§fTabooLib§8] §7No Effect.");
                             break;
+                    }
+                }
+            }, new Module() {
+                @Override
+                public String[] name() {
+                    return new String[] {"color", "ChatColor"};
+                }
+
+                @Override
+                public void run(Player player, String[] args) {
+                    List<Color> colors = Lists.newArrayList(Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.YELLOW, Color.RED);
+                    for (Color color : colors) {
+                        player.sendMessage("§8[§fTabooLib§8] " + ChatColor.of(color) + "Color: " + ChatColor.of(color).toString().replace("§", "&"));
                     }
                 }
             });

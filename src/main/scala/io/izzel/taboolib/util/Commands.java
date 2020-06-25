@@ -29,7 +29,7 @@ public class Commands {
                 }
                 return Bukkit.dispatchCommand(e.getSender(), e.getCommand());
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
         return false;

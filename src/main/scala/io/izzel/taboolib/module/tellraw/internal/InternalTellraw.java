@@ -5,6 +5,7 @@ import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.packet.TPacketHandler;
 import io.izzel.taboolib.module.tellraw.TellrawVersion;
+import net.minecraft.server.v1_16_R1.ChatMessageType;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
@@ -17,12 +18,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Author 坏黑
  * @Since 2018-11-07 22:54
  */
 public class InternalTellraw implements AbstractTellraw {
+
+    private final boolean v11600 = Version.isAfter(Version.v1_16);
 
     public InternalTellraw() {
         SimpleReflection.saveField(NBTTagCompound.class, "map");
@@ -31,7 +35,11 @@ public class InternalTellraw implements AbstractTellraw {
 
     @Override
     public void sendRawMessage(Player player, String rawMessage) {
-        TPacketHandler.sendPacket(player, new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(rawMessage)));
+        if (v11600) {
+            TPacketHandler.sendPacket(player, new net.minecraft.server.v1_16_R1.PacketPlayOutChat(net.minecraft.server.v1_16_R1.IChatBaseComponent.ChatSerializer.a(rawMessage), ChatMessageType.CHAT, UUID.randomUUID()));
+        } else {
+            TPacketHandler.sendPacket(player, new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(rawMessage)));
+        }
     }
 
     @Override

@@ -2,18 +2,11 @@ package io.izzel.taboolib.util.chat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-/**
- * @author md_5
- */
 public final class TranslatableComponent extends BaseComponent {
 
-    private final ResourceBundle locales = ResourceBundle.getBundle("mojang-translations/en_US");
     private final Pattern format = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     /**
@@ -26,29 +19,6 @@ public final class TranslatableComponent extends BaseComponent {
      */
     private List<BaseComponent> with;
 
-    public ResourceBundle getLocales() {
-        return locales;
-    }
-
-    public Pattern getFormat() {
-        return format;
-    }
-
-    public String getTranslate() {
-        return translate;
-    }
-
-    public void setTranslate(String translate) {
-        this.translate = translate;
-    }
-
-    public List<BaseComponent> getWith() {
-        return with;
-    }
-
-    public TranslatableComponent() {
-    }
-
     /**
      * Creates a translatable component from the original to clone it.
      *
@@ -59,7 +29,11 @@ public final class TranslatableComponent extends BaseComponent {
         setTranslate(original.getTranslate());
 
         if (original.getWith() != null) {
-            setWith(original.getWith().stream().map(BaseComponent::duplicate).collect(Collectors.toList()));
+            List<BaseComponent> temp = new ArrayList<BaseComponent>();
+            for (BaseComponent baseComponent : original.getWith()) {
+                temp.add(baseComponent.duplicate());
+            }
+            setWith(temp);
         }
     }
 
@@ -76,16 +50,19 @@ public final class TranslatableComponent extends BaseComponent {
     public TranslatableComponent(String translate, Object... with) {
         setTranslate(translate);
         if (with != null && with.length != 0) {
-            List<BaseComponent> temp = new ArrayList<>();
+            List<BaseComponent> temp = new ArrayList<BaseComponent>();
             for (Object w : with) {
-                if (w instanceof String) {
-                    temp.add(new TextComponent((String) w));
-                } else {
+                if (w instanceof BaseComponent) {
                     temp.add((BaseComponent) w);
+                } else {
+                    temp.add(new TextComponent(String.valueOf(w)));
                 }
             }
             setWith(temp);
         }
+    }
+
+    public TranslatableComponent() {
     }
 
     /**
@@ -94,13 +71,8 @@ public final class TranslatableComponent extends BaseComponent {
      * @return the duplicate of this TranslatableComponent.
      */
     @Override
-    public BaseComponent duplicate() {
+    public TranslatableComponent duplicate() {
         return new TranslatableComponent(this);
-    }
-
-    @Override
-    public String toString() {
-        return "locales=" + "TranslatableComponent{" + locales + ", format=" + format + ", translate='" + translate + '\'' + ", with=" + with + '}';
     }
 
     /**
@@ -110,7 +82,9 @@ public final class TranslatableComponent extends BaseComponent {
      * @param components the components to substitute
      */
     public void setWith(List<BaseComponent> components) {
-        components.forEach(component -> component.parent = this);
+        for (BaseComponent component : components) {
+            component.parent = this;
+        }
         with = components;
     }
 
@@ -132,7 +106,7 @@ public final class TranslatableComponent extends BaseComponent {
      */
     public void addWith(BaseComponent component) {
         if (with == null) {
-            with = new ArrayList<>();
+            with = new ArrayList<BaseComponent>();
         }
         component.parent = this;
         with.add(component);
@@ -140,51 +114,18 @@ public final class TranslatableComponent extends BaseComponent {
 
     @Override
     protected void toPlainText(StringBuilder builder) {
-        String trans;
-        try {
-            trans = locales.getString(translate);
-        } catch (MissingResourceException ex) {
-            trans = translate;
-        }
-
-        Matcher matcher = format.matcher(trans);
-        int position = 0;
-        int i = 0;
-        while (matcher.find(position)) {
-            int pos = matcher.start();
-            if (pos != position) {
-                builder.append(trans, position, pos);
-            }
-            position = matcher.end();
-
-            String formatCode = matcher.group(2);
-            switch (formatCode.charAt(0)) {
-                case 's':
-                case 'd':
-                    String withIndex = matcher.group(1);
-                    with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++).toPlainText(builder);
-                    break;
-                case '%':
-                    builder.append('%');
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (trans.length() != position) {
-            builder.append(trans, position, trans.length());
-        }
+        convert(builder, false);
         super.toPlainText(builder);
     }
 
     @Override
     protected void toLegacyText(StringBuilder builder) {
-        String trans;
-        try {
-            trans = locales.getString(translate);
-        } catch (MissingResourceException e) {
-            trans = translate;
-        }
+        convert(builder, true);
+        super.toLegacyText(builder);
+    }
+
+    private void convert(StringBuilder builder, boolean applyFormat) {
+        String trans = TranslationRegistry.INSTANCE.translate(translate);
 
         Matcher matcher = format.matcher(trans);
         int position = 0;
@@ -192,7 +133,9 @@ public final class TranslatableComponent extends BaseComponent {
         while (matcher.find(position)) {
             int pos = matcher.start();
             if (pos != position) {
-                addFormat(builder);
+                if (applyFormat) {
+                    addFormat(builder);
+                }
                 builder.append(trans, position, pos);
             }
             position = matcher.end();
@@ -202,39 +145,80 @@ public final class TranslatableComponent extends BaseComponent {
                 case 's':
                 case 'd':
                     String withIndex = matcher.group(1);
-                    with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++).toLegacyText(builder);
+
+                    BaseComponent withComponent = with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++);
+                    if (applyFormat) {
+                        withComponent.toLegacyText(builder);
+                    } else {
+                        withComponent.toPlainText(builder);
+                    }
                     break;
                 case '%':
-                    addFormat(builder);
+                    if (applyFormat) {
+                        addFormat(builder);
+                    }
                     builder.append('%');
-                    break;
-                default:
                     break;
             }
         }
         if (trans.length() != position) {
-            addFormat(builder);
-            builder.append(trans, position, trans.length());
+            if (applyFormat) {
+                addFormat(builder);
+            }
+            builder.append(trans.substring(position));
         }
-        super.toLegacyText(builder);
     }
 
-    private void addFormat(StringBuilder builder) {
-        builder.append(getColor());
-        if (isBold()) {
-            builder.append(ChatColor.BOLD);
-        }
-        if (isItalic()) {
-            builder.append(ChatColor.ITALIC);
-        }
-        if (isUnderlined()) {
-            builder.append(ChatColor.UNDERLINE);
-        }
-        if (isStrikethrough()) {
-            builder.append(ChatColor.STRIKETHROUGH);
-        }
-        if (isObfuscated()) {
-            builder.append(ChatColor.MAGIC);
-        }
+    public Pattern getFormat() {
+        return this.format;
+    }
+
+    public String getTranslate() {
+        return this.translate;
+    }
+
+    public List<BaseComponent> getWith() {
+        return this.with;
+    }
+
+    public void setTranslate(String translate) {
+        this.translate = translate;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof TranslatableComponent)) return false;
+        final TranslatableComponent other = (TranslatableComponent) o;
+        if (!other.canEqual(this)) return false;
+        if (!super.equals(o)) return false;
+        final Object this$format = this.getFormat();
+        final Object other$format = other.getFormat();
+        if (this$format == null ? other$format != null : !this$format.equals(other$format)) return false;
+        final Object this$translate = this.getTranslate();
+        final Object other$translate = other.getTranslate();
+        if (this$translate == null ? other$translate != null : !this$translate.equals(other$translate)) return false;
+        final Object this$with = this.getWith();
+        final Object other$with = other.getWith();
+        return this$with == null ? other$with == null : this$with.equals(other$with);
+    }
+
+    protected boolean canEqual(final Object other) {
+        return other instanceof TranslatableComponent;
+    }
+
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = super.hashCode();
+        final Object $format = this.getFormat();
+        result = result * PRIME + ($format == null ? 43 : $format.hashCode());
+        final Object $translate = this.getTranslate();
+        result = result * PRIME + ($translate == null ? 43 : $translate.hashCode());
+        final Object $with = this.getWith();
+        result = result * PRIME + ($with == null ? 43 : $with.hashCode());
+        return result;
+    }
+
+    public String toString() {
+        return "TranslatableComponent(format=" + this.getFormat() + ", translate=" + this.getTranslate() + ", with=" + this.getWith() + ")";
     }
 }

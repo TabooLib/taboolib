@@ -83,6 +83,8 @@ public abstract class NMS {
 
     abstract public Position fromBlockPosition(Object blockPosition);
 
+    abstract public Object toBlockPosition(Position blockPosition);
+
     abstract public void openSignEditor(Player player, Block block);
 
     abstract public boolean inBoundingBox(Entity entity, Vector vector);
