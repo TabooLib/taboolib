@@ -13,13 +13,13 @@ import java.util.Map;
  */
 public class Time {
 
-    private static Map<String, Time> cacheMap = Maps.newHashMap();
-    private TimeType type;
+    private static final Map<String, Time> cacheMap = Maps.newHashMap();
+    private final TimeType type;
     private int day;
     private int hour;
     private int minute;
     private long time;
-    private Map<Long, Calendar> cacheEnd = Maps.newHashMap();
+    private final Map<Long, Calendar> cacheEnd = Maps.newHashMap();
     private Calendar end;
     private String origin;
 
@@ -54,19 +54,18 @@ public class Time {
         if (this.cacheEnd.containsKey(start)) {
             this.end = this.cacheEnd.get(start);
         } else {
-            Calendar calendar = Calendar.getInstance();
-            Calendar startCal = (Calendar) calendar.clone();
+            Calendar startCal = Calendar.getInstance();
             startCal.setTimeInMillis(start);
-            this.end = (Calendar) calendar.clone();
-            this.cacheEnd.put(start, this.end);
+            this.end = startCal;
             this.end.set(Calendar.SECOND, 0);
             this.end.set(Calendar.MILLISECOND, 0);
+            this.cacheEnd.put(start, this.end);
             if (this.type != TimeType.TIME) {
                 switch (this.type) {
                     case DAY:
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
+                        if (Calendar.getInstance().after(this.end)) {
                             this.end.add(Calendar.DATE, 1);
                         }
                         break;
@@ -74,7 +73,7 @@ public class Time {
                         this.end.set(Calendar.DAY_OF_WEEK, day + 1);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
+                        if (Calendar.getInstance().after(this.end)) {
                             this.end.add(Calendar.DATE, 7);
                         }
                         break;
@@ -82,7 +81,7 @@ public class Time {
                         this.end.set(Calendar.DAY_OF_MONTH, day);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) {
+                        if (Calendar.getInstance().after(this.end)) {
                             this.end.add(Calendar.MONTH, 1);
                         }
                         break;
@@ -97,20 +96,7 @@ public class Time {
     }
 
     public boolean isTimeout() {
-        Calendar calendar = Calendar.getInstance();
-        switch (type) {
-            case DAY: {
-                return calendar.after(this.end);
-            }
-            case WEEK: {
-                return calendar.after(this.end);
-            }
-            case MONTH: {
-                return calendar.after(this.end);
-            }
-            default:
-                return false;
-        }
+        return Calendar.getInstance().after(this.end);
     }
 
     public boolean isEquals() {
@@ -194,5 +180,19 @@ public class Time {
 
     public String getOrigin() {
         return origin;
+    }
+
+    @Override
+    public String toString() {
+        return "Time{" +
+                "type=" + type +
+                ", day=" + day +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", time=" + time +
+                ", cacheEnd=" + cacheEnd +
+                ", end=" + end +
+                ", origin='" + origin + '\'' +
+                '}';
     }
 }
