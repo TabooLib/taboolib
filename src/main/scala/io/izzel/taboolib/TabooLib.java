@@ -61,6 +61,10 @@ import java.util.concurrent.Executors;
         maven = "com.google.inject:guice:4.2.2",
         url = "http://repo.ptms.ink/repository/maven-releases/com/google/inject/guice/4.2.2/guice-4.2.2.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/guice-4.2.2.jar"
 )
+@Dependency(
+        maven = "com.mongodb:mongodb:3.12.2",
+        url = "http://repo.ptms.ink/repository/maven-public/com/mongodb/MongoDB/3.12.2/MongoDB-3.12.2-all.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/mongo-java-driver-3.12.2.jar"
+)
 public class TabooLib {
 
     private static TabooLib inst = new TabooLib();

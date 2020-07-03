@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -23,26 +22,6 @@ public class SecuredFile extends YamlConfiguration {
 
     public SecuredFile() {
         SimpleReflection.setFieldValue(MemorySection.class, this, "map", new ConcurrentHashMap<>(map), true);
-    }
-
-    @Override
-    public void set(String path, Object value) {
-        super.set(path, value);
-    }
-
-    @Override
-    public void save(File file) throws IOException {
-        super.save(file);
-    }
-
-    @Override
-    public void save(String file) throws IOException {
-        super.save(file);
-    }
-
-    @Override
-    public String saveToString() {
-        return super.saveToString();
     }
 
     @Override

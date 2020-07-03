@@ -14,8 +14,8 @@ import java.util.Map;
  */
 public class LocalPlugin {
 
-    private String name;
-    private Map<String, FileConfiguration> files = Maps.newConcurrentMap();
+    private final String name;
+    private final Map<String, FileConfiguration> files = Maps.newConcurrentMap();
 
     public LocalPlugin(String name) {
         this.name = name;

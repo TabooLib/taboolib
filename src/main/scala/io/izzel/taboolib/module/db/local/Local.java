@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class Local  {
 
-    private static Map<String, LocalPlugin> plugins = Maps.newConcurrentMap();
+    private static final Map<String, LocalPlugin> plugins = Maps.newConcurrentMap();
 
     @TSchedule(delay = 20 * 30, period = 20 * 30, async = true)
     public static void saveFiles() {

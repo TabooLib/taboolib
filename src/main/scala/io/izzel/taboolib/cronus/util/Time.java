@@ -65,7 +65,7 @@ public class Time {
                     case DAY:
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (Calendar.getInstance().after(this.end)) {
+                        if (startCal.after(this.end)) {
                             this.end.add(Calendar.DATE, 1);
                         }
                         break;
@@ -73,7 +73,7 @@ public class Time {
                         this.end.set(Calendar.DAY_OF_WEEK, day + 1);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (Calendar.getInstance().after(this.end)) {
+                        if (startCal.after(this.end)) {
                             this.end.add(Calendar.DATE, 7);
                         }
                         break;
@@ -81,7 +81,7 @@ public class Time {
                         this.end.set(Calendar.DAY_OF_MONTH, day);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (Calendar.getInstance().after(this.end)) {
+                        if (startCal.after(this.end)) {
                             this.end.add(Calendar.MONTH, 1);
                         }
                         break;

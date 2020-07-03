@@ -7,6 +7,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.KV;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -111,6 +112,12 @@ public class TConfigMigrate {
             }
         }
         return migrated ? content : null;
+    }
+
+    public static Map<String, Object> toMap(FileConfiguration conf) {
+        Map<String, Object> map = conf.getValues(true);
+        map.entrySet().removeIf(next -> next.getValue() instanceof ConfigurationSection);
+        return map;
     }
 
     public static List<KV<String, Object>> contrast(Map<?, ?> current, Map<?, ?> source) {
