@@ -86,18 +86,22 @@ public abstract class PluginLoader {
                 // 保存数据
                 Local.saveFiles(plugin.getName());
                 Local.clearFiles(plugin.getName());
-                // 注销插件类
-                TabooLibLoader.unloadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
-                // 注销监听器
-                TListenerHandler.cancelListener(plugin);
                 // 释放文检读取
                 Optional.ofNullable(TConfig.getFiles().remove(plugin.getName())).ifPresent(files -> files.forEach(file -> TConfigWatcher.getInst().removeListener(file)));
-                // 注销数据库连接
-                DBSource.getDataSource().keySet().stream().filter(dbSourceData -> dbSourceData.getPlugin().equals(plugin)).forEach(DBSource::closeDataSource);
-                // 注销调度器
-                Bukkit.getScheduler().cancelTasks(plugin);
-                // 卸载语言文件
-                TLocaleLoader.unload(plugin);
+                // 非关服
+                // 关服情况下不会主动卸载这些功能，因为进程即将关闭，等待其他插件最后处理
+                if (!(plugin instanceof InternalPlugin)) {
+                    // 注销插件类
+                    TabooLibLoader.unloadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
+                    // 注销监听器
+                    TListenerHandler.cancelListener(plugin);
+                    // 注销数据库连接
+                    DBSource.getDataSource().keySet().stream().filter(dbSourceData -> dbSourceData.getPlugin().equals(plugin)).forEach(DBSource::closeDataSource);
+                    // 注销调度器
+                    Bukkit.getScheduler().cancelTasks(plugin);
+                    // 卸载语言文件
+                    TLocaleLoader.unload(plugin);
+                }
             }
         });
     }
