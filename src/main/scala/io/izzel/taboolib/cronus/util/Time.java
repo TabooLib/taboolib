@@ -56,7 +56,9 @@ public class Time {
         } else {
             Calendar startCal = Calendar.getInstance();
             startCal.setTimeInMillis(start);
-            this.end = startCal;
+            Calendar endCal = Calendar.getInstance();
+            endCal.setTimeInMillis(start);
+            this.end = endCal;
             this.end.set(Calendar.SECOND, 0);
             this.end.set(Calendar.MILLISECOND, 0);
             this.cacheEnd.put(start, this.end);
