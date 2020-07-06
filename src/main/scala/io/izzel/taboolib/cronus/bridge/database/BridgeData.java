@@ -13,24 +13,24 @@ import java.util.Set;
  * @Author sky
  * @Since 2020-07-03 17:11
  */
-public class Data {
+public class BridgeData {
 
     private final String id;
     private final Map<String, Object> update = Maps.newHashMap();
     private FileConfiguration data = new SecuredFile();
     private boolean checked = false;
 
-    public Data(String id) {
+    public BridgeData(String id) {
         this.id = id;
     }
 
-    public Data(String id, FileConfiguration data) {
+    public BridgeData(String id, FileConfiguration data) {
         this.id = id;
         this.data = data;
         update();
     }
 
-    public Data(String id, Set<Map.Entry<String, Object>> input) {
+    public BridgeData(String id, Set<Map.Entry<String, Object>> input) {
         this.id = id;
         parse(input, "");
         update();
@@ -67,7 +67,7 @@ public class Data {
         return checked;
     }
 
-    public Data setChecked(boolean checked) {
+    public BridgeData setChecked(boolean checked) {
         this.checked = checked;
         return this;
     }

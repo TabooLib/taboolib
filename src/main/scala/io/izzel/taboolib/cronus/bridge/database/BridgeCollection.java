@@ -21,7 +21,7 @@ public final class BridgeCollection {
     private final BridgeDatabase database;
     private final String collection;
     private final MongoCollection<Document> mongoCollection;
-    private final Map<String, Data> dataMap = Maps.newConcurrentMap();
+    private final Map<String, BridgeData> dataMap = Maps.newConcurrentMap();
     private final Gson gson = new Gson();
     private final IndexType indexType;
 
@@ -49,7 +49,7 @@ public final class BridgeCollection {
         }
     }
 
-    public void update(String id, Data data) {
+    public void update(String id, BridgeData data) {
         Map<String, Object> current = TConfigMigrate.toMap(data.getData());
         if (!data.isChecked() && mongoCollection.countDocuments(Filters.eq("id", id)) == 0) {
             mongoCollection.insertOne(new Document().append("data", Document.parse(gson.toJson(current))).append("id", id));
@@ -73,11 +73,11 @@ public final class BridgeCollection {
             return dataMap.get(id).getData();
         }
         Document find = mongoCollection.find(Filters.eq("id", id)).first();
-        Data data;
+        BridgeData data;
         if (find != null) {
-            data = new Data(id, find.get("data", Document.class).entrySet()).setChecked(true);
+            data = new BridgeData(id, find.get("data", Document.class).entrySet()).setChecked(true);
         } else {
-            data = new Data(id);
+            data = new BridgeData(id);
         }
         dataMap.put(id, data);
         return data.getData();
@@ -117,7 +117,7 @@ public final class BridgeCollection {
         return this.mongoCollection;
     }
 
-    public Map<String, Data> getDataMap() {
+    public Map<String, BridgeData> getDataMap() {
         return dataMap;
     }
 

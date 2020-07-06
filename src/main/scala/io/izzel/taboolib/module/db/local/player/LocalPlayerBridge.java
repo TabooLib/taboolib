@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.db.local.player;
 
 import io.izzel.taboolib.cronus.bridge.CronusBridge;
 import io.izzel.taboolib.cronus.bridge.database.BridgeCollection;
-import io.izzel.taboolib.cronus.bridge.database.Data;
+import io.izzel.taboolib.cronus.bridge.database.BridgeData;
 import io.izzel.taboolib.cronus.bridge.database.IndexType;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.inject.TListener;
@@ -69,7 +69,7 @@ public class LocalPlayerBridge extends LocalPlayerHandler {
 
     @Override
     public void set0(OfflinePlayer player, FileConfiguration file) {
-        this.bridgeCollection.update(LocalPlayer.toName(player), new Data(LocalPlayer.toName(player), file));
+        this.bridgeCollection.update(LocalPlayer.toName(player), new BridgeData(LocalPlayer.toName(player), file));
     }
 
     public String getClient() {
