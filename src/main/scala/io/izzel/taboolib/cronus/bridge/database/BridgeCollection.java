@@ -72,6 +72,7 @@ public final class BridgeCollection {
         if (cache && dataMap.containsKey(id)) {
             return dataMap.get(id).getData();
         }
+
         Document find = mongoCollection.find(Filters.eq("id", id)).first();
         BridgeData data;
         if (find != null) {
