@@ -52,15 +52,14 @@ public final class BridgeCollection {
     public void update(String id, BridgeData data) {
         Map<String, Object> current = TConfigMigrate.toMap(data.getData());
         if (!data.isChecked() && mongoCollection.countDocuments(Filters.eq("id", id)) == 0) {
-            mongoCollection.insertOne(new Document().append("data", Document.parse(gson.toJson(current))).append("id", id));
-        } else {
-            List<KV<String, Object>> contrast = TConfigMigrate.contrast(current, data.getUpdate());
-            if (contrast.size() > 0) {
-                mongoCollection.updateOne(Filters.eq("id", id), Updates.combine(toBson(contrast)));
-                data.setChecked(true);
-                data.getUpdate().clear();
-                data.getUpdate().putAll(current);
-            }
+            mongoCollection.insertOne(new Document().append("id", id));
+        }
+        List<KV<String, Object>> contrast = TConfigMigrate.contrast(current, data.getUpdate());
+        if (contrast.size() > 0) {
+            mongoCollection.updateOne(Filters.eq("id", id), Updates.combine(toBson(contrast)));
+            data.setChecked(true);
+            data.getUpdate().clear();
+            data.getUpdate().putAll(current);
         }
     }
 
