@@ -39,8 +39,12 @@ public final class BridgeCollection {
         this.indexType = indexType;
     }
 
-    public void release(String id) {
+    public void remove(String id) {
         this.dataMap.remove(id);
+    }
+
+    public void release(String id) {
+        update(id, this.dataMap.remove(id));
     }
 
     public void update(String id) {
@@ -50,6 +54,9 @@ public final class BridgeCollection {
     }
 
     public void update(String id, BridgeData data) {
+        if (data == null) {
+            return;
+        }
         Map<String, Object> current = TConfigMigrate.toMap(data.getData());
         if (!data.isChecked() && mongoCollection.countDocuments(Filters.eq("id", id)) == 0) {
             mongoCollection.insertOne(new Document().append("id", id));
@@ -71,7 +78,6 @@ public final class BridgeCollection {
         if (cache && dataMap.containsKey(id)) {
             return dataMap.get(id).getData();
         }
-
         Document find = mongoCollection.find(Filters.eq("id", id)).first();
         BridgeData data;
         if (find != null) {
@@ -79,7 +85,9 @@ public final class BridgeCollection {
         } else {
             data = new BridgeData(id);
         }
-        dataMap.put(id, data);
+        if (cache) {
+            dataMap.put(id, data);
+        }
         return data.getData();
     }
 

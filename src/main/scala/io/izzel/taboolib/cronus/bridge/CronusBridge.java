@@ -2,15 +2,18 @@ package io.izzel.taboolib.cronus.bridge;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.cronus.bridge.database.BridgeCollection;
+import io.izzel.taboolib.cronus.bridge.database.BridgeData;
 import io.izzel.taboolib.cronus.bridge.database.BridgeDatabase;
 import io.izzel.taboolib.cronus.bridge.database.IndexType;
 import io.izzel.taboolib.module.inject.TListener;
+import io.izzel.taboolib.module.inject.TSchedule;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author sky
@@ -48,8 +51,25 @@ public class CronusBridge {
         }
     }
 
+    public static void release() {
+        for (BridgeDatabase database : databaseMap.values()) {
+            for (BridgeCollection collection : database.getCollectionMap().values()) {
+                for (Map.Entry<String, BridgeData> entry : collection.getDataMap().entrySet()) {
+                    if (System.currentTimeMillis() - entry.getValue().getTime() > TimeUnit.SECONDS.toMillis(60)) {
+                        collection.release(entry.getKey());
+                    }
+                }
+            }
+        }
+    }
+
     @TListener
     static class Events implements Listener {
+
+        @TSchedule(period = 20 * 60, async = true)
+        public void e() {
+            CronusBridge.release();
+        }
 
         @EventHandler
         public void e(PlayerQuitEvent e) {

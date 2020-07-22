@@ -19,6 +19,7 @@ public class BridgeData {
     private final Map<String, Object> update = Maps.newHashMap();
     private FileConfiguration data = new SecuredFile();
     private boolean checked = false;
+    private long time = System.currentTimeMillis();
 
     public BridgeData(String id) {
         this.id = id;
@@ -37,6 +38,7 @@ public class BridgeData {
     }
 
     public void update() {
+        time = System.currentTimeMillis();
         update.clear();
         update.putAll(TConfigMigrate.toMap(data));
     }
@@ -56,6 +58,7 @@ public class BridgeData {
     }
 
     public FileConfiguration getData() {
+        time = System.currentTimeMillis();
         return data;
     }
 
@@ -70,5 +73,13 @@ public class BridgeData {
     public BridgeData setChecked(boolean checked) {
         this.checked = checked;
         return this;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }
