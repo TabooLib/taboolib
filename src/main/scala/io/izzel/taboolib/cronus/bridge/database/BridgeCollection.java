@@ -85,9 +85,7 @@ public final class BridgeCollection {
         } else {
             data = new BridgeData(id);
         }
-        if (cache) {
-            dataMap.put(id, data);
-        }
+        dataMap.put(id, data);
         return data.getData();
     }
 
