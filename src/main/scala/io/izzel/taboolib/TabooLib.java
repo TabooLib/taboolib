@@ -1,5 +1,6 @@
 package io.izzel.taboolib;
 
+import io.izzel.taboolib.common.plugin.IllegalAccess;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.config.TConfig;
 import io.izzel.taboolib.module.config.TConfigWatcher;
@@ -98,6 +99,12 @@ public class TabooLib {
         // 加载内部语言文件
         try {
             internal.loadFromString(IO.readFully(Files.getResource("__resources__/lang/internal.yml"), StandardCharsets.UTF_8));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+        // 加载日志屏蔽
+        try {
+            IllegalAccess.init();
         } catch (Throwable t) {
             t.printStackTrace();
         }
