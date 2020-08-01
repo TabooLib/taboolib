@@ -15,6 +15,15 @@ import java.util.Arrays;
 public class TabooLibAPI {
 
     private static boolean bukkit;
+    private static final boolean forge = forName("net.minecraftforge.classloading.FMLForgePlugin", Plugin.class.getClassLoader()) != null || forName("net.minecraftforge.common.MinecraftForge", Plugin.class.getClassLoader()) != null;
+
+    private static Class<?> forName(String name, ClassLoader loader) {
+        try {
+            return Class.forName(name, false, loader);
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
 
     static {
         try {
@@ -30,6 +39,10 @@ public class TabooLibAPI {
 
     public static boolean isBukkit() {
         return bukkit;
+    }
+
+    public static boolean isForge() {
+        return forge;
     }
 
     public static boolean isOriginLoaded() {
