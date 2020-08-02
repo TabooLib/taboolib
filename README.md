@@ -17,7 +17,10 @@
     <img src="https://img.shields.io/github/release/Bkm016/TabooLib.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Bukkit-1.8~1.14-blue.svg">
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/Loader-2.2-blue.svg">
   </a>
 </p>
 
