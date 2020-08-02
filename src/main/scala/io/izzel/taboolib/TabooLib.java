@@ -39,24 +39,24 @@ import java.util.concurrent.Executors;
         url = "http://repo.ptms.ink/repository/maven-public/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib:1.3.72",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib/1.3.72/kotlin-stdlib-1.3.72.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.3.72-1.3.72.jar"
+        maven = "org.kotlinlang:kotlin-stdlib:1.4.0-rc",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib/1.4.0-rc/kotlin-stdlib-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.0-rc-1.4.0-rc.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.3.72",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk7/1.3.72/kotlin-stdlib-jdk7-1.3.72.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.3.72.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.0-rc",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk7/1.4.0-rc/kotlin-stdlib-jdk7-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.0-rc.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.3.72",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk8/1.3.72/kotlin-stdlib-jdk8-1.3.72.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.3.72.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.0-rc",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk8/1.4.0-rc/kotlin-stdlib-jdk8-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.0-rc.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-reflect:1.3.72",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-reflect/1.3.72/kotlin-reflect-1.3.72.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.3.72.jar"
+        maven = "org.kotlinlang:kotlin-reflect:1.4.0-rc",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-reflect/1.4.0-rc/kotlin-reflect-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.0-rc.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-test:1.3.72",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-test/1.3.72/kotlin-test-1.3.72.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.3.72.jar"
+        maven = "org.kotlinlang:kotlin-test:1.4.0-rc",
+        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-test/1.4.0-rc/kotlin-test-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.4.0-rc.jar"
 )
 @Dependency(
         maven = "com.google.inject:guice:4.2.2",

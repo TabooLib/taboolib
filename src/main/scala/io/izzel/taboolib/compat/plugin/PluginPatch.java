@@ -33,8 +33,7 @@ public class PluginPatch {
     public static void patch(String plugin, String path) {
         try {
             patchMap.computeIfAbsent(plugin, i -> Lists.newArrayList()).add(new KV<>(path, IO.readFully(Files.getResourceChecked(TabooLib.getPlugin(), "patch/" + path.substring(path.lastIndexOf("/") + 1) + ".class"))));
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Throwable ignore) {
         }
     }
 
