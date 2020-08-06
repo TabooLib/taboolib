@@ -57,8 +57,7 @@ public class TConfigWatcher {
             WatchService service = FileSystems.getDefault().newWatchService();
             file.getParentFile().toPath().register(service, StandardWatchEventKinds.ENTRY_MODIFY);
             map.putIfAbsent(service, Triple.of(file, obj, consumer));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable ignored) {
         }
     }
 

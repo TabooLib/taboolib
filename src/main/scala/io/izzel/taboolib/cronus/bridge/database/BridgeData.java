@@ -31,9 +31,11 @@ public class BridgeData {
         update();
     }
 
-    public BridgeData(String id, Set<Map.Entry<String, Object>> input) {
+    public BridgeData(String id, Document input) {
         this.id = id;
-        parse(input, "");
+        if (input != null) {
+            parse(input.entrySet(), "");
+        }
         update();
     }
 

@@ -81,7 +81,7 @@ public final class BridgeCollection {
         Document find = mongoCollection.find(Filters.eq("id", id)).first();
         BridgeData data;
         if (find != null) {
-            data = new BridgeData(id, find.get("data", Document.class).entrySet()).setChecked(true);
+            data = new BridgeData(id, find.get("data", Document.class)).setChecked(true);
         } else {
             data = new BridgeData(id);
         }
