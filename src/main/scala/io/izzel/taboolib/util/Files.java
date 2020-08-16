@@ -3,7 +3,7 @@ package io.izzel.taboolib.util;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.db.local.SecuredFile;
-import io.izzel.taboolib.module.inject.TSchedule;
+import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.util.plugin.PluginUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -60,7 +60,7 @@ public class Files {
         return classes;
     }
 
-    @TSchedule(period = 100, async = true)
+    @TFunction.Cancel
     public static void clearTempFiles() {
         deepDelete(new File("plugins/TabooLib/temp"));
     }

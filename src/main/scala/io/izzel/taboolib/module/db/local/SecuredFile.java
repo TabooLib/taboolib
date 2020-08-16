@@ -3,15 +3,12 @@ package io.izzel.taboolib.module.db.local;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 /**
@@ -20,17 +17,20 @@ import java.util.logging.Level;
  */
 public class SecuredFile extends YamlConfiguration {
 
-    public SecuredFile() {
-        SimpleReflection.setFieldValue(MemorySection.class, this, "map", new ConcurrentHashMap<>(map), true);
+    private final Object lock = new Object();
+
+    @Override
+    public void set(String path, Object value) {
+        synchronized(lock) {
+            super.set(path, value);
+        }
     }
 
     @Override
-    public ConfigurationSection createSection(String path) {
-        ConfigurationSection section = super.createSection(path);
-        if (section instanceof MemorySection) {
-            SimpleReflection.setFieldValue(MemorySection.class, section, "map", new ConcurrentHashMap<>(), true);
+    public String saveToString() {
+        synchronized(lock) {
+            return super.saveToString();
         }
-        return section;
     }
 
     /**

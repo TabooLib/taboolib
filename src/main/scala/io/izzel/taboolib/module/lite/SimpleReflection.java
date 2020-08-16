@@ -17,8 +17,8 @@ import java.util.Map;
  */
 public class SimpleReflection {
 
-    private static Map<String, Map<String, Field>> fieldCached = Maps.newHashMap();
-    private static Map<String, Map<String, Method>> methodCached = Maps.newHashMap();
+    private static final Map<String, Map<String, Field>> fieldCached = Maps.newConcurrentMap();
+    private static final Map<String, Map<String, Method>> methodCached = Maps.newConcurrentMap();
 
     @Deprecated
     public static boolean isExists(Class<?> nmsClass) {
@@ -34,19 +34,19 @@ public class SimpleReflection {
     }
 
     public static Map<String, Field> getFields(Class<?> nmsClass) {
-        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap());
+        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newConcurrentMap());
     }
 
     public static Map<String, Method> getMethods(Class<?> nmsClass) {
-        return methodCached.getOrDefault(nmsClass.getName(), Maps.newHashMap());
+        return methodCached.getOrDefault(nmsClass.getName(), Maps.newConcurrentMap());
     }
 
     public static Field getField(Class<?> nmsClass, String fieldName) {
-        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(fieldName);
+        return fieldCached.getOrDefault(nmsClass.getName(), Maps.newConcurrentMap()).get(fieldName);
     }
 
     public static Method getMethod(Class<?> nmsClass, String methodName) {
-        return methodCached.getOrDefault(nmsClass.getName(), Maps.newHashMap()).get(methodName);
+        return methodCached.getOrDefault(nmsClass.getName(), Maps.newConcurrentMap()).get(methodName);
     }
 
     public static void checkAndSave(Class<?>... nmsClass) {
@@ -89,7 +89,7 @@ public class SimpleReflection {
     public static void saveField(Class<?> nmsClass, String fieldName) {
         try {
             Field declaredField = nmsClass.getDeclaredField(fieldName);
-            fieldCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(fieldName, declaredField);
+            fieldCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newConcurrentMap()).put(fieldName, declaredField);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,7 +98,7 @@ public class SimpleReflection {
     public static void saveMethod(Class<?> nmsClass, String methodName) {
         try {
             Method declaredMethod = nmsClass.getDeclaredMethod(methodName);
-            methodCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newHashMap()).put(methodName, declaredMethod);
+            methodCached.computeIfAbsent(nmsClass.getName(), name -> Maps.newConcurrentMap()).put(methodName, declaredMethod);
         } catch (NoSuchMethodException | NoSuchMethodError ignored) {
         } catch (Exception e) {
             e.printStackTrace();
