@@ -3,11 +3,12 @@ package io.izzel.taboolib.util.asm;
 public class AsmClassLoader extends ClassLoader {
 
     private static final class AsmClassLoaderHolder {
-        private static AsmClassLoader instance = new AsmClassLoader();
+
+        private static final AsmClassLoader INSTANCE = new AsmClassLoader();
     }
 
     public static AsmClassLoader getInstance() {
-        return new AsmClassLoader();
+        return AsmClassLoaderHolder.INSTANCE;
     }
 
     private AsmClassLoader() {

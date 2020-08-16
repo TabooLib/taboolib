@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.commons.ClassRemapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -142,11 +143,10 @@ public class SimpleVersionControl {
         })) : Files.getResource(plugin, target.replace(".", "/") + ".class");
         // 读取
         ClassReader classReader = new ClassReader(inputStream);
-        ClassWriter classWriter = new ClassWriter(0);
-        ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
-        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
-        classWriter.visitEnd();
-        classVisitor.visitEnd();
+
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
+        classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
         // 打印
         if (mapping || plugin instanceof InternalPlugin) {
             executorService.submit(this::printMapping);
@@ -161,11 +161,9 @@ public class SimpleVersionControl {
             throw new IllegalStateException();
         }
         ClassReader classReader = new ClassReader(Files.getTabooLibResource(target.replace(".", "/") + ".class"));
-        ClassWriter classWriter = new ClassWriter(0);
-        ClassVisitor classVisitor = new SimpleClassVisitor(this, classWriter);
-        classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
-        classWriter.visitEnd();
-        classVisitor.visitEnd();
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
+        classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
         if (mapping || plugin instanceof InternalPlugin) {
             executorService.submit(this::printMapping);
         }
