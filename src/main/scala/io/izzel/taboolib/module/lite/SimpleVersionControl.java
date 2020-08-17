@@ -144,9 +144,9 @@ public class SimpleVersionControl {
         // 读取
         ClassReader classReader = new ClassReader(inputStream);
 
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
-        classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
+        classReader.accept(classVisitor, 0);
         // 打印
         if (mapping || plugin instanceof InternalPlugin) {
             executorService.submit(this::printMapping);
@@ -161,9 +161,9 @@ public class SimpleVersionControl {
             throw new IllegalStateException();
         }
         ClassReader classReader = new ClassReader(Files.getTabooLibResource(target.replace(".", "/") + ".class"));
-        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
-        classReader.accept(classVisitor, ClassReader.SKIP_FRAMES);
+        classReader.accept(classVisitor, 0);
         if (mapping || plugin instanceof InternalPlugin) {
             executorService.submit(this::printMapping);
         }
@@ -174,8 +174,8 @@ public class SimpleVersionControl {
         String replace = origin;
         if (useNMS) {
             replace = replace
-                    .replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/")
-                    .replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
+                .replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/")
+                .replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
         }
         for (String from : from) {
             replace = replace.replace("/" + from + "/", "/" + to + "/");
