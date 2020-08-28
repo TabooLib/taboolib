@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  */
 public class Signs {
 
-    private static List<Data> signs = Lists.newCopyOnWriteArrayList();
+    private static final List<Data> signs = Lists.newCopyOnWriteArrayList();
 
     /**
      * 向玩家发送虚拟牌子，并返回编辑内容
@@ -108,9 +108,11 @@ public class Signs {
 
     static class Data {
 
-        private String player;
-        private Consumer<String[]> catcher;
-        private int x, y, z;
+        private final String player;
+        private final Consumer<String[]> catcher;
+        private final int x;
+        private final int y;
+        private final int z;
 
         public Data(String player, Consumer<String[]> catcher, int x, int y, int z) {
             this.player = player;

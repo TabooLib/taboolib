@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -13,16 +14,16 @@ import java.util.Properties;
  */
 public class TabooLibSettings {
 
-    private static Charset charset = Charset.forName("UTF-8");
-    private static Properties settings = new Properties();
-    private static Throwable throwable;
+    private static final Properties settings = new Properties();
+    private static final Charset charset = StandardCharsets.UTF_8;
+    private static Throwable error;
 
     public static boolean load() {
         try {
             settings.load(getSettingsInputStream());
             return true;
         } catch (Throwable e) {
-            throwable = e;
+            error = e;
             return false;
         }
     }
@@ -42,18 +43,12 @@ public class TabooLibSettings {
         }
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public static Properties getSettings() {
         return settings;
     }
 
-    public static Throwable getThrowable() {
-        return throwable;
+    public static Throwable getError() {
+        return error;
     }
 
     public static Charset getCharset() {

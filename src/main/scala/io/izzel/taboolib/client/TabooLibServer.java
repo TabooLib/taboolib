@@ -27,16 +27,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class TabooLibServer {
 
-    private static SimpleDateFormat infoFormat = new SimpleDateFormat("HH:mm:ss");
     private static ServerSocket server = null;
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
-    private static ConcurrentHashMap<Integer, ClientConnection> client = new ConcurrentHashMap<>();
+    private static final SimpleDateFormat infoFormat = new SimpleDateFormat("HH:mm:ss");
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final ConcurrentHashMap<Integer, ClientConnection> client = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
         println("TabooLib Communication Area Starting...");
 
         if (!TabooLibSettings.load()) {
-            println("Settings loading failed: " + TabooLibSettings.getThrowable().toString());
+            println("Settings loading failed: " + TabooLibSettings.getError().toString());
             return;
         }
 
@@ -101,12 +101,6 @@ public class TabooLibServer {
     public static Optional<Map.Entry<Integer, ClientConnection>> getConnection(int port) {
         return client.entrySet().stream().filter(entry -> entry.getKey().equals(port)).findFirst();
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public static ServerSocket getServer() {
         return server;

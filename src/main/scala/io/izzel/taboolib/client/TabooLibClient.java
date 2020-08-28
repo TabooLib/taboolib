@@ -3,6 +3,7 @@ package io.izzel.taboolib.client;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.client.packet.Packet;
 import io.izzel.taboolib.client.packet.PacketSerializer;
+import io.izzel.taboolib.client.packet.impl.PacketBroadcast;
 import io.izzel.taboolib.client.packet.impl.PacketCommand;
 import io.izzel.taboolib.client.packet.impl.PacketMessage;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
@@ -22,21 +23,25 @@ import java.util.concurrent.Executors;
  */
 public class TabooLibClient {
 
+    private static boolean notify = false;
     private static Socket socket;
     private static BufferedReader reader;
     private static PrintWriter writer;
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
     private static Packet packet;
-    private static boolean notify = false;
     private static long latestResponse = System.currentTimeMillis();
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     public static void init() {
         if (TabooLibSettings.load()) {
             connect();
             TabooLib.getPlugin().runTaskAsync(TabooLibClient::reconnect, 0, 100);
         } else {
-            TLocale.sendToConsole("COMMUNICATION.FAILED-LOAD-SETTINGS", TabooLibSettings.getThrowable().toString());
+            TLocale.sendToConsole("COMMUNICATION.FAILED-LOAD-SETTINGS", TabooLibSettings.getError().toString());
         }
+    }
+
+    public static void sendBroadcast(String value) {
+        sendPacket(new PacketBroadcast(value));
     }
 
     public static void sendPacket(Packet packet) {
@@ -85,23 +90,19 @@ public class TabooLibClient {
                 .permission("*")
                 .execute((sender, args) -> {
                     if (args.length == 0) {
-                        sender.sendMessage("§c[TabooLibClient] §f/tclient message §7[TEXT] §8- §7发送测试信息");
-                        sender.sendMessage("§c[TabooLibClient] §f/tclient command §7[TEXT] §8- §7发送测试命令");
+                        sender.sendMessage("§c[TabooLibClient] §f/tclient message §7[TEXT] §8- §7发送信息");
+                        sender.sendMessage("§c[TabooLibClient] §f/tclient broadcast §7[TEXT] §8- §7发送广播");
                     } else if (args[0].equalsIgnoreCase("message") && args.length > 1) {
                         sendPacket(new PacketMessage(ArrayUtil.arrayJoin(args, 1)));
                     } else if (args[0].equalsIgnoreCase("command") && args.length > 1) {
                         sendPacket(new PacketCommand(ArrayUtil.arrayJoin(args, 1)));
+                    } else if (args[0].equalsIgnoreCase("broadcast") && args.length > 1) {
+                        sendPacket(new PacketBroadcast(ArrayUtil.arrayJoin(args, 1)));
                     } else {
                         sender.sendMessage("§c[TabooLibClient] §7指令错误.");
                     }
                 }).build();
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public static Socket getSocket() {
         return socket;
