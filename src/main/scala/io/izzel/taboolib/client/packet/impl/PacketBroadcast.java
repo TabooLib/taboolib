@@ -26,7 +26,7 @@ public class PacketBroadcast extends Packet {
     }
 
     @Override
-    public void readOnServer() {
+    public void readOnClient() {
         new TabooClientPacketBroadcast(value).call();
     }
 }
