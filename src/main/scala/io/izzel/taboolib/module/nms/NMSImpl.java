@@ -3,9 +3,9 @@ package io.izzel.taboolib.module.nms;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.izzel.taboolib.Version;
-import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
 import io.izzel.taboolib.module.nms.nbt.*;
 import io.izzel.taboolib.module.packet.TPacketHandler;
@@ -16,6 +16,7 @@ import net.minecraft.server.v1_12_R1.MinecraftServer;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.EnumHand;
 import net.minecraft.server.v1_13_R2.IRegistry;
+import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.*;
 import net.minecraft.server.v1_15_R1.LightEngineThreaded;
 import net.minecraft.server.v1_16_R1.WorldDataServer;
@@ -589,12 +590,23 @@ public class NMSImpl extends NMS {
     public int getRawLightLevel(Block block, Type lightType) {
         Object world = ((CraftWorld) block.getWorld()).getHandle();
         Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-        if (lightType == Type.BLOCK) {
-            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
-        } else if (lightType == Type.SKY) {
-            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+        if (is11200) {
+            if (lightType == Type.BLOCK) {
+                return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+            } else if (lightType == Type.SKY) {
+                return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
+            } else {
+                return ((net.minecraft.server.v1_13_R2.WorldServer) world).getLightLevel((net.minecraft.server.v1_13_R2.BlockPosition) position);
+            }
         } else {
-            return ((net.minecraft.server.v1_13_R2.WorldServer) world).getLightLevel((net.minecraft.server.v1_13_R2.BlockPosition) position);
+            Object chunk = ((net.minecraft.server.v1_9_R2.WorldServer) world).getChunkAt(block.getChunk().getX(), block.getChunk().getZ());
+            if (lightType == Type.BLOCK) {
+                return ((net.minecraft.server.v1_9_R2.Chunk) chunk).getBrightness(net.minecraft.server.v1_9_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_9_R2.BlockPosition) position);
+            } else if (lightType == Type.SKY) {
+                return ((net.minecraft.server.v1_9_R2.Chunk) world).getBrightness(net.minecraft.server.v1_9_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_9_R2.BlockPosition) position);
+            } else {
+                return 15;
+            }
         }
     }
 

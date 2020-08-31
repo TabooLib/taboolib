@@ -7,6 +7,7 @@ import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.util.Files;
+import io.izzel.taboolib.util.item.Items;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
@@ -75,7 +76,11 @@ public class I18nOrigin extends I18nBase {
                 }
             }
         }
-        return lang.getString(NMS.handle().getName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", ""));
+        if (Items.isNull(itemStack)) {
+            return lang.getString("item_air");
+        } else {
+            return lang.getString(NMS.handle().getName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", ""));
+        }
     }
 
     private File getLocaleFile(Plugin plugin) {

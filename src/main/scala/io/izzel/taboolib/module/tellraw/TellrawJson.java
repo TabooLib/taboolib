@@ -1,10 +1,12 @@
 package io.izzel.taboolib.module.tellraw;
 
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.util.chat.*;
+import io.izzel.taboolib.util.item.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  */
 public class TellrawJson {
 
+    private static final boolean is10900 = Version.getCurrentVersionInt() <= 10900;
     private List<BaseComponent> components = new ArrayList<>();
     private final List<BaseComponent> componentsLatest = new ArrayList<>();
     private final Map<String, String[]> itemTag = new HashMap<>();
@@ -129,6 +132,9 @@ public class TellrawJson {
     }
 
     public TellrawJson hoverItem(ItemStack itemStack, boolean supportVersion) {
+        if (is10900 && Items.isNull(itemStack)) {
+            return this;
+        }
         itemStack = TellrawCreator.getAbstractTellraw().optimizeNBT(itemStack, nbtWhitelist);
         BaseComponent[] itemComponentCurrentVersion = new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.CURRENT_VERSION)).create();
         getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemComponentCurrentVersion)));

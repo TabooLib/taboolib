@@ -55,7 +55,7 @@ public class InternalTellraw implements AbstractTellraw {
     @Override
     public ItemStack optimizeNBT(ItemStack itemStack, List<String> nbtWhitelist) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        if (((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).hasTag()) {
+        if (Items.nonNull(itemStack) && ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).hasTag()) {
             Object nbtTag = new NBTTagCompound();
             Map<String, NBTBase> mapNew =  (Map) SimpleReflection.getFieldValue(NBTTagCompound.class, nbtTag, "map");
             Map<String, NBTBase> mapOrigin = (Map) SimpleReflection.getFieldValue(NBTTagCompound.class, ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag(), "map");
