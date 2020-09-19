@@ -48,12 +48,22 @@ public class Strings {
         char[] arr = template.toCharArray();
         StringBuilder stringBuilder = new StringBuilder(template.length());
         for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == '{' && Character.isDigit(arr[Math.min(i + 1, arr.length - 1)])
-                    && arr[Math.min(i + 1, arr.length - 1)] - '0' < args.length
-                    && arr[Math.min(i + 2, arr.length - 1)] == '}') {
-                stringBuilder.append(args[arr[i + 1] - '0']);
-                i += 2;
-            } else {
+            int mark = i;
+            if (arr[i] == '{') {
+                int num = 0;
+                while (i + 1 < arr.length && Character.isDigit(arr[i + 1])) {
+                    i++;
+                    num *= 10;
+                    num += arr[i] - '0';
+                }
+                if (i != mark && i + 1 < arr.length && arr[i + 1] == '}') {
+                    i++;
+                    stringBuilder.append(args[num]);
+                } else {
+                    i = mark;
+                }
+            }
+            if (mark == i) {
                 stringBuilder.append(arr[i]);
             }
         }
@@ -88,7 +98,7 @@ public class Strings {
         return cacheKey;
     }
 
-    public static double similarDegree(String strA, String strB){
+    public static double similarDegree(String strA, String strB) {
         String newStrA = removeSign(max(strA, strB));
         String newStrB = removeSign(min(strA, strB));
         try {
@@ -123,7 +133,7 @@ public class Strings {
     private static String removeSign(String str) {
         StringBuilder builder = new StringBuilder();
         for (char item : str.toCharArray()) {
-            if (charReg(item)){
+            if (charReg(item)) {
                 builder.append(item);
             }
         }
@@ -131,7 +141,7 @@ public class Strings {
     }
 
     private static boolean charReg(char charValue) {
-        return (charValue >= 0x4E00 && charValue <= 0X9FA5) || (charValue >= 'a' && charValue <= 'z') || (charValue >= 'A' && charValue <= 'Z')  || (charValue >= '0' && charValue <= '9');
+        return (charValue >= 0x4E00 && charValue <= 0X9FA5) || (charValue >= 'a' && charValue <= 'z') || (charValue >= 'A' && charValue <= 'Z') || (charValue >= '0' && charValue <= '9');
     }
 
     private static String longestCommonSubstring(String strA, String strB) {
