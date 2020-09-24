@@ -173,9 +173,13 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
                 @Override
                 public void run() {
-                    List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && x.hasPermission(sender)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
-                    if (commandCompute.size() > 0) {
-                        display.displayErrorCommand(sender, BaseMainCommand.this, args[0], commandCompute.get(0).getCommandString(sender, label));
+                    try {
+                        List<BaseSubCommand> commandCompute = subCommands.stream().filter(x -> x != null && x.hasPermission(sender)).sorted((b, a) -> Double.compare(Strings.similarDegree(args[0], a.getLabel()), Strings.similarDegree(args[0], b.getLabel()))).collect(Collectors.toList());
+                        if (commandCompute.size() > 0) {
+                            display.displayErrorCommand(sender, BaseMainCommand.this, args[0], commandCompute.get(0).getCommandString(sender, label));
+                        }
+                    } catch (Throwable t) {
+                        t.printStackTrace();
                     }
                 }
             }.runTaskAsynchronously(TabooLib.getPlugin());

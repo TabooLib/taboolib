@@ -20,7 +20,7 @@ MYSQL-HIKARI:
 
 COMMANDS:
   INTERNAL:
-    COMMAND-CREATE-FAILED: '&c插件 &7{0} &c的 &7{1} &c命令注册失败: &7{2}'
+    COMMAND-CREATE-FAILED: '&cPlugin &7{0} &c''s command &7{1} &cregistration failed: &7{2}'
     TYPE-ERROR: '&8[&3&lTabooLib&8] &7Command &f{0} &7can only be executed by &f{1} &7.'
     TYPE-PLAYER: 'Player'
     TYPE-CONSOLE: 'Console'
@@ -58,8 +58,8 @@ COMMANDS:
         - ' '
         - ' &f&l{0}&7 v{1}'
         - ' '
-        - ' &7命令: &f/{2} &8[...]'
-        - ' &7参数:'
+        - ' &7Command: &f/{2} &8[...]'
+        - ' &7Parameters:'
       BOTTOM:
         - ' '
       PARAMETERS:
@@ -81,12 +81,12 @@ COMMANDS:
             suggest: '{3}'
 
 COMMUNICATION:
-  FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4配置载入失败: {0}'
-  FAILED-CONNECT-SERVER: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接失败.'
-  FAILED-CONNECT-CLIENT: '§8[§3§lTabooLibClient§8] &4本地通讯网络连接出错: {0}'
-  FAILED-READING-PACKET: '§8[§3§lTabooLibClient§8] &4本地通讯网络数据包读取失败: {0}'
-  SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7本地通讯网络连接成功.'
-  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7加入本地通讯网络.'
-  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7退出本地通讯网络.'
-  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7发送信息: &f{1}'
-  PACKET-COMMAND: '§8[§3§lTabooLibClient§8] &7服务器 &f{0} &7运行命令: &f{1}'
+  FAILED-LOAD-SETTINGS: '§8[§3§lTabooLibClient§8] &4configuration loading failed: {0}'
+  FAILED-CONNECT-SERVER: '§8[§3§lTabooLibClient§8] &4Local communication network connection failed.'
+  FAILED-CONNECT-CLIENT: '§8[§3§lTabooLibClient§8] &4Local communication network connection error: {0}'
+  FAILED-READING-PACKET: '§8[§3§lTabooLibClient§8] &4Local communication network read error: {0}'
+  SUCCESS-CONNECTED: '§8[§3§lTabooLibClient§8] &7Local communication network connection successfully.'
+  CLIENT-JOINED: '§8[§3§lTabooLibClient§8] &7Server &f{0} &7joined local communication network.'
+  CLIENT-QUITED: '§8[§3§lTabooLibClient§8] &7Server &f{0} &7quited local communication network.'
+  PACKET-MESSAGE: '§8[§3§lTabooLibClient§8] &7Server &f{0} &7sent message: &f{1}'
+  PACKET-COMMAND: '§8[§3§lTabooLibClient§8] &7Server &f{0} &7sent command: &f{1}'

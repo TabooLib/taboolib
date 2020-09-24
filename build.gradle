@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'scala'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.2.41'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0-rc'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
@@ -46,8 +46,7 @@ dependencies {
     shadow 'com.zaxxer:HikariCP:3.1.0'
     shadow 'com.google.inject:guice:4.2.2'
     shadow 'org.scala-lang:scala-library:2.12.8'
-    shadow "org.jetbrains.kotlin:kotlin-stdlib:1.2.41"
-    shadow "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.41"
+    shadow "org.jetbrains.kotlin:kotlin-stdlib"
     shadow 'com.mongodb:MongoDB:3.12.2:all'
     shadow 'pw.yumc.Yum:Yum:1:all'
     shadow 'me.clip:placeholderapi:2.10.4'
@@ -62,9 +61,6 @@ dependencies {
 }
 
 shadowJar {
-    // 免得 MANIFEST.MF 里面刷一堆 lib 难看
-    taskActions.removeIf { it.actionClassName.contains 'configureShadowTask' }
-
     dependencies {
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
