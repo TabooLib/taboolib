@@ -184,6 +184,10 @@ public class Time {
         return origin;
     }
 
+    public Calendar getEnd() {
+        return end;
+    }
+
     @Override
     public String toString() {
         return "Time{" +
