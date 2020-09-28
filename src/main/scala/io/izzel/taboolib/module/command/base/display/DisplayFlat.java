@@ -40,12 +40,20 @@ public class DisplayFlat extends DisplayBase {
 
     @Override
     public void displayErrorUsage(CommandSender sender, BaseMainCommand main, String label, String help) {
-        TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.ERROR-USAGE", label, help, main.getRegisterCommand().getPlugin().getName());
+        try {
+            TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.ERROR-USAGE", label, help, main.getRegisterCommand().getPlugin().getName());
+        } catch (NullPointerException t) {
+            t.printStackTrace();
+        }
     }
 
     @Override
     public void displayErrorCommand(CommandSender sender, BaseMainCommand main, String label, String help) {
-        TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.ERROR-COMMAND", label, help, main.getRegisterCommand().getPlugin().getName());
+        try {
+            TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.ERROR-COMMAND", label, help, main.getRegisterCommand().getPlugin().getName());
+        } catch (NullPointerException t) {
+            t.printStackTrace();
+        }
     }
 
     @Override
