@@ -14,7 +14,7 @@ import javax.sql.DataSource;
  */
 public class SQLTable {
 
-    private String tableName;
+    private final String tableName;
     private IColumn[] columns;
 
     public SQLTable(String tableName) {
@@ -147,12 +147,6 @@ public class SQLTable {
         java.util.Arrays.stream(columns).forEach(sqlColumn -> builder.append(sqlColumn.convertToCommand()).append(", "));
         return Strings.replaceWithOrder("create table if not exists `{0}` ({1})", tableName, builder.substring(0, builder.length() - 2));
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public String getTableName() {
         return tableName;

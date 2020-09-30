@@ -28,7 +28,8 @@ public class TabooLibAPI {
     static {
         try {
             // 判断是否基于 Bukkit 运行
-            bukkit = Class.forName("org.bukkit.Bukkit") != null;
+            Class.forName("org.bukkit.Bukkit");
+            bukkit = true;
         } catch (Exception ignored) {
         }
     }

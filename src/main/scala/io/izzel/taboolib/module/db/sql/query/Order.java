@@ -6,11 +6,12 @@ package io.izzel.taboolib.module.db.sql.query;
  */
 public class Order {
 
-    private String row;
-    private boolean desc;
+    private final String row;
+    private final boolean desc;
 
     public Order(String row) {
         this.row = row;
+        this.desc = false;
     }
 
     public Order(String row, boolean desc) {

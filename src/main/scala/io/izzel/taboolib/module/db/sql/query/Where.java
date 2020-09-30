@@ -2,12 +2,13 @@ package io.izzel.taboolib.module.db.sql.query;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class Where {
 
-    private String row;
+    private final String row;
     private String symbol;
     private Object value;
     private Object between;
@@ -19,14 +20,14 @@ public class Where {
         this.value = value;
     }
 
-    public Where(String row, String symbol, Object value, Object between) {
+    Where(String row, String symbol, Object value, Object between) {
         this.row = row;
         this.symbol = symbol;
         this.value = value;
         this.between = between;
     }
 
-    public Where(String row, Object[] in) {
+    Where(String row, Object[] in) {
         this.row = row;
         this.in = in;
     }
@@ -81,17 +82,39 @@ public class Where {
 
     public int toStatement(PreparedStatement statement, int index) throws SQLException {
         if (between == null) {
-            statement.setObject(index, value);
+            setStatement(statement, index, value);
             return index + 1;
         } else if (in == null) {
-            statement.setObject(index, value);
-            statement.setObject(index + 1, between);
+            setStatement(statement, index, value);
+            setStatement(statement, index + 1, between);
             return index + 2;
         } else {
             for (int i = 0; i < in.length; i++) {
-                statement.setObject(index + i, in[i]);
+                setStatement(statement, index + i, in[i]);
             }
             return index + in.length;
+        }
+    }
+
+    public void setStatement(PreparedStatement statement, int index, Object obj) throws SQLException {
+        if (obj instanceof Boolean) {
+            statement.setBoolean(index, (boolean) obj);
+        } else if (obj instanceof Integer) {
+            statement.setInt(index, (int) obj);
+        } else if (obj instanceof Double) {
+            statement.setDouble(index, (double) obj);
+        } else if (obj instanceof Long) {
+            statement.setLong(index, (long) obj);
+        } else if (obj instanceof Float) {
+            statement.setFloat(index, (float) obj);
+        } else if (obj instanceof Short) {
+            statement.setShort(index, (short) obj);
+        } else if (obj instanceof Byte) {
+            statement.setByte(index, (byte) obj);
+        } else if (obj instanceof byte[]) {
+            statement.setBytes(index, (byte[]) obj);
+        } else {
+            statement.setObject(index, obj);
         }
     }
 

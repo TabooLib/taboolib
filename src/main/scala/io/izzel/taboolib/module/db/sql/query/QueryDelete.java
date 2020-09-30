@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class QueryDelete {
 
     private String tableName;
-    private List<Where> where = Lists.newArrayList();
+    private final List<Where> where = Lists.newArrayList();
 
     public QueryDelete table(String tableName) {
         this.tableName = tableName;

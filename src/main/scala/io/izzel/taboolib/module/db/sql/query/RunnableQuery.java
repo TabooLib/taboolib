@@ -22,7 +22,7 @@ public class RunnableQuery {
     private TaskResult resultAutoNext;
     private Connection connection;
     private boolean autoClose;
-    private String query;
+    private final String query;
 
     public RunnableQuery(String query) {
         this.query = query;

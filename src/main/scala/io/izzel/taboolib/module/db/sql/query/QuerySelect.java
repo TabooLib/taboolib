@@ -17,8 +17,8 @@ public class QuerySelect {
     private List<String> rowName = Lists.newArrayList();
     private String tableName;
     private String distinct;
-    private List<Where> where = Lists.newArrayList();
-    private List<Order> order = Lists.newArrayList();
+    private final List<Where> where = Lists.newArrayList();
+    private final List<Order> order = Lists.newArrayList();
     private int limit = -1;
 
     public QuerySelect row(String... row) {

@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 public class QueryUpdate {
 
     private String tableName;
-    private List<Where> where = Lists.newArrayList();
-    private List<KV<String, Object>> set = Lists.newArrayList();
+    private final List<Where> where = Lists.newArrayList();
+    private final List<KV<String, Object>> set = Lists.newArrayList();
 
     public QueryUpdate table(String tableName) {
         this.tableName = tableName;

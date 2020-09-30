@@ -19,7 +19,7 @@ public class RunnableUpdate {
     private TaskStatement statement;
     private Connection connection;
     private boolean autoClose;
-    private String query;
+    private final String query;
 
     public RunnableUpdate(String query) {
         this.query = query;

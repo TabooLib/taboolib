@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
  */
 public class SQLHost extends IHost {
 
-    private String host;
-    private String port;
-    private String user;
-    private String password;
-    private String database;
-    private List<String> flags = Arrays.asList("characterEncoding=utf-8", "useSSL=false");
+    private final String host;
+    private final String port;
+    private final String user;
+    private final String password;
+    private final String database;
+    private final List<String> flags = Arrays.asList("characterEncoding=utf-8", "useSSL=false");
 
     public SQLHost(ConfigurationSection section, Plugin plugin) {
         this(section, plugin, false);

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class QueryInsert {
 
     private String tableName;
-    private List<Object> value = Lists.newArrayList();
+    private final List<Object> value = Lists.newArrayList();
 
     public QueryInsert table(String tableName) {
         this.tableName = tableName;

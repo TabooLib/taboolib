@@ -131,19 +131,17 @@ public class TabooLib {
         });
     }
 
-    public static File getTabooLibFile() {
-        return new File("libs/TabooLib.jar");
-    }
-
     public static InternalPlugin getPlugin() {
         return InternalPlugin.getPlugin();
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
+    public static File getTabooLibFile() {
+        return new File("libs/TabooLib.jar");
+    }
+
+    public YamlConfiguration getInternal() {
+        return internal;
+    }
 
     public static TabooLib getInst() {
         return inst;
@@ -159,9 +157,5 @@ public class TabooLib {
 
     public static double getVersion() {
         return version;
-    }
-
-    public YamlConfiguration getInternal() {
-        return internal;
     }
 }
