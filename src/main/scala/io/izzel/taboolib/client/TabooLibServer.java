@@ -4,8 +4,8 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.client.packet.Packet;
 import io.izzel.taboolib.client.packet.PacketSerializer;
 import io.izzel.taboolib.client.packet.impl.PacketHeartbeat;
-import io.izzel.taboolib.client.server.ClientConnection;
 import io.izzel.taboolib.client.packet.impl.PacketQuit;
+import io.izzel.taboolib.client.server.ClientConnection;
 import org.bukkit.util.NumberConversions;
 
 import java.io.IOException;

@@ -56,12 +56,6 @@ public class TagPlayerData {
                 '}';
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public UUID getUUID() {
         return uuid;
     }

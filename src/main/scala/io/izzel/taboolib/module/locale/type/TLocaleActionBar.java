@@ -1,9 +1,9 @@
 package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
-import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

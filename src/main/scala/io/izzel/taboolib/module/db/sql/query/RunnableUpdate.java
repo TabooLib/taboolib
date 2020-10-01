@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
-import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.db.sql.SQLExecutor;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

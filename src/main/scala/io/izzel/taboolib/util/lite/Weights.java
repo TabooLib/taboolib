@@ -9,8 +9,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @Author sky
  * @Since 2018-05-07 16:18
+ * @replaceTo Randoms.java
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 @ThreadSafe
+@Deprecated
 public class Weights<A> {
 
     private final List<WeightObject> weightList = new CopyOnWriteArrayList<>();
@@ -35,7 +38,7 @@ public class Weights<A> {
     public WeightObject getWeight() {
         int weightSum = weightList.stream().mapToInt(WeightObject::getWeightNumber).sum();
         if (weightSum > 0) {
-            Integer m = 0, n = Numbers.getRandom().nextInt(weightSum);
+            int m = 0, n = Numbers.getRandom().nextInt(weightSum);
             for (WeightObject weightObject : weightList) {
                 if (m <= n && n < m + weightObject.getWeightNumber()) {
                     return weightObject;

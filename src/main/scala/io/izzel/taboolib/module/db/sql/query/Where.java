@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.db.sql.query;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

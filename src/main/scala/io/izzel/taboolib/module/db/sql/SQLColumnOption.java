@@ -12,6 +12,16 @@ public enum SQLColumnOption {
     NOTNULL("NOT NULL"),
 
     /**
+     * 0填充
+     */
+    ZEROFILL("ZEROFILL"),
+
+    /**
+     * 无符号（非负数）
+     */
+    UNSIGNED("UNSIGNED"),
+
+    /**
      * 唯一
      */
     UNIQUE_KEY("UNIQUE KEY"),

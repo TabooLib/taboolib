@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.db.sql;
 
-import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.module.db.IColumn;
+import io.izzel.taboolib.util.Strings;
 
 import java.util.Arrays;
 
@@ -11,13 +11,19 @@ import java.util.Arrays;
  */
 public class SQLColumn extends IColumn {
 
-    public static final SQLColumn PRIMARY_KEY_ID = new SQLColumn(SQLColumnType.INT, "id", SQLColumnOption.NOTNULL, SQLColumnOption.PRIMARY_KEY, SQLColumnOption.AUTO_INCREMENT);
+    public static final SQLColumn PRIMARY_KEY_ID = new SQLColumn(SQLColumnType.BIGINT, "id")
+            .columnOptions(
+                    SQLColumnOption.PRIMARY_KEY,
+                    SQLColumnOption.NOTNULL,
+                    SQLColumnOption.AUTO_INCREMENT,
+                    SQLColumnOption.UNSIGNED
+            );
 
-    private SQLColumnType columnType;
+    private final SQLColumnType columnType;
     private int m;
     private int d;
 
-    private String columnName;
+    private final String columnName;
     private Object defaultValue;
 
     private SQLColumnOption[] columnOptions;

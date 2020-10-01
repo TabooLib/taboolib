@@ -1,8 +1,8 @@
 package io.izzel.taboolib.cronus.util;
 
-import io.izzel.taboolib.module.locale.logger.TLogger;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.inject.TInject;
+import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.module.locale.logger.TLogger;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

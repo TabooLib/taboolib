@@ -25,14 +25,7 @@
 package io.izzel.taboolib.util;
 
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Booleans;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Chars;
-import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Floats;
-import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Shorts;
+import com.google.common.primitives.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;

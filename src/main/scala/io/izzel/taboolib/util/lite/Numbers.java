@@ -1,6 +1,6 @@
 package io.izzel.taboolib.util.lite;
 
-import org.bukkit.util.NumberConversions;
+import io.izzel.taboolib.util.Coerce;
 
 import java.text.DecimalFormat;
 import java.util.Random;
@@ -15,27 +15,27 @@ public class Numbers {
     private static final DecimalFormat doubleFormat = new DecimalFormat("#.##");
 
     public static int toInt(Object in) {
-        return NumberConversions.toInt(in);
+        return Coerce.toInteger(in);
     }
 
     public static long toLong(Object in) {
-        return NumberConversions.toLong(in);
+        return Coerce.toLong(in);
     }
 
     public static short toShort(Object in) {
-        return NumberConversions.toShort(in);
+        return Coerce.toShort(in);
     }
 
     public static float toFloat(Object in) {
-        return NumberConversions.toFloat(in);
+        return Coerce.toFloat(in);
     }
 
     public static double toDouble(Object in) {
-        return NumberConversions.toDouble(in);
+        return Coerce.toDouble(in);
     }
 
     public static byte toByte(Object in) {
-        return NumberConversions.toByte(in);
+        return Coerce.toByte(in);
     }
 
     public static Random getRandom() {
@@ -63,6 +63,9 @@ public class Numbers {
     public static double getRandomDouble(Number num1, Number num2) {
         double min = Math.min(num1.doubleValue(), num2.doubleValue());
         double max = Math.max(num1.doubleValue(), num2.doubleValue());
+        if (min == max) {
+            return max;
+        }
         return ThreadLocalRandom.current().nextDouble(min, max);
     }
 

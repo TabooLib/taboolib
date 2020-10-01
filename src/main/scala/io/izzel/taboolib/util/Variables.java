@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
  */
 public class Variables {
 
-    private Pattern pattern;
     private String text;
-    private String textOrigin;
-    private List<Variable> variableList = new ArrayList<>();
+    private final Pattern pattern;
+    private final String textOrigin;
+    private final List<Variable> variableList = new ArrayList<>();
 
     public Variables(String text) {
         this(text, "<([^<>]+)>");
@@ -65,12 +65,6 @@ public class Variables {
         return Strings.replaceWithOrder("VariableFormatter'{'pattern={0}, text=''{1}'', textOrigin=''{2}'', variableList={3}'}'", pattern, text, textOrigin, variableList);
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public String getText() {
         return text;
     }
@@ -78,12 +72,6 @@ public class Variables {
     public List<Variable> getVariableList() {
         return variableList;
     }
-
-    // *********************************
-    //
-    //         Public classes
-    //
-    // *********************************
 
     public static class Variable {
 

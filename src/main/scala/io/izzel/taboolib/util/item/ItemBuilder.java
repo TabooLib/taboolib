@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class ItemBuilder {
 
-    private ItemStack itemStack;
-    private ItemMeta itemMeta;
+    private final ItemStack itemStack;
+    private final ItemMeta itemMeta;
 
     public ItemBuilder(Material material) {
         this(material, 1, 0);

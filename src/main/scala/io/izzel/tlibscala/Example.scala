@@ -1,6 +1,6 @@
 package io.izzel.tlibscala
 
-import Prelude._
+import io.izzel.tlibscala.Prelude._
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.{EventHandler, Listener}

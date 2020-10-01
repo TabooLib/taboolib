@@ -82,12 +82,6 @@ public class TagDataHandler implements Listener {
         updatePlayerVariable(getPlayerDataComputeIfAbsent(player).reset());
     }
 
-    // *********************************
-    //
-    //        Private Methods
-    //
-    // *********************************
-
     private void downloadPlayerVariable(Player player) {
         Scoreboard scoreboard = TagUtils.getScoreboardComputeIfAbsent(player);
         playersData.values().forEach(playerData -> updateTeamVariable(scoreboard, playerData));
@@ -138,12 +132,6 @@ public class TagDataHandler implements Listener {
         }
     }
 
-    // *********************************
-    //
-    //            Listeners
-    //
-    // *********************************
-
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         downloadPlayerVariable(e.getPlayer());
@@ -153,12 +141,6 @@ public class TagDataHandler implements Listener {
     public void onQuit(PlayerQuitEvent e) {
         cancelPlayerVariable(e.getPlayer(), unregisterPlayerData(e.getPlayer()));
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public static TagDataHandler getHandler() {
         return handler;

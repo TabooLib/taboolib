@@ -1,10 +1,10 @@
 package io.izzel.taboolib.client.packet.impl;
 
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.client.TabooLibServer;
 import io.izzel.taboolib.client.packet.Packet;
 import io.izzel.taboolib.client.packet.PacketType;
 import io.izzel.taboolib.client.packet.PacketValue;
+import io.izzel.taboolib.module.locale.TLocale;
 import org.bukkit.Bukkit;
 
 /**

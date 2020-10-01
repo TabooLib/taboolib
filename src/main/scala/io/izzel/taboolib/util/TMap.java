@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  */
 public class TMap {
 
-    private String name;
-    private Map<String, String> content = Maps.newHashMap();
+    private final String name;
+    private final Map<String, String> content = Maps.newHashMap();
 
     public TMap(String name) {
         this.name = name;
@@ -129,12 +129,6 @@ public class TMap {
                 ", content=" + content +
                 '}';
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public String getName() {
         return name;

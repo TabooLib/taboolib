@@ -2,8 +2,8 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.inject.TInject;
-import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.nms.impl.Position;
+import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTAttribute;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;

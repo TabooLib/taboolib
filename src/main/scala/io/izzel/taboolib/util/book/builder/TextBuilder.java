@@ -1,11 +1,11 @@
 package io.izzel.taboolib.util.book.builder;
 
+import io.izzel.taboolib.util.book.action.ClickAction;
+import io.izzel.taboolib.util.book.action.HoverAction;
 import io.izzel.taboolib.util.chat.BaseComponent;
 import io.izzel.taboolib.util.chat.ClickEvent;
 import io.izzel.taboolib.util.chat.HoverEvent;
 import io.izzel.taboolib.util.chat.TextComponent;
-import io.izzel.taboolib.util.book.action.ClickAction;
-import io.izzel.taboolib.util.book.action.HoverAction;
 
 /**
  * @author sky

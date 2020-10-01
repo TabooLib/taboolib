@@ -1,7 +1,7 @@
 package io.izzel.taboolib.module.db.sqlite;
 
-import io.izzel.taboolib.util.Strings;
 import io.izzel.taboolib.module.db.IColumn;
+import io.izzel.taboolib.util.Strings;
 
 import java.util.Arrays;
 
