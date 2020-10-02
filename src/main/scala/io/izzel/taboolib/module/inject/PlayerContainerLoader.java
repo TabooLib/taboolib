@@ -52,9 +52,9 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
     public void onQuit(PlayerQuitEvent e) {
         pluginContainer.values().stream().flatMap(Collection::stream).forEach(container -> {
             if (container.getContainer() instanceof Map) {
-                ((Map) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
+                ((Map<?, ?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
             } else if (container.getContainer() instanceof Collection) {
-                ((Collection) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
+                ((Collection<?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
             } else {
                 TLogger.getGlobalLogger().error("Invalid Container: " + container.getContainer().getClass().getSimpleName());
             }

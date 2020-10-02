@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Files;
-import io.izzel.taboolib.util.KV;
+import io.izzel.taboolib.util.Pair;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -42,9 +42,9 @@ public class TConfigMigrate {
         if (Objects.equals(hash1, hash2)) {
             return null;
         }
-        List<KV<String, String[]>> update = Lists.newArrayList();
-        List<KV<String, Object>> contrast = contrast(c.getValues(true), s.getValues(true));
-        for (KV<String, Object> pair : contrast) {
+        List<Pair<String, String[]>> update = Lists.newArrayList();
+        List<Pair<String, Object>> contrast = contrast(c.getValues(true), s.getValues(true));
+        for (Pair<String, Object> pair : contrast) {
             int index = pair.getKey().lastIndexOf(".");
             if (pair.getValue() == null) {
                 Object data = s.get(pair.getKey());
@@ -64,7 +64,7 @@ public class TConfigMigrate {
                     }
                 }
                 if (find == -1) {
-                    update.add(new KV<>(pair.getKey(), SecuredFile.dump(data).split("\n")));
+                    update.add(new Pair<>(pair.getKey(), SecuredFile.dump(data).split("\n")));
                 } else {
                     String space = Strings.copy("  ", nodes.length - 1);
                     String[] dumpList = SecuredFile.dump(data).split("\n");
@@ -85,7 +85,7 @@ public class TConfigMigrate {
         if (update.size() > 0) {
             content.add("");
             content.add("# ------------------------- #\n" + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" + "# ------------------------- #");
-            for (KV<String, String[]> pair : update) {
+            for (Pair<String, String[]> pair : update) {
                 if (pair.getValue().length == 1) {
                     content.add("# " + pair.getKey() + ": " + pair.getValue()[0]);
                 } else {
@@ -120,22 +120,22 @@ public class TConfigMigrate {
         return map;
     }
 
-    public static List<KV<String, Object>> contrast(Map<?, ?> current, Map<?, ?> source) {
+    public static List<Pair<String, Object>> contrast(Map<?, ?> current, Map<?, ?> source) {
         List<String> deleted = Lists.newArrayList();
-        List<KV<String, Object>> difference = Lists.newArrayList();
+        List<Pair<String, Object>> difference = Lists.newArrayList();
         // change & add
         for (Map.Entry<?, ?> entry : current.entrySet()) {
             if (entry.getValue() instanceof ConfigurationSection) {
                 continue;
             }
             if (entry.getValue() instanceof Map && source.get(entry.getKey()) instanceof Map) {
-                List<KV<String, Object>> contrast = contrast((Map<?, ?>) entry.getValue(), (Map<?, ?>) source.get(entry.getKey()));
-                for (KV<String, Object> pair : contrast) {
+                List<Pair<String, Object>> contrast = contrast((Map<?, ?>) entry.getValue(), (Map<?, ?>) source.get(entry.getKey()));
+                for (Pair<String, Object> pair : contrast) {
                     pair.setKey(entry.getKey() + "." + pair.getKey());
                 }
                 difference.addAll(contrast);
             } else if (!Objects.equals(entry.getValue(), source.get(entry.getKey()))) {
-                difference.add(new KV<>(entry.getKey().toString(), entry.getValue()));
+                difference.add(new Pair<>(entry.getKey().toString(), entry.getValue()));
             }
         }
         // delete
@@ -144,14 +144,14 @@ public class TConfigMigrate {
                 continue;
             }
             if (entry.getValue() instanceof Map && current.get(entry.getKey()) instanceof Map) {
-                List<KV<String, Object>> contrast = contrast((Map<?, ?>) entry.getValue(), (Map<?, ?>) source.get(entry.getKey()));
-                for (KV<String, Object> pair : contrast) {
+                List<Pair<String, Object>> contrast = contrast((Map<?, ?>) entry.getValue(), (Map<?, ?>) source.get(entry.getKey()));
+                for (Pair<String, Object> pair : contrast) {
                     pair.setKey(entry.getKey() + "." + pair.getKey());
                 }
                 difference.addAll(contrast);
             } else if (!current.containsKey(entry.getKey())) {
                 deleted.add(entry.getKey().toString());
-                difference.add(new KV<>(entry.getKey().toString(), null));
+                difference.add(new Pair<>(entry.getKey().toString(), null));
             }
         }
         return difference;

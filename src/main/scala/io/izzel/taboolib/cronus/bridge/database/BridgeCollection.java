@@ -8,7 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.Updates;
 import io.izzel.taboolib.module.config.TConfigMigrate;
-import io.izzel.taboolib.util.KV;
+import io.izzel.taboolib.util.Pair;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -61,7 +61,7 @@ public final class BridgeCollection {
         if (!data.isChecked() && mongoCollection.countDocuments(Filters.eq("id", id)) == 0) {
             mongoCollection.insertOne(new Document().append("id", id));
         }
-        List<KV<String, Object>> contrast = TConfigMigrate.contrast(current, data.getUpdate());
+        List<Pair<String, Object>> contrast = TConfigMigrate.contrast(current, data.getUpdate());
         if (contrast.size() > 0) {
             mongoCollection.updateOne(Filters.eq("id", id), Updates.combine(toBson(contrast)));
             data.setChecked(true);
@@ -99,9 +99,9 @@ public final class BridgeCollection {
         return false;
     }
 
-    private List<Bson> toBson(List<KV<String, Object>> difference) {
+    private List<Bson> toBson(List<Pair<String, Object>> difference) {
         List<Bson> list = Lists.newArrayList();
-        for (KV<String, Object> pair : difference) {
+        for (Pair<String, Object> pair : difference) {
             if (pair.getValue() == null) {
                 list.add(Updates.unset("data." + pair.getKey()));
             } else {

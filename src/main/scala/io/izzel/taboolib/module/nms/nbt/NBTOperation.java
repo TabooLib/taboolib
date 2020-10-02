@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.nms.nbt;
 
-import io.izzel.taboolib.util.KV;
+import io.izzel.taboolib.util.Pair;
 import org.bukkit.util.NumberConversions;
 
 import java.util.Arrays;
@@ -17,11 +17,11 @@ public enum NBTOperation {
         return Arrays.stream(values()).filter(operation -> operation.ordinal() == index).findFirst().orElse(ADD_NUMBER);
     }
 
-    public static KV<Double, NBTOperation> fromSimple(String in) {
+    public static Pair<Double, NBTOperation> fromSimple(String in) {
         if (in.endsWith("%")) {
-            return new KV(NumberConversions.toDouble(in.substring(0, in.length() - 1)), ADD_SCALAR);
+            return new Pair(NumberConversions.toDouble(in.substring(0, in.length() - 1)), ADD_SCALAR);
         } else {
-            return new KV(NumberConversions.toDouble(in), ADD_NUMBER);
+            return new Pair(NumberConversions.toDouble(in), ADD_NUMBER);
         }
     }
 }

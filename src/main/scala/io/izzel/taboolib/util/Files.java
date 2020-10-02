@@ -30,14 +30,15 @@ import java.util.zip.ZipOutputStream;
 /**
  * @author sky
  */
+@SuppressWarnings("rawtypes")
 public class Files {
 
-    public static List<Class<?>> getClasses(Plugin plugin) {
+    public static List<Class> getClasses(Plugin plugin) {
         return getClasses(plugin, new String[0]);
     }
 
-    public static List<Class<?>> getClasses(Plugin plugin, String[] ignore) {
-        List<Class<?>> classes = new CopyOnWriteArrayList<>();
+    public static List<Class> getClasses(Plugin plugin, String[] ignore) {
+        List<Class> classes = new CopyOnWriteArrayList<>();
         URL url = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
         try {
             File src;
@@ -112,6 +113,11 @@ public class Files {
                 t.printStackTrace();
             }
         }
+    }
+
+    public static File[] listFile(File file) {
+        File[] files = file.listFiles();
+        return files == null ? new File[0] : files;
     }
 
     public static File toFile(byte[] in, File file) {
@@ -218,7 +224,7 @@ public class Files {
             }
         }
         if (originFile.isDirectory()) {
-            Arrays.stream(originFile.listFiles()).parallel().forEach(file -> {
+            Arrays.stream(listFile(originFile)).parallel().forEach(file -> {
                 if (file.isDirectory()) {
                     deepCopy(file.getAbsolutePath(), targetFileName + "/" + file.getName());
                 } else {
@@ -238,7 +244,7 @@ public class Files {
             file.delete();
             return;
         }
-        Arrays.stream(file.listFiles()).parallel().forEach(Files::deepDelete);
+        Arrays.stream(listFile(file)).parallel().forEach(Files::deepDelete);
         file.delete();
     }
 
@@ -415,7 +421,7 @@ public class Files {
     public static void toZipSkipDirectory(File source, File target) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(target); ZipOutputStream zipOutputStream = new ZipOutputStream(fileOutputStream)) {
             if (source.isDirectory()) {
-                Arrays.stream(source.listFiles()).forEach(f -> toZip(zipOutputStream, f, ""));
+                Arrays.stream(listFile(source)).forEach(f -> toZip(zipOutputStream, f, ""));
             } else {
                 toZip(zipOutputStream, source, "");
             }
@@ -426,7 +432,7 @@ public class Files {
 
     public static void toZip(ZipOutputStream zipOutputStream, File file, String path) {
         if (file.isDirectory()) {
-            Arrays.stream(file.listFiles()).forEach(f -> toZip(zipOutputStream, f, path + file.getName() + "/"));
+            Arrays.stream(listFile(file)).forEach(f -> toZip(zipOutputStream, f, path + file.getName() + "/"));
         } else {
             try (FileInputStream fileInputStream = new FileInputStream(file)) {
                 zipOutputStream.putNextEntry(new ZipEntry(path + file.getName()));

@@ -5,8 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.cronus.CronusUtils;
-import io.izzel.taboolib.module.lite.SimpleEquip;
-import io.izzel.taboolib.module.lite.SimpleI18n;
+import io.izzel.taboolib.module.i18n.I18n;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.nms.nbt.Attribute;
@@ -48,7 +47,7 @@ public class Items {
     };
 
     public static String getName(ItemStack item) {
-        return SimpleI18n.getCustomName(item);
+        return I18n.get().getName(item);
     }
 
     public static boolean isNull(ItemStack item) {
@@ -293,7 +292,7 @@ public class Items {
                             a.put("UUIDLeast", new NBTBase(uuid.getLeastSignificantBits()));
                             a.put("Name", new NBTBase(asAttribute(name)));
                             if (!hand.equals("all")) {
-                                Optional.ofNullable(SimpleEquip.fromNMS(hand)).ifPresent(e -> a.put("Slot", new NBTBase(e.getNMS())));
+                                Optional.ofNullable(Equipments.fromNMS(hand)).ifPresent(e -> a.put("Slot", new NBTBase(e.getNMS())));
                             }
                             attr.add(a);
                         } catch (Exception ignored) {

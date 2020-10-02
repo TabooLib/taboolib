@@ -23,7 +23,6 @@ import java.util.concurrent.Executors;
  */
 public class TabooLibClient {
 
-    private static boolean notify = false;
     private static Socket socket;
     private static BufferedReader reader;
     private static PrintWriter writer;
@@ -66,7 +65,6 @@ public class TabooLibClient {
             socket = new Socket("localhost", NumberConversions.toInt(TabooLibSettings.getSettings().getProperty("channel.port")));
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), TabooLibSettings.getCharset()));
             writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), TabooLibSettings.getCharset()), true);
-            notify = false;
             TLocale.sendToConsole("COMMUNICATION.SUCCESS-CONNECTED");
         } catch (SocketException e) {
             return;
@@ -77,7 +75,8 @@ public class TabooLibClient {
 
         executorService.execute(() -> {
             try {
-                while (!socket.isClosed() && (packet = PacketSerializer.unSerialize(reader.readLine())) != null) {
+                while (!socket.isClosed()) {
+                    packet = PacketSerializer.unSerialize(reader.readLine());
                     packet.readOnClient();
                 }
             } catch (IOException e) {

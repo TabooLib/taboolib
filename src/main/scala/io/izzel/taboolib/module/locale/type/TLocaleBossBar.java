@@ -1,16 +1,17 @@
 package io.izzel.taboolib.module.locale.type;
 
+import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
-import org.inventivetalent.bossbar.BossBar;
-import org.inventivetalent.bossbar.BossBarAPI;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Map;
@@ -35,32 +36,31 @@ public class TLocaleBossBar extends TLocaleSerialize {
      */
 
     private final String text;
-    private final BossBarAPI.Color color;
-    private final BossBarAPI.Style style;
+    private final BarColor color;
+    private final BarStyle style;
     private final float progress;
     private final int timeout;
-    private final int timeoutInterval;
     private final boolean papi;
 
-    public TLocaleBossBar(String text, BossBarAPI.Color color, BossBarAPI.Style style, float progress, int timeout, int timeoutInterval, boolean papi) {
+    public TLocaleBossBar(String text, BarColor color, BarStyle style, float progress, int timeout, boolean papi) {
         this.text = text;
         this.color = color;
         this.style = style;
         this.progress = progress;
         this.timeout = timeout;
-        this.timeoutInterval = timeoutInterval;
         this.papi = papi;
     }
 
     @Override
     public void sendTo(CommandSender sender, String... args) {
-        if (Bukkit.getPluginManager().getPlugin("BossBarAPI") == null) {
-            TLocale.Logger.error("LOCALE.BAR-PLUGIN-NOT-FOUND");
-            return;
-        }
         if (sender instanceof Player) {
-            TextComponent textComponent = new TextComponent(papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(text, args)) : TLocale.Translate.setColored(Strings.replaceWithOrder(text, args)));
-            BossBar bossBar = BossBarAPI.addBar((Player) sender, textComponent, color, style, progress, timeout, timeoutInterval);
+            String title = papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(text, args)) : TLocale.Translate.setColored(Strings.replaceWithOrder(text, args));
+            BossBar bossBar = Bukkit.createBossBar(title, color, style);
+            bossBar.setProgress(progress);
+            bossBar.addPlayer((Player) sender);
+            if (timeout > 0) {
+                Bukkit.getScheduler().runTaskLater(TabooLib.getPlugin(), bossBar::removeAll, timeout);
+            }
         } else {
             sender.sendMessage(text);
         }
@@ -78,25 +78,24 @@ public class TLocaleBossBar extends TLocaleSerialize {
                 getStyle(String.valueOf(map.get("style"))),
                 NumberConversions.toFloat(map.getOrDefault("progress", 1)),
                 NumberConversions.toInt(map.getOrDefault("timeout", 20)),
-                NumberConversions.toInt(map.getOrDefault("timeout-interval", 2)),
                 isPlaceholderEnabled(map));
     }
 
-    private static BossBarAPI.Color getColor(String color) {
+    private static BarColor getColor(String color) {
         try {
-            return BossBarAPI.Color.valueOf(color);
+            return BarColor.valueOf(color);
         } catch (Exception e) {
             TLocale.Logger.error("LOCALE.BAR-STYLE-IDENTIFICATION-FAILED", e.toString());
-            return BossBarAPI.Color.WHITE;
+            return BarColor.WHITE;
         }
     }
 
-    private static BossBarAPI.Style getStyle(String style) {
+    private static BarStyle getStyle(String style) {
         try {
-            return BossBarAPI.Style.valueOf(style);
+            return BarStyle.valueOf(style);
         } catch (Exception e) {
             TLocale.Logger.error("LOCALE.BAR-COLOR-IDENTIFICATION-FAILED", e.toString());
-            return BossBarAPI.Style.NOTCHED_20;
+            return BarStyle.SEGMENTED_20;
         }
     }
 }

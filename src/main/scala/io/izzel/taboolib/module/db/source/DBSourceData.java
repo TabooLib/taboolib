@@ -11,9 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class DBSourceData {
 
-    private IHost host;
-    private AtomicInteger activePlugin;
-    private HikariDataSource hikariDataSource;
+    private final IHost host;
+    private final AtomicInteger activePlugin;
+    private final HikariDataSource hikariDataSource;
 
     DBSourceData(IHost host, HikariDataSource hikariDataSource) {
         this.host = host;

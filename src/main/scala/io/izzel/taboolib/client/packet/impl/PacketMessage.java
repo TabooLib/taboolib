@@ -15,7 +15,7 @@ import org.bukkit.Bukkit;
 public class PacketMessage extends Packet {
 
     @PacketValue
-    private String message;
+    private final String message;
 
     public PacketMessage(int port) {
         this(port, "none");

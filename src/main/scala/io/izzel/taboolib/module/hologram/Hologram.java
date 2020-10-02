@@ -19,7 +19,7 @@ import java.util.function.Consumer;
  */
 public class Hologram {
 
-    private Set<HologramViewer> viewers = Sets.newConcurrentHashSet();
+    private final Set<HologramViewer> viewers = Sets.newConcurrentHashSet();
     private String text;
     private Location location;
     private boolean viewAll = false;

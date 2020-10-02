@@ -118,5 +118,20 @@ public enum SQLColumnType {
     /**
      * 可变长二进制数据，最多2的32次方-1个字节
      */
-    LONGBLOB
+    LONGBLOB;
+
+    /**
+     * 5.38 update
+     */
+    public SQLColumn toColumn(String name) {
+        return new SQLColumn(this, name);
+    }
+
+    public SQLColumn toColumn(int m, String name) {
+        return new SQLColumn(this, m, name);
+    }
+
+    public SQLColumn toColumn(int m, int d, String name) {
+        return new SQLColumn(this, m, d, name);
+    }
 }

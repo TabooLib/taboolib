@@ -10,11 +10,11 @@ import java.util.Objects;
 public class Argument {
 
     // 参数名称
-    private String name;
+    private final String name;
     // 是否必须
-    private boolean required;
+    private final boolean required;
     // 参数补全
-    private CommandTab tab;
+    private final CommandTab tab;
 
     public String getName() {
         return name;

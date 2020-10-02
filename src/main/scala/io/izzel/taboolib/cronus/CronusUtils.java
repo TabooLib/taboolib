@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.NumberConversions;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -62,8 +63,7 @@ public class CronusUtils {
 
     public static boolean isBoolean(String in) {
         try {
-            Boolean.parseBoolean(in);
-            return true;
+            return Objects.equals(in, "true") || Objects.equals(in, "false");
         } catch (Throwable ignored) {
         }
         return false;

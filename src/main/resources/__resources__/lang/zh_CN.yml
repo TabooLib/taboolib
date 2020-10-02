@@ -4,7 +4,6 @@ LOCALE:
   BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook 的变量识别失败: {0}'
   BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar 的颜色识别失败: {0}'
   BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar 的类型识别失败: {0}'
-  BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar 的依赖插件 BossBarAPI 不存在'
   CALLER-PLUGIN-NOT-FOUND: '{0} 不是一个由插件加载的类'
   STATIC-CLASS-LOADER: '{0} 由静态类加载器初始化，无法获得其从属的插件'
 

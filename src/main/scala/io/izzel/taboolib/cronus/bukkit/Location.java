@@ -10,9 +10,9 @@ import java.util.Arrays;
  */
 public class Location {
 
-    private Mode mode;
-    private org.bukkit.Location[] area;
-    private org.bukkit.Location[] points;
+    private final Mode mode;
+    private final org.bukkit.Location[] area;
+    private final org.bukkit.Location[] points;
     private int range;
 
     public Location(Mode mode, org.bukkit.Location[] area, org.bukkit.Location[] points) {
@@ -23,6 +23,7 @@ public class Location {
 
     public Location(Mode mode, org.bukkit.Location[] points, int range) {
         this.mode = mode;
+        this.area = new org.bukkit.Location[0];
         this.points = points;
         this.range = range;
     }
@@ -75,12 +76,6 @@ public class Location {
                 ", range=" + range +
                 '}';
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public Mode getMode() {
         return mode;

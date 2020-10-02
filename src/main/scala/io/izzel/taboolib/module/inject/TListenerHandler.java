@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  */
 public class TListenerHandler {
 
-    private static HashMap<String, List<Listener>> listeners = new HashMap<>();
+    private static final HashMap<String, List<Listener>> listeners = new HashMap<>();
 
     /**
      * 初始化所有插件的所有监听器
@@ -157,7 +157,7 @@ public class TListenerHandler {
         });
     }
 
-    public static List<Listener> getInstance(Plugin plugin, Class pluginClass) {
+    public static List<Listener> getInstance(Plugin plugin, Class<?> pluginClass) {
         List<Listener> list = TListenerHandler.listeners.get(plugin.getName());
         return list == null ? Collections.emptyList() : list.stream().filter(listener -> pluginClass.equals(listener.getClass())).collect(Collectors.toList());
     }

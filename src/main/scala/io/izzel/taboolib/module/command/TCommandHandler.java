@@ -31,6 +31,7 @@ public class TCommandHandler {
     private static SimpleCommandMap commandMap;
     private static Map<String, Command> knownCommands;
 
+    @SuppressWarnings("unchecked")
     @TFunction.Init
     static void init() {
         SimpleReflection.saveField(SimplePluginManager.class, "commandMap");
@@ -114,7 +115,7 @@ public class TCommandHandler {
         if (Bukkit.getPluginCommand(command) == null) {
             String permission = tCommand.permission();
             if (tCommand.permissionDefault() == PermissionDefault.TRUE || tCommand.permissionDefault() == PermissionDefault.NOT_OP) {
-                if (permission == null || permission.isEmpty()) {
+                if (permission.isEmpty()) {
                     permission = plugin.getName().toLowerCase() + ".command.use";
                 }
                 if (Bukkit.getPluginManager().getPermission(permission) != null) {

@@ -56,6 +56,7 @@ public abstract class BaseSubCommand {
         return annotation.permission();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hideInHelp() {
         return annotation.hideInHelp();
     }

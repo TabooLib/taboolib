@@ -11,8 +11,10 @@ import org.bukkit.plugin.ServicePriority;
  * @Author sky
  * @Since 2018-09-08 14:00
  */
+@SuppressWarnings("unchecked")
 public class TServiceLoader implements TabooLibLoader.Loader {
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void preLoad(Plugin plugin, Class pluginClass) {
         if (pluginClass.isAnnotationPresent(TService.class)) {
@@ -28,9 +30,9 @@ public class TServiceLoader implements TabooLibLoader.Loader {
     }
 
     @Override
-    public void unload(Plugin plugin, Class pluginClass) {
+    public void unload(Plugin plugin, Class<?> pluginClass) {
         if (pluginClass.isAnnotationPresent(TService.class)) {
-            TService service = (TService) pluginClass.getAnnotation(TService.class);
+            TService service = pluginClass.getAnnotation(TService.class);
             try {
                 Bukkit.getServicesManager().unregister(pluginClass, Bukkit.getServicesManager().load(pluginClass));
                 TabooLibAPI.debug("Service " + pluginClass.getSimpleName() + " unregistered. (" + plugin.getName() + ")");

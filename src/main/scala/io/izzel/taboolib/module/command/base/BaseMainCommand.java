@@ -33,13 +33,12 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     private DisplayBase display = new DisplayFlat();
     private PluginCommand registerCommand;
-    private List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
-    private List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
+    private final List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
+    private final List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
 
     public static BaseMainCommand createCommandExecutor(String command, BaseMainCommand baseMainCommand) {
         Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\" not found");
         Preconditions.checkArgument(baseMainCommand != null, "Executor cannot be null");
-        Preconditions.checkArgument(baseMainCommand.getClass() != BaseMainCommand.class, "Executor can not be \"BaseMainCommand.class\"");
         baseMainCommand.setRegisterCommand(Bukkit.getPluginCommand(command));
         baseMainCommand.getRegisterCommand().setExecutor(baseMainCommand);
         baseMainCommand.getRegisterCommand().setTabCompleter(baseMainCommand);
@@ -64,13 +63,13 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 try {
                     BaseSubCommand subCommand = null;
                     // lite parameter
-                    if (Arrays.equals(method.getParameterTypes(), new Class[] {CommandSender.class, String[].class})) {
+                    if (Arrays.equals(method.getParameterTypes(), new Class[]{CommandSender.class, String[].class})) {
                         subCommand = buildSubCommand(baseMainCommand, method)
                                 .label(method.getName())
                                 .annotation(method.getAnnotation(SubCommand.class));
                     }
                     // player only parameter
-                    else if (Arrays.equals(method.getParameterTypes(), new Class[] {Player.class, String[].class})) {
+                    else if (Arrays.equals(method.getParameterTypes(), new Class[]{Player.class, String[].class})) {
                         subCommand = buildSubCommand(baseMainCommand, method)
                                 .player()
                                 .label(method.getName())
@@ -89,8 +88,10 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             fields.forEach(commandField -> {
                 try {
                     BaseSubCommand subCommand = Ref.getField(commandField.getParent().newInstance(), commandField.getField(), BaseSubCommand.class);
-                    subCommand.label(commandField.getField().getName()).annotation(commandField.getField().getAnnotation(SubCommand.class));
-                    baseMainCommand.registerSubCommand(subCommand);
+                    if (subCommand != null) {
+                        subCommand.label(commandField.getField().getName()).annotation(commandField.getField().getAnnotation(SubCommand.class));
+                        baseMainCommand.registerSubCommand(subCommand);
+                    }
                 } catch (Throwable ignored) {
                 }
             });
@@ -126,6 +127,18 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         display.displayBottom(sender, this, label);
     }
 
+    /**
+     * 5.38 update
+     * 命令补全扩展方法
+     *
+     * @param sender   用户实例
+     * @param command  指令
+     * @param argument 参数
+     */
+    public List<String> onTabComplete(CommandSender sender, String command, String argument) {
+        return null;
+    }
+
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         if (args.length == 1) {
@@ -142,6 +155,8 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 CommandTab commandTab = arguments[args.length - 2].getTab();
                 if (commandTab != null) {
                     return commandTab.run().stream().filter(l -> args[args.length - 1].isEmpty() || l.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).collect(Collectors.toList());
+                } else {
+                    return onTabComplete(sender, subCommand.getLabel(), arguments[args.length - 2].getName());
                 }
             }
         }
@@ -197,12 +212,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 '}';
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public String getCommandTitle() {
         return "§e§l----- §6§l" + registerCommand.getPlugin().getName() + " Commands §e§l-----";
     }
@@ -232,12 +241,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         Preconditions.checkNotNull(display);
         this.display = display;
     }
-
-    // *********************************
-    //
-    //        Private Methods
-    //
-    // *********************************
 
     private boolean isConfirmType(CommandSender sender, CommandType commandType) {
         return commandType == CommandType.ALL

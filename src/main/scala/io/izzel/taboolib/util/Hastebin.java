@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @author Arasple
- * @date 2020/1/20 16:40
+ * @since 2020/1/20 16:40
  */
 public class Hastebin {
 
@@ -33,8 +33,8 @@ public class Hastebin {
 
     public static class Result {
 
-        private String source;
-        private JsonObject sourceJson;
+        private final String source;
+        private final JsonObject sourceJson;
 
         public Result(String source) {
             this.source = source;

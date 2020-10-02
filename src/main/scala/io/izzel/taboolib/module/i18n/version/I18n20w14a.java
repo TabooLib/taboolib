@@ -95,6 +95,6 @@ public class I18n20w14a extends I18nBase {
     }
 
     public void load() {
-        Arrays.stream(folder.listFiles()).forEach(listFile -> cache.put(listFile.getName(), new JsonParser().parse(Files.readFromFile(listFile)).getAsJsonObject()));
+        Arrays.stream(Files.listFile(folder)).forEach(listFile -> cache.put(listFile.getName(), new JsonParser().parse(Files.readFromFile(listFile)).getAsJsonObject()));
     }
 }

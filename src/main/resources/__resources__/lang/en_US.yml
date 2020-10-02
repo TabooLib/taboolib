@@ -4,7 +4,6 @@ LOCALE:
   BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook variables identiy failed: {0}'
   BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar color identify failed: {0}'
   BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar type identify failed: {0}'
-  BAR-PLUGIN-NOT-FOUND: 'TLocaleBossBar is depend on BossBarAPI'
   CALLER-PLUGIN-NOT-FOUND: '{0} is not called by a plugin'
   STATIC-CLASS-LOADER: '{0} Initialized by a static class loader, unable to get its plugin'
 

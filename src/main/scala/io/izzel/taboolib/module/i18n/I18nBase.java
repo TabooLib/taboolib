@@ -16,4 +16,11 @@ public abstract class I18nBase {
 
     abstract public String getName(Player player, ItemStack itemStack);
 
+    public String getName(Entity entity) {
+        return getName(null, entity);
+    }
+
+    public String getName(ItemStack itemStack) {
+        return getName(null, itemStack);
+    }
 }

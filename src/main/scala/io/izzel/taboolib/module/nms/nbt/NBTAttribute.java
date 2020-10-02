@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.nms.nbt;
 
-import io.izzel.taboolib.module.lite.SimpleEquip;
+import io.izzel.taboolib.util.item.Equipments;
 import io.izzel.taboolib.util.item.Items;
 
 import java.util.Objects;
@@ -16,14 +16,14 @@ public class NBTAttribute {
     private String name;
     private String description;
     private double amount;
-    private SimpleEquip slot;
+    private Equipments slot;
     private NBTOperation operation;
 
     public NBTAttribute(String name, String description, double amount, NBTOperation operation) {
         this(UUID.randomUUID(), name, description, amount, null, operation);
     }
 
-    public NBTAttribute(String name, String description, double amount, SimpleEquip slot, NBTOperation operation) {
+    public NBTAttribute(String name, String description, double amount, Equipments slot, NBTOperation operation) {
         this(UUID.randomUUID(), name, description, amount, slot, operation);
     }
 
@@ -31,7 +31,7 @@ public class NBTAttribute {
         this(id, name, description, amount, null, operation);
     }
 
-    public NBTAttribute(UUID id, String name, String description, double amount, SimpleEquip slot, NBTOperation operation) {
+    public NBTAttribute(UUID id, String name, String description, double amount, Equipments slot, NBTOperation operation) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -63,7 +63,7 @@ public class NBTAttribute {
                 NBTOperation.fromIndex(nbt.get("Operation").asInt())
         );
         if (nbt.containsKey("Slot")) {
-            attribute.slot(SimpleEquip.fromNMS(nbt.get("Slot").asString()));
+            attribute.slot(Equipments.fromNMS(nbt.get("Slot").asString()));
         }
         return attribute;
     }
@@ -114,11 +114,11 @@ public class NBTAttribute {
         return this;
     }
 
-    public SimpleEquip getSlot() {
+    public Equipments getSlot() {
         return slot;
     }
 
-    public NBTAttribute slot(SimpleEquip slot) {
+    public NBTAttribute slot(Equipments slot) {
         this.slot = slot;
         return this;
     }

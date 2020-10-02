@@ -7,6 +7,7 @@ import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Strings;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 
 /**
  * @Author sky
@@ -37,6 +38,14 @@ public class SQLTable {
     }
 
     /**
+     * 5.38 update
+     */
+    public SQLTable column(IColumn... column) {
+        Arrays.stream(column).forEach(this::column);
+        return this;
+    }
+
+    /**
      * 5.1 update
      */
     public SQLTable column(String... column) {
@@ -60,39 +69,39 @@ public class SQLTable {
     }
 
     public QuerySelect select() {
-        return new QuerySelect().row("*").table(tableName);
+        return new QuerySelect(this).row("*");
     }
 
     public QuerySelect select(String... row) {
-        return new QuerySelect().row(row).table(tableName);
+        return new QuerySelect(this).row(row);
     }
 
     public QuerySelect select(Where... where) {
-        return new QuerySelect().where(where).table(tableName);
+        return new QuerySelect(this).where(where);
     }
 
     public QueryUpdate update() {
-        return new QueryUpdate().table(tableName);
+        return new QueryUpdate(this);
     }
 
     public QueryUpdate update(Where... where) {
-        return new QueryUpdate().where(where).table(tableName);
+        return new QueryUpdate(this).where(where);
     }
 
     public QueryInsert insert() {
-        return new QueryInsert().table(tableName);
+        return new QueryInsert(this);
     }
 
     public QueryInsert insert(Object... value) {
-        return new QueryInsert().table(tableName).value(value);
+        return new QueryInsert(this).value(value);
     }
 
     public QueryDelete delete() {
-        return new QueryDelete().table(tableName);
+        return new QueryDelete(this);
     }
 
     public QueryDelete delete(Where... where) {
-        return new QueryDelete().table(tableName).where(where);
+        return new QueryDelete(this).where(where);
     }
 
     /**
@@ -123,22 +132,22 @@ public class SQLTable {
 
     @Deprecated
     public RunnableQuery executeSelect() {
-        return executeQuery("select * from " + tableName);
+        return executeQuery(Strings.replaceWithOrder("select * from `{0}`", tableName));
     }
 
     @Deprecated
     public RunnableQuery executeSelect(String queryWhere) {
-        return executeQuery("select * from " + tableName + " where " + queryWhere);
+        return executeQuery(Strings.replaceWithOrder("select * from `{0}` where {1}", tableName, queryWhere));
     }
 
     @Deprecated
     public RunnableUpdate executeInsert(String queryValues) {
-        return executeUpdate("insert into " + tableName + " values(" + queryValues + ")");
+        return executeUpdate(Strings.replaceWithOrder("insert into `{0}` values({1})", tableName, queryValues));
     }
 
     @Deprecated
     public RunnableUpdate executeUpdate(String update, String where) {
-        return executeUpdate("update " + tableName + " set " + update + " where " + where);
+        return executeUpdate(Strings.replaceWithOrder("update `{0}` set {1} where {2}", tableName, update, where));
     }
 
     @Deprecated

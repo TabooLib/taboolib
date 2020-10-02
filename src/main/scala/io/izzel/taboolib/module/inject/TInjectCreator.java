@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 public class TInjectCreator implements TabooLibLoader.Loader {
 
-    private static Map<ClassData, InstanceData> instanceMap = Maps.newHashMap();
+    private static final Map<ClassData, InstanceData> instanceMap = Maps.newHashMap();
 
     @Override
     public int priority() {
@@ -89,19 +89,19 @@ public class TInjectCreator implements TabooLibLoader.Loader {
      */
     public static class ClassData {
 
-        private Class parent;
-        private Class type;
+        private final Class<?> parent;
+        private final Class<?> type;
 
-        public ClassData(Class parent, Class type) {
+        public ClassData(Class<?> parent, Class<?> type) {
             this.parent = parent;
             this.type = type;
         }
 
-        public Class getParent() {
+        public Class<?> getParent() {
             return parent;
         }
 
-        public Class getType() {
+        public Class<?> getType() {
             return type;
         }
 
@@ -123,10 +123,10 @@ public class TInjectCreator implements TabooLibLoader.Loader {
         }
     }
 
-    public class InstanceData {
+    public static class InstanceData {
 
-        private Object instance;
-        private TInject inject;
+        private final Object instance;
+        private final TInject inject;
 
         public InstanceData(Object instance, TInject inject) {
             this.instance = instance;

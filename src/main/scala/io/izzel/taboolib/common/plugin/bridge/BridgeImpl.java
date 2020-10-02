@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("rawtypes")
@@ -41,6 +42,7 @@ public class BridgeImpl extends InternalPluginBridge {
     private final boolean placeholder;
     private boolean worldguard;
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public BridgeImpl() {
         if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
             economy = getRegisteredService(Economy.class);
@@ -60,6 +62,7 @@ public class BridgeImpl extends InternalPluginBridge {
         placeholder = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getRegisteredService(Class<? extends T> clazz) {
         RegisteredServiceProvider registeredServiceProvider = Bukkit.getServer().getServicesManager().getRegistration(clazz);
@@ -123,12 +126,12 @@ public class BridgeImpl extends InternalPluginBridge {
 
     @Override
     public Collection<String> worldguardGetRegions(World world) {
-        return worldguardRegionManager(world).getRegions().keySet();
+        return Objects.requireNonNull(worldguardRegionManager(world)).getRegions().keySet();
     }
 
     @Override
     public List<String> worldguardGetRegion(World world, Location location) {
-        return worldguardRegionManager(world).getRegions().values().stream().filter(r -> r.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ())).map(ProtectedRegion::getId).collect(Collectors.toList());
+        return Objects.requireNonNull(worldguardRegionManager(world)).getRegions().values().stream().filter(r -> r.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ())).map(ProtectedRegion::getId).collect(Collectors.toList());
     }
 
     @Override
@@ -165,6 +168,7 @@ public class BridgeImpl extends InternalPluginBridge {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, Object> taboolibTLocaleSerialize(Object in) {
         switch (in.getClass().getSimpleName()) {

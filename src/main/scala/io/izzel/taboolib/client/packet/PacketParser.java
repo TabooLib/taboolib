@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public class PacketParser {
 
-    private List<Class<?>> packets = new ArrayList<>();
+    private final List<Class<?>> packets = new ArrayList<>();
 
     public PacketParser() {
         Files.getClasses(TabooLib.getPlugin()).stream().filter(clazz -> clazz.isAnnotationPresent(PacketType.class)).forEach(clazz -> packets.add(clazz));
@@ -76,12 +76,6 @@ public class PacketParser {
             return null;
         }
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public List<Class<?>> getPackets() {
         return packets;

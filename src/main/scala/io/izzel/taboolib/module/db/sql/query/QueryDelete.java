@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
+import io.izzel.taboolib.module.db.sql.SQLTable;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -11,14 +12,12 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2019-10-26 13:34
  */
-public class QueryDelete {
+public class QueryDelete extends Query {
 
-    private String tableName;
     private final List<Where> where = Lists.newArrayList();
 
-    public QueryDelete table(String tableName) {
-        this.tableName = tableName;
-        return this;
+    public QueryDelete(SQLTable table) {
+        super(table);
     }
 
     public QueryDelete where(Where where) {
@@ -44,9 +43,10 @@ public class QueryDelete {
         });
     }
 
+    @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("delete from ").append(tableName);
+        builder.append("delete from ").append(table.getTableName());
         builder.append(" ");
         if (!where.isEmpty()) {
             builder.append("where ");

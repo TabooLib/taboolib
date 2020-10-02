@@ -11,7 +11,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class DependencyClassVisitor extends ClassVisitor {
 
-    private Plugin plugin;
+    private final Plugin plugin;
 
     public DependencyClassVisitor(Plugin plugin, ClassVisitor classVisitor) {
         super(Opcodes.ASM5, classVisitor);

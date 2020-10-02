@@ -18,18 +18,19 @@ import java.util.concurrent.Executors;
  */
 public class THologram {
 
-    private static ExecutorService executorService = Executors.newSingleThreadExecutor();
-
     @PlayerContainer
-    private static Map<String, Integer> index = Maps.newConcurrentMap();
-    private static List<Hologram> holograms = Lists.newCopyOnWriteArrayList();
+    private static final Map<String, Integer> index = Maps.newConcurrentMap();
+    private static final List<Hologram> holograms = Lists.newCopyOnWriteArrayList();
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public static List<Hologram> getHolograms() {
         return holograms;
     }
 
     public static int nextIndex(Player player) {
-        return index.put(player.getName(), index.computeIfAbsent(player.getName(), e -> 449599702) + 1);
+        int idx = index.computeIfAbsent(player.getName(), e -> 449599702) + 1;
+        index.put(player.getName(), idx);
+        return idx;
     }
 
     public static Hologram create(Location location, String text) {

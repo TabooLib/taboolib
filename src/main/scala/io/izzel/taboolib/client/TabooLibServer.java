@@ -1,17 +1,17 @@
 package io.izzel.taboolib.client;
 
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.client.packet.Packet;
 import io.izzel.taboolib.client.packet.PacketSerializer;
 import io.izzel.taboolib.client.packet.impl.PacketHeartbeat;
 import io.izzel.taboolib.client.packet.impl.PacketQuit;
 import io.izzel.taboolib.client.server.ClientConnection;
 import org.bukkit.util.NumberConversions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,12 +28,12 @@ import java.util.concurrent.TimeUnit;
 public class TabooLibServer {
 
     private static ServerSocket server = null;
-    private static final SimpleDateFormat infoFormat = new SimpleDateFormat("HH:mm:ss");
+    private static final Logger logger = LoggerFactory.getLogger(TabooLibServer.class);
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     private static final ConcurrentHashMap<Integer, ClientConnection> client = new ConcurrentHashMap<>();
 
     public static void main(String[] args) {
-        println("TabooLib Communication Area Starting...");
+        println("TabooLib Communication Network Starting...");
 
         if (!TabooLibSettings.load()) {
             println("Settings loading failed: " + TabooLibSettings.getError().toString());
@@ -42,7 +42,7 @@ public class TabooLibServer {
 
         try {
             server = new ServerSocket(NumberConversions.toInt(TabooLibSettings.getSettings().getProperty("channel.port")));
-            println("Starting TabooLib server on " + server.getInetAddress().getHostName() + ":" + server.getLocalPort());
+            println("Starting server on port " + server.getInetAddress().getHostName() + ":" + server.getLocalPort());
         } catch (IOException e) {
             println("Server starting failed: " + e.toString());
             return;
@@ -63,7 +63,7 @@ public class TabooLibServer {
             异步接收连接请求
          */
         Executors.newSingleThreadScheduledExecutor().execute(() -> {
-            while (true) {
+            while (!server.isClosed()) {
                 try {
                     Socket socket = server.accept();
                     ClientConnection connection = new ClientConnection(socket);
@@ -83,7 +83,7 @@ public class TabooLibServer {
 
     public static void sendPacket(String origin) {
         // 在服务端尝试解析动作并运行
-        Optional.ofNullable(PacketSerializer.unSerialize(origin)).ifPresent(Packet::readOnServer);
+        PacketSerializer.unSerialize(origin).readOnServer();
         // 将动作发送至所有客户端
         for (ClientConnection connection : TabooLibServer.getClient().values()) {
             try {
@@ -95,7 +95,7 @@ public class TabooLibServer {
     }
 
     public static void println(Object obj) {
-        System.out.println(TabooLibAPI.isBukkit() ? obj : "[" + infoFormat.format(System.currentTimeMillis()) + " INFO]: " + obj);
+        logger.info(obj.toString());
     }
 
     public static Optional<Map.Entry<Integer, ClientConnection>> getConnection(int port) {
@@ -112,5 +112,9 @@ public class TabooLibServer {
 
     public static ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    public static Logger getLogger() {
+        return logger;
     }
 }

@@ -60,13 +60,14 @@ public class ListenerCommand implements Listener {
         abstract public String[] name();
 
         abstract public void run(Player player, String[] args);
+
     }
 
     List<Module> testUtil = Lists.newArrayList(
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"json", "tellrawJson"};
+                    return new String[]{"json", "tellrawJson"};
                 }
 
                 @Override
@@ -81,7 +82,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"sign", "fakeSign"};
+                    return new String[]{"sign", "fakeSign"};
                 }
 
                 @Override
@@ -92,7 +93,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"hd", "hologram"};
+                    return new String[]{"hd", "hologram"};
                 }
 
                 @Override
@@ -123,7 +124,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"book", "bookBuilder"};
+                    return new String[]{"book", "bookBuilder"};
                 }
 
                 @Override
@@ -139,7 +140,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"light"};
+                    return new String[]{"light"};
                 }
 
                 @Override
@@ -160,7 +161,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"simpleAI", "ai"};
+                    return new String[]{"simpleAI", "ai"};
                 }
 
                 @Override
@@ -184,7 +185,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"local"};
+                    return new String[]{"local"};
                 }
 
                 @Override
@@ -201,7 +202,7 @@ public class ListenerCommand implements Listener {
             new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"effects", "effect"};
+                    return new String[]{"effects", "effect"};
                 }
 
                 @Override
@@ -329,7 +330,7 @@ public class ListenerCommand implements Listener {
             }, new Module() {
                 @Override
                 public String[] name() {
-                    return new String[] {"color", "ChatColor"};
+                    return new String[]{"color", "ChatColor"};
                 }
 
                 @Override

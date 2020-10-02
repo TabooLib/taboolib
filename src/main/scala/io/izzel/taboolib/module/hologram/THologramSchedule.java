@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
  */
 abstract class THologramSchedule {
 
-    private Callable condition;
+    private final Callable<Boolean> condition;
 
     public THologramSchedule(Callable<Boolean> condition) {
         this.condition = condition;

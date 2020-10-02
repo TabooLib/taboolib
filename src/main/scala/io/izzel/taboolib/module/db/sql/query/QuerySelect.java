@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
+import io.izzel.taboolib.module.db.sql.SQLTable;
 import io.izzel.taboolib.util.ArrayUtil;
 
 import javax.sql.DataSource;
@@ -12,22 +13,20 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2019-10-26 13:34
  */
-public class QuerySelect {
+public class QuerySelect extends Query {
 
     private List<String> rowName = Lists.newArrayList();
-    private String tableName;
     private String distinct;
     private final List<Where> where = Lists.newArrayList();
     private final List<Order> order = Lists.newArrayList();
     private int limit = -1;
 
-    public QuerySelect row(String... row) {
-        this.rowName = ArrayUtil.asList(row);
-        return this;
+    public QuerySelect(SQLTable table) {
+        super(table);
     }
 
-    public QuerySelect table(String tableName) {
-        this.tableName = tableName;
+    public QuerySelect row(String... row) {
+        this.rowName = ArrayUtil.asList(row);
         return this;
     }
 
@@ -69,6 +68,7 @@ public class QuerySelect {
         });
     }
 
+    @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
         builder.append("select");
@@ -81,7 +81,7 @@ public class QuerySelect {
             builder.append("*");
         }
         builder.append(" ");
-        builder.append("from ").append(tableName);
+        builder.append("from ").append(table.getTableName());
         builder.append(" ");
         if (!where.isEmpty()) {
             builder.append("where ");

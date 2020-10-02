@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
  */
 public class RunnableUpdate {
 
+
     private DataSource dataSource;
     private TaskStatement statement;
     private Connection connection;

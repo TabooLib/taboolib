@@ -1,8 +1,8 @@
 package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.lite.SimpleVersionControl;
 import io.izzel.taboolib.util.Ref;
+import io.izzel.taboolib.util.asm.AsmVersionControl;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -22,7 +22,7 @@ public class TInjectAsm implements TabooLibLoader.Loader {
             }
             for (Object instance : TInjectHelper.getInstance(declaredField, pluginClass, plugin)) {
                 try {
-                    Ref.putField(instance, declaredField, SimpleVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
+                    Ref.putField(instance, declaredField, AsmVersionControl.createNMS(annotation.asm()).useCache().translate(plugin).newInstance());
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

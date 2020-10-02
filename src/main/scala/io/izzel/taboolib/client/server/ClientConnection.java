@@ -56,12 +56,6 @@ public class ClientConnection implements Runnable {
         return System.currentTimeMillis() - latestResponse < NumberConversions.toInt(TabooLibSettings.getSettings().getProperty("channel.timeout"));
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public Socket getSocket() {
         return socket;
     }

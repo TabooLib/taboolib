@@ -27,6 +27,7 @@ public class TLocaleSound extends TLocaleSerialize {
         this.soundPacks = soundPacks;
     }
 
+    @SuppressWarnings("unchecked")
     public static TLocaleSound valueOf(Map<String, Object> map) {
         List<SoundPack> soundPacks = new ArrayList<>();
         Object sounds = map.containsKey("sounds") ? map.get("sounds") : map.getOrDefault("sound", "");

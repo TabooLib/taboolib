@@ -8,7 +8,7 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Files;
-import io.izzel.taboolib.util.KV;
+import io.izzel.taboolib.util.Pair;
 import io.izzel.taboolib.util.Ref;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,7 +31,7 @@ public class TConfig extends YamlConfiguration {
     private final Plugin plugin;
     private final File file;
     private final List<Runnable> runnable = Lists.newArrayList();
-    private final List<KV<String, String[]>> migrate = Lists.newArrayList();
+    private final List<Pair<String, String[]>> migrate = Lists.newArrayList();
     private String path;
 
     private TConfig(File file, Plugin plugin) {

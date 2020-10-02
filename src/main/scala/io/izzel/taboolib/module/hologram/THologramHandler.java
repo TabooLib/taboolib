@@ -40,7 +40,7 @@ class THologramHandler implements Listener {
     private static Packet packetSpawn = null;
     private static Packet packetName = null;
     private static THologramSchedule currentSchedule = null;
-    private static Queue<THologramSchedule> queueSchedule = Queues.newArrayDeque();
+    private static final Queue<THologramSchedule> queueSchedule = Queues.newArrayDeque();
 
     private static boolean learned = false;
 
@@ -111,6 +111,7 @@ class THologramHandler implements Listener {
         return packet;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static Packet copy(int id, String name) {
         Packet packet = THologramHandler.getPacketName().copy();
         packet.write("a", id);
@@ -188,7 +189,9 @@ class THologramHandler implements Listener {
                     learnTarget.remove();
                 } else if (schedule.check()) {
                     currentSchedule = queueSchedule.poll();
-                    currentSchedule.before();
+                    if (currentSchedule != null) {
+                        currentSchedule.before();
+                    }
                 }
             }
         }.runTaskTimer(TabooLib.getPlugin(), 1, 1);
@@ -218,12 +221,6 @@ class THologramHandler implements Listener {
     public void e() {
         Bukkit.getOnlinePlayers().forEach(THologram::refresh);
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public static ArmorStand getLearnTarget() {
         return learnTarget;

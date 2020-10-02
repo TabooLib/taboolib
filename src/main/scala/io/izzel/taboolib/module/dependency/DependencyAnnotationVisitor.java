@@ -13,7 +13,7 @@ import org.objectweb.asm.Opcodes;
  */
 public class DependencyAnnotationVisitor extends AnnotationVisitor {
 
-    private Plugin plugin;
+    private final Plugin plugin;
     private String maven;
     private String mavenRepo = TDependency.MAVEN_REPO;
     private String url = "";

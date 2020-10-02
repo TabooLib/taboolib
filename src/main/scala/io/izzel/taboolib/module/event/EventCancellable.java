@@ -6,6 +6,7 @@ import org.bukkit.event.Cancellable;
  * @Author sky
  * @Since 2019-10-22 10:41
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class EventCancellable<T extends EventCancellable> extends EventNormal implements Cancellable {
 
     private boolean cancelled;

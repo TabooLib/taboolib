@@ -4,6 +4,7 @@ import io.izzel.taboolib.module.db.IColumn;
 import io.izzel.taboolib.util.Strings;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @Author sky
@@ -13,35 +14,31 @@ public class SQLiteColumn extends IColumn {
 
     public static final SQLiteColumn PRIMARY_KEY_ID = new SQLiteColumn(SQLiteColumnType.INTEGER, "id", SQLiteColumnOption.NOTNULL, SQLiteColumnOption.PRIMARY_KEY, SQLiteColumnOption.AUTOINCREMENT);
 
-    private SQLiteColumnType columnType;
+    private final SQLiteColumnType columnType;
     private int m;
     private int d;
 
-    private String columnName;
+    private final String columnName;
     private Object defaultValue;
 
     private SQLiteColumnOption[] columnOptions;
 
-    /**
-     * 文本 类型常用构造器
-     * new SQLColumn(SQLiteColumnType.TEXT, "username");
-     */
     public SQLiteColumn(SQLiteColumnType columnType, String columnName) {
         this(columnType, 0, 0, columnName, null);
     }
 
-    /**
-     * 主键 类型常用构造器
-     * new SQLColumn(SQLiteColumnType.TEXT, "username", SQLiteColumnOption.PRIMARY_KEY, SQLiteColumnOption.AUTO_INCREMENT);
-     */
+    public SQLiteColumn(SQLiteColumnType columnType, int m, String columnName) {
+        this(columnType, m, 0, columnName, null);
+    }
+
+    public SQLiteColumn(SQLiteColumnType columnType, int m, int d, String columnName) {
+        this(columnType, m, d, columnName, null);
+    }
+
     public SQLiteColumn(SQLiteColumnType columnType, String columnName, SQLiteColumnOption... columnOptions) {
         this(columnType, 0, 0, columnName, null, columnOptions);
     }
 
-    /**
-     * 数据 类型常用构造器
-     * new SQLColumn(SQLiteColumnType.TEXT, "player_group", "PLAYER");
-     */
     public SQLiteColumn(SQLiteColumnType columnType, String columnName, Object defaultValue) {
         this(columnType, 0, 0, columnName, defaultValue);
     }
@@ -50,16 +47,6 @@ public class SQLiteColumn extends IColumn {
         this(columnType, 0, 0, columnName, defaultValue, columnOptions);
     }
 
-    /**
-     * 完整构造器
-     *
-     * @param columnType    类型
-     * @param m             m值
-     * @param d             d值
-     * @param columnName    名称
-     * @param defaultValue  默认值
-     * @param columnOptions 属性值
-     */
     public SQLiteColumn(SQLiteColumnType columnType, int m, int d, String columnName, Object defaultValue, SQLiteColumnOption... columnOptions) {
         this.columnType = columnType;
         this.m = m;
@@ -101,13 +88,11 @@ public class SQLiteColumn extends IColumn {
 
     private String convertToOptions() {
         StringBuilder builder = new StringBuilder();
-        Arrays.stream(columnOptions).forEach(option -> builder.append(" ").append(option.getText()));
-        if (defaultValue != null) {
-            if (defaultValue instanceof String) {
-                builder.append(" DEFAULT '").append(defaultValue).append("'");
-            } else {
-                builder.append(" DEFAULT ").append(defaultValue);
-            }
+        builder.append(Arrays.stream(columnOptions).map(SQLiteColumnOption::getText).collect(Collectors.joining(" ")));
+        if (defaultValue instanceof String) {
+            builder.append(" DEFAULT '").append(defaultValue).append("'");
+        } else if (defaultValue != null) {
+            builder.append(" DEFAULT ").append(defaultValue);
         }
         return builder.toString();
     }

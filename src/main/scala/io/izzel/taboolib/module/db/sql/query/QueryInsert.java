@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
+import io.izzel.taboolib.module.db.sql.SQLTable;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -11,14 +12,12 @@ import java.util.stream.Collectors;
  * @Author sky
  * @Since 2019-10-26 13:34
  */
-public class QueryInsert {
+public class QueryInsert extends Query {
 
-    private String tableName;
     private final List<Object> value = Lists.newArrayList();
 
-    public QueryInsert table(String tableName) {
-        this.tableName = tableName;
-        return this;
+    public QueryInsert(SQLTable table) {
+        super(table);
     }
 
     public QueryInsert value(Object... value) {
@@ -39,9 +38,10 @@ public class QueryInsert {
         });
     }
 
+    @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("insert into ").append(tableName);
+        builder.append("insert into ").append(table.getTableName());
         builder.append(" ");
         builder.append("values (");
         if (!value.isEmpty()) {

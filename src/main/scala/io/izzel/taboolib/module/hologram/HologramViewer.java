@@ -10,8 +10,8 @@ import java.util.Objects;
  */
 public class HologramViewer {
 
-    private int id;
-    private Player player;
+    private final int id;
+    private final Player player;
     private boolean spawned;
     private boolean visible;
 
@@ -51,12 +51,6 @@ public class HologramViewer {
                 ", visible=" + visible +
                 '}';
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public int getId() {
         return id;

@@ -14,7 +14,7 @@ import io.izzel.taboolib.module.locale.TLocale;
 public class PacketQuit extends Packet {
 
     @PacketValue
-    private String message;
+    private final String message;
 
     public PacketQuit(int port) {
         this(port, "connect closed.");

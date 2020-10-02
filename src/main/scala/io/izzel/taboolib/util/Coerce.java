@@ -30,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,14 +45,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class Coerce {
 
-    private static final Pattern listPattern = Pattern.compile("^([\\(\\[\\{]?)(.+?)([\\)\\]\\}]?)$");
-
+    private static final Pattern listPattern = Pattern.compile("^([(\\[{]?)(.+?)([)\\]}]?)$");
     private static final String[] listPairings = {"([{", ")]}"};
 
     /**
      * No subclasses for you.
      */
     private Coerce() {
+    }
+
+    public static double format(double value) {
+        return BigDecimal.valueOf(value).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
@@ -98,7 +102,7 @@ public final class Coerce {
      */
     public static List<?> toList(@Nullable Object obj) {
         if (obj == null) {
-            return Collections.<Object>emptyList();
+            return Collections.emptyList();
         }
 
         if (obj instanceof List) {
@@ -129,19 +133,19 @@ public final class Coerce {
         }
 
         if (obj instanceof List) {
-            return Optional.<List<?>>of((List<?>) obj);
+            return Optional.of((List<?>) obj);
         }
 
         Class<?> clazz = obj.getClass();
         if (clazz.isArray()) {
             if (clazz.getComponentType().isPrimitive()) {
-                return Optional.<List<?>>of(Coerce.primitiveArrayToList(obj));
+                return Optional.of(Coerce.primitiveArrayToList(obj));
             }
 
-            return Optional.<List<?>>of(Arrays.asList((Object[]) obj));
+            return Optional.of(Arrays.asList((Object[]) obj));
         }
 
-        return Optional.<List<?>>of(Coerce.parseStringToList(obj.toString()));
+        return Optional.of(Coerce.parseStringToList(obj.toString()));
     }
 
     /**
@@ -262,7 +266,7 @@ public final class Coerce {
         if (iParsed == null) {
             Double dParsed = Doubles.tryParse(strObj);
             // try parsing as double now
-            return dParsed == null ? Optional.<Integer>empty() : Optional.of(dParsed.intValue());
+            return dParsed == null ? Optional.empty() : Optional.of(dParsed.intValue());
         }
         return Optional.of(iParsed);
     }
@@ -314,7 +318,7 @@ public final class Coerce {
         String strObj = Coerce.sanitiseNumber(obj);
         Double dParsed = Doubles.tryParse(strObj);
         // try parsing as double now
-        return dParsed == null ? Optional.<Double>empty() : Optional.of(dParsed);
+        return dParsed == null ? Optional.empty() : Optional.of(dParsed);
     }
 
     /**
@@ -362,7 +366,7 @@ public final class Coerce {
 
         String strObj = Coerce.sanitiseNumber(obj);
         Double dParsed = Doubles.tryParse(strObj);
-        return dParsed == null ? Optional.<Float>empty() : Optional.of(dParsed.floatValue());
+        return dParsed == null ? Optional.empty() : Optional.of(dParsed.floatValue());
     }
 
     /**
@@ -705,13 +709,13 @@ public final class Coerce {
             return Doubles.asList((double[]) obj);
         }
 
-        return Collections.<Object>emptyList();
+        return Collections.emptyList();
     }
 
     private static List<?> parseStringToList(String string) {
         Matcher candidate = Coerce.listPattern.matcher(string);
         if (!Coerce.listBracketsMatch(candidate)) {
-            return Collections.<Object>emptyList();
+            return Collections.emptyList();
         }
 
         List<String> list = Lists.newArrayList();

@@ -1,6 +1,6 @@
 package io.izzel.taboolib.common.plugin;
 
-import io.izzel.taboolib.module.lite.SimpleVersionControl;
+import io.izzel.taboolib.util.asm.AsmVersionControl;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -26,7 +26,7 @@ public abstract class InternalPluginBridge {
 
     static {
         try {
-            handle = (InternalPluginBridge) SimpleVersionControl.createNMS("io.izzel.taboolib.common.plugin.bridge.BridgeImpl").translateBridge().newInstance();
+            handle = (InternalPluginBridge) AsmVersionControl.createNMS("io.izzel.taboolib.common.plugin.bridge.BridgeImpl").translateBridge().newInstance();
         } catch (Throwable t) {
             t.printStackTrace();
         }

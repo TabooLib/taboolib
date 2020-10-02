@@ -83,12 +83,6 @@ public class DBSource {
         return config;
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public static ConcurrentHashMap<IHost, DBSourceData> getDataSource() {
         return dataSource;
     }

@@ -31,6 +31,17 @@ public enum SQLiteColumnType {
     /**
      * 数字自动转换
      */
-    NUMERIC
+    NUMERIC;
 
+    public SQLiteColumn toColumn(String name) {
+        return new SQLiteColumn(this, name);
+    }
+
+    public SQLiteColumn toColumn(int m, String name) {
+        return new SQLiteColumn(this, m, name);
+    }
+
+    public SQLiteColumn toColumn(int m, int d, String name) {
+        return new SQLiteColumn(this, m, d, name);
+    }
 }
