@@ -16,8 +16,7 @@ public class SQLColumn extends IColumn {
             .columnOptions(
                     SQLColumnOption.PRIMARY_KEY,
                     SQLColumnOption.NOTNULL,
-                    SQLColumnOption.AUTO_INCREMENT,
-                    SQLColumnOption.UNSIGNED
+                    SQLColumnOption.AUTO_INCREMENT
             );
 
     private final SQLColumnType columnType;
@@ -85,11 +84,11 @@ public class SQLColumn extends IColumn {
     @Override
     public String convertToCommand() {
         if (this.m == 0 && this.d == 0) {
-            return Strings.replaceWithOrder("`{0}` {1}{2}", columnName, columnType.name().toLowerCase(), convertToOptions());
+            return Strings.replaceWithOrder("`{0}` {1} {2}", columnName, columnType.name().toLowerCase(), convertToOptions());
         } else if (this.d == 0) {
-            return Strings.replaceWithOrder("`{0}` {1}({2}){3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
+            return Strings.replaceWithOrder("`{0}` {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
         } else {
-            return Strings.replaceWithOrder("`{0}` {1}({2},{3}){4}", columnName, columnType.name().toLowerCase(), m, d, convertToOptions());
+            return Strings.replaceWithOrder("`{0}` {1}({2},{3}) {4}", columnName, columnType.name().toLowerCase(), m, d, convertToOptions());
         }
     }
 

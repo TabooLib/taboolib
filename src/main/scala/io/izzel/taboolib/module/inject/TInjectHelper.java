@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author sky
@@ -77,16 +78,19 @@ public class TInjectHelper {
             else if (CompatKotlin.isCompanion(pluginClass)) {
                 instance.add(CompatKotlin.getCompanion(pluginClass));
             }
-            // Main
-            if (pluginClass.equals(PluginLoader.get(plugin).getClass())) {
-                instance.add(PluginLoader.get(plugin));
-            }
             // TInject
             if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
                 TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
             }
             // TListener
-            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+            if (plugin != null) {
+                instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+            }
+            // Main
+            Object redefine = PluginLoader.get(plugin);
+            if (redefine != null && redefine.getClass().equals(pluginClass)) {
+                instance.add(PluginLoader.get(plugin));
+            }
         }
         // Nothing
         if (instance.isEmpty()) {
