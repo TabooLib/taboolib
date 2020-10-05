@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.38'
+version = '5.4'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -79,4 +79,9 @@ processResources {
         include 'plugin.yml'
         expand 'version': project.version
     }
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
