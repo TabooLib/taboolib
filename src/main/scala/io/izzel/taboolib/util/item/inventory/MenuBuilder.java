@@ -37,53 +37,121 @@ public class MenuBuilder {
         this.plugin = plugin;
     }
 
+    /**
+     * 获取一个 MenuBuilder 实例
+     *
+     * @param plugin 插件主类实例
+     * @return MenuBuilder 实例
+     */
     public static MenuBuilder builder(Plugin plugin) {
         return new MenuBuilder(plugin);
     }
 
+    /**
+     * 获取一个 MenuBuilder 实例
+     *
+     * @return MenuBuilder 实例
+     */
     public static MenuBuilder builder() {
         return new MenuBuilder(Ref.getCallerPlugin(Ref.getCallerClass(3).orElse(TabooLib.class)));
     }
 
+    /**
+     * 为玩家打开已由 MenuBuilder 创建好的菜单
+     *
+     * @param player 需要打开菜单的玩家
+     */
     public void open(Player player) {
         player.openInventory(build());
     }
 
+    /**
+     * 将菜单设置为锁定玩家手部动作
+     * 这将阻止玩家在使用菜单时进行包括但不限于
+     * 丢弃物品，拿出菜单物品
+     * 等行为
+     *
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder lockHand() {
         this.lockHand = true;
         return this;
     }
 
+    /**
+     * 设置是否锁定玩家手部动作
+     * 设置为 true 则将阻止玩家在使用菜单时进行包括但不限于
+     * 丢弃物品，拿出菜单物品
+     * 等行为
+     *
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder lockHand(boolean value) {
         this.lockHand = value;
         return this;
     }
 
+    /**
+     * 设置玩家点击菜单事件
+     *
+     * @param clickTask 玩家点击菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder event(ClickTask clickTask) {
         this.clickTask = clickTask;
         return this;
     }
 
+    /**
+     * 设置玩家关闭菜单事件
+     *
+     * @param closeTask 玩家关闭菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder close(CloseTask closeTask) {
         this.closeTask = closeTask;
         return this;
     }
 
+    /**
+     * 构建菜单内容
+     *
+     * @param buildTask 菜单构建任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder build(BuildTask buildTask) {
         this.buildTask = buildTask;
         return this;
     }
 
+    /**
+     * 异步构建菜单内容
+     *
+     * @param buildTask 菜单构建任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder buildAsync(BuildTask buildTask) {
         this.buildTaskAsync = buildTask;
         return this;
     }
 
+    /**
+     * 设置菜单标题
+     *
+     * @param title 标题
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder title(String title) {
         this.title = title;
         return this;
     }
 
+    /**
+     * 设置菜单行数
+     *
+     * @param rows 菜单行数
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder rows(int rows) {
         this.rows = rows * 9;
         return this;
@@ -102,6 +170,11 @@ public class MenuBuilder {
         return this;
     }
 
+    /**
+     * 构建菜单
+     *
+     * @return Bukkit 的 Inventory 背包对象实例
+     */
     public Inventory build() {
         Inventory inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
         for (int i = 0; i < items.length && i < rows; i++) {
