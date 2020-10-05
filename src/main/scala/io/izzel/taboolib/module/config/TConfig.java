@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * TabooLib YAML配置文件操作类
+ *
  * @Author sky
  * @Since 2018-09-08 15:00
  */
@@ -47,14 +49,34 @@ public class TConfig extends YamlConfiguration {
         return files;
     }
 
+    /**
+     * 创建一个 TConfig 配置文件实例
+     *
+     * @param file 配置文件
+     * @return TConfig 实例
+     */
     public static TConfig create(File file) {
         return new TConfig(file, Ref.getCallerPlugin(Ref.getCallerClass(3).orElse(TabooLib.class)));
     }
 
+    /**
+     * 创建一个 TConfig 配置文件实例
+     *
+     * @param file   配置文件
+     * @param plugin 插件主类对象
+     * @return TConfig 实例
+     */
     public static TConfig create(File file, Plugin plugin) {
         return new TConfig(file, plugin);
     }
 
+    /**
+     * 创建一个 TConfig 配置文件实例
+     *
+     * @param plugin 插件主类实例
+     * @param path   配置文件路径
+     * @return
+     */
     public static TConfig create(Plugin plugin, String path) {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.exists()) {
@@ -65,22 +87,50 @@ public class TConfig extends YamlConfiguration {
         return conf;
     }
 
+    /**
+     * 获取一个上色过的字符串
+     * 使用'&'作为样式代码
+     *
+     * @param path YAML路径
+     * @return 上过色的字符串
+     */
     public String getStringColored(String path) {
         return TLocale.Translate.setColored(getString(path));
     }
 
+    /**
+     * 获取一个上色过的字符串
+     * 使用'&'作为样式代码
+     *
+     * @param path YAML路径
+     * @param def  路径不存在时返回的默认值
+     * @return 上过色的字符串
+     */
     public String getStringColored(String path, String def) {
         return TLocale.Translate.setColored(getString(path, def));
     }
 
+    /**
+     * 获取一个上色过的字符串列表
+     * 使用'&'作为样式代码
+     *
+     * @param path YAML路径
+     * @return 上过色的字符串列表
+     */
     public List<String> getStringListColored(String path) {
         return TLocale.Translate.setColored(getStringList(path));
     }
 
+    /**
+     * 释放配置文件监听
+     */
     public void release() {
         TConfigWatcher.getInst().removeListener(file);
     }
 
+    /**
+     * 重载配置文件
+     */
     public void reload() {
         try {
             load(file);
@@ -90,6 +140,9 @@ public class TConfig extends YamlConfiguration {
         }
     }
 
+    /**
+     * 保存配置到文件
+     */
     public void saveToFile() {
         try {
             save(file);
