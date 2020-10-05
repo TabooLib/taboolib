@@ -28,35 +28,35 @@ import java.util.concurrent.Executors;
  */
 @Dependency(
         maven = "org.slf4j:slf4j-api:1.7.25",
-        url = "http://repo.ptms.ink/repository/maven-public/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar"
 )
 @Dependency(
-        maven = "com.zaxxer:HikariCP:3.1.0",
-        url = "http://repo.ptms.ink/repository/maven-releases/com/zaxxer/HikariCP/3.1.0/HikariCP-3.1.0.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar"
+        maven = "com.zaxxer:HikariCP:3.4.5",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/HikariCP/3.4.5/HikariCP-3.4.5.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/HikariCP-3.4.5.jar"
 )
 @Dependency(
         maven = "org.scala-lang:scala-library:2.12.8",
-        url = "http://repo.ptms.ink/repository/maven-public/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib/1.4.0-rc/kotlin-stdlib-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.0-rc-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib:1.4.10",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.10.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk7/1.4.0-rc/kotlin-stdlib-jdk7-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.10",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib-jdk7.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.10.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk8/1.4.0-rc/kotlin-stdlib-jdk8-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.10",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib-jdk8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.10.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-reflect:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-reflect/1.4.0-rc/kotlin-reflect-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-reflect:1.4.10",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-reflect.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.10.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-test:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-test/1.4.0-rc/kotlin-test-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-test:1.4.10",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-test.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.4.10.jar"
 )
 @Dependency(
         maven = "com.google.inject:guice:4.2.2",
@@ -64,7 +64,7 @@ import java.util.concurrent.Executors;
 )
 @Dependency(
         maven = "com.mongodb:mongodb:3.12.2",
-        url = "http://repo.ptms.ink/repository/maven-public/com/mongodb/MongoDB/3.12.2/MongoDB-3.12.2-all.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/mongo-java-driver-3.12.2.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/com/mongodb/MongoDB/3.12.2/MongoDB-3.12.2-all.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/mongodb-driver-3.12.2.jar"
 )
 public class TabooLib {
 

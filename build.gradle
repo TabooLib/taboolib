@@ -24,10 +24,12 @@ dependencies {
         exclude(module: 'log4j')
     }
 
+    // ptms repo
     compile 'me.skymc.taboolib:TabooLib:4.9:all'
     compile 'io.izzel.taboolib:TabooLibKotlin:1.0.1'
     compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.0'
 
+    // ptms repo
     compile 'ink.ptms.core:v11200:11200:all'
     compile 'ink.ptms.core:v11600:11600:all'
     compile 'ink.ptms.core:v11500:11500:all'
@@ -36,17 +38,20 @@ dependencies {
     compile 'ink.ptms.core:v10900:10900:all'
     compile 'ink.ptms.core:v10800:10800:all'
 
+    // ptms repo
     compile 'net.md_5.bungee:BungeeCord:1:all'
 
     compile 'com.github.cryptomorin:XSeries:7.5.2.1'
     compile 'org.apache.commons:commons-lang3:3.8'
     compile 'com.google.code.gson:gson:2.8.6'
-    compile 'org.ow2.asm:asm:7.3.1'
-    compile 'org.ow2.asm:asm-commons:7.3.1'
+    compile 'org.ow2.asm:asm:9.0'
+    compile 'org.ow2.asm:asm-commons:9.0'
     compile 'com.google.inject:guice:4.2.2'
-    compile 'com.zaxxer:HikariCP:3.1.0'
+    compile 'com.zaxxer:HikariCP:3.4.5'
+    // ptms repo
     compile 'com.mongodb:MongoDB:3.12.2:all'
 
+    // ptms repo
     compile 'pw.yumc.Yum:Yum:1:all'
     compile 'me.clip:placeholderapi:2.10.4'
     compile 'net.milkbowl.vault:Vault:1:all'
@@ -79,9 +84,4 @@ processResources {
         include 'plugin.yml'
         expand 'version': project.version
     }
-}
-
-task sourceJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
 }
