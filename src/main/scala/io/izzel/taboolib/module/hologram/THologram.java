@@ -23,6 +23,11 @@ public class THologram {
     private static final List<Hologram> holograms = Lists.newCopyOnWriteArrayList();
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    /**
+     * 获取所有已创建的 {@link Hologram} 实例
+     *
+     * @return 包含所有 {@link Hologram} 实例的列表
+     */
     public static List<Hologram> getHolograms() {
         return holograms;
     }
@@ -33,23 +38,51 @@ public class THologram {
         return idx;
     }
 
+    /**
+     * 创建一个 {@link Hologram} 全息字实例
+     *
+     * @param location 全息字需要被放置到的位置
+     * @param text     全系字内容
+     * @return {@link Hologram} 全息字实例
+     */
     public static Hologram create(Location location, String text) {
         return new Hologram(location, text);
     }
 
+    /**
+     * 创建一个 {@link Hologram} 全息字实例
+     * * @param location 全息字需要被放置到的位置
+     * * @param text     全系字内容
+     *
+     * @param viewers 能看到该全息字的玩家
+     *                * @return {@link Hologram} 全息字实例
+     */
     public static Hologram create(Location location, String text, Player... viewers) {
         return new Hologram(location, text, viewers);
     }
 
+    /**
+     * 释放所有已被声明删除的 {@link Hologram} 全息字对象实例
+     */
     @TSchedule(period = 100, async = true)
     public static void release() {
         holograms.removeIf(Hologram::isDeleted);
     }
 
+    /**
+     * 移除指定玩家对所有 {@link Hologram} 全息字实例的可见
+     *
+     * @param player 需要移除的玩家
+     */
     public static void remove(Player player) {
         holograms.forEach(hologram -> hologram.removeViewer(player));
     }
 
+    /**
+     * 刷新指定玩家对所有 {@link Hologram} 全息字实例的可见
+     *
+     * @param player 需要刷新的玩家
+     */
     public static void refresh(Player player) {
         for (Hologram hologram : holograms) {
             HologramViewer viewer = hologram.getViewer(player);
