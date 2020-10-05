@@ -26,7 +26,7 @@ dependencies {
 
     // ptms repo
     compile 'me.skymc.taboolib:TabooLib:4.9:all'
-    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.1'
+    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.2'
     compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.0'
 
     // ptms repo
