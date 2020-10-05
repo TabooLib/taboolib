@@ -29,16 +29,16 @@ public class I18n11601 extends I18nBase {
 
     public static final I18n11601 INSTANCE = new I18n11601();
 
-    // 1。16.1
+    // 1.16.3
     public static final String[][] LOCALE = {
             {
-                    "zh_cn", "207c12360216c9222878b8c2b6ac0660d8a7f7bb"
+                    "zh_cn", "4ee6d2b4057f6b1af0552a1f44782fa2d5eb5f2e"
             },
             {
-                    "zh_tw", "e3721a0efb6077faa7d5525c189a36485ce1366c"
+                    "zh_tw", "beaa0234d2f130b1c2a1a10df7e8c8ea8042e2d6"
             },
             {
-                    "en_gb", "7697b4bfb780270caad749f38abb9007fc1bd976",
+                    "en_gb", "b1384f0bc5d88985539b31b28c0db81a25e7f39b",
             }
     };
 
