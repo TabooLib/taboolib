@@ -159,12 +159,6 @@ public class TCommandHandler {
         }
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public static SimpleCommandMap getCommandMap() {
         return commandMap;
     }

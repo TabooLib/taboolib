@@ -8,6 +8,12 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 文本工具
+ *
+ * @author sky
+ * @since -
+ */
 public class Strings {
 
     public static String copy(String text, int count) {

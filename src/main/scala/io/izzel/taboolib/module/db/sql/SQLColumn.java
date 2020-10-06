@@ -8,11 +8,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * SQL 数据列
+ *
  * @Author sky
  * @Since 2018-05-14 19:09
  */
 public class SQLColumn extends IColumn {
 
+    /**
+     * ID 常量（id bigint unsigned not null auto_increment primary key）
+     */
     public static final SQLColumn PRIMARY_KEY_ID = SQLColumnType.BIGINT.toColumn("id")
             .columnOptions(
                     SQLColumnOption.UNSIGNED,
@@ -21,10 +26,16 @@ public class SQLColumn extends IColumn {
                     SQLColumnOption.PRIMARY_KEY
             );
 
+    /**
+     * GMT_CREATE 常量（gmt_create datetime not null default CURRENT_TIMESTAMP）
+     */
     public static final SQLColumn GMT_CREATE = SQLColumnType.DATETIME.toColumn("gmt_create")
             .columnOptions(SQLColumnOption.NOTNULL)
             .defaultValue("$CURRENT_TIMESTAMP");
 
+    /**
+     * GMT_MODIFIED 常量（gmt_modified datetime not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP）
+     */
     public static final SQLColumn GMT_MODIFIED = SQLColumnType.DATETIME.toColumn("gmt_modified")
             .columnOptions(SQLColumnOption.NOTNULL)
             .defaultValue("$CURRENT_TIMESTAMP")
@@ -122,7 +133,7 @@ public class SQLColumn extends IColumn {
         if (this.m == 0 && this.d == 0) {
             return Strings.replaceWithOrder("`{0}` {1} {2}", columnName, columnType.name().toLowerCase(), convertToOptions());
         } else if (this.d == 0) {
-            return Strings.replaceWithOrder("`{0}` {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
+            return Strings.replaceWithOrder("`{0}`t {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
         } else {
             return Strings.replaceWithOrder("`{0}` {1}({2},{3}) {4}", columnName, columnType.name().toLowerCase(), m, d, convertToOptions());
         }

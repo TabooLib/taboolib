@@ -75,7 +75,6 @@ public class TConfig extends YamlConfiguration {
      *
      * @param plugin 插件主类实例
      * @param path   配置文件路径
-     * @return
      */
     public static TConfig create(Plugin plugin, String path) {
         File file = new File(plugin.getDataFolder(), path);
@@ -170,12 +169,6 @@ public class TConfig extends YamlConfiguration {
         }
         return this;
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public File getFile() {
         return file;

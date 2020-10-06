@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
+ * SQL 数据表
+ *
  * @Author sky
  * @Since 2018-05-14 19:07
  */
@@ -21,10 +23,21 @@ public class SQLTable {
     private final String tableName;
     private final List<IColumn> columns = Lists.newArrayList();
 
+    /**
+     * 创建数据表实例
+     *
+     * @param tableName 表名
+     */
     public SQLTable(String tableName) {
         this.tableName = tableName;
     }
 
+    /**
+     * 创建数据表实例
+     *
+     * @param tableName 表名
+     * @param column    列
+     */
     public SQLTable(String tableName, IColumn... column) {
         this.tableName = tableName;
         this.columns.addAll(Arrays.asList(column));
@@ -43,6 +56,9 @@ public class SQLTable {
         return new SQLTable(name, SQLColumn.PRIMARY_KEY_ID);
     }
 
+    /**
+     * 添加列
+     */
     public SQLTable column(IColumn column) {
         columns.add(column);
         return this;
@@ -56,6 +72,11 @@ public class SQLTable {
         return this;
     }
 
+    /**
+     * 创建表
+     *
+     * @param dataSource 连接池对象
+     */
     public void create(DataSource dataSource) {
         executeUpdate(createQuery()).dataSource(dataSource).run();
     }

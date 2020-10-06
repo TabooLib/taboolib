@@ -17,6 +17,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * 玩家数据 MongoDB 储存方式
+ *
  * @Author sky
  * @Since 2020-07-03 18:31
  */

@@ -29,6 +29,8 @@ import java.util.Queue;
 import java.util.UUID;
 
 /**
+ * 全息逻辑处理类
+ *
  * @Author sky
  * @Since 2020-03-07 14:23
  */
@@ -82,10 +84,21 @@ class THologramHandler implements Listener {
         return true;
     }
 
+    /**
+     * 是否学习完成。
+     * 指 TabooLib 会在首位玩家进入服务器时学习服务端向玩家发送的 ArmorStand 数据包，并在之后借助该数据包结构伪向玩家发送造虚假的 ArmorStand 实体。
+     */
     public static boolean isLearned() {
         return packetInit != null && packetSpawn != null && packetName != null;
     }
 
+    /**
+     * 克隆一个 ArmorStand 生成数据包
+     *
+     * @param id       序号
+     * @param location 新的实体坐标
+     * @return 数据包对象
+     */
     public static Packet copy(int id, Location location) {
         Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntity"), "e", "f", "j", "h", "i", "j", "k", "l");
         packet.write("a", id);
@@ -155,6 +168,9 @@ class THologramHandler implements Listener {
         return packet;
     }
 
+    /**
+     * 重置数据包结构
+     */
     public static void reset() {
         queueSchedule.clear();
         queueSchedule.offer(new THologramSchedule(() -> packetInit != null) {
@@ -170,6 +186,11 @@ class THologramHandler implements Listener {
         });
     }
 
+    /**
+     * 学习服务端即将向该玩家发送的 ArmorStand 数据包结构。
+     *
+     * @param player 玩家
+     */
     public static void learn(Player player) {
         NMS.handle().spawn(player.getLocation(), ArmorStand.class, c -> {
             learnTarget = c;

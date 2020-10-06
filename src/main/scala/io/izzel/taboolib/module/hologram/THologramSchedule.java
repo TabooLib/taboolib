@@ -18,7 +18,7 @@ abstract class THologramSchedule {
 
     public boolean check() {
         try {
-            return (Boolean) condition.call();
+            return condition.call();
         } catch (Exception e) {
             e.printStackTrace();
         }

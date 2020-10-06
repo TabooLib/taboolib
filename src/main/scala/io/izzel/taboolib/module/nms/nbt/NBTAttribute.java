@@ -72,12 +72,6 @@ public class NBTAttribute {
         return new NBTAttribute(Items.asAttribute("damage"), "TabooLib Modifiers", 0, NBTOperation.ADD_NUMBER);
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public UUID getId() {
         return id;
     }

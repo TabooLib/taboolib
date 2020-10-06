@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class MenuBuilder {
 
-    private Map<Character, ItemStack> keys = Maps.newHashMap();
-    private Plugin plugin;
+    private final Map<Character, ItemStack> keys = Maps.newHashMap();
+    private final Plugin plugin;
     private String title;
     private int rows;
     private char[][] items = new char[0][0];
@@ -70,6 +70,8 @@ public class MenuBuilder {
      * 这将阻止玩家在使用菜单时进行包括但不限于
      * 丢弃物品，拿出菜单物品
      * 等行为
+     * <p>
+     * 主要用于处理玩家在打开菜单之前移动手持物品，导致插件产生逻辑错误。
      *
      * @return 编辑过的 MenuBuilder 实例
      */
@@ -197,12 +199,6 @@ public class MenuBuilder {
         }
         return ' ';
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public Map<Character, ItemStack> getKeys() {
         return keys;

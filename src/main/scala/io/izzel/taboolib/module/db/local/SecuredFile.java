@@ -12,7 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 
 /**
- * @Author sky, yumc
+ * 线程安全的 YamlConfiguration 封装
+ *
+ * @Author sky
  * @Since 2020-02-28 11:14
  */
 public class SecuredFile extends YamlConfiguration {
@@ -21,14 +23,14 @@ public class SecuredFile extends YamlConfiguration {
 
     @Override
     public void set(String path, Object value) {
-        synchronized(lock) {
+        synchronized (lock) {
             super.set(path, value);
         }
     }
 
     @Override
     public String saveToString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.saveToString();
         }
     }

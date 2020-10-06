@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.db.sql;
 
 /**
+ * SQL 数据设置
+ *
  * @Author sky
  * @Since 2018-05-14 21:43
  */

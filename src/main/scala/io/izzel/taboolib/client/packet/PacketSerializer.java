@@ -99,12 +99,6 @@ public class PacketSerializer implements Listener {
         return packet == null ? new PacketEmpty(0) : packet;
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public static PacketParser getParser() {
         return parser;
     }

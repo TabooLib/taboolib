@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * SQLite 数据列
+ *
  * @Author sky
  * @Since 2018-05-14 19:09
  */

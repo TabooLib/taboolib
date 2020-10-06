@@ -158,12 +158,6 @@ public class CommandBuilder {
         return this;
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public String getCommand() {
         return command;
     }

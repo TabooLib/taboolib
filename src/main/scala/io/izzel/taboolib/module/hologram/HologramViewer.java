@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 /**
+ * 全息观察对象
+ *
  * @Author sky
  * @Since 2020-03-07 16:56
  */

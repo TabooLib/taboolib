@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
+ * TConfig 配置文件改动监听工具
+ *
  * @author lzzelAliz
  */
 public class TConfigWatcher {

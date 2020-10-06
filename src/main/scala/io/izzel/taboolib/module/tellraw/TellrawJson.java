@@ -202,12 +202,6 @@ public class TellrawJson {
         componentsLatest.clear();
     }
 
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
-
     public void setComponents(BaseComponent[] components) {
         this.components = Arrays.asList(components);
     }
