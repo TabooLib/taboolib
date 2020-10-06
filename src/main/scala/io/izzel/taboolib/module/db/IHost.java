@@ -1,6 +1,9 @@
 package io.izzel.taboolib.module.db;
 
+import io.izzel.taboolib.module.db.source.DBSource;
 import org.bukkit.plugin.Plugin;
+
+import javax.sql.DataSource;
 
 /**
  * @Author sky
@@ -34,6 +37,13 @@ public abstract class IHost {
 
     public void setAutoClose(boolean autoClose) {
         this.autoClose = autoClose;
+    }
+
+    /**
+     * 5.41 update
+     */
+    public DataSource createDataSource() {
+        return DBSource.create(this);
     }
 
     abstract public String getConnectionUrl();

@@ -19,6 +19,10 @@ public class Pair<K, V> {
         this.value = value;
     }
 
+    public static <K, V> Pair<K, V> of(K key, V value) {
+        return new Pair<>(key, value);
+    }
+
     public K getKey() {
         return key;
     }

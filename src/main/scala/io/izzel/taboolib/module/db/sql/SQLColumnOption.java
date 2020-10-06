@@ -7,12 +7,12 @@ package io.izzel.taboolib.module.db.sql;
 public enum SQLColumnOption {
 
     /**
-     * 不能为空
+     * 递增
      */
-    NOTNULL("NOT NULL"),
+    AUTO_INCREMENT("AUTO_INCREMENT"),
 
     /**
-     * 0填充
+     * 填充数字
      */
     ZEROFILL("ZEROFILL"),
 
@@ -22,9 +22,9 @@ public enum SQLColumnOption {
     UNSIGNED("UNSIGNED"),
 
     /**
-     * 唯一
+     * 非空
      */
-    UNIQUE_KEY("UNIQUE KEY"),
+    NOTNULL("NOT NULL"),
 
     /**
      * 主键
@@ -32,11 +32,21 @@ public enum SQLColumnOption {
     PRIMARY_KEY("PRIMARY KEY"),
 
     /**
-     * 递增
+     * 唯一索引
      */
-    AUTO_INCREMENT("AUTO_INCREMENT");
+    UNIQUE_KEY("UNIQUE KEY"),
+
+    /**
+     * 普通索引
+     */
+    KEY("KEY"),
+
+    ;
 
     String text;
+
+    SQLColumnOption() {
+    }
 
     SQLColumnOption(String text) {
         this.text = text;

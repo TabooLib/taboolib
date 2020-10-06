@@ -1,10 +1,11 @@
 package io.izzel.taboolib.module.db.sql;
 
+import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.IColumn;
 import io.izzel.taboolib.util.Strings;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * @Author sky
@@ -12,12 +13,22 @@ import java.util.stream.Collectors;
  */
 public class SQLColumn extends IColumn {
 
-    public static final SQLColumn PRIMARY_KEY_ID = new SQLColumn(SQLColumnType.BIGINT, "id")
+    public static final SQLColumn PRIMARY_KEY_ID = SQLColumnType.BIGINT.toColumn("id")
             .columnOptions(
-                    SQLColumnOption.PRIMARY_KEY,
+                    SQLColumnOption.UNSIGNED,
                     SQLColumnOption.NOTNULL,
-                    SQLColumnOption.AUTO_INCREMENT
+                    SQLColumnOption.AUTO_INCREMENT,
+                    SQLColumnOption.PRIMARY_KEY
             );
+
+    public static final SQLColumn GMT_CREATE = SQLColumnType.DATETIME.toColumn("gmt_create")
+            .columnOptions(SQLColumnOption.NOTNULL)
+            .defaultValue("$CURRENT_TIMESTAMP");
+
+    public static final SQLColumn GMT_MODIFIED = SQLColumnType.DATETIME.toColumn("gmt_modified")
+            .columnOptions(SQLColumnOption.NOTNULL)
+            .defaultValue("$CURRENT_TIMESTAMP")
+            .update("CURRENT_TIMESTAMP");
 
     private final SQLColumnType columnType;
     private int m;
@@ -25,8 +36,10 @@ public class SQLColumn extends IColumn {
 
     private final String columnName;
     private Object defaultValue;
+    private String update;
+    private boolean descendingIndex;
 
-    private SQLColumnOption[] columnOptions;
+    private final List<SQLColumnOption> columnOptions = Lists.newArrayList();
 
     public SQLColumn(SQLColumnType columnType, String columnName) {
         this(columnType, 0, 0, columnName, null);
@@ -58,7 +71,7 @@ public class SQLColumn extends IColumn {
         this.d = d;
         this.columnName = columnName;
         this.defaultValue = defaultValue;
-        this.columnOptions = columnOptions;
+        this.columnOptions.addAll(Arrays.asList(columnOptions));
     }
 
     public SQLColumn m(int m) {
@@ -71,13 +84,36 @@ public class SQLColumn extends IColumn {
         return this;
     }
 
+    /**
+     * 为该列赋予一项默认值
+     * 如果参数含有单引号则需要添加转义符例如 "\\'"
+     * <p>
+     * 非字符串的特殊类型需在参数前添加 "$" 符号
+     */
     public SQLColumn defaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
 
     public SQLColumn columnOptions(SQLColumnOption... columnOptions) {
-        this.columnOptions = columnOptions;
+        this.columnOptions.addAll(Arrays.asList(columnOptions));
+        return this;
+    }
+
+    /**
+     * 5.41 update
+     */
+    public SQLColumn update(String update) {
+        this.update = update;
+        return this;
+    }
+
+    /**
+     * 5.41 update
+     * 倒序索引，在 SQL 8.0 中有效，在此之前可以使用，但不会生效。
+     */
+    public SQLColumn descendingIndex() {
+        this.descendingIndex = true;
         return this;
     }
 
@@ -94,13 +130,24 @@ public class SQLColumn extends IColumn {
 
     private String convertToOptions() {
         StringBuilder builder = new StringBuilder();
-        builder.append(Arrays.stream(columnOptions).map(SQLColumnOption::getText).collect(Collectors.joining(" ")));
-        if (defaultValue instanceof String) {
-            builder.append(" DEFAULT '").append(defaultValue).append("'");
-        } else if (defaultValue != null) {
-            builder.append(" DEFAULT ").append(defaultValue);
+        for (SQLColumnOption option : columnOptions) {
+            if (option != SQLColumnOption.UNIQUE_KEY && option != SQLColumnOption.KEY) {
+                builder.append(" ").append(option.getText());
+            }
         }
-        return builder.toString();
+        if (defaultValue instanceof String) {
+            if (defaultValue.toString().startsWith("$")) {
+                builder.append(" default ").append(defaultValue.toString().substring(1));
+            } else {
+                builder.append(" default '").append(defaultValue).append("'");
+            }
+        } else if (defaultValue != null) {
+            builder.append(" default ").append(defaultValue);
+        }
+        if (update != null) {
+            builder.append(" on update ").append(update);
+        }
+        return builder.toString().trim();
     }
 
     @Override
@@ -111,7 +158,41 @@ public class SQLColumn extends IColumn {
                 ", d=" + d +
                 ", columnName='" + columnName + '\'' +
                 ", defaultValue=" + defaultValue +
-                ", columnOptions=" + Arrays.toString(columnOptions) +
+                ", update='" + update + '\'' +
+                ", descendingIndex=" + descendingIndex +
+                ", columnOptions=" + columnOptions +
                 '}';
+    }
+
+    public SQLColumnType getColumnType() {
+        return columnType;
+    }
+
+    public int getM() {
+        return m;
+    }
+
+    public int getD() {
+        return d;
+    }
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public String getUpdate() {
+        return update;
+    }
+
+    public boolean isDescendingIndex() {
+        return descendingIndex;
+    }
+
+    public List<SQLColumnOption> getColumnOptions() {
+        return columnOptions;
     }
 }
