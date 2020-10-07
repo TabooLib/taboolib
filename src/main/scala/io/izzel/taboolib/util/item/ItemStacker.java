@@ -140,8 +140,8 @@ public class ItemStacker {
 
     public static class AddResult {
 
-        private int countOut;
-        private boolean changed;
+        private final int countOut;
+        private final boolean changed;
 
         public AddResult(int countOut, boolean changed) {
             this.countOut = countOut;
