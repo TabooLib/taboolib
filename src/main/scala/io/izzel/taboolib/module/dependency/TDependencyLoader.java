@@ -15,6 +15,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+/**
+ * 依赖加载工具
+ */
 public class TDependencyLoader {
 
     private static Method ADD_URL_METHOD;

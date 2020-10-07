@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -47,12 +48,12 @@ public class I18nOrigin extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, Entity entity) {
+    public @NotNull String getName(Player player, @NotNull Entity entity) {
         return entity == null ? "-" : lang.getString(NMS.handle().getName(entity).replace(".", "_"), entity.getName());
     }
 
     @Override
-    public String getName(Player player, ItemStack itemStack) {
+    public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
         if (itemStack == null) {
             return "-";
         }

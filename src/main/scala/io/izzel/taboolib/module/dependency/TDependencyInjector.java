@@ -8,6 +8,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 /**
+ * 依赖注入工具
+ *
  * @author Izzel_Aliz
  */
 public class TDependencyInjector {

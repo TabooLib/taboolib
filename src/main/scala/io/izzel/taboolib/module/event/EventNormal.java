@@ -9,6 +9,8 @@ import org.bukkit.event.HandlerList;
 import java.lang.reflect.Field;
 
 /**
+ * 普通监听器简化接口
+ *
  * @Author sky
  * @Since 2019-10-22 10:25
  */

@@ -22,6 +22,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 语言文件加载工具
+ */
 public class TLocaleLoader {
 
     private static final Map<String, List<String>> localePriority = new HashMap<>();

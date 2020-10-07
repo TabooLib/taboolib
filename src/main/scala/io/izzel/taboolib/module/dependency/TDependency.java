@@ -7,6 +7,9 @@ import io.izzel.taboolib.util.Strings;
 import java.io.File;
 import java.util.Arrays;
 
+/**
+ * 依赖工具
+ */
 public class TDependency {
 
     public static final String MAVEN_REPO = "https://maven.aliyun.com/repository/central";

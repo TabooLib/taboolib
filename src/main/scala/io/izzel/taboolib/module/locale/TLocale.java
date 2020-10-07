@@ -13,6 +13,7 @@ import io.izzel.taboolib.util.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,14 +96,17 @@ public class TLocale {
         sendTo0(Bukkit.getOnlinePlayers(), path);
     }
 
+    @NotNull
     public static String asString(String path, Object... args) {
         return asString0(path, toArray(args));
     }
 
+    @NotNull
     public static String asString(String path, String... args) {
         return asString0(path, args);
     }
 
+    @NotNull
     public static String asString(String path) {
         return asString0(path);
     }
@@ -123,8 +127,17 @@ public class TLocale {
         Ref.getCallerClass(3).ifPresent(clazz -> TLocaleLoader.load(Ref.getCallerPlugin(clazz), true));
     }
 
+    /**
+     * 语言文件扩展 Tellraw 信息工具
+     */
     public static final class Tellraw extends TLocale {
 
+        /**
+         * 发送 Tellraw 信息
+         *
+         * @param sender     目标
+         * @param rawMessage 信息
+         */
         public static void send(CommandSender sender, String rawMessage) {
             if (sender instanceof Player) {
                 TellrawCreator.getAbstractTellraw().sendRawMessage((Player) sender, rawMessage);
@@ -134,56 +147,133 @@ public class TLocale {
         }
     }
 
+    /**
+     * 语言文件扩展展示工具
+     */
     public static final class Display extends TLocale {
 
+        /**
+         * 发送标题
+         * 默认为 10 淡入 20 停留 10 淡出
+         *
+         * @param player   玩家
+         * @param title    大标题
+         * @param subTitle 小标题
+         */
         public static void sendTitle(Player player, String title, String subTitle) {
             sendTitle(player, title, subTitle, 10, 20, 10);
         }
 
+        /**
+         * 发送标题
+         *
+         * @param player   玩家
+         * @param title    大标题
+         * @param subTitle 小标题
+         * @param fadein   淡入
+         * @param stay     停留
+         * @param fadeout  淡出
+         */
         public static void sendTitle(Player player, String title, String subTitle, int fadein, int stay, int fadeout) {
             NMS.handle().sendTitle(player, title, fadein, stay, fadeout, subTitle, fadein, stay, fadeout);
         }
 
+        /**
+         * 发送动作栏信息
+         *
+         * @param player 玩家
+         * @param text   信息
+         */
         public static void sendActionBar(Player player, String text) {
             NMS.handle().sendActionBar(player, text);
         }
     }
 
+    /**
+     * 语言文件扩展转换工具
+     */
     public static final class Translate extends TLocale {
 
+        /**
+         * 是否启用 PlaceholderAPI 支持
+         */
         public static boolean isPlaceholderUseDefault() {
             return TabooLib.getConfig().getBoolean("LOCALE.USE_PAPI", false);
         }
 
+        /**
+         * 检查 PlaceholderAPI 插件是否启用
+         */
         public static boolean isPlaceholderPluginEnabled() {
             return PlaceholderHook.isHooked();
         }
 
-        public static String setColored(String args) {
+        /**
+         * 设置颜色，使用 '&' 作为颜色符号
+         *
+         * @param args 文本
+         */
+        @NotNull
+        public static String setColored(@NotNull String args) {
             return ChatColor.translateAlternateColorCodes('&', args);
         }
 
-        public static List<String> setColored(List<String> args) {
+        /**
+         * 设置颜色，使用 '&' 作为颜色符号
+         *
+         * @param args 文本
+         */
+        @NotNull
+        public static List<String> setColored(@NotNull List<String> args) {
             return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
         }
 
-        public static String setUncolored(String args) {
+        /**
+         * 移除颜色
+         *
+         * @param args 文本
+         */
+        @NotNull
+        public static String setUncolored(@NotNull String args) {
             return ChatColor.stripColor(args);
         }
 
-        public static List<String> setUncolored(List<String> args) {
+        /**
+         * 移除颜色
+         *
+         * @param args 文本
+         */
+        @NotNull
+        public static List<String> setUncolored(@NotNull List<String> args) {
             return args.stream().map(ChatColor::stripColor).collect(Collectors.toList());
         }
 
-        public static String setPlaceholders(CommandSender sender, String args) {
+        /**
+         * 进行 PlaceholderAPI 变量转换
+         *
+         * @param sender 用户
+         * @param args   文本
+         */
+        @NotNull
+        public static String setPlaceholders(@NotNull CommandSender sender, @NotNull String args) {
             return PlaceholderHook.replace(sender, args);
         }
 
-        public static List<String> setPlaceholders(CommandSender sender, List<String> args) {
+        /**
+         * 进行 PlaceholderAPI 变量转换
+         *
+         * @param sender 用户
+         * @param args   文本
+         */
+        @NotNull
+        public static List<String> setPlaceholders(CommandSender sender, @NotNull List<String> args) {
             return args.stream().map(var -> PlaceholderHook.replace(sender, var)).collect(Collectors.toList());
         }
     }
 
+    /**
+     * 语言文件扩展日志工具
+     */
     public static final class Logger extends TLocale {
 
         public static void info(String path, String... args) {

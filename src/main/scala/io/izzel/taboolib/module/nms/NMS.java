@@ -164,22 +164,66 @@ public abstract class NMS {
     @NotNull
     abstract public List<NBTAttribute> getBaseAttribute(ItemStack item);
 
+    /**
+     * 将 Attribute 映射类转换为 nms 对应属性类
+     *
+     * @param attribute Attribute 映射累
+     */
     abstract public Object toNMS(Attribute attribute);
 
+    /**
+     * 通过实体 id 获取实体对象
+     */
     abstract public Entity getEntityById(int id);
 
+    /**
+     * 将 nms BlockPosition 类转换为 {@link Position} 映射类
+     */
     abstract public Position fromBlockPosition(Object blockPosition);
 
+    /**
+     * 将 {@link Position} 映射类转换为 nms BlockPosition 类
+     */
     abstract public Object toBlockPosition(Position blockPosition);
 
+    /**
+     * 打开牌子编辑界面
+     *
+     * @param player 玩家实例
+     * @param block  方块实例
+     */
     abstract public void openSignEditor(Player player, Block block);
 
+    /**
+     * 判断某个坐标点是否在实体碰撞箱中
+     *
+     * @param entity 实体对象
+     * @param vector 向量
+     */
     abstract public boolean inBoundingBox(Entity entity, Vector vector);
 
+    /**
+     * 获取 ProjectileHitEvent 事件中箭矢的最终位置
+     *
+     * @param event 事件
+     */
     abstract public Location getLastLocation(ProjectileHitEvent event);
 
+    /**
+     * 向玩家发送实体移除数据包
+     *
+     * @param player 玩家
+     * @param entity 实体id
+     */
     abstract public void sendPacketEntityDestroy(Player player, int entity);
 
+    /**
+     * 向玩家发送实体传送数据包
+     *
+     * @param player   玩家
+     * @param entity   实体id
+     * @param location 坐标
+     */
     abstract public void sendPacketEntityTeleport(Player player, int entity, Location location);
 
     abstract public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e);
@@ -190,16 +234,53 @@ public abstract class NMS {
 
     abstract public Object asEntityType(String name);
 
+    /**
+     * 创造真实世界光照
+     *
+     * @param block      方块
+     * @param lightType  光照类型
+     * @param lightLevel 光照等级
+     */
     abstract public boolean createLight(Block block, Type lightType, int lightLevel);
 
+    /**
+     * 删除光照
+     *
+     * @param block     方块
+     * @param lightType 光照等级
+     */
     abstract public boolean deleteLight(Block block, Type lightType);
 
+    /**
+     * 设置真实光照等级
+     *
+     * @param block      方块
+     * @param lightType  光照类型
+     * @param lightLevel 光照等级
+     */
     abstract public void setRawLightLevel(Block block, Type lightType, int lightLevel);
 
+    /**
+     * 获取真实光照等级
+     *
+     * @param block     方块
+     * @param lightType 光照类型
+     */
     abstract public int getRawLightLevel(Block block, Type lightType);
 
+    /**
+     * 重新计算光照
+     *
+     * @param block     方块
+     * @param lightType 光照类型
+     */
     abstract public void recalculate(Block block, Type lightType);
 
+    /**
+     * 更新区块光照
+     *
+     * @param chunk 区块
+     */
     abstract public void update(Chunk chunk);
 
 }

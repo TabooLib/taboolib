@@ -11,6 +11,7 @@ import io.izzel.taboolib.util.Files;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -69,7 +70,7 @@ public class I18n20w14a extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, Entity entity) {
+    public @NotNull String getName(Player player, @NotNull Entity entity) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");
@@ -82,7 +83,7 @@ public class I18n20w14a extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, ItemStack itemStack) {
+    public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");

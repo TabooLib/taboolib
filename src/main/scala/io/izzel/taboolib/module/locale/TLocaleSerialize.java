@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 语言文件序列化接口
+ *
  * @Author sky
  * @Since 2018-05-12 14:01
  */
