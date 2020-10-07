@@ -19,6 +19,8 @@ import org.bukkit.potion.PotionEffect;
 import java.util.List;
 
 /**
+ * 物品构造工具
+ *
  * @Author sky
  * @Since 2018-08-22 11:37
  * @BuilderVersion 1.1
@@ -118,7 +120,7 @@ public class ItemBuilder {
 
     public ItemBuilder banner(Pattern... patterns) {
         if (itemMeta instanceof BannerMeta) {
-            java.util.Arrays.stream(patterns).forEach(pattern -> ((BannerMeta) itemMeta).addPattern(pattern));
+            java.util.Arrays.stream(patterns).forEach(((BannerMeta) itemMeta)::addPattern);
         }
         return this;
     }

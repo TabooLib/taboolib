@@ -48,6 +48,9 @@ public class Ref {
         }
     }
 
+    /**
+     * 获取 Unsafe 实例
+     */
     public static Unsafe getUnsafe() {
         return UNSAFE;
     }

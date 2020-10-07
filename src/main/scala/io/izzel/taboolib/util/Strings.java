@@ -16,6 +16,12 @@ import java.util.stream.IntStream;
  */
 public class Strings {
 
+    /**
+     * 重复一段文本特定次数
+     *
+     * @param text  文本
+     * @param count 次数
+     */
     public static String copy(String text, int count) {
         return IntStream.range(0, count).mapToObj(i -> text).collect(Collectors.joining());
     }
@@ -104,6 +110,9 @@ public class Strings {
         return cacheKey;
     }
 
+    /**
+     * 获取两段文本的相似度（0.0~1.0)
+     */
     public static double similarDegree(String strA, String strB) {
         String newStrA = removeSign(max(strA, strB));
         String newStrB = removeSign(min(strA, strB));

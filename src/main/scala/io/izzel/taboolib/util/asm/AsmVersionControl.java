@@ -26,6 +26,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
+ * ASM 版本转换工具
+ *
  * @Author sky
  * @Since 2018-09-19 21:05
  */
@@ -173,8 +175,8 @@ public class AsmVersionControl {
         String replace = origin;
         if (useNMS) {
             replace = replace
-                .replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/")
-                .replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
+                    .replaceAll("net/minecraft/server/.*?/", "net/minecraft/server/" + to + "/")
+                    .replaceAll("org/bukkit/craftbukkit/.*?/", "org/bukkit/craftbukkit/" + to + "/");
         }
         for (String from : from) {
             replace = replace.replace("/" + from + "/", "/" + to + "/");

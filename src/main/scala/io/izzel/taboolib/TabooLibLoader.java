@@ -11,6 +11,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -20,6 +21,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * TabooLib 插件加载类
+ *
  * @Author 坏黑
  * @Since 2019-07-05 15:30
  */
@@ -31,6 +34,15 @@ public class TabooLibLoader {
     static List<Runnable> tasks = Lists.newArrayList();
     static boolean started;
 
+    /**
+     * 通过以下顺序初始化
+     * 1. 加载依赖
+     * 2. 加载插件统计
+     * 3. 读取插件类
+     * 4. 读取加载器
+     * 5. 载入 TabooLib 伪装插件
+     * 6. 启动 TabooLib 伪装插件
+     */
     static void init() {
         // 加载依赖
         TDependencyInjector.inject(TabooLib.getPlugin(), TabooLib.class);
@@ -53,31 +65,62 @@ public class TabooLibLoader {
         PluginLoader.start(TabooLib.getPlugin());
     }
 
+    /**
+     * 获取插件的所有类，需要该插件基于 TabooLib
+     *
+     * @param plugin 插件实例
+     */
+    @NotNull
     public static Optional<List<Class>> getPluginClasses(Plugin plugin) {
         return Optional.ofNullable(pluginClasses.get(plugin.getName()));
     }
 
+    /**
+     * 获取插件的所有类，需要该插件基于 TabooLib
+     *
+     * @param plugin 插件实例
+     */
+    @NotNull
     public static List<Class> getPluginClassSafely(Plugin plugin) {
         List<Class> classes = pluginClasses.get(plugin.getName());
         return classes == null ? new ArrayList<>() : new ArrayList<>(classes);
     }
 
+    /**
+     * 获取已缓存的所有插件类
+     */
+    @NotNull
     public static Map<String, List<Class>> getPluginClasses() {
         return pluginClasses;
     }
 
+    /**
+     * 获取所有加载器 {@link Loader}
+     */
+    @NotNull
     public static List<Loader> getLoaders() {
         return loaders;
     }
 
+    /**
+     * 获取所有启动计划
+     */
+    @NotNull
     public static List<Runnable> getTasks() {
         return tasks;
     }
 
+    /**
+     * 检查 TabooLib 是否完全启动
+     */
     public static boolean isStarted() {
         return started;
     }
 
+    /**
+     * 运行启动计划，用于防止在插件未启动时运行 BukkitRunnable 报错
+     * 由 TabooLib 代理执行
+     */
     public static void runTask(Runnable runnable) {
         if (started) {
             runnable.run();
@@ -86,6 +129,13 @@ public class TabooLibLoader {
         }
     }
 
+    /**
+     * 通过以下顺序启动 TabooLib
+     * 1. 执行 active 计划
+     * 2. 启动本地通讯服务器
+     * 3. 启动本地通讯客户端
+     * 4. 执行启动计划
+     */
     @TSchedule
     static void start() {
         PluginLoader.active(TabooLib.getPlugin());
@@ -106,6 +156,12 @@ public class TabooLibLoader {
         started = true;
     }
 
+    /**
+     * 缓存该插件的所有类，如果该插件名为 TabooLib 则只读取 io.izzel 包。
+     * 通过添加 {@link IgnoreClasses} 注解忽略特定包，避免造成内存浪费。
+     *
+     * @param plugin 插件实例
+     */
     static void setupClasses(Plugin plugin) {
         try {
             long time = System.currentTimeMillis();
@@ -177,10 +233,19 @@ public class TabooLibLoader {
         });
     }
 
+    /**
+     * 判定该类是否为加载器
+     *
+     * @param pluginClass 插件类
+     */
     static boolean isLoader(Class pluginClass) {
         return !Loader.class.equals(pluginClass) && Loader.class.isAssignableFrom(pluginClass);
     }
 
+    /**
+     * 加载器接口
+     * 只允许 TabooLib 自身使用
+     */
     public interface Loader {
 
         default void preLoad(Plugin plugin, Class<?> pluginClass) {
@@ -200,10 +265,16 @@ public class TabooLibLoader {
         }
     }
 
+    /**
+     * 在 TabooLib 缓存插件类时屏蔽特定包名
+     */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface IgnoreClasses {
 
+        /**
+         * 包名（左模糊判断）
+         */
         String[] value();
 
     }

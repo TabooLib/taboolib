@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * TabooLib 插件加载器，只允许 TabooLib 内部使用。
+ *
  * @Author 坏黑
  * @Since 2019-07-05 15:14
  */
@@ -106,71 +108,168 @@ public abstract class PluginLoader {
         });
     }
 
+    /**
+     * 当插件载入（onLoad）时
+     *
+     * @param plugin 插件实例
+     */
     public void onLoading(Plugin plugin) {
     }
 
+    /**
+     * 当插件载入完成时
+     *
+     * @param plugin 插件实例
+     */
     public void postLoading(Plugin plugin) {
     }
 
+    /**
+     * 当插件启动（onEnable）时
+     *
+     * @param plugin 插件实例
+     */
     public void onStarting(Plugin plugin) {
     }
 
+    /**
+     * 当插件启动完成时
+     *
+     * @param plugin 插件实例
+     */
     public void postStarting(Plugin plugin) {
     }
 
+    /**
+     * 当插件活跃（可执行 Bukkit 插件调度器）时
+     *
+     * @param plugin 插件实例
+     */
     public void onActivated(Plugin plugin) {
     }
 
+    /**
+     * 当插件停止（onDisable）时
+     *
+     * @param plugin 插件实例
+     */
     public void onStopping(Plugin plugin) {
     }
 
+    /**
+     * 当插件已停止时
+     *
+     * @param plugin 插件实例
+     */
     public void postStopping(Plugin plugin) {
     }
 
+    /**
+     * 认可一个基于 TabooLib 的插件
+     *
+     * @param plugin 插件实例
+     */
     public static void addPlugin(Plugin plugin) {
         plugins.add(plugin.getName());
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 onLoading 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void load(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onLoading(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 postLoading 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void postLoad(Plugin plugin) {
         registerLoader.forEach(loader -> loader.postLoading(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 onStarting 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void start(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onStarting(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 postStarting 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void postStart(Plugin plugin) {
         registerLoader.forEach(loader -> loader.postStarting(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 onActivated 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void active(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onActivated(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 onStopping 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void stop(Plugin plugin) {
         registerLoader.forEach(loader -> loader.onStopping(plugin));
     }
 
+    /**
+     * 调用所有插件加载器为该插件执行 postStopping 方法
+     *
+     * @param plugin 插件实例
+     */
     public static void postStop(Plugin plugin) {
         registerLoader.forEach(loader -> loader.postStopping(plugin));
     }
 
+    /**
+     * 检测该插件是否被 TabooLib 认可
+     *
+     * @param plugin 插件实例
+     */
     public static boolean isPlugin(Plugin plugin) {
         return plugins.contains(plugin.getName());
     }
 
+    /**
+     * 重定义一个插件的在 TabooLib 中的主类地址
+     *
+     * @param origin   插件实例
+     * @param instance 重定义主类实例
+     */
     public static void redefine(Plugin origin, Object instance) {
         redefine.put(origin.getName(), instance);
     }
 
+    /**
+     * 获取一个插件在 TabooLib 中的主类
+     *
+     * @param plugin 插件实例
+     * @return 主类实例（可能不继承自 JavaPlugin）
+     */
     public static Object get(Plugin plugin) {
         return redefine.getOrDefault(plugin.getName(), plugin);
     }
 
+    /**
+     * 获取首个被 TabooLib 的插件
+     *
+     * @return 插件实例
+     */
     public static Plugin getFirstLoaded() {
         return firstLoaded;
     }

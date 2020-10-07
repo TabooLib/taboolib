@@ -6,6 +6,8 @@ import io.izzel.taboolib.module.tellraw.internal.AbstractTellraw;
 import org.bukkit.Bukkit;
 
 /**
+ * Minecraft Tellraw 信息扩展构建工具
+ *
  * @Author 坏黑
  * @Since 2018-11-07 22:58
  */

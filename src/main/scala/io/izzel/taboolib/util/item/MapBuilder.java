@@ -9,27 +9,28 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.*;
 import org.bukkit.map.MapView.Scale;
 import org.bukkit.plugin.AuthorNagException;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 地图绘制工具
+ *
  * @Author LagBug
  */
 public class MapBuilder {
 
     public static final String VERSION = "1.5";
-    private MapView map;
     private BufferedImage image;
-    private List<Text> texts;
-    private MapCursorCollection cursors;
-    
+    private final List<Text> texts;
+    private final MapCursorCollection cursors;
+
     private boolean rendered;
     private boolean renderOnce;
-    private boolean isNewVersion;
+    private final boolean isNewVersion;
 
     public MapBuilder() {
         cursors = new MapCursorCollection();
@@ -54,7 +55,7 @@ public class MapBuilder {
      * @param image the buffered image to use
      * @return the instance of this class
      */
-    public MapBuilder setImage(@Nonnull BufferedImage image) {
+    public MapBuilder setImage(@NotNull BufferedImage image) {
         this.image = image;
         return this;
     }
@@ -62,12 +63,12 @@ public class MapBuilder {
     /**
      * Set and image to be used
      *
-     * @param x, y the coordinates to add the text
+     * @param x,   y the coordinates to add the text
      * @param font the font to be used
      * @param text the string that will be displayed
      * @return the instance of this class
      */
-    public MapBuilder addText(@Nonnull int x, @Nonnull int y, @Nonnull MapFont font, @Nonnull String text) {
+    public MapBuilder addText(@NotNull int x, @NotNull int y, @NotNull MapFont font, @NotNull String text) {
         this.texts.add(new Text(x, y, font, text));
         return this;
     }
@@ -84,13 +85,13 @@ public class MapBuilder {
     /**
      * Adds a cursor to the map
      *
-     * @param x, y the coordinates to add the cursor
+     * @param x,        y the coordinates to add the cursor
      * @param direction the direction to display the cursor
-     * @param type the type of the cursor
+     * @param type      the type of the cursor
      * @return the instance of this class
      */
     @SuppressWarnings("deprecation")
-    public MapBuilder addCursor(@Nonnull int x, @Nonnull int y, @Nonnull CursorDirection direction, @Nonnull CursorType type) {
+    public MapBuilder addCursor(@NotNull int x, @NotNull int y, @NotNull CursorDirection direction, @NotNull CursorType type) {
         cursors.addCursor(x, y, (byte) direction.getId(), (byte) type.getId());
         return this;
     }
@@ -111,7 +112,7 @@ public class MapBuilder {
      * @param renderOnce the value to determine if it's going to be rendered once
      * @return the instance of this class
      */
-    public MapBuilder setRenderOnce(@Nonnull boolean renderOnce) {
+    public MapBuilder setRenderOnce(@NotNull boolean renderOnce) {
         this.renderOnce = renderOnce;
         return this;
     }
@@ -124,15 +125,15 @@ public class MapBuilder {
     @SuppressWarnings("deprecation")
     public ItemStack build() {
         ItemStack item = null;
-        
+
         try {
-        	item = new ItemStack(isNewVersion ? Material.MAP : Material.valueOf("MAP")); 
+            item = new ItemStack(isNewVersion ? Material.MAP : Material.valueOf("MAP"));
         } catch (AuthorNagException ex) {
             System.out.println("Could not get material for the current spigot version. This won't be shown again until server restats");
         }
-                
-        map = Bukkit.createMap(Bukkit.getWorlds().get(0));
-        
+
+        MapView map = Bukkit.createMap(Bukkit.getWorlds().get(0));
+
         map.setScale(Scale.NORMAL);
         map.getRenderers().forEach(map::removeRenderer);
         map.addRenderer(new MapRenderer() {
@@ -141,20 +142,20 @@ public class MapBuilder {
                 if (rendered && renderOnce) {
                     return;
                 }
-                
+
                 if (player != null && player.isOnline()) {
                     if (image != null) {
                         mapCanvas.drawImage(0, 0, image);
                     }
-                    
+
                     if (!texts.isEmpty()) {
-                    	texts.forEach(text -> mapCanvas.drawText(text.getX(), text.getY(), text.getFont(), text.getMessage()));	
+                        texts.forEach(text -> mapCanvas.drawText(text.getX(), text.getY(), text.getFont(), text.getMessage()));
                     }
-                    
+
                     if (cursors.size() > 0) {
-                    	mapCanvas.setCursors(cursors);	
+                        mapCanvas.setCursors(cursors);
                     }
-                    
+
                     rendered = true;
                 }
             }
@@ -179,12 +180,12 @@ public class MapBuilder {
      * @param mapView the map to get the id
      * @return the instance of this class
      */
-    private short getMapId(@Nonnull MapView mapView) {
+    private short getMapId(@NotNull MapView mapView) {
         try {
-            return (short) mapView.getId();
+            return mapView.getId();
         } catch (NoSuchMethodError ex) {
             try {
-                return (short) Class.forName("org.bukkit.map.MapView").getMethod("getId", (Class<?>[]) new Class[0])
+                return (short) Class.forName("org.bukkit.map.MapView").getMethod("getId", new Class[0])
                         .invoke(mapView, new Object[0]);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
                     | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
@@ -204,14 +205,14 @@ public class MapBuilder {
 
         private final int id;
 
-        CursorDirection(@Nonnull int id) {
+        CursorDirection(@NotNull int id) {
             this.id = id;
         }
 
         /**
          * Returns the actual integer to use
          *
-         * @return the integer of the specified enum type 
+         * @return the integer of the specified enum type
          */
         public int getId() {
             return this.id;
@@ -227,14 +228,14 @@ public class MapBuilder {
 
         private final int id;
 
-        CursorType(@Nonnull int id) {
+        CursorType(@NotNull int id) {
             this.id = id;
         }
 
         /**
          * Returns the actual integer to use
          *
-         * @return the integer of the specified enum type 
+         * @return the integer of the specified enum type
          */
         public int getId() {
             return this.id;
@@ -251,7 +252,7 @@ public class MapBuilder {
         private MapFont font;
         private String message;
 
-        public Text(@Nonnull int x, @Nonnull int y, @Nonnull MapFont font, @Nonnull String message) {
+        public Text(@NotNull int x, @NotNull int y, @NotNull MapFont font, @NotNull String message) {
             setX(x);
             setY(y);
             setFont(font);
@@ -272,7 +273,7 @@ public class MapBuilder {
          *
          * @param x the x postion
          */
-        public void setX(@Nonnull int x) {
+        public void setX(@NotNull int x) {
             this.x = x;
         }
 
@@ -290,7 +291,7 @@ public class MapBuilder {
          *
          * @param y the y position
          */
-        public void setY(@Nonnull int y) {
+        public void setY(@NotNull int y) {
             this.y = y;
         }
 
@@ -308,7 +309,7 @@ public class MapBuilder {
          *
          * @param font the actual font
          */
-        public void setFont(@Nonnull MapFont font) {
+        public void setFont(@NotNull MapFont font) {
             this.font = font;
         }
 
@@ -326,7 +327,7 @@ public class MapBuilder {
          *
          * @param message the actual text
          */
-        public void setMessage(@Nonnull String message) {
+        public void setMessage(@NotNull String message) {
             this.message = message;
         }
     }

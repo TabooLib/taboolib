@@ -9,10 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 /**
+ * 界面构建工具
+ *
  * @Author 坏黑
  * @Since 2019-05-21 15:54
  */
@@ -61,7 +64,7 @@ public class MenuBuilder {
      *
      * @param player 需要打开菜单的玩家
      */
-    public void open(Player player) {
+    public void open(@NotNull Player player) {
         player.openInventory(build());
     }
 
@@ -99,7 +102,7 @@ public class MenuBuilder {
      * @param clickTask 玩家点击菜单任务
      * @return 编辑过的 MenuBuilder 实例
      */
-    public MenuBuilder event(ClickTask clickTask) {
+    public MenuBuilder event(@NotNull ClickTask clickTask) {
         this.clickTask = clickTask;
         return this;
     }
@@ -110,7 +113,7 @@ public class MenuBuilder {
      * @param closeTask 玩家关闭菜单任务
      * @return 编辑过的 MenuBuilder 实例
      */
-    public MenuBuilder close(CloseTask closeTask) {
+    public MenuBuilder close(@NotNull CloseTask closeTask) {
         this.closeTask = closeTask;
         return this;
     }
@@ -121,7 +124,7 @@ public class MenuBuilder {
      * @param buildTask 菜单构建任务
      * @return 编辑过的 MenuBuilder 实例
      */
-    public MenuBuilder build(BuildTask buildTask) {
+    public MenuBuilder build(@NotNull BuildTask buildTask) {
         this.buildTask = buildTask;
         return this;
     }
@@ -132,7 +135,7 @@ public class MenuBuilder {
      * @param buildTask 菜单构建任务
      * @return 编辑过的 MenuBuilder 实例
      */
-    public MenuBuilder buildAsync(BuildTask buildTask) {
+    public MenuBuilder buildAsync(@NotNull BuildTask buildTask) {
         this.buildTaskAsync = buildTask;
         return this;
     }
@@ -143,7 +146,7 @@ public class MenuBuilder {
      * @param title 标题
      * @return 编辑过的 MenuBuilder 实例
      */
-    public MenuBuilder title(String title) {
+    public MenuBuilder title(@NotNull String title) {
         this.title = title;
         return this;
     }

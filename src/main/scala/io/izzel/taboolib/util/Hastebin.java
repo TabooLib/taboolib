@@ -2,6 +2,8 @@ package io.izzel.taboolib.util;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -9,6 +11,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * Hastebin 在线粘贴板工具
+ *
  * @author Arasple
  * @since 2020/1/20 16:40
  */
@@ -16,6 +20,14 @@ public class Hastebin {
 
     private static final String HASTEBIN_URL = "https://hasteb.in/";
 
+    /**
+     * 创建在线粘贴板
+     * 报错会被屏蔽
+     *
+     * @param content 文本内容
+     * @return {@link Result}
+     */
+    @Nullable
     public static Result paste(String content) {
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(HASTEBIN_URL + "documents").openConnection();
@@ -41,17 +53,28 @@ public class Hastebin {
             this.sourceJson = new JsonParser().parse(source).getAsJsonObject();
         }
 
+        /**
+         * 获取地址
+         */
+        @NotNull
         public String getURL() {
             return HASTEBIN_URL + sourceJson.get("key").getAsString();
         }
 
+        /**
+         * 获取原始内容
+         */
+        @NotNull
         public String getSource() {
             return source;
         }
 
+        /**
+         * 获取 {@link JsonObject} 实例
+         */
+        @NotNull
         public JsonObject getSourceJson() {
             return sourceJson;
         }
     }
-
 }

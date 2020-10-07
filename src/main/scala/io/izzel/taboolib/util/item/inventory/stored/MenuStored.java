@@ -11,6 +11,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * 可交互界面构建工具
+ * 这里的可交互指的是界面重的物品可以被修改
+ *
  * @Author sky
  * @Since 2019-12-03 13:24
  */

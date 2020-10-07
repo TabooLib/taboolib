@@ -8,6 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 /**
+ * 物品背包合并工具
+ *
  * @Author 坏黑
  * @Since 2019-02-07 23:53
  */
@@ -34,7 +36,7 @@ public class ItemStacker {
     /**
      * 添加并拆分，但不合并
      * 返回值为是否添加完成
-     *
+     * <p>
      * desc = 快捷栏逆向添加，用于工作台拟真，会忽略 start 参数
      */
     public static boolean addItemAndSplit(ItemStack item, Inventory inventory, int start, boolean desc) {

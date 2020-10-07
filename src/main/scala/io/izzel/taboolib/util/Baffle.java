@@ -1,6 +1,7 @@
 package io.izzel.taboolib.util;
 
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +57,7 @@ public abstract class Baffle {
      * @param duration 时间数值
      * @param timeUnit 时间单位
      */
+    @NotNull
     public static Baffle of(long duration, TimeUnit timeUnit) {
         return new BaffleTime(timeUnit.toMillis(duration));
     }
@@ -65,6 +67,7 @@ public abstract class Baffle {
      *
      * @param count 次数
      */
+    @NotNull
     public static Baffle of(int count) {
         return new BaffleCounter(count);
     }

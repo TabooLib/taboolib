@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util.item;
 
+import com.cryptomorin.xseries.XMaterial;
 import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
@@ -27,13 +28,14 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
+ * 物品操作工具
+ *
  * @Author 坏黑
  * @Since 2019-07-05 16:44
  */
@@ -46,46 +48,96 @@ public class Items {
             37, 38, 39, 40, 41, 42, 43
     };
 
+    /**
+     * 获取物品名称，当该物品没有 DisplayName 时则获取中文译名
+     *
+     * @param item 物品实例
+     */
+    @NotNull
     public static String getName(ItemStack item) {
         return I18n.get().getName(item);
     }
 
+    /**
+     * 物品是否为 null 或 AIR
+     *
+     * @param item 物品实例
+     */
     public static boolean isNull(ItemStack item) {
         return item == null || item.getType().equals(Material.AIR);
     }
 
+    /**
+     * 物品不为 null 或 AIR
+     *
+     * @param item 物品实例
+     */
     public static boolean nonNull(ItemStack item) {
         return !isNull(item);
     }
 
+    /**
+     * 物品是否拥有 DisplayName
+     *
+     * @param i 物品实例
+     */
     public static boolean hasName(ItemStack i) {
         return !isNull(i) && i.getItemMeta().hasDisplayName();
     }
 
+    /**
+     * 物品名称是否含有特定关键字（含 DisplayName 和中文译名）
+     *
+     * @param i 物品实例
+     * @param a 关键字
+     */
     public static boolean hasName(ItemStack i, String a) {
         return hasName(i) && getName(i).contains(a);
     }
 
+    /**
+     * 物品描述是否含有特定关键字
+     *
+     * @param i 物品实例
+     * @param a 关键字
+     */
     public static boolean hasLore(ItemStack i, String a) {
         return hasLore(i) && i.getItemMeta().getLore().toString().contains(a);
     }
 
+    /**
+     * 物品是否含有描述
+     *
+     * @param i 物品实例
+     */
     public static boolean hasLore(ItemStack i) {
         return !isNull(i) && i.getItemMeta().hasLore();
     }
 
+    /**
+     * 通过文本获取 Material 枚举，获取失败会返回 STONE 类型
+     *
+     * @param args 文本
+     */
+    @Nullable
     public static Material asMaterial(String args) {
         if (CronusUtils.isInt(args)) {
             try {
                 return Material.getMaterial(NumberConversions.toInt(args));
             } catch (Throwable ignored) {
-                return Materials.matchMaterials(NumberConversions.toInt(args), (byte) -1).orElse(Materials.STONE).parseMaterial();
+                return XMaterial.matchXMaterial(NumberConversions.toInt(args), (byte) -1).orElse(XMaterial.STONE).parseMaterial();
             }
         } else {
-            return Materials.matchMaterials(args.toUpperCase()).orElse(Materials.STONE).parseMaterial();
+            return XMaterial.matchXMaterial(args.toUpperCase()).orElse(XMaterial.STONE).parseMaterial();
         }
     }
 
+    /**
+     * 通过文本获取 Color 类型，格式为 R-G-B，获取失败会返回 0-0-0
+     *
+     * @param color 文本
+     */
+    @NotNull
     public static Color asColor(String color) {
         try {
             String[] v = color.split("-");
@@ -95,6 +147,12 @@ public class Items {
         }
     }
 
+    /**
+     * 通过文本获取 Enchantment 类型
+     *
+     * @param enchant 文本
+     */
+    @Nullable
     public static Enchantment asEnchantment(String enchant) {
         try {
             Enchantment enchantment = Enchantment.getByName(enchant);
@@ -104,6 +162,12 @@ public class Items {
         }
     }
 
+    /**
+     * 通过文本获取 PotionEffectType 类型
+     *
+     * @param potion 文本
+     */
+    @Nullable
     public static PotionEffectType asPotionEffectType(String potion) {
         try {
             PotionEffectType type = PotionEffectType.getByName(potion);
@@ -113,22 +177,58 @@ public class Items {
         }
     }
 
+    /**
+     * 通过文本获取 ItemFlag 枚举
+     *
+     * @param flag 文本
+     */
+    @Nullable
     public static ItemFlag asItemFlag(String flag) {
         return Enums.getIfPresent(ItemFlag.class, flag).orNull();
     }
 
+    /**
+     * 通过文本获取 Attribute 的 Minecraft Key
+     *
+     * @param name 文本
+     */
+    @Nullable
     public static String asAttribute(String name) {
-        return Attribute.parse(name).getMinecraftKey();
+        Attribute attribute = Attribute.parse(name);
+        return attribute == null ? null : attribute.getMinecraftKey();
     }
 
+    /**
+     * 替换物品名称（完全替换）
+     *
+     * @param item    物品实例
+     * @param nameOld 文本
+     * @param nameNew 文本
+     */
+    @NotNull
     public static ItemStack replaceName(ItemStack item, String nameOld, String nameNew) {
         return replaceName(item, ImmutableMap.of(nameOld, nameNew));
     }
 
+    /**
+     * 替换物品描述（完全替换）
+     *
+     * @param item    物品实例
+     * @param loreOld 文本
+     * @param loreNew 文本
+     */
+    @NotNull
     public static ItemStack replaceLore(ItemStack item, String loreOld, String loreNew) {
         return replaceLore(item, ImmutableMap.of(loreOld, loreNew));
     }
 
+    /**
+     * 替换物品名称（完全替换）
+     *
+     * @param item 物品实例
+     * @param map  文本关系
+     */
+    @NotNull
     public static ItemStack replaceName(ItemStack item, Map<String, String> map) {
         if (hasName(item)) {
             ItemMeta meta = item.getItemMeta();
@@ -142,6 +242,13 @@ public class Items {
         return item;
     }
 
+    /**
+     * 替换物品描述（完全替换）
+     *
+     * @param item 物品实例
+     * @param map  文本关系
+     */
+    @NotNull
     public static ItemStack replaceLore(ItemStack item, Map<String, String> map) {
         if (hasLore(item)) {
             ItemMeta meta = item.getItemMeta();
@@ -159,14 +266,37 @@ public class Items {
         return item;
     }
 
+    /**
+     * 检查玩家背包中的特定物品是否达到特定数量
+     *
+     * @param player 玩家
+     * @param item   物品
+     * @param amount 检查数量
+     * @param remove 是否移除
+     */
     public static boolean checkItem(Player player, ItemStack item, int amount, boolean remove) {
         return remove ? takeItem(player.getInventory(), i -> i.isSimilar(item), amount) : hasItem(player.getInventory(), i -> i.isSimilar(item), amount);
     }
 
+    /**
+     * 检查背包中的特定物品是否达到特定数量
+     *
+     * @param inventory 背包实例
+     * @param item      物品
+     * @param amount    检查数量
+     * @param remove    是否移除
+     */
     public static boolean checkItem(Inventory inventory, ItemStack item, int amount, boolean remove) {
         return hasItem(inventory, i -> i.isSimilar(item), amount) && (!remove || takeItem(inventory, i -> i.isSimilar(item), amount));
     }
 
+    /**
+     * 检查背包中符合特定规则的物品是否达到特定该数量
+     *
+     * @param inventory 背包实例
+     * @param matcher   规则
+     * @param amount    数量
+     */
     public static boolean hasItem(Inventory inventory, Matcher matcher, int amount) {
         int checkAmount = amount;
         for (ItemStack itemStack : inventory.getContents()) {
@@ -180,6 +310,13 @@ public class Items {
         return false;
     }
 
+    /**
+     * 移除背包中特定数量的符合特定规则的物品
+     *
+     * @param inventory 背包实例
+     * @param matcher   规则
+     * @param amount    实例
+     */
     public static boolean takeItem(Inventory inventory, Matcher matcher, int amount) {
         int takeAmount = amount;
         ItemStack[] contents = inventory.getContents();
@@ -201,12 +338,18 @@ public class Items {
         return false;
     }
 
+    /**
+     * 通过配置文件载入物品实例
+     *
+     * @param section 配置文件
+     */
+    @NotNull
     public static ItemStack loadItem(ConfigurationSection section) {
         if (section.get("bukkit") instanceof ItemStack) {
             return section.getItemStack("bukkit");
         }
         // 材质
-        ItemStack item = new ItemStack(asMaterial(section.contains("material") ? section.getString("material") : section.getString("type")));
+        ItemStack item = new ItemStack(Objects.requireNonNull(asMaterial(section.contains("material") ? section.getString("material") : section.getString("type"))));
         // 数量
         item.setAmount(section.contains("amount") ? section.getInt("amount") : section.getInt("count", 1));
         // 耐久
@@ -307,6 +450,12 @@ public class Items {
         return NMS.handle().saveNBT(item, nbt);
     }
 
+    /**
+     * 通过 Json 读取物品实例
+     *
+     * @param item json 文本
+     */
+    @Nullable
     public static ItemStack fromJson(String item) {
         JsonElement json = new JsonParser().parse(item);
         if (json instanceof JsonObject) {
@@ -333,6 +482,12 @@ public class Items {
         return null;
     }
 
+    /**
+     * 将物品转换为 Json 格式
+     *
+     * @param item 物品实例
+     */
+    @NotNull
     public static String toJson(ItemStack item) {
         JsonObject json = new JsonObject();
         json.addProperty("type", item.getType().name());
@@ -342,12 +497,26 @@ public class Items {
         return json.toString();
     }
 
+    /**
+     * 将物品转换为 Json 格式（通过格式化）
+     *
+     * @param item 物品实例
+     */
+    @NotNull
     public static String toJsonFormatted(ItemStack item) {
         return new GsonBuilder().setPrettyPrinting().create().toJson(new Gson().toJsonTree(toJson(item)));
     }
 
+    /**
+     * 物品匹配规则
+     */
     public interface Matcher {
 
-        boolean match(ItemStack item);
+        /**
+         * 是否符合规则
+         *
+         * @param item 物品实例
+         */
+        boolean match(@NotNull ItemStack item);
     }
 }

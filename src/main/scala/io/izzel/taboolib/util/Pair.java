@@ -3,6 +3,8 @@ package io.izzel.taboolib.util;
 import java.util.Objects;
 
 /**
+ * Pair
+ *
  * @Author sky
  * @Since 2019-09-18 21:23
  */

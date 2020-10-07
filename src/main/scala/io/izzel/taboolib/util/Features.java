@@ -16,6 +16,8 @@ import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -53,6 +55,7 @@ public class Features {
      * @param player 玩家
      * @param lines  记分板内容
      */
+    @NotNull
     public static Scoreboard displayScoreboard(Player player, String... lines) {
         return Scoreboards.display(player, lines);
     }
@@ -63,6 +66,7 @@ public class Features {
      * @param script 脚本源码
      * @return 预编译脚本实例
      */
+    @Nullable
     public static CompiledScript compileScript(String script) {
         try {
             return ((Compilable) scriptEngine).compile(script);
@@ -129,6 +133,7 @@ public class Features {
      * @param e 伤害事件
      * @return 实体实例
      */
+    @Nullable
     public static LivingEntity getAttacker(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof LivingEntity) {
             return (LivingEntity) e.getDamager();
@@ -211,6 +216,7 @@ public class Features {
      * @param itemStack 物品
      * @return 物品实例
      */
+    @NotNull
     public static Item dropItem(Player player, ItemStack itemStack) {
         return dropItem(player, itemStack, 0.0, 0.4);
     }
@@ -224,6 +230,7 @@ public class Features {
      * @param radius       半径
      * @return 物品实例
      */
+    @NotNull
     public static Item dropItem(Player player, ItemStack itemStack, double bulletSpread, double radius) {
         Location location = player.getLocation().add(0.0D, 1.5D, 0.0D);
         Item item = player.getWorld().dropItem(location, itemStack);

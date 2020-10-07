@@ -8,11 +8,14 @@ import io.izzel.taboolib.util.chat.ComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
+ * 书本编辑工具
+ *
  * @author sky
  * @since 2020-10-02 03:19
  */
@@ -81,6 +84,7 @@ public class Books {
      * @param lines 文本内容
      * @return 书本物品实例
      */
+    @NotNull
     public static ItemStack toBook(List<String> lines) {
         Books book = Books.create();
         TellrawJson json = null;

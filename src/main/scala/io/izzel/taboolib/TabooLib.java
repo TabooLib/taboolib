@@ -14,6 +14,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -131,30 +132,65 @@ public class TabooLib {
         });
     }
 
+    /**
+     * 获取 TaboLib 伪装插件
+     *
+     * @return {@link InternalPlugin}
+     */
+    @NotNull
     public static InternalPlugin getPlugin() {
         return InternalPlugin.getPlugin();
     }
 
+    /**
+     * 获取 TabooLib 文件实例
+     */
+    @NotNull
     public static File getTabooLibFile() {
         return new File("libs/TabooLib.jar");
     }
 
+    /**
+     * 获取 TabooLib 内部配置文件
+     */
+    @NotNull
     public YamlConfiguration getInternal() {
         return internal;
     }
 
+    /**
+     * 获取 TabooLib 实例
+     *
+     * @return {@link TabooLib}
+     */
+    @NotNull
     public static TabooLib getInst() {
         return inst;
     }
 
+    /**
+     * 获取 TabooLib 的日志实例
+     *
+     * @return {@link TLogger}
+     */
+    @NotNull
     public static TLogger getLogger() {
         return logger;
     }
 
+    /**
+     * 获取 TabooLib 配置文件实例
+     *
+     * @return {@link TConfig}
+     */
+    @NotNull
     public static TConfig getConfig() {
         return config;
     }
 
+    /**
+     * 获取 TabooLib 版本号，如 5.41
+     */
     public static double getVersion() {
         return version;
     }
