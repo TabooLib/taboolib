@@ -15,7 +15,7 @@ public class InternalChannelExecutor extends ChannelExecutor {
     @Override
     public void sendPacket(Player player, Object packet) {
         if (packet instanceof Packet) {
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket((Packet) packet);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket((Packet<?>) packet);
         } else {
             TLogger.getGlobalLogger().warn("Invalid packet: " + packet.getClass().getName());
         }

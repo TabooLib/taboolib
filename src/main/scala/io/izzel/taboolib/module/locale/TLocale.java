@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 语言文件工具
+ *
  * @author IzzelAliz
  */
 public class TLocale {

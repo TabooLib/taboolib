@@ -15,12 +15,14 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
+ * 物品 NBT 结构映射类
+ *
  * @Author 坏黑
  * @Since 2019-05-24 17:44
  */
 public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 
-    private Map<String, NBTBase> value = Maps.newConcurrentMap();
+    private final Map<String, NBTBase> value = Maps.newConcurrentMap();
 
     public NBTCompound() {
         super(0);

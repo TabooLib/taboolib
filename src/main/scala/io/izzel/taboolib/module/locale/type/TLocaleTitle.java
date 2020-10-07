@@ -27,7 +27,7 @@ public class TLocaleTitle extends TLocaleSerialize {
     private final int fadeout;
     private final int stay;
 
-    private boolean usePlaceholder;
+    private final boolean usePlaceholder;
 
     private TLocaleTitle(String title, String subString, int fadein, int fadeout, int stay, boolean usePlaceholder) {
         this.title = title;

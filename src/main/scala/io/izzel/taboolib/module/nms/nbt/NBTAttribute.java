@@ -7,6 +7,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
+ * 物品属性映射类
+ *
  * @Author sky
  * @Since 2019-10-22 11:38
  */

@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 数据包加载器
+ *
  * @Author sky
  * @Since 2019-10-25 22:50
  */
@@ -28,7 +30,7 @@ public class TPacketLoader implements TabooLibLoader.Loader {
                 TPacket packet = method.getAnnotation(TPacket.class);
                 boolean packetType = method.getReturnType().equals(Boolean.TYPE) || method.getReturnType().equals(Boolean.class);
                 // object type
-                if (Arrays.equals(method.getParameterTypes(), new Class[] {Player.class, Object.class})) {
+                if (Arrays.equals(method.getParameterTypes(), new Class[]{Player.class, Object.class})) {
                     for (Object i : instance) {
                         TPacketHandler.addListener(plugin, new TPacketListener() {
                             @Override
@@ -44,7 +46,7 @@ public class TPacketLoader implements TabooLibLoader.Loader {
                     }
                 }
                 // packet type
-                else if (Arrays.equals(method.getParameterTypes(), new Class[] {Player.class, Packet.class})) {
+                else if (Arrays.equals(method.getParameterTypes(), new Class[]{Player.class, Packet.class})) {
                     for (Object i : instance) {
                         TPacketHandler.addListener(plugin, new TPacketListener() {
                             @Override

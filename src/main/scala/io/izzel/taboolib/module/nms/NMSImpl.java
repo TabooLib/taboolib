@@ -52,6 +52,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -64,6 +65,7 @@ import java.util.function.Consumer;
  * @Author 坏黑
  * @Since 2018-11-09 14:42
  */
+@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "ConstantConditions", "unchecked", "deprecation", "rawtypes"})
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
@@ -276,6 +278,7 @@ public class NMSImpl extends NMS {
         return new NBTCompound();
     }
 
+    @NotNull
     @Override
     public List<NBTAttribute> getBaseAttribute(org.bukkit.inventory.ItemStack item) {
         List<NBTAttribute> list = Lists.newArrayList();
@@ -761,7 +764,7 @@ public class NMSImpl extends NMS {
                 } else {
                     SimpleReflection.invokeMethod(LightEngineStorage.class, s, "c", new Object[0], true);
                 }
-                SimpleReflection.invokeMethod(LightEngineGraph.class, lightEngineLayer, "a", new Object[] {9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true}, true);
+                SimpleReflection.invokeMethod(LightEngineGraph.class, lightEngineLayer, "a", new Object[]{9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true}, true);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

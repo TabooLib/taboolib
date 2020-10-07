@@ -11,6 +11,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
+ * 物品 NBT 结构映射类
+ *
  * @Author 坏黑
  * @Since 2019-05-24 17:45
  */

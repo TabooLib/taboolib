@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 /**
+ * 光照工具
+ *
  * @Author sky
  * @Since 2020-04-02 18:10
  */
