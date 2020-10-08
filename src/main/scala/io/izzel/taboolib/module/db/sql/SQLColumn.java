@@ -133,7 +133,7 @@ public class SQLColumn extends IColumn {
         if (this.m == 0 && this.d == 0) {
             return Strings.replaceWithOrder("`{0}` {1} {2}", columnName, columnType.name().toLowerCase(), convertToOptions());
         } else if (this.d == 0) {
-            return Strings.replaceWithOrder("`{0}`t {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
+            return Strings.replaceWithOrder("`{0}` {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
         } else {
             return Strings.replaceWithOrder("`{0}` {1}({2},{3}) {4}", columnName, columnType.name().toLowerCase(), m, d, convertToOptions());
         }
