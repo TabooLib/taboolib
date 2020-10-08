@@ -12,6 +12,12 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    if (System.getenv('CI')) {
+        jcenter()
+        maven { url "https://repo.codemc.io/repository/nms/" }
+        maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
     maven { url "http://repo.ptms.ink/repository/codemc-nms/" }
     maven { url "http://repo.ptms.ink/repository/maven-releases/" }
     maven { url "http://repo.extendedclip.com/content/repositories/placeholderapi/" }
@@ -88,5 +94,5 @@ processResources {
 
 compileScala {
     options.encoding = scalaCompileOptions.encoding = 'UTF-8'
-    scalaCompileOptions.additionalParameters = ['-Djna.nosys=true']
+    scalaCompileOptions.forkOptions.jvmArgs.addAll(['-Djna.nosys=true'])
 }
