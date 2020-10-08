@@ -85,3 +85,8 @@ processResources {
         expand 'version': project.version
     }
 }
+
+compileScala {
+    options.encoding = scalaCompileOptions.encoding = 'UTF-8'
+    scalaCompileOptions.additionalParameters = ['-Djna.nosys=true']
+}
