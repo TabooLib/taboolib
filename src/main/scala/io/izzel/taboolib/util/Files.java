@@ -259,8 +259,9 @@ public class Files {
         try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             toFile(bufferedInputStream, file);
             return true;
-        } catch (Throwable ignored) { }
-        return false;
+        } catch (Throwable t) {
+            throw new IllegalArgumentException("Failed to download fail " + file.getName());
+        }
     }
 
     @NotNull
