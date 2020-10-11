@@ -4,7 +4,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.module.inject.TFunction;
-import io.izzel.taboolib.util.plugin.PluginUtils;
+import me.skymc.taboolib.plugin.PluginUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -259,9 +259,7 @@ public class Files {
         try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             toFile(bufferedInputStream, file);
             return true;
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        } catch (Throwable ignored) { }
         return false;
     }
 
