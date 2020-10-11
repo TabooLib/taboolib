@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.dependency;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.util.Files;
+import io.izzel.taboolib.util.Strings;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -21,9 +22,10 @@ public class TDependencyInjector {
                     try {
                         if (TDependency.requestLib(dependency.maven(), dependency.mavenRepo(), url)) {
                             break;
+                        }else {
+                            System.out.println("[TabooLib] "+Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-DOWNLOAD-FAIL"),plugin.getName(),dependency.maven()));
                         }
-                    } catch (Throwable ignored) {
-                    }
+                    } catch (Throwable ignored) { }
                 }
             }
         } else {
