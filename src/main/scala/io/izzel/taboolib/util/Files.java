@@ -14,9 +14,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -255,13 +253,16 @@ public class Files {
      * @param in   地址
      * @param file 文件实例
      */
-    public static boolean downloadFile(String in, File file) {
+    public static boolean downloadFile(String in, File file) throws ConnectException {
         try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             toFile(bufferedInputStream, file);
             return true;
-        } catch (Throwable t) {
-            throw new IllegalArgumentException("Failed to download fail " + file.getName());
+        } catch (ConnectException e) {
+            throw e;
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     @NotNull

@@ -5,6 +5,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.common.loader.Startup;
 import io.izzel.taboolib.common.loader.StartupLoader;
+import io.izzel.taboolib.kotlin.Tasks;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
 import io.izzel.taboolib.module.db.local.Local;
@@ -40,6 +41,7 @@ import org.bukkit.util.Vector;
 
 import java.awt.*;
 import java.io.File;
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -394,14 +396,18 @@ public class ListenerCommand implements Listener {
             e.getSender().sendMessage("§8[§fTabooLib§8] §cWARNING §7| §4Update TabooLib will force to restart your server. Please confirm this action by type §c/libupdateconfirm");
         } else if (e.getCommand().equalsIgnoreCase("libUpdateConfirm") || e.getCommand().equalsIgnoreCase("libUpdate confirm")) {
             e.getSender().sendMessage("§8[§fTabooLib§8] §7Downloading TabooLib file...");
-            Files.downloadFile("https://skymc.oss-cn-shanghai.aliyuncs.com/plugins/TabooLib.jar", new File("libs/TabooLib.jar"));
-            e.getSender().sendMessage("§8[§fTabooLib§8] §2Download completed, the server will restart in 3 secs");
             try {
-                Thread.sleep(3000L);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
+                Files.downloadFile("https://skymc.oss-cn-shanghai.aliyuncs.com/plugins/TabooLib.jar", new File("libs/TabooLib.jar"));
+                e.getSender().sendMessage("§8[§fTabooLib§8] §2Download completed, the server will restart in 3 secs");
+                try {
+                    Thread.sleep(3000L);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                Bukkit.shutdown();
+            } catch (ConnectException t) {
+                e.getSender().sendMessage("§8[§fTabooLib§8] §2Download failed.");
             }
-            Bukkit.shutdown();
         }
     }
 
