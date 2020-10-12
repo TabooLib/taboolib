@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.db.local.player;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.module.db.source.DBSource;

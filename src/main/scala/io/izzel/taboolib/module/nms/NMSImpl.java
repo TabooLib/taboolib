@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.nms;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.nms.impl.Type;
@@ -45,12 +46,14 @@ import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -667,6 +670,24 @@ public class NMSImpl extends NMS {
                     TPacketHandler.sendPacket(player, new net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk((net.minecraft.server.v1_14_R1.Chunk) chunk1, 0x1ffff));
                 }
             }
+        }
+    }
+
+    @Override
+    public @NotNull String getEnchantmentKey(Enchantment enchantment) {
+        if (Version.isAfter(Version.v1_13)) {
+            return "enchantment.minecraft." + Reflex.Companion.from(Keyed.class, enchantment).<NamespacedKey>invoke("getKey").getKey();
+        } else {
+            return net.minecraft.server.v1_16_R1.IRegistry.ENCHANTMENT.fromId(enchantment.getId()).g();
+        }
+    }
+
+    @Override
+    public @NotNull String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
+        if (Version.isAfter(Version.v1_13)) {
+            return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
+        } else {
+            return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
         }
     }
 

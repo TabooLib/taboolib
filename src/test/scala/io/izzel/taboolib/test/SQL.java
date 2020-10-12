@@ -1,9 +1,7 @@
 package io.izzel.taboolib.test;
 
-import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.db.sql.*;
 import io.izzel.taboolib.module.db.sql.query.Where;
-import io.izzel.taboolib.util.Pair;
 
 import javax.sql.DataSource;
 

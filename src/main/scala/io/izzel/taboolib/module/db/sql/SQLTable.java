@@ -9,7 +9,6 @@ import io.izzel.taboolib.util.Strings;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**

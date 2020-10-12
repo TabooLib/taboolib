@@ -1,8 +1,6 @@
 package io.izzel.taboolib.test;
 
 import io.izzel.taboolib.kotlin.Reflex;
-import io.izzel.taboolib.module.db.sql.SQLHost;
-import io.izzel.taboolib.module.db.sql.SQLTable;
 
 public class ReflexTest {
 

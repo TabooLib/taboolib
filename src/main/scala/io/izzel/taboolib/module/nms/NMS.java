@@ -12,10 +12,12 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -282,5 +284,21 @@ public abstract class NMS {
      * @param chunk 区块
      */
     abstract public void update(Chunk chunk);
+
+    /**
+     * 获取附魔内部名称
+     *
+     * @param enchantment 附魔
+     */
+    @NotNull
+    abstract public String getEnchantmentKey(Enchantment enchantment);
+
+    /**
+     * 获取药水效果内部名称
+     *
+     * @param potionEffectType 药水效果
+     */
+    @NotNull
+    abstract public String getPotionEffectTypeKey(PotionEffectType potionEffectType);
 
 }

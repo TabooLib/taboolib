@@ -1,12 +1,10 @@
 package io.izzel.taboolib.module.db.sql;
 
 import io.izzel.taboolib.module.db.IHost;
-import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

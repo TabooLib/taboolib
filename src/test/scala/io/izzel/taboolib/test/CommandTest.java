@@ -3,7 +3,6 @@ package io.izzel.taboolib.test;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.SubCommand;
-import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;

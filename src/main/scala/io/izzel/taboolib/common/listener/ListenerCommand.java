@@ -5,7 +5,6 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.common.loader.Startup;
 import io.izzel.taboolib.common.loader.StartupLoader;
-import io.izzel.taboolib.kotlin.Tasks;
 import io.izzel.taboolib.module.ai.SimpleAiSelector;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;
 import io.izzel.taboolib.module.db.local.Local;

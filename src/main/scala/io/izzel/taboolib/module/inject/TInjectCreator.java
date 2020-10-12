@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.inject;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Reflection;
