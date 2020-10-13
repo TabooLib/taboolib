@@ -78,8 +78,8 @@ shadowJar {
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
     }
+    relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
-    relocate 'org.apache.commons', 'io.izzel.taboolib.internal.apache'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
     relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
 }
