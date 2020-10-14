@@ -100,7 +100,7 @@ class THologramHandler implements Listener {
      * @return 数据包对象
      */
     public static Packet copy(int id, Location location) {
-        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntity"), "e", "f", "j", "h", "i", "j", "k", "l");
+        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntityLiving"), "e", "f", "j", "h", "i", "j", "k", "l");
         packet.write("a", id);
         if (Version.isAfter(Version.v1_14)) {
             packet.write("k", NMS.handle().asEntityType("armor_stand"));
