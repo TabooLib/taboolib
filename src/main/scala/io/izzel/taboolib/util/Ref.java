@@ -40,6 +40,7 @@ public class Ref {
             Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
             theUnsafe.setAccessible(true);
             UNSAFE = (Unsafe) theUnsafe.get(null);
+            UNSAFE.ensureClassInitialized(MethodHandles.Lookup.class);
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             Object lookupBase = UNSAFE.staticFieldBase(lookupField);
             long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
