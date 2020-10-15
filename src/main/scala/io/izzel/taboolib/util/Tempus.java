@@ -4,9 +4,13 @@ import java.time.Duration;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalUnit;
 
-public class Times {
+/**
+ * @author izzel
+ */
+public class Tempus {
 
     public static final TemporalUnit TICK = new TemporalUnit() {
+
         @Override
         public Duration getDuration() {
             return Duration.ofMillis(50);

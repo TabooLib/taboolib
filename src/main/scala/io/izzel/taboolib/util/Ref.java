@@ -22,6 +22,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 反射工具
+ *
+ * @author izzel
+ */
 @SuppressWarnings("restriction")
 @ThreadSafe
 public class Ref {
