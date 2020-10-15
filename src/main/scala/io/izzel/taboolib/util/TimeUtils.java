@@ -7,7 +7,7 @@ import java.time.temporal.TemporalUnit;
 /**
  * @author izzel
  */
-public class Tempus {
+public class TimeUtils {
 
     public static final TemporalUnit TICK = new TemporalUnit() {
 
