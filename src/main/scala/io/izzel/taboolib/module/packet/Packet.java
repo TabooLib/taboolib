@@ -1,9 +1,6 @@
 package io.izzel.taboolib.module.packet;
 
-import com.google.common.base.Preconditions;
 import io.izzel.taboolib.kotlin.Reflex;
-import io.izzel.taboolib.module.lite.SimpleReflection;
-import pw.yumc.Yum.reflect.Reflect;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -129,7 +126,15 @@ public class Packet {
         }
         Reflex reflex = Reflex.Companion.from(clazz, packet);
         for (String field : fields) {
-            reflex.set(field, this.reflex.get(field));
+            try {
+                reflex.set(field, this.reflex.get(field));
+            } catch (Throwable t) {
+                System.out.println("[TabooLib] Packet copy failed: " + field + " (" + clazz.getName() + ")");
+                System.out.println("[TabooLib] Origin class: " + this.packetClass.getName());
+                System.out.println("[TabooLib] Origin value: " + this.reflex.get(field) + " (" + this.reflex.get(field).getClass().getName() + ")");
+                t.printStackTrace();
+                throw t;
+            }
         }
         return new Packet(packet);
     }

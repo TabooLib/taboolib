@@ -4,7 +4,7 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.common.plugin.InternalPlugin;
 import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.module.inject.TFunction;
-import me.skymc.taboolib.plugin.PluginUtils;
+import io.izzel.taboolib.util.plugin.PluginUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.ConnectException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -255,13 +256,16 @@ public class Files {
      * @param in   地址
      * @param file 文件实例
      */
-    public static boolean downloadFile(String in, File file) {
+    public static boolean downloadFile(String in, File file) throws ConnectException {
         try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
             toFile(bufferedInputStream, file);
             return true;
-        } catch (Throwable t) {
-            throw new IllegalArgumentException("Failed to download fail " + file.getName());
+        } catch (ConnectException e) {
+            throw e;
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     @NotNull

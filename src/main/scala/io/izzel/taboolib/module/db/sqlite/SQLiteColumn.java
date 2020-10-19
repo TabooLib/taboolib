@@ -2,9 +2,6 @@ package io.izzel.taboolib.module.db.sqlite;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.IColumn;
-import io.izzel.taboolib.module.db.sql.SQLColumn;
-import io.izzel.taboolib.module.db.sql.SQLColumnOption;
-import io.izzel.taboolib.module.db.sql.SQLColumnType;
 import io.izzel.taboolib.util.Strings;
 
 import java.util.Arrays;

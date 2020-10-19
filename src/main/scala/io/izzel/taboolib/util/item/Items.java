@@ -13,7 +13,6 @@ import io.izzel.taboolib.module.nms.nbt.Attribute;
 import io.izzel.taboolib.module.nms.nbt.NBTBase;
 import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
-import io.izzel.taboolib.util.lite.Materials;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

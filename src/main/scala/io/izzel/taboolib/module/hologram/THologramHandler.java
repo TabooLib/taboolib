@@ -69,11 +69,11 @@ class THologramHandler implements Listener {
         if (learnTarget == null) {
             return true;
         }
-        if ((packet.is("PacketPlayOutSpawnEntity") || packet.is("PacketPlayOutSpawnEntityLiving")) && packet.read("a", Integer.TYPE) == learnTarget.getEntityId()) {
+        if (packet.is("PacketPlayOutSpawnEntityLiving") && packet.read("a", 0) == learnTarget.getEntityId()) {
             packetSpawn = packet;
             return false;
         }
-        if (packet.is("PacketPlayOutEntityMetadata") && packet.read("a", Integer.TYPE) == learnTarget.getEntityId()) {
+        if (packet.is("PacketPlayOutEntityMetadata") && packet.read("a", 0) == learnTarget.getEntityId()) {
             if (currentSchedule != null) {
                 currentSchedule.after(packet);
             } else {
@@ -100,20 +100,14 @@ class THologramHandler implements Listener {
      * @return 数据包对象
      */
     public static Packet copy(int id, Location location) {
-        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntity"), "e", "f", "j", "h", "i", "j", "k", "l");
+        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntityLiving"), "c", "g", "h", "i", "j", "k", "l");
         packet.write("a", id);
-        if (Version.isAfter(Version.v1_14)) {
-            packet.write("k", NMS.handle().asEntityType("armor_stand"));
-        }
-        if (Version.isAfter(Version.v1_9)) {
-            packet.write("b", UUID.randomUUID());
-            packet.write("c", location.getX());
-            packet.write("d", location.getY());
-            packet.write("e", location.getZ());
-        } else {
-            packet.write("b", location.getX());
-            packet.write("c", location.getY());
-            packet.write("d", location.getZ());
+        packet.write("b", UUID.randomUUID());
+        packet.write("d", location.getX());
+        packet.write("e", location.getY());
+        packet.write("f", location.getZ());
+        if (Version.isBefore(Version.v1_15)) {
+            packet.write("m", THologramHandler.getPacketSpawn().read("m"));
         }
         return packet;
     }

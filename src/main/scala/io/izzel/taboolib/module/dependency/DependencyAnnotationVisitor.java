@@ -7,6 +7,8 @@ import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.net.ConnectException;
+
 /**
  * @Author 坏黑
  * @Since 2019-07-13 15:25
@@ -57,14 +59,18 @@ public class DependencyAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visitEnd() {
         if (maven != null) {
-            if (TDependency.requestLib(maven, mavenRepo, url)) {
-                TabooLibAPI.debug("  Loaded " + String.join(":", maven) + " (" + plugin.getName() + ")");
-            } else {
+            try {
+                if (TDependency.requestLib(maven, mavenRepo, url)) {
+                    TabooLibAPI.debug("  Loaded " + String.join(":", maven) + " (" + plugin.getName() + ")");
+                } else {
+                    TabooLibAPI.debug("  Loading failed " + String.join(":", maven) + " (" + plugin.getName() + ")");
+                }
+            } catch (ConnectException ignored) {
                 TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-LOAD-FAIL"), plugin.getName(), String.join(":", maven)));
             }
+            url = "";
             maven = null;
             mavenRepo = TDependency.MAVEN_REPO;
-            url = "";
         }
         super.visitEnd();
     }

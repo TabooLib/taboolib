@@ -10,6 +10,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.item.Items;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,9 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -82,6 +85,16 @@ public class I18nOrigin extends I18nBase {
         } else {
             return lang.getString(NMS.handle().getName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", ""));
         }
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull Enchantment enchantment) {
+        return enchantment.getName();
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull PotionEffectType potionEffectType) {
+        return potionEffectType.getName();
     }
 
     private File getLocaleFile(Plugin plugin) {
