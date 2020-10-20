@@ -65,7 +65,7 @@ public class TCommodoreHandler {
         boolean flag = false;
         for (Field declaredField : clazz.getDeclaredFields()) {
             // 跳过不含注解的类
-            if(declaredField.getAnnotation(NeedCommodore.class) == null){
+            if(declaredField.getAnnotation(CustomCommodore.class) == null){
                 continue;
             }
             //region 处理注解

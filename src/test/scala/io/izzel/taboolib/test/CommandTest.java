@@ -8,7 +8,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.SubCommand;
-import io.izzel.taboolib.module.command.commodore.NeedCommodore;
+import io.izzel.taboolib.module.command.commodore.CustomCommodore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @BaseCommand(name = "test")
 public class CommandTest extends BaseMainCommand {
 
-    @NeedCommodore
+    @CustomCommodore
     private LiteralArgumentBuilder<?> builder = LiteralArgumentBuilder.literal("test")
             .then(LiteralArgumentBuilder.literal("help"))
             .then(LiteralArgumentBuilder.literal("test")
