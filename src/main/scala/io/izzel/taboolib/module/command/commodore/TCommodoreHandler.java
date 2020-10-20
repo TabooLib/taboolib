@@ -62,6 +62,9 @@ public class TCommodoreHandler {
      * @param mainCommand 命令的实例
      */
     public static void handle(Class<?> clazz, Plugin plugin, BaseMainCommand mainCommand) {
+        if(!CommodoreProvider.isSupported()){
+            return;
+        }
         boolean flag = false;
         for (Field declaredField : clazz.getDeclaredFields()) {
             // 跳过不含注解的类
