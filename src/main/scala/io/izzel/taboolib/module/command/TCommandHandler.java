@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.command;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
+import io.izzel.taboolib.module.command.commodore.TCommodoreHandler;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.TLocale;
@@ -31,7 +32,6 @@ public class TCommandHandler {
     private static SimpleCommandMap commandMap;
     private static Map<String, Command> knownCommands;
 
-    @SuppressWarnings("unchecked")
     @TFunction.Init
     static void init() {
         SimpleReflection.saveField(SimplePluginManager.class, "commandMap");
@@ -147,11 +147,12 @@ public class TCommandHandler {
      * 注册插件的所有 TCommand 命令
      */
     public static void registerCommand(Plugin plugin) {
-        for (Class pluginClass : Files.getClasses(plugin)) {
+        for (Class<?> pluginClass : Files.getClasses(plugin)) {
             if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(BaseCommand.class)) {
-                BaseCommand tCommand = (BaseCommand) pluginClass.getAnnotation(BaseCommand.class);
+                BaseCommand tCommand = pluginClass.getAnnotation(BaseCommand.class);
                 try {
-                    registerCommand(tCommand, tCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
+                    BaseMainCommand baseMainCommand = registerCommand(tCommand, tCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
+                    TCommodoreHandler.handle(pluginClass,plugin,baseMainCommand);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
