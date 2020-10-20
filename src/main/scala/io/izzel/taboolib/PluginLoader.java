@@ -66,6 +66,8 @@ public abstract class PluginLoader {
                 TabooLibLoader.postLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册插件命令
                 TCommandHandler.registerCommand(plugin);
+                // 注册命令高亮
+                
                 // 首次运行
                 if (!firstStarting && !(plugin instanceof InternalPlugin)) {
                     firstStarting = true;

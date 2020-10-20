@@ -68,7 +68,7 @@ import java.util.function.Consumer;
  * @Author 坏黑
  * @Since 2018-11-09 14:42
  */
-@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "ConstantConditions", "unchecked", "deprecation", "rawtypes"})
+@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "ConstantConditions", "deprecation", "rawtypes", "BusyWait"})
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
@@ -624,7 +624,6 @@ public class NMSImpl extends NMS {
             Object lightEngine = ((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine();
             if (((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a()) {
                 sync(lightEngine, e -> {
-                    Object[] lightEngineLayers;
                     if (lightType == Type.BLOCK) {
                         ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK)).a(Integer.MAX_VALUE, true, true);
                     } else if (lightType == Type.SKY) {
@@ -678,7 +677,7 @@ public class NMSImpl extends NMS {
         if (Version.isAfter(Version.v1_13)) {
             return "enchantment.minecraft." + Reflex.Companion.from(Keyed.class, enchantment).<NamespacedKey>invoke("getKey").getKey();
         } else {
-            return net.minecraft.server.v1_16_R1.IRegistry.ENCHANTMENT.fromId(enchantment.getId()).g();
+            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(enchantment.getId()).g();
         }
     }
 
@@ -753,8 +752,7 @@ public class NMSImpl extends NMS {
             try {
                 task.accept(lightEngine);
             } finally {
-                while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get(), flags & ~2))
-                    ;
+                while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get(), flags & ~2)) {}
                 SimpleReflection.invokeMethod(ThreadedMailbox.class, b, "f", new Object[0], true);
             }
         } catch (Throwable t) {
