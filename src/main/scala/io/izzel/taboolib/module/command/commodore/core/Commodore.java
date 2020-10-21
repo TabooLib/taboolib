@@ -28,26 +28,14 @@ package io.izzel.taboolib.module.command.commodore.core;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
-import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
-import io.izzel.taboolib.module.inject.TInject;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandSendEvent;
-import org.bukkit.event.server.ServerLoadEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 在Bukkit插件中使用Minecraft的1.13"brigadier"库的实用工具。
@@ -91,8 +79,8 @@ public abstract class Commodore {
      *
      * <p>只有玩家通过 {@code PermissionTest}，才会向其发送参数数据.</p>
      *
-     * @param command 从中读取别名的命令
-     * @param node 参数数据
+     * @param command        从中读取别名的命令
+     * @param node           参数数据
      * @param permissionTest Predicate，检查是否应向玩家发送参数数据
      */
     public abstract void register(Command command, LiteralCommandNode<?> node, Predicate<? super Player> permissionTest);
@@ -105,9 +93,9 @@ public abstract class Commodore {
      *
      * <p>只有玩家通过 {@code PermissionTest}，才会向其发送参数数据.</p>
      *
-     * @param command 从中读取别名的命令
+     * @param command         从中读取别名的命令
      * @param argumentBuilder 构造器形式的参数数据
-     * @param permissionTest Predicate，检查是否应向玩家发送参数数据
+     * @param permissionTest  Predicate，检查是否应向玩家发送参数数据
      */
     public void register(Command command, LiteralArgumentBuilder<?> argumentBuilder, Predicate<? super Player> permissionTest) {
         Objects.requireNonNull(command, "command");
@@ -123,7 +111,7 @@ public abstract class Commodore {
      * 因此ASK_SERVER建议可以继续对该命令起作用。</p>
      *
      * @param command 从中读取别名的命令
-     * @param node 参数数据
+     * @param node    参数数据
      */
     public abstract void register(Command command, LiteralCommandNode<?> node);
 
@@ -133,7 +121,7 @@ public abstract class Commodore {
      * <p>另外，将CraftBukkit {@link SuggestionProvider}应用于节点内的所有参数，
      * 因此ASK_SERVER建议可以继续对该命令起作用。</p>
      *
-     * @param command 从中读取别名的命令
+     * @param command         从中读取别名的命令
      * @param argumentBuilder 构造器形式的参数数据
      */
     public void register(Command command, LiteralArgumentBuilder<?> argumentBuilder) {

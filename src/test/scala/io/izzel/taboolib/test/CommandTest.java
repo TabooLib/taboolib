@@ -5,22 +5,42 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import io.izzel.taboolib.module.command.base.BaseCommand;
-import io.izzel.taboolib.module.command.base.BaseMainCommand;
-import io.izzel.taboolib.module.command.base.SubCommand;
+import io.izzel.taboolib.module.command.base.*;
 import io.izzel.taboolib.module.command.commodore.CustomCommodore;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @BaseCommand(name = "test")
 public class CommandTest extends BaseMainCommand {
 
+    @SubCommand
+    final BaseSubCommand command = new BaseSubCommand() {
+
+        @Override
+        public Argument[] getArguments() {
+            return of(
+                    new Argument("args-1")
+                            .optional()
+                            .restrict(ArgumentType.doubleArg(100, 200)),
+                    new Argument("args-2")
+                            .optional()
+                            .complete(Arrays.asList("1", "2", "3"))
+            );
+        }
+
+        @Override
+        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+        }
+    };
+
     @CustomCommodore
-    private LiteralArgumentBuilder<?> builder = LiteralArgumentBuilder.literal("test")
+    final LiteralArgumentBuilder<?> builder = LiteralArgumentBuilder.literal("test")
             .then(LiteralArgumentBuilder.literal("help"))
             .then(LiteralArgumentBuilder.literal("test")
                     .then(RequiredArgumentBuilder.argument("string", StringArgumentType.word())

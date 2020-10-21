@@ -1,15 +1,14 @@
 package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
-import io.izzel.taboolib.module.command.commodore.TCommodoreHandler;
+import io.izzel.taboolib.module.command.commodore.CommodoreHandler;
 import io.izzel.taboolib.module.inject.TFunction;
-import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Files;
-import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.permissions.Permission;
@@ -34,10 +33,8 @@ public class TCommandHandler {
 
     @TFunction.Init
     static void init() {
-        SimpleReflection.saveField(SimplePluginManager.class, "commandMap");
-        SimpleReflection.saveField(SimpleCommandMap.class, "knownCommands");
-        commandMap = (SimpleCommandMap) SimpleReflection.getFieldValue(SimplePluginManager.class, Bukkit.getPluginManager(), "commandMap");
-        knownCommands = (Map<String, Command>) SimpleReflection.getFieldValue(SimpleCommandMap.class, commandMap, "knownCommands");
+        commandMap = new Reflex(SimplePluginManager.class).instance(Bukkit.getPluginManager()).get("commandMap");
+        knownCommands = new Reflex(SimpleCommandMap.class).instance(commandMap).get("knownCommands");
     }
 
     public static boolean registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor) {
@@ -88,12 +85,13 @@ public class TCommandHandler {
             PluginCommand pluginCommand = constructor.newInstance(command, plugin);
             pluginCommand.setExecutor(commandExecutor);
             pluginCommand.setTabCompleter(tabCompleter);
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "description", description);
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "usageMessage", usage);
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "aliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "activeAliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permission", permission);
-            Reflection.setValue(pluginCommand, pluginCommand.getClass().getSuperclass(), true, "permissionMessage", permissionMessage);
+            Reflex reflex = new Reflex(pluginCommand.getClass().getSuperclass()).instance(pluginCommand);
+            reflex.set("description", description);
+            reflex.set("usageMessage", usage);
+            reflex.set("aliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
+            reflex.set("activeAliases", aliases.stream().map(String::toLowerCase).collect(Collectors.toList()));
+            reflex.set("permission", permission);
+            reflex.set("permissionMessage", permissionMessage);
             commandMap.register(plugin.getName(), pluginCommand);
             TabooLibAPI.debug("Command " + command + " created. (" + plugin.getName() + ")");
             return true;
@@ -111,35 +109,40 @@ public class TCommandHandler {
      * @param baseMainCommand 命令对象
      * @return {@link BaseMainCommand}
      */
-    public static BaseMainCommand registerCommand(BaseCommand tCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
-        if (Bukkit.getPluginCommand(command) == null) {
-            String permission = tCommand.permission();
-            if (tCommand.permissionDefault() == PermissionDefault.TRUE || tCommand.permissionDefault() == PermissionDefault.NOT_OP) {
-                if (permission.isEmpty()) {
-                    permission = plugin.getName().toLowerCase() + ".command.use";
-                }
-                if (Bukkit.getPluginManager().getPermission(permission) != null) {
-                    try {
-                        Permission p = new Permission(permission, tCommand.permissionDefault());
-                        Bukkit.getPluginManager().addPermission(p);
-                        Bukkit.getPluginManager().recalculatePermissionDefaults(p);
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
+    public static BaseMainCommand registerCommand(BaseCommand baseCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
+        // 移除冲突命令
+        TCommandHandler.getKnownCommands().remove(command);
+        // 注册权限
+        String permission = baseCommand.permission();
+        if (baseCommand.permissionDefault() == PermissionDefault.TRUE || baseCommand.permissionDefault() == PermissionDefault.NOT_OP) {
+            if (permission.isEmpty()) {
+                permission = plugin.getName().toLowerCase() + ".command.use";
+            }
+            if (Bukkit.getPluginManager().getPermission(permission) != null) {
+                try {
+                    Permission p = new Permission(permission, baseCommand.permissionDefault());
+                    Bukkit.getPluginManager().addPermission(p);
+                    Bukkit.getPluginManager().recalculatePermissionDefaults(p);
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
             }
-            registerPluginCommand(
-                    plugin,
-                    command,
-                    ArrayUtil.skipEmpty(tCommand.description(), "Registered by TabooLib."),
-                    ArrayUtil.skipEmpty(tCommand.usage(), "/" + command),
-                    ArrayUtil.skipEmpty(ArrayUtil.asList(tCommand.aliases()), new ArrayList<>()),
-                    ArrayUtil.skipEmpty(tCommand.permission()),
-                    ArrayUtil.skipEmpty(tCommand.permissionMessage()),
-                    baseMainCommand,
-                    baseMainCommand);
         }
-        return BaseMainCommand.createCommandExecutor(command, baseMainCommand);
+        // 注册命令
+        registerPluginCommand(
+                plugin,
+                command,
+                ArrayUtil.skipEmpty(baseCommand.description(), "Registered by TabooLib."),
+                ArrayUtil.skipEmpty(baseCommand.usage(), "/" + command),
+                ArrayUtil.skipEmpty(ArrayUtil.asList(baseCommand.aliases()), new ArrayList<>()),
+                ArrayUtil.skipEmpty(baseCommand.permission()),
+                ArrayUtil.skipEmpty(baseCommand.permissionMessage()),
+                baseMainCommand,
+                baseMainCommand);
+        BaseMainCommand.createCommandExecutor(command, baseMainCommand);
+        // 注册高亮
+        CommodoreHandler.register(baseMainCommand);
+        return baseMainCommand;
     }
 
 
@@ -149,10 +152,9 @@ public class TCommandHandler {
     public static void registerCommand(Plugin plugin) {
         for (Class<?> pluginClass : Files.getClasses(plugin)) {
             if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(BaseCommand.class)) {
-                BaseCommand tCommand = pluginClass.getAnnotation(BaseCommand.class);
+                BaseCommand baseCommand = pluginClass.getAnnotation(BaseCommand.class);
                 try {
-                    BaseMainCommand baseMainCommand = registerCommand(tCommand, tCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
-                    TCommodoreHandler.handle(pluginClass,plugin,baseMainCommand);
+                    registerCommand(baseCommand, baseCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

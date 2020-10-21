@@ -92,4 +92,9 @@ public abstract class BaseSubCommand {
         this.mainCommand = mainCommand;
         return this;
     }
+
+    @SafeVarargs
+    protected final <T> T[] of(T... argument) {
+        return argument;
+    }
 }

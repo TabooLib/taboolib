@@ -32,6 +32,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import io.izzel.taboolib.module.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -52,10 +53,10 @@ import java.util.stream.Stream;
 public final class CommodoreImpl extends Commodore {
 
     // ArgumentCommandNode＃customSuggestions字段
-    private static final Field CUSTOM_SUGGESTIONS_FIELD;
+    protected static final Field CUSTOM_SUGGESTIONS_FIELD;
 
     // CommandNode＃children，CommandNode＃literals，CommandNode＃arguments字段
-    private static final Field CHILDREN_FIELD;
+    protected static final Field CHILDREN_FIELD;
     protected static Field LITERALS_FIELD;
     protected static Field ARGUMENTS_FIELD;
 
@@ -90,12 +91,12 @@ public final class CommodoreImpl extends Commodore {
 
     @Override
     public CommandDispatcher<?> getDispatcher() {
-        return NMSAccess.INSTANCE.getDispatcher();
+        return NMS.handle().getDispatcher();
     }
 
     @Override
     public CommandSender getBukkitSender(Object commandWrapperListener) {
-        return NMSAccess.INSTANCE.getBukkitSender(commandWrapperListener);
+        return NMS.handle().getBukkitSender(commandWrapperListener);
     }
 
     @Override
@@ -123,7 +124,7 @@ public final class CommodoreImpl extends Commodore {
         Objects.requireNonNull(permissionTest, "permissionTest");
 
         try {
-            SuggestionProvider<?> wrapper = NMSAccess.INSTANCE.getWrapper(command);
+            SuggestionProvider<?> wrapper = NMS.handle().getWrapper(command);
             setCustomSuggestionProvider(node, wrapper);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -138,7 +139,7 @@ public final class CommodoreImpl extends Commodore {
             if (node.getLiteral().equals(alias)) {
                 register(node);
             } else {
-                register(LiteralArgumentBuilder.literal(alias).redirect((LiteralCommandNode<Object>)node).build());
+                register(LiteralArgumentBuilder.literal(alias).redirect((LiteralCommandNode<Object>) node).build());
             }
         }
 
@@ -156,7 +157,6 @@ public final class CommodoreImpl extends Commodore {
     public static void ensureSetup() {
 
     }
-
 
 
     /**
@@ -209,7 +209,6 @@ public final class CommodoreImpl extends Commodore {
         }
         return clone;
     }
-
 
 
     /**

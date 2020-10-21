@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.izzel.taboolib.module.inject.TInject;
 import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.nms.impl.Type;
@@ -10,8 +12,11 @@ import io.izzel.taboolib.module.nms.nbt.NBTCompound;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -301,4 +306,15 @@ public abstract class NMS {
     @NotNull
     abstract public String getPotionEffectTypeKey(PotionEffectType potionEffectType);
 
+    abstract public CommandDispatcher<?> getDispatcher();
+
+    abstract public CommandSender getBukkitSender(Object commandWrapperListener);
+
+    abstract public SuggestionProvider<?> getWrapper(Command command);
+
+    abstract public Class<?> getArgumentRegistryClass();
+
+    abstract public Class<?> getMinecraftKeyClass();
+
+    abstract public Object createMinecraftKey(NamespacedKey key);
 }

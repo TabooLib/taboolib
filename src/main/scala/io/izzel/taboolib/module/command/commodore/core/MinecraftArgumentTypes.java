@@ -26,6 +26,7 @@
 package io.izzel.taboolib.module.command.commodore.core;
 
 import com.mojang.brigadier.arguments.ArgumentType;
+import io.izzel.taboolib.module.nms.NMS;
 import org.bukkit.NamespacedKey;
 
 import java.lang.reflect.Constructor;
@@ -36,7 +37,8 @@ import java.lang.reflect.Method;
  * Minecraft提供的{@link ArgumentType}的注册表。
  */
 public final class MinecraftArgumentTypes {
-    private MinecraftArgumentTypes() {}
+    private MinecraftArgumentTypes() {
+    }
 
     // ArgumentRegistry#getByKey（混淆）方法
     // 私有构造函数，请勿修改
@@ -47,7 +49,7 @@ public final class MinecraftArgumentTypes {
 
     static {
         try {
-            ARGUMENT_REGISTRY_GET_BY_KEY_METHOD = NMSAccess.INSTANCE.getArgumentRegistryClass().getDeclaredMethod("a",NMSAccess.INSTANCE.getMinecraftKeyClass());
+            ARGUMENT_REGISTRY_GET_BY_KEY_METHOD = NMS.handle().getArgumentRegistryClass().getDeclaredMethod("a", NMS.handle().getMinecraftKeyClass());
             ARGUMENT_REGISTRY_GET_BY_KEY_METHOD.setAccessible(true);
 
             Class<?> argumentRegistryEntry = ARGUMENT_REGISTRY_GET_BY_KEY_METHOD.getReturnType();
@@ -66,7 +68,7 @@ public final class MinecraftArgumentTypes {
      */
     public static boolean isRegistered(NamespacedKey key) {
         try {
-            Object minecraftKey = NMSAccess.INSTANCE.createMinecraftKey(key);
+            Object minecraftKey = NMS.handle().createMinecraftKey(key);
             Object entry = ARGUMENT_REGISTRY_GET_BY_KEY_METHOD.invoke(null, minecraftKey);
             return entry != null;
         } catch (ReflectiveOperationException e) {
@@ -83,7 +85,7 @@ public final class MinecraftArgumentTypes {
      */
     public static Class<? extends ArgumentType<?>> getClassByKey(NamespacedKey key) throws IllegalArgumentException {
         try {
-            Object minecraftKey = NMSAccess.INSTANCE.createMinecraftKey(key);
+            Object minecraftKey = NMS.handle().createMinecraftKey(key);
             Object entry = ARGUMENT_REGISTRY_GET_BY_KEY_METHOD.invoke(null, minecraftKey);
             if (entry == null) {
                 throw new IllegalArgumentException(key.toString());

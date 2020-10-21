@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.command.base;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -12,9 +13,11 @@ public class Argument {
     // 参数名称
     private final String name;
     // 是否必须
-    private final boolean required;
+    private boolean required;
     // 参数补全
-    private final CommandTab tab;
+    private CommandTab tab;
+    // 参数约束
+    private ArgumentType restrict;
 
     public String getName() {
         return name;
@@ -26,6 +29,10 @@ public class Argument {
 
     public CommandTab getTab() {
         return tab;
+    }
+
+    public ArgumentType getRestrict() {
+        return restrict;
     }
 
     public Argument(String name) {
@@ -44,6 +51,26 @@ public class Argument {
         this.name = name;
         this.required = required;
         this.tab = tab;
+    }
+
+    public Argument optional() {
+        this.required = false;
+        return this;
+    }
+
+    public Argument complete(CommandTab tab) {
+        this.tab = tab;
+        return this;
+    }
+
+    public Argument complete(List<String> tab) {
+        this.tab = () -> tab;
+        return this;
+    }
+
+    public Argument restrict(ArgumentType restrict) {
+        this.restrict = restrict;
+        return this;
     }
 
     @Override

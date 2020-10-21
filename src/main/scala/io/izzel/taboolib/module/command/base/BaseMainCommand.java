@@ -123,7 +123,11 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
     public void onCommandHelp(CommandSender sender, Command command, String label, String[] args) {
         display.displayHead(sender, this, label);
-        subCommands.forEach(s -> display.displayParameters(sender, s, label));
+        for (BaseSubCommand subCommand : subCommands) {
+            if (subCommand.getType().isType(sender)) {
+                display.displayParameters(sender, subCommand, label);
+            }
+        }
         display.displayBottom(sender, this, label);
     }
 
@@ -172,7 +176,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 if (subCommand == null || !(args[0].equalsIgnoreCase(subCommand.getLabel()) || java.util.Arrays.stream(subCommand.getAliases()).anyMatch(args[0]::equalsIgnoreCase)) || !subCommand.hasPermission(sender)) {
                     continue;
                 }
-                if (!isConfirmType(sender, subCommand.getType())) {
+                if (!subCommand.getType().isType(sender)) {
                     TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()), registerCommand.getPlugin().getName());
                     return true;
                 }
@@ -240,12 +244,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public void setDisplay(DisplayBase display) {
         Preconditions.checkNotNull(display);
         this.display = display;
-    }
-
-    private boolean isConfirmType(CommandSender sender, CommandType commandType) {
-        return commandType == CommandType.ALL
-                || (sender instanceof Player && commandType == CommandType.PLAYER)
-                || (sender instanceof ConsoleCommandSender && commandType == CommandType.CONSOLE);
     }
 
     private void disguisedPlugin() {

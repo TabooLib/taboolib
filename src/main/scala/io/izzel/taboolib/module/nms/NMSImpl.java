@@ -2,6 +2,8 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.lite.SimpleReflection;
@@ -40,9 +42,12 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -60,6 +65,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -688,6 +694,38 @@ public class NMSImpl extends NMS {
         } else {
             return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
         }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public CommandDispatcher<?> getDispatcher() {
+        return net.minecraft.server.v1_13_R2.MinecraftServer.getServer().getCommandDispatcher().a();
+    }
+
+    @Override
+    public CommandSender getBukkitSender(Object commandWrapperListener) {
+        Objects.requireNonNull(commandWrapperListener, "commandWrapperListener不能为空");
+        return ((net.minecraft.server.v1_13_R2.CommandListenerWrapper)commandWrapperListener).getBukkitSender();
+    }
+
+    @Override
+    public SuggestionProvider<?> getWrapper(Command command) {
+        return new BukkitCommandWrapper((CraftServer) Bukkit.getServer(),command);
+    }
+
+    @Override
+    public Class<?> getArgumentRegistryClass() {
+        return net.minecraft.server.v1_13_R2.ArgumentRegistry.class;
+    }
+
+    @Override
+    public Class<?> getMinecraftKeyClass() {
+        return net.minecraft.server.v1_13_R2.MinecraftKey.class;
+    }
+
+    @Override
+    public Object createMinecraftKey(NamespacedKey key) {
+        return new net.minecraft.server.v1_13_R2.MinecraftKey(key.getNamespace(),key.getKey());
     }
 
     public int distance(Object player) {

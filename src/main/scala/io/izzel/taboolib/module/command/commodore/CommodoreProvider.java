@@ -39,8 +39,12 @@ import java.util.Objects;
  * 用于获取{@link Commodore}实例的工厂。
  */
 public final class CommodoreProvider {
-    private CommodoreProvider() { throw new AssertionError(); }
-    private static Map<Plugin,Commodore> pluginCommodoreMap = new HashMap<>();
+
+    private CommodoreProvider() {
+        throw new AssertionError();
+    }
+
+    private static final Map<Plugin, Commodore> pluginCommodoreMap = new HashMap<>();
 
     private static final Throwable SETUP_EXCEPTION = checkSupported();
 
@@ -72,7 +76,7 @@ public final class CommodoreProvider {
      * @throws BrigadierUnsupportedException 如果服务器不 {@link #isSupported() 支持} Brigadier。
      */
     public static Commodore getCommodore(Plugin plugin) throws BrigadierUnsupportedException {
-        if(pluginCommodoreMap.containsKey(plugin)){
+        if (pluginCommodoreMap.containsKey(plugin)) {
             return pluginCommodoreMap.get(plugin);
         }
         Objects.requireNonNull(plugin, "plugin");
@@ -80,7 +84,7 @@ public final class CommodoreProvider {
             throw new BrigadierUnsupportedException("Brigadier is not supported by the server.", SETUP_EXCEPTION);
         }
         CommodoreImpl commodore = new CommodoreImpl(plugin);
-        pluginCommodoreMap.put(plugin,commodore);
+        pluginCommodoreMap.put(plugin, commodore);
         return commodore;
     }
 }
