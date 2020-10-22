@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
+ * 经典命令帮助列表排版
+ *
  * @Author sky
  * @Since 2020-04-04 16:17
  */

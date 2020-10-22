@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 public class TabooLibLoader {
 
-    static Map<String, List<Class>> pluginClasses = Maps.newHashMap();
+    static Map<String, List<Class>> pluginClasses = Maps.newConcurrentMap();
     static List<Loader> loaders = Lists.newArrayList();
     static List<Runnable> tasks = Lists.newArrayList();
     static boolean started;

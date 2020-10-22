@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
+ * 子命令接口
+ *
  * @author Bkm016
  * @since 2018-04-17
  */
@@ -18,9 +20,71 @@ public abstract class BaseSubCommand {
     private SubCommand annotation;
     private BaseMainCommand mainCommand;
 
+    /**
+     * 命令执行方法
+     * 同 Bukkit 方法
+     *
+     * @param sender  执行者
+     * @param command 命令对象
+     * @param label   命令
+     * @param args    参数
+     */
     abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
 
-    public BaseMainCommand getMainCommand() {
+    /**
+     * 判定传入参数是否符合参数约束
+     *
+     * @param args 传入参数
+     */
+    public final boolean isParameterConform(String[] args) {
+        return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
+    }
+
+    /**
+     * 获取命令帮助列表中对展示文本
+     *
+     * @param sender 执行者
+     * @param label  命令
+     */
+    public final String getCommandString(CommandSender sender, String label) {
+        return mainCommand.getDisplay().displayHelp(sender, this, label);
+    }
+
+    /**
+     * 是否拥有权限
+     *
+     * @param sender 执行者
+     */
+    public final boolean hasPermission(CommandSender sender) {
+        return Strings.isBlank(getPermission()) || sender.hasPermission(getPermission());
+    }
+
+    protected final BaseSubCommand label(String label) {
+        this.label = label;
+        return this;
+    }
+
+    protected final BaseSubCommand player() {
+        player = true;
+        return this;
+    }
+
+    protected final BaseSubCommand annotation(SubCommand annotation) {
+        this.annotation = annotation;
+        return this;
+    }
+
+    protected final BaseSubCommand mainCommand(BaseMainCommand mainCommand) {
+        this.mainCommand = mainCommand;
+        return this;
+    }
+
+    @SafeVarargs
+    protected final <T> T[] of(T... argument) {
+        return argument;
+    }
+
+    public final BaseMainCommand getMainCommand() {
         return mainCommand;
     }
 
@@ -44,10 +108,12 @@ public abstract class BaseSubCommand {
         return player ? CommandType.PLAYER : annotation.type();
     }
 
+    @Deprecated
     public boolean ignoredLabel() {
         return annotation.ignoredLabel();
     }
 
+    @Deprecated
     public boolean requiredPlayer() {
         return annotation.requiredPlayer();
     }
@@ -59,42 +125,5 @@ public abstract class BaseSubCommand {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hideInHelp() {
         return annotation.hideInHelp();
-    }
-
-    public boolean isParameterConform(String[] args) {
-        return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
-    }
-
-    public String getCommandString(CommandSender sender, String label) {
-        return mainCommand.getDisplay().displayHelp(sender, this, label);
-    }
-
-    public boolean hasPermission(CommandSender sender) {
-        return Strings.isBlank(getPermission()) || sender.hasPermission(getPermission());
-    }
-
-    protected BaseSubCommand label(String label) {
-        this.label = label;
-        return this;
-    }
-
-    protected BaseSubCommand player() {
-        player = true;
-        return this;
-    }
-
-    protected BaseSubCommand annotation(SubCommand annotation) {
-        this.annotation = annotation;
-        return this;
-    }
-
-    protected BaseSubCommand mainCommand(BaseMainCommand mainCommand) {
-        this.mainCommand = mainCommand;
-        return this;
-    }
-
-    @SafeVarargs
-    protected final <T> T[] of(T... argument) {
-        return argument;
     }
 }

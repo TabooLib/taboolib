@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * BaseSubCommand 命令参数
+ *
  * @author Bkm016
  * @since 2018-04-17
  */
@@ -53,21 +55,34 @@ public class Argument {
         this.tab = tab;
     }
 
+    /**
+     * 将该参数定义为可选参数
+     * 帮助列表中当显示文本将会被修改
+     */
     public Argument optional() {
         this.required = false;
         return this;
     }
 
+    /**
+     * 参数补全
+     */
     public Argument complete(CommandTab tab) {
         this.tab = tab;
         return this;
     }
 
+    /**
+     * 参数补全
+     */
     public Argument complete(List<String> tab) {
         this.tab = () -> tab;
         return this;
     }
 
+    /**
+     * 参数约束（5.43 update）
+     */
     public Argument restrict(ArgumentType restrict) {
         this.restrict = restrict;
         return this;

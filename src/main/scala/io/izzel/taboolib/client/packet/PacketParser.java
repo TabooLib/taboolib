@@ -18,7 +18,7 @@ public class PacketParser {
     private final List<Class<?>> packets = new ArrayList<>();
 
     public PacketParser() {
-        Files.getClasses(TabooLib.getPlugin()).stream().filter(clazz -> clazz.isAnnotationPresent(PacketType.class)).forEach(clazz -> packets.add(clazz));
+        Files.getClasses(TabooLib.getPlugin()).stream().filter(clazz -> clazz.isAnnotationPresent(PacketType.class)).forEach(packets::add);
     }
 
     public Packet parser(JsonObject json) {

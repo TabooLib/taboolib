@@ -8,6 +8,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 主命令注解
+ * 用于声明 BaseMainCommand 子类并进行自动注册
+ *
  * @Author sky
  * @Since 2018-08-23 20:34
  */
@@ -15,17 +18,43 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BaseCommand {
 
+    /**
+     * 命令名称
+     * 默认启用强制注册，替换冲突命令
+     */
     String name();
 
+    /**
+     * 命令权限
+     */
     String permission() default "";
 
+    /**
+     * 缺少权限提示
+     */
     String permissionMessage() default "";
 
-    String description() default "";
+    /**
+     * 默认权限设置
+     */
+    PermissionDefault permissionDefault() default PermissionDefault.OP;
 
-    String usage() default "";
-
+    /**
+     * 别名
+     * 别名不会被强制注册
+     */
     String[] aliases() default {};
 
-    PermissionDefault permissionDefault() default PermissionDefault.OP;
+    /**
+     * 命令描述（Bukkit）
+     * 不会在 BaseMainCommand 构建的帮助列表中显示
+     */
+    String description() default "";
+
+    /**
+     * 使用方法（Bukkit）
+     * 不会在 BaseMainCommand 构建的帮助列表中显示
+     */
+    String usage() default "";
+
 }

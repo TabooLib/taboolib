@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
@@ -23,6 +24,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * 命令注册工具
+ * 无需在 plugin.yml 文件中声明命令
+ *
  * @Author sky
  * @Since 2018-05-23 2:43
  */
@@ -150,7 +154,7 @@ public class TCommandHandler {
      * 注册插件的所有 TCommand 命令
      */
     public static void registerCommand(Plugin plugin) {
-        for (Class<?> pluginClass : Files.getClasses(plugin)) {
+        for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {
             if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(BaseCommand.class)) {
                 BaseCommand baseCommand = pluginClass.getAnnotation(BaseCommand.class);
                 try {

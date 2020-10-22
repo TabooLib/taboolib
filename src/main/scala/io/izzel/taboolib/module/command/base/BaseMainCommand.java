@@ -26,6 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
+ * 主命令接口
+ *
  * @Author sky
  * @Since 2018-05-07 21:38
  */
@@ -124,7 +126,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public void onCommandHelp(CommandSender sender, Command command, String label, String[] args) {
         display.displayHead(sender, this, label);
         for (BaseSubCommand subCommand : subCommands) {
-            if (subCommand.getType().isType(sender)) {
+            if (subCommand.getType().isType(sender) && sender.hasPermission(subCommand.getPermission())) {
                 display.displayParameters(sender, subCommand, label);
             }
         }

@@ -43,7 +43,7 @@ public abstract class PluginLoader {
             @Override
             public void onLoading(Plugin plugin) {
                 // 注入依赖
-                TDependencyInjector.inject(plugin, plugin.getClass());
+                TDependencyInjector.inject(plugin, PluginLoader.get(plugin).getClass());
                 // 加载语言文件
                 TLocaleLoader.load(plugin, false);
                 // 读取插件类

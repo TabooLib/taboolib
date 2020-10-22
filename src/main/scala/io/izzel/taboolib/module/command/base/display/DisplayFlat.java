@@ -12,6 +12,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
+ * 扁平化命令帮助列表排版
+ * 于 5.X 版本更新，并默认启用该方案
+ *
  * @Author sky
  * @Since 2020-04-04 16:18
  */
