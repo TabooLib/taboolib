@@ -33,4 +33,9 @@
 
 # How to use TabooLib?
 
-[![](https://i.loli.net/2019/10/06/aPimqXFnGRDeMbv.jpg)](https://wiki.ptms.ink/index.php?title=TabooLib)
++ **Home**
++ https://tabooproject.org
++ **Javadoc**
++ https://tabooproject.org/doc
++ **Quick Start**
++ https://wiki.ptms.ink/index.php?title=TabooLib
