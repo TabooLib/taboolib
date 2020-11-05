@@ -13,6 +13,7 @@ import java.sql.SQLException;
  * @Author sky
  * @Since 2018-07-03 21:29
  */
+@SuppressWarnings("unchecked")
 public class RunnableQuery {
 
     private DataSource dataSource;
