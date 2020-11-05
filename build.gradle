@@ -71,6 +71,7 @@ dependencies {
 }
 
 shadowJar {
+    from sourceSets.main.allSource
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
         it.include it.dependency('com.github.cryptomorin:.*')
