@@ -21,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Author sky
@@ -99,7 +100,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 e.printStackTrace();
             }
         });
-        // SimpleCommandBuilder Inject
+        // CommandBuilder Inject
         injectTypes.put(CommandBuilder.class, (plugin, field, args, pluginClass, instance) -> {
             try {
                 CommandBuilder builder = Ref.getField(instance, field, CommandBuilder.class);
@@ -119,7 +120,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
         // CooldownPack Inject
         injectTypes.put(Cooldown.class, (plugin, field, args, pluginClass, instance) -> {
             try {
-                Cooldowns.register((Cooldown) Ref.getField(instance, field), plugin);
+                Cooldowns.register((Cooldown) Objects.requireNonNull(Ref.getField(instance, field)), plugin);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

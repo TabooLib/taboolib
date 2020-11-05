@@ -16,6 +16,8 @@ import io.izzel.taboolib.module.inject.TScheduleLoader;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -251,7 +253,7 @@ public abstract class PluginLoader {
      * @param origin   插件实例
      * @param instance 重定义主类实例
      */
-    public static void redefine(Plugin origin, Object instance) {
+    public static void redefine(Plugin origin, @NotNull Object instance) {
         redefine.put(origin.getName(), instance);
     }
 
@@ -261,6 +263,7 @@ public abstract class PluginLoader {
      * @param plugin 插件实例
      * @return 主类实例（可能不继承自 JavaPlugin）
      */
+    @NotNull
     public static Object get(Plugin plugin) {
         return redefine.getOrDefault(plugin.getName(), plugin);
     }
@@ -270,6 +273,7 @@ public abstract class PluginLoader {
      *
      * @return 插件实例
      */
+    @Nullable
     public static Plugin getFirstLoaded() {
         return firstLoaded;
     }

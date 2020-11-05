@@ -5,7 +5,7 @@ import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.cronus.util.StringExpression;
 import io.izzel.taboolib.module.locale.logger.TLogger;
-import io.izzel.taboolib.util.Reflection;
+import io.izzel.taboolib.util.Coerce;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -45,19 +45,23 @@ public class TListenerHandler {
         for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {
             if (Listener.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(TListener.class)) {
                 try {
-                    TListener tListener = pluginClass.getAnnotation(TListener.class);
+                    TListener annotation = pluginClass.getAnnotation(TListener.class);
                     // 检查版本
-                    if (!new StringExpression(tListener.version()).isSelect(Version.getCurrentVersion().getVersionInt())) {
+                    if (!new StringExpression(annotation.version()).isSelect(Version.getCurrentVersion().getVersionInt())) {
                         continue;
                     }
                     // 检查注册条件
-                    if (tListener.depend().length > 0 && !Strings.isBlank(tListener.depend()[0])) {
-                        if (Arrays.stream(tListener.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
+                    if (annotation.depend().length > 0 && !Strings.isBlank(annotation.depend()[0])) {
+                        if (Arrays.stream(annotation.depend()).anyMatch(depend -> Bukkit.getPluginManager().getPlugin(depend) == null)) {
                             continue;
                         }
                     }
                     // 实例化监听器
-                    Listener listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) Reflection.instantiateObject(pluginClass);
+                    List<Object> instance = TInjectHelper.getInstance(pluginClass, plugin, true);
+                    if (instance.isEmpty()) {
+                        instance.add(pluginClass.newInstance());
+                    }
+                    Listener listener = (Listener) instance.get(0);
                     try {
                         listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
                         TabooLibAPI.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
@@ -98,7 +102,7 @@ public class TListenerHandler {
                     try {
                         Method method = listener.getClass().getDeclaredMethod(tListener.condition());
                         method.setAccessible(true);
-                        if (!(boolean) method.invoke(listener)) {
+                        if (!Coerce.toBoolean(method.invoke(listener))) {
                             continue;
                         }
                     } catch (Exception e) {

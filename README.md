@@ -17,7 +17,7 @@
     <img src="https://img.shields.io/github/release/Bkm016/TabooLib.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue.svg">
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.17 (snapshot)-blue.svg">
   </a>
   <a>
     <img src="https://img.shields.io/badge/Loader-2.6-blue.svg">
@@ -25,17 +25,23 @@
 </p>
 
 ---
-# Features
+# 🌟 Features
 
-+ **Built-in expansion**：Load in a unique way, doesn't need to download any plugin.
++ **Built-in expansion**：Doesn't need to download any plugin.
 + **Silently running**：No redundant console logs.
 + **Lightweight**：More tools and only tools.
 
-# How to use TabooLib?
-
-+ **Home**
-+ https://tabooproject.org
-+ **Javadoc**
-+ https://tabooproject.org/doc
-+ **Quick Start**
-+ https://wiki.ptms.ink/index.php?title=TabooLib
+---
+<p align="center">
+  <a href="https://tabooproject.org">
+    <b>Home 🏠</b>
+  </a>
+  |
+  <a href="https://tabooproject.org/doc">
+    <b>Javadoc 📖</b>
+  </a>
+  |
+  <a href="https://wiki.ptms.ink/index.php?title=TabooLib">
+    <b>Quick Start 📦</b>
+  </a>
+</p>

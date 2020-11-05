@@ -9,7 +9,6 @@ import io.izzel.taboolib.module.command.commodore.CommodoreHandler;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
-import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.permissions.Permission;
