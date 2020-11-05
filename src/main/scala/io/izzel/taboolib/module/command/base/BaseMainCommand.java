@@ -15,6 +15,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -106,7 +107,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public static BaseSubCommand buildSubCommand(BaseMainCommand baseMainCommand, Method method) {
         return new BaseSubCommand() {
             @Override
-            public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+            public void onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
                 try {
                     method.invoke(baseMainCommand, sender, args);
                 } catch (Throwable t) {

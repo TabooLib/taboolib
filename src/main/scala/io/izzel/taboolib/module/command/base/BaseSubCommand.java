@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.command.base;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.IntStream;
@@ -29,7 +30,7 @@ public abstract class BaseSubCommand {
      * @param label   命令
      * @param args    参数
      */
-    abstract public void onCommand(CommandSender sender, Command command, String label, String[] args);
+    abstract public void onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args);
 
     /**
      * 判定传入参数是否符合参数约束

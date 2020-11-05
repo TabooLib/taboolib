@@ -59,6 +59,13 @@ public class Packet {
         return this.packetClass.getSimpleName().equalsIgnoreCase(packetName);
     }
 
+    /**
+     * 同 is() 方法
+     */
+    public boolean equals(String packetName) {
+        return this.is(packetName);
+    }
+
     public boolean any(Class<?>... packetClass) {
         return Arrays.stream(packetClass).anyMatch(this::is);
     }
@@ -76,6 +83,12 @@ public class Packet {
         return reflex.get(key);
     }
 
+    /**
+     * 读取数据包中的某个内容
+     *
+     * @param key 名称
+     * @param def 默认值
+     */
     public <T> T read(String key, T def) {
         T obj = reflex.get(key);
         return obj == null ? def : obj;

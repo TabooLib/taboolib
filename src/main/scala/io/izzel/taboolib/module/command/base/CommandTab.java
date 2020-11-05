@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.command.base;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 /**
@@ -9,6 +11,6 @@ import java.util.List;
  */
 public interface CommandTab {
 
-    List<String> run();
+    @Nullable List<String> run();
 
 }

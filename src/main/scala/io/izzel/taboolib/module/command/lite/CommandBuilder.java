@@ -9,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,56 +54,56 @@ public class CommandBuilder {
         return new CommandBuilder(UUID.randomUUID().toString(), null).plugin(callerClass == null ? TabooLib.getPlugin() : Ref.getCallerPlugin(callerClass));
     }
 
-    public static CommandBuilder create(String command, Plugin plugin) {
+    public static CommandBuilder create(@NotNull String command, @NotNull Plugin plugin) {
         return new CommandBuilder(command.toLowerCase(), plugin);
     }
 
-    public CommandBuilder command(String command) {
+    public CommandBuilder command(@NotNull String command) {
         this.command = command;
         return this;
     }
 
-    public CommandBuilder plugin(Plugin plugin) {
+    public CommandBuilder plugin(@NotNull Plugin plugin) {
         this.plugin = plugin;
         return this;
     }
 
-    public CommandBuilder description(String description) {
+    public CommandBuilder description(@Nullable String description) {
         this.description = description;
         return this;
     }
 
-    public CommandBuilder usage(String usage) {
+    public CommandBuilder usage(@Nullable String usage) {
         this.usage = usage;
         return this;
     }
 
-    public CommandBuilder aliases(String... aliases) {
+    public CommandBuilder aliases(@Nullable String... aliases) {
         this.aliases = ArrayUtil.asList(aliases);
         return this;
     }
 
-    public CommandBuilder permission(String permission) {
+    public CommandBuilder permission(@Nullable String permission) {
         this.permission = permission;
         return this;
     }
 
-    public CommandBuilder permissionMessage(String permissionMessage) {
+    public CommandBuilder permissionMessage(@Nullable String permissionMessage) {
         this.permissionMessage = permissionMessage;
         return this;
     }
 
-    public CommandBuilder permissionDefault(PermissionDefault permissionDefault) {
+    public CommandBuilder permissionDefault(@NotNull PermissionDefault permissionDefault) {
         this.permissionDefault = permissionDefault;
         return this;
     }
 
-    public CommandBuilder execute(CompleterCommand completerCommand) {
+    public CommandBuilder execute(@NotNull CompleterCommand completerCommand) {
         this.completerCommand = completerCommand;
         return this;
     }
 
-    public CommandBuilder tab(CompleterTab completerTab) {
+    public CommandBuilder tab(@NotNull CompleterTab completerTab) {
         this.completerTab = completerTab;
         return this;
     }

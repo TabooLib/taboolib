@@ -1,6 +1,7 @@
 package io.izzel.taboolib.module.command.lite;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 为了防止与 CommandExecutor 混淆所以名称改为 CompleterCommand
@@ -9,6 +10,6 @@ import org.bukkit.command.CommandSender;
  */
 public interface CompleterCommand {
 
-    void execute(CommandSender sender, String[] args);
+    void execute(@NotNull CommandSender sender, @NotNull String[] args);
 
 }

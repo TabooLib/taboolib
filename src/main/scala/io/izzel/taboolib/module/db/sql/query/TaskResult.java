@@ -7,6 +7,7 @@ import java.sql.SQLException;
  * @Author sky
  * @Since 2018-07-03 22:02
  */
+@Deprecated
 public interface TaskResult {
 
     Object execute(ResultSet resultSet) throws SQLException;

@@ -2,8 +2,12 @@ package io.izzel.taboolib.test;
 
 import io.izzel.taboolib.module.db.sql.*;
 import io.izzel.taboolib.module.db.sql.query.Where;
+import io.izzel.taboolib.util.Pair;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 public class SQL {
 
@@ -30,11 +34,16 @@ public class SQL {
         }
     }
 
+    public List<Pair<String, Double>> getValues() {
+        return table.select().to(dataSource)
+                .map(r -> Pair.of(r.getString("name"), r.getBigDecimal("value").doubleValue()));
+    }
+
     public double getValue(String name) {
         return table.select(Where.equals("name", name))
                 .limit(1)
                 .to(dataSource)
-                .resultNext(r -> r.getBigDecimal("value").doubleValue()).run(0D, Double.TYPE);
+                .firstOrElse(r -> r.getBigDecimal("value").doubleValue(), 0D);
     }
 
     public void updateValue(String name, double value) {

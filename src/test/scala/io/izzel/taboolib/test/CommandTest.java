@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CommandTest extends BaseMainCommand {
         }
 
         @Override
-        public void onCommand(CommandSender sender, Command command, String label, String[] args) {
+        public void onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         }
     };
 

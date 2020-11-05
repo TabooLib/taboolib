@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.command.base;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -75,7 +77,7 @@ public class Argument {
     /**
      * 参数补全
      */
-    public Argument complete(List<String> tab) {
+    public Argument complete(@Nullable List<String> tab) {
         this.tab = () -> tab;
         return this;
     }
@@ -83,7 +85,7 @@ public class Argument {
     /**
      * 参数约束（5.43 update）
      */
-    public Argument restrict(ArgumentType restrict) {
+    public Argument restrict(@Nullable ArgumentType restrict) {
         this.restrict = restrict;
         return this;
     }
