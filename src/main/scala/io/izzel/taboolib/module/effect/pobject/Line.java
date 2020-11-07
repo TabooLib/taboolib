@@ -60,7 +60,8 @@ public class Line extends ParticleObject {
     public void show() {
         for (double i = 0; i < length; i += step) {
             Vector vectorTemp = vector.clone().multiply(i);
-            start.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, start.clone().add(vectorTemp), 1);
+            spawnParticle(start.clone().add(vectorTemp));
+//            start.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, start.clone().add(vectorTemp), 1);
         }
     }
 

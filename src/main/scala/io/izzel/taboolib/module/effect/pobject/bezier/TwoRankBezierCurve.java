@@ -47,7 +47,8 @@ public class TwoRankBezierCurve extends ParticleObject {
     public void show() {
         locations.forEach(loc -> {
             if (loc != null) {
-                loc.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 1);
+                spawnParticle(loc);
+//                loc.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 1);
             }
         });
     }

@@ -33,7 +33,8 @@ public class GeneralEquationRenderer extends ParticleObject {
     @Override
     public void show() {
         for (double x = minX; x < maxX; x += dx) {
-            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, function.apply(x), 0), 1);
+            spawnParticle(origin.clone().add(x, function.apply(x), 0));
+//            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, function.apply(x), 0), 1);
         }
     }
 

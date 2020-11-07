@@ -48,7 +48,8 @@ public class PolarEquationRenderer extends ParticleObject {
             double x = rho * Math.cos(theta);
             double y = rho * Math.sin(theta);
 
-            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, 0), 1);
+            spawnParticle(origin.clone().add(x, y, 0));
+//            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, 0), 1);
         }
     }
 

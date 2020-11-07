@@ -58,7 +58,8 @@ public class Arc extends ParticleObject {
             double x = radius * Math.cos(radians);
             double z = radius * Math.sin(radians);
 
-            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, 0, z), 1);
+            spawnParticle(origin.clone().add(x, 0, z));
+//            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, 0, z), 1);
         }
     }
 

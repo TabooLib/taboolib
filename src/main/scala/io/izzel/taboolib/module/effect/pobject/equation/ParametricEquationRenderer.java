@@ -81,7 +81,8 @@ public class ParametricEquationRenderer extends ParticleObject {
             double y = yFunction.apply(t);
             double z = zFunction.apply(t);
 
-            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, z), 1);
+            spawnParticle(origin.clone().add(x, y, z));
+//            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, z), 1);
         }
     }
 
