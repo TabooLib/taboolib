@@ -34,11 +34,8 @@ public class TDependencyInjector {
         } else {
             try {
                 ClassReader classReader = new ClassReader(Objects.requireNonNull(Files.getResource(plugin, clazz.getName().replace(".", "/") + ".class")));
-                ClassWriter classWriter = new ClassWriter(0);
-                ClassVisitor classVisitor = new DependencyClassVisitor(plugin, classWriter);
-                classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
-                classWriter.visitEnd();
-                classVisitor.visitEnd();
+                ClassVisitor classVisitor = new DependencyClassVisitor(plugin, null);
+                classReader.accept(classVisitor, ClassReader.SKIP_CODE);
             } catch (Throwable t) {
                 t.printStackTrace();
             }
