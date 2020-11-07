@@ -6,6 +6,7 @@ import io.izzel.taboolib.Version;
 import io.izzel.taboolib.cronus.util.StringExpression;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Coerce;
+import io.izzel.taboolib.util.Reflection;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
@@ -59,7 +60,7 @@ public class TListenerHandler {
                     // 实例化监听器
                     List<Object> instance = TInjectHelper.getInstance(pluginClass, plugin, true);
                     if (instance.isEmpty()) {
-                        instance.add(pluginClass.newInstance());
+                        instance.add(Reflection.instantiateObject(pluginClass));
                     }
                     Listener listener = (Listener) instance.get(0);
                     try {
