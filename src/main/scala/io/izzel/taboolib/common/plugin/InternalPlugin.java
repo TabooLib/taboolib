@@ -32,11 +32,6 @@ public class InternalPlugin implements Plugin {
 
     static {
         plugin = new InternalPlugin();
-        try {
-            Class.forName("io.izzel.taboolib.TabooLib");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
