@@ -27,6 +27,7 @@ public class DependencyAnnotationVisitor extends AnnotationVisitor {
 
     @Override
     public void visit(String name, Object value) {
+        if (name == null) return;
         switch (name) {
             case "maven":
                 maven = String.valueOf(value);
