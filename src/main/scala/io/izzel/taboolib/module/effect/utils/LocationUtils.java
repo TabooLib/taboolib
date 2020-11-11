@@ -2,6 +2,11 @@ package io.izzel.taboolib.module.effect.utils;
 
 import org.bukkit.Location;
 
+/**
+ * 坐标工具类
+ *
+ * @author Zoyn
+ */
 public class LocationUtils {
 
     /**

@@ -2,10 +2,14 @@ package io.izzel.taboolib.module.effect.pobject.equation;
 
 import io.izzel.taboolib.module.effect.pobject.ParticleObject;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 
 import java.util.function.Function;
 
+/**
+ * 表示一个参数方程渲染器
+ *
+ * @author Zoyn
+ */
 public class ParametricEquationRenderer extends ParticleObject {
 
     private final Function<Double, Double> xFunction;

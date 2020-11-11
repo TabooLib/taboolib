@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 给定三点, 自动生成一条二阶贝塞尔曲线
+ * 表示一条二阶贝塞尔曲线
+ * <p>给定三点, 自动生成一条二阶贝塞尔曲线</p>
  *
  * @author Zoyn
  */

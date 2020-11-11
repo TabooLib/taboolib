@@ -2,6 +2,11 @@ package io.izzel.taboolib.module.effect.pobject;
 
 import org.bukkit.Location;
 
+/**
+ * 表示一个圆
+ *
+ * @author Zoyn
+ */
 public class Circle extends ParticleObject {
 
     private final Arc fullArc;

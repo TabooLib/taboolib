@@ -2,6 +2,11 @@ package io.izzel.taboolib.module.effect.utils;
 
 import org.bukkit.util.Vector;
 
+/**
+ * 向量工具类
+ *
+ * @author Zoyn
+ */
 public class VectorUtils {
 
     public static Vector rotateAroundAxisX(Vector v, double angle) {

@@ -4,7 +4,8 @@ import io.izzel.taboolib.module.effect.utils.LocationUtils;
 import org.bukkit.Location;
 
 /**
- * 将玩家背后转换为一个平面直角坐标系
+ * 表示一个玩家后背坐标系
+ * <p>将玩家背后转换为一个直角坐标系</p>
  *
  * @author Zoyn
  */

@@ -8,8 +8,7 @@ import java.util.List;
 
 /**
  * 构造一个球
- * <p>
- * 算法来源: https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere/26127012#26127012
+ * <p>算法来源: https://stackoverflow.com/questions/9600801/evenly-distributing-n-points-on-a-sphere/26127012#26127012</p>
  *
  * @author Zoyn
  */

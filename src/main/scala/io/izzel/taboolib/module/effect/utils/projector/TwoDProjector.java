@@ -6,8 +6,8 @@ import org.bukkit.util.Vector;
 import java.util.function.BiFunction;
 
 /**
- * 二维至三维投影器
- * 算法由 @Bryan33 提供
+ * 表示一个二维至三维投影器
+ * <p>算法由 @Bryan33 提供</p>
  *
  * @author Zoyn
  * @since 2020/9/19

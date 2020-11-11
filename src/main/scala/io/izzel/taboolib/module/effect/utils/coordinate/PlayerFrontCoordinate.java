@@ -4,8 +4,9 @@ import io.izzel.taboolib.module.effect.utils.LocationUtils;
 import org.bukkit.Location;
 
 /**
- * 将玩家面前作为一个新坐标系
- * 暂时不会受到仰俯角的控制
+ * 表示一个玩家面前的坐标系
+ * <p>将玩家面前作为一个新坐标系
+ * 暂时不会受到仰俯角的控制</p>
  *
  * @author Zoyn
  */

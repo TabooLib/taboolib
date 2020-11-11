@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
 /**
- * 三维至三维投影器
- * 算法由 @Bryan33 提供
+ * 表示一个三维至三维投影器
+ * <p>算法由 @Bryan33 提供</p>
  *
  * @author Zoyn
  * @since 2020/9/19

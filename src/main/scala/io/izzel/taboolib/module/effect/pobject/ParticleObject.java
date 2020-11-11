@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * 特效对象
+ * 表示一个特效对象
  *
  * @author Zoyn
  */

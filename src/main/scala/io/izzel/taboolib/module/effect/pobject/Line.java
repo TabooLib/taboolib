@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 /**
- * 表示一个线
+ * 表示一条线
  *
  * @author Zoyn
  */
