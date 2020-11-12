@@ -1,8 +1,12 @@
 package io.izzel.taboolib.module.effect.pobject;
 
 import org.bukkit.Location;
-import org.bukkit.Particle;
 
+/**
+ * 表示一个弧
+ *
+ * @author Zoyn
+ */
 public class Arc extends ParticleObject {
 
     private Location origin;

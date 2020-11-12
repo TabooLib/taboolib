@@ -23,26 +23,32 @@ public class Line extends ParticleObject {
      */
     private double length;
 
+    /**
+     * 构造一条线
+     *
+     * @param start 线的起点
+     * @param end   线的终点
+     */
     public Line(Location start, Location end) {
         this(start, end, 0.1);
     }
 
     /**
-     * 构造一个线
+     * 构造一条线
      *
      * @param start 线的起点
-     * @param end 线的终点
-     * @param step 每个粒子之间的间隔 (也即步长)
+     * @param end   线的终点
+     * @param step  每个粒子之间的间隔 (也即步长)
      */
     public Line(Location start, Location end, double step) {
         this(start, end, step, 20L);
     }
 
     /**
-     * 构造一个线
+     * 构造一条线
      *
-     * @param start   线的起点
-     * @param end   线的终点
+     * @param start  线的起点
+     * @param end    线的终点
      * @param step   每个粒子之间的间隔 (也即步长)
      * @param period 特效周期(如果需要可以使用)
      */
@@ -65,81 +71,84 @@ public class Line extends ParticleObject {
         }
     }
 
-//    @Override
-//    public void alwaysShow() {
-//        turnOffTask();
-//
-//        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-//        Bukkit.getScheduler().runTaskLater(ParticleLib.getInstance(), () -> {
-//            running = true;
-//            task = new BukkitRunnable() {
-//                @Override
-//                public void run() {
-//                    if (!running) {
-//                        return;
-//                    }
-//                    show();
-//                }
-//            }.runTaskTimer(ParticleLib.getInstance(), 0L, period);
-//
-//            setShowType(ShowType.ALWAYS_SHOW);
-//        }, 2L);
-//    }
-//
-//    @Override
-//    public void alwaysShowAsync() {
-//        turnOffTask();
-//
-//        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
-//        Bukkit.getScheduler().runTaskLater(ParticleLib.getInstance(), () -> {
-//            running = true;
-//            task = new BukkitRunnable() {
-//                @Override
-//                public void run() {
-//                    if (!running) {
-//                        return;
-//                    }
-//                    show();
-//                }
-//            }.runTaskTimerAsynchronously(ParticleLib.getInstance(), 0L, period);
-//
-//            setShowType(ShowType.ALWAYS_SHOW_ASYNC);
-//        }, 2L);
-//    }
-
+    /**
+     * 获取线的起始坐标
+     *
+     * @return {@link Location}
+     */
     public Location getStart() {
         return start;
     }
 
+    /**
+     * 利用给定的坐标设置线的起始坐标
+     *
+     * @param start 起始坐标
+     * @return {@link Line}
+     */
     public Line setStart(Location start) {
         this.start = start;
         resetVector();
         return this;
     }
 
+    /**
+     * 获取线的终点坐标
+     *
+     * @return {@link Location}
+     */
     public Location getEnd() {
         return end;
     }
 
+    /**
+     * 利用给定的坐标设置线的终点坐标
+     *
+     * @param end 终点
+     * @return {@link Line}
+     */
     public Line setEnd(Location end) {
         this.end = end;
         resetVector();
         return this;
     }
 
+    /**
+     * 获取每个粒子之间的间隔
+     *
+     * @return 也就是循环的步长
+     */
     public double getStep() {
         return step;
     }
 
+    /**
+     * 设置每个粒子之间的间隔
+     *
+     * @param step 间隔
+     * @return {@link Line}
+     */
     public Line setStep(double step) {
         this.step = step;
         resetVector();
         return this;
     }
 
+    /**
+     * 手动重设线的向量
+     */
     public void resetVector() {
         vector = end.clone().subtract(start).toVector();
         length = vector.length();
         vector.normalize();
+    }
+
+    public static void buildLine(Location locA, Location locB, double step, Particle particle) {
+        Vector vectorAB = locB.clone().subtract(locA).toVector();
+        double vectorLength = vectorAB.length();
+        vectorAB.normalize();
+        for (double i = 0; i < vectorLength; i += step) {
+            locA.getWorld().spawnParticle(particle, locA.clone().add(vectorAB.clone().multiply(i)), 1);
+        }
     }
 }
