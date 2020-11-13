@@ -8,6 +8,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.Reflection;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -166,6 +167,11 @@ public class BridgeImpl extends InternalPluginBridge {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    @Override
+    public void registerExpansion(PlaceholderHook.Expansion expansion) {
+
     }
 
     @SuppressWarnings("unchecked")

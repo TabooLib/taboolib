@@ -44,8 +44,13 @@ public abstract class PluginLoader {
 
             @Override
             public void onLoading(Plugin plugin) {
+                System.out.println("loading " + plugin + ", redefine: " + PluginLoader.get(plugin));
                 // 注入依赖
-                TDependencyInjector.inject(plugin, PluginLoader.get(plugin).getClass());
+                try {
+                    TDependencyInjector.inject(plugin, PluginLoader.get(plugin).getClass());
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
                 // 加载语言文件
                 TLocaleLoader.load(plugin, false);
                 // 读取插件类

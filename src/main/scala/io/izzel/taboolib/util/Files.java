@@ -74,7 +74,8 @@ public class Files {
                 } catch (Throwable ignored) {
                 }
             });
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
         return classes;
     }

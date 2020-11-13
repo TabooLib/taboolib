@@ -177,7 +177,8 @@ public class TabooLibLoader {
             }
             TabooLibAPI.debug("Saved " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
             pluginClasses.put(plugin.getName(), classes);
-        } catch (Exception ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 

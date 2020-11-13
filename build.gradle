@@ -20,7 +20,6 @@ repositories {
     }
     maven { url "http://repo.ptms.ink/repository/codemc-nms/" }
     maven { url "http://repo.ptms.ink/repository/maven-releases/" }
-    maven { url "http://repo.extendedclip.com/content/repositories/placeholderapi/" }
     mavenCentral()
 }
 
@@ -59,12 +58,12 @@ dependencies {
 
     // ptms repo
     compile 'pw.yumc.Yum:Yum:1:all'
-    compile 'me.clip:placeholderapi:2.10.4'
     compile 'net.milkbowl.vault:Vault:1:all'
     compile 'us.myles.ViaVersion:ViaVersion:1:all'
     compile 'protocolsupport:ProtocolSupport:1:all'
     compile 'com.sk89q.worldedit:WorldEdit:7:all'
     compile 'com.sk89q.worldguard:WorldGuard:7:all'
+    compile 'me.clip.placeholder:PlaceholderAPI:2.7.1:all'
 
     compile 'org.jetbrains:annotations:19.0.0'
     compile 'org.scala-lang:scala-library:2.12.8'

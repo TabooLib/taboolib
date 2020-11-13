@@ -14,6 +14,10 @@ import java.util.List;
  */
 public class PlaceholderHook {
 
+    public static class Expansion {
+
+    }
+
     /**
      * 变量识别
      *
