@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
+import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
@@ -144,7 +145,9 @@ public class TCommandHandler {
                 baseMainCommand);
         BaseMainCommand.createCommandExecutor(command, baseMainCommand);
         // 注册高亮
-        CommodoreHandler.register(baseMainCommand);
+        if (Version.isAfter(Version.v1_13)) {
+            CommodoreHandler.register(baseMainCommand);
+        }
         return baseMainCommand;
     }
 

@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.inject;
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.compat.kotlin.CompatKotlin;
 import io.izzel.taboolib.cronus.util.StringExpression;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.util.Coerce;
@@ -58,11 +59,13 @@ public class TListenerHandler {
                         }
                     }
                     // 实例化监听器
-                    List<Object> instance = TInjectHelper.getInstance(pluginClass, plugin, true);
-                    if (instance.isEmpty()) {
-                        instance.add(Reflection.instantiateObject(pluginClass));
+                    Listener listener;
+                    // Object
+                    if (CompatKotlin.getInstance(pluginClass) != null) {
+                        listener = (Listener) CompatKotlin.getInstance(pluginClass);
+                    } else {
+                        listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) Reflection.instantiateObject(pluginClass);
                     }
-                    Listener listener = (Listener) instance.get(0);
                     try {
                         listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
                         TabooLibAPI.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");

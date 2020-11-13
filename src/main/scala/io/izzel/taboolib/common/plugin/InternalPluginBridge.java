@@ -1,6 +1,5 @@
 package io.izzel.taboolib.common.plugin;
 
-import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.asm.AsmVersionControl;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -68,8 +67,6 @@ public abstract class InternalPluginBridge {
     abstract public boolean isPlaceholderExpansion(Class pluginClass);
 
     abstract public void registerExpansion(Class pluginClass);
-
-    abstract public void registerExpansion(PlaceholderHook.Expansion expansion);
 
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 

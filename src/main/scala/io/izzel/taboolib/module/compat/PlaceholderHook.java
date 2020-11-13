@@ -3,6 +3,8 @@ package io.izzel.taboolib.module.compat;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -14,8 +16,13 @@ import java.util.List;
  */
 public class PlaceholderHook {
 
-    public static class Expansion {
+    public interface Expansion {
 
+        @NotNull Plugin plugin();
+
+        @NotNull String identifier();
+
+        @NotNull String onPlaceholderRequest(@NotNull Player p, @NotNull String params);
     }
 
     /**
