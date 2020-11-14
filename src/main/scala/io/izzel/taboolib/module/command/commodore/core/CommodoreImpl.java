@@ -124,7 +124,7 @@ public final class CommodoreImpl extends Commodore {
         Objects.requireNonNull(permissionTest, "permissionTest");
 
         try {
-            SuggestionProvider<?> wrapper = NMS.handle().getWrapper(command);
+            SuggestionProvider<?> wrapper = (SuggestionProvider<?>) NMS.handle().getWrapper(command);
             setCustomSuggestionProvider(node, wrapper);
         } catch (Throwable e) {
             e.printStackTrace();

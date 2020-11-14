@@ -3,7 +3,6 @@ package io.izzel.taboolib.module.nms;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.lite.SimpleReflection;
@@ -709,7 +708,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public SuggestionProvider<?> getWrapper(Command command) {
+    public Object getWrapper(Command command) {
         return new BukkitCommandWrapper((CraftServer) Bukkit.getServer(),command);
     }
 
