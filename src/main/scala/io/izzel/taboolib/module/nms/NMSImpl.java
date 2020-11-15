@@ -50,6 +50,7 @@ import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_16_R1.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -248,10 +249,19 @@ public class NMSImpl extends NMS {
 
     @Override
     public void sendTitle(Player player, String title, int titleFadein, int titleStay, int titleFadeout, String subtitle, int subtitleFadein, int subtitleStay, int subtitleFadeout) {
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, new ChatComponentText(String.valueOf(title)), titleFadein, titleStay, titleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(String.valueOf(title)), titleFadein, titleStay, titleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, new ChatComponentText(String.valueOf(subtitle)), subtitleFadein, subtitleStay, subtitleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, new ChatComponentText(String.valueOf(subtitle)), subtitleFadein, subtitleStay, subtitleFadeout));
+        Object rawTitle;
+        Object rawSubTitle;
+        if (is11600) {
+            rawTitle = CraftChatMessage.fromStringOrNull(title);
+            rawSubTitle = CraftChatMessage.fromStringOrNull(subtitle);
+        } else {
+            rawTitle = new ChatComponentText(String.valueOf(title));
+            rawSubTitle = new ChatComponentText(String.valueOf(subtitle));
+        }
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawTitle, titleFadein, titleStay, titleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawTitle, titleFadein, titleStay, titleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawSubTitle, subtitleFadein, subtitleStay, subtitleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawSubTitle, subtitleFadein, subtitleStay, subtitleFadeout));
     }
 
     @Override
