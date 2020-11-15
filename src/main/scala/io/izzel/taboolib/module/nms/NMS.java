@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import io.izzel.taboolib.module.inject.TInject;
 import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.nms.impl.Type;
@@ -310,7 +309,7 @@ public abstract class NMS {
 
     abstract public CommandSender getBukkitSender(Object commandWrapperListener);
 
-    abstract public SuggestionProvider<?> getWrapper(Command command);
+    abstract public Object getWrapper(Command command);
 
     abstract public Class<?> getArgumentRegistryClass();
 
