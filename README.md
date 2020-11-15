@@ -20,7 +20,7 @@
     <img src="https://img.shields.io/badge/Bukkit-1.8~1.17 (snapshot)-blue.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Loader-2.6-blue.svg">
+    <img src="https://img.shields.io/badge/Loader-2.7-blue.svg">
   </a>
 </p>
 
