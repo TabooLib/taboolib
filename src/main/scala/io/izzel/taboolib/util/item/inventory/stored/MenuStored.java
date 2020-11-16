@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * 可交互界面构建工具
- * 这里的可交互指的是界面重的物品可以被修改
+ * 这里的可交互指的是界面中的物品可以被修改
  *
  * @Author sky
  * @Since 2019-12-03 13:24
@@ -21,11 +21,18 @@ public abstract class MenuStored {
 
     protected Player player;
 
+    public MenuStored() {
+    }
+
     public MenuStored(Player player) {
         this.player = player;
     }
 
     public void open() {
+        open(player);
+    }
+
+    public void open(Player player) {
         MenuBuilder.builder()
                 .lockHand(isLockHand())
                 .title(getTitle())
@@ -42,7 +49,7 @@ public abstract class MenuStored {
     }
 
     public String getTitle() {
-        return player.getName();
+        return "MenuStored";
     }
 
     public int getRows() {

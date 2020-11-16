@@ -1,6 +1,8 @@
 package io.izzel.taboolib.util;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.module.inject.Releasable;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -12,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @author sky
  * @since 2020-10-02 04:35
  */
-public abstract class Baffle {
+public abstract class Baffle implements Releasable {
 
     /**
      * 重置所有数据
@@ -90,6 +92,11 @@ public abstract class Baffle {
     @NotNull
     public static Baffle of(int count) {
         return new BaffleCounter(count);
+    }
+
+    @Override
+    public void release(Player player, String namespace) {
+        reset(namespace);
     }
 
     public static class BaffleTime extends Baffle {
