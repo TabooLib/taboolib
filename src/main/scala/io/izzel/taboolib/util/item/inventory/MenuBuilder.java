@@ -108,6 +108,22 @@ public class MenuBuilder {
     }
 
     /**
+     * 设置玩家点击菜单事件
+     * 只有 CLICK 方式，并且屏蔽 DRAG 事件
+     *
+     * @param clickTask 玩家点击菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder click(@NotNull ClickTask clickTask) {
+        return event(e -> {
+            e.setCancelled(true);
+            if (e.getClickType() == ClickType.CLICK) {
+                clickTask.run(e);
+            }
+        });
+    }
+
+    /**
      * 设置玩家关闭菜单事件
      *
      * @param closeTask 玩家关闭菜单任务

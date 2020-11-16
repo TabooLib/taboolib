@@ -13,6 +13,7 @@ import io.izzel.taboolib.util.Ref;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +46,7 @@ public class TConfig extends YamlConfiguration {
         TabooLibAPI.debug("Loaded TConfiguration \"" + file.getName() + "\" from Plugin \"" + plugin.getName() + "\"");
     }
 
+    @NotNull
     public static Map<String, List<File>> getFiles() {
         return files;
     }
@@ -55,6 +57,7 @@ public class TConfig extends YamlConfiguration {
      * @param file 配置文件
      * @return TConfig 实例
      */
+    @NotNull
     public static TConfig create(File file) {
         return new TConfig(file, Ref.getCallerPlugin(Ref.getCallerClass(3).orElse(TabooLib.class)));
     }
@@ -66,6 +69,7 @@ public class TConfig extends YamlConfiguration {
      * @param plugin 插件主类对象
      * @return TConfig 实例
      */
+    @NotNull
     public static TConfig create(File file, Plugin plugin) {
         return new TConfig(file, plugin);
     }
@@ -76,6 +80,7 @@ public class TConfig extends YamlConfiguration {
      * @param plugin 插件主类实例
      * @param path   配置文件路径
      */
+    @NotNull
     public static TConfig create(Plugin plugin, String path) {
         File file = new File(plugin.getDataFolder(), path);
         if (!file.exists()) {
@@ -93,8 +98,9 @@ public class TConfig extends YamlConfiguration {
      * @param path YAML路径
      * @return 上过色的字符串
      */
-    public String getStringColored(String path) {
-        return TLocale.Translate.setColored(getString(path));
+    @NotNull
+    public String getStringColored(@NotNull String path) {
+        return TLocale.Translate.setColored(getString(path, ""));
     }
 
     /**
@@ -105,7 +111,8 @@ public class TConfig extends YamlConfiguration {
      * @param def  路径不存在时返回的默认值
      * @return 上过色的字符串
      */
-    public String getStringColored(String path, String def) {
+    @NotNull
+    public String getStringColored(@NotNull String path, @NotNull String def) {
         return TLocale.Translate.setColored(getString(path, def));
     }
 
@@ -116,6 +123,7 @@ public class TConfig extends YamlConfiguration {
      * @param path YAML路径
      * @return 上过色的字符串列表
      */
+    @NotNull
     public List<String> getStringListColored(String path) {
         return TLocale.Translate.setColored(getStringList(path));
     }

@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Baffle;
 import io.izzel.taboolib.util.Ref;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -50,14 +51,18 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
-        pluginContainer.values().stream().flatMap(Collection::stream).forEach(container -> {
-            if (container.getContainer() instanceof Map) {
-                ((Map<?, ?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-            } else if (container.getContainer() instanceof Collection) {
-                ((Collection<?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-            } else {
-                TLogger.getGlobalLogger().error("Invalid Container: " + container.getContainer().getClass().getSimpleName());
+        for (List<Container> containers : pluginContainer.values()) {
+            for (Container container : containers) {
+                if (container.getContainer() instanceof Map) {
+                    container.<Map<?, ?>>as().remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
+                } else if (container.getContainer() instanceof Collection) {
+                    container.<Collection<?>>as().remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
+                } else if (container.getContainer() instanceof Baffle) {
+                    container.<Baffle>as().reset(container.isUniqueId() ? e.getPlayer().getUniqueId().toString() : e.getPlayer().getName());
+                } else {
+                    TLogger.getGlobalLogger().error("Invalid Container: " + container.getContainer().getClass().getSimpleName());
+                }
             }
-        });
+        }
     }
 }

@@ -13,6 +13,11 @@ public class Container {
         this.uniqueId = uniqueId;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T as() {
+        return (T) container;
+    }
+
     public Object getContainer() {
         return container;
     }

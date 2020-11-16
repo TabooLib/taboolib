@@ -15,40 +15,60 @@ import java.util.concurrent.TimeUnit;
 public abstract class Baffle {
 
     /**
-     * 验证个体（*）的执行结果
-     *
-     * @return 是否运行
+     * 重置所有数据
      */
-    public boolean hasNext() {
-        return hasNext("*");
-    }
+    abstract public void resetAll();
 
     /**
-     * 验证个体的执行结果
-     *
-     * @param id 个体序号
-     * @return 是否运行
-     */
-    abstract public boolean hasNext(String id);
-
-    /**
-     * 重置个体（*）的执行缓存
-     */
-    public void reset() {
-        reset("*");
-    }
-
-    /**
-     * 重置个体（*）的执行缓存
+     * 重置个体的执行缓存
      *
      * @param id 个体序号
      */
     abstract public void reset(String id);
 
     /**
-     * 重置所有数据
+     * 强制个体更新数据
+     *
+     * @param id 个体序号
      */
-    abstract public void resetAll();
+    abstract public void next(String id);
+
+    /**
+     * 验证个体的执行结果
+     *
+     * @param id     个体序号
+     * @param update 是否更新数据
+     * @return 是否运行
+     */
+    abstract public boolean hasNext(String id, boolean update);
+
+    /**
+     * 同 {@link Baffle#next(String)}，个体序号为（*）
+     */
+    public void reset() {
+        reset("*");
+    }
+
+    /**
+     * 同 {@link Baffle#next(String)}，个体序号为（*）
+     */
+    public void next() {
+        next("*");
+    }
+
+    /**
+     * 同 {@link Baffle#hasNext(String, boolean)}，个体序号为（*）
+     */
+    public boolean hasNext() {
+        return hasNext("*");
+    }
+
+    /**
+     * 同 {@link Baffle#hasNext(String, boolean)}
+     */
+    public boolean hasNext(String id) {
+        return hasNext(id, true);
+    }
 
     /**
      * 按时间阻断（类似 Cooldowns）
@@ -81,18 +101,18 @@ public abstract class Baffle {
             this.millis = millis;
         }
 
+        /**
+         * 获取下次执行时间戳，该方法不会刷新数据
+         *
+         * @param id 个体序号
+         */
         public long nextTime(String id) {
-            return hasNext(id) ? (data.get(id) + millis) - System.currentTimeMillis() : 0L;
+            return hasNext(id, false) ? (data.get(id) + millis) - System.currentTimeMillis() : 0L;
         }
 
         @Override
-        public boolean hasNext(String id) {
-            long time = data.getOrDefault(id, 0L);
-            if (time + millis > System.currentTimeMillis()) {
-                data.put(id, System.currentTimeMillis());
-                return true;
-            }
-            return false;
+        public void resetAll() {
+            data.clear();
         }
 
         @Override
@@ -101,8 +121,20 @@ public abstract class Baffle {
         }
 
         @Override
-        public void resetAll() {
-            data.clear();
+        public void next(String id) {
+            data.put(id, System.currentTimeMillis());
+        }
+
+        @Override
+        public boolean hasNext(String id, boolean update) {
+            long time = data.getOrDefault(id, 0L);
+            if (time + millis > System.currentTimeMillis()) {
+                if (update) {
+                    data.put(id, System.currentTimeMillis());
+                }
+                return true;
+            }
+            return false;
         }
     }
 
@@ -116,14 +148,8 @@ public abstract class Baffle {
         }
 
         @Override
-        public boolean hasNext(String id) {
-            int i = data.computeIfAbsent(id, a -> 0);
-            if (i < count) {
-                data.put(id, i + 1);
-                return false;
-            }
-            data.put(id, 0);
-            return true;
+        public void resetAll() {
+            data.clear();
         }
 
         @Override
@@ -132,8 +158,23 @@ public abstract class Baffle {
         }
 
         @Override
-        public void resetAll() {
-            data.clear();
+        public void next(String id) {
+            data.put(id, data.computeIfAbsent(id, a -> 0) + 1);
+        }
+
+        @Override
+        public boolean hasNext(String id, boolean update) {
+            int i = data.computeIfAbsent(id, a -> 0);
+            if (i < count) {
+                if (update) {
+                    data.put(id, i + 1);
+                }
+                return false;
+            }
+            if (update) {
+                data.put(id, 0);
+            }
+            return true;
         }
     }
 }
