@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util.item;
 
+import com.cryptomorin.xseries.XMaterial;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
@@ -29,6 +30,10 @@ public class ItemBuilder {
 
     private final ItemStack itemStack;
     private final ItemMeta itemMeta;
+
+    public ItemBuilder(XMaterial material) {
+        this(material.parseMaterial(true), 1, 0);
+    }
 
     public ItemBuilder(Material material) {
         this(material, 1, 0);
