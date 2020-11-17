@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.effect.pobject;
 
 import org.bukkit.Location;
-import org.bukkit.Particle;
 
 import java.util.ArrayList;
 import java.util.List;

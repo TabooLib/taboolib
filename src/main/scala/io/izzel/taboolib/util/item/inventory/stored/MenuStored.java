@@ -45,7 +45,7 @@ public abstract class MenuStored {
     }
 
     public boolean isLockHand() {
-        return false;
+        return true;
     }
 
     public String getTitle() {

@@ -54,7 +54,7 @@ public class Items {
      */
     @NotNull
     public static String getName(ItemStack item) {
-        return I18n.get().getName(item);
+        return hasName(item) ? item.getItemMeta().getDisplayName() : I18n.get().getName(item);
     }
 
     /**

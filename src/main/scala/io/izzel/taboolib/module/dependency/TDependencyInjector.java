@@ -6,7 +6,6 @@ import io.izzel.taboolib.util.Strings;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ClassWriter;
 
 import java.net.ConnectException;
 import java.util.Objects;

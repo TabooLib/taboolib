@@ -81,6 +81,17 @@ public class Features {
      * 待重置，暂用 Signs
      *
      * @param player  玩家
+     * @param catcher 编辑内容
+     */
+    public static void inputSign(Player player, Consumer<String[]> catcher) {
+        Signs.fakeSign(player, new String[0], catcher);
+    }
+
+    /**
+     * 向玩家发送虚拟牌子，并捕获玩家接下来的编辑内容
+     * 待重置，暂用 Signs
+     *
+     * @param player  玩家
      * @param origin  原始内容
      * @param catcher 编辑内容
      */
@@ -321,6 +332,6 @@ public class Features {
         default void cancel() {
         }
 
-        boolean onChat(String message);
+        boolean onChat(@NotNull String message);
     }
 }
