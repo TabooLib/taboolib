@@ -9,7 +9,6 @@ import org.bukkit.Location;
  */
 public class Arc extends ParticleObject {
 
-    private Location origin;
     private double angle;
     private double radius;
     private double step;
@@ -48,7 +47,7 @@ public class Arc extends ParticleObject {
      * @param period 特效周期(如果需要可以使用)
      */
     public Arc(Location origin, double angle, double radius, double step, long period) {
-        this.origin = origin;
+        setOrigin(origin);
         this.angle = angle;
         this.radius = radius;
         this.step = step;
@@ -62,18 +61,9 @@ public class Arc extends ParticleObject {
             double x = radius * Math.cos(radians);
             double z = radius * Math.sin(radians);
 
-            spawnParticle(origin.clone().add(x, 0, z));
+            spawnParticle(getOrigin().clone().add(x, 0, z));
 //            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, 0, z), 1);
         }
-    }
-
-    public Location getOrigin() {
-        return origin;
-    }
-
-    public Arc setOrigin(Location origin) {
-        this.origin = origin;
-        return this;
     }
 
     public double getAngle() {

@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.effect.pobject.equation;
 
+import io.izzel.taboolib.module.effect.pobject.Circle;
 import io.izzel.taboolib.module.effect.pobject.ParticleObject;
 import org.bukkit.Location;
 
@@ -13,7 +14,6 @@ import java.util.function.Function;
 public class PolarEquationRenderer extends ParticleObject {
 
     private final Function<Double, Double> function;
-    private Location origin;
     private double minTheta;
     private double maxTheta;
     private double dTheta;
@@ -38,7 +38,7 @@ public class PolarEquationRenderer extends ParticleObject {
      * @param dTheta   每次自变量所增加的量
      */
     public PolarEquationRenderer(Location origin, Function<Double, Double> function, double minTheta, double maxTheta, double dTheta) {
-        this.origin = origin;
+        setOrigin(origin);
         this.function = function;
         this.minTheta = minTheta;
         this.maxTheta = maxTheta;
@@ -52,18 +52,9 @@ public class PolarEquationRenderer extends ParticleObject {
             double x = rho * Math.cos(theta);
             double y = rho * Math.sin(theta);
 
-            spawnParticle(origin.clone().add(x, y, 0));
+            spawnParticle(getOrigin().clone().add(x, y, 0));
 //            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, 0), 1);
         }
-    }
-
-    public Location getOrigin() {
-        return origin;
-    }
-
-    public PolarEquationRenderer setOrigin(Location origin) {
-        this.origin = origin;
-        return this;
     }
 
     public double getMinTheta() {

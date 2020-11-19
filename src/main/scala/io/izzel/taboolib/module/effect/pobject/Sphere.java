@@ -18,7 +18,6 @@ public class Sphere extends ParticleObject {
      */
     private final double phi = Math.PI * (3D - Math.sqrt(5));
     private final List<Location> locations;
-    private Location origin;
     private int sample;
     private double radius;
 
@@ -34,7 +33,7 @@ public class Sphere extends ParticleObject {
      * @param radius 球的半径
      */
     public Sphere(Location origin, int sample, double radius) {
-        this.origin = origin;
+        setOrigin(origin);
         this.sample = sample;
         this.radius = radius;
 
@@ -50,16 +49,6 @@ public class Sphere extends ParticleObject {
 //                loc.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 1);
             }
         });
-    }
-
-    public Location getOrigin() {
-        return origin;
-    }
-
-    public Sphere setOrigin(Location origin) {
-        this.origin = origin;
-        resetLocations();
-        return this;
     }
 
     public int getSample() {
@@ -96,7 +85,7 @@ public class Sphere extends ParticleObject {
             double z = Math.sin(theta) * radius * yRadius;
             y *= radius;
 
-            locations.add(origin.clone().add(x, y, z));
+            locations.add(getOrigin().clone().add(x, y, z));
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.effect.pobject.equation;
 
+import io.izzel.taboolib.module.effect.pobject.Circle;
 import io.izzel.taboolib.module.effect.pobject.ParticleObject;
 import org.bukkit.Location;
 
@@ -13,7 +14,6 @@ import java.util.function.Function;
 public class GeneralEquationRenderer extends ParticleObject {
 
     private final Function<Double, Double> function;
-    private Location origin;
     private double minX;
     private double maxX;
     private double dx;
@@ -27,7 +27,7 @@ public class GeneralEquationRenderer extends ParticleObject {
     }
 
     public GeneralEquationRenderer(Location origin, Function<Double, Double> function, double minX, double maxX, double dx) {
-        this.origin = origin;
+        setOrigin(origin);
         this.function = function;
         this.minX = minX;
         this.maxX = maxX;
@@ -37,18 +37,9 @@ public class GeneralEquationRenderer extends ParticleObject {
     @Override
     public void show() {
         for (double x = minX; x < maxX; x += dx) {
-            spawnParticle(origin.clone().add(x, function.apply(x), 0));
+            spawnParticle(getOrigin().clone().add(x, function.apply(x), 0));
 //            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, function.apply(x), 0), 1);
         }
-    }
-
-    public Location getOrigin() {
-        return origin;
-    }
-
-    public GeneralEquationRenderer setOrigin(Location origin) {
-        this.origin = origin;
-        return this;
     }
 
     public double getMinX() {

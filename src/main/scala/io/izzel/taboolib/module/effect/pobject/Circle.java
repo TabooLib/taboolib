@@ -77,11 +77,10 @@ public class Circle extends ParticleObject {
         return fullArc.getOrigin();
     }
 
-    public Circle setOrigin(Location origin) {
+    public void setOrigin(Location origin) {
         this.fullArc.setOrigin(origin);
         // 之前脑子坏掉了忘记给fullArc设置origin了, 现在不用了
 //        checkArcThenRefreshShow();
-        return this;
     }
 
     public double getRadius() {

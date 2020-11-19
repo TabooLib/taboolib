@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.effect.pobject.equation;
 
+import io.izzel.taboolib.module.effect.pobject.Circle;
 import io.izzel.taboolib.module.effect.pobject.ParticleObject;
 import org.bukkit.Location;
 
@@ -15,7 +16,6 @@ public class ParametricEquationRenderer extends ParticleObject {
     private final Function<Double, Double> xFunction;
     private final Function<Double, Double> yFunction;
     private final Function<Double, Double> zFunction;
-    private Location origin;
     private double minT;
     private double maxT;
     private double dt;
@@ -69,7 +69,7 @@ public class ParametricEquationRenderer extends ParticleObject {
      * @param dT        每次自变量所增加的量
      */
     public ParametricEquationRenderer(Location origin, Function<Double, Double> xFunction, Function<Double, Double> yFunction, Function<Double, Double> zFunction, double minT, double maxT, double dT) {
-        this.origin = origin;
+        setOrigin(origin);
         this.xFunction = xFunction;
         this.yFunction = yFunction;
         this.zFunction = zFunction;
@@ -85,18 +85,9 @@ public class ParametricEquationRenderer extends ParticleObject {
             double y = yFunction.apply(t);
             double z = zFunction.apply(t);
 
-            spawnParticle(origin.clone().add(x, y, z));
+            spawnParticle(getOrigin().clone().add(x, y, z));
 //            origin.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, origin.clone().add(x, y, z), 1);
         }
-    }
-
-    public Location getOrigin() {
-        return origin;
-    }
-
-    public ParametricEquationRenderer setOrigin(Location origin) {
-        this.origin = origin;
-        return this;
     }
 
     public double getMinT() {
