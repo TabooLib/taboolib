@@ -2,11 +2,9 @@ package io.izzel.taboolib.module.command;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
-import io.izzel.taboolib.module.command.commodore.CommodoreHandler;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
@@ -144,10 +142,10 @@ public class TCommandHandler {
                 baseMainCommand,
                 baseMainCommand);
         BaseMainCommand.createCommandExecutor(command, baseMainCommand);
-        // 注册高亮
-        if (Version.isAfter(Version.v1_13)) {
-            CommodoreHandler.register(baseMainCommand);
-        }
+//        等tony老师的改版
+//        if (Version.isAfter(Version.v1_13)) {
+//            CommodoreHandler.register(baseMainCommand);
+//        }
         return baseMainCommand;
     }
 
