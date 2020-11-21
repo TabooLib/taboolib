@@ -18,7 +18,6 @@ public class Polygon extends ParticleObject {
      * 边数
      */
     private int side;
-    private Location origin;
     private double step;
 
     /**
@@ -43,7 +42,7 @@ public class Polygon extends ParticleObject {
             throw new IllegalArgumentException("边数不可为小于或等于2的数!");
         }
         this.side = side;
-        this.origin = origin;
+        setOrigin(origin);
         this.step = step;
 
         this.locations = new ArrayList<>();
@@ -67,27 +66,6 @@ public class Polygon extends ParticleObject {
      */
     public Polygon setSide(int side) {
         this.side = side;
-        resetLocations();
-        return this;
-    }
-
-    /**
-     * 获取正多边形的中心点
-     *
-     * @return {@link Location}
-     */
-    public Location getOrigin() {
-        return origin;
-    }
-
-    /**
-     * 设置正多边形的中心点
-     *
-     * @param origin 中心点坐标
-     * @return {@link Polygon}
-     */
-    public Polygon setOrigin(Location origin) {
-        this.origin = origin;
         resetLocations();
         return this;
     }
@@ -139,7 +117,7 @@ public class Polygon extends ParticleObject {
             double x = Math.cos(radians);
             double z = Math.sin(radians);
 
-            locations.add(origin.clone().add(x, 0, z));
+            locations.add(getOrigin().clone().add(x, 0, z));
         }
     }
 
