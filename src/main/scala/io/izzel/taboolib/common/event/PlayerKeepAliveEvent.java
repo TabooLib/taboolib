@@ -11,6 +11,7 @@ public class PlayerKeepAliveEvent extends EventNormal<PlayerKeepAliveEvent> {
     public PlayerKeepAliveEvent(Player player, boolean isFirst) {
         this.player = player;
         this.isFirst = isFirst;
+        async(true);
     }
 
     public Player getPlayer() {
