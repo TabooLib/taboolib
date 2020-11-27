@@ -24,10 +24,10 @@
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/[Addon] TabooLib Kotlin-1.0.4-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.4-yellow.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/[Addon] TabooLib Deprecated-1.0.2-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.2-yellow.svg">
   </a>
 </p>
 
