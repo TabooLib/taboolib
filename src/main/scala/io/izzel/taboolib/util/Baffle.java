@@ -135,7 +135,7 @@ public abstract class Baffle implements Releasable {
         @Override
         public boolean hasNext(String id, boolean update) {
             long time = data.getOrDefault(id, 0L);
-            if (time + millis > System.currentTimeMillis()) {
+            if (time + millis < System.currentTimeMillis()) {
                 if (update) {
                     data.put(id, System.currentTimeMillis());
                 }
