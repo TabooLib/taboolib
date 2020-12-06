@@ -114,7 +114,8 @@ public abstract class Baffle implements Releasable {
          * @param id 个体序号
          */
         public long nextTime(String id) {
-            return hasNext(id, false) ? (data.get(id) + millis) - System.currentTimeMillis() : 0L;
+            long result = data.get(id) + millis - System.currentTimeMillis();
+            return result >= 0 ? result : 0L;
         }
 
         @Override
