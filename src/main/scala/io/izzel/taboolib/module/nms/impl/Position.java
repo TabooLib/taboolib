@@ -1,5 +1,8 @@
 package io.izzel.taboolib.module.nms.impl;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 import java.util.Objects;
 
 /**
@@ -40,6 +43,14 @@ public class Position {
 
     public void setZ(int z) {
         this.z = z;
+    }
+
+    public Location toLocation(World world) {
+        return new Location(world, x, y, z);
+    }
+
+    public static Position at(Location location) {
+        return new Position(location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     @Override

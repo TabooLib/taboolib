@@ -33,7 +33,7 @@ public abstract class MenuLinked<T> {
     protected List<T> items;
     protected int page = 0;
 
-    public MenuLinked(Player player) {
+    public MenuLinked(@NotNull Player player) {
         this.player = player;
     }
 
