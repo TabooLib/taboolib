@@ -71,7 +71,11 @@ public class Quat {
                 0);
     }
 
-    public Quat transform2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
+    public Quat rotate2D(double angle, double aboutX, double aboutZ) {
+        return rotate2D(angle, aboutX, aboutZ, 0, 0);
+    }
+
+    public Quat rotate2D(double angle, double aboutX, double aboutZ, double translateX, double translateZ) {
         angle = Math.toRadians(angle);
         double x = this.x - aboutX;
         double z = this.z - aboutZ;

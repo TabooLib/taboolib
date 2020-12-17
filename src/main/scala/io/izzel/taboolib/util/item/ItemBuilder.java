@@ -2,6 +2,7 @@ package io.izzel.taboolib.util.item;
 
 import com.cryptomorin.xseries.XMaterial;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.lite.Materials;
@@ -177,6 +178,13 @@ public class ItemBuilder {
             itemMeta.setUnbreakable(value);
         } else {
             itemMeta.spigot().setUnbreakable(value);
+        }
+        return this;
+    }
+
+    public ItemBuilder customModelData(Integer value) {
+        if (Version.isAfter(Version.v1_12)) {
+            Reflex.Companion.of(itemMeta).invoke("setCustomModelData", value);
         }
         return this;
     }
