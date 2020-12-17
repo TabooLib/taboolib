@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.cronus.CronusUtils;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.i18n.I18n;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.nms.NMS;
@@ -30,7 +31,10 @@ import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * 物品操作工具
@@ -347,6 +351,9 @@ public class Items {
         if (section.get("bukkit") instanceof ItemStack) {
             return section.getItemStack("bukkit");
         }
+        if (section.contains("json")) {
+            return fromJson(section.getString("json"));
+        }
         // 材质
         ItemStack item = new ItemStack(Objects.requireNonNull(asMaterial(section.contains("material") ? section.getString("material") : section.getString("type"))));
         // 数量
@@ -369,8 +376,6 @@ public class Items {
                 Enchantment enchant = asEnchantment(preEnchant);
                 if (enchant != null) {
                     meta.addEnchant(enchant, section.getInt("enchant." + preEnchant), true);
-                } else {
-                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-ENCHANTS", preEnchant);
                 }
             }
         }
@@ -380,8 +385,6 @@ public class Items {
                 ItemFlag flag = asItemFlag(preFlag);
                 if (flag != null) {
                     meta.addItemFlags(flag);
-                } else {
-                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-FLAG", preFlag);
                 }
             }
         }
@@ -399,10 +402,12 @@ public class Items {
                             potionEffectType,
                             NumberConversions.toInt(section.getString("potions." + prePotionName).split("-")[0]),
                             NumberConversions.toInt(section.getString("potions." + prePotionName).split("-")[1]) - 1), true);
-                } else {
-                    TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", prePotionName);
                 }
             }
+        }
+        // 模型
+        if (section.contains("custom-model-data")) {
+            Reflex.Companion.of(meta).invoke("setCustomModelData", section.getInt("custom-model-data"));
         }
         // 元数据
         item.setItemMeta(meta);
@@ -418,29 +423,27 @@ public class Items {
             for (String hand : section.getConfigurationSection("attributes").getKeys(false)) {
                 for (String name : section.getConfigurationSection("attributes." + hand).getKeys(false)) {
                     if (asAttribute(name) != null) {
-                        try {
-                            UUID uuid = UUID.randomUUID();
-                            NBTCompound a = new NBTCompound();
-                            String num = section.getString("attributes." + hand + "." + name);
-                            if (num.endsWith("%")) {
-                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num.substring(0, num.length() - 1)) / 100D));
-                                a.put("Operation", new NBTBase(1));
-                            } else {
-                                a.put("Amount", new NBTBase(NumberConversions.toDouble(num)));
-                                a.put("Operation", new NBTBase(0));
-                            }
-                            a.put("AttributeName", new NBTBase(asAttribute(name)));
-                            a.put("UUIDMost", new NBTBase(uuid.getMostSignificantBits()));
-                            a.put("UUIDLeast", new NBTBase(uuid.getLeastSignificantBits()));
-                            a.put("Name", new NBTBase(asAttribute(name)));
-                            if (!hand.equals("all")) {
-                                Optional.ofNullable(Equipments.fromNMS(hand)).ifPresent(e -> a.put("Slot", new NBTBase(e.getNMS())));
-                            }
-                            attr.add(a);
-                        } catch (Exception ignored) {
+                        UUID uuid = UUID.randomUUID();
+                        NBTCompound a = new NBTCompound();
+                        String num = section.getString("attributes." + hand + "." + name);
+                        if (num.endsWith("%")) {
+                            a.put("Amount", new NBTBase(NumberConversions.toDouble(num.substring(0, num.length() - 1)) / 100D));
+                            a.put("Operation", new NBTBase(1));
+                        } else {
+                            a.put("Amount", new NBTBase(NumberConversions.toDouble(num)));
+                            a.put("Operation", new NBTBase(0));
                         }
-                    } else {
-                        TLocale.Logger.error("ITEM-UTILS.FAIL-LOAD-POTION", name);
+                        a.put("AttributeName", new NBTBase(asAttribute(name)));
+                        a.put("UUIDMost", new NBTBase(uuid.getMostSignificantBits()));
+                        a.put("UUIDLeast", new NBTBase(uuid.getLeastSignificantBits()));
+                        a.put("Name", new NBTBase(asAttribute(name)));
+                        if (!hand.equals("all")) {
+                            Equipments equipments = Equipments.fromNMS(hand);
+                            if (equipments != null) {
+                                a.put("Slot", new NBTBase(equipments.getNMS()));
+                            }
+                        }
+                        attr.add(a);
                     }
                 }
             }
