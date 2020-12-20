@@ -48,7 +48,9 @@ public class TellrawJson {
             // 隐藏标签
             "HideFlags",
             // 方块标签
-            "BlockEntityTag"
+            "BlockEntityTag",
+            // Bukkit 自定义标签
+            "PublicBukkitValues"
     );
 
     TellrawJson() {
