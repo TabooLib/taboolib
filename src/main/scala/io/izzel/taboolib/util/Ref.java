@@ -10,7 +10,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import sun.misc.Unsafe;
-import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.lang.invoke.MethodHandle;
@@ -279,7 +278,8 @@ public class Ref {
             @SuppressWarnings({"deprecation", "restriction"})
             @Override
             Class<?> getCallerClass(int i) {
-                return Reflection.getCallerClass(i);
+//                return Reflection.getCallerClass(i);
+                return null;
             }
         }
 
