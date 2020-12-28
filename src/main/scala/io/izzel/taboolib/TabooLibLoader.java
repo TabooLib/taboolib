@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.client.TabooLibClient;
 import io.izzel.taboolib.client.TabooLibServer;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.metrics.BStats;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
 import io.izzel.taboolib.module.inject.TSchedule;
@@ -11,8 +12,10 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -165,21 +168,60 @@ public class TabooLibLoader {
     static void setupClasses(Plugin plugin) {
         try {
             long time = System.currentTimeMillis();
-            List<Class> classes;
-            IgnoreClasses annotation = plugin.getClass().getAnnotation(IgnoreClasses.class);
-            if (annotation != null) {
-                classes = Files.getClasses(plugin, annotation.value());
-            } else {
-                classes = Files.getClasses(plugin);
-            }
-            if (plugin.getName().equals("TabooLib")) {
-                classes = classes.stream().filter(c -> c.getName().startsWith("io.izzel")).collect(Collectors.toList());
-            }
-            TabooLibAPI.debug("Saved " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
+            final List<Class> classes = Lists.newArrayList();
+            File file = plugin.getName().equals("TabooLib") ? TabooLib.getTabooLibFile() : Reflex.Companion.from(JavaPlugin.class).instance(plugin).read("file");
+            File fileClasses = Files.file(TabooLib.getPlugin().getDataFolder(), "cache/classes/" + plugin.getName() + ".txt");
+            Files.read(fileClasses, r -> {
+                String fileHash = Files.getFileHash(file, "SHA-1");
+                List<String> lines = r.lines().collect(Collectors.toList());
+                if (lines.size() > 3 && Objects.equals(fileHash, lines.get(1))) {
+                    for (int i = 1; i < lines.size(); i++) {
+                        try {
+                            if (lines.get(i).length() > 0) {
+                                classes.add(Class.forName(lines.get(i), false, plugin.getClass().getClassLoader()));
+                            }
+                        } catch (Throwable ignored) {
+                        }
+                    }
+                } else {
+                    classes.addAll(getClassesFromJar(plugin));
+                    // 异步写入缓存
+                    Bukkit.getScheduler().runTaskAsynchronously(TabooLib.getPlugin(), () -> {
+                        Files.write(fileClasses, w -> {
+                            w.write("--- SHA-1 ---");
+                            w.newLine();
+                            w.write(fileHash);
+                            w.newLine();
+                            w.write("--- SHA-1 ---");
+                            w.newLine();
+                            w.newLine();
+                            for (Class c : classes) {
+                                w.write(c.getName());
+                                w.newLine();
+                            }
+                        });
+                    });
+                }
+            });
             pluginClasses.put(plugin.getName(), classes);
+            TabooLibAPI.debug("Loaded " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
         } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
+
+    static List<Class> getClassesFromJar(Plugin plugin) {
+        List<Class> classes = Lists.newArrayList();
+        IgnoreClasses annotation = plugin.getClass().getAnnotation(IgnoreClasses.class);
+        if (annotation != null) {
+            classes.addAll(Files.getClasses(plugin, annotation.value()));
+        } else {
+            classes.addAll(Files.getClasses(plugin));
+        }
+        if (plugin.getName().equals("TabooLib")) {
+            classes.removeIf(p -> !p.getName().startsWith("io.izzel"));
+        }
+        return classes;
     }
 
     static void preLoadClass(Plugin plugin, List<Class> loadClass) {

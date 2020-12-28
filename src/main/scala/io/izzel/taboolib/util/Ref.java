@@ -263,16 +263,20 @@ public class Ref {
         private static CallerClass impl;
 
         static {
-            try {
-                Class.forName("sun.reflect.Reflection");
-                impl = new ReflectionImpl();
-            } catch (ClassNotFoundException e) {
-                impl = new StackTraceImpl();
-            }
+//            try {
+//                Class.forName("sun.reflect.Reflection");
+//                impl = new ReflectionImpl();
+//            } catch (ClassNotFoundException e) {
+//                impl = new StackTraceImpl();
+//            }
+            impl = new StackTraceImpl();
         }
 
         abstract Class<?> getCallerClass(int i);
 
+        /**
+         * Removed on Java 11
+         */
         private static class ReflectionImpl extends CallerClass {
 
             @SuppressWarnings({"deprecation", "restriction"})
@@ -288,11 +292,16 @@ public class Ref {
             @Override
             Class<?> getCallerClass(int i) {
                 StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+                String className = elements[i].getClassName();
                 try {
-                    return Class.forName(elements[i].getClassName());
-                } catch (ClassNotFoundException e) {
-                    return null;
+                    return Class.forName(className);
+                } catch (ClassNotFoundException ignored) {
                 }
+                try {
+                    return TabooLibAPI.getPluginBridge().getClass(className);
+                } catch (NullPointerException | ClassNotFoundException ignored) {
+                }
+                return null;
             }
         }
     }
