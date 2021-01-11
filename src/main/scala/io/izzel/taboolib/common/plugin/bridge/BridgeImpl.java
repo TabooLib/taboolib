@@ -7,8 +7,8 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
-import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.Reflection;
+import io.izzel.taboolib.util.asm.AsmVersionControl;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.skymc.taboolib.database.PlayerDataManager;
@@ -168,34 +168,16 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public void registerExpansion(PlaceholderHook.Expansion expansion) {
-        new PlaceholderExpansion() {
-
-            @Override
-            public String onPlaceholderRequest(Player player, String s) {
-                return expansion.onPlaceholderRequest(player, s);
-            }
-
-            @Override
-            public String getIdentifier() {
-                return expansion.identifier();
-            }
-
-            @Override
-            public String getPlugin() {
-                return expansion.plugin().getName();
-            }
-
-            @Override
-            public String getAuthor() {
-                return expansion.plugin().getDescription().getAuthors().toString();
-            }
-
-            @Override
-            public String getVersion() {
-                return expansion.plugin().getDescription().getVersion();
-            }
-        }.register();
+    public void registerExpansionProxy(Class expansionClass) {
+        try {
+            BridgeProxy proxy = (BridgeProxy) AsmVersionControl.createNMS("io.izzel.taboolib.common.plugin.bridge.proxy.PlaceholderExpansionProxy")
+                    .translateBridge()
+                    .newInstance();
+            proxy.initProxy("expansion", expansionClass.newInstance());
+            ((PlaceholderExpansion) proxy).register();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
     }
 
     @SuppressWarnings("unchecked")

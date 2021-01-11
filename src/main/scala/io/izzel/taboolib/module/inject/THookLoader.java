@@ -26,11 +26,7 @@ public class THookLoader implements TabooLibLoader.Loader {
                 }
                 // PlaceholderHook Expansion
                 if (PlaceholderHook.Expansion.class.isAssignableFrom(pluginClass)) {
-                    try {
-                        TabooLibAPI.getPluginBridge().registerExpansion((PlaceholderHook.Expansion) pluginClass.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
+                    TabooLibAPI.getPluginBridge().registerExpansionProxy(pluginClass);
                 }
             }
         }
