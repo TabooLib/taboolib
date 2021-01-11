@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.inject;
 
 import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.TabooLibLoader;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
@@ -18,9 +19,19 @@ public class THookLoader implements TabooLibLoader.Loader {
     @Override
     public void activeLoad(Plugin plugin, Class<?> pluginClass) {
         if (pluginClass.isAnnotationPresent(THook.class)) {
-            // PlaceholderAPI
-            if (TabooLibAPI.getPluginBridge().placeholderHooked() && TabooLibAPI.getPluginBridge().isPlaceholderExpansion(pluginClass)) {
-                TabooLibAPI.getPluginBridge().registerExpansion(pluginClass);
+            if (TabooLibAPI.getPluginBridge().placeholderHooked()) {
+                // PlaceholderAPI
+                if (TabooLibAPI.getPluginBridge().isPlaceholderExpansion(pluginClass)) {
+                    TabooLibAPI.getPluginBridge().registerExpansion(pluginClass);
+                }
+                // PlaceholderHook Expansion
+                if (PlaceholderHook.Expansion.class.isAssignableFrom(pluginClass)) {
+                    try {
+                        TabooLibAPI.getPluginBridge().registerExpansion((PlaceholderHook.Expansion) pluginClass.newInstance());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         for (Field declaredField : pluginClass.getDeclaredFields()) {

@@ -7,6 +7,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.util.Reflection;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -164,6 +165,37 @@ public class BridgeImpl extends InternalPluginBridge {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    @Override
+    public void registerExpansion(PlaceholderHook.Expansion expansion) {
+        new PlaceholderExpansion() {
+
+            @Override
+            public String onPlaceholderRequest(Player player, String s) {
+                return expansion.onPlaceholderRequest(player, s);
+            }
+
+            @Override
+            public String getIdentifier() {
+                return expansion.identifier();
+            }
+
+            @Override
+            public String getPlugin() {
+                return expansion.plugin().getName();
+            }
+
+            @Override
+            public String getAuthor() {
+                return expansion.plugin().getDescription().getAuthors().toString();
+            }
+
+            @Override
+            public String getVersion() {
+                return expansion.plugin().getDescription().getVersion();
+            }
+        }.register();
     }
 
     @SuppressWarnings("unchecked")
