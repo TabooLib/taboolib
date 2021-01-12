@@ -60,7 +60,7 @@ public class CommandTest extends BaseMainCommand {
 
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, String command, String argument) {
+     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
         if (command.equals("command") && argument.equals("param1")) {
             return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
         }

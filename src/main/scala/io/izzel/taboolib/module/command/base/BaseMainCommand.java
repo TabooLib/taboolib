@@ -142,7 +142,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
      * @param command  指令
      * @param argument 参数
      */
-    public List<String> onTabComplete(CommandSender sender, String command, String argument) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
         return null;
     }
 
