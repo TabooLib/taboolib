@@ -7,7 +7,6 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.command.base.display.DisplayBase;
 import io.izzel.taboolib.module.command.base.display.DisplayFlat;
 import io.izzel.taboolib.module.locale.TLocale;
-import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -142,7 +142,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
      * @param command  指令
      * @param argument 参数
      */
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
         return null;
     }
 
@@ -158,7 +158,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
         }
         for (BaseSubCommand subCommand : subCommands) {
             Argument[] arguments = subCommand.getArguments();
-            if (args[0].equalsIgnoreCase(subCommand.getLabel()) && args.length - 1 <= arguments.length) {
+            if (subCommand.isCommand(args[0]) && args.length - 1 <= arguments.length) {
                 CommandTab commandTab = arguments[args.length - 2].getTab();
                 if (commandTab != null) {
                     return commandTab.run().stream().filter(l -> args[args.length - 1].isEmpty() || l.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).collect(Collectors.toList());
@@ -185,7 +185,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 }
                 String[] subCommandArgs = removeFirst(args);
                 if (subCommand.isParameterConform(subCommandArgs)) {
-                    subCommand.onCommand(sender, command, label, subCommand.ignoredLabel() ? subCommandArgs : args);
+                    subCommand.onCommand(sender, command, label, subCommandArgs);
                 } else {
                     display.displayErrorUsage(sender, this, args[0], subCommand.getCommandString(sender, label));
                 }
@@ -265,11 +265,11 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     }
 
     private String[] removeFirst(String[] args) {
-        if (args.length <= 1) {
+        if (args.length < 2) {
             return new String[0];
         }
-        List<String> list = ArrayUtil.asList(args);
-        list.remove(0);
-        return list.toArray(new String[0]);
+        String[] newArray = new String[args.length - 1];
+        System.arraycopy(args, 1, newArray, 0, args.length - 1);
+        return newArray;
     }
 }

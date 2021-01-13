@@ -53,24 +53,6 @@ public @interface SubCommand {
     String[] arguments() default {};
 
     /**
-     * 是否忽略子命令名称作为第一个传入参数
-     * /example test bukkitObj 1
-     * <p>
-     * 启用时传入参数：
-     * [bukkitObj, 1]
-     * 仅用时传入参数：
-     * [test, bukkitObj, 1]
-     */
-    boolean ignoredLabel() default true;
-
-    /**
-     * 是否需要玩家执行
-     * 已过时
-     */
-    @Deprecated
-    boolean requiredPlayer() default false;
-
-    /**
      * 是否在帮助列表中隐藏该子命令
      */
     boolean hideInHelp() default false;

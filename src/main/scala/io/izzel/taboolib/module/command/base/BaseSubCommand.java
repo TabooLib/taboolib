@@ -109,16 +109,6 @@ public abstract class BaseSubCommand {
         return player ? CommandType.PLAYER : annotation.type();
     }
 
-    @Deprecated
-    public boolean ignoredLabel() {
-        return annotation.ignoredLabel();
-    }
-
-    @Deprecated
-    public boolean requiredPlayer() {
-        return annotation.requiredPlayer();
-    }
-
     public String getPermission() {
         return annotation.permission();
     }
@@ -126,5 +116,9 @@ public abstract class BaseSubCommand {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean hideInHelp() {
         return annotation.hideInHelp();
+    }
+
+    public boolean isCommand(String input) {
+        return label.equalsIgnoreCase(input) || Arrays.stream(getAliases()).anyMatch(input::equalsIgnoreCase);
     }
 }
