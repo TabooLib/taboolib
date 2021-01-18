@@ -303,7 +303,6 @@ public class Files {
             if ((index >= 0) && (!(folder = new File(filePath.substring(0, index))).exists())) {
                 folder.mkdirs();
             }
-            file.mkdirs();
         }
         return file;
     }
