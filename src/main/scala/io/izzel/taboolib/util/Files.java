@@ -221,12 +221,7 @@ public class Files {
      */
     @NotNull
     public static File toFile(String in, File file) {
-        try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
-            bufferedWriter.write(in);
-            bufferedWriter.flush();
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
+        write(file, w -> w.write(in));
         return file;
     }
 
@@ -238,15 +233,11 @@ public class Files {
      */
     @NotNull
     public static File toFile(InputStream inputStream, File file) {
-        try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buf)) > 0) {
-                bos.write(buf, 0, len);
-            }
-            bos.flush();
-        } catch (Throwable t) {
-            t.printStackTrace();
+        try {
+            String readFully = IO.readFully(inputStream, StandardCharsets.UTF_8);
+            write(file, w -> w.write(readFully));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return file;
     }
@@ -312,6 +303,7 @@ public class Files {
             if ((index >= 0) && (!(folder = new File(filePath.substring(0, index))).exists())) {
                 folder.mkdirs();
             }
+            file.mkdirs();
         }
         return file;
     }
@@ -489,7 +481,7 @@ public class Files {
             while ((i = in.read(b)) > 0) {
                 bos.write(b, 0, i);
             }
-            return new String(bos.toByteArray(), encode);
+            return bos.toString(encode.name());
         } catch (IOException e) {
             e.printStackTrace();
         }

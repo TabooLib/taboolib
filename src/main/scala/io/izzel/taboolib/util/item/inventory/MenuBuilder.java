@@ -72,9 +72,11 @@ public class MenuBuilder {
 
     /**
      * 设置菜单类型
+     * 暂不可用
      *
      * @return 编辑过的 MenuBuilder 实例
      */
+    @Deprecated
     public MenuBuilder type(InventoryType type) {
         this.type = type;
         return this;

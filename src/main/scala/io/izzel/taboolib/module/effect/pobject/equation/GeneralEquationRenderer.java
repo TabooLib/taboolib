@@ -1,6 +1,5 @@
 package io.izzel.taboolib.module.effect.pobject.equation;
 
-import io.izzel.taboolib.module.effect.pobject.Circle;
 import io.izzel.taboolib.module.effect.pobject.ParticleObject;
 import org.bukkit.Location;
 

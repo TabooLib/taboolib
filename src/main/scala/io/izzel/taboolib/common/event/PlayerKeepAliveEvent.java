@@ -1,6 +1,7 @@
 package io.izzel.taboolib.common.event;
 
 import io.izzel.taboolib.module.event.EventNormal;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class PlayerKeepAliveEvent extends EventNormal<PlayerKeepAliveEvent> {
@@ -11,7 +12,7 @@ public class PlayerKeepAliveEvent extends EventNormal<PlayerKeepAliveEvent> {
     public PlayerKeepAliveEvent(Player player, boolean isFirst) {
         this.player = player;
         this.isFirst = isFirst;
-        async(true);
+        async(!Bukkit.isPrimaryThread());
     }
 
     public Player getPlayer() {

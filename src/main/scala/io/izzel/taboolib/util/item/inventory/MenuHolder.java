@@ -9,7 +9,7 @@ import org.bukkit.inventory.InventoryHolder;
  */
 class MenuHolder implements InventoryHolder {
 
-    private MenuBuilder builder;
+    private final MenuBuilder builder;
 
     public MenuHolder(MenuBuilder builder) {
         this.builder = builder;

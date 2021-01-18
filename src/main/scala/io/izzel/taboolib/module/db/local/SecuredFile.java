@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.db.local;
 
-import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -67,7 +67,7 @@ public class SecuredFile extends YamlConfiguration {
     }
 
     public static String dump(Object data) {
-        Yaml yaml = (Yaml) SimpleReflection.getFieldValueChecked(YamlConfiguration.class, new YamlConfiguration(), "yaml", true);
+        Yaml yaml = Reflex.Companion.of(new YamlConfiguration()).read("yaml");
         try {
             return yaml.dump(data);
         } catch (Throwable t) {

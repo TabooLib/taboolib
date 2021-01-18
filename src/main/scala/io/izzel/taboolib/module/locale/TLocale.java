@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.compat.PlaceholderHook;
+import io.izzel.taboolib.module.locale.chatcolor.TColor;
 import io.izzel.taboolib.module.locale.logger.TLoggerManager;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.module.tellraw.TellrawCreator;
@@ -15,10 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -215,7 +213,7 @@ public class TLocale {
          */
         @NotNull
         public static String setColored(@NotNull String args) {
-            return ChatColor.translateAlternateColorCodes('&', args);
+            return TColor.translate(args);
         }
 
         /**
@@ -225,7 +223,11 @@ public class TLocale {
          */
         @NotNull
         public static List<String> setColored(@NotNull List<String> args) {
-            return args.stream().map(var -> ChatColor.translateAlternateColorCodes('&', var)).collect(Collectors.toList());
+            List<String> colored = new ArrayList<>();
+            for (String a : args) {
+                colored.add(TColor.translate(a));
+            }
+            return colored;
         }
 
         /**
