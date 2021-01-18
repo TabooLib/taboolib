@@ -221,7 +221,12 @@ public class Files {
      */
     @NotNull
     public static File toFile(String in, File file) {
-        write(file, w -> w.write(in));
+        try (FileWriter fileWriter = new FileWriter(file); BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)) {
+            bufferedWriter.write(in);
+            bufferedWriter.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
         return file;
     }
 
@@ -233,11 +238,15 @@ public class Files {
      */
     @NotNull
     public static File toFile(InputStream inputStream, File file) {
-        try {
-            String readFully = IO.readFully(inputStream, StandardCharsets.UTF_8);
-            write(file, w -> w.write(readFully));
-        } catch (IOException e) {
-            e.printStackTrace();
+        try (FileOutputStream fos = new FileOutputStream(file); BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buf)) > 0) {
+                bos.write(buf, 0, len);
+            }
+            bos.flush();
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
         return file;
     }
@@ -480,7 +489,7 @@ public class Files {
             while ((i = in.read(b)) > 0) {
                 bos.write(b, 0, i);
             }
-            return bos.toString(encode.name());
+            return new String(bos.toByteArray(), encode);
         } catch (IOException e) {
             e.printStackTrace();
         }
