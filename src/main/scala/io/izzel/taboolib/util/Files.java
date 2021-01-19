@@ -489,7 +489,7 @@ public class Files {
             while ((i = in.read(b)) > 0) {
                 bos.write(b, 0, i);
             }
-            return new String(bos.toByteArray(), encode);
+            return bos.toString(encode.name());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -632,19 +632,24 @@ public class Files {
     }
 
     public static void fromZip(File source, File target) {
-        try (ZipFile zipFile = new ZipFile(source)) {
-            zipFile.stream().parallel().forEach(e -> {
-                if (e.isDirectory()) {
-                    return;
-                }
-                try {
-                    Files.toFile(zipFile.getInputStream(e), Files.file(target, e.getName()));
-                } catch (Throwable t) {
-                    t.printStackTrace();
+        fromZip(source, target.getPath());
+    }
+
+    public static void fromZip(File inputFile, String destDirPath) {
+        try (ZipFile zipFile = new ZipFile(inputFile)) {
+            zipFile.stream().forEach(entry -> {
+                if (entry.isDirectory()) {
+                    new File(destDirPath + "/" + entry.getName()).mkdirs();
+                } else {
+                    try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                        Files.toFile(inputStream, Files.file(destDirPath + "/" + entry.getName()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
