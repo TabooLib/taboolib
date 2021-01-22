@@ -40,24 +40,16 @@ import java.util.concurrent.Executors;
         url = "http://repo.ptms.ink/repository/maven-releases/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib:1.4.10",
-        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.10.jar"
+        maven = "org.kotlinlang:kotlin-stdlib:1.4.20",
+        url = "http://ptms.ink:8081/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-stdlib.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.20.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.10",
-        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib-jdk7.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.10.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.20",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-stdlib-jdk8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.20.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.10",
-        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-stdlib-jdk8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.10.jar"
-)
-@Dependency(
-        maven = "org.kotlinlang:kotlin-reflect:1.4.10",
-        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-reflect.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.10.jar"
-)
-@Dependency(
-        maven = "org.kotlinlang:kotlin-test:1.4.10",
-        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.10/Kotlin-1.4.10-test.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.4.10.jar"
+        maven = "org.kotlinlang:kotlin-reflect:1.4.20",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-reflect.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.20.jar"
 )
 @Dependency(
         maven = "com.google.inject:guice:4.2.2",
