@@ -48,6 +48,10 @@ import java.util.concurrent.Executors;
         url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-stdlib-jdk8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.20.jar"
 )
 @Dependency(
+        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.20",
+        url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.20.jar"
+)
+@Dependency(
         maven = "org.kotlinlang:kotlin-reflect:1.4.20",
         url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-reflect.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.20.jar"
 )
