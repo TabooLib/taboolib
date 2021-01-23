@@ -61,7 +61,7 @@ public class Features {
         @EventHandler
         public void e(PlayerEditBookEvent e) {
             List<String> bookLore = e.getNewBookMeta().getLore();
-            if (bookLore.size() > 0 && bookLore.get(0).equals("§0Features Input")) {
+            if (bookLore != null && bookLore.size() > 0 && bookLore.get(0).equals("§0Features Input")) {
                 Consumer<List<String>> consumer = inputBookMap.get(e.getPlayer().getName());
                 if (consumer != null) {
                     List<String> pages = Lists.newArrayList();
