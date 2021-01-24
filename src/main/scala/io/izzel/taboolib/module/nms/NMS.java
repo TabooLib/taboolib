@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
 /**
  * NMS 工具
  *
- * @Author 坏黑
- * @Since 2018-11-09 14:38
+ * @author 坏黑
+ * @since 2018-11-09 14:38
  */
 @SuppressWarnings("DeprecatedIsStillUsed")
 public abstract class NMS {
@@ -44,6 +44,8 @@ public abstract class NMS {
 
     /**
      * 获取工具实例
+     *
+     * @return NMS
      */
     public static NMS handle() {
         return impl;
@@ -60,13 +62,15 @@ public abstract class NMS {
     /**
      * 服务端是否正在运行
      * 当服务端开始关闭时该方法将会返回 false
+     *
+     * @return boolean
      */
     abstract public boolean isRunning();
 
     abstract public Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11);
 
     /**
-     * 获取服务端 TPS 运行状态
+     * @return 服务端 TPS 运行状态
      */
     abstract public double[] getTPS();
 
@@ -102,6 +106,7 @@ public abstract class NMS {
      * 命名存在误导，不建议使用
      *
      * @param itemStack 物品
+     * @return NMS NBT
      */
     @Deprecated
     abstract public Object _NBT(ItemStack itemStack);
@@ -112,6 +117,7 @@ public abstract class NMS {
      *
      * @param itemStack 物品
      * @param compound  NBT 结构
+     * @return ItemStack
      */
     @Deprecated
     abstract public ItemStack _NBT(ItemStack itemStack, Object compound);
@@ -120,6 +126,7 @@ public abstract class NMS {
      * 获取物品的 NBT 结构
      *
      * @param itemStack 物品实例
+     * @return NBTCompound
      */
     @NotNull
     public NBTCompound loadNBT(ItemStack itemStack) {
@@ -131,6 +138,7 @@ public abstract class NMS {
      *
      * @param itemStack 物品实例
      * @param compound  NBT 结构
+     * @return ItemStack
      */
     @NotNull
     public ItemStack saveNBT(ItemStack itemStack, NBTCompound compound) {
@@ -141,6 +149,7 @@ public abstract class NMS {
      * 获取物品的所有属性
      *
      * @param item 物品实例
+     * @return 属性
      */
     @NotNull
     public List<NBTAttribute> getAttribute(ItemStack item) {
@@ -153,6 +162,7 @@ public abstract class NMS {
      *
      * @param item       物品实例
      * @param attributes 属性实例
+     * @return ItemStack
      */
     @NotNull
     public ItemStack setAttribute(ItemStack item, List<NBTAttribute> attributes) {
@@ -166,6 +176,7 @@ public abstract class NMS {
      * 这个属性不会存在与物品上，是由 Minecraft 提供的默认属性，例如钻石剑的 7 点攻击力。
      *
      * @param item 物品实例
+     * @return 物品基础属性
      */
     @NotNull
     abstract public List<NBTAttribute> getBaseAttribute(ItemStack item);
@@ -174,21 +185,27 @@ public abstract class NMS {
      * 将 Attribute 映射类转换为 nms 对应属性类
      *
      * @param attribute Attribute 映射累
+     * @return NMS Attribute
      */
     abstract public Object toNMS(Attribute attribute);
 
     /**
      * 通过实体 id 获取实体对象
+     *
+     * @param id id
+     * @return Entity
      */
     abstract public Entity getEntityById(int id);
 
     /**
-     * 将 nms BlockPosition 类转换为 {@link Position} 映射类
+     * @param blockPosition NMS BlockPosition
+     * @return 将 nms BlockPosition 类转换为 {@link Position} 映射类
      */
     abstract public Position fromBlockPosition(Object blockPosition);
 
     /**
-     * 将 {@link Position} 映射类转换为 nms BlockPosition 类
+     * @param blockPosition {@link Position}
+     * @return 将 {@link Position} 映射类转换为 nms BlockPosition 类
      */
     abstract public Object toBlockPosition(Position blockPosition);
 
@@ -205,6 +222,7 @@ public abstract class NMS {
      *
      * @param entity 实体对象
      * @param vector 向量
+     * @return boolean
      */
     abstract public boolean inBoundingBox(Entity entity, Vector vector);
 
@@ -212,6 +230,7 @@ public abstract class NMS {
      * 获取 ProjectileHitEvent 事件中箭矢的最终位置
      *
      * @param event 事件
+     * @return Location
      */
     abstract public Location getLastLocation(ProjectileHitEvent event);
 
@@ -246,6 +265,7 @@ public abstract class NMS {
      * @param block      方块
      * @param lightType  光照类型
      * @param lightLevel 光照等级
+     * @return boolean
      */
     abstract public boolean createLight(Block block, Type lightType, int lightLevel);
 
@@ -254,6 +274,7 @@ public abstract class NMS {
      *
      * @param block     方块
      * @param lightType 光照等级
+     * @return boolean
      */
     abstract public boolean deleteLight(Block block, Type lightType);
 
@@ -271,6 +292,7 @@ public abstract class NMS {
      *
      * @param block     方块
      * @param lightType 光照类型
+     * @return int
      */
     abstract public int getRawLightLevel(Block block, Type lightType);
 
@@ -293,6 +315,7 @@ public abstract class NMS {
      * 获取附魔内部名称
      *
      * @param enchantment 附魔
+     * @return String
      */
     @NotNull
     abstract public String getEnchantmentKey(Enchantment enchantment);
@@ -301,6 +324,7 @@ public abstract class NMS {
      * 获取药水效果内部名称
      *
      * @param potionEffectType 药水效果
+     * @return String
      */
     @NotNull
     abstract public String getPotionEffectTypeKey(PotionEffectType potionEffectType);

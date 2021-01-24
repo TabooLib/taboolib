@@ -8,8 +8,8 @@ import org.bukkit.util.NumberConversions;
 import java.util.Arrays;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-23 22:43
+ * @author 坏黑
+ * @since 2019-05-23 22:43
  */
 public class CronusParser {
 

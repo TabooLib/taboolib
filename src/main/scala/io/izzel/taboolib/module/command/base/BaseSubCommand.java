@@ -36,6 +36,7 @@ public abstract class BaseSubCommand {
      * 判定传入参数是否符合参数约束
      *
      * @param args 传入参数
+     * @return boolean
      */
     public final boolean isParameterConform(String[] args) {
         return IntStream.range(0, getArguments().length).noneMatch(i -> getArguments()[i].isRequired() && (args == null || args.length <= i));
@@ -46,6 +47,7 @@ public abstract class BaseSubCommand {
      *
      * @param sender 执行者
      * @param label  命令
+     * @return String
      */
     public final String getCommandString(CommandSender sender, String label) {
         return mainCommand.getDisplay().displayHelp(sender, this, label);
@@ -55,6 +57,7 @@ public abstract class BaseSubCommand {
      * 是否拥有权限
      *
      * @param sender 执行者
+     * @return boolean
      */
     public final boolean hasPermission(CommandSender sender) {
         return Strings.isBlank(getPermission()) || sender.hasPermission(getPermission());

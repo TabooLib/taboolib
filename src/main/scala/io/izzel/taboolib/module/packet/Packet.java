@@ -8,8 +8,8 @@ import java.util.Objects;
 /**
  * 数据包实例
  *
- * @Author sky
- * @Since 2019-10-25 22:52
+ * @author sky
+ * @since 2019-10-25 22:52
  */
 public class Packet {
 
@@ -27,7 +27,7 @@ public class Packet {
     }
 
     /**
-     * 获取 {@link Reflex} 实例
+     * @return {@link Reflex} 实例
      */
     public Reflex reflex() {
         return reflex;
@@ -35,6 +35,9 @@ public class Packet {
 
     /**
      * 获取数据包中某个数据的 {@link Reflex} 实例
+     *
+     * @param name 名称
+     * @return {@link Reflex}
      */
     public Reflex reflex(String name) {
         Object obj = reflex.get(name);
@@ -45,6 +48,7 @@ public class Packet {
      * 检查数据包是否匹配
      *
      * @param packetClass 数据包类
+     * @return boolean
      */
     public boolean is(Class<?> packetClass) {
         return this.packetClass.equals(packetClass);
@@ -54,6 +58,7 @@ public class Packet {
      * 检查数据包是否匹配
      *
      * @param packetName 数据包名称（忽略大小写）
+     * @return boolean
      */
     public boolean is(String packetName) {
         return this.packetClass.getSimpleName().equalsIgnoreCase(packetName);
@@ -61,6 +66,9 @@ public class Packet {
 
     /**
      * 同 is() 方法
+     *
+     * @param packetName 数据包名称
+     * @return boolean
      */
     public boolean equals(String packetName) {
         return this.is(packetName);
@@ -78,6 +86,7 @@ public class Packet {
      * 读取数据包中的某个内容
      *
      * @param key 名称
+     * @return NMS Object
      */
     public Object read(String key) {
         return reflex.get(key);
@@ -88,6 +97,8 @@ public class Packet {
      *
      * @param key 名称
      * @param def 默认值
+     * @param <T> ?
+     * @return NMS Object
      */
     public <T> T read(String key, T def) {
         T obj = reflex.get(key);
@@ -153,7 +164,7 @@ public class Packet {
     }
 
     /**
-     * 获取 nms 原始数据包实例
+     * @return nms 原始数据包实例
      */
     public Object get() {
         return origin;

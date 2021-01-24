@@ -17,8 +17,8 @@ import java.util.Map;
 /**
  * 界面构建工具
  *
- * @Author 坏黑
- * @Since 2019-05-21 15:54
+ * @author 坏黑
+ * @since 2019-05-21 15:54
  */
 public class MenuBuilder {
 
@@ -36,7 +36,6 @@ public class MenuBuilder {
     private BuildTask buildTaskAsync = r -> {
     };
     private boolean lockHand;
-    private InventoryType type;
 
     public MenuBuilder(Plugin plugin) {
         this.plugin = plugin;
@@ -71,18 +70,6 @@ public class MenuBuilder {
     }
 
     /**
-     * 设置菜单类型
-     * 暂不可用
-     *
-     * @return 编辑过的 MenuBuilder 实例
-     */
-    @Deprecated
-    public MenuBuilder type(InventoryType type) {
-        this.type = type;
-        return this;
-    }
-
-    /**
      * 将菜单设置为锁定玩家手部动作
      * 这将阻止玩家在使用菜单时进行包括但不限于
      * 丢弃物品，拿出菜单物品
@@ -103,6 +90,7 @@ public class MenuBuilder {
      * 丢弃物品，拿出菜单物品
      * 等行为
      *
+     * @param value 锁定
      * @return 编辑过的 MenuBuilder 实例
      */
     public MenuBuilder lockHand(boolean value) {
@@ -211,12 +199,7 @@ public class MenuBuilder {
      * @return Bukkit 的 Inventory 背包对象实例
      */
     public Inventory build() {
-        Inventory inventory;
-        if (type == null) {
-            inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
-        } else {
-            inventory = Bukkit.createInventory(new MenuHolder(this), type, String.valueOf(title));
-        }
+        Inventory inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
         for (int i = 0; i < items.length && i < rows; i++) {
             char[] line = items[i];
             for (int j = 0; j < line.length && j < 9; j++) {

@@ -6,8 +6,8 @@ import org.bukkit.Bukkit;
 import java.lang.reflect.Method;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-09 17:43
+ * @author 坏黑
+ * @since 2019-07-09 17:43
  */
 public class BridgeLoader extends ClassLoader {
 

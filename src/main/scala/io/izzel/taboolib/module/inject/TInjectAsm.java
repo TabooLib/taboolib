@@ -8,8 +8,8 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 
 /**
- * @Author sky
- * @Since 2019-08-18 0:47
+ * @author sky
+ * @since 2019-08-18 0:47
  */
 public class TInjectAsm implements TabooLibLoader.Loader {
 

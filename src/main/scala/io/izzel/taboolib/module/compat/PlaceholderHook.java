@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * PlaceholderAPI 支持
  *
- * @Author 坏黑
- * @Since 2019-07-05 18:50
+ * @author 坏黑
+ * @since 2019-07-05 18:50
  */
 public class PlaceholderHook {
 
@@ -30,6 +30,7 @@ public class PlaceholderHook {
      *
      * @param sender 执行者
      * @param text   文本
+     * @return String
      */
     public static String replace(CommandSender sender, String text) {
         return sender instanceof Player ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
@@ -40,13 +41,14 @@ public class PlaceholderHook {
      *
      * @param sender 执行者
      * @param text   文本列表
+     * @return String
      */
     public static List<String> replace(CommandSender sender, List<String> text) {
         return sender instanceof Player ? InternalPluginBridge.handle().setPlaceholders((Player) sender, text) : text;
     }
 
     /**
-     * 是否支持
+     * @return 是否支持
      */
     public static boolean isHooked() {
         return InternalPluginBridge.handle().placeholderHooked();

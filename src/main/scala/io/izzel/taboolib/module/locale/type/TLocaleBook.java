@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @Author sky
- * @Since 2018-05-27 0:05
+ * @author sky
+ * @since 2018-05-27 0:05
  */
 @ThreadSafe
 @SerializableAs("BOOK")

@@ -8,8 +8,8 @@ import java.util.Arrays;
 /**
  * 物品 NBT 结构映射类
  *
- * @Author sky
- * @Since 2019-10-22 12:06
+ * @author sky
+ * @since 2019-10-22 12:06
  */
 public enum NBTOperation {
 

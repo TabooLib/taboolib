@@ -21,8 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-05 10:39
+ * @author 坏黑
+ * @since 2019-07-05 10:39
  * <p>
  * 注意与 TabooLib4.x 版本的兼容
  * 可能存在同时运行的情况
@@ -140,6 +140,8 @@ public class TabooLib {
 
     /**
      * 获取 TabooLib 文件实例
+     *
+     * @return File
      */
     @NotNull
     public static File getTabooLibFile() {
@@ -148,6 +150,8 @@ public class TabooLib {
 
     /**
      * 获取 TabooLib 内部配置文件
+     *
+     * @return YamlConfiguration
      */
     @NotNull
     public YamlConfiguration getInternal() {
@@ -185,7 +189,7 @@ public class TabooLib {
     }
 
     /**
-     * 获取 TabooLib 版本号，如 5.41
+     * @return TabooLib 版本号，如 5.41
      */
     public static double getVersion() {
         return version;

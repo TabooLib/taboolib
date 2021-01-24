@@ -5,8 +5,8 @@ import com.google.common.base.Enums;
 /**
  * 物品 NBT 类型映射
  *
- * @Author 坏黑
- * @Since 2019-05-24 17:46
+ * @author 坏黑
+ * @since 2019-05-24 17:46
  */
 public enum NBTType {
 

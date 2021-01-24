@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Author sky
- * @Since 2019-10-26 13:34
+ * @author sky
+ * @since 2019-10-26 13:34
  */
 public class QueryUpdate extends Query {
 
@@ -41,6 +41,9 @@ public class QueryUpdate extends Query {
     /**
      * 5.38 update
      * 数据不存在则跳过 update 执行 insert 语句。
+     *
+     * @param value 内容
+     * @return {@link QueryUpdate}
      */
     public QueryUpdate insertIfAbsent(Object... value) {
         Collections.addAll(this.insertIfAbsent, value);

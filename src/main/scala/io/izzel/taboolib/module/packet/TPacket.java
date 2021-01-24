@@ -8,15 +8,15 @@ import java.lang.annotation.Target;
 /**
  * 数据包监听器注解
  *
- * @Author sky
- * @Since 2018-09-14 23:45
+ * @author sky
+ * @since 2018-09-14 23:45
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TPacket {
 
     /**
-     * 监听器类型
+     * @return 监听器类型
      */
     Type type();
 

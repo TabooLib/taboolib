@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 /**
  * SQLite 数据列
  *
- * @Author sky
- * @Since 2018-05-14 19:09
+ * @author sky
+ * @since 2018-05-14 19:09
  */
 public class SQLiteColumn extends IColumn {
 

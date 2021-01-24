@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.zip.ZipFile;
 
 /**
- * @Author sky
- * @Since 2020-05-04 23:55
+ * @author sky
+ * @since 2020-05-04 23:55
  */
 public class PluginPatch {
 

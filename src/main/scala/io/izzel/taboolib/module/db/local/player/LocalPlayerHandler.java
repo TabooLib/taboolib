@@ -4,8 +4,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 
 /**
- * @Author sky
- * @Since 2020-07-03 18:19
+ * @author sky
+ * @since 2020-07-03 18:19
  */
 public abstract class LocalPlayerHandler {
 

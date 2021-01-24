@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @Author sky
- * @Since 2020-07-03 17:11
+ * @author sky
+ * @since 2020-07-03 17:11
  */
 public class BridgeData {
 

@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 连接池缓存
  *
- * @Author sky
- * @Since 2018-05-17 23:47
+ * @author sky
+ * @since 2018-05-17 23:47
  */
 public class DBSourceData {
 

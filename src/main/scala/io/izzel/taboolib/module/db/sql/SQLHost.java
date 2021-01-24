@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 /**
  * SQL 数据库地址
  *
- * @Author sky
- * @Since 2018-05-14 19:01
+ * @author sky
+ * @since 2018-05-14 19:01
  */
 public class SQLHost extends IHost {
 

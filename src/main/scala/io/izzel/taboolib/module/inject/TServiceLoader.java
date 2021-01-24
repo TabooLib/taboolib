@@ -8,8 +8,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 
 /**
- * @Author sky
- * @Since 2018-09-08 14:00
+ * @author sky
+ * @since 2018-09-08 14:00
  */
 @SuppressWarnings("unchecked")
 public class TServiceLoader implements TabooLibLoader.Loader {

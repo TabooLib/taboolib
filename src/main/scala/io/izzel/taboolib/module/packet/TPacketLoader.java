@@ -13,8 +13,8 @@ import java.util.List;
 /**
  * 数据包加载器
  *
- * @Author sky
- * @Since 2019-10-25 22:50
+ * @author sky
+ * @since 2019-10-25 22:50
  */
 public class TPacketLoader implements TabooLibLoader.Loader {
 

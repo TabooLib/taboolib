@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @Author 坏黑
- * @Since 2019-06-07 23:51
+ * @author 坏黑
+ * @since 2019-06-07 23:51
  */
 public class StringExpression {
 

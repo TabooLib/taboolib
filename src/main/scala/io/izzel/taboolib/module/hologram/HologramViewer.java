@@ -7,8 +7,8 @@ import java.util.Objects;
 /**
  * 全息观察对象
  *
- * @Author sky
- * @Since 2020-03-07 16:56
+ * @author sky
+ * @since 2020-03-07 16:56
  */
 public class HologramViewer {
 

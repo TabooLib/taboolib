@@ -14,8 +14,8 @@ import java.net.Socket;
 import java.net.SocketException;
 
 /**
- * @Author sky
- * @Since 2018-08-22 22:30
+ * @author sky
+ * @since 2018-08-22 22:30
  */
 public class ClientConnection implements Runnable {
 

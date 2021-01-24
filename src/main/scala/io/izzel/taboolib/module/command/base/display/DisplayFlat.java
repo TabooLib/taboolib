@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  * 扁平化命令帮助列表排版
  * 于 5.X 版本更新，并默认启用该方案
  *
- * @Author sky
- * @Since 2020-04-04 16:18
+ * @author sky
+ * @since 2020-04-04 16:18
  */
 public class DisplayFlat extends DisplayBase {
 
@@ -34,10 +34,12 @@ public class DisplayFlat extends DisplayBase {
 
     @Override
     public void displayParameters(CommandSender sender, BaseSubCommand sub, String label) {
-        if (Strings.nonBlack(sub.getDescription())) {
-            TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.PARAMETERS", sub.getLabel(), sub.getDescription(), displayHelp(sender, sub, label), "/" + label + " " + sub.getLabel() + " ");
-        } else {
-            TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.PARAMETERS-EMPTY", sub.getLabel(), sub.getDescription(), displayHelp(sender, sub, label), "/" + label + " " + sub.getLabel() + " ");
+        if (sub != null) {
+            if (Strings.nonBlack(sub.getDescription())) {
+                TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.PARAMETERS", sub.getLabel(), sub.getDescription(), displayHelp(sender, sub, label), "/" + label + " " + sub.getLabel() + " ");
+            } else {
+                TLocale.sendTo(sender, "COMMANDS.DISPLAY.FLAT.PARAMETERS-EMPTY", sub.getLabel(), sub.getDescription(), displayHelp(sender, sub, label), "/" + label + " " + sub.getLabel() + " ");
+            }
         }
     }
 

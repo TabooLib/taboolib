@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 /**
  * 全息实例
  *
- * @Author sky
- * @Since 2020-03-07 16:28
+ * @author sky
+ * @since 2020-03-07 16:28
  */
 public class Hologram {
 
@@ -44,6 +44,8 @@ public class Hologram {
 
     /**
      * 设置当该全息实例在没有任何观察者 {@link HologramViewer} 时自动删除。
+     *
+     * @return 修改后的 Hologram 实例
      */
     public Hologram autoDelete() {
         this.autoDelete = true;
@@ -74,6 +76,7 @@ public class Hologram {
      * 设置全息字对是否对所有玩家显示
      * 设置为 false 则该全息字实例将对所有玩家隐藏
      *
+     * @param viewAll boolean
      * @return 修改后的 Hologram 实例
      */
     public Hologram viewAll(Boolean viewAll) {
@@ -181,6 +184,7 @@ public class Hologram {
      * @param vector 相对坐标
      * @param period 位移周期
      * @param times  位移次数
+     * @return 修改后的 Hologram 实例
      */
     public Hologram flash(Vector vector, int period, int times) {
         for (int i = 0; i < times; i++) {
@@ -193,6 +197,7 @@ public class Hologram {
      * 使该全息字传送至某个坐标
      *
      * @param location 坐标
+     * @return 修改后的 Hologram 实例
      */
     public Hologram flash(Location location) {
         if (deleted) {

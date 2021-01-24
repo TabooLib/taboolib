@@ -1,4 +1,4 @@
 rootProject.name = 'TabooLib'
-include 'injector'
-include 'module-ipc'
+// include 'injector'
+// include 'module-ipc'
 

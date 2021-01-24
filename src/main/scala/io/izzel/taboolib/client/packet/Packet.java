@@ -5,8 +5,8 @@ import com.google.gson.JsonObject;
 import java.util.UUID;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:01
+ * @author sky
+ * @since 2018-08-22 23:01
  */
 public abstract class Packet {
 

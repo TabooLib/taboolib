@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-05 14:09
+ * @author 坏黑
+ * @since 2019-07-05 14:09
  */
 public class InternalPluginLoader implements PluginLoader {
 

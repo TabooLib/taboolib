@@ -6,8 +6,8 @@ import org.bukkit.plugin.Plugin;
 import javax.sql.DataSource;
 
 /**
- * @Author sky
- * @Since 2018-05-14 19:07
+ * @author sky
+ * @since 2018-05-14 19:07
  */
 public abstract class IHost {
 
@@ -41,6 +41,8 @@ public abstract class IHost {
 
     /**
      * 5.41 update
+     *
+     * @return {@link DataSource}
      */
     public DataSource createDataSource() {
         return DBSource.create(this);

@@ -8,8 +8,8 @@ import org.bukkit.event.HandlerList;
 /**
  * 普通监听器简化接口
  *
- * @Author sky
- * @Since 2019-10-22 10:25
+ * @author sky
+ * @since 2019-10-22 10:25
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class EventNormal<T extends EventNormal> extends Event {

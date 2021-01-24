@@ -17,9 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @Author sky
- * @Since 2018-08-27 8:42
- * @BuilderLevel 1.0
+ * @author sky
+ * @since 2018-08-27 8:42
  */
 public class CommandBuilder {
 

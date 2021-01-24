@@ -5,8 +5,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 /**
- * @Author sky
- * @Since 2018-09-20 20:47
+ * @author sky
+ * @since 2018-09-20 20:47
  */
 @SuppressWarnings("rawtypes")
 public abstract class PathfinderExecutor {

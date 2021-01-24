@@ -17,8 +17,8 @@ import java.util.function.Function;
 /**
  * 物品 NBT 结构映射类
  *
- * @Author 坏黑
- * @Since 2019-05-24 17:44
+ * @author 坏黑
+ * @since 2019-05-24 17:44
  */
 public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 

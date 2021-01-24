@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 /**
  * SQL 数据表
  *
- * @Author sky
- * @Since 2018-05-14 19:07
+ * @author sky
+ * @since 2018-05-14 19:07
  */
 public class SQLTable {
 
@@ -50,6 +50,9 @@ public class SQLTable {
     /**
      * 5.41 update
      * 用该方法创建 SQLTable 对象会默认带有 PRIMARY_KEY_ID
+     *
+     * @param name 表名
+     * @return {@link SQLTable}
      */
     public static SQLTable create(String name) {
         return new SQLTable(name, SQLColumn.PRIMARY_KEY_ID);
@@ -57,6 +60,9 @@ public class SQLTable {
 
     /**
      * 添加列
+     *
+     * @param column 列
+     * @return {@link SQLTable}
      */
     public SQLTable column(IColumn column) {
         columns.add(column);
@@ -65,6 +71,9 @@ public class SQLTable {
 
     /**
      * 5.38 update
+     *
+     * @param column 列
+     * @return {@link SQLTable}
      */
     public SQLTable column(IColumn... column) {
         columns.addAll(Arrays.asList(column));
@@ -118,6 +127,9 @@ public class SQLTable {
 
     /**
      * 4.x version
+     *
+     * @param query 命令
+     * @return {@link RunnableQuery}
      */
     public RunnableQuery executeQuery(String query) {
         return new RunnableQuery(query);
@@ -204,6 +216,9 @@ public class SQLTable {
 
     /**
      * 5.1 update
+     *
+     * @param column 列
+     * @return {@link SQLTable}
      */
     @Deprecated
     public SQLTable column(String... column) {

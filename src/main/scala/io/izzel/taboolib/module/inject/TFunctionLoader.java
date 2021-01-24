@@ -7,8 +7,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
- * @Author sky
- * @Since 2018-09-08 14:00
+ * @author sky
+ * @since 2018-09-08 14:00
  */
 public class TFunctionLoader implements TabooLibLoader.Loader {
 

@@ -19,13 +19,13 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 物品构造工具
  *
- * @Author sky
- * @Since 2018-08-22 11:37
- * @BuilderVersion 1.1
+ * @author sky
+ * @since 2018-08-22 11:37
  */
 public class ItemBuilder {
 
@@ -33,7 +33,7 @@ public class ItemBuilder {
     private final ItemMeta itemMeta;
 
     public ItemBuilder(XMaterial material) {
-        this(material.parseItem(true));
+        this(Objects.requireNonNull(material.parseItem(true)));
     }
 
     public ItemBuilder(Material material) {

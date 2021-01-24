@@ -25,8 +25,8 @@ import java.util.stream.Collectors;
  * 命令注册工具
  * 无需在 plugin.yml 文件中声明命令
  *
- * @Author sky
- * @Since 2018-05-23 2:43
+ * @author sky
+ * @since 2018-05-23 2:43
  */
 public class TCommandHandler {
 
@@ -61,6 +61,9 @@ public class TCommandHandler {
 
     /**
      * 获取插件注册的命令
+     *
+     * @param command 命令
+     * @return {@link Command}
      */
     public static Command getPluginCommand(String command) {
         return commandMap.getCommand(command);
@@ -109,6 +112,8 @@ public class TCommandHandler {
      *
      * @param command         命令全称（需在 plugin.yml 内注册）
      * @param baseMainCommand 命令对象
+     * @param plugin          插件
+     * @param baseCommand     命令实例
      * @return {@link BaseMainCommand}
      */
     public static BaseMainCommand registerCommand(BaseCommand baseCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
@@ -149,9 +154,10 @@ public class TCommandHandler {
         return baseMainCommand;
     }
 
-
     /**
      * 注册插件的所有 TCommand 命令
+     *
+     * @param plugin 插件
      */
     public static void registerCommand(Plugin plugin) {
         for (Class<?> pluginClass : TabooLibLoader.getPluginClassSafely(plugin)) {

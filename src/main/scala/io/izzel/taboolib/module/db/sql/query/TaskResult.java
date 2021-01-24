@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * @Author sky
- * @Since 2018-07-03 22:02
+ * @author sky
+ * @since 2018-07-03 22:02
  */
 @Deprecated
 public interface TaskResult {

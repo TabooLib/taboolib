@@ -15,8 +15,8 @@ import java.util.concurrent.Executors;
 /**
  * 全息工具
  *
- * @Author sky
- * @Since 2020-03-07 14:24
+ * @author sky
+ * @since 2020-03-07 14:24
  */
 public class THologram {
 
@@ -56,8 +56,10 @@ public class THologram {
      * * @param location 全息字需要被放置到的位置
      * * @param text     全系字内容
      *
-     * @param viewers 能看到该全息字的玩家
-     *                * @return {@link Hologram} 全息字实例
+     * @param viewers  能看到该全息字的玩家
+     * @param location 坐标
+     * @param text     文字
+     * @return {@link Hologram} 全息字实例
      */
     public static Hologram create(Location location, String text, Player... viewers) {
         return new Hologram(location, text, viewers);

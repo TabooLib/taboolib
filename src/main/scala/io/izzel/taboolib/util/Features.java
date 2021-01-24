@@ -95,6 +95,7 @@ public class Features {
      *
      * @param player 玩家
      * @param lines  记分板内容
+     * @return {@link org.bukkit.scoreboard}
      */
     @NotNull
     public static Scoreboard displayScoreboard(Player player, String... lines) {

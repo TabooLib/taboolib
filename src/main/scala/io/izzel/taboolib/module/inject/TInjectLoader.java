@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @Author sky
- * @Since 2018-10-05 13:40
+ * @author sky
+ * @since 2018-10-05 13:40
  */
 public class TInjectLoader implements TabooLibLoader.Loader {
 

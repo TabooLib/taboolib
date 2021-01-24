@@ -12,8 +12,8 @@ import java.util.Map;
 /**
  * 原版语言文件工具
  *
- * @Author sky
- * @Since 2020-04-04 19:33
+ * @author sky
+ * @since 2020-04-04 19:33
  */
 public class I18n {
 

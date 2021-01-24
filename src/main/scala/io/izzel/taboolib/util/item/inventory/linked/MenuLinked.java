@@ -82,6 +82,8 @@ public abstract class MenuLinked<T> {
 
     /**
      * 添加界面交互按钮（下一页）
+     *
+     * @param slot 位置
      */
     public void addButtonNextPage(int slot) {
         addButton(slot, e -> {
@@ -93,6 +95,8 @@ public abstract class MenuLinked<T> {
 
     /**
      * 添加界面交互按钮（上一页）
+     *
+     * @param slot 位置
      */
     public void addButtonPreviousPage(int slot) {
         addButton(slot, e -> {
@@ -103,52 +107,54 @@ public abstract class MenuLinked<T> {
     }
 
     /**
-     * 是否有上一页
+     * @return 是否有上一页
      */
     public boolean hasPreviousPage() {
         return page > 0;
     }
 
     /**
-     * 是否有下一页
+     * @return 是否有下一页
      */
     public boolean hasNextPage() {
         return CronusUtils.next(page, itemsAll.size(), slots.size());
     }
 
     /**
-     * 是否锁定手持物品
+     * @return 是否锁定手持物品
      */
     public boolean isLockHand() {
         return true;
     }
 
     /**
-     * 页面标题
+     * @return 页面标题
      */
     public String getTitle() {
         return "MenuLinked";
     }
 
     /**
-     * 页面行数
+     * @return 页面行数
      */
     public int getRows() {
         return 1;
     }
 
     /**
-     * 获取所有元素
+     * @return 所有元素
      */
     abstract public List<T> getElements();
 
     /**
-     * 获取界面中可存放元素的格子
+     * @return 界面中可存放元素的格子
      */
     abstract public List<Integer> getSlots();
 
     /**
      * 当页面即将构建完成时
+     *
+     * @param inventory 背包
      */
     abstract public void onBuild(@NotNull Inventory inventory);
 
@@ -167,17 +173,22 @@ public abstract class MenuLinked<T> {
      * @param element 元素
      * @param index   序号
      * @param slot    位置
+     * @return ItemStack 物品
      */
     abstract public ItemStack generateItem(@NotNull Player player, @NotNull T element, int index, int slot);
 
     /**
      * 当界面关闭时
+     *
+     * @param e 事件
      */
     public void onClose(@NotNull InventoryCloseEvent e) {
     }
 
     /**
      * 当页面即将构建完成时（异步）
+     *
+     * @param inventory 背包
      */
     public void onBuildAsync(@NotNull Inventory inventory) {
     }

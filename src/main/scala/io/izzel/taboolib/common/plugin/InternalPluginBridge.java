@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-09 17:10
+ * @author 坏黑
+ * @since 2019-07-09 17:10
  */
 public abstract class InternalPluginBridge {
 

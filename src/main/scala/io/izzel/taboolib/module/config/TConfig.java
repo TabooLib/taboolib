@@ -25,8 +25,8 @@ import java.util.Map;
 /**
  * TabooLib YAML配置文件操作类
  *
- * @Author sky
- * @Since 2018-09-08 15:00
+ * @author sky
+ * @since 2018-09-08 15:00
  */
 public class TConfig extends YamlConfiguration {
 
@@ -79,6 +79,7 @@ public class TConfig extends YamlConfiguration {
      *
      * @param plugin 插件主类实例
      * @param path   配置文件路径
+     * @return {@link TConfig}
      */
     @NotNull
     public static TConfig create(Plugin plugin, String path) {
@@ -93,7 +94,7 @@ public class TConfig extends YamlConfiguration {
 
     /**
      * 获取一个上色过的字符串
-     * 使用'&'作为样式代码
+     * 使用'&amp;'作为样式代码
      *
      * @param path YAML路径
      * @return 上过色的字符串
@@ -105,7 +106,7 @@ public class TConfig extends YamlConfiguration {
 
     /**
      * 获取一个上色过的字符串
-     * 使用'&'作为样式代码
+     * 使用'&amp;'作为样式代码
      *
      * @param path YAML路径
      * @param def  路径不存在时返回的默认值
@@ -118,7 +119,7 @@ public class TConfig extends YamlConfiguration {
 
     /**
      * 获取一个上色过的字符串列表
-     * 使用'&'作为样式代码
+     * 使用'&amp;'作为样式代码
      *
      * @param path YAML路径
      * @return 上过色的字符串列表

@@ -25,8 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 /**
- * @Author sky
- * @Since 2020-04-04 19:44
+ * @author sky
+ * @since 2020-04-04 19:44
  */
 public class I18nOrigin extends I18nBase {
 

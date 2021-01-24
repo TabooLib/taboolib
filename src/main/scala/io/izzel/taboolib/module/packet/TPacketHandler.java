@@ -21,8 +21,8 @@ import java.util.Optional;
 /**
  * 数据包工具
  *
- * @Author 坏黑
- * @Since 2018-10-28 14:52
+ * @author 坏黑
+ * @since 2018-10-28 14:52
  */
 @TListener
 public class TPacketHandler implements Listener {

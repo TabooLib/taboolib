@@ -1,5 +1,6 @@
 package io.izzel.taboolib.util.item;
 
+import com.google.common.collect.Maps;
 import io.izzel.taboolib.Version;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,8 +16,8 @@ import java.util.stream.Collectors;
 /**
  * 装备类型转换工具
  *
- * @Author 坏黑
- * @Since 2019-04-25 22:01
+ * @author 坏黑
+ * @since 2019-04-25 22:01
  */
 public enum Equipments {
 
@@ -145,6 +146,7 @@ public enum Equipments {
      * 获取物品
      *
      * @param player 玩家实例
+     * @return ItemStack
      */
     @Nullable
     public ItemStack getItem(Player player) {
@@ -155,6 +157,7 @@ public enum Equipments {
      * 获取物品
      *
      * @param entity 玩家实例
+     * @return ItemStack
      */
     @Nullable
     public ItemStack getItem(LivingEntity entity) {
@@ -186,6 +189,7 @@ public enum Equipments {
      * 获取物品掉落几率
      *
      * @param entity 实体实例
+     * @return float
      */
     public float getItemDropChance(LivingEntity entity) {
         switch (this) {
@@ -213,7 +217,10 @@ public enum Equipments {
     }
 
     /**
-     * 通过 nms 物品类型名称获取 {@link Equipments}
+     * 通过 nms 物品类型名称获取
+     *
+     * @param nms 名称
+     * @return {@link Equipments}
      */
     @Nullable
     public static Equipments fromNMS(String nms) {
@@ -221,7 +228,10 @@ public enum Equipments {
     }
 
     /**
-     * 通过 bukkit 物品类型名称获取 {@link Equipments}
+     * 通过 bukkit 物品类型名称获取
+     *
+     * @param bukkit 物品类型
+     * @return {@link Equipments}
      */
     @Nullable
     public static Equipments fromBukkit(EquipmentSlot bukkit) {
@@ -232,19 +242,29 @@ public enum Equipments {
      * 获取所有物品
      *
      * @param player 玩家实例
+     * @return {@link Map} 位置对应的物品
      */
     @NotNull
-    public static Map<Equipments, ItemStack> getItems(Player player) {
+    public static Map<Equipments, @NotNull ItemStack> getItems(Player player) {
         return getItems((LivingEntity) player);
     }
 
     /**
      * 获取所有物品
+     *
      * @param entity 实体实例
+     * @return {@link Map} 位置对应的物品
      */
     @NotNull
-    public static Map<Equipments, ItemStack> getItems(LivingEntity entity) {
-        return Arrays.stream(values()).collect(Collectors.toMap(equipment -> equipment, equipment -> equipment.getItem(entity), (a, b) -> b));
+    public static Map<Equipments, @NotNull ItemStack> getItems(LivingEntity entity) {
+        Map<Equipments, ItemStack> map = Maps.newHashMap();
+        for (Equipments equipments : values()) {
+            ItemStack itemStack = equipments.getItem(entity);
+            if (itemStack != null) {
+                map.put(equipments, itemStack);
+            }
+        }
+        return map;
     }
 
     public EquipmentSlot getBukkit() {

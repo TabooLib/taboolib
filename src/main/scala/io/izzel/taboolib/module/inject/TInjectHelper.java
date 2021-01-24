@@ -12,8 +12,8 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
- * @Author sky
- * @Since 2019-08-17 23:22
+ * @author sky
+ * @since 2019-08-17 23:22
  */
 public class TInjectHelper {
 

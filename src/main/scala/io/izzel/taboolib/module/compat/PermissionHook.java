@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 /**
  * Vault 支持
  *
- * @Author 坏黑
- * @Since 2019-07-05 18:50
+ * @author 坏黑
+ * @since 2019-07-05 18:50
  */
 public class PermissionHook {
 
@@ -36,13 +36,14 @@ public class PermissionHook {
      *
      * @param player 玩家
      * @param perm   权限
+     * @return boolean
      */
     public static boolean has(Player player, String perm) {
         return InternalPluginBridge.handle().permissionHas(player, perm);
     }
 
     /**
-     * 是否支持
+     * @return 是否支持
      */
     public static boolean exists() {
         return InternalPluginBridge.handle().permissionHooked();

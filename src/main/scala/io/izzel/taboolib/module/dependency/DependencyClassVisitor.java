@@ -6,8 +6,8 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * @Author sky
- * @Since 2019-7-13 15:17
+ * @author sky
+ * @since 2019-7-13 15:17
  */
 public class DependencyClassVisitor extends ClassVisitor {
 

@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 /**
  * 物品 NBT 结构映射类
  *
- * @Author 坏黑
- * @Since 2019-05-24 18:37
+ * @author 坏黑
+ * @since 2019-05-24 18:37
  */
 public class NBTList extends NBTBase implements List<NBTBase> {
 

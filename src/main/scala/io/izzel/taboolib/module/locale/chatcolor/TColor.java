@@ -19,20 +19,20 @@ public class TColor {
     /**
      * 对字符串中的特殊颜色表达式进行转换
      * 可供转换的格式有：
-     * &{255-255-255} —— RGB 代码
-     * &{255,255,255} —— RGB 代码
-     * &{#FFFFFF}      —— HEX 代码
-     * &{BLUE}        —— 已知颜色（英文）
-     * &{蓝}          —— 已知颜色（中文）
+     * &amp;{255-255-255} —— RGB 代码
+     * &amp;{255,255,255} —— RGB 代码
+     * &amp;{#FFFFFF}     —— HEX 代码
+     * &amp;{BLUE}        —— 已知颜色（英文）
+     * &amp;{蓝}          —— 已知颜色（中文）
      *
      * @param in 字符串
+     * @return String
      */
     public static String translate(String in) {
-        String colored = ChatColor.translateAlternateColorCodes('&', in);
         // 1.16 supported
         if (Version.isAfter(Version.v1_16)) {
             StringBuilder builder = new StringBuilder();
-            char[] chars = colored.toCharArray();
+            char[] chars = in.toCharArray();
             for (int i = 0; i < chars.length; i++) {
                 if (i + 1 < chars.length && chars[i] == '&' && chars[i + 1] == '{') {
                     ChatColor chatColor = null;
@@ -61,9 +61,9 @@ public class TColor {
                     builder.append(chars[i]);
                 }
             }
-            return builder.toString();
+            return ChatColor.translateAlternateColorCodes('&', builder.toString());
         }
-        return colored;
+        return ChatColor.translateAlternateColorCodes('&', in);
     }
 
     private static char[] arrayAppend(char[] chars, char in) {

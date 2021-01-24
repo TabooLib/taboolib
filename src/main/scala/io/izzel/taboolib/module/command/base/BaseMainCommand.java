@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 /**
  * 主命令接口
  *
- * @Author sky
- * @Since 2018-05-07 21:38
+ * @author sky
+ * @since 2018-05-07 21:38
  */
 public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
 
@@ -127,7 +127,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     public void onCommandHelp(CommandSender sender, Command command, String label, String[] args) {
         display.displayHead(sender, this, label);
         for (BaseSubCommand subCommand : subCommands) {
-            if (subCommand.getType().isType(sender) && sender.hasPermission(subCommand.getPermission())) {
+            if (subCommand.getType().isType(sender) && sender.hasPermission(subCommand.getPermission()) && !subCommand.hideInHelp()) {
                 display.displayParameters(sender, subCommand, label);
             }
         }
@@ -141,6 +141,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
      * @param sender   用户实例
      * @param command  指令
      * @param argument 参数
+     * @return 补全结果
      */
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
         return null;

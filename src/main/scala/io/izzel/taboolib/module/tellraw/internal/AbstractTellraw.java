@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 /**
- * @Author 坏黑
- * @Since 2018-11-07 22:52
+ * @author 坏黑
+ * @since 2018-11-07 22:52
  */
 public interface AbstractTellraw {
 

@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 /**
  * 经典命令帮助列表排版
  *
- * @Author sky
- * @Since 2020-04-04 16:17
+ * @author sky
+ * @since 2020-04-04 16:17
  */
 public class DisplayClassic extends DisplayBase {
 
@@ -32,11 +32,7 @@ public class DisplayClassic extends DisplayBase {
 
     @Override
     public void displayParameters(CommandSender sender, BaseSubCommand sub, String label) {
-        if (sub == null) {
-            sender.sendMessage(" ");
-        } else if (!sub.hideInHelp() && sub.hasPermission(sender)) {
-            sender.sendMessage(" " + displayHelp(sender, sub, label));
-        }
+        sender.sendMessage(" " + displayHelp(sender, sub, label));
     }
 
     @Override

@@ -60,6 +60,8 @@ public class Argument {
     /**
      * 将该参数定义为可选参数
      * 帮助列表中当显示文本将会被修改
+     *
+     * @return {@link Argument}
      */
     public Argument optional() {
         this.required = false;
@@ -67,7 +69,8 @@ public class Argument {
     }
 
     /**
-     * 参数补全
+     * @param tab 参数补全
+     * @return {@link Argument}
      */
     public Argument complete(CommandTab tab) {
         this.tab = tab;
@@ -75,7 +78,8 @@ public class Argument {
     }
 
     /**
-     * 参数补全
+     * @param tab 参数补全
+     * @return {@link Argument}
      */
     public Argument complete(@Nullable List<String> tab) {
         this.tab = () -> tab;
@@ -83,7 +87,8 @@ public class Argument {
     }
 
     /**
-     * 参数约束（5.43 update）
+     * @param restrict 参数约束（5.43 update）
+     * @return {@link Argument}
      */
     public Argument restrict(@Nullable ArgumentType restrict) {
         this.restrict = restrict;

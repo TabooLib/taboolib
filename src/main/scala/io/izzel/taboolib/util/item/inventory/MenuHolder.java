@@ -4,8 +4,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-21 20:28
+ * @author 坏黑
+ * @since 2019-05-21 20:28
  */
 public class MenuHolder implements InventoryHolder {
 

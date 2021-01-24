@@ -19,8 +19,8 @@ import java.util.stream.IntStream;
 /**
  * TConfig 配置文件升级工具
  *
- * @Author sky
- * @Since 2020-04-27 21:02
+ * @author sky
+ * @since 2020-04-27 21:02
  */
 public class TConfigMigrate {
 

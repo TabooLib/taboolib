@@ -6,8 +6,8 @@ import org.bukkit.OfflinePlayer;
 /**
  * Vault 支持
  *
- * @Author 坏黑
- * @Since 2019-07-05 18:50
+ * @author 坏黑
+ * @since 2019-07-05 18:50
  */
 public class EconomyHook {
 
@@ -45,6 +45,7 @@ public class EconomyHook {
      * 获取货币
      *
      * @param p 玩家
+     * @return double
      */
     public static double get(OfflinePlayer p) {
         return InternalPluginBridge.handle().economyLook(p);
@@ -60,7 +61,7 @@ public class EconomyHook {
     }
 
     /**
-     * 是否支持
+     * @return 是否支持
      */
     public static boolean exists() {
         return InternalPluginBridge.handle().economyHooked();

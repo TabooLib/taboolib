@@ -193,23 +193,24 @@ public class TLocale {
     public static final class Translate extends TLocale {
 
         /**
-         * 是否启用 PlaceholderAPI 支持
+         * @return 是否启用 PlaceholderAPI 支持
          */
         public static boolean isPlaceholderUseDefault() {
             return TabooLib.getConfig().getBoolean("LOCALE.USE_PAPI", false);
         }
 
         /**
-         * 检查 PlaceholderAPI 插件是否启用
+         * @return 检查 PlaceholderAPI 插件是否启用
          */
         public static boolean isPlaceholderPluginEnabled() {
             return PlaceholderHook.isHooked();
         }
 
         /**
-         * 设置颜色，使用 '&' 作为颜色符号
+         * 设置颜色，使用 '&amp;' 作为颜色符号
          *
          * @param args 文本
+         * @return String
          */
         @NotNull
         public static String setColored(@NotNull String args) {
@@ -217,9 +218,10 @@ public class TLocale {
         }
 
         /**
-         * 设置颜色，使用 '&' 作为颜色符号
+         * 设置颜色，使用 '&amp;' 作为颜色符号
          *
          * @param args 文本
+         * @return List
          */
         @NotNull
         public static List<String> setColored(@NotNull List<String> args) {
@@ -234,6 +236,7 @@ public class TLocale {
          * 移除颜色
          *
          * @param args 文本
+         * @return 文本
          */
         @NotNull
         public static String setUncolored(@NotNull String args) {
@@ -244,6 +247,7 @@ public class TLocale {
          * 移除颜色
          *
          * @param args 文本
+         * @return List
          */
         @NotNull
         public static List<String> setUncolored(@NotNull List<String> args) {
@@ -255,6 +259,7 @@ public class TLocale {
          *
          * @param sender 用户
          * @param args   文本
+         * @return String
          */
         @NotNull
         public static String setPlaceholders(@NotNull CommandSender sender, @NotNull String args) {
@@ -266,6 +271,7 @@ public class TLocale {
          *
          * @param sender 用户
          * @param args   文本
+         * @return List
          */
         @NotNull
         public static List<String> setPlaceholders(CommandSender sender, @NotNull List<String> args) {

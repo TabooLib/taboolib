@@ -7,8 +7,8 @@ import java.util.Arrays;
 /**
  * Attribute 映射类
  *
- * @Author sky
- * @Since 2019-12-11 19:31
+ * @author sky
+ * @since 2019-12-11 19:31
  */
 public enum Attribute {
 

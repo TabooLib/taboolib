@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * @Author sky
- * @Since 2018-05-06 14:35
+ * @author sky
+ * @since 2018-05-06 14:35
  */
 @Immutable
 @SerializableAs("ACTION")

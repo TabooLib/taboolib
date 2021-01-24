@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 /**
  * 数据包监听器接口
  *
- * @Author 坏黑
- * @Since 2018-10-28 14:35
+ * @author 坏黑
+ * @since 2018-10-28 14:35
  */
 public abstract class TPacketListener {
 

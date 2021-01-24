@@ -3,8 +3,8 @@ package io.izzel.taboolib.cronus.util;
 import io.izzel.taboolib.cronus.CronusUtils;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-29 21:43
+ * @author 坏黑
+ * @since 2019-05-29 21:43
  */
 public class StringNumber {
 

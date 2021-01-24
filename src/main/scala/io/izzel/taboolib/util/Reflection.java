@@ -551,9 +551,8 @@ public final class Reflection {
         }
 
         /**
-         * Returns the primitive class array of the given object array
-         *
-         * @return The primitive class array
+         * @param objects objects
+         * @return the primitive class array of the given object array
          */
         public static Class<?>[] getPrimitive(Object[] objects) {
             int length = objects == null ? 0 : objects.length;
@@ -565,9 +564,8 @@ public final class Reflection {
         }
 
         /**
-         * Returns the reference class array of the given object array
-         *
-         * @return The reference class array
+         * @param objects objects
+         * @return the reference class array of the given object array
          */
         public static Class<?>[] getReference(Object[] objects) {
             int length = objects == null ? 0 : objects.length;

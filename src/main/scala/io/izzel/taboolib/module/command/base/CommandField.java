@@ -3,8 +3,8 @@ package io.izzel.taboolib.module.command.base;
 import java.lang.reflect.Field;
 
 /**
- * @Author sky
- * @Since 2018-05-23 3:07
+ * @author sky
+ * @since 2018-05-23 3:07
  */
 public class CommandField {
 

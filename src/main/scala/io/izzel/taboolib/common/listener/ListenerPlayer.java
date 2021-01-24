@@ -13,8 +13,8 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 /**
- * @Author sky
- * @Since 2020-01-14 21:26
+ * @author sky
+ * @since 2020-01-14 21:26
  */
 public class ListenerPlayer {
 

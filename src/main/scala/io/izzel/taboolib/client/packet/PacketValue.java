@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
  * - Boolean
  * - Character
  *
- * @Author sky
- * @Since 2018-08-22 23:09
+ * @author sky
+ * @since 2018-08-22 23:09
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

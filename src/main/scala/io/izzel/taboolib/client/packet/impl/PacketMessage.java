@@ -8,8 +8,8 @@ import io.izzel.taboolib.module.locale.TLocale;
 import org.bukkit.Bukkit;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:01
+ * @author sky
+ * @since 2018-08-22 23:01
  */
 @PacketType(name = "message")
 public class PacketMessage extends Packet {

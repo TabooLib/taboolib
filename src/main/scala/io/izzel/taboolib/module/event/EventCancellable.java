@@ -5,8 +5,8 @@ import org.bukkit.event.Cancellable;
 /**
  * 可取消类监听器简化接口
  *
- * @Author sky
- * @Since 2019-10-22 10:41
+ * @author sky
+ * @since 2019-10-22 10:41
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class EventCancellable<T extends EventCancellable> extends EventNormal implements Cancellable {

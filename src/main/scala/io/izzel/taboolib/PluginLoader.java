@@ -27,8 +27,8 @@ import java.util.Set;
 /**
  * TabooLib 插件加载器，只允许 TabooLib 内部使用。
  *
- * @Author 坏黑
- * @Since 2019-07-05 15:14
+ * @author 坏黑
+ * @since 2019-07-05 15:14
  */
 public abstract class PluginLoader {
 
@@ -242,6 +242,7 @@ public abstract class PluginLoader {
      * 检测该插件是否被 TabooLib 认可
      *
      * @param plugin 插件实例
+     * @return boolean
      */
     public static boolean isPlugin(Plugin plugin) {
         return plugins.contains(plugin.getName());

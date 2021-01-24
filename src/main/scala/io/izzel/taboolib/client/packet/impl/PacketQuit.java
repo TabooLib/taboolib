@@ -7,8 +7,8 @@ import io.izzel.taboolib.client.packet.PacketValue;
 import io.izzel.taboolib.module.locale.TLocale;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:38
+ * @author sky
+ * @since 2018-08-22 23:38
  */
 @PacketType(name = "quit")
 public class PacketQuit extends Packet {

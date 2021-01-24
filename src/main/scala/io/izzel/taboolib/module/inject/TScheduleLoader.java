@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2018-12-15 15:09
+ * @author 坏黑
+ * @since 2018-12-15 15:09
  */
 public class TScheduleLoader implements TabooLibLoader.Loader {
 

@@ -18,18 +18,15 @@ import org.objectweb.asm.commons.ClassRemapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * ASM 版本转换工具
  *
- * @Author sky
- * @Since 2018-09-19 21:05
+ * @author sky
+ * @since 2018-09-19 21:05
  */
 public class AsmVersionControl {
 
@@ -66,6 +63,9 @@ public class AsmVersionControl {
 
     /**
      * 设置转换类地址，写法如：me.skymc.taboolib.packet.InternalPacket
+     *
+     * @param target 转换类地址
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl target(String target) {
         this.target = target;
@@ -74,6 +74,9 @@ public class AsmVersionControl {
 
     /**
      * 设置原版本，写法如：v1_8_R3
+     *
+     * @param from 原始版本
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl from(String from) {
         this.from.add(from.startsWith("v") ? from : "v" + from);
@@ -82,6 +85,9 @@ public class AsmVersionControl {
 
     /**
      * 设置原版本，写法如：v1_8_R3, v1_12_R1
+     *
+     * @param from 原始版本
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl from(String... from) {
         Arrays.stream(from).forEach(v -> this.from.add(v.startsWith("v") ? v : "v" + v));
@@ -90,6 +96,9 @@ public class AsmVersionControl {
 
     /**
      * 设置目标版本
+     *
+     * @param to 目标版本
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl to(String to) {
         this.to = to.startsWith("v") ? to : "v" + to;
@@ -98,6 +107,9 @@ public class AsmVersionControl {
 
     /**
      * 设置插件，不填默认指向 TabooLib
+     *
+     * @param plugin 插件
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl plugin(Plugin plugin) {
         this.plugin = plugin;
@@ -106,6 +118,8 @@ public class AsmVersionControl {
 
     /**
      * 转换类将会保存在 TabooLib 中，防止出现 NoClassDefFoundError 异常
+     *
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl useCache() {
         this.useCache = true;
@@ -114,6 +128,8 @@ public class AsmVersionControl {
 
     /**
      * 自动转换所有使用到的 NMS 或 OBC 方法
+     *
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl useNMS() {
         this.useNMS = true;
@@ -122,6 +138,8 @@ public class AsmVersionControl {
 
     /**
      * 将转换结果打印至 plugins/TabooLib/asm-mapping
+     *
+     * @return {@link AsmVersionControl}
      */
     public AsmVersionControl mapping() {
         this.mapping = true;
@@ -136,15 +154,14 @@ public class AsmVersionControl {
         // 防止出现 Class not found 的奇葩问题，使用缓存（目的是兼容热重载）
         InputStream inputStream = useCache ? new ByteArrayInputStream(cacheClasses.computeIfAbsent(target, n -> {
             try {
-                return IO.readFully(Files.getResource(plugin, target.replace(".", "/") + ".class"));
+                return IO.readFully(Objects.requireNonNull(Files.getResource(plugin, target.replace(".", "/") + ".class")));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             return new byte[0];
         })) : Files.getResource(plugin, target.replace(".", "/") + ".class");
         // 读取
-        ClassReader classReader = new ClassReader(inputStream);
-
+        ClassReader classReader = new ClassReader(Objects.requireNonNull(inputStream));
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
         classReader.accept(classVisitor, 0);
@@ -161,7 +178,7 @@ public class AsmVersionControl {
         if (callerClass != null && !callerClass.getName().startsWith("io.izzel")) {
             throw new IllegalStateException();
         }
-        ClassReader classReader = new ClassReader(Files.getTabooLibResource(target.replace(".", "/") + ".class"));
+        ClassReader classReader = new ClassReader(Objects.requireNonNull(Files.getTabooLibResource(target.replace(".", "/") + ".class")));
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         ClassVisitor classVisitor = new ClassRemapper(classWriter, new VersionRemapper(this));
         classReader.accept(classVisitor, 0);

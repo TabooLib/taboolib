@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
 /**
  * 命令帮助列表排版接口
  *
- * @Author sky
- * @Since 2020-04-04 16:14
+ * @author sky
+ * @since 2020-04-04 16:14
  */
 public abstract class DisplayBase {
 
@@ -36,6 +36,7 @@ public abstract class DisplayBase {
      * @param sender         执行者
      * @param baseSubCommand 子命令对象
      * @param label          命令
+     * @return 帮助
      */
     abstract public String displayHelp(CommandSender sender, BaseSubCommand baseSubCommand, String label);
 

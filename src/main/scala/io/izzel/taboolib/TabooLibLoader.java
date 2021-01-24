@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 /**
  * TabooLib 插件加载类
  *
- * @Author 坏黑
- * @Since 2019-07-05 15:30
+ * @author 坏黑
+ * @since 2019-07-05 15:30
  */
 @SuppressWarnings("rawtypes")
 public class TabooLibLoader {
@@ -72,6 +72,7 @@ public class TabooLibLoader {
      * 获取插件的所有类，需要该插件基于 TabooLib
      *
      * @param plugin 插件实例
+     * @return List
      */
     @NotNull
     public static Optional<List<Class>> getPluginClasses(Plugin plugin) {
@@ -82,6 +83,7 @@ public class TabooLibLoader {
      * 获取插件的所有类，需要该插件基于 TabooLib
      *
      * @param plugin 插件实例
+     * @return List
      */
     @NotNull
     public static List<Class> getPluginClassSafely(Plugin plugin) {
@@ -90,7 +92,7 @@ public class TabooLibLoader {
     }
 
     /**
-     * 获取已缓存的所有插件类
+     * @return 已缓存的所有插件类
      */
     @NotNull
     public static Map<String, List<Class>> getPluginClasses() {
@@ -98,7 +100,7 @@ public class TabooLibLoader {
     }
 
     /**
-     * 获取所有加载器 {@link Loader}
+     * @return 所有加载器 {@link Loader}
      */
     @NotNull
     public static List<Loader> getLoaders() {
@@ -106,7 +108,7 @@ public class TabooLibLoader {
     }
 
     /**
-     * 获取所有启动计划
+     * @return 所有启动计划
      */
     @NotNull
     public static List<Runnable> getTasks() {
@@ -114,7 +116,7 @@ public class TabooLibLoader {
     }
 
     /**
-     * 检查 TabooLib 是否完全启动
+     * @return TabooLib 是否完全启动
      */
     public static boolean isStarted() {
         return started;
@@ -123,6 +125,8 @@ public class TabooLibLoader {
     /**
      * 运行启动计划，用于防止在插件未启动时运行 BukkitRunnable 报错
      * 由 TabooLib 代理执行
+     *
+     * @param runnable 计划
      */
     public static void runTask(Runnable runnable) {
         if (started) {
@@ -316,7 +320,7 @@ public class TabooLibLoader {
     public @interface IgnoreClasses {
 
         /**
-         * 包名（左模糊判断）
+         * @return 包名（左模糊判断）
          */
         String[] value();
 

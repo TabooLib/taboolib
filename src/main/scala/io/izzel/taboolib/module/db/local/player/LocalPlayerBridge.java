@@ -19,8 +19,8 @@ import java.util.concurrent.Executors;
 /**
  * 玩家数据 MongoDB 储存方式
  *
- * @Author sky
- * @Since 2020-07-03 18:31
+ * @author sky
+ * @since 2020-07-03 18:31
  */
 public class LocalPlayerBridge extends LocalPlayerHandler {
 

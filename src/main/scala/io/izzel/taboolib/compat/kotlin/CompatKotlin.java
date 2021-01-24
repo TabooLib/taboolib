@@ -4,8 +4,8 @@ import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.util.Reflection;
 
 /**
- * @Author sky
- * @Since 2019-09-19 14:27
+ * @author sky
+ * @since 2019-09-19 14:27
  */
 public class CompatKotlin {
 

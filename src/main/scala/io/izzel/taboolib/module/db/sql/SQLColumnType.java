@@ -3,8 +3,8 @@ package io.izzel.taboolib.module.db.sql;
 /**
  * SQL 数据类型
  *
- * @Author sky
- * @Since 2018-05-14 19:13 (recode 2020/10/06 10:00)
+ * @author sky
+ * @since 2018-05-14 19:13 (recode 2020/10/06 10:00)
  */
 public enum SQLColumnType {
 
@@ -258,7 +258,7 @@ public enum SQLColumnType {
 
     /**
      * ENUM('member',...)
-     * up to 65,535 distinct members (<3,000 in practice)
+     * up to 65,535 distinct members (less 3,000 in practice)
      * 1-2 bytes storage
      * <p>
      * Defines a list of members, of witch every field can use at most one.
@@ -398,6 +398,9 @@ public enum SQLColumnType {
 
     /**
      * 5.38 update
+     *
+     * @param name 名称
+     * @return {@link SQLColumn}
      */
     public SQLColumn toColumn(String name) {
         return new SQLColumn(this, name);

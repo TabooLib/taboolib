@@ -71,8 +71,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * @Author 坏黑
- * @Since 2018-11-09 14:42
+ * @author 坏黑
+ * @since 2018-11-09 14:42
  */
 @SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "ConstantConditions", "deprecation", "rawtypes", "BusyWait"})
 public class NMSImpl extends NMS {

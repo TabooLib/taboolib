@@ -10,13 +10,13 @@ import java.util.Arrays;
  * <p>
  * 支持版本为 1.7 到 1.16
  * 命名方式为 {主版本}{次版本}{00}
- * 如 1.7.10 则为 {01}{07}{10} -> 01 07 00 -> 10700
- * 如 1.16.3 则为 {01}{16}{03} -> 01 16 00 -> 11600
+ * 如 1.7.10 则为 {01}{07}{10} -- 01 07 00 -- 10700
+ * 如 1.16.3 则为 {01}{16}{03} -- 01 16 00 -- 11600
  * <p>
  * 目的时使用整数计算进行快速的版本判断
  *
- * @Author 坏黑
- * @Since 2019-07-05 14:42
+ * @author 坏黑
+ * @since 2019-07-05 14:42
  */
 public enum Version {
 
@@ -30,14 +30,14 @@ public enum Version {
     }
 
     /**
-     * 获取版本数字号
+     * @return 版本数字号
      */
     public int getVersionInt() {
         return versionInt;
     }
 
     /**
-     * 获取 Bukkit 版本（例如：v1_16_R1）
+     * @return Bukkit 版本（例如：v1_16_R1）
      */
     public static String getBukkitVersion() {
         return Bukkit.getServer().getClass().getName().split("\\.")[3];
@@ -47,6 +47,7 @@ public enum Version {
      * 检测服务端是否<b>高于或等于</b>该版本
      *
      * @param in 版本枚举
+     * @return boolean
      */
     public static boolean isAfter(Version in) {
         return getCurrentVersion().getVersionInt() >= in.getVersionInt();
@@ -56,20 +57,21 @@ public enum Version {
      * 检测服务端是否<b>低于</b>该版本
      *
      * @param in 版本枚举
+     * @return boolean
      */
     public static boolean isBefore(Version in) {
         return getCurrentVersion().getVersionInt() < in.getVersionInt();
     }
 
     /**
-     * 获取当前服务端版本数字号
+     * @return 当前服务端版本数字号
      */
     public static int getCurrentVersionInt() {
         return getCurrentVersion().versionInt;
     }
 
     /**
-     * 获取当前服务端版本枚举
+     * @return 当前服务端版本枚举
      */
     @NotNull
     public static Version getCurrentVersion() {

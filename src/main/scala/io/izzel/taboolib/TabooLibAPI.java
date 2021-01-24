@@ -11,8 +11,8 @@ import java.util.Arrays;
 /**
  * TabooLib 中心工具
  *
- * @Author 坏黑
- * @Since 2019-07-05 14:31
+ * @author 坏黑
+ * @since 2019-07-05 14:31
  */
 public class TabooLibAPI {
 
@@ -52,21 +52,21 @@ public class TabooLibAPI {
     }
 
     /**
-     * 检测当前服务端是否基于 Bukkit（含 Spigot、Paper 等）
+     * @return 当前服务端是否基于 Bukkit（含 Spigot、Paper 等）
      */
     public static boolean isBukkit() {
         return bukkit;
     }
 
     /**
-     * 检测当前服务端是否含有 Forge
+     * @return 当前服务端是否含有 Forge
      */
     public static boolean isForge() {
         return forge;
     }
 
     /**
-     * 检测 TabooLib 4.X 插件版本是否被加载
+     * @return TabooLib 4.X 插件版本是否被加载
      */
     public static boolean isOriginLoaded() {
         return Bukkit.getPluginManager().getPlugin("TabooLib") != null;
@@ -76,20 +76,21 @@ public class TabooLibAPI {
      * 检测该插件是否基于 TabooLib
      *
      * @param plugin 插件实例
+     * @return boolean
      */
     public static boolean isDependTabooLib(Plugin plugin) {
         return PluginLoader.isPlugin(plugin);
     }
 
     /**
-     * 获取服务端 TPS 运行状态
+     * @return 服务端 TPS 运行状态
      */
     public static double[] getTPS() {
         return NMS.handle().getTPS();
     }
 
     /**
-     * 检测是否处于调试模式，可通过控制台指令 /tdebug 指令切换调试模式。
+     * @return 检测是否处于调试模式，可通过控制台指令 /tdebug 指令切换调试模式。
      */
     public static boolean isDebug() {
         return Local.get().get("data").getBoolean("debug");
@@ -97,6 +98,8 @@ public class TabooLibAPI {
 
     /**
      * 设置调试模式
+     *
+     * @param debug debug
      */
     public static void debug(boolean debug) {
         Local.get().get("data").set("debug", debug);

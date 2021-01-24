@@ -27,8 +27,8 @@ import java.util.concurrent.Executors;
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
  *
- * @Author sky
- * @Since 2020-04-04 19:51
+ * @author sky
+ * @since 2020-04-04 19:51
  */
 public class I18n11603 extends I18nBase {
 

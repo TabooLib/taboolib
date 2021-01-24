@@ -9,8 +9,8 @@ import java.util.UUID;
 /**
  * 物品 Attribute 属性映射类
  *
- * @Author sky
- * @Since 2019-10-22 11:38
+ * @author sky
+ * @since 2019-10-22 11:38
  */
 public class NBTAttribute {
 

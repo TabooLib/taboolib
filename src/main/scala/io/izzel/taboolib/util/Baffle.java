@@ -60,6 +60,8 @@ public abstract class Baffle implements Releasable {
 
     /**
      * 同 {@link Baffle#hasNext(String, boolean)}，个体序号为（*）
+     *
+     * @return boolean
      */
     public boolean hasNext() {
         return hasNext("*");
@@ -67,6 +69,9 @@ public abstract class Baffle implements Releasable {
 
     /**
      * 同 {@link Baffle#hasNext(String, boolean)}
+     *
+     * @param id 序号
+     * @return boolean
      */
     public boolean hasNext(String id) {
         return hasNext(id, true);
@@ -78,6 +83,7 @@ public abstract class Baffle implements Releasable {
      *
      * @param duration 时间数值
      * @param timeUnit 时间单位
+     * @return {@link Baffle}
      */
     @NotNull
     public static Baffle of(long duration, TimeUnit timeUnit) {
@@ -88,6 +94,7 @@ public abstract class Baffle implements Releasable {
      * 按次阻断（类似 SimpleCounter）
      *
      * @param count 次数
+     * @return {@link Baffle}
      */
     @NotNull
     public static Baffle of(int count) {
@@ -112,6 +119,7 @@ public abstract class Baffle implements Releasable {
          * 获取下次执行时间戳，该方法不会刷新数据
          *
          * @param id 个体序号
+         * @return long
          */
         public long nextTime(String id) {
             long result = data.get(id) + millis - System.currentTimeMillis();

@@ -42,6 +42,7 @@ public class Files {
      * 读取一个插件的所有类，该插件可以不基于 TabooLib
      *
      * @param plugin 插件实例
+     * @return List
      */
     @NotNull
     public static List<Class> getClasses(Plugin plugin) {
@@ -53,6 +54,7 @@ public class Files {
      *
      * @param plugin 插件实例
      * @param ignore 忽略包名，左模糊判断
+     * @return List
      */
     @NotNull
     public static List<Class> getClasses(Plugin plugin, String[] ignore) {
@@ -92,6 +94,7 @@ public class Files {
      * 获取 TabooLib 资源文件
      *
      * @param filename 资源文件名称
+     * @return {@link InputStream}
      */
     @Nullable
     public static InputStream getResource(String filename) {
@@ -103,6 +106,7 @@ public class Files {
      *
      * @param plugin   插件 实例
      * @param filename 资源文件名称
+     * @return {@link InputStream}
      */
     @Nullable
     public static InputStream getResource(Plugin plugin, String filename) {
@@ -115,6 +119,7 @@ public class Files {
      *
      * @param plugin   插件 实例
      * @param filename 资源文件名称
+     * @return {@link InputStream}
      */
     @Nullable
     public static InputStream getResourceChecked(Plugin plugin, String filename) {
@@ -125,6 +130,7 @@ public class Files {
      * 从一份拷贝中获取 TabooLib 真实资源文件
      *
      * @param filename 资源文件名称
+     * @return {@link InputStream}
      */
     @Nullable
     public static InputStream getTabooLibResource(String filename) {
@@ -136,6 +142,7 @@ public class Files {
      *
      * @param plugin   插件实例
      * @param filename 资源文件名称
+     * @return {@link InputStream}
      */
     @Nullable
     public static InputStream getCanonicalResource(Plugin plugin, String filename) {
@@ -158,6 +165,7 @@ public class Files {
      *
      * @param plugin 插件实例
      * @param path   资源文件路径
+     * @return File
      */
     @NotNull
     public static File releaseResource(Plugin plugin, String path) {
@@ -189,6 +197,7 @@ public class Files {
      * 获取一个目录下的所有文件，非递归
      *
      * @param file 文件
+     * @return File[]
      */
     @NotNull
     public static File[] listFile(File file) {
@@ -201,6 +210,7 @@ public class Files {
      *
      * @param in   字节数组
      * @param file 文件实例
+     * @return File
      */
     @NotNull
     public static File toFile(byte[] in, File file) {
@@ -218,6 +228,7 @@ public class Files {
      *
      * @param in   文本
      * @param file 文件实例
+     * @return File
      */
     @NotNull
     public static File toFile(String in, File file) {
@@ -235,6 +246,7 @@ public class Files {
      *
      * @param inputStream 流
      * @param file        文件实例
+     * @return File
      */
     @NotNull
     public static File toFile(InputStream inputStream, File file) {
@@ -256,6 +268,8 @@ public class Files {
      *
      * @param in   地址
      * @param file 文件实例
+     * @return boolean
+     * @throws ConnectException 连接异常
      */
     public static boolean downloadFile(String in, File file) throws ConnectException {
         try (InputStream inputStream = new URL(in).openStream(); BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
@@ -381,6 +395,7 @@ public class Files {
      *
      * @param url 地址
      * @param def 默认值
+     * @return String
      */
     @Nullable
     public static String readFromURL(String url, @Nullable String def) {
@@ -393,6 +408,7 @@ public class Files {
      * @param url     地址
      * @param charset 编码
      * @param def     默认值
+     * @return String
      */
     @Nullable
     public static String readFromURL(String url, @NotNull Charset charset, @Nullable String def) {
@@ -403,6 +419,7 @@ public class Files {
      * 通过互联网地址获取文本内容（默认编码 UTF-8）
      *
      * @param url 地址
+     * @return String
      */
     @Nullable
     public static String readFromURL(String url) {
@@ -414,6 +431,7 @@ public class Files {
      *
      * @param url     地址
      * @param charset 编码
+     * @return String
      */
     @Nullable
     public static String readFromURL(String url, Charset charset) {
@@ -430,6 +448,7 @@ public class Files {
      * 读取文件内容
      *
      * @param file 文件实例
+     * @return String
      */
     @Nullable
     public static String readFromFile(File file) {

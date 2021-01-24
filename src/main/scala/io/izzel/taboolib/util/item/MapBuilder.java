@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * 地图绘制工具
  *
- * @Author LagBug
+ * @author LagBug
  */
 public class MapBuilder {
 
@@ -63,12 +63,13 @@ public class MapBuilder {
     /**
      * Set and image to be used
      *
-     * @param x,   y the coordinates to add the text
+     * @param x    the coordinates to add the text
+     * @param y    the coordinates to add the text
      * @param font the font to be used
      * @param text the string that will be displayed
      * @return the instance of this class
      */
-    public MapBuilder addText(@NotNull int x, @NotNull int y, @NotNull MapFont font, @NotNull String text) {
+    public MapBuilder addText(int x, int y, @NotNull MapFont font, @NotNull String text) {
         this.texts.add(new Text(x, y, font, text));
         return this;
     }
@@ -85,13 +86,14 @@ public class MapBuilder {
     /**
      * Adds a cursor to the map
      *
-     * @param x,        y the coordinates to add the cursor
+     * @param y         the coordinates to add the cursor
+     * @param x         the coordinates to add the cursor
      * @param direction the direction to display the cursor
      * @param type      the type of the cursor
      * @return the instance of this class
      */
     @SuppressWarnings("deprecation")
-    public MapBuilder addCursor(@NotNull int x, @NotNull int y, @NotNull CursorDirection direction, @NotNull CursorType type) {
+    public MapBuilder addCursor(int x, int y, @NotNull CursorDirection direction, @NotNull CursorType type) {
         cursors.addCursor(x, y, (byte) direction.getId(), (byte) type.getId());
         return this;
     }
@@ -112,7 +114,7 @@ public class MapBuilder {
      * @param renderOnce the value to determine if it's going to be rendered once
      * @return the instance of this class
      */
-    public MapBuilder setRenderOnce(@NotNull boolean renderOnce) {
+    public MapBuilder setRenderOnce(boolean renderOnce) {
         this.renderOnce = renderOnce;
         return this;
     }
@@ -205,7 +207,7 @@ public class MapBuilder {
 
         private final int id;
 
-        CursorDirection(@NotNull int id) {
+        CursorDirection(int id) {
             this.id = id;
         }
 
@@ -228,7 +230,7 @@ public class MapBuilder {
 
         private final int id;
 
-        CursorType(@NotNull int id) {
+        CursorType(int id) {
             this.id = id;
         }
 
@@ -252,7 +254,7 @@ public class MapBuilder {
         private MapFont font;
         private String message;
 
-        public Text(@NotNull int x, @NotNull int y, @NotNull MapFont font, @NotNull String message) {
+        public Text(int x, int y, @NotNull MapFont font, @NotNull String message) {
             setX(x);
             setY(y);
             setFont(font);
@@ -273,7 +275,7 @@ public class MapBuilder {
          *
          * @param x the x postion
          */
-        public void setX(@NotNull int x) {
+        public void setX(int x) {
             this.x = x;
         }
 
@@ -291,7 +293,7 @@ public class MapBuilder {
          *
          * @param y the y position
          */
-        public void setY(@NotNull int y) {
+        public void setY(int y) {
             this.y = y;
         }
 

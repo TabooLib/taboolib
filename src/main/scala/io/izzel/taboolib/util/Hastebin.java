@@ -54,7 +54,7 @@ public class Hastebin {
         }
 
         /**
-         * 获取地址
+         * @return 地址
          */
         @NotNull
         public String getURL() {
@@ -62,7 +62,7 @@ public class Hastebin {
         }
 
         /**
-         * 获取原始内容
+         * @return 原始内容
          */
         @NotNull
         public String getSource() {
@@ -70,7 +70,7 @@ public class Hastebin {
         }
 
         /**
-         * 获取 {@link JsonObject} 实例
+         * @return {@link JsonObject} 实例
          */
         @NotNull
         public JsonObject getSourceJson() {

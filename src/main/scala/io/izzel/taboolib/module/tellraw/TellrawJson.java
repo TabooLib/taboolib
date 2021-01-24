@@ -20,9 +20,8 @@ import java.util.stream.Collectors;
  * Minecraft Tellraw 信息构建工具
  * 支持版本兼容以及物品显示优化
  *
- * @Author sky
- * @Since 2018-05-26 14:42json
- * @BuilderLevel 1.2
+ * @author sky
+ * @since 2018-05-26 14:42json
  */
 public class TellrawJson {
 
@@ -58,6 +57,8 @@ public class TellrawJson {
 
     /**
      * 创建入口
+     *
+     * @return {@link TellrawJson}
      */
     public static TellrawJson create() {
         return new TellrawJson();
@@ -103,7 +104,7 @@ public class TellrawJson {
     }
 
     /**
-     * 转换为 Json 原始信息
+     * @return Json 原始信息
      */
     @NotNull
     public String toRawMessage() {
@@ -114,6 +115,7 @@ public class TellrawJson {
      * 通过版本类型转换为 Json 原始信息
      *
      * @param version 版本类型
+     * @return Json 原始信息
      */
     @NotNull
     public String toRawMessage(TellrawVersion version) {
@@ -132,6 +134,7 @@ public class TellrawJson {
      * 可支持版本兼容插件 ViaVersion、ProtocolSupport
      *
      * @param player 玩家实例
+     * @return Json 原始信息
      */
     @NotNull
     public String toRawMessage(Player player) {
@@ -183,6 +186,7 @@ public class TellrawJson {
      *
      * @param itemStack      物品
      * @param supportVersion 是否处理跨版本兼容
+     * @return {@link TellrawJson}
      */
     public TellrawJson hoverItem(ItemStack itemStack, boolean supportVersion) {
         if (is10900 && Items.isNull(itemStack)) {

@@ -1,8 +1,8 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 /**
- * @Author sky
- * @Since 2019-10-26 14:02
+ * @author sky
+ * @since 2019-10-26 14:02
  */
 public class Order {
 

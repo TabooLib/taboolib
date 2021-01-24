@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * SQL 数据列
  *
- * @Author sky
- * @Since 2018-05-14 19:09
+ * @author sky
+ * @since 2018-05-14 19:09
  */
 public class SQLColumn extends IColumn {
 
@@ -100,6 +100,9 @@ public class SQLColumn extends IColumn {
      * 如果参数含有单引号则需要添加转义符例如 "\\'"
      * <p>
      * 非字符串的特殊类型需在参数前添加 "$" 符号
+     *
+     * @param defaultValue 默认值
+     * @return {@link SQLTable}
      */
     public SQLColumn defaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
@@ -113,6 +116,9 @@ public class SQLColumn extends IColumn {
 
     /**
      * 5.41 update
+     *
+     * @param update 更新行为
+     * @return {@link SQLColumn}
      */
     public SQLColumn update(String update) {
         this.update = update;
@@ -122,6 +128,8 @@ public class SQLColumn extends IColumn {
     /**
      * 5.41 update
      * 倒序索引，在 SQL 8.0 中有效，在此之前可以使用，但不会生效。
+     *
+     * @return {@link SQLColumn}
      */
     public SQLColumn descendingIndex() {
         this.descendingIndex = true;

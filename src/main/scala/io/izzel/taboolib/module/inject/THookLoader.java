@@ -11,8 +11,8 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 
 /**
- * @Author sky
- * @Since 2019-08-17 22:32
+ * @author sky
+ * @since 2019-08-17 22:32
  */
 public class THookLoader implements TabooLibLoader.Loader {
 

@@ -21,7 +21,10 @@ public class TDependency {
      * 阻塞线程进行下载/加载
      *
      * @param type 依赖名，格式为 groupId:artifactId:version
+     * @param repo 仓库
+     * @param url  地址
      * @return 是否成功加载库，如果加载成功，插件将可以任意调用使用的类
+     * @throws ConnectException 连接失败
      */
     public static boolean requestLib(String type, String repo, String url) throws ConnectException {
         // 清理大小为 0 的依赖文件

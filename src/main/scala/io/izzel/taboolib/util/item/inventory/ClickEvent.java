@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 /**
  * 界面构建工具 {@link MenuBuilder} 中的点击事件
  *
- * @Author 坏黑
- * @Since 2019-05-21 18:09
+ * @author 坏黑
+ * @since 2019-05-21 18:09
  */
 public class ClickEvent {
 
@@ -48,7 +48,7 @@ public class ClickEvent {
     }
 
     /**
-     * 获取受影响的物品
+     * @return 受该事件影响的物品
      */
     @NotNull
     public List<ItemStack> getAffectItems() {
@@ -56,7 +56,7 @@ public class ClickEvent {
     }
 
     /**
-     * 转换为点击事件
+     * @return 转换为点击事件
      */
     @NotNull
     public InventoryClickEvent castClick() {
@@ -64,7 +64,7 @@ public class ClickEvent {
     }
 
     /**
-     * 转换为拖动事件
+     * @return 转换为拖动事件
      */
     @NotNull
     public InventoryDragEvent castDrag() {
@@ -72,35 +72,35 @@ public class ClickEvent {
     }
 
     /**
-     * 获取点击位置
+     * @return 点击位置
      */
     public int getRawSlot() {
         return clickType == ClickType.CLICK ? castClick().getRawSlot() : -1;
     }
 
     /**
-     * 获取点击位置（文本映射类型）
+     * @return 点击位置（文本映射类型）
      */
     public char getSlot() {
         return slot;
     }
 
     /**
-     * 获取点击方式
+     * @return 点击方式
      */
     public ClickType getClickType() {
         return clickType;
     }
 
     /**
-     * 获取点击者（玩家）实例
+     * @return 点击者（玩家）实例
      */
     public Player getClicker() {
         return (Player) ((InventoryInteractEvent) event).getWhoClicked();
     }
 
     /**
-     * 获取背包实例
+     * @return 背包实例
      */
     public Inventory getInventory() {
         return ((InventoryEvent) event).getInventory();
@@ -108,20 +108,22 @@ public class ClickEvent {
 
     /**
      * 是否取消点击事件
+     *
+     * @param c 是否取消
      */
     public void setCancelled(boolean c) {
         ((Cancellable) event).setCancelled(true);
     }
 
     /**
-     * 点击事件是否被取消
+     * @return 点击事件是否被取消
      */
     public boolean isCancelled() {
         return ((Cancellable) event).isCancelled();
     }
 
     /**
-     * 获取点击物品（仅限 CLICK 点击方式）
+     * @return 点击物品（仅限 CLICK 点击方式）
      */
     @Nullable
     public ItemStack getCurrentItem() {
@@ -130,6 +132,7 @@ public class ClickEvent {
 
     /**
      * 设置点击物品（仅限 CLICK 点击方式）
+     *
      * @param item 物品实例
      */
     public void setCurrentItem(ItemStack item) {

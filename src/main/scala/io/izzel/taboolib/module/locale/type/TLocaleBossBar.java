@@ -17,8 +17,8 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Map;
 
 /**
- * @Author sky
- * @Since 2018-05-27 18:52
+ * @author sky
+ * @since 2018-05-27 18:52
  */
 @ThreadSafe
 @SerializableAs("BAR")

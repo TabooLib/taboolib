@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @Author sky
- * @Since 2018-07-03 21:29
+ * @author sky
+ * @since 2018-07-03 21:29
  */
 @SuppressWarnings({"unchecked", "deprecation"})
 public class RunnableQuery {
@@ -43,7 +43,7 @@ public class RunnableQuery {
     }
 
     /**
-     * 是否存在结果
+     * @return 是否存在结果
      */
     public boolean find() {
         this.resultNext = r -> true;
@@ -52,6 +52,10 @@ public class RunnableQuery {
 
     /**
      * 获取首个结果
+     *
+     * @param task 函数
+     * @param <T>  T
+     * @return T
      */
     @Nullable
     public <T> T first(Task.Function<T> task) {
@@ -65,6 +69,11 @@ public class RunnableQuery {
 
     /**
      * 获取首个结果，检测 NULL 并返回默认值
+     *
+     * @param task 函数
+     * @param def  默认值
+     * @param <T>  T
+     * @return T
      */
     @Nullable
     @Contract("_, !null -> !null")
@@ -75,6 +84,10 @@ public class RunnableQuery {
 
     /**
      * 获取所有结果，并转换
+     *
+     * @param task 函数
+     * @param <T>  T
+     * @return List
      */
     @NotNull
     public <T> List<T> map(Task.Function<T> task) {
@@ -85,6 +98,8 @@ public class RunnableQuery {
 
     /**
      * 获取所有结果，并遍历
+     *
+     * @param task 函数
      */
     public void forEach(Task.Consumer task) {
         resultAutoNext(r -> {

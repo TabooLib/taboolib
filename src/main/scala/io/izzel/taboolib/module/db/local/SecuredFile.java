@@ -14,8 +14,8 @@ import java.util.logging.Level;
 /**
  * 线程安全的 YamlConfiguration 封装
  *
- * @Author sky
- * @Since 2020-02-28 11:14
+ * @author sky
+ * @since 2020-02-28 11:14
  */
 public class SecuredFile extends YamlConfiguration {
 

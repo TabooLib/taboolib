@@ -10,8 +10,8 @@ import org.objectweb.asm.Opcodes;
 import java.net.ConnectException;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-13 15:25
+ * @author 坏黑
+ * @since 2019-07-13 15:25
  */
 public class DependencyAnnotationVisitor extends AnnotationVisitor {
 

@@ -100,6 +100,7 @@ public class VectorUtils {
     /**
      * 判断一个向量是否已单位化
      *
+     * @param vector 向量
      * @return 是否单位化
      */
     public static boolean isNormalized(Vector vector) {

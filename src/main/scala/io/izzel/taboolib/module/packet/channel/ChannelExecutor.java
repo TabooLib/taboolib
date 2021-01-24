@@ -14,8 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @Author 坏黑
- * @Since 2018-10-28 14:34
+ * @author 坏黑
+ * @since 2018-10-28 14:34
  */
 public abstract class ChannelExecutor {
 

@@ -1,8 +1,8 @@
 package io.izzel.taboolib.module.ai;
 
 /**
- * @Author sky
- * @Since 2018-09-21 13:06
+ * @author sky
+ * @since 2018-09-21 13:06
  */
 public interface PathfinderCreator {
 

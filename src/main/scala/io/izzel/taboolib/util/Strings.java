@@ -21,6 +21,7 @@ public class Strings {
      *
      * @param text  文本
      * @param count 次数
+     * @return String
      */
     public static String copy(String text, int count) {
         return IntStream.range(0, count).mapToObj(i -> text).collect(Collectors.joining());
@@ -112,6 +113,10 @@ public class Strings {
 
     /**
      * 获取两段文本的相似度（0.0~1.0)
+     *
+     * @param strA 文本
+     * @param strB 文本
+     * @return double
      */
     public static double similarDegree(String strA, String strB) {
         String newStrA = removeSign(max(strA, strB));

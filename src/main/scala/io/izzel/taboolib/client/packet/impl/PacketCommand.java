@@ -7,8 +7,8 @@ import io.izzel.taboolib.client.packet.PacketValue;
 import org.bukkit.Bukkit;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:01
+ * @author sky
+ * @since 2018-08-22 23:01
  */
 @PacketType(name = "command")
 public class PacketCommand extends Packet {
