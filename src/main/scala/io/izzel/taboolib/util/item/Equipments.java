@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 装备类型转换工具
@@ -245,7 +244,7 @@ public enum Equipments {
      * @return {@link Map} 位置对应的物品
      */
     @NotNull
-    public static Map<Equipments, @NotNull ItemStack> getItems(Player player) {
+    public static Map<Equipments, ItemStack> getItems(Player player) {
         return getItems((LivingEntity) player);
     }
 
@@ -256,7 +255,7 @@ public enum Equipments {
      * @return {@link Map} 位置对应的物品
      */
     @NotNull
-    public static Map<Equipments, @NotNull ItemStack> getItems(LivingEntity entity) {
+    public static Map<Equipments, ItemStack> getItems(LivingEntity entity) {
         Map<Equipments, ItemStack> map = Maps.newHashMap();
         for (Equipments equipments : values()) {
             ItemStack itemStack = equipments.getItem(entity);
