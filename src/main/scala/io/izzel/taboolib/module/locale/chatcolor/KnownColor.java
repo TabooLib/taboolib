@@ -129,7 +129,7 @@ public enum KnownColor {
 
     TURQUOISE("绿宝石", "40E0D0"),
 
-    AUQAMARIN("绿玉/碧绿", "7FFFAA"),
+    AUQAMARIN("碧绿", "7FFFAA"),
 
     MEDIUM_AQUAMARINE("适中的碧绿", "00FA9A"),
 
@@ -215,7 +215,7 @@ public enum KnownColor {
 
     BRULY_WOOD("结实的树", "DEB887"),
 
-    BISQUE("", "FFE4C4"),
+    BISQUE("BISQUE", "FFE4C4"),
 
     DARK_ORANGE("深橙", "FF8C00"),
 
