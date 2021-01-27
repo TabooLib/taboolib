@@ -19,6 +19,7 @@ import java.util.function.Consumer;
  * @author sky
  * @since 2020-03-07 16:28
  */
+@SuppressWarnings("UnusedReturnValue")
 public class Hologram {
 
     private final Set<HologramViewer> viewers = Sets.newConcurrentHashSet();
@@ -152,7 +153,7 @@ public class Hologram {
     public Hologram flash(List<String> text, int period) {
         for (int i = 0; i < text.size(); i++) {
             String line = text.get(i);
-            TabooLib.getPlugin().runTask(() -> flash(line), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(line), (long) period * i);
         }
         return this;
     }
@@ -188,7 +189,7 @@ public class Hologram {
      */
     public Hologram flash(Vector vector, int period, int times) {
         for (int i = 0; i < times; i++) {
-            TabooLib.getPlugin().runTask(() -> flash(location.add(vector)), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(location.add(vector)), (long) period * i);
         }
         return this;
     }

@@ -32,7 +32,7 @@ dependencies {
     // ptms repo
     compile 'me.skymc.taboolib:TabooLib:4.9:all'
     compile 'io.izzel.taboolib:TabooLibKotlin:1.0.21'
-    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.2'
+    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.3'
 
     // ptms repo
     compile 'ink.ptms.core:v11200:11200:all'
@@ -57,6 +57,7 @@ dependencies {
     compile 'com.mongodb:MongoDB:3.12.2:all'
 
     // ptms repo
+    compile 'ink.ptms.adyeshach:Adyeshach:1.1.0'
     compile 'pw.yumc.Yum:Yum:1:all'
     compile 'net.milkbowl.vault:Vault:1:all'
     compile 'us.myles.ViaVersion:ViaVersion:1:all'
