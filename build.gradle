@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.53'
+version = '5.54'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -31,8 +31,8 @@ dependencies {
 
     // ptms repo
     compile 'me.skymc.taboolib:TabooLib:4.9:all'
-    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.28'
-    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.3'
+    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.30'
+    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
 
     // ptms repo
     compile 'ink.ptms.core:v11200:11200:all'
