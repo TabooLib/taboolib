@@ -1,4 +1,3 @@
-
 <p align="center">
   <img src="https://i.loli.net/2019/07/06/5d1f802426f2a12175.png">
 </p>
@@ -24,14 +23,18 @@
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.31-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.33-yellow.svg">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.4-yellow.svg">
   </a>
+  <a>
+    <img src="https://img.shields.io/badge/kether--common-1.0.10-yellow.svg">
+  </a>
 </p>
 
 ---
+
 # 🌟 Features
 
 + **Built-in expansion**：Doesn't need to download any plugin.
