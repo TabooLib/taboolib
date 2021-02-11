@@ -19,11 +19,11 @@
     <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Loader-2.11-blue.svg">
+    <img src="https://img.shields.io/badge/Loader-2.12-blue.svg">
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.33-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.34-yellow.svg">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.4-yellow.svg">
