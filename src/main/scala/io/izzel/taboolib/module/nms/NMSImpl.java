@@ -63,10 +63,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -296,22 +293,24 @@ public class NMSImpl extends NMS {
         return new NBTCompound();
     }
 
+    @SuppressWarnings("unchecked")
     @NotNull
     @Override
     public List<NBTAttribute> getBaseAttribute(org.bukkit.inventory.ItemStack item) {
         List<NBTAttribute> list = Lists.newArrayList();
         Object nmsItem = CraftItemStack.asNMSCopy(item);
-        Object attr;
+        Collection attr;
         if (Version.isAfter(Version.v1_9)) {
-            attr = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a(net.minecraft.server.v1_12_R1.EnumItemSlot.MAINHAND);
+            attr = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a(net.minecraft.server.v1_12_R1.EnumItemSlot.MAINHAND).entries();
         } else {
-            attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i();
+            attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i().entries();
         }
-        ((Multimap) attr).asMap().forEach((k, v) -> {
-            Object nbt = net.minecraft.server.v1_12_R1.GenericAttributes.a((net.minecraft.server.v1_12_R1.AttributeModifier) v);
+        attr.forEach(it -> {
+            Map.Entry entry = ((Map.Entry) it);
+            Object nbt = net.minecraft.server.v1_12_R1.GenericAttributes.a((net.minecraft.server.v1_12_R1.AttributeModifier) entry.getValue());
             list.add(new NBTAttribute(
                     new UUID(((NBTTagCompound) nbt).getLong("UUIDMost"), ((NBTTagCompound) nbt).getLong("UUIDLeast")),
-                    String.valueOf(k),
+                    entry.getKey().toString(),
                     ((NBTTagCompound) nbt).getString("Name"),
                     ((NBTTagCompound) nbt).getDouble("Amount"),
                     NBTOperation.fromIndex(((NBTTagCompound) nbt).getInt("Operation"))

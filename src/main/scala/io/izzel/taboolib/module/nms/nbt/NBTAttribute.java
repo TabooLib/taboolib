@@ -58,11 +58,11 @@ public class NBTAttribute {
 
     public static NBTAttribute fromNBT(NBTCompound nbt) {
         NBTAttribute attribute = new NBTAttribute(
-                new UUID(nbt.get("UUIDMost").asLong(), nbt.get("UUIDLeast").asLong()),
+                new UUID(nbt.getOrElse("UUIDMost", new NBTBase(0L)).asLong(), nbt.getOrElse("UUIDLeast", new NBTBase(0L)).asLong()),
                 nbt.get("AttributeName").asString(),
                 nbt.get("Name").asString(),
                 nbt.get("Amount").asDouble(),
-                NBTOperation.fromIndex(nbt.get("Operation").asInt())
+                NBTOperation.fromIndex(nbt.getOrElse("Operation", new NBTBase(0)).asInt())
         );
         if (nbt.containsKey("Slot")) {
             attribute.slot(Equipments.fromNMS(nbt.get("Slot").asString()));

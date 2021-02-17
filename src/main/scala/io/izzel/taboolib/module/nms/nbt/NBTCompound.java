@@ -6,10 +6,7 @@ import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -153,6 +150,10 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         return value.get(key);
     }
 
+    public NBTBase getOrElse(String key, NBTBase base) {
+        return value.getOrDefault(key, base);
+    }
+
     public NBTBase getDeep(String key) {
         NBTBase value = this;
         for (String keyStr : key.split("\\.")) {
@@ -161,6 +162,10 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
             }
         }
         return value;
+    }
+
+    public NBTBase getDeepOrElse(String key, NBTBase base) {
+        return Optional.ofNullable(getDeep(key)).orElse(base);
     }
 
     @Override
