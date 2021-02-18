@@ -307,7 +307,12 @@ public class NMSImpl extends NMS {
         }
         attr.forEach(it -> {
             Map.Entry entry = ((Map.Entry) it);
-            Object nbt = asNBT((net.minecraft.server.v1_12_R1.AttributeModifier) entry.getValue());
+            Object nbt;
+            if (Version.isAfter(Version.v1_16_R3)) {
+                nbt = asNBT1((net.minecraft.server.v1_16_R3.AttributeModifier) entry.getValue());
+            } else {
+                nbt = asNBT0((net.minecraft.server.v1_12_R1.AttributeModifier) entry.getValue());
+            }
             list.add(new NBTAttribute(
                     new UUID(((NBTTagCompound) nbt).getLong("UUIDMost"), ((NBTTagCompound) nbt).getLong("UUIDLeast")),
                     entry.getKey().toString(),
@@ -319,7 +324,16 @@ public class NMSImpl extends NMS {
         return list;
     }
 
-    public NBTTagCompound asNBT(net.minecraft.server.v1_12_R1.AttributeModifier modifier) {
+    public NBTTagCompound asNBT1(net.minecraft.server.v1_16_R3.AttributeModifier modifier) {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        nbttagcompound.setString("Name", modifier.getName());
+        nbttagcompound.setDouble("Amount", modifier.getAmount());
+        nbttagcompound.setInt("Operation", modifier.getOperation().a());
+        nbttagcompound.a("UUID", modifier.getUniqueId());
+        return nbttagcompound;
+    }
+
+    public NBTTagCompound asNBT0(net.minecraft.server.v1_12_R1.AttributeModifier modifier) {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         nbttagcompound.setString("Name", modifier.b());
         nbttagcompound.setDouble("Amount", modifier.d());
