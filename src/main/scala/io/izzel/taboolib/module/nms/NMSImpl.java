@@ -766,7 +766,7 @@ public class NMSImpl extends NMS {
             if (playerViewDistance < viewDistance) {
                 viewDistance = playerViewDistance;
             }
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
         }
         return viewDistance;
     }
