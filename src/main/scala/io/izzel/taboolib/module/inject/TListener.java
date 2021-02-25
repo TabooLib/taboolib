@@ -31,7 +31,7 @@ public @interface TListener {
     /**
      * @return 注册前判断依赖插件
      */
-    String[] depend() default "";
+    String[] depend() default {};
 
     /**
      * @return 注册前判断依赖版本

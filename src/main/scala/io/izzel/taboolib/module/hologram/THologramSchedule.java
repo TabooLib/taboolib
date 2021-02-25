@@ -5,8 +5,8 @@ import io.izzel.taboolib.module.packet.Packet;
 import java.util.concurrent.Callable;
 
 /**
- * @Author sky
- * @Since 2020-03-07 14:28
+ * @author sky
+ * @since 2020-03-07 14:28
  */
 abstract class THologramSchedule {
 

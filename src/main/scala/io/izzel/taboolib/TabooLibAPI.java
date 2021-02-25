@@ -1,12 +1,9 @@
 package io.izzel.taboolib;
 
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
-import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-
-import java.util.Arrays;
 
 /**
  * TabooLib 中心工具
@@ -16,8 +13,9 @@ import java.util.Arrays;
  */
 public class TabooLibAPI {
 
-    private static boolean bukkit;
-    private static final boolean forge = forName("net.minecraftforge.classloading.FMLForgePlugin", Plugin.class.getClassLoader()) != null || forName("net.minecraftforge.common.MinecraftForge", Plugin.class.getClassLoader()) != null;
+    private static boolean isBukkit;
+
+    private static final boolean isForge = forName("net.minecraftforge.classloading.FMLForgePlugin", Plugin.class.getClassLoader()) != null || forName("net.minecraftforge.common.MinecraftForge", Plugin.class.getClassLoader()) != null;
 
     /**
      * 通过类加载器获取插件类
@@ -37,7 +35,7 @@ public class TabooLibAPI {
         try {
             // 判断是否基于 Bukkit 运行
             Class.forName("org.bukkit.Bukkit");
-            bukkit = true;
+            isBukkit = true;
         } catch (Exception ignored) {
         }
     }
@@ -55,14 +53,14 @@ public class TabooLibAPI {
      * @return 当前服务端是否基于 Bukkit（含 Spigot、Paper 等）
      */
     public static boolean isBukkit() {
-        return bukkit;
+        return isBukkit;
     }
 
     /**
      * @return 当前服务端是否含有 Forge
      */
     public static boolean isForge() {
-        return forge;
+        return isForge;
     }
 
     /**

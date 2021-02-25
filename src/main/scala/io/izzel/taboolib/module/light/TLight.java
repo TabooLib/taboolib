@@ -95,8 +95,8 @@ public class TLight {
      * @param lightType 光照类型
      * @return boolean
      */
+    @SuppressWarnings("UnusedReturnValue")
     public static boolean deleteLight(Location location, Type lightType) {
         return NMS.handle().deleteLight(location.getBlock(), lightType);
     }
-
 }

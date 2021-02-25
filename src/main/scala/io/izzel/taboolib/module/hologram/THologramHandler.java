@@ -31,8 +31,8 @@ import java.util.UUID;
 /**
  * 全息逻辑处理类
  *
- * @Author sky
- * @Since 2020-03-07 14:23
+ * @author sky
+ * @since 2020-03-07 14:23
  */
 @TListener
 class THologramHandler implements Listener {

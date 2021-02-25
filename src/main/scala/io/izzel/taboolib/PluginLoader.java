@@ -11,7 +11,6 @@ import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.db.local.Local;
 import io.izzel.taboolib.module.db.source.DBSource;
 import io.izzel.taboolib.module.dependency.TDependencyInjector;
-import io.izzel.taboolib.module.inject.TListenerHandler;
 import io.izzel.taboolib.module.inject.TScheduleLoader;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import org.bukkit.Bukkit;
@@ -62,8 +61,6 @@ public abstract class PluginLoader {
 
             @Override
             public void onStarting(Plugin plugin) {
-                // 加载监听器
-                TListenerHandler.setupListener(plugin);
                 // 加载插件类
                 TabooLibLoader.postLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册插件命令
@@ -77,8 +74,6 @@ public abstract class PluginLoader {
 
             @Override
             public void onActivated(Plugin plugin) {
-                // 注册监听器
-                TListenerHandler.registerListener(plugin);
                 // 加载插件类
                 TabooLibLoader.activeLoadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
                 // 注册调度器
@@ -97,8 +92,6 @@ public abstract class PluginLoader {
                 if (!(plugin instanceof InternalPlugin)) {
                     // 注销插件类
                     TabooLibLoader.unloadClass(plugin, TabooLibLoader.getPluginClassSafely(plugin));
-                    // 注销监听器
-                    TListenerHandler.cancelListener(plugin);
                     // 注销数据库连接
                     DBSource.getDataSource().keySet().stream().filter(dbSourceData -> dbSourceData.getPlugin().equals(plugin)).forEach(DBSource::closeDataSource);
                     // 注销调度器

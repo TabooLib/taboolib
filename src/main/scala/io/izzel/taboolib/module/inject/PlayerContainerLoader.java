@@ -50,16 +50,16 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
-        for (List<Container> containers : containersMap.values()) {
-            for (Container container : containers) {
-                if (container.getContainer() instanceof Map) {
-                    container.<Map<?, ?>>as().remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-                } else if (container.getContainer() instanceof Collection) {
-                    container.<Collection<?>>as().remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-                } else if (container.getContainer() instanceof Releasable) {
-                    container.<Releasable>as().release(e.getPlayer(), container.isUniqueId() ? e.getPlayer().getUniqueId().toString() : e.getPlayer().getName());
+        for (Map.Entry<String, List<Container>> containers : containersMap.entrySet()) {
+            for (Container container : containers.getValue()) {
+                if (container.isInstanceOf(Map.class)) {
+                    container.<Map<?, ?>>cast().remove(container.namespace(e.getPlayer()));
+                } else if (container.isInstanceOf(Collection.class)) {
+                    container.<Collection<?>>cast().remove(container.namespace(e.getPlayer()));
+                } else if (container.isInstanceOf(Releasable.class)) {
+                    container.<Releasable>cast().release(e.getPlayer(), container.namespace(e.getPlayer()).toString());
                 } else {
-                    TLogger.getGlobalLogger().error("Unsupported container type: " + container.getContainer().getClass().getSimpleName());
+                    TLogger.getGlobalLogger().error("Unsupported container: " + container);
                 }
             }
         }

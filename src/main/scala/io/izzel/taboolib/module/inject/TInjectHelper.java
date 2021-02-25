@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.izzel.taboolib.PluginLoader;
 import io.izzel.taboolib.compat.kotlin.CompatKotlin;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.Reflection;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -35,65 +36,74 @@ public class TInjectHelper {
         }
     }
 
+    public static List<Object> getInstance(Class<?> pluginClass, Plugin plugin) {
+        List<Object> instance = Lists.newArrayList();
+        if (pluginClass.isInstance(PluginLoader.get(plugin))) {
+            instance.add(PluginLoader.get(plugin));
+        }
+        if (CompatKotlin.getInstance(pluginClass) != null) {
+            instance.add(CompatKotlin.getInstance(pluginClass));
+        }
+        if (CompatKotlin.isCompanion(pluginClass)) {
+            instance.add(CompatKotlin.getCompanion(pluginClass));
+        }
+        TInjectCreator.getInstanceMap().entrySet()
+                .stream()
+                .filter(e -> e.getKey().getType().equals(pluginClass))
+                .forEach(e -> instance.add(e.getValue().getInstance()));
+        instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+        if (instance.isEmpty()) {
+            try {
+                instance.add(Reflection.instantiateObject(pluginClass));
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+        return instance;
+    }
+
     public static List<Object> getInstance(Field field, Class<?> pluginClass, Plugin plugin) {
         List<Object> instance = Lists.newArrayList();
-        // Static
         if (Modifier.isStatic(field.getModifiers())) {
             instance.add(null);
-        }
-        // No Static
-        else if (!Modifier.isStatic(field.getModifiers())) {
-            // Main
-            if (pluginClass.equals(PluginLoader.get(plugin).getClass())) {
+        } else {
+            if (pluginClass.isInstance(PluginLoader.get(plugin))) {
                 instance.add(PluginLoader.get(plugin));
             }
-            // TInject
-            if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
-                TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
-            }
-            // TListener
+            TInjectCreator.getInstanceMap().entrySet()
+                    .stream()
+                    .filter(e -> e.getKey().getType().equals(pluginClass))
+                    .forEach(e -> instance.add(e.getValue().getInstance()));
             instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
         }
-        // Nothing
         if (instance.isEmpty()) {
-            TLogger.getGlobalLogger().error(field.getName() + " is not a static field. (" + pluginClass.getName() + ")");
+            TLogger.getGlobalLogger().warn("No instance of " + field.getName() + " (" + pluginClass.getSimpleName() + ")");
         }
         return instance;
     }
 
     public static List<Object> getInstance(Method method, Class<?> pluginClass, Plugin plugin) {
         List<Object> instance = Lists.newArrayList();
-        // Static
         if (Modifier.isStatic(method.getModifiers())) {
             instance.add(null);
-        }
-        // No Static
-        else if (!Modifier.isStatic(method.getModifiers())) {
-            // Object
+        } else {
+            if (pluginClass.isInstance(PluginLoader.get(plugin))) {
+                instance.add(PluginLoader.get(plugin));
+            }
             if (CompatKotlin.getInstance(pluginClass) != null) {
                 instance.add(CompatKotlin.getInstance(pluginClass));
             }
-            // Companion Object
-            else if (CompatKotlin.isCompanion(pluginClass)) {
+            if (CompatKotlin.isCompanion(pluginClass)) {
                 instance.add(CompatKotlin.getCompanion(pluginClass));
             }
-            // TInject
-            if (TInjectCreator.getInstanceMap().entrySet().stream().anyMatch(e -> e.getKey().getType().equals(pluginClass))) {
-                TInjectCreator.getInstanceMap().entrySet().stream().filter(e -> e.getKey().getType().equals(pluginClass)).forEach(i -> instance.add(i.getValue().getInstance()));
-            }
-            // TListener
-            if (plugin != null) {
-                instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
-            }
-            // Main
-            Object redefine = PluginLoader.get(plugin);
-            if (redefine != null && redefine.getClass().equals(pluginClass)) {
-                instance.add(PluginLoader.get(plugin));
-            }
+            TInjectCreator.getInstanceMap().entrySet()
+                    .stream()
+                    .filter(e -> e.getKey().getType().equals(pluginClass))
+                    .forEach(e -> instance.add(e.getValue().getInstance()));
+            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
         }
-        // Nothing
         if (instance.isEmpty()) {
-            TLogger.getGlobalLogger().error(method.getName() + " is not a static method. (" + pluginClass.getName() + ")");
+            TLogger.getGlobalLogger().warn("No instance of " + method.getName() + " (" + pluginClass.getSimpleName() + ")");
         }
         return instance;
     }

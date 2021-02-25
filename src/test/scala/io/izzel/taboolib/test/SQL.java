@@ -5,9 +5,7 @@ import io.izzel.taboolib.module.db.sql.query.Where;
 import io.izzel.taboolib.util.Pair;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 public class SQL {
 

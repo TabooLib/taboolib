@@ -227,7 +227,7 @@ public class TabooLibLoader {
         return classes;
     }
 
-    static void preLoadClass(Plugin plugin, List<Class> loadClass) {
+    static void preLoadClass(Plugin plugin, List<Class<?>> loadClass) {
         loaders.forEach(loader -> {
             for (Class pluginClass : loadClass) {
                 try {
@@ -240,7 +240,7 @@ public class TabooLibLoader {
         });
     }
 
-    static void postLoadClass(Plugin plugin, List<Class> loadClass) {
+    static void postLoadClass(Plugin plugin, List<Class<?>> loadClass) {
         loaders.forEach(loader -> {
             for (Class pluginClass : loadClass) {
                 try {
@@ -253,7 +253,7 @@ public class TabooLibLoader {
         });
     }
 
-    static void activeLoadClass(Plugin plugin, List<Class> loadClass) {
+    static void activeLoadClass(Plugin plugin, List<Class<?>> loadClass) {
         loaders.forEach(loader -> {
             for (Class pluginClass : loadClass) {
                 try {
@@ -266,7 +266,7 @@ public class TabooLibLoader {
         });
     }
 
-    static void unloadClass(Plugin plugin, List<Class> loadClass) {
+    static void unloadClass(Plugin plugin, List<Class<?>> loadClass) {
         loaders.forEach(loader -> {
             for (Class pluginClass : loadClass) {
                 try {

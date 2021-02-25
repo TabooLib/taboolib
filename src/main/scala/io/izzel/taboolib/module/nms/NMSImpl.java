@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import com.mojang.brigadier.CommandDispatcher;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;

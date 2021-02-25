@@ -14,7 +14,6 @@ public class IO {
         return new String(readFully(inputStream), charset);
     }
 
-    @NotNull
     public static byte[] readFully(InputStream inputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];

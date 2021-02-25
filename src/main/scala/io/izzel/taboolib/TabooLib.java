@@ -65,22 +65,18 @@ import java.util.concurrent.Executors;
 )
 public class TabooLib {
 
-    private static TabooLib inst = new TabooLib();
-    private static TLogger logger;
-    private static TConfig config;
+    private static final YamlConfiguration internal = new YamlConfiguration();
 
-    // 当前运行版本
+    private static final TabooLib instance = new TabooLib();
+
+    private static final TLogger logger = TLogger.getUnformatted("TabooLib");
+
+    private static final TConfig config = TConfig.create(getPlugin(), "settings.yml");
+
     private static double version;
-
-    // 内部语言文件
-    private final YamlConfiguration internal = new YamlConfiguration();
 
     @SuppressWarnings("BusyWait")
     public TabooLib() {
-        inst = this;
-        logger = TLogger.getUnformatted("TabooLib");
-        // 配置文件从 config.yml 修改为 settings.yml 防止与老版本插件冲突
-        config = TConfig.create(getPlugin(), "settings.yml");
         // 配置更新
         try {
             config.migrate();
@@ -128,70 +124,37 @@ public class TabooLib {
         });
     }
 
-    /**
-     * 获取 TaboLib 伪装插件
-     *
-     * @return {@link InternalPlugin}
-     */
+    public static double getVersion() {
+        return version;
+    }
+
     @NotNull
     public static InternalPlugin getPlugin() {
         return InternalPlugin.getPlugin();
     }
 
-    /**
-     * 获取 TabooLib 文件实例
-     *
-     * @return File
-     */
-    @NotNull
-    public static File getTabooLibFile() {
-        return new File("libs/TabooLib.jar");
-    }
-
-    /**
-     * 获取 TabooLib 内部配置文件
-     *
-     * @return YamlConfiguration
-     */
     @NotNull
     public YamlConfiguration getInternal() {
         return internal;
     }
 
-    /**
-     * 获取 TabooLib 实例
-     *
-     * @return {@link TabooLib}
-     */
     @NotNull
     public static TabooLib getInst() {
-        return inst;
+        return instance;
     }
 
-    /**
-     * 获取 TabooLib 的日志实例
-     *
-     * @return {@link TLogger}
-     */
-    @NotNull
-    public static TLogger getLogger() {
-        return logger;
-    }
-
-    /**
-     * 获取 TabooLib 配置文件实例
-     *
-     * @return {@link TConfig}
-     */
     @NotNull
     public static TConfig getConfig() {
         return config;
     }
 
-    /**
-     * @return TabooLib 版本号，如 5.41
-     */
-    public static double getVersion() {
-        return version;
+    @NotNull
+    public static TLogger getLogger() {
+        return logger;
+    }
+
+    @NotNull
+    public static File getTabooLibFile() {
+        return new File("libs/TabooLib.jar");
     }
 }

@@ -3,7 +3,6 @@ package io.izzel.taboolib.module.command.base;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.module.command.base.display.DisplayBase;
 import io.izzel.taboolib.module.command.base.display.DisplayFlat;
 import io.izzel.taboolib.module.locale.TLocale;

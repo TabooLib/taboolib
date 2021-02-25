@@ -2,7 +2,6 @@ package io.izzel.taboolib.common.listener;
 
 import io.izzel.taboolib.PluginLoader;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.common.loader.Startup;
 import io.izzel.taboolib.common.loader.StartupLoader;
 import io.izzel.taboolib.module.command.lite.CommandBuilder;

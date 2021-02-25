@@ -1,7 +1,6 @@
 package io.izzel.taboolib.module.dependency;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.AnnotationVisitor;
