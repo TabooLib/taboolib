@@ -1,7 +1,9 @@
 <p align="center">
-  <img src="https://i.loli.net/2019/07/06/5d1f802426f2a12175.png">
+  <!-- legacy https://i.loli.net/2019/07/06/5d1f802426f2a12175.png -->
+  <img src="https://i.loli.net/2021/02/24/pbLg5T4DyU2YoKS.png">
 </p>
-<h3 align="center"><i>Built-in Bukkit-API Expansion @since 2017</i></h3>
+<h3 align="center">Powerful framework for creating bukkit plugin.</b><h3>
+<h4 align="center">NO PLUGIN, NO SPAM AND ONLY TOOLS</b><h4>
 <p align="center">
   <a>
     <img src="https://img.shields.io/github/license/bkm016/taboolib.svg">
@@ -29,17 +31,12 @@
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.4-yellow.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/kether--common-1.0.10-yellow.svg">
+    <img src="https://img.shields.io/badge/kether--common-1.0.10-red.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/navigation--no--entity-1.0.0-red.svg">
   </a>
 </p>
-
----
-
-# 🌟 Features
-
-+ **Built-in expansion**：Doesn't need to download any plugin.
-+ **Silently running**：No redundant console logs.
-+ **Lightweight**：More tools and only tools.
 
 ---
 <p align="center">
