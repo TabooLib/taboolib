@@ -2,7 +2,8 @@
   <!-- legacy https://i.loli.net/2019/07/06/5d1f802426f2a12175.png -->
   <img src="https://i.loli.net/2021/02/24/pbLg5T4DyU2YoKS.png">
 </p>
-<h3 align="center"><i>Powerful framework for creating bukkit plugin @since 2017</i></h3>
+<h3 align="center">Powerful framework for creating bukkit plugin.
+  <br><span style="color=gray">NO PLUGIN, NO SPAM AND ONLY TOOLS</span></h3>
 <p align="center">
   <a>
     <img src="https://img.shields.io/github/license/bkm016/taboolib.svg">
