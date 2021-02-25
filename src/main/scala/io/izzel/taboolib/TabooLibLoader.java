@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("rawtypes")
 public class TabooLibLoader {
 
-    static Map<String, List<Class>> pluginClasses = Maps.newConcurrentMap();
+    static Map<String, List<Class<?>>> pluginClasses = Maps.newConcurrentMap();
     static List<Loader> loaders = Lists.newArrayList();
     static List<Runnable> tasks = Lists.newArrayList();
     static boolean started;
@@ -75,7 +75,7 @@ public class TabooLibLoader {
      * @return List
      */
     @NotNull
-    public static Optional<List<Class>> getPluginClasses(Plugin plugin) {
+    public static Optional<List<Class<?>>> getPluginClasses(Plugin plugin) {
         return Optional.ofNullable(pluginClasses.get(plugin.getName()));
     }
 
@@ -86,8 +86,8 @@ public class TabooLibLoader {
      * @return List
      */
     @NotNull
-    public static List<Class> getPluginClassSafely(Plugin plugin) {
-        List<Class> classes = pluginClasses.get(plugin.getName());
+    public static List<Class<?>> getPluginClassSafely(Plugin plugin) {
+        List<Class<?>> classes = pluginClasses.get(plugin.getName());
         return classes == null ? new ArrayList<>() : new ArrayList<>(classes);
     }
 
@@ -95,7 +95,7 @@ public class TabooLibLoader {
      * @return 已缓存的所有插件类
      */
     @NotNull
-    public static Map<String, List<Class>> getPluginClasses() {
+    public static Map<String, List<Class<?>>> getPluginClasses() {
         return pluginClasses;
     }
 
@@ -172,7 +172,7 @@ public class TabooLibLoader {
     static void setupClasses(Plugin plugin) {
         try {
             long time = System.currentTimeMillis();
-            final List<Class> classes = Lists.newArrayList();
+            final List<Class<?>> classes = Lists.newArrayList();
             File file = plugin.getName().equals("TabooLib") ? TabooLib.getTabooLibFile() : Reflex.Companion.from(JavaPlugin.class).instance(plugin).read("file");
             File fileClasses = Files.file(TabooLib.getPlugin().getDataFolder(), "cache/classes/" + plugin.getName() + ".txt");
             Files.read(fileClasses, r -> {
@@ -194,7 +194,7 @@ public class TabooLibLoader {
                         Files.write(fileClasses, w -> {
                             w.write("--- SHA-1 ---");
                             w.newLine();
-                            w.write(fileHash);
+                            w.write(fileHash != null ? fileHash : "");
                             w.newLine();
                             w.write("--- SHA-1 ---");
                             w.newLine();
@@ -208,14 +208,13 @@ public class TabooLibLoader {
                 }
             });
             pluginClasses.put(plugin.getName(), classes);
-            TabooLibAPI.debug("Loaded " + classes.size() + " classes (" + plugin.getName() + ") (" + (System.currentTimeMillis() - time) + "ms)");
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    static List<Class> getClassesFromJar(Plugin plugin) {
-        List<Class> classes = Lists.newArrayList();
+    static List<Class<?>> getClassesFromJar(Plugin plugin) {
+        List<Class<?>> classes = Lists.newArrayList();
         IgnoreClasses annotation = plugin.getClass().getAnnotation(IgnoreClasses.class);
         if (annotation != null) {
             classes.addAll(Files.getClasses(plugin, annotation.value()));

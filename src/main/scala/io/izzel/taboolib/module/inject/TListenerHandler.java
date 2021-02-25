@@ -68,15 +68,9 @@ public class TListenerHandler {
                     } else {
                         listener = plugin.getClass().equals(pluginClass) ? (Listener) plugin : (Listener) Reflection.instantiateObject(pluginClass);
                     }
-                    try {
-                        listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
-                        TabooLibAPI.debug("Listener " + listener.getClass().getSimpleName() + " setup successfully. (" + plugin.getName() + ")");
-                    } catch (Exception e) {
-                        TLogger.getGlobalLogger().warn("TListener setup Failed: " + pluginClass.getName());
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    TabooLibAPI.debug("Listener " + pluginClass.getSimpleName() + "(" + plugin.getName() + ")" + " setup failed: " + e.toString());
+                    listeners.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(listener);
+                } catch (Throwable e) {
+                    TLogger.getGlobalLogger().warn("TListener " + pluginClass.getSimpleName() + "(" + plugin.getName() + ")" + " setup failed: " + e.toString());
                 }
             }
         }
@@ -129,7 +123,6 @@ public class TListenerHandler {
                 }
                 // 注册监听
                 Bukkit.getPluginManager().registerEvents(listener, plugin);
-                TabooLibAPI.debug("Listener " + listener.getClass().getSimpleName() + " registered. (" + plugin.getName() + ")");
             }
         });
     }

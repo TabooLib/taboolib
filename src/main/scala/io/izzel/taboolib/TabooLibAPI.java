@@ -88,41 +88,4 @@ public class TabooLibAPI {
     public static double[] getTPS() {
         return NMS.handle().getTPS();
     }
-
-    /**
-     * @return 检测是否处于调试模式，可通过控制台指令 /tdebug 指令切换调试模式。
-     */
-    public static boolean isDebug() {
-        return Local.get().get("data").getBoolean("debug");
-    }
-
-    /**
-     * 设置调试模式
-     *
-     * @param debug debug
-     */
-    public static void debug(boolean debug) {
-        Local.get().get("data").set("debug", debug);
-    }
-
-    /**
-     * 输出调试信息
-     *
-     * @param args 调试信息，不通过颜色转换
-     */
-    public static void debug(String... args) {
-        debug(TabooLib.getPlugin(), args);
-    }
-
-    /**
-     * 已特定插件视角输出调试信息
-     *
-     * @param plugin 插件实例
-     * @param args   调试信息，不通过颜色转换
-     */
-    public static void debug(Plugin plugin, String... args) {
-        if (isDebug()) {
-            Arrays.stream(args).forEach(line -> Bukkit.getConsoleSender().sendMessage("§4[" + plugin.getName() + "][DEBUG] §c" + line));
-        }
-    }
 }

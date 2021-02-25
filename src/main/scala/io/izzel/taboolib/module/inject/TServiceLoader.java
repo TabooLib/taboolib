@@ -21,7 +21,6 @@ public class TServiceLoader implements TabooLibLoader.Loader {
             TService service = (TService) pluginClass.getAnnotation(TService.class);
             try {
                 Bukkit.getServicesManager().register(pluginClass, service.value().newInstance(), plugin, ServicePriority.Normal);
-                TabooLibAPI.debug("Service " + pluginClass.getSimpleName() + " registered. (" + plugin.getName() + ")");
             } catch (Exception e) {
                 TLogger.getGlobalLogger().warn("TService load Failed: " + pluginClass.getName());
                 e.printStackTrace();
@@ -35,7 +34,6 @@ public class TServiceLoader implements TabooLibLoader.Loader {
             TService service = pluginClass.getAnnotation(TService.class);
             try {
                 Bukkit.getServicesManager().unregister(pluginClass, Bukkit.getServicesManager().load(pluginClass));
-                TabooLibAPI.debug("Service " + pluginClass.getSimpleName() + " unregistered. (" + plugin.getName() + ")");
             } catch (Exception e) {
                 TLogger.getGlobalLogger().warn("TService unload Failed: " + pluginClass.getName());
                 e.printStackTrace();

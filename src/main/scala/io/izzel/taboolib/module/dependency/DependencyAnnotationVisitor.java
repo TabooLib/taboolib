@@ -61,11 +61,7 @@ public class DependencyAnnotationVisitor extends AnnotationVisitor {
     public void visitEnd() {
         if (maven != null) {
             try {
-                if (TDependency.requestLib(maven, mavenRepo, url)) {
-                    TabooLibAPI.debug("  Loaded " + String.join(":", maven) + " (" + plugin.getName() + ")");
-                } else {
-                    TabooLibAPI.debug("  Loading failed " + String.join(":", maven) + " (" + plugin.getName() + ")");
-                }
+                TDependency.requestLib(maven, mavenRepo, url);
             } catch (ConnectException ignored) {
                 TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-LOAD-FAIL"), plugin.getName(), String.join(":", maven)));
             }

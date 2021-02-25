@@ -43,7 +43,6 @@ public class TConfig extends YamlConfiguration {
         this.file = file;
         reload();
         TConfigWatcher.getInst().addSimpleListener(this.file, this::reload);
-        TabooLibAPI.debug("Loaded TConfiguration \"" + file.getName() + "\" from Plugin \"" + plugin.getName() + "\"");
     }
 
     @NotNull

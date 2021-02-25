@@ -45,7 +45,7 @@ public class Files {
      * @return List
      */
     @NotNull
-    public static List<Class> getClasses(Plugin plugin) {
+    public static List<Class<?>> getClasses(Plugin plugin) {
         return getClasses(plugin, new String[0]);
     }
 
@@ -57,8 +57,8 @@ public class Files {
      * @return List
      */
     @NotNull
-    public static List<Class> getClasses(Plugin plugin, String[] ignore) {
-        List<Class> classes = new CopyOnWriteArrayList<>();
+    public static List<Class<?>> getClasses(Plugin plugin, String[] ignore) {
+        List<Class<?>> classes = new CopyOnWriteArrayList<>();
         URL url = plugin.getClass().getProtectionDomain().getCodeSource().getLocation();
         try {
             File src;

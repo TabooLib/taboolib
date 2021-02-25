@@ -99,9 +99,6 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                 }
             });
         }
-        if (methods.size() + fields.size() > 0) {
-            TabooLibAPI.debug("Registered " + (methods.size() + fields.size()) + " sub-command with " + baseMainCommand.getRegisterCommand().getName() + " (" + baseMainCommand.getRegisterCommand().getPlugin().getName() + ")");
-        }
     }
 
     public static BaseSubCommand buildSubCommand(BaseMainCommand baseMainCommand, Method method) {

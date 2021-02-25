@@ -98,7 +98,6 @@ public class TCommandHandler {
             reflex.set("permission", permission);
             reflex.set("permissionMessage", permissionMessage);
             commandMap.register(plugin.getName(), pluginCommand);
-            TabooLibAPI.debug("Command " + command + " created. (" + plugin.getName() + ")");
             return true;
         } catch (Exception e) {
             TLocale.Logger.error("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.toString());

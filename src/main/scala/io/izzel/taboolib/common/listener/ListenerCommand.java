@@ -47,14 +47,6 @@ public class ListenerCommand implements Listener {
             Local.saveFiles();
             LocalPlayer.saveFiles();
             TLogger.getGlobalLogger().info("Successfully.");
-        } else if (e.getCommand().equalsIgnoreCase("tDebug")) {
-            if (TabooLibAPI.isDebug()) {
-                TabooLibAPI.debug(false);
-                TLogger.getGlobalLogger().info("&cDisabled.");
-            } else {
-                TabooLibAPI.debug(true);
-                TLogger.getGlobalLogger().info("&aEnabled.");
-            }
         } else if (e.getCommand().equalsIgnoreCase("libUpdate")) {
             e.setCancelled(true);
             e.getSender().sendMessage("§8[§fTabooLib§8] §cWARNING §7| §4Update TabooLib will force to restart your server. Please confirm this action by type §c/libupdateconfirm");
