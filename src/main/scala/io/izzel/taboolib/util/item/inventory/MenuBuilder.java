@@ -6,6 +6,7 @@ import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -35,6 +36,7 @@ public class MenuBuilder {
     private BuildTask buildTaskAsync = r -> {
     };
     private boolean lockHand;
+    private InventoryType inventoryType = InventoryType.CHEST;
 
     public MenuBuilder(Plugin plugin) {
         this.plugin = plugin;
@@ -169,6 +171,18 @@ public class MenuBuilder {
     }
 
     /**
+     * 设置容器类型
+     *
+     * @param inventoryType 容器类型 默认为箱子
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder type(@NotNull InventoryType inventoryType) {
+        this.inventoryType = inventoryType;
+        return this;
+    }
+
+
+    /**
      * 设置菜单行数
      *
      * @param rows 菜单行数
@@ -198,7 +212,13 @@ public class MenuBuilder {
      * @return Bukkit 的 Inventory 背包对象实例
      */
     public Inventory build() {
-        Inventory inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
+        Inventory inventory;
+        if (inventoryType == InventoryType.CHEST){
+            inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
+        }else {
+            inventory = Bukkit.createInventory(new MenuHolder(this), inventoryType, String.valueOf(title));
+        }
+
         for (int i = 0; i < items.length && i < rows; i++) {
             char[] line = items[i];
             for (int j = 0; j < line.length && j < 9; j++) {
