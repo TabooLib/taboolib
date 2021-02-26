@@ -1,6 +1,7 @@
 package io.izzel.taboolib.common.event;
 
 import io.izzel.taboolib.module.event.EventCancellable;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -12,7 +13,7 @@ public class PlayerAttackEvent extends EventCancellable<PlayerAttackEvent> {
     public PlayerAttackEvent(Player player, Entity target) {
         this.player = player;
         this.target = target;
-        async(true);
+        async(!Bukkit.isPrimaryThread());
     }
 
     public Player getPlayer() {

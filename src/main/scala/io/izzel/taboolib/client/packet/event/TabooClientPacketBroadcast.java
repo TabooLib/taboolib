@@ -1,10 +1,11 @@
 package io.izzel.taboolib.client.packet.event;
 
 import io.izzel.taboolib.module.event.EventNormal;
+import org.bukkit.Bukkit;
 
 /**
- * @Author sky
- * @Since 2020-08-29 0:10
+ * @author sky
+ * @since 2020-08-29 0:10
  */
 public class TabooClientPacketBroadcast extends EventNormal<TabooClientPacketBroadcast> {
 
@@ -12,6 +13,7 @@ public class TabooClientPacketBroadcast extends EventNormal<TabooClientPacketBro
 
     public TabooClientPacketBroadcast(String value) {
         this.value = value;
+        async(!Bukkit.isPrimaryThread());
     }
 
     public String getValue() {

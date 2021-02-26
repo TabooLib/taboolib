@@ -14,13 +14,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @Author 坏黑
- * @Since 2018-10-28 14:34
+ * @author 坏黑
+ * @since 2018-10-28 14:34
  */
 public abstract class ChannelExecutor {
 
-    private ExecutorService addChannelService = Executors.newSingleThreadExecutor();
-    private ExecutorService removeChannelService = Executors.newSingleThreadExecutor();
+    private final ExecutorService addChannelService = Executors.newSingleThreadExecutor();
+    private final ExecutorService removeChannelService = Executors.newSingleThreadExecutor();
 
     public abstract void sendPacket(Player player, Object packet);
 
@@ -41,9 +41,9 @@ public abstract class ChannelExecutor {
         });
     }
 
-    class ChannelHandler extends ChannelDuplexHandler {
+    static class ChannelHandler extends ChannelDuplexHandler {
 
-        private Player player;
+        private final Player player;
 
         public ChannelHandler(Player player) {
             this.player = player;

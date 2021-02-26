@@ -1,7 +1,6 @@
 package io.izzel.taboolib.common.plugin.bridge;
 
 import com.google.common.collect.Maps;
-import com.ilummc.tlib.dependency.TDependency;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -9,6 +8,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.util.Reflection;
+import io.izzel.taboolib.util.asm.AsmVersionControl;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.skymc.taboolib.database.PlayerDataManager;
@@ -40,7 +40,7 @@ public class BridgeImpl extends InternalPluginBridge {
     private Object permission;
     private Method getRegionManager;
     private final boolean placeholder;
-    private boolean worldguard;
+    private boolean worldGuard;
 
     @SuppressWarnings("JavaReflectionMemberAccess")
     public BridgeImpl() {
@@ -57,7 +57,7 @@ public class BridgeImpl extends InternalPluginBridge {
                     e.printStackTrace();
                 }
             }
-            worldguard = true;
+            worldGuard = true;
         }
         placeholder = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
     }
@@ -65,7 +65,16 @@ public class BridgeImpl extends InternalPluginBridge {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getRegisteredService(Class<? extends T> clazz) {
-        RegisteredServiceProvider registeredServiceProvider = Bukkit.getServer().getServicesManager().getRegistration(clazz);
+        Class<?> service = null;
+        for (Class<?> knownService : Bukkit.getServicesManager().getKnownServices()) {
+            if (knownService.getName().equals(clazz.getName())) {
+                service = knownService;
+            }
+        }
+        if (service == null) {
+            return null;
+        }
+        RegisteredServiceProvider registeredServiceProvider = Bukkit.getServicesManager().getRegistration(service);
         return registeredServiceProvider == null ? null : (T) registeredServiceProvider.getProvider();
     }
 
@@ -81,42 +90,32 @@ public class BridgeImpl extends InternalPluginBridge {
 
     @Override
     public void economyCreate(OfflinePlayer p) {
-        if (economy instanceof Economy) {
-            ((Economy) economy).createPlayerAccount(p);
-        }
+        ((Economy) economy).createPlayerAccount(p);
     }
 
     @Override
     public void economyTake(OfflinePlayer p, double d) {
-        if (economy instanceof Economy) {
-            ((Economy) economy).withdrawPlayer(p, d);
-        }
+        ((Economy) economy).withdrawPlayer(p, d);
     }
 
     @Override
     public void economyGive(OfflinePlayer p, double d) {
-        if (economy instanceof Economy) {
-            ((Economy) economy).depositPlayer(p, d);
-        }
+        ((Economy) economy).depositPlayer(p, d);
     }
 
     @Override
     public double economyLook(OfflinePlayer p) {
-        return economy instanceof Economy ? ((Economy) economy).getBalance(p) : 0;
+        return ((Economy) economy).getBalance(p);
     }
 
     @Override
     public void permissionAdd(Player player, String perm) {
-        if (permission instanceof Permission) {
-            ((Permission) permission).playerAdd(player, perm);
-        }
+        ((Permission) permission).playerAdd(player, perm);
     }
 
     @Override
     public void permissionRemove(Player player, String perm) {
-        if (permission instanceof Permission) {
-            ((Permission) permission).playerRemove(player, perm);
-        }
+        ((Permission) permission).playerRemove(player, perm);
     }
 
     @Override
@@ -151,7 +150,7 @@ public class BridgeImpl extends InternalPluginBridge {
 
     @Override
     public boolean worldguardHooked() {
-        return worldguard;
+        return worldGuard;
     }
 
     @Override
@@ -163,6 +162,19 @@ public class BridgeImpl extends InternalPluginBridge {
     public void registerExpansion(Class pluginClass) {
         try {
             ((PlaceholderExpansion) pluginClass.newInstance()).register();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @Override
+    public void registerExpansionProxy(Class expansionClass) {
+        try {
+            BridgeProxy proxy = (BridgeProxy) AsmVersionControl.createNMS("io.izzel.taboolib.common.plugin.bridge.proxy.PlaceholderExpansionProxy")
+                    .translateBridge()
+                    .newInstance();
+            proxy.initProxy("expansion", expansionClass.newInstance());
+            ((PlaceholderExpansion) proxy).register();
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -259,7 +271,7 @@ public class BridgeImpl extends InternalPluginBridge {
 
     @Override
     public void test() {
-        TDependency.requestPlugin("");
+//        TDependency.requestPlugin("");
     }
 
     private RegionManager worldguardRegionManager(World world) {

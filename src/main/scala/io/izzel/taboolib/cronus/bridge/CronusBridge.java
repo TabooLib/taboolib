@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Author sky
- * @Since 2020-07-03 14:05
+ * @author sky
+ * @since 2020-07-03 14:05
  */
 public class CronusBridge {
 

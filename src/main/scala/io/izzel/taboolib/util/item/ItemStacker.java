@@ -8,14 +8,19 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 /**
- * @Author 坏黑
- * @Since 2019-02-07 23:53
+ * 物品背包合并工具
+ *
+ * @author 坏黑
+ * @since 2019-02-07 23:53
  */
 public class ItemStacker {
 
     /**
      * 从箱子里移动物品到玩家背包
      * 如果溢出则丢弃
+     *
+     * @param item   物品
+     * @param player 玩家
      */
     public static void moveItemFromChest(ItemStack item, Player player) {
         AddResult result = addItemAndMerge(item, player.getInventory(), new Integer[0]);
@@ -34,8 +39,13 @@ public class ItemStacker {
     /**
      * 添加并拆分，但不合并
      * 返回值为是否添加完成
+     * <p>
      *
-     * desc = 快捷栏逆向添加，用于工作台拟真，会忽略 start 参数
+     * @param item      物品
+     * @param desc      快捷栏逆向添加，用于工作台拟真，会忽略 start 参数
+     * @param inventory 背包
+     * @param start     起始位置
+     * @return boolean
      */
     public static boolean addItemAndSplit(ItemStack item, Inventory inventory, int start, boolean desc) {
         int size = inventory instanceof PlayerInventory || inventory instanceof CraftingInventory ? 36 : inventory.getSize();
@@ -94,6 +104,11 @@ public class ItemStacker {
 
     /**
      * 合并物品，不新增
+     *
+     * @param inventory 背包
+     * @param item      物品
+     * @param ignore    忽略位置
+     * @return {@link AddResult}
      */
     public static AddResult addItemAndMerge(ItemStack item, Inventory inventory, Integer[] ignore) {
         boolean changed = false;
@@ -138,8 +153,8 @@ public class ItemStacker {
 
     public static class AddResult {
 
-        private int countOut;
-        private boolean changed;
+        private final int countOut;
+        private final boolean changed;
 
         public AddResult(int countOut, boolean changed) {
             this.countOut = countOut;

@@ -19,8 +19,8 @@ import java.util.Collection;
 /**
  * 该类仅用作生成 ASM 代码，无任何意义
  *
- * @Author sky
- * @Since 2018-09-20 20:57
+ * @author sky
+ * @since 2018-09-20 20:57
  */
 @SuppressWarnings("rawtypes")
 public class InternalPathfinderExecutor extends PathfinderExecutor {

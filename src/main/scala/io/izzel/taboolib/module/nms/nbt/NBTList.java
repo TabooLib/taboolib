@@ -10,12 +10,14 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-24 18:37
+ * 物品 NBT 结构映射类
+ *
+ * @author 坏黑
+ * @since 2019-05-24 18:37
  */
 public class NBTList extends NBTBase implements List<NBTBase> {
 
-    private List<NBTBase> value = new CopyOnWriteArrayList<>();
+    private final List<NBTBase> value = new CopyOnWriteArrayList<>();
 
     public NBTList() {
         super(0);

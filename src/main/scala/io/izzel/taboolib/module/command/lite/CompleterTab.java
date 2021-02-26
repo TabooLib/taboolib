@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.command.lite;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -11,6 +13,6 @@ import java.util.List;
  */
 public interface CompleterTab {
 
-    List<String> execute(CommandSender sender, String[] args);
+    @Nullable List<String> execute(@NotNull CommandSender sender, @NotNull String[] args);
 
 }

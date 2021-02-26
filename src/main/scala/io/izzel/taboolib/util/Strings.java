@@ -8,8 +8,21 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 文本工具
+ *
+ * @author sky
+ * @since -
+ */
 public class Strings {
 
+    /**
+     * 重复一段文本特定次数
+     *
+     * @param text  文本
+     * @param count 次数
+     * @return String
+     */
     public static String copy(String text, int count) {
         return IntStream.range(0, count).mapToObj(i -> text).collect(Collectors.joining());
     }
@@ -98,6 +111,13 @@ public class Strings {
         return cacheKey;
     }
 
+    /**
+     * 获取两段文本的相似度（0.0~1.0)
+     *
+     * @param strA 文本
+     * @param strB 文本
+     * @return double
+     */
     public static double similarDegree(String strA, String strB) {
         String newStrA = removeSign(max(strA, strB));
         String newStrB = removeSign(min(strA, strB));

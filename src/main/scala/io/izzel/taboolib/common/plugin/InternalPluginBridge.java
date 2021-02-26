@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-09 17:10
+ * @author 坏黑
+ * @since 2019-07-09 17:10
  */
 public abstract class InternalPluginBridge {
 
@@ -64,9 +64,11 @@ public abstract class InternalPluginBridge {
 
     abstract public boolean worldguardHooked();
 
-    abstract public boolean isPlaceholderExpansion(Class pluginClass);
+    abstract public boolean isPlaceholderExpansion(Class<?> pluginClass);
 
-    abstract public void registerExpansion(Class pluginClass);
+    abstract public void registerExpansion(Class<?> pluginClass);
+
+    abstract public void registerExpansionProxy(Class<?> expansionClass);
 
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 
@@ -76,12 +78,11 @@ public abstract class InternalPluginBridge {
 
     abstract public int viaVersionPlayerVersion(Player player);
 
-    abstract public Class getClass(String name) throws ClassNotFoundException;
+    abstract public Class<?> getClass(String name) throws ClassNotFoundException;
 
     abstract public ClassLoader getClassLoader();
 
     abstract public void attach(ClassFileTransformer transformer, List<String> c);
 
     abstract public void test();
-
 }

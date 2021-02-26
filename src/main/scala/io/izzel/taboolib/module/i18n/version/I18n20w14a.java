@@ -8,9 +8,13 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.i18n.I18nBase;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Files;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -22,8 +26,8 @@ import java.util.concurrent.Executors;
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
  *
- * @Author sky
- * @Since 2020-04-04 19:51
+ * @author sky
+ * @since 2020-04-04 19:51
  */
 public class I18n20w14a extends I18nBase {
 
@@ -69,7 +73,7 @@ public class I18n20w14a extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, Entity entity) {
+    public @NotNull String getName(Player player, @NotNull Entity entity) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");
@@ -82,7 +86,7 @@ public class I18n20w14a extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, ItemStack itemStack) {
+    public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");
@@ -92,6 +96,32 @@ public class I18n20w14a extends I18nBase {
         }
         JsonElement element = locale.get(NMS.handle().getName(itemStack));
         return element == null ? itemStack.getType().name().toLowerCase().replace("_", "") : element.getAsString();
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull Enchantment enchantment) {
+        JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
+        if (locale == null) {
+            locale = cache.get("en_gb");
+        }
+        if (locale == null) {
+            return "[ERROR LOCALE]";
+        }
+        JsonElement element = locale.get(NMS.handle().getEnchantmentKey(enchantment));
+        return element == null ? enchantment.getName() : element.getAsString();
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull PotionEffectType potionEffectType) {
+        JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
+        if (locale == null) {
+            locale = cache.get("en_gb");
+        }
+        if (locale == null) {
+            return "[ERROR LOCALE]";
+        }
+        JsonElement element = locale.get(NMS.handle().getPotionEffectTypeKey(potionEffectType));
+        return element == null ? potionEffectType.getName() : element.getAsString();
     }
 
     public void load() {

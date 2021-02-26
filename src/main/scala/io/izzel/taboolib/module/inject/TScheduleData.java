@@ -3,8 +3,8 @@ package io.izzel.taboolib.module.inject;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
- * @Author 坏黑
- * @Since 2018-12-15 15:25
+ * @author 坏黑
+ * @since 2018-12-15 15:25
  */
 public class TScheduleData {
 

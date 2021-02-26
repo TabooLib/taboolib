@@ -10,9 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import sun.misc.Unsafe;
-import sun.reflect.Reflection;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -21,6 +21,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 反射工具
+ *
+ * @author izzel
+ */
 @SuppressWarnings("restriction")
 @ThreadSafe
 public class Ref {
@@ -39,6 +44,7 @@ public class Ref {
             Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");
             theUnsafe.setAccessible(true);
             UNSAFE = (Unsafe) theUnsafe.get(null);
+            UNSAFE.ensureClassInitialized(MethodHandles.Lookup.class);
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             Object lookupBase = UNSAFE.staticFieldBase(lookupField);
             long lookupOffset = UNSAFE.staticFieldOffset(lookupField);
@@ -48,6 +54,9 @@ public class Ref {
         }
     }
 
+    /**
+     * @return Unsafe 实例
+     */
     public static Unsafe getUnsafe() {
         return UNSAFE;
     }
@@ -58,38 +67,15 @@ public class Ref {
 
     public static void putField(Object src, Field field, Object value) {
         Preconditions.checkNotNull(field);
-        if (Modifier.isStatic(field.getModifiers())) {
-            Object base = getUnsafe().staticFieldBase(field);
-            long offset = getUnsafe().staticFieldOffset(field);
-            put(field, base, offset, value);
-        } else {
-            long offset = getUnsafe().objectFieldOffset(field);
-            put(field, src, offset, value);
-        }
-    }
-
-    private static void put(Field field, Object base, long offset, Object value) {
-        Class<?> type = field.getType();
-        if (type.isPrimitive()) {
-            if (type == boolean.class) {
-                getUnsafe().putBoolean(base, offset, (Boolean) value);
-            } else if (type == int.class) {
-                getUnsafe().putInt(base, offset, ((Number) value).intValue());
-            } else if (type == double.class) {
-                getUnsafe().putDouble(base, offset, ((Number) value).doubleValue());
-            } else if (type == long.class) {
-                getUnsafe().putLong(base, offset, ((Number) value).longValue());
-            } else if (type == float.class) {
-                getUnsafe().putFloat(base, offset, ((Number) value).floatValue());
-            } else if (type == short.class) {
-                getUnsafe().putShort(base, offset, ((Number) value).shortValue());
-            } else if (type == byte.class) {
-                getUnsafe().putByte(base, offset, ((Number) value).byteValue());
-            } else if (type == char.class) {
-                getUnsafe().putChar(base, offset, ((Character) value));
+        try {
+            MethodHandle methodHandle = lookup().unreflectSetter(field);
+            if (Modifier.isStatic(field.getModifiers())) {
+                methodHandle.invokeWithArguments(value);
+            } else {
+                methodHandle.bindTo(src).invokeWithArguments(value);
             }
-        } else {
-            getUnsafe().putObject(base, offset, value);
+        } catch (Throwable t) {
+            getUnsafe().throwException(t);
         }
     }
 
@@ -100,43 +86,19 @@ public class Ref {
 
     public static Object getField(Object src, Field field) {
         Preconditions.checkNotNull(field);
-        getUnsafe().ensureClassInitialized(field.getDeclaringClass());
-        if (Modifier.isStatic(field.getModifiers())) {
-            Object base = getUnsafe().staticFieldBase(field);
-            long offset = getUnsafe().staticFieldOffset(field);
-            return get(field, base, offset);
-        } else {
-            long offset = getUnsafe().objectFieldOffset(field);
-            return get(field, src, offset);
+        try {
+            MethodHandle methodHandle = lookup().unreflectGetter(field);
+            if (Modifier.isStatic(field.getModifiers())) {
+                return methodHandle.invokeWithArguments();
+            } else {
+                return methodHandle.bindTo(src).invokeWithArguments();
+            }
+        } catch (Throwable t) {
+            getUnsafe().throwException(t);
+            return null;
         }
     }
 
-    private static Object get(Field field, Object base, long offset) {
-        Class<?> type = field.getType();
-        if (type.isPrimitive()) {
-            if (type == boolean.class) {
-                return getUnsafe().getBoolean(base, offset);
-            } else if (type == int.class) {
-                return getUnsafe().getInt(base, offset);
-            } else if (type == double.class) {
-                return getUnsafe().getDouble(base, offset);
-            } else if (type == long.class) {
-                return getUnsafe().getLong(base, offset);
-            } else if (type == float.class) {
-                return getUnsafe().getFloat(base, offset);
-            } else if (type == short.class) {
-                return getUnsafe().getShort(base, offset);
-            } else if (type == byte.class) {
-                return getUnsafe().getByte(base, offset);
-            } else if (type == char.class) {
-                return getUnsafe().getChar(base, offset);
-            } else {
-                return null;
-            }
-        } else {
-            return getUnsafe().getObject(base, offset);
-        }
-    }
 
     public static List<Field> getDeclaredFields(Class<?> clazz) {
         return getDeclaredFields(clazz, 0, true);
@@ -301,22 +263,27 @@ public class Ref {
         private static CallerClass impl;
 
         static {
-            try {
-                Class.forName("sun.reflect.Reflection");
-                impl = new ReflectionImpl();
-            } catch (ClassNotFoundException e) {
-                impl = new StackTraceImpl();
-            }
+//            try {
+//                Class.forName("sun.reflect.Reflection");
+//                impl = new ReflectionImpl();
+//            } catch (ClassNotFoundException e) {
+//                impl = new StackTraceImpl();
+//            }
+            impl = new StackTraceImpl();
         }
 
         abstract Class<?> getCallerClass(int i);
 
+        /**
+         * Removed on Java 11
+         */
         private static class ReflectionImpl extends CallerClass {
 
             @SuppressWarnings({"deprecation", "restriction"})
             @Override
             Class<?> getCallerClass(int i) {
-                return Reflection.getCallerClass(i);
+//                return Reflection.getCallerClass(i);
+                return null;
             }
         }
 
@@ -325,11 +292,16 @@ public class Ref {
             @Override
             Class<?> getCallerClass(int i) {
                 StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+                String className = elements[i].getClassName();
                 try {
-                    return Class.forName(elements[i].getClassName());
-                } catch (ClassNotFoundException e) {
-                    return null;
+                    return Class.forName(className);
+                } catch (ClassNotFoundException ignored) {
                 }
+                try {
+                    return TabooLibAPI.getPluginBridge().getClass(className);
+                } catch (NullPointerException | ClassNotFoundException ignored) {
+                }
+                return null;
             }
         }
     }

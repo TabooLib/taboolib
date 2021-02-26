@@ -5,8 +5,8 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 
 /**
- * @Author sky
- * @Since 2018-10-05 13:41
+ * @author sky
+ * @since 2018-10-05 13:41
  */
 public interface TInjectTask {
 

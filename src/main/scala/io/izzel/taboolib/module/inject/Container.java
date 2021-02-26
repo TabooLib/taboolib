@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.inject;
 
+import org.bukkit.entity.Player;
+
 /**
  * @author sky
  */
@@ -13,11 +15,23 @@ public class Container {
         this.uniqueId = uniqueId;
     }
 
-    public Object getContainer() {
-        return container;
+    public boolean isInstanceOf(Class<?> clazz) {
+        return clazz.isInstance(container);
     }
 
-    public boolean isUniqueId() {
-        return uniqueId;
+    public Object namespace(Player player) {
+        return uniqueId ? player.getUniqueId() : player.getName();
+    }
+
+    public <T> T cast() {
+        return (T) container;
+    }
+
+    @Override
+    public String toString() {
+        return "Container{" +
+                "container=" + container +
+                ", uniqueId=" + uniqueId +
+                '}';
     }
 }

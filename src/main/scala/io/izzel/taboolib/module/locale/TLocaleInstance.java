@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+/**
+ * 预言文件实例
+ */
 @ThreadSafe
 @SuppressWarnings("rawtypes")
 class TLocaleInstance {

@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:55
+ * @author sky
+ * @since 2018-08-22 23:55
  */
 public class TabooLibSettings {
 

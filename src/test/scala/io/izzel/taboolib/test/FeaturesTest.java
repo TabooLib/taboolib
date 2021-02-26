@@ -2,6 +2,7 @@ package io.izzel.taboolib.test;
 
 import io.izzel.taboolib.util.Features;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class FeaturesTest {
 
@@ -24,7 +25,7 @@ public class FeaturesTest {
             }
 
             @Override
-            public boolean onChat(String message) {
+            public boolean onChat(@NotNull String message) {
                 return true;
             }
         });

@@ -10,8 +10,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /**
- * @Author sky
- * @Since 2020-03-24 23:54
+ * @author sky
+ * @since 2020-03-24 23:54
  */
 @SuppressWarnings("rawtypes")
 public class StartupLoader {

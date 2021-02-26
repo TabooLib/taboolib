@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import java.util.Arrays;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-24 14:09
+ * @author 坏黑
+ * @since 2019-05-24 14:09
  */
 public class Location {
 

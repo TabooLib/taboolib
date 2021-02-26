@@ -7,8 +7,10 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * @Author sky
- * @Since 2019-10-22 11:38
+ * 物品 Attribute 属性映射类
+ *
+ * @author sky
+ * @since 2019-10-22 11:38
  */
 public class NBTAttribute {
 
@@ -56,11 +58,11 @@ public class NBTAttribute {
 
     public static NBTAttribute fromNBT(NBTCompound nbt) {
         NBTAttribute attribute = new NBTAttribute(
-                new UUID(nbt.get("UUIDMost").asLong(), nbt.get("UUIDLeast").asLong()),
+                new UUID(nbt.getOrElse("UUIDMost", new NBTBase(0L)).asLong(), nbt.getOrElse("UUIDLeast", new NBTBase(0L)).asLong()),
                 nbt.get("AttributeName").asString(),
                 nbt.get("Name").asString(),
                 nbt.get("Amount").asDouble(),
-                NBTOperation.fromIndex(nbt.get("Operation").asInt())
+                NBTOperation.fromIndex(nbt.getOrElse("Operation", new NBTBase(0)).asInt())
         );
         if (nbt.containsKey("Slot")) {
             attribute.slot(Equipments.fromNMS(nbt.get("Slot").asString()));
@@ -71,12 +73,6 @@ public class NBTAttribute {
     public static NBTAttribute create() {
         return new NBTAttribute(Items.asAttribute("damage"), "TabooLib Modifiers", 0, NBTOperation.ADD_NUMBER);
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public UUID getId() {
         return id;

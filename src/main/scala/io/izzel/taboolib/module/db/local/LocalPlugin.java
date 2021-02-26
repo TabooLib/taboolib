@@ -9,8 +9,10 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-06 16:55
+ * 本地数据
+ *
+ * @author 坏黑
+ * @since 2019-07-06 16:55
  */
 public class LocalPlugin {
 

@@ -18,13 +18,13 @@ import org.bukkit.plugin.Plugin;
 import java.util.Arrays;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:32
+ * @author sky
+ * @since 2018-08-22 23:32
  */
 @TListener
 public class PacketSerializer implements Listener {
 
-    private static PacketParser parser = new PacketParser();
+    private static final PacketParser parser = new PacketParser();
 
     public PacketSerializer() {
         loadPacket();
@@ -98,12 +98,6 @@ public class PacketSerializer implements Listener {
         }
         return packet == null ? new PacketEmpty(0) : packet;
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public static PacketParser getParser() {
         return parser;

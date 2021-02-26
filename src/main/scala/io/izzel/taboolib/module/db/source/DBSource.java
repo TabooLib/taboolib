@@ -14,8 +14,10 @@ import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @Author sky
- * @Since 2018-05-16 21:59
+ * 连接池创建工具
+ *
+ * @author sky
+ * @since 2018-05-16 21:59
  */
 public class DBSource {
 

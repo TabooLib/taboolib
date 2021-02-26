@@ -8,6 +8,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * 日志工具
+ *
+ * @author sky
+ */
 public class TLogger {
 
     public static final int VERBOSE = 0, FINEST = 1, FINE = 2, INFO = 3, WARN = 4, ERROR = 5, FATAL = 6;

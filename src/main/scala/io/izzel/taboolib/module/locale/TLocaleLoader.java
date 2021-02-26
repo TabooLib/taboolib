@@ -22,6 +22,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 语言文件加载工具
+ */
 public class TLocaleLoader {
 
     private static final Map<String, List<String>> localePriority = new HashMap<>();
@@ -46,7 +49,6 @@ public class TLocaleLoader {
     }
 
     public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
-        TabooLibAPI.debug(plugin, "TLocaleLoader.sendTo: " + plugin + ", path: " + path + ", sender: " + sender + ", args: " + Arrays.asList(args));
         if (Bukkit.isPrimaryThread()) {
             Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
         } else {
@@ -57,7 +59,6 @@ public class TLocaleLoader {
     }
 
     public static String asString(Plugin plugin, String path, String... args) {
-        TabooLibAPI.debug(plugin, "TLocaleLoader.asString: " + plugin.getName() + ", path: " + path + ", args: " + Arrays.asList(args));
         TLocaleInstance tLocaleInstance = map.get(plugin.getName());
         if (tLocaleInstance != null) {
             return tLocaleInstance.asString(path, args);
@@ -67,7 +68,6 @@ public class TLocaleLoader {
     }
 
     public static List<String> asStringList(Plugin plugin, String path, String... args) {
-        TabooLibAPI.debug(plugin, "TLocaleLoader.asStringList: " + plugin + ", path: " + path + ", args: " + Arrays.asList(args));
         TLocaleInstance tLocaleInstance = map.get(plugin.getName());
         if (tLocaleInstance != null) {
             return tLocaleInstance.asStringList(path, args);

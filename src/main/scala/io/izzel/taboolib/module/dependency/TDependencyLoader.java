@@ -15,16 +15,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+/**
+ * 依赖加载工具
+ */
 public class TDependencyLoader {
 
     private static Method ADD_URL_METHOD;
 
     static {
-        try {
-            ADD_URL_METHOD = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            ADD_URL_METHOD.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+         if (TabooLibAPI.isForge()) {
+            try {
+                ADD_URL_METHOD = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+                ADD_URL_METHOD.setAccessible(true);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
         }
     }
 

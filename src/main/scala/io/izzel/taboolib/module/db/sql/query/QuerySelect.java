@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * @Author sky
- * @Since 2019-10-26 13:34
+ * @author sky
+ * @since 2019-10-26 13:34
  */
 public class QuerySelect extends Query {
 

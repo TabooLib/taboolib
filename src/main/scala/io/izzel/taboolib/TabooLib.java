@@ -14,49 +14,46 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.util.NumberConversions;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-05 10:39
+ * @author 坏黑
+ * @since 2019-07-05 10:39
  * <p>
  * 注意与 TabooLib4.x 版本的兼容
  * 可能存在同时运行的情况
  */
 @Dependency(
         maven = "org.slf4j:slf4j-api:1.7.25",
-        url = "http://repo.ptms.ink/repository/maven-public/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/org.slf4j-slf4j-api-1.7.25.jar"
 )
 @Dependency(
-        maven = "com.zaxxer:HikariCP:3.1.0",
-        url = "http://repo.ptms.ink/repository/maven-releases/com/zaxxer/HikariCP/3.1.0/HikariCP-3.1.0.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/com.zaxxer-HikariCP-3.1.0.jar"
+        maven = "com.zaxxer:HikariCP:3.4.5",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/HikariCP/3.4.5/HikariCP-3.4.5.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/HikariCP-3.4.5.jar"
 )
 @Dependency(
         maven = "org.scala-lang:scala-library:2.12.8",
-        url = "http://repo.ptms.ink/repository/maven-public/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/scala-library-2.12.8.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib/1.4.0-rc/kotlin-stdlib-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.0-rc-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib:1.4.20",
+        url = "http://ptms.ink:8081/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-stdlib.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-1.4.20.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk7/1.4.0-rc/kotlin-stdlib-jdk7-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.20",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-stdlib-jdk8.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.20.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-stdlib-jdk8:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-stdlib-jdk8/1.4.0-rc/kotlin-stdlib-jdk8-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk8-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-stdlib-jdk7:1.4.20",
+        url = "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-stdlib-jdk7-1.4.20.jar"
 )
 @Dependency(
-        maven = "org.kotlinlang:kotlin-reflect:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-reflect/1.4.0-rc/kotlin-reflect-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.0-rc.jar"
-)
-@Dependency(
-        maven = "org.kotlinlang:kotlin-test:1.4.0-rc",
-        url = "http://repo.ptms.ink/repository/maven-releases/org/kotlinlang/kotlin-test/1.4.0-rc/kotlin-test-1.4.0-rc-rc.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-test-1.4.0-rc.jar"
+        maven = "org.kotlinlang:kotlin-reflect:1.4.20",
+        url = "http://repo.ptms.ink/repository/maven-releases/public/Kotlin/1.4.20/Kotlin-1.4.20-reflect.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/kotlin-reflect-1.4.20.jar"
 )
 @Dependency(
         maven = "com.google.inject:guice:4.2.2",
@@ -64,29 +61,26 @@ import java.util.concurrent.Executors;
 )
 @Dependency(
         maven = "com.mongodb:mongodb:3.12.2",
-        url = "http://repo.ptms.ink/repository/maven-public/com/mongodb/MongoDB/3.12.2/MongoDB-3.12.2-all.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/mongo-java-driver-3.12.2.jar"
+        url = "http://repo.ptms.ink/repository/maven-releases/com/mongodb/MongoDB/3.12.2/MongoDB-3.12.2-all.jar;" + "https://skymc.oss-cn-shanghai.aliyuncs.com/libs/mongodb-driver-3.12.2.jar"
 )
 public class TabooLib {
 
-    private static TabooLib inst = new TabooLib();
+    private static final YamlConfiguration internal = new YamlConfiguration();
+
+    private static final TabooLib instance = new TabooLib();
+
     private static TLogger logger;
+
     private static TConfig config;
 
-    // 当前运行版本
     private static double version;
-
-    // 内部语言文件
-    private final YamlConfiguration internal = new YamlConfiguration();
 
     @SuppressWarnings("BusyWait")
     public TabooLib() {
-        inst = this;
         logger = TLogger.getUnformatted("TabooLib");
-        // 配置文件从 config.yml 修改为 settings.yml 防止与老版本插件冲突
-        config = TConfig.create(getPlugin(), "settings.yml");
         // 配置更新
         try {
-            config.migrate();
+            config = TConfig.create(getPlugin(), "settings.yml").migrate();
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -131,31 +125,37 @@ public class TabooLib {
         });
     }
 
+    public static double getVersion() {
+        return version;
+    }
+
+    @NotNull
     public static InternalPlugin getPlugin() {
         return InternalPlugin.getPlugin();
     }
 
-    public static File getTabooLibFile() {
-        return new File("libs/TabooLib.jar");
-    }
-
+    @NotNull
     public YamlConfiguration getInternal() {
         return internal;
     }
 
+    @NotNull
     public static TabooLib getInst() {
-        return inst;
+        return instance;
     }
 
-    public static TLogger getLogger() {
-        return logger;
-    }
-
+    @NotNull
     public static TConfig getConfig() {
         return config;
     }
 
-    public static double getVersion() {
-        return version;
+    @NotNull
+    public static TLogger getLogger() {
+        return logger;
+    }
+
+    @NotNull
+    public static File getTabooLibFile() {
+        return new File("libs/TabooLib.jar");
     }
 }

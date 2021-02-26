@@ -1,15 +1,16 @@
 package io.izzel.taboolib.module.dependency;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.TabooLibAPI;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.net.ConnectException;
+
 /**
- * @Author 坏黑
- * @Since 2019-07-13 15:25
+ * @author 坏黑
+ * @since 2019-07-13 15:25
  */
 public class DependencyAnnotationVisitor extends AnnotationVisitor {
 
@@ -25,6 +26,7 @@ public class DependencyAnnotationVisitor extends AnnotationVisitor {
 
     @Override
     public void visit(String name, Object value) {
+        if (name == null) return;
         switch (name) {
             case "maven":
                 maven = String.valueOf(value);
@@ -57,14 +59,14 @@ public class DependencyAnnotationVisitor extends AnnotationVisitor {
     @Override
     public void visitEnd() {
         if (maven != null) {
-            if (TDependency.requestLib(maven, mavenRepo, url)) {
-                TabooLibAPI.debug("  Loaded " + String.join(":", maven) + " (" + plugin.getName() + ")");
-            } else {
+            try {
+                TDependency.requestLib(maven, mavenRepo, url);
+            } catch (ConnectException ignored) {
                 TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-LOAD-FAIL"), plugin.getName(), String.join(":", maven)));
             }
+            url = "";
             maven = null;
             mavenRepo = TDependency.MAVEN_REPO;
-            url = "";
         }
         super.visitEnd();
     }

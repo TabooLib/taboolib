@@ -1,9 +1,14 @@
 package io.izzel.taboolib.module.command.base;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
+ * BaseSubCommand 命令参数
+ *
  * @author Bkm016
  * @since 2018-04-17
  */
@@ -12,9 +17,11 @@ public class Argument {
     // 参数名称
     private final String name;
     // 是否必须
-    private final boolean required;
+    private boolean required;
     // 参数补全
-    private final CommandTab tab;
+    private CommandTab tab;
+    // 参数约束
+    private ArgumentType restrict;
 
     public String getName() {
         return name;
@@ -26,6 +33,10 @@ public class Argument {
 
     public CommandTab getTab() {
         return tab;
+    }
+
+    public ArgumentType getRestrict() {
+        return restrict;
     }
 
     public Argument(String name) {
@@ -44,6 +55,44 @@ public class Argument {
         this.name = name;
         this.required = required;
         this.tab = tab;
+    }
+
+    /**
+     * 将该参数定义为可选参数
+     * 帮助列表中当显示文本将会被修改
+     *
+     * @return {@link Argument}
+     */
+    public Argument optional() {
+        this.required = false;
+        return this;
+    }
+
+    /**
+     * @param tab 参数补全
+     * @return {@link Argument}
+     */
+    public Argument complete(CommandTab tab) {
+        this.tab = tab;
+        return this;
+    }
+
+    /**
+     * @param tab 参数补全
+     * @return {@link Argument}
+     */
+    public Argument complete(@Nullable List<String> tab) {
+        this.tab = () -> tab;
+        return this;
+    }
+
+    /**
+     * @param restrict 参数约束（5.43 update）
+     * @return {@link Argument}
+     */
+    public Argument restrict(@Nullable ArgumentType restrict) {
+        this.restrict = restrict;
+        return this;
     }
 
     @Override

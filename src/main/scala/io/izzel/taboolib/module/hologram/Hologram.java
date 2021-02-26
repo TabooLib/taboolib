@@ -14,9 +14,12 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * @Author sky
- * @Since 2020-03-07 16:28
+ * 全息实例
+ *
+ * @author sky
+ * @since 2020-03-07 16:28
  */
+@SuppressWarnings("UnusedReturnValue")
 public class Hologram {
 
     private final Set<HologramViewer> viewers = Sets.newConcurrentHashSet();
@@ -28,6 +31,9 @@ public class Hologram {
     private int viewDistance = 50;
     private Consumer<Player> event;
 
+    /**
+     * @see THologram#create(Location, String, Player...)
+     */
     Hologram(Location location, String text, Player... viewers) {
         THologram.getHolograms().add(this);
         this.text = text;
@@ -37,21 +43,43 @@ public class Hologram {
         }
     }
 
+    /**
+     * 设置当该全息实例在没有任何观察者 {@link HologramViewer} 时自动删除。
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram autoDelete() {
         this.autoDelete = true;
         return this;
     }
 
+    /**
+     * 设置全息字对所有玩家显示
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram toAll() {
         this.viewAll = true;
         return refresh();
     }
 
+    /**
+     * 设置全息字对所有玩家隐藏
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram hideAll() {
         this.viewAll = false;
         return removeViewers();
     }
 
+    /**
+     * 设置全息字对是否对所有玩家显示
+     * 设置为 false 则该全息字实例将对所有玩家隐藏
+     *
+     * @param viewAll boolean
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram viewAll(Boolean viewAll) {
         if (!this.viewAll && viewAll) {
             toAll();
@@ -67,6 +95,11 @@ public class Hologram {
 //        return this;
 //    }
 
+    /**
+     * 刷新指定玩家对该全息字实例的可见
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram refresh() {
         if (deleted) {
             return this;
@@ -78,6 +111,12 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 刷新指定 {@link HologramViewer} 对该全息字实例的可见
+     *
+     * @param viewer 需要刷新全息字的 {@link HologramViewer}
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram refresh(HologramViewer viewer) {
         if (deleted) {
             return this;
@@ -104,14 +143,27 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 设置全息字闪烁
+     *
+     * @param text   需要闪烁的字符串列表
+     * @param period 闪烁间隔
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram flash(List<String> text, int period) {
         for (int i = 0; i < text.size(); i++) {
             String line = text.get(i);
-            TabooLib.getPlugin().runTask(() -> flash(line), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(line), (long) period * i);
         }
         return this;
     }
 
+    /**
+     * 设置全息字闪烁
+     *
+     * @param text 需要闪烁的字符串
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram flash(String text) {
         if (deleted) {
             return this;
@@ -127,13 +179,27 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 使该全息字以特定间隔不断向某个相对坐标位移
+     *
+     * @param vector 相对坐标
+     * @param period 位移周期
+     * @param times  位移次数
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram flash(Vector vector, int period, int times) {
         for (int i = 0; i < times; i++) {
-            TabooLib.getPlugin().runTask(() -> flash(location.add(vector)), period * i);
+            TabooLib.getPlugin().runTask(() -> flash(location.add(vector)), (long) period * i);
         }
         return this;
     }
 
+    /**
+     * 使该全息字传送至某个坐标
+     *
+     * @param location 坐标
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram flash(Location location) {
         if (deleted) {
             return this;
@@ -149,17 +215,33 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 声明删除本实例
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram delete() {
         destroy();
         deleted = true;
         return this;
     }
 
+    /**
+     * 声明在指定时长后删除本实例
+     *
+     * @param delay 删除时长
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram deleteOn(int delay) {
         TabooLib.getPlugin().runTask(this::delete, delay);
         return this;
     }
 
+    /**
+     * 声明破坏本实例
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram destroy() {
         if (deleted) {
             return this;
@@ -168,6 +250,12 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 声明向指定 {@link HologramViewer} 破坏本实例
+     *
+     * @param viewer 需要声明破坏的 {@link HologramViewer}
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram destroy(HologramViewer viewer) {
         if (deleted) {
             return this;
@@ -183,6 +271,12 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 为本全息字实例添加可见玩家
+     *
+     * @param player 需要添加可见的玩家
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram addViewer(Player player) {
         if (deleted) {
             return this;
@@ -195,6 +289,12 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 为本全息字实例移除可见玩家
+     *
+     * @param player 需要移除可见的玩家
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram removeViewer(Player player) {
         if (deleted) {
             return this;
@@ -211,6 +311,11 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 移除所有玩家对本全息字的可见
+     *
+     * @return 修改后的 Hologram 实例
+     */
     public Hologram removeViewers() {
         if (deleted) {
             return this;
@@ -221,19 +326,25 @@ public class Hologram {
         return this;
     }
 
+    /**
+     * 查询指定玩家是否为本全息字的可见者
+     *
+     * @param player 需要查询的玩家
+     * @return 修改后的 Hologram 实例
+     */
     public boolean isViewer(Player player) {
         return viewers.stream().anyMatch(i -> i.getPlayer().getName().equals(player.getName()));
     }
 
+    /**
+     * 获取指定玩家的 {@link HologramViewer} 对象实例
+     *
+     * @param player 玩家
+     * @return {@link HologramViewer} 对象实例
+     */
     public HologramViewer getViewer(Player player) {
         return viewers.stream().filter(i -> i.getPlayer().getName().equals(player.getName())).findFirst().orElse(null);
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public Set<HologramViewer> getViewers() {
         return viewers;

@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-06 15:24
+ * 本地数据工具
+ *
+ * @author 坏黑
+ * @since 2019-07-06 15:24
  */
-public class Local  {
+public class Local {
 
     private static final Map<String, LocalPlugin> plugins = Maps.newConcurrentMap();
 

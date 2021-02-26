@@ -18,8 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @Author sky
- * @Since 2018-08-22 22:27
+ * @author sky
+ * @since 2018-08-22 22:27
  */
 public class TabooLibClient {
 

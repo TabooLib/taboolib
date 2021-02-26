@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @Author sky
- * @Since 2018-09-14 23:45
+ * @author sky
+ * @since 2018-09-14 23:45
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

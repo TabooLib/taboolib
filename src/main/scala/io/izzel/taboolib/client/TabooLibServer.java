@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * 研究了一个小时 log4j 愣是没整明白，不搞那些高端日志工具了
  *
- * @Author sky
- * @Since 2018-08-22 20:45
+ * @author sky
+ * @since 2018-08-22 20:45
  */
 public class TabooLibServer {
 

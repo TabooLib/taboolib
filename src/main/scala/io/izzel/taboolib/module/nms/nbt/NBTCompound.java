@@ -6,21 +6,20 @@ import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-24 17:44
+ * 物品 NBT 结构映射类
+ *
+ * @author 坏黑
+ * @since 2019-05-24 17:44
  */
 public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 
-    private Map<String, NBTBase> value = Maps.newConcurrentMap();
+    private final Map<String, NBTBase> value = Maps.newConcurrentMap();
 
     public NBTCompound() {
         super(0);
@@ -151,6 +150,10 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
         return value.get(key);
     }
 
+    public NBTBase getOrElse(String key, NBTBase base) {
+        return value.getOrDefault(key, base);
+    }
+
     public NBTBase getDeep(String key) {
         NBTBase value = this;
         for (String keyStr : key.split("\\.")) {
@@ -159,6 +162,10 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
             }
         }
         return value;
+    }
+
+    public NBTBase getDeepOrElse(String key, NBTBase base) {
+        return Optional.ofNullable(getDeep(key)).orElse(base);
     }
 
     @Override
@@ -176,14 +183,29 @@ public class NBTCompound extends NBTBase implements Map<String, NBTBase> {
 
     public NBTBase putDeep(String key, NBTBase value) {
         NBTBase compound = this, temp;
-        String[] keySplit = key.split("\\.");
-        for (String keyStr : keySplit) {
-            if (keyStr.equalsIgnoreCase(keySplit[keySplit.length - 1])) {
-                return ((NBTCompound) compound).put(keyStr, value);
+        String[] split = key.split("\\.");
+        for (String node : split) {
+            if (node.equalsIgnoreCase(split[split.length - 1])) {
+                return ((NBTCompound) compound).put(node, value);
             }
-            if ((temp = compound.asCompound().get(keyStr)) == null) {
+            if ((temp = compound.asCompound().get(node)) == null) {
                 temp = new NBTCompound();
-                compound.asCompound().put(keyStr, temp);
+                compound.asCompound().put(node, temp);
+            }
+            compound = temp;
+        }
+        return null;
+    }
+
+    public NBTBase removeDeep(String key) {
+        NBTBase compound = this, temp;
+        String[] split = key.split("\\.");
+        for (String node : split) {
+            if (node.equalsIgnoreCase(split[split.length - 1])) {
+                return ((NBTCompound) compound).remove(node);
+            }
+            if ((temp = compound.asCompound().get(node)) == null) {
+                return null;
             }
             compound = temp;
         }

@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @Author sky
- * @Since 2019-08-17 22:50
+ * @author sky
+ * @since 2019-08-17 22:50
  */
 public class TInjectCreator implements TabooLibLoader.Loader {
 

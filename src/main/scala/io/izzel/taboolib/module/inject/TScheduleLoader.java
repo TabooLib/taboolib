@@ -1,29 +1,28 @@
 package io.izzel.taboolib.module.inject;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibLoader;
-import io.izzel.taboolib.util.Ref;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2018-12-15 15:09
+ * @author 坏黑
+ * @since 2018-12-15 15:09
  */
 public class TScheduleLoader implements TabooLibLoader.Loader {
 
     static Map<String, List<TScheduleData>> schedules = Maps.newHashMap();
 
     public static void run(Plugin plugin) {
-        List<TScheduleData> list = schedules.remove(plugin.getName());
-        if (list != null) {
-            list.forEach(data -> run(plugin, data.getRunnable(), data.getAnnotation().delay(), data.getAnnotation().period(), data.getAnnotation().async()));
+        List<TScheduleData> dataList = schedules.remove(plugin.getName());
+        if (dataList != null) {
+            dataList.forEach(data -> run(plugin, data.getRunnable(), data.getAnnotation().delay(), data.getAnnotation().period(), data.getAnnotation().async()));
         }
     }
 
@@ -42,9 +41,10 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
             if (annotation == null) {
                 continue;
             }
+            method.setAccessible(true);
+            Object instance = TInjectHelper.getInstance(method, pluginClass, plugin).get(0);
             if (plugin.equals(TabooLib.getPlugin())) {
-                method.setAccessible(true);
-                TInjectHelper.getInstance(method, pluginClass, plugin).forEach(instance -> run(plugin, new BukkitRunnable() {
+                run(plugin, new BukkitRunnable() {
 
                     @Override
                     public void run() {
@@ -54,25 +54,20 @@ public class TScheduleLoader implements TabooLibLoader.Loader {
                             t.printStackTrace();
                         }
                     }
-                }, annotation.delay(), annotation.period(), annotation.async()));
+                }, annotation.delay(), annotation.period(), annotation.async());
             } else {
-                method.setAccessible(true);
-                TInjectHelper.getInstance(method, pluginClass, plugin).forEach(instance -> schedules.computeIfAbsent(plugin.getName(), n -> Lists.newArrayList()).add(new TScheduleData(annotation, new BukkitRunnable() {
+                List<TScheduleData> dataList = schedules.computeIfAbsent(plugin.getName(), n -> new ArrayList<>());
+                dataList.add(new TScheduleData(annotation, new BukkitRunnable() {
 
                     @Override
                     public void run() {
                         try {
                             method.invoke(instance);
                         } catch (Throwable t) {
-                            try {
-                                method.invoke(Ref.getUnsafe().allocateInstance(pluginClass));
-                            } catch (Throwable t2) {
-                                t.printStackTrace();
-                                t2.printStackTrace();
-                            }
+                            t.printStackTrace();
                         }
                     }
-                })));
+                }));
             }
         }
     }

@@ -7,8 +7,10 @@ import java.io.File;
 import java.util.Objects;
 
 /**
- * @Author 坏黑
- * @Since 2018-12-08 12:58
+ * SQLite 数据库地址
+ *
+ * @author 坏黑
+ * @since 2018-12-08 12:58
  */
 public class SQLiteHost extends IHost {
 

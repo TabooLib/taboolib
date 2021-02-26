@@ -1,6 +1,6 @@
 package io.izzel.taboolib.module.db.local;
 
-import io.izzel.taboolib.module.lite.SimpleReflection;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -12,8 +12,10 @@ import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 
 /**
- * @Author sky, yumc
- * @Since 2020-02-28 11:14
+ * 线程安全的 YamlConfiguration 封装
+ *
+ * @author sky
+ * @since 2020-02-28 11:14
  */
 public class SecuredFile extends YamlConfiguration {
 
@@ -21,14 +23,14 @@ public class SecuredFile extends YamlConfiguration {
 
     @Override
     public void set(String path, Object value) {
-        synchronized(lock) {
+        synchronized (lock) {
             super.set(path, value);
         }
     }
 
     @Override
     public String saveToString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.saveToString();
         }
     }
@@ -65,7 +67,7 @@ public class SecuredFile extends YamlConfiguration {
     }
 
     public static String dump(Object data) {
-        Yaml yaml = (Yaml) SimpleReflection.getFieldValueChecked(YamlConfiguration.class, new YamlConfiguration(), "yaml", true);
+        Yaml yaml = Reflex.Companion.of(new YamlConfiguration()).read("yaml");
         try {
             return yaml.dump(data);
         } catch (Throwable t) {

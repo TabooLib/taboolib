@@ -1,6 +1,8 @@
 package io.izzel.taboolib.util.item;
 
+import com.cryptomorin.xseries.XMaterial;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.lite.Materials;
@@ -17,16 +19,22 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
- * @Author sky
- * @Since 2018-08-22 11:37
- * @BuilderVersion 1.1
+ * 物品构造工具
+ *
+ * @author sky
+ * @since 2018-08-22 11:37
  */
 public class ItemBuilder {
 
     private final ItemStack itemStack;
-    private final ItemMeta itemMeta;
+    private ItemMeta itemMeta;
+
+    public ItemBuilder(XMaterial material) {
+        this(Objects.requireNonNull(material.parseItem(true)));
+    }
 
     public ItemBuilder(Material material) {
         this(material, 1, 0);
@@ -53,16 +61,22 @@ public class ItemBuilder {
 
     public ItemBuilder material(int id) {
         itemStack.setType(Items.asMaterial(String.valueOf(id)));
+        itemStack.setItemMeta(itemMeta);
+        itemMeta = itemStack.getItemMeta();
         return this;
     }
 
     public ItemBuilder material(String material) {
         itemStack.setType(Material.getMaterial(material));
+        itemStack.setItemMeta(itemMeta);
+        itemMeta = itemStack.getItemMeta();
         return this;
     }
 
     public ItemBuilder material(Material material) {
         itemStack.setType(material);
+        itemStack.setItemMeta(itemMeta);
+        itemMeta = itemStack.getItemMeta();
         return this;
     }
 
@@ -118,7 +132,7 @@ public class ItemBuilder {
 
     public ItemBuilder banner(Pattern... patterns) {
         if (itemMeta instanceof BannerMeta) {
-            java.util.Arrays.stream(patterns).forEach(pattern -> ((BannerMeta) itemMeta).addPattern(pattern));
+            java.util.Arrays.stream(patterns).forEach(((BannerMeta) itemMeta)::addPattern);
         }
         return this;
     }
@@ -170,6 +184,13 @@ public class ItemBuilder {
             itemMeta.setUnbreakable(value);
         } else {
             itemMeta.spigot().setUnbreakable(value);
+        }
+        return this;
+    }
+
+    public ItemBuilder customModelData(Integer value) {
+        if (Version.isAfter(Version.v1_12)) {
+            Reflex.Companion.of(itemMeta).invoke("setCustomModelData", value);
         }
         return this;
     }

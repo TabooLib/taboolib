@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.db.local.player;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.module.db.local.LocalPlayer;
 import io.izzel.taboolib.module.db.local.SecuredFile;
 import io.izzel.taboolib.module.db.source.DBSource;
@@ -22,14 +21,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * @Author sky
- * @Since 2020-07-03 18:21
+ * 玩家数据 SQLite 储存方式
+ *
+ * @author sky
+ * @since 2020-07-03 18:21
  */
 public class LocalPlayerFile extends LocalPlayerHandler {
 
     private final Map<String, FileConfiguration> files = Maps.newConcurrentMap();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final IHost host;
+    private final SQLiteHost host;
     private final SQLTable table;
     private DataSource dataSource;
 
@@ -38,7 +39,7 @@ public class LocalPlayerFile extends LocalPlayerHandler {
         table = new SQLTable("player_data");
         try {
             dataSource = DBSource.create(host);
-            table.executeUpdate("create table if not exists player_data (name text primary key, data text)").dataSource(dataSource).run();
+            table.executeUpdate("create table if not exists player_data (name varchar(32) primary key, data text)").dataSource(dataSource).run();
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -107,5 +108,25 @@ public class LocalPlayerFile extends LocalPlayerHandler {
 
     public File toFile(String name) {
         return new File(getFolder(), name + ".yml");
+    }
+
+    public Map<String, FileConfiguration> getFiles() {
+        return files;
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public SQLiteHost getHost() {
+        return host;
+    }
+
+    public SQLTable getTable() {
+        return table;
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
     }
 }

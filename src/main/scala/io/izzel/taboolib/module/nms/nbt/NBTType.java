@@ -3,8 +3,10 @@ package io.izzel.taboolib.module.nms.nbt;
 import com.google.common.base.Enums;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-24 17:46
+ * 物品 NBT 类型映射
+ *
+ * @author 坏黑
+ * @since 2019-05-24 17:46
  */
 public enum NBTType {
 
@@ -32,7 +34,7 @@ public enum NBTType {
 
     COMPOUND(10);
 
-    private int id;
+    private final int id;
 
     NBTType(int i) {
         this.id = i;

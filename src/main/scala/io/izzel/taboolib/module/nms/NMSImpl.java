@@ -1,8 +1,9 @@
 package io.izzel.taboolib.module.nms;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.mojang.brigadier.CommandDispatcher;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.nms.impl.Type;
@@ -39,31 +40,37 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_12_R1.CraftParticle;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.command.BukkitCommandWrapper;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_16_R1.util.CraftChatMessage;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
- * @Author 坏黑
- * @Since 2018-11-09 14:42
+ * @author 坏黑
+ * @since 2018-11-09 14:42
  */
+@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "ConstantConditions", "deprecation", "rawtypes", "BusyWait"})
 public class NMSImpl extends NMS {
 
     private Field entityTypesField;
@@ -237,10 +244,19 @@ public class NMSImpl extends NMS {
 
     @Override
     public void sendTitle(Player player, String title, int titleFadein, int titleStay, int titleFadeout, String subtitle, int subtitleFadein, int subtitleStay, int subtitleFadeout) {
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, new ChatComponentText(String.valueOf(title)), titleFadein, titleStay, titleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, new ChatComponentText(String.valueOf(title)), titleFadein, titleStay, titleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, new ChatComponentText(String.valueOf(subtitle)), subtitleFadein, subtitleStay, subtitleFadeout));
-        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, new ChatComponentText(String.valueOf(subtitle)), subtitleFadein, subtitleStay, subtitleFadeout));
+        Object rawTitle;
+        Object rawSubTitle;
+        if (is11600) {
+            rawTitle = CraftChatMessage.fromStringOrNull(title);
+            rawSubTitle = CraftChatMessage.fromStringOrNull(subtitle);
+        } else {
+            rawTitle = new ChatComponentText(String.valueOf(title));
+            rawSubTitle = new ChatComponentText(String.valueOf(subtitle));
+        }
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawTitle, titleFadein, titleStay, titleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawTitle, titleFadein, titleStay, titleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawSubTitle, subtitleFadein, subtitleStay, subtitleFadeout));
+        TPacketHandler.sendPacket(player, new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, (net.minecraft.server.v1_8_R3.IChatBaseComponent) rawSubTitle, subtitleFadein, subtitleStay, subtitleFadeout));
     }
 
     @Override
@@ -276,27 +292,53 @@ public class NMSImpl extends NMS {
         return new NBTCompound();
     }
 
+    @SuppressWarnings("unchecked")
+    @NotNull
     @Override
     public List<NBTAttribute> getBaseAttribute(org.bukkit.inventory.ItemStack item) {
         List<NBTAttribute> list = Lists.newArrayList();
         Object nmsItem = CraftItemStack.asNMSCopy(item);
-        Object attr;
+        Collection attr;
         if (Version.isAfter(Version.v1_9)) {
-            attr = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a(net.minecraft.server.v1_12_R1.EnumItemSlot.MAINHAND);
+            attr = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a(net.minecraft.server.v1_12_R1.EnumItemSlot.MAINHAND).entries();
         } else {
-            attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i();
+            attr = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().i().entries();
         }
-        ((Multimap) attr).asMap().forEach((k, v) -> {
-            Object nbt = net.minecraft.server.v1_12_R1.GenericAttributes.a((net.minecraft.server.v1_12_R1.AttributeModifier) v);
+        attr.forEach(it -> {
+            Map.Entry entry = ((Map.Entry) it);
+            Object nbt;
+            if (Version.isAfter(Version.v1_16_R3)) {
+                nbt = asNBT1((net.minecraft.server.v1_16_R3.AttributeModifier) entry.getValue());
+            } else {
+                nbt = asNBT0((net.minecraft.server.v1_12_R1.AttributeModifier) entry.getValue());
+            }
             list.add(new NBTAttribute(
                     new UUID(((NBTTagCompound) nbt).getLong("UUIDMost"), ((NBTTagCompound) nbt).getLong("UUIDLeast")),
-                    String.valueOf(k),
+                    entry.getKey().toString(),
                     ((NBTTagCompound) nbt).getString("Name"),
                     ((NBTTagCompound) nbt).getDouble("Amount"),
                     NBTOperation.fromIndex(((NBTTagCompound) nbt).getInt("Operation"))
             ));
         });
         return list;
+    }
+
+    public NBTTagCompound asNBT1(net.minecraft.server.v1_16_R3.AttributeModifier modifier) {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        nbttagcompound.setString("Name", modifier.getName());
+        nbttagcompound.setDouble("Amount", modifier.getAmount());
+        nbttagcompound.setInt("Operation", modifier.getOperation().a());
+        nbttagcompound.a("UUID", modifier.getUniqueId());
+        return nbttagcompound;
+    }
+
+    public NBTTagCompound asNBT0(net.minecraft.server.v1_12_R1.AttributeModifier modifier) {
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+        nbttagcompound.setString("Name", modifier.b());
+        nbttagcompound.setDouble("Amount", modifier.d());
+        nbttagcompound.setInt("Operation", modifier.c());
+        nbttagcompound.a("UUID", modifier.a());
+        return nbttagcompound;
     }
 
     @Override
@@ -618,7 +660,6 @@ public class NMSImpl extends NMS {
             Object lightEngine = ((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine();
             if (((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a()) {
                 sync(lightEngine, e -> {
-                    Object[] lightEngineLayers;
                     if (lightType == Type.BLOCK) {
                         ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK)).a(Integer.MAX_VALUE, true, true);
                     } else if (lightType == Type.SKY) {
@@ -667,6 +708,56 @@ public class NMSImpl extends NMS {
         }
     }
 
+    @Override
+    public @NotNull String getEnchantmentKey(Enchantment enchantment) {
+        if (Version.isAfter(Version.v1_13)) {
+            return "enchantment.minecraft." + Reflex.Companion.from(Keyed.class, enchantment).<NamespacedKey>invoke("getKey").getKey();
+        } else {
+            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(enchantment.getId()).g();
+        }
+    }
+
+    @Override
+    public @NotNull String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
+        if (Version.isAfter(Version.v1_13)) {
+            return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
+        } else {
+            return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public CommandDispatcher<?> getDispatcher() {
+        return net.minecraft.server.v1_13_R2.MinecraftServer.getServer().getCommandDispatcher().a();
+    }
+
+    @Override
+    public CommandSender getBukkitSender(Object commandWrapperListener) {
+        Objects.requireNonNull(commandWrapperListener, "commandWrapperListener不能为空");
+        return ((net.minecraft.server.v1_13_R2.CommandListenerWrapper)commandWrapperListener).getBukkitSender();
+    }
+
+    @Override
+    public Object getWrapper(Command command) {
+        return new BukkitCommandWrapper((CraftServer) Bukkit.getServer(),command);
+    }
+
+    @Override
+    public Class<?> getArgumentRegistryClass() {
+        return net.minecraft.server.v1_13_R2.ArgumentRegistry.class;
+    }
+
+    @Override
+    public Class<?> getMinecraftKeyClass() {
+        return net.minecraft.server.v1_13_R2.MinecraftKey.class;
+    }
+
+    @Override
+    public Object createMinecraftKey(NamespacedKey key) {
+        return new net.minecraft.server.v1_13_R2.MinecraftKey(key.getNamespace(),key.getKey());
+    }
+
     public int distance(Object player) {
         int viewDistance = Bukkit.getViewDistance();
         try {
@@ -674,7 +765,7 @@ public class NMSImpl extends NMS {
             if (playerViewDistance < viewDistance) {
                 viewDistance = playerViewDistance;
             }
-        } catch (Exception ignored) {
+        } catch (Throwable ignored) {
         }
         return viewDistance;
     }
@@ -729,8 +820,7 @@ public class NMSImpl extends NMS {
             try {
                 task.accept(lightEngine);
             } finally {
-                while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get(), flags & ~2))
-                    ;
+                while (!((AtomicInteger) c).compareAndSet(flags = ((AtomicInteger) c).get(), flags & ~2)) {}
                 SimpleReflection.invokeMethod(ThreadedMailbox.class, b, "f", new Object[0], true);
             }
         } catch (Throwable t) {
@@ -761,7 +851,7 @@ public class NMSImpl extends NMS {
                 } else {
                     SimpleReflection.invokeMethod(LightEngineStorage.class, s, "c", new Object[0], true);
                 }
-                SimpleReflection.invokeMethod(LightEngineGraph.class, lightEngineLayer, "a", new Object[] {9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true}, true);
+                SimpleReflection.invokeMethod(LightEngineGraph.class, lightEngineLayer, "a", new Object[]{9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true}, true);
             } catch (Throwable t) {
                 t.printStackTrace();
             }

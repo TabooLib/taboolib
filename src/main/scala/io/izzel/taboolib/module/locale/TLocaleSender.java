@@ -5,8 +5,8 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 
 /**
- * @Author sky
- * @Since 2018-05-12 13:58
+ * @author sky
+ * @since 2018-05-12 13:58
  */
 public interface TLocaleSender {
 

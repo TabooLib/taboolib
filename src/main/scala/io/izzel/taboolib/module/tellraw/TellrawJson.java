@@ -11,14 +11,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @Author sky
- * @Since 2018-05-26 14:42json
- * @BuilderLevel 1.2
+ * Minecraft Tellraw 信息构建工具
+ * 支持版本兼容以及物品显示优化
+ *
+ * @author sky
+ * @since 2018-05-26 14:42json
  */
 public class TellrawJson {
 
@@ -44,28 +47,54 @@ public class TellrawJson {
             // 隐藏标签
             "HideFlags",
             // 方块标签
-            "BlockEntityTag"
+            "BlockEntityTag",
+            // Bukkit 自定义标签
+            "PublicBukkitValues"
     );
 
     TellrawJson() {
     }
 
+    /**
+     * 创建入口
+     *
+     * @return {@link TellrawJson}
+     */
     public static TellrawJson create() {
         return new TellrawJson();
     }
 
+    /**
+     * 向全服玩家播报
+     */
     public void broadcast() {
         Bukkit.getOnlinePlayers().forEach(player -> send(player, new String[0]));
     }
 
+    /**
+     * 向全服玩家播报，可传入参数
+     *
+     * @param args 参数
+     */
     public void broadcast(String... args) {
         Bukkit.getOnlinePlayers().forEach(player -> send(player, args));
     }
 
+    /**
+     * 向特定目标播报
+     *
+     * @param sender 目标
+     */
     public void send(CommandSender sender) {
         send(sender, new String[0]);
     }
 
+    /**
+     * 向特定玩家播报，可传入参数
+     *
+     * @param sender 目标
+     * @param args   参数
+     */
     public void send(CommandSender sender, String... args) {
         if (sender instanceof Player) {
             TLocale.Tellraw.send(sender, Strings.replaceWithOrder(toRawMessage((Player) sender), args));
@@ -74,10 +103,21 @@ public class TellrawJson {
         }
     }
 
+    /**
+     * @return Json 原始信息
+     */
+    @NotNull
     public String toRawMessage() {
         return ComponentSerializer.toString(getComponentsAll());
     }
 
+    /**
+     * 通过版本类型转换为 Json 原始信息
+     *
+     * @param version 版本类型
+     * @return Json 原始信息
+     */
+    @NotNull
     public String toRawMessage(TellrawVersion version) {
         String rawMessage = toRawMessage();
         if (version == TellrawVersion.CURRENT_VERSION) {
@@ -89,6 +129,14 @@ public class TellrawJson {
         return rawMessage;
     }
 
+    /**
+     * 通过玩家等版本转换为 Json 原始信息
+     * 可支持版本兼容插件 ViaVersion、ProtocolSupport
+     *
+     * @param player 玩家实例
+     * @return Json 原始信息
+     */
+    @NotNull
     public String toRawMessage(Player player) {
         // ViaVersion support!
         if (TellrawCreator.isViaVersionLoaded()) {
@@ -131,6 +179,15 @@ public class TellrawJson {
         return hoverItem(itemStack, true);
     }
 
+    /**
+     * 添加一个物品结构
+     * 传入的方法会自动通过 TellrawCreator.getAbstractTellraw().optimizeNBT 优化逻辑
+     * 但不会执行对应的 optimizeShulkerBox 优化逻辑，需要自行添加
+     *
+     * @param itemStack      物品
+     * @param supportVersion 是否处理跨版本兼容
+     * @return {@link TellrawJson}
+     */
     public TellrawJson hoverItem(ItemStack itemStack, boolean supportVersion) {
         if (is10900 && Items.isNull(itemStack)) {
             return this;
@@ -139,7 +196,7 @@ public class TellrawJson {
         BaseComponent[] itemComponentCurrentVersion = new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.CURRENT_VERSION)).create();
         getLatestComponent().forEach(component -> component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, itemComponentCurrentVersion)));
         if (supportVersion) {
-            itemTag.put(ComponentSerializer.toString(itemComponentCurrentVersion), new String[] {
+            itemTag.put(ComponentSerializer.toString(itemComponentCurrentVersion), new String[]{
                     ComponentSerializer.toString(new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.LOW_VERSION)).create()),
                     ComponentSerializer.toString(new ComponentBuilder(TellrawCreator.getAbstractTellraw().getItemComponent(itemStack, TellrawVersion.HIGH_VERSION)).create())
             });
@@ -183,12 +240,6 @@ public class TellrawJson {
         return TellrawCreator.getAbstractTellraw().getItemComponent(item);
     }
 
-    // *********************************
-    //
-    //         Private Methods
-    //
-    // *********************************
-
     private List<BaseComponent> getLatestComponent() {
         return componentsLatest;
     }
@@ -201,12 +252,6 @@ public class TellrawJson {
         components.addAll(componentsLatest);
         componentsLatest.clear();
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public void setComponents(BaseComponent[] components) {
         this.components = Arrays.asList(components);

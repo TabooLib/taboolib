@@ -11,18 +11,28 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @Author sky
- * @Since 2019-12-03 13:24
+ * 可交互界面构建工具
+ * 这里的可交互指的是界面中的物品可以被修改
+ *
+ * @author sky
+ * @since 2019-12-03 13:24
  */
 public abstract class MenuStored {
 
     protected Player player;
+
+    public MenuStored() {
+    }
 
     public MenuStored(Player player) {
         this.player = player;
     }
 
     public void open() {
+        open(player);
+    }
+
+    public void open(Player player) {
         MenuBuilder.builder()
                 .lockHand(isLockHand())
                 .title(getTitle())
@@ -35,11 +45,11 @@ public abstract class MenuStored {
     }
 
     public boolean isLockHand() {
-        return false;
+        return true;
     }
 
     public String getTitle() {
-        return player.getName();
+        return "MenuStored";
     }
 
     public int getRows() {
@@ -109,24 +119,35 @@ public abstract class MenuStored {
 
     /**
      * 当界面关闭时
+     *
+     * @param e 事件
      */
     public void onClose(InventoryCloseEvent e) {
     }
 
     /**
      * 当界面刷新时
+     *
+     * @param inventory 背包
      */
     public void refresh(Inventory inventory) {
     }
 
     /**
      * 当界面刷新时（异步）
+     *
+     * @param inventory 背包
      */
     public void refreshAsync(Inventory inventory) {
     }
 
     /**
      * 物品是否可以放入该位置
+     *
+     * @param inventory 背包
+     * @param slot      位置
+     * @param item      物品
+     * @return boolean
      */
     public boolean shouldIntoSlot(Inventory inventory, ItemStack item, int slot) {
         return false;
@@ -134,6 +155,11 @@ public abstract class MenuStored {
 
     /**
      * 是否为有效的位置
+     *
+     * @param item      物品
+     * @param slot      位置
+     * @param inventory 背包
+     * @return boolean
      */
     public boolean isIntoSlot(Inventory inventory, ItemStack item, int slot) {
         return false;
@@ -142,6 +168,10 @@ public abstract class MenuStored {
     /**
      * 获取界面中有效的位置
      * 用于 shift 点击时的自动装填
+     *
+     * @param item      物品
+     * @param inventory 背包
+     * @return 位置
      */
     public int getIntoSlot(Inventory inventory, ItemStack item) {
         return -1;
@@ -149,20 +179,28 @@ public abstract class MenuStored {
 
     /**
      * 物品存入界面
+     *
+     * @param inventory 洁面
+     * @param item      物品
+     * @param slot      位置
      */
     public void intoItem(Inventory inventory, ItemStack item, int slot) {
         inventory.setItem(slot, item);
     }
 
     /**
-     * 是否存在物品
+     * @param inventory 界面
+     * @param slot      物品
+     * @return 是否存在物品
      */
     public boolean existsItem(Inventory inventory, int slot) {
         return false;
     }
 
     /**
-     * 获取物品
+     * @param inventory 界面
+     * @param slot      位置
+     * @return 物品
      */
     public ItemStack getItem(Inventory inventory, int slot) {
         return inventory.getItem(slot);

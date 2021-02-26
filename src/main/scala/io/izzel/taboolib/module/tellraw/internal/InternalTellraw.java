@@ -21,9 +21,10 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * @Author 坏黑
- * @Since 2018-11-07 22:54
+ * @author 坏黑
+ * @since 2018-11-07 22:54
  */
+@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "unchecked", "rawtypes"})
 public class InternalTellraw implements AbstractTellraw {
 
     private final boolean v11600 = Version.isAfter(Version.v1_16);

@@ -6,8 +6,10 @@ import io.izzel.taboolib.module.db.IHost;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @Author sky
- * @Since 2018-05-17 23:47
+ * 连接池缓存
+ *
+ * @author sky
+ * @since 2018-05-17 23:47
  */
 public class DBSourceData {
 

@@ -8,37 +8,42 @@ import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.i18n.I18nBase;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Files;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
  *
- * @Author sky
- * @Since 2020-04-04 19:51
+ * @author sky
+ * @since 2020-04-04 19:51
  */
-public class I18n11601 extends I18nBase {
+public class I18n11603 extends I18nBase {
 
-    public static final I18n11601 INSTANCE = new I18n11601();
+    public static final I18n11603 INSTANCE = new I18n11603();
 
-    // 1。16.1
+    // 1.16.3
     public static final String[][] LOCALE = {
             {
-                    "zh_cn", "207c12360216c9222878b8c2b6ac0660d8a7f7bb"
+                    "zh_cn", "4ee6d2b4057f6b1af0552a1f44782fa2d5eb5f2e"
             },
             {
-                    "zh_tw", "e3721a0efb6077faa7d5525c189a36485ce1366c"
+                    "zh_tw", "beaa0234d2f130b1c2a1a10df7e8c8ea8042e2d6"
             },
             {
-                    "en_gb", "7697b4bfb780270caad749f38abb9007fc1bd976",
+                    "en_gb", "b1384f0bc5d88985539b31b28c0db81a25e7f39b",
             }
     };
 
@@ -69,7 +74,7 @@ public class I18n11601 extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, Entity entity) {
+    public @NotNull String getName(Player player, @NotNull Entity entity) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");
@@ -82,7 +87,7 @@ public class I18n11601 extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, ItemStack itemStack) {
+    public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
         JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
         if (locale == null) {
             locale = cache.get("en_gb");
@@ -94,7 +99,33 @@ public class I18n11601 extends I18nBase {
         return element == null ? itemStack.getType().name().toLowerCase().replace("_", "") : element.getAsString();
     }
 
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull Enchantment enchantment) {
+        JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
+        if (locale == null) {
+            locale = cache.get("en_gb");
+        }
+        if (locale == null) {
+            return "[ERROR LOCALE]";
+        }
+        JsonElement element = locale.get(NMS.handle().getEnchantmentKey(enchantment));
+        return element == null ? enchantment.getName() : element.getAsString();
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull PotionEffectType potionEffectType) {
+        JsonObject locale = cache.get(player == null ? "zh_cn" : player.getLocale());
+        if (locale == null) {
+            locale = cache.get("en_gb");
+        }
+        if (locale == null) {
+            return "[ERROR LOCALE]";
+        }
+        JsonElement element = locale.get(NMS.handle().getPotionEffectTypeKey(potionEffectType));
+        return element == null ? potionEffectType.getName() : element.getAsString();
+    }
+
     public void load() {
-        Arrays.stream(Files.listFile(folder)).forEach(listFile -> cache.put(listFile.getName(), new JsonParser().parse(Files.readFromFile(listFile)).getAsJsonObject()));
+        Arrays.stream(Files.listFile(folder)).forEach(listFile -> cache.put(listFile.getName(), new JsonParser().parse(Objects.requireNonNull(Files.readFromFile(listFile))).getAsJsonObject()));
     }
 }

@@ -19,15 +19,17 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * @Author 坏黑
- * @Since 2018-10-28 14:52
+ * 数据包工具
+ *
+ * @author 坏黑
+ * @since 2018-10-28 14:52
  */
 @TListener
 public class TPacketHandler implements Listener {
 
     @TInject(asm = "io.izzel.taboolib.module.packet.channel.InternalChannelExecutor")
     private static ChannelExecutor channelExecutor;
-    private static Map<String, List<TPacketListener>> packetListeners = Maps.newHashMap();
+    private static final Map<String, List<TPacketListener>> packetListeners = Maps.newHashMap();
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
@@ -44,18 +46,41 @@ public class TPacketHandler implements Listener {
         removeListener(e.getPlugin());
     }
 
+    /**
+     * 向玩家发送数据包
+     *
+     * @param player 玩家
+     * @param packet nms 数据包实例
+     */
     public static void sendPacket(Player player, Object packet) {
         channelExecutor.sendPacket(player, packet);
     }
 
+    /**
+     * 创建数据包监听器
+     *
+     * @param plugin   所属插件实例
+     * @param listener 监听器
+     */
     public static void addListener(Plugin plugin, TPacketListener listener) {
         packetListeners.computeIfAbsent(plugin.getName(), name -> Lists.newCopyOnWriteArrayList()).add(listener);
     }
 
+    /**
+     * 移除所有数据包监听器
+     *
+     * @param plugin 所属插件
+     */
     public static void removeListener(Plugin plugin) {
         packetListeners.remove(plugin.getName());
     }
 
+    /**
+     * 移除特定数据包监听器
+     *
+     * @param plugin   所属插件
+     * @param listener 监听器实例
+     */
     public static void removeListener(Plugin plugin, TPacketListener listener) {
         Optional.ofNullable(packetListeners.get(plugin.getName())).ifPresent(list -> list.remove(listener));
     }

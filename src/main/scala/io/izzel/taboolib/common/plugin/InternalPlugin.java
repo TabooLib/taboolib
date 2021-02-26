@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-05 14:02
+ * @author 坏黑
+ * @since 2019-07-05 14:02
  */
 public class InternalPlugin implements Plugin {
 

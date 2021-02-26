@@ -7,8 +7,8 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-23 22:45
+ * @author 坏黑
+ * @since 2019-05-23 22:45
  */
 public class ItemStack {
 

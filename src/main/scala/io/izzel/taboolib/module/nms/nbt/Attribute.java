@@ -5,32 +5,67 @@ import io.izzel.taboolib.module.nms.NMS;
 import java.util.Arrays;
 
 /**
- * @Author sky
- * @Since 2019-12-11 19:31
+ * Attribute 映射类
+ *
+ * @author sky
+ * @since 2019-12-11 19:31
  */
 public enum Attribute {
 
-    MAX_HEALTH("generic.maxHealth", new String[] {"health", "maxHealth"}),
+    /**
+     * 最大生命值
+     */
+    MAX_HEALTH("generic.maxHealth", new String[]{"health", "maxHealth"}),
 
-    FOLLOW_RANGE("generic.followRange", new String[] {"follow", "followRange"}),
+    /**
+     * 最大跟随距离
+     */
+    FOLLOW_RANGE("generic.followRange", new String[]{"follow", "followRange"}),
 
-    KNOCKBACK_RESISTANCE("generic.knockbackResistance", new String[] {"knockback", "knockbackResistance"}),
+    /**
+     * 击退抗性
+     */
+    KNOCKBACK_RESISTANCE("generic.knockbackResistance", new String[]{"knockback", "knockbackResistance"}),
 
-    MOVEMENT_SPEED("generic.movementSpeed", new String[] {"speed", "movementSpeed", "walkSpeed"}),
+    /**
+     * 移动速度
+     */
+    MOVEMENT_SPEED("generic.movementSpeed", new String[]{"speed", "movementSpeed", "walkSpeed"}),
 
-    FLYING_SPEED("generic.flyingSpeed", new String[] {"flySpeed", "flyingSpeed"}),
+    /**
+     * 飞行速度
+     */
+    FLYING_SPEED("generic.flyingSpeed", new String[]{"flySpeed", "flyingSpeed"}),
 
-    ATTACK_DAMAGE("generic.attackDamage", new String[] {"damage", "attackDamage"}),
+    /**
+     * 攻击力
+     */
+    ATTACK_DAMAGE("generic.attackDamage", new String[]{"damage", "attackDamage"}),
 
-    ATTACK_KNOCKBACK("generic.attackKnockback", new String[] {"damageKnockback", "attackKnockback"}),
+    /**
+     * 击退
+     */
+    ATTACK_KNOCKBACK("generic.attackKnockback", new String[]{"damageKnockback", "attackKnockback"}),
 
-    ATTACK_SPEED("generic.attackSpeed", new String[] {"damageSpeed", "attackSpeed"}),
+    /**
+     * 攻速
+     */
+    ATTACK_SPEED("generic.attackSpeed", new String[]{"damageSpeed", "attackSpeed"}),
 
-    ARMOR("generic.armor", new String[] {"armor"}),
+    /**
+     * 护甲
+     */
+    ARMOR("generic.armor", new String[]{"armor"}),
 
-    ARMOR_TOUGHNESS("generic.armorToughness", new String[] {"toughness", "armorToughness"}),
+    /**
+     * 护甲任性
+     */
+    ARMOR_TOUGHNESS("generic.armorToughness", new String[]{"toughness", "armorToughness"}),
 
-    LUCK("generic.luck", new String[] {"luck"});
+    /**
+     * 幸运
+     */
+    LUCK("generic.luck", new String[]{"luck"});
 
     String minecraftKey;
     String[] simplifiedKey;

@@ -14,8 +14,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.util.UUID;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-06 17:43
+ * 玩家本地数据工具
+ *
+ * @author 坏黑
+ * @since 2019-07-06 17:43
  */
 public class LocalPlayer {
 
@@ -41,6 +43,9 @@ public class LocalPlayer {
 
     /**
      * 获取玩家数据（通过缓存）
+     *
+     * @param player 玩家
+     * @return {@link FileConfiguration}
      */
     public static FileConfiguration get(OfflinePlayer player) {
         return handler.get(player);
@@ -48,6 +53,9 @@ public class LocalPlayer {
 
     /**
      * 获取玩家数据（绕过缓存）
+     *
+     * @param player 玩家
+     * @return {@link FileConfiguration}
      */
     public static FileConfiguration get0(OfflinePlayer player) {
         return handler.get0(player);
@@ -55,6 +63,9 @@ public class LocalPlayer {
 
     /**
      * 上传玩家数据（绕过缓存，这个方法不会更新缓存）
+     *
+     * @param player 玩家
+     * @param data   数据
      */
     public static void set0(OfflinePlayer player, FileConfiguration data) {
         handler.set0(player, data);

@@ -1,6 +1,15 @@
 package io.izzel.taboolib.util;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.google.common.collect.Lists;
+import io.izzel.taboolib.Version;
+import io.izzel.taboolib.module.inject.PlayerContainer;
+import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.util.book.builder.BookBuilder;
+import io.izzel.taboolib.util.chat.TextComponent;
+import io.izzel.taboolib.util.item.ItemBuilder;
+import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.lite.Catchers;
 import io.izzel.taboolib.util.lite.Numbers;
 import io.izzel.taboolib.util.lite.Scoreboards;
@@ -10,19 +19,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -35,6 +51,33 @@ import java.util.stream.IntStream;
 public class Features {
 
     private static ScriptEngine scriptEngine;
+
+    @PlayerContainer
+    static final ConcurrentHashMap<String, Consumer<List<String>>> inputBookMap = new ConcurrentHashMap<>();
+
+    @TListener
+    static class FeaturesListener implements Listener {
+
+        @EventHandler
+        public void e(PlayerEditBookEvent e) {
+            List<String> bookLore = e.getNewBookMeta().getLore();
+            if (bookLore != null && bookLore.size() > 0 && bookLore.get(0).equals("§0Features Input")) {
+                Consumer<List<String>> consumer = inputBookMap.get(e.getPlayer().getName());
+                if (consumer != null) {
+                    List<String> pages = Lists.newArrayList();
+                    for (String page : e.getNewBookMeta().getPages()) {
+                        pages.addAll(Arrays.asList(new TextComponent(page).toPlainText().replace("§0", "").split("\n")));
+                    }
+                    consumer.accept(pages);
+                    // 一次性捕获
+                    if (bookLore.size() > 1 && bookLore.get(1).equals("§0Disposable")) {
+                        inputBookMap.remove(e.getPlayer().getName());
+                        Items.takeItem(e.getPlayer().getInventory(), i -> Items.hasLore(i, "Features Input"), 99);
+                    }
+                }
+            }
+        }
+    }
 
     static {
         ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
@@ -52,7 +95,9 @@ public class Features {
      *
      * @param player 玩家
      * @param lines  记分板内容
+     * @return {@link org.bukkit.scoreboard}
      */
+    @NotNull
     public static Scoreboard displayScoreboard(Player player, String... lines) {
         return Scoreboards.display(player, lines);
     }
@@ -63,6 +108,7 @@ public class Features {
      * @param script 脚本源码
      * @return 预编译脚本实例
      */
+    @Nullable
     public static CompiledScript compileScript(String script) {
         try {
             return ((Compilable) scriptEngine).compile(script);
@@ -70,6 +116,17 @@ public class Features {
             TLogger.getGlobalLogger().info("§4JavaScript §c" + script + "§4 Compile Failed: §c" + e.toString());
             return null;
         }
+    }
+
+    /**
+     * 向玩家发送虚拟牌子，并捕获玩家接下来的编辑内容
+     * 待重置，暂用 Signs
+     *
+     * @param player  玩家
+     * @param catcher 编辑内容
+     */
+    public static void inputSign(Player player, Consumer<String[]> catcher) {
+        Signs.fakeSign(player, new String[0], catcher);
     }
 
     /**
@@ -124,16 +181,44 @@ public class Features {
     }
 
     /**
+     * 向玩家发送一本书
+     * 并捕获该书本的编辑动作
+     *
+     * @param player     玩家
+     * @param display    展示名称
+     * @param disposable 编辑后销毁
+     * @param origin     原始内容
+     * @param catcher    编辑动作
+     */
+    public static void inputBook(Player player, String display, Boolean disposable, List<String> origin, Consumer<List<String>> catcher) {
+        // 移除正在编辑的书本
+        Items.takeItem(player.getInventory(), i -> Items.hasLore(i, "Features Input"), 99);
+        // 发送书本
+        player.getInventory().addItem(
+                new ItemBuilder(
+                        new BookBuilder(XMaterial.WRITABLE_BOOK.parseItem())
+                                .pagesRaw(String.join("\n", origin))
+                                .build()
+                ).name("§f" + display).lore("§0Features Input", disposable ? "§0Disposable" : "").build()
+        );
+        inputBookMap.put(player.getName(), catcher);
+    }
+
+    /**
      * 从伤害事件中获取攻击实体
+     * 在 5.47 版本中增加了 EvokerFangs 召唤物判定
      *
      * @param e 伤害事件
      * @return 实体实例
      */
+    @Nullable
     public static LivingEntity getAttacker(EntityDamageByEntityEvent e) {
         if (e.getDamager() instanceof LivingEntity) {
             return (LivingEntity) e.getDamager();
         } else if (e.getDamager() instanceof Projectile && ((Projectile) e.getDamager()).getShooter() instanceof LivingEntity) {
             return (LivingEntity) ((Projectile) e.getDamager()).getShooter();
+        } else if (Version.isAfter(Version.v1_11) && e.getDamager() instanceof EvokerFangs) {
+            return ((EvokerFangs) e.getDamager()).getOwner();
         } else {
             return null;
         }
@@ -211,6 +296,7 @@ public class Features {
      * @param itemStack 物品
      * @return 物品实例
      */
+    @NotNull
     public static Item dropItem(Player player, ItemStack itemStack) {
         return dropItem(player, itemStack, 0.0, 0.4);
     }
@@ -224,6 +310,7 @@ public class Features {
      * @param radius       半径
      * @return 物品实例
      */
+    @NotNull
     public static Item dropItem(Player player, ItemStack itemStack, double bulletSpread, double radius) {
         Location location = player.getLocation().add(0.0D, 1.5D, 0.0D);
         Item item = player.getWorld().dropItem(location, itemStack);
@@ -314,6 +401,6 @@ public class Features {
         default void cancel() {
         }
 
-        boolean onChat(String message);
+        boolean onChat(@NotNull String message);
     }
 }

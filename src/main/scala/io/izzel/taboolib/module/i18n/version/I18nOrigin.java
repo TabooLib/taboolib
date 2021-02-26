@@ -10,6 +10,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.item.Items;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,12 +18,15 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 /**
- * @Author sky
- * @Since 2020-04-04 19:44
+ * @author sky
+ * @since 2020-04-04 19:44
  */
 public class I18nOrigin extends I18nBase {
 
@@ -47,12 +51,12 @@ public class I18nOrigin extends I18nBase {
     }
 
     @Override
-    public String getName(Player player, Entity entity) {
+    public @NotNull String getName(Player player, @NotNull Entity entity) {
         return entity == null ? "-" : lang.getString(NMS.handle().getName(entity).replace(".", "_"), entity.getName());
     }
 
     @Override
-    public String getName(Player player, ItemStack itemStack) {
+    public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
         if (itemStack == null) {
             return "-";
         }
@@ -81,6 +85,16 @@ public class I18nOrigin extends I18nBase {
         } else {
             return lang.getString(NMS.handle().getName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", ""));
         }
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull Enchantment enchantment) {
+        return enchantment.getName();
+    }
+
+    @Override
+    public @NotNull String getName(@Nullable Player player, @NotNull PotionEffectType potionEffectType) {
+        return potionEffectType.getName();
     }
 
     private File getLocaleFile(Plugin plugin) {

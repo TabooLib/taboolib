@@ -1,31 +1,53 @@
 package io.izzel.taboolib.util.item;
 
+import com.google.common.collect.Maps;
 import io.izzel.taboolib.Version;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * @Author 坏黑
- * @Since 2019-04-25 22:01
+ * 装备类型转换工具
+ *
+ * @author 坏黑
+ * @since 2019-04-25 22:01
  */
 public enum Equipments {
 
+    /**
+     * 主手
+     */
     HAND(EquipmentSlot.HAND, "mainhand", -1),
 
+    /**
+     * 副手
+     */
     OFF_HAND(EquipmentSlot.OFF_HAND, "offhand", 40),
 
+    /**
+     * 脚
+     */
     FEET(EquipmentSlot.FEET, "feet", 36),
 
+    /**
+     * 腿
+     */
     LEGS(EquipmentSlot.LEGS, "legs", 37),
 
+    /**
+     * 胸
+     */
     CHEST(EquipmentSlot.CHEST, "chest", 38),
 
+    /**
+     * 头
+     */
     HEAD(EquipmentSlot.HEAD, "head", 39);
 
     private final EquipmentSlot bukkit;
@@ -39,10 +61,22 @@ public enum Equipments {
         this.slot = slot;
     }
 
+    /**
+     * 设置物品
+     *
+     * @param player 玩家实例
+     * @param item   物品
+     */
     public void setItem(Player player, ItemStack item) {
         setItem((LivingEntity) player, item);
     }
 
+    /**
+     * 设置物品
+     *
+     * @param entity 实体实例
+     * @param item   物品
+     */
     public void setItem(LivingEntity entity, ItemStack item) {
         switch (this) {
             case HAND:
@@ -72,6 +106,12 @@ public enum Equipments {
         }
     }
 
+    /**
+     * 设置物品掉落几率
+     *
+     * @param entity 实体实例
+     * @param chance 几率
+     */
     public void setItemDropChance(LivingEntity entity, float chance) {
         switch (this) {
             case HAND:
@@ -101,10 +141,24 @@ public enum Equipments {
         }
     }
 
+    /**
+     * 获取物品
+     *
+     * @param player 玩家实例
+     * @return ItemStack
+     */
+    @Nullable
     public ItemStack getItem(Player player) {
         return getItem((LivingEntity) player);
     }
 
+    /**
+     * 获取物品
+     *
+     * @param entity 玩家实例
+     * @return ItemStack
+     */
+    @Nullable
     public ItemStack getItem(LivingEntity entity) {
         switch (this) {
             case HAND:
@@ -130,6 +184,12 @@ public enum Equipments {
         }
     }
 
+    /**
+     * 获取物品掉落几率
+     *
+     * @param entity 实体实例
+     * @return float
+     */
     public float getItemDropChance(LivingEntity entity) {
         switch (this) {
             case HAND:
@@ -155,20 +215,55 @@ public enum Equipments {
         }
     }
 
+    /**
+     * 通过 nms 物品类型名称获取
+     *
+     * @param nms 名称
+     * @return {@link Equipments}
+     */
+    @Nullable
     public static Equipments fromNMS(String nms) {
         return Arrays.stream(values()).filter(tEquipment -> tEquipment.nms.equalsIgnoreCase(nms)).findFirst().orElse(null);
     }
 
+    /**
+     * 通过 bukkit 物品类型名称获取
+     *
+     * @param bukkit 物品类型
+     * @return {@link Equipments}
+     */
+    @Nullable
     public static Equipments fromBukkit(EquipmentSlot bukkit) {
         return Arrays.stream(values()).filter(tEquipment -> tEquipment.bukkit == bukkit).findFirst().orElse(null);
     }
 
+    /**
+     * 获取所有物品
+     *
+     * @param player 玩家实例
+     * @return {@link Map} 位置对应的物品
+     */
+    @NotNull
     public static Map<Equipments, ItemStack> getItems(Player player) {
         return getItems((LivingEntity) player);
     }
 
+    /**
+     * 获取所有物品
+     *
+     * @param entity 实体实例
+     * @return {@link Map} 位置对应的物品
+     */
+    @NotNull
     public static Map<Equipments, ItemStack> getItems(LivingEntity entity) {
-        return Arrays.stream(values()).collect(Collectors.toMap(equipment -> equipment, equipment -> equipment.getItem(entity), (a, b) -> b));
+        Map<Equipments, ItemStack> map = Maps.newHashMap();
+        for (Equipments equipments : values()) {
+            ItemStack itemStack = equipments.getItem(entity);
+            if (itemStack != null) {
+                map.put(equipments, itemStack);
+            }
+        }
+        return map;
     }
 
     public EquipmentSlot getBukkit() {

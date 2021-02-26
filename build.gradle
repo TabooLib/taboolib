@@ -6,15 +6,20 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.38'
+version = '5.56'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
+    if (System.getenv('CI')) {
+        jcenter()
+        maven { url "https://repo.codemc.io/repository/nms/" }
+        maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
     maven { url "http://repo.ptms.ink/repository/codemc-nms/" }
     maven { url "http://repo.ptms.ink/repository/maven-releases/" }
-    maven { url "http://repo.extendedclip.com/content/repositories/placeholderapi/" }
     mavenCentral()
 }
 
@@ -24,11 +29,14 @@ dependencies {
         exclude(module: 'log4j')
     }
 
+    // ptms repo
     compile 'me.skymc.taboolib:TabooLib:4.9:all'
-    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.1'
-    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.0'
+    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.34'
+    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
 
+    // ptms repo
     compile 'ink.ptms.core:v11200:11200:all'
+    compile 'ink.ptms.core:v11604:11604:all'
     compile 'ink.ptms.core:v11600:11600:all'
     compile 'ink.ptms.core:v11500:11500:all'
     compile 'ink.ptms.core:v11400:11400:all'
@@ -36,30 +44,38 @@ dependencies {
     compile 'ink.ptms.core:v10900:10900:all'
     compile 'ink.ptms.core:v10800:10800:all'
 
+    // ptms repo
     compile 'net.md_5.bungee:BungeeCord:1:all'
 
     compile 'com.github.cryptomorin:XSeries:7.5.2.1'
     compile 'org.apache.commons:commons-lang3:3.8'
     compile 'com.google.code.gson:gson:2.8.6'
-    compile 'org.ow2.asm:asm:7.3.1'
-    compile 'org.ow2.asm:asm-commons:7.3.1'
+    compile 'org.ow2.asm:asm:9.0'
+    compile 'org.ow2.asm:asm-commons:9.0'
     compile 'com.google.inject:guice:4.2.2'
-    compile 'com.zaxxer:HikariCP:3.1.0'
+    compile 'com.zaxxer:HikariCP:3.4.5'
+    // ptms repo
     compile 'com.mongodb:MongoDB:3.12.2:all'
 
+    // ptms repo
+    compile 'ink.ptms.adyeshach:Adyeshach:1.1.0'
     compile 'pw.yumc.Yum:Yum:1:all'
-    compile 'me.clip:placeholderapi:2.10.4'
     compile 'net.milkbowl.vault:Vault:1:all'
     compile 'us.myles.ViaVersion:ViaVersion:1:all'
     compile 'protocolsupport:ProtocolSupport:1:all'
     compile 'com.sk89q.worldedit:WorldEdit:7:all'
     compile 'com.sk89q.worldguard:WorldGuard:7:all'
+    compile 'me.clip.placeholder:PlaceholderAPI:2.7.1:all'
 
     compile 'org.jetbrains:annotations:19.0.0'
     compile 'org.scala-lang:scala-library:2.12.8'
 }
 
 shadowJar {
+    from(sourceSets.main.allSource) {
+        exclude '__resources__/*'
+        exclude 'plugin.yml'
+    }
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
         it.include it.dependency('com.github.cryptomorin:.*')
@@ -67,8 +83,8 @@ shadowJar {
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
     }
+    relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
-    relocate 'org.apache.commons', 'io.izzel.taboolib.internal.apache'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
     relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
 }
@@ -79,4 +95,9 @@ processResources {
         include 'plugin.yml'
         expand 'version': project.version
     }
+}
+
+compileScala {
+    options.encoding = scalaCompileOptions.encoding = 'UTF-8'
+    scalaCompileOptions.forkOptions.jvmArgs.addAll(['-Djna.nosys=true'])
 }

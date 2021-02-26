@@ -1,8 +1,10 @@
 package io.izzel.taboolib.module.db.sqlite;
 
 /**
- * @Author sky
- * @Since 2018-05-14 21:43
+ * SQLite 数据设置
+ *
+ * @author sky
+ * @since 2018-05-14 21:43
  */
 public enum SQLiteColumnOption {
 

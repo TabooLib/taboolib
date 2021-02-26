@@ -5,8 +5,8 @@ import io.izzel.taboolib.client.packet.Packet;
 import io.izzel.taboolib.client.packet.PacketType;
 
 /**
- * @Author sky
- * @Since 2018-08-22 23:01
+ * @author sky
+ * @since 2018-08-22 23:01
  */
 @PacketType(name = "alive")
 public class PacketAlive extends Packet {

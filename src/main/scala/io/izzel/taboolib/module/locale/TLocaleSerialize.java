@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Author sky
- * @Since 2018-05-12 14:01
+ * 语言文件序列化接口
+ *
+ * @author sky
+ * @since 2018-05-12 14:01
  */
 public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSerializable {
 

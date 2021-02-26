@@ -8,8 +8,8 @@ import org.bukkit.plugin.Plugin;
 import java.lang.reflect.Field;
 
 /**
- * @Author 坏黑
- * @Since 2019-07-06 17:35
+ * @author 坏黑
+ * @since 2019-07-06 17:35
  */
 public class LocalLoader implements TabooLibLoader.Loader {
 

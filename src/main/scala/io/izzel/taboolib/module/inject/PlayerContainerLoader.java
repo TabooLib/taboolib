@@ -17,13 +17,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @Author sky
- * @Since 2018-09-14 23:45
+ * @author sky
+ * @since 2018-09-14 23:45
  */
 @TListener
 public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
 
-    static Map<String, List<Container>> pluginContainer = new ConcurrentHashMap<>();
+    private static final Map<String, List<Container>> containersMap = new ConcurrentHashMap<>();
 
     @Override
     public void postLoad(Plugin plugin, Class<?> pluginClass) {
@@ -35,7 +35,7 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
             field.setAccessible(true);
             for (Object instance : TInjectHelper.getInstance(field, pluginClass, plugin)) {
                 try {
-                    pluginContainer.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(Ref.getField(instance, field), annotation.uniqueId()));
+                    containersMap.computeIfAbsent(plugin.getName(), name -> new ArrayList<>()).add(new Container(Ref.getField(instance, field), annotation.uniqueId()));
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -45,19 +45,23 @@ public class PlayerContainerLoader implements Listener, TabooLibLoader.Loader {
 
     @Override
     public void unload(Plugin plugin, Class<?> pluginClass) {
-        pluginContainer.remove(plugin.getName());
+        containersMap.remove(plugin.getName());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
-        pluginContainer.values().stream().flatMap(Collection::stream).forEach(container -> {
-            if (container.getContainer() instanceof Map) {
-                ((Map<?, ?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-            } else if (container.getContainer() instanceof Collection) {
-                ((Collection<?>) container.getContainer()).remove(container.isUniqueId() ? e.getPlayer().getUniqueId() : e.getPlayer().getName());
-            } else {
-                TLogger.getGlobalLogger().error("Invalid Container: " + container.getContainer().getClass().getSimpleName());
+        for (Map.Entry<String, List<Container>> containers : containersMap.entrySet()) {
+            for (Container container : containers.getValue()) {
+                if (container.isInstanceOf(Map.class)) {
+                    container.<Map<?, ?>>cast().remove(container.namespace(e.getPlayer()));
+                } else if (container.isInstanceOf(Collection.class)) {
+                    container.<Collection<?>>cast().remove(container.namespace(e.getPlayer()));
+                } else if (container.isInstanceOf(Releasable.class)) {
+                    container.<Releasable>cast().release(e.getPlayer(), container.namespace(e.getPlayer()).toString());
+                } else {
+                    TLogger.getGlobalLogger().error("Unsupported container: " + container);
+                }
             }
-        });
+        }
     }
 }

@@ -10,8 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-11 15:42
+ * @author 坏黑
+ * @since 2019-05-11 15:42
  */
 public class CronusUtils {
 
@@ -95,7 +95,7 @@ public class CronusUtils {
         if (level <= 15) {
             return (2 * level) + 7;
         }
-        if ((level >= 16) && (level <= 30)) {
+        if (level <= 30) {
             return (5 * level) - 38;
         }
         return (9 * level) - 158;
@@ -161,5 +161,4 @@ public class CronusUtils {
         }
         return time;
     }
-
 }

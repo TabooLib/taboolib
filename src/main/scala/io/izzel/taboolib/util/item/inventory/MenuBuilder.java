@@ -9,17 +9,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
 /**
- * @Author 坏黑
- * @Since 2019-05-21 15:54
+ * 界面构建工具
+ *
+ * @author 坏黑
+ * @since 2019-05-21 15:54
  */
 public class MenuBuilder {
 
-    private Map<Character, ItemStack> keys = Maps.newHashMap();
-    private Plugin plugin;
+    private final Map<Character, ItemStack> keys = Maps.newHashMap();
+    private final Plugin plugin;
     private String title;
     private int rows;
     private char[][] items = new char[0][0];
@@ -37,53 +40,140 @@ public class MenuBuilder {
         this.plugin = plugin;
     }
 
+    /**
+     * 获取一个 MenuBuilder 实例
+     *
+     * @param plugin 插件主类实例
+     * @return MenuBuilder 实例
+     */
     public static MenuBuilder builder(Plugin plugin) {
         return new MenuBuilder(plugin);
     }
 
+    /**
+     * 获取一个 MenuBuilder 实例
+     *
+     * @return MenuBuilder 实例
+     */
     public static MenuBuilder builder() {
         return new MenuBuilder(Ref.getCallerPlugin(Ref.getCallerClass(3).orElse(TabooLib.class)));
     }
 
-    public void open(Player player) {
+    /**
+     * 为玩家打开已由 MenuBuilder 创建好的菜单
+     *
+     * @param player 需要打开菜单的玩家
+     */
+    public void open(@NotNull Player player) {
         player.openInventory(build());
     }
 
+    /**
+     * 将菜单设置为锁定玩家手部动作
+     * 这将阻止玩家在使用菜单时进行包括但不限于
+     * 丢弃物品，拿出菜单物品
+     * 等行为
+     * <p>
+     * 主要用于处理玩家在打开菜单之前移动手持物品，导致插件产生逻辑错误。
+     *
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder lockHand() {
         this.lockHand = true;
         return this;
     }
 
+    /**
+     * 设置是否锁定玩家手部动作
+     * 设置为 true 则将阻止玩家在使用菜单时进行包括但不限于
+     * 丢弃物品，拿出菜单物品
+     * 等行为
+     *
+     * @param value 锁定
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder lockHand(boolean value) {
         this.lockHand = value;
         return this;
     }
 
-    public MenuBuilder event(ClickTask clickTask) {
+    /**
+     * 设置玩家点击菜单事件
+     *
+     * @param clickTask 玩家点击菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder event(@NotNull ClickTask clickTask) {
         this.clickTask = clickTask;
         return this;
     }
 
-    public MenuBuilder close(CloseTask closeTask) {
+    /**
+     * 设置玩家点击菜单事件
+     * 只有 CLICK 方式，并且屏蔽 DRAG 事件
+     *
+     * @param clickTask 玩家点击菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder click(@NotNull ClickTask clickTask) {
+        return event(e -> {
+            e.setCancelled(true);
+            if (e.getClickType() == ClickType.CLICK) {
+                clickTask.run(e);
+            }
+        });
+    }
+
+    /**
+     * 设置玩家关闭菜单事件
+     *
+     * @param closeTask 玩家关闭菜单任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder close(@NotNull CloseTask closeTask) {
         this.closeTask = closeTask;
         return this;
     }
 
-    public MenuBuilder build(BuildTask buildTask) {
+    /**
+     * 构建菜单内容
+     *
+     * @param buildTask 菜单构建任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder build(@NotNull BuildTask buildTask) {
         this.buildTask = buildTask;
         return this;
     }
 
-    public MenuBuilder buildAsync(BuildTask buildTask) {
+    /**
+     * 异步构建菜单内容
+     *
+     * @param buildTask 菜单构建任务
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder buildAsync(@NotNull BuildTask buildTask) {
         this.buildTaskAsync = buildTask;
         return this;
     }
 
-    public MenuBuilder title(String title) {
+    /**
+     * 设置菜单标题
+     *
+     * @param title 标题
+     * @return 编辑过的 MenuBuilder 实例
+     */
+    public MenuBuilder title(@NotNull String title) {
         this.title = title;
         return this;
     }
 
+    /**
+     * 设置菜单行数
+     *
+     * @param rows 菜单行数
+     * @return 编辑过的 MenuBuilder 实例
+     */
     public MenuBuilder rows(int rows) {
         this.rows = rows * 9;
         return this;
@@ -102,6 +192,11 @@ public class MenuBuilder {
         return this;
     }
 
+    /**
+     * 构建菜单
+     *
+     * @return Bukkit 的 Inventory 背包对象实例
+     */
     public Inventory build() {
         Inventory inventory = Bukkit.createInventory(new MenuHolder(this), rows, String.valueOf(title));
         for (int i = 0; i < items.length && i < rows; i++) {
@@ -124,12 +219,6 @@ public class MenuBuilder {
         }
         return ' ';
     }
-
-    // *********************************
-    //
-    //        Getter and Setter
-    //
-    // *********************************
 
     public Map<Character, ItemStack> getKeys() {
         return keys;

@@ -5,8 +5,8 @@ import io.izzel.taboolib.util.item.inventory.ClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @Author sky
- * @Since 2019-12-03 19:20
+ * @author sky
+ * @since 2019-12-03 19:20
  */
 public class ActionQuickTake extends Action {
 

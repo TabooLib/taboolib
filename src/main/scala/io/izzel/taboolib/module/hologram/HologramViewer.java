@@ -5,8 +5,10 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 /**
- * @Author sky
- * @Since 2020-03-07 16:56
+ * 全息观察对象
+ *
+ * @author sky
+ * @since 2020-03-07 16:56
  */
 public class HologramViewer {
 
@@ -20,6 +22,11 @@ public class HologramViewer {
         this.player = player;
     }
 
+    /**
+     * 设置全息字是否可见
+     *
+     * @param visible 是否可见
+     */
     public void setVisible(boolean visible) {
         this.spawned = false;
         this.visible = visible;

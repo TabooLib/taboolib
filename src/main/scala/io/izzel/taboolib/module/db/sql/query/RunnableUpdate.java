@@ -1,6 +1,5 @@
 package io.izzel.taboolib.module.db.sql.query;
 
-import io.izzel.taboolib.module.db.sql.SQLExecutor;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 
 import javax.sql.DataSource;
@@ -8,19 +7,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 /**
- * F
- *
- * @Author sky
- * @Since 2018-07-03 21:29
+ * @author sky
+ * @since 2018-07-03 21:29
  */
 public class RunnableUpdate {
 
-
+    private final String query;
     private DataSource dataSource;
     private TaskStatement statement;
-    private Connection connection;
-    private boolean autoClose;
-    private final String query;
 
     public RunnableUpdate(String query) {
         this.query = query;
@@ -36,51 +30,18 @@ public class RunnableUpdate {
         return this;
     }
 
-    public RunnableUpdate connection(Connection connection) {
-        return connection(connection, false);
-    }
-
-    public RunnableUpdate connection(Connection connection, boolean autoClose) {
-        this.connection = connection;
-        this.autoClose = autoClose;
-        return this;
-    }
-
     public void run() {
-        PreparedStatement preparedStatement = null;
         if (dataSource != null) {
-            try (Connection connection = dataSource.getConnection()) {
-                preparedStatement = connection.prepareStatement(query);
+            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 if (statement != null) {
                     statement.execute(preparedStatement);
                 }
                 preparedStatement.executeUpdate();
             } catch (Exception e) {
-                printException(e);
-            } finally {
-                SQLExecutor.freeStatement(preparedStatement, null);
-            }
-        } else if (connection != null) {
-            try {
-                preparedStatement = connection.prepareStatement(query);
-                if (statement != null) {
-                    statement.execute(preparedStatement);
-                }
-                preparedStatement.executeUpdate();
-            } catch (Exception e) {
-                printException(e);
-            } finally {
-                SQLExecutor.freeStatement(preparedStatement, null);
-                if (autoClose) {
-                    SQLExecutor.freeConnection(connection);
-                }
+                TLogger.getGlobalLogger().error("An exception occurred in the database. (" + query + ")");
+                TLogger.getGlobalLogger().error("Reason: " + e.toString());
+                e.printStackTrace();
             }
         }
-    }
-
-    private void printException(Exception e) {
-        TLogger.getGlobalLogger().error("An exception occurred in the database. (" + query + ")");
-        TLogger.getGlobalLogger().error("Reason: " + e.toString());
-        e.printStackTrace();
     }
 }
