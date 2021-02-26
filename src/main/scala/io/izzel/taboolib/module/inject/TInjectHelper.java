@@ -51,7 +51,7 @@ public class TInjectHelper {
                 .stream()
                 .filter(e -> e.getKey().getType().equals(pluginClass))
                 .forEach(e -> instance.add(e.getValue().getInstance()));
-        instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+        instance.addAll(TListenerLoader.getInstance(plugin, pluginClass));
         if (instance.isEmpty()) {
             try {
                 instance.add(Reflection.instantiateObject(pluginClass));
@@ -74,7 +74,7 @@ public class TInjectHelper {
                     .stream()
                     .filter(e -> e.getKey().getType().equals(pluginClass))
                     .forEach(e -> instance.add(e.getValue().getInstance()));
-            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+            instance.addAll(TListenerLoader.getInstance(plugin, pluginClass));
         }
         if (instance.isEmpty()) {
             TLogger.getGlobalLogger().warn("No instance of " + field.getName() + " (" + pluginClass.getSimpleName() + ")");
@@ -100,7 +100,7 @@ public class TInjectHelper {
                     .stream()
                     .filter(e -> e.getKey().getType().equals(pluginClass))
                     .forEach(e -> instance.add(e.getValue().getInstance()));
-            instance.addAll(TListenerHandler.getInstance(plugin, pluginClass));
+            instance.addAll(TListenerLoader.getInstance(plugin, pluginClass));
         }
         if (instance.isEmpty()) {
             TLogger.getGlobalLogger().warn("No instance of " + method.getName() + " (" + pluginClass.getSimpleName() + ")");

@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * @author sky
  * @since 2018-08-22 13:48
  */
-public class TListenerHandler implements TabooLibLoader.Loader {
+public class TListenerLoader implements TabooLibLoader.Loader {
 
     private static final Map<String, List<Listener>> listeners = new HashMap<>();
     private static final Map<String, Map<Class<?>, Listener>> listenerInstances = new HashMap<>();
@@ -91,8 +91,13 @@ public class TListenerHandler implements TabooLibLoader.Loader {
         }
     }
 
+    @Override
+    public int priority() {
+        return -10;
+    }
+
     public static List<Listener> getInstance(Plugin plugin, Class<?> pluginClass) {
-        List<Listener> list = TListenerHandler.listeners.get(plugin.getName());
+        List<Listener> list = TListenerLoader.listeners.get(plugin.getName());
         return list == null ? Collections.emptyList() : list.stream().filter(listener -> pluginClass.equals(listener.getClass())).collect(Collectors.toList());
     }
 

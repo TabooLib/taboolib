@@ -69,17 +69,18 @@ public class TabooLib {
 
     private static final TabooLib instance = new TabooLib();
 
-    private static final TLogger logger = TLogger.getUnformatted("TabooLib");
+    private static TLogger logger;
 
-    private static final TConfig config = TConfig.create(getPlugin(), "settings.yml");
+    private static TConfig config;
 
     private static double version;
 
     @SuppressWarnings("BusyWait")
     public TabooLib() {
+        logger = TLogger.getUnformatted("TabooLib");
         // 配置更新
         try {
-            config.migrate();
+            config = TConfig.create(getPlugin(), "settings.yml").migrate();
         } catch (Throwable t) {
             t.printStackTrace();
         }

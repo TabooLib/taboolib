@@ -112,7 +112,7 @@ public class TInjectLoader implements TabooLibLoader.Loader {
 
     @Override
     public int priority() {
-        return -999;
+        return -5;
     }
 
     @Override
