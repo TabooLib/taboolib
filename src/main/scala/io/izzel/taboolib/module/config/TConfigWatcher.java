@@ -63,7 +63,6 @@ public class TConfigWatcher {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public <T> void addListener(File file, T obj, Consumer<T> consumer) {
         addOnListen(file, obj, (Consumer<Object>) consumer);
     }

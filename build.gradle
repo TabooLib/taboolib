@@ -24,51 +24,46 @@ repositories {
 }
 
 dependencies {
-    shadow('org.apache.cassandra:cassandra-all:0.8.1') {
+    implementation('org.apache.cassandra:cassandra-all:0.8.1') {
         exclude(module: 'slf4j-log4j12')
         exclude(module: 'log4j')
     }
 
-    // ptms repo
-    compile 'me.skymc.taboolib:TabooLib:4.9:all'
-    compile 'io.izzel.taboolib:TabooLibKotlin:1.0.34'
-    compile 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
+    implementation 'me.skymc.taboolib:TabooLib:4.9:all'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.34'
+    implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
 
-    // ptms repo
-    compile 'ink.ptms.core:v11200:11200:all'
-    compile 'ink.ptms.core:v11604:11604:all'
-    compile 'ink.ptms.core:v11600:11600:all'
-    compile 'ink.ptms.core:v11500:11500:all'
-    compile 'ink.ptms.core:v11400:11400:all'
-    compile 'ink.ptms.core:v11300:11300:all'
-    compile 'ink.ptms.core:v10900:10900:all'
-    compile 'ink.ptms.core:v10800:10800:all'
+    implementation 'ink.ptms.core:v11200:11200:all'
+    implementation 'ink.ptms.core:v11604:11604:all'
+    implementation 'ink.ptms.core:v11600:11600:all'
+    implementation 'ink.ptms.core:v11500:11500:all'
+    implementation 'ink.ptms.core:v11400:11400:all'
+    implementation 'ink.ptms.core:v11300:11300:all'
+    implementation 'ink.ptms.core:v10900:10900:all'
+    implementation 'ink.ptms.core:v10800:10800:all'
 
-    // ptms repo
-    compile 'net.md_5.bungee:BungeeCord:1:all'
+    implementation 'net.md_5.bungee:BungeeCord:1:all'
 
-    compile 'com.github.cryptomorin:XSeries:7.5.2.1'
-    compile 'org.apache.commons:commons-lang3:3.8'
-    compile 'com.google.code.gson:gson:2.8.6'
-    compile 'org.ow2.asm:asm:9.0'
-    compile 'org.ow2.asm:asm-commons:9.0'
-    compile 'com.google.inject:guice:4.2.2'
-    compile 'com.zaxxer:HikariCP:3.4.5'
-    // ptms repo
-    compile 'com.mongodb:MongoDB:3.12.2:all'
+    implementation 'com.github.cryptomorin:XSeries:7.8.0'
+    implementation 'org.apache.commons:commons-lang3:3.8'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.ow2.asm:asm:9.0'
+    implementation 'org.ow2.asm:asm-commons:9.0'
+    implementation 'com.google.inject:guice:4.2.2'
+    implementation 'com.zaxxer:HikariCP:3.4.5'
+    implementation 'com.mongodb:MongoDB:3.12.2:all'
 
-    // ptms repo
-    compile 'ink.ptms.adyeshach:Adyeshach:1.1.0'
-    compile 'pw.yumc.Yum:Yum:1:all'
-    compile 'net.milkbowl.vault:Vault:1:all'
-    compile 'us.myles.ViaVersion:ViaVersion:1:all'
-    compile 'protocolsupport:ProtocolSupport:1:all'
-    compile 'com.sk89q.worldedit:WorldEdit:7:all'
-    compile 'com.sk89q.worldguard:WorldGuard:7:all'
-    compile 'me.clip.placeholder:PlaceholderAPI:2.7.1:all'
+    implementation 'ink.ptms.adyeshach:Adyeshach:1.1.0'
+    implementation 'pw.yumc.Yum:Yum:1:all'
+    implementation 'net.milkbowl.vault:Vault:1:all'
+    implementation 'us.myles.ViaVersion:ViaVersion:1:all'
+    implementation 'protocolsupport:ProtocolSupport:1:all'
+    implementation 'com.sk89q.worldedit:WorldEdit:7:all'
+    implementation 'com.sk89q.worldguard:WorldGuard:7:all'
+    implementation 'me.clip.placeholder:PlaceholderAPI:2.7.1:all'
 
-    compile 'org.jetbrains:annotations:19.0.0'
-    compile 'org.scala-lang:scala-library:2.12.8'
+    implementation 'org.jetbrains:annotations:19.0.0'
+    implementation 'org.scala-lang:scala-library:2.12.8'
 }
 
 shadowJar {

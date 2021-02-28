@@ -2,7 +2,6 @@ package io.izzel.taboolib.module.config;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.local.SecuredFile;
-import io.izzel.taboolib.util.ArrayUtil;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.Pair;
 import io.izzel.taboolib.util.Strings;
@@ -41,7 +40,7 @@ public class TConfigMigrate {
                 break;
             }
         }
-        if (Objects.equals(hash1, hash2)) {
+        if (hash1.equals(hash2)) {
             return null;
         }
         List<Pair<String, String[]>> update = Lists.newArrayList();
@@ -69,16 +68,20 @@ public class TConfigMigrate {
                     update.add(new Pair<>(pair.getKey(), SecuredFile.dump(data).split("\n")));
                 } else {
                     String space = Strings.copy("  ", nodes.length - 1);
-                    String[] dumpList = SecuredFile.dump(data).split("\n");
-                    if (dumpList.length > 1) {
-                        IntStream.range(0, dumpList.length).forEach(j -> dumpList[j] = space + "  # " + dumpList[j]);
+                    String[] dump = SecuredFile.dump(data).split("\n");
+                    if (dump.length > 1) {
+                        IntStream.range(0, dump.length).forEach(j -> dump[j] = space + "  " + dump[j]);
                     }
-                    ArrayUtil.addAutoExpand(content, find + 1, space + "# ------------------------- #\n" + space + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" + space + "# ------------------------- #", "");
-                    if (dumpList.length == 1) {
-                        ArrayUtil.addAutoExpand(content, find + 2, space + "# " + pair.getKey().substring(index + 1) + ": " + dumpList[0] + "\n", "");
+                    addAutoExpand(content, find + 1,
+                            space + "# ------------------------- #\n" +
+                            space + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" +
+                            space + "# ------------------------- #"
+                    );
+                    if (dump.length == 1) {
+                        addAutoExpand(content, find + 2, space + pair.getKey().substring(index + 1) + ": " + dump[0] + "\n");
                     } else {
-                        ArrayUtil.addAutoExpand(content, find + 2, space + "# " + pair.getKey().substring(index + 1) + ":", "");
-                        ArrayUtil.addAutoExpand(content, find + 3, String.join("\n# ", dumpList) + "\n", "");
+                        addAutoExpand(content, find + 2, space + pair.getKey().substring(index + 1) + ":");
+                        addAutoExpand(content, find + 3, String.join("\n", dump) + "\n");
                     }
                     migrated = true;
                 }
@@ -86,13 +89,17 @@ public class TConfigMigrate {
         }
         if (update.size() > 0) {
             content.add("");
-            content.add("# ------------------------- #\n" + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" + "# ------------------------- #");
+            content.add(
+                    "# ------------------------- #\n" +
+                    "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" +
+                    "# ------------------------- #"
+            );
             for (Pair<String, String[]> pair : update) {
                 if (pair.getValue().length == 1) {
-                    content.add("# " + pair.getKey() + ": " + pair.getValue()[0]);
+                    content.add(pair.getKey() + ": " + pair.getValue()[0]);
                 } else {
-                    content.add("# " + pair.getKey() + ":");
-                    content.add(String.join("\n# ", pair.getValue()));
+                    content.add(pair.getKey() + ":");
+                    content.add(String.join("\n", pair.getValue()));
                 }
             }
             migrated = true;
@@ -157,5 +164,12 @@ public class TConfigMigrate {
             }
         }
         return difference;
+    }
+
+    private static <T> void addAutoExpand(List<T> list, int index, T element) {
+        while(list.size() <= index) {
+            list.add((T) "");
+        }
+        list.add(index, element);
     }
 }
