@@ -10,10 +10,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
 /**
  * TConfig 配置文件升级工具
@@ -25,11 +25,19 @@ public class TConfigMigrate {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
 
+    /**
+     * 更新配置文件
+     *
+     * @param current 目标文件
+     * @param source  源文件
+     */
     public static List<String> migrate(InputStream current, InputStream source) {
         boolean migrated = false;
+        boolean append = false;
         List<String> content = Files.readToList(current);
+        List<String> contentSource = Files.readToList(source);
         String cc = String.join("\n", content);
-        String cs = String.join("\n", Files.readToList(source));
+        String cs = String.join("\n", contentSource);
         SecuredFile c = SecuredFile.loadConfiguration(cc);
         SecuredFile s = SecuredFile.loadConfiguration(cs);
         String hash1 = Strings.hashKeyForDisk(cs, "sha-1");
@@ -43,45 +51,33 @@ public class TConfigMigrate {
         if (hash1.equals(hash2)) {
             return null;
         }
-        List<Pair<String, String[]>> update = Lists.newArrayList();
+        List<Pair<String, Update>> update = Lists.newArrayList();
         List<Pair<String, Object>> contrast = contrast(c.getValues(true), s.getValues(true));
         for (Pair<String, Object> pair : contrast) {
             int index = pair.getKey().lastIndexOf(".");
             if (pair.getValue() == null) {
-                Object data = s.get(pair.getKey());
                 String[] nodes = pair.getKey().split("\\.");
-                int regex = 0;
-                int match = 0;
-                int find = -1;
-                for (int i = 0; i < content.size(); i++) {
-                    String line = content.get(i);
-                    for (int j = regex; j < nodes.length; j++) {
-                        if (line.matches("( *)(['\"])?(" + nodes[j] + ")(['\"])?:(.*)")) {
-                            match++;
-                            find = i;
-                            regex = j;
-                            break;
-                        }
-                    }
-                }
+                Object data = s.get(pair.getKey());
+                int find = readNode(pair.getKey(), content);
                 if (find == -1) {
-                    update.add(new Pair<>(pair.getKey(), SecuredFile.dump(data).split("\n")));
+                    List<String> commits = readCommit(pair.getKey(), contentSource);
+                    update.add(new Pair<>(pair.getKey(), new Update(SecuredFile.dump(data).split("\n"), commits)));
                 } else {
-                    String space = Strings.copy("  ", nodes.length - 1);
+                    int line = 1;
                     String[] dump = SecuredFile.dump(data).split("\n");
-                    if (dump.length > 1) {
-                        IntStream.range(0, dump.length).forEach(j -> dump[j] = space + "  " + dump[j]);
+                    String space = Strings.copy("  ", nodes.length - 1);
+                    arrayAppend(content, find + line++, space + "# ------------------------- #");
+                    arrayAppend(content, find + line++, space + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #");
+                    arrayAppend(content, find + line++, space + "# ------------------------- #");
+                    for (String commit : readCommit(pair.getKey(), contentSource)) {
+                        arrayAppend(content, find + line++, space + "# " + commit);
                     }
-                    addAutoExpand(content, find + 1,
-                            space + "# ------------------------- #\n" +
-                            space + "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" +
-                            space + "# ------------------------- #"
-                    );
                     if (dump.length == 1) {
-                        addAutoExpand(content, find + 2, space + pair.getKey().substring(index + 1) + ": " + dump[0] + "\n");
+                        arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ": " + dump[0]);
                     } else {
-                        addAutoExpand(content, find + 2, space + pair.getKey().substring(index + 1) + ":");
-                        addAutoExpand(content, find + 3, String.join("\n", dump) + "\n");
+                        Arrays.setAll(dump, i -> space + "  " + dump[i]);
+                        arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ":");
+                        arrayAppend(content, find + line, String.join("\n", dump));
                     }
                     migrated = true;
                 }
@@ -89,24 +85,32 @@ public class TConfigMigrate {
         }
         if (update.size() > 0) {
             content.add("");
-            content.add(
-                    "# ------------------------- #\n" +
-                    "#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #\n" +
-                    "# ------------------------- #"
-            );
-            for (Pair<String, String[]> pair : update) {
-                if (pair.getValue().length == 1) {
-                    content.add(pair.getKey() + ": " + pair.getValue()[0]);
+            content.add("# ------------------------- #");
+            content.add("#  UPDATE " + dateFormat.format(System.currentTimeMillis()) + "  #");
+            content.add("# ------------------------- #");
+            for (Pair<String, Update> pair : update) {
+                Update value = pair.getValue();
+                for (String commit : value.getCommit()) {
+                    content.add("# " + commit);
+                }
+                if (value.getContent().length == 1) {
+                    content.add(pair.getKey() + ": " + value.getContent()[0]);
                 } else {
                     content.add(pair.getKey() + ":");
-                    content.add(String.join("\n", pair.getValue()));
+                    for (String line : value.getContent()) {
+                        content.add("  " + line);
+                    }
                 }
+                content.add("");
             }
             migrated = true;
+            append = true;
         }
         if (migrated) {
             if (hash2.isEmpty()) {
-                content.add("");
+                if (!append) {
+                    content.add("");
+                }
                 content.add("# --------------------------------------------- #");
                 content.add("# HASH " + hash1 + " #");
                 content.add("# --------------------------------------------- #");
@@ -132,7 +136,6 @@ public class TConfigMigrate {
     public static List<Pair<String, Object>> contrast(Map<?, ?> current, Map<?, ?> source) {
         List<String> deleted = Lists.newArrayList();
         List<Pair<String, Object>> difference = Lists.newArrayList();
-        // change & add
         for (Map.Entry<?, ?> entry : current.entrySet()) {
             if (entry.getValue() instanceof ConfigurationSection) {
                 continue;
@@ -147,7 +150,6 @@ public class TConfigMigrate {
                 difference.add(new Pair<>(entry.getKey().toString(), entry.getValue()));
             }
         }
-        // delete
         for (Map.Entry<?, ?> entry : source.entrySet()) {
             if (deleted.stream().anyMatch(delete -> entry.getKey().toString().startsWith(delete) && delete.split("\\.").length < entry.getKey().toString().split("\\.").length)) {
                 continue;
@@ -166,10 +168,90 @@ public class TConfigMigrate {
         return difference;
     }
 
-    private static <T> void addAutoExpand(List<T> list, int index, T element) {
-        while(list.size() <= index) {
+    private static <T> void arrayAppend(List<T> list, int index, T element) {
+        while (list.size() <= index) {
             list.add((T) "");
         }
         list.add(index, element);
+    }
+
+    private static int readNode(String node, List<String> content) {
+        String[] nodes = node.split("\\.");
+        int find = -1;
+        int regex = 0;
+        for (int i = 0; i < content.size(); i++) {
+            String line = content.get(i).trim();
+            for (int j = regex; j < nodes.length; j++) {
+                if (line.matches("(['\"])?(" + nodes[j] + ")(['\"])?:(.*)")) {
+                    find = i;
+                    regex = j;
+                    break;
+                }
+            }
+        }
+        return find;
+    }
+
+    private static List<String> readCommit(String node, List<String> source) {
+        List<String> commit = Lists.newArrayList();
+        String[] nodes = node.split("\\.");
+        int regex = 0;
+        for (String i : source) {
+            String line = i.trim();
+            if (line.startsWith("#")) {
+                commit.add(line.substring(1).trim());
+            }
+            for (int j = regex; j < nodes.length; j++) {
+                if (line.matches("(['\"])?(" + nodes[j] + ")(['\"])?:(.*)")) {
+                    if (regex == nodes.length - 1) {
+                        return commit;
+                    }
+                    regex = j;
+                    break;
+                }
+            }
+            if (!line.startsWith("#") && line.length() != 0) {
+                commit.clear();
+            }
+        }
+        return commit;
+    }
+
+    static class Node {
+
+        private final int line;
+        private final List<String> commit;
+
+        public Node(int line, List<String> commit) {
+            this.line = line;
+            this.commit = commit;
+        }
+
+        public int getLine() {
+            return line;
+        }
+
+        public List<String> getCommit() {
+            return commit;
+        }
+    }
+
+    static class Update {
+
+        private final String[] value;
+        private final List<String> commit;
+
+        public Update(String[] value, List<String> commit) {
+            this.value = value;
+            this.commit = commit;
+        }
+
+        public String[] getContent() {
+            return value;
+        }
+
+        public List<String> getCommit() {
+            return commit;
+        }
     }
 }

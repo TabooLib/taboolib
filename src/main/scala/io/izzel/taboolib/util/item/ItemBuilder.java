@@ -33,7 +33,7 @@ public class ItemBuilder {
     private ItemMeta itemMeta;
 
     public ItemBuilder(XMaterial material) {
-        this(Objects.requireNonNull(material.parseItem(true)));
+        this(Objects.requireNonNull(material.parseItem()));
     }
 
     public ItemBuilder(Material material) {
