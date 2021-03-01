@@ -19,10 +19,12 @@ public class CronusUtils {
         player.getInventory().addItem(item).values().forEach(e -> player.getWorld().dropItem(player.getLocation(), e));
     }
 
+    @Deprecated
     public static String NonNull(String in) {
         return Strings.isBlank(in) ? "-" : in;
     }
 
+    @Deprecated
     public static ItemStack NonNull(ItemStack itemStack) {
         return Optional.ofNullable(itemStack).orElse(new ItemStack(Material.STONE));
     }

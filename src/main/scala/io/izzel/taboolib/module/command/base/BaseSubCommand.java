@@ -1,5 +1,6 @@
 package io.izzel.taboolib.module.command.base;
 
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -97,7 +98,12 @@ public abstract class BaseSubCommand {
     }
 
     public String getDescription() {
-        return annotation.description();
+        String description = annotation.description();
+        if (description.startsWith("@")) {
+            return TLocaleLoader.asString(mainCommand.getRegisterCommand().getPlugin(), description.substring(1));
+        } else {
+            return description;
+        }
     }
 
     public String[] getAliases() {

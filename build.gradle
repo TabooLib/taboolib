@@ -30,7 +30,7 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.34'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.35'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
 
     implementation 'ink.ptms.core:v11200:11200:all'
@@ -53,7 +53,6 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'com.mongodb:MongoDB:3.12.2:all'
 
-    implementation 'ink.ptms.adyeshach:Adyeshach:1.1.0'
     implementation 'pw.yumc.Yum:Yum:1:all'
     implementation 'net.milkbowl.vault:Vault:1:all'
     implementation 'us.myles.ViaVersion:ViaVersion:1:all'

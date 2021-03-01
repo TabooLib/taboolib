@@ -8,7 +8,6 @@ import io.izzel.taboolib.module.command.base.display.DisplayFlat;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Ref;
 import io.izzel.taboolib.util.Strings;
-import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -38,16 +37,14 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
     private final List<Class<?>> linkClasses = new CopyOnWriteArrayList<>();
     private final List<BaseSubCommand> subCommands = new CopyOnWriteArrayList<>();
 
-    public static BaseMainCommand createCommandExecutor(String command, BaseMainCommand baseMainCommand) {
-        Preconditions.checkArgument(Bukkit.getPluginCommand(command) != null, "PluginCommand \"" + command + "\" not found");
-        Preconditions.checkArgument(baseMainCommand != null, "Executor cannot be null");
-        baseMainCommand.setRegisterCommand(Bukkit.getPluginCommand(command));
+    public static void createCommandExecutor(PluginCommand command, BaseMainCommand baseMainCommand) {
+        Preconditions.checkNotNull(command);
+        baseMainCommand.setRegisterCommand(command);
         baseMainCommand.getRegisterCommand().setExecutor(baseMainCommand);
         baseMainCommand.getRegisterCommand().setTabCompleter(baseMainCommand);
         baseMainCommand.getLinkClasses().add(baseMainCommand.getClass());
         baseMainCommand.disguisedPlugin();
         loadCommandRegister(baseMainCommand);
-        return baseMainCommand;
     }
 
     public static void loadCommandRegister(BaseMainCommand baseMainCommand) {
@@ -64,14 +61,11 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
             methods.forEach(method -> {
                 try {
                     BaseSubCommand subCommand = null;
-                    // lite parameter
                     if (Arrays.equals(method.getParameterTypes(), new Class[]{CommandSender.class, String[].class})) {
                         subCommand = buildSubCommand(baseMainCommand, method)
                                 .label(method.getName())
                                 .annotation(method.getAnnotation(SubCommand.class));
-                    }
-                    // player only parameter
-                    else if (Arrays.equals(method.getParameterTypes(), new Class[]{Player.class, String[].class})) {
+                    } else if (Arrays.equals(method.getParameterTypes(), new Class[]{Player.class, String[].class})) {
                         subCommand = buildSubCommand(baseMainCommand, method)
                                 .player()
                                 .label(method.getName())
@@ -139,29 +133,35 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
      * @param argument 参数
      * @return 补全结果
      */
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
+    @Nullable
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull String command, @NotNull String argument) {
         return null;
     }
 
     @Override
+    @Nullable
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
         if (args.length == 1) {
             List<String> label = Lists.newArrayList();
-            subCommands.stream().filter(subCommand -> subCommand != null && !subCommand.hideInHelp() && subCommand.hasPermission(sender)).forEach(l -> {
-                label.add(l.getLabel());
-                label.addAll(Lists.newArrayList(l.getAliases()));
+            subCommands.stream().filter(subCommand -> subCommand != null && !subCommand.hideInHelp() && subCommand.hasPermission(sender)).forEach(i -> {
+                label.add(i.getLabel());
+                label.addAll(Lists.newArrayList(i.getAliases()));
             });
-            return label.stream().filter(l -> args[0].isEmpty() || l.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
+            return label.stream().filter(i -> args[0].isEmpty() || i.toLowerCase().startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
         for (BaseSubCommand subCommand : subCommands) {
             Argument[] arguments = subCommand.getArguments();
             if (subCommand.isCommand(args[0]) && args.length - 1 <= arguments.length) {
                 CommandTab commandTab = arguments[args.length - 2].getTab();
                 if (commandTab != null) {
-                    return commandTab.run().stream().filter(l -> args[args.length - 1].isEmpty() || l.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).collect(Collectors.toList());
-                } else {
-                    return onTabComplete(sender, subCommand.getLabel(), arguments[args.length - 2].getName());
+                    List<String> run = commandTab.run();
+                    if (run != null) {
+                        return run.stream()
+                                .filter(i -> args[args.length - 1].isEmpty() || i.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                                .collect(Collectors.toList());
+                    }
                 }
+                return onTabComplete(sender, subCommand.getLabel(), arguments[args.length - 2].getName());
             }
         }
         return null;

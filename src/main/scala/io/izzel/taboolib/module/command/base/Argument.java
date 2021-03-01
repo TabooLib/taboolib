@@ -14,13 +14,9 @@ import java.util.Objects;
  */
 public class Argument {
 
-    // 参数名称
     private final String name;
-    // 是否必须
     private boolean required;
-    // 参数补全
     private CommandTab tab;
-    // 参数约束
     private ArgumentType restrict;
 
     public String getName() {

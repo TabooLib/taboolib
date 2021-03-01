@@ -3,8 +3,7 @@ package io.izzel.taboolib.module.command.lite;
 import com.google.common.base.Preconditions;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.command.TCommandHandler;
-import io.izzel.taboolib.util.ArrayUtil;
-import io.izzel.taboolib.util.Ref;
+ import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -13,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public class CommandBuilder {
     }
 
     public CommandBuilder aliases(@Nullable String... aliases) {
-        this.aliases = ArrayUtil.asList(aliases);
+        this.aliases = Arrays.asList(aliases);
         return this;
     }
 
@@ -113,9 +113,9 @@ public class CommandBuilder {
     }
 
     public CommandBuilder build() {
-        Preconditions.checkNotNull(plugin, "缺少 \"plugin\" 部分");
-        Preconditions.checkNotNull(command, "缺少 \"command\" 部分");
-        Preconditions.checkNotNull(completerCommand, "缺少 \"CompleterCommand\" 部分");
+        Preconditions.checkNotNull(plugin);
+        Preconditions.checkNotNull(command);
+        Preconditions.checkNotNull(completerCommand);
         if (forceRegister) {
             TCommandHandler.getKnownCommands().remove(command);
         }
@@ -125,9 +125,9 @@ public class CommandBuilder {
             }
             if (Bukkit.getPluginManager().getPermission(permission) != null) {
                 try {
-                    Permission p = new Permission(permission, permissionDefault);
-                    Bukkit.getPluginManager().addPermission(p);
-                    Bukkit.getPluginManager().recalculatePermissionDefaults(p);
+                    Permission permission = new Permission(this.permission, permissionDefault);
+                    Bukkit.getPluginManager().addPermission(permission);
+                    Bukkit.getPluginManager().recalculatePermissionDefaults(permission);
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }

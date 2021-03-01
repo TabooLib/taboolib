@@ -5,17 +5,20 @@ import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.command.base.BaseCommand;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.inject.TFunction;
+import io.izzel.taboolib.module.inject.TInjectHelper;
 import io.izzel.taboolib.module.locale.TLocale;
-import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.SimplePluginManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,23 +41,28 @@ public class TCommandHandler {
         knownCommands = new Reflex(SimpleCommandMap.class).instance(commandMap).get("knownCommands");
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor) {
         return registerPluginCommand(plugin, command, "", "/" + command, new ArrayList<>(), null, null, commandExecutor, null);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         return registerPluginCommand(plugin, command, "", "/" + command, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, String description, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         return registerPluginCommand(plugin, command, description, "/" + command, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, String description, String usage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         return registerPluginCommand(plugin, command, description, usage, new ArrayList<>(), null, null, commandExecutor, tabCompleter);
     }
 
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         return registerPluginCommand(plugin, command, description, usage, aliases, null, null, commandExecutor, tabCompleter);
     }
 
@@ -64,6 +72,7 @@ public class TCommandHandler {
      * @param command 命令
      * @return {@link Command}
      */
+    @Nullable
     public static Command getPluginCommand(String command) {
         return commandMap.getCommand(command);
     }
@@ -80,9 +89,10 @@ public class TCommandHandler {
      * @param permissionMessage 权限提示
      * @param commandExecutor   命令执行器
      * @param tabCompleter      补全执行器
-     * @return 注册结果(boolean)
+     * @return PluginCommand
      */
-    public static boolean registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
+    @Nullable
+    public static PluginCommand registerPluginCommand(Plugin plugin, String command, String description, String usage, List<String> aliases, String permission, String permissionMessage, CommandExecutor commandExecutor, TabCompleter tabCompleter) {
         try {
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
@@ -97,29 +107,25 @@ public class TCommandHandler {
             reflex.set("permission", permission);
             reflex.set("permissionMessage", permissionMessage);
             commandMap.register(plugin.getName(), pluginCommand);
-            return true;
+            return pluginCommand;
         } catch (Exception e) {
             TLocale.Logger.error("COMMANDS.INTERNAL.COMMAND-CREATE-FAILED", plugin.getName(), command, e.toString());
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     /**
      * 向服务端注册 BaseMainCommand 类
      *
+     * @param baseCommand     命令实例
      * @param command         命令全称（需在 plugin.yml 内注册）
      * @param baseMainCommand 命令对象
      * @param plugin          插件
-     * @param baseCommand     命令实例
-     * @return {@link BaseMainCommand}
      */
-    public static BaseMainCommand registerCommand(BaseCommand baseCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
-        // 移除冲突命令
-        TCommandHandler.getKnownCommands().remove(command);
-        // 注册权限
-        String permission = baseCommand.permission();
+    public static void registerCommand(BaseCommand baseCommand, String command, BaseMainCommand baseMainCommand, Plugin plugin) {
         if (baseCommand.permissionDefault() == PermissionDefault.TRUE || baseCommand.permissionDefault() == PermissionDefault.NOT_OP) {
+            String permission = baseCommand.permission();
             if (permission.isEmpty()) {
                 permission = plugin.getName().toLowerCase() + ".command.use";
             }
@@ -133,23 +139,17 @@ public class TCommandHandler {
                 }
             }
         }
-        // 注册命令
-        registerPluginCommand(
+        TCommandHandler.getKnownCommands().remove(command);
+        BaseMainCommand.createCommandExecutor(registerPluginCommand(
                 plugin,
                 command,
-                ArrayUtil.skipEmpty(baseCommand.description(), "Registered by TabooLib."),
-                ArrayUtil.skipEmpty(baseCommand.usage(), "/" + command),
-                ArrayUtil.skipEmpty(ArrayUtil.asList(baseCommand.aliases()), new ArrayList<>()),
-                ArrayUtil.skipEmpty(baseCommand.permission()),
-                ArrayUtil.skipEmpty(baseCommand.permissionMessage()),
+                skip(baseCommand.description(), "/" + command),
+                skip(baseCommand.usage(), "/" + command),
+                Arrays.asList(baseCommand.aliases()),
+                skip(baseCommand.permission()),
+                skip(baseCommand.permissionMessage()),
                 baseMainCommand,
-                baseMainCommand);
-        BaseMainCommand.createCommandExecutor(command, baseMainCommand);
-//        等tony老师的改版
-//        if (Version.isAfter(Version.v1_13)) {
-//            CommodoreHandler.register(baseMainCommand);
-//        }
-        return baseMainCommand;
+                baseMainCommand), baseMainCommand);
     }
 
     /**
@@ -162,7 +162,8 @@ public class TCommandHandler {
             if (BaseMainCommand.class.isAssignableFrom(pluginClass) && pluginClass.isAnnotationPresent(BaseCommand.class)) {
                 BaseCommand baseCommand = pluginClass.getAnnotation(BaseCommand.class);
                 try {
-                    registerCommand(baseCommand, baseCommand.name(), (BaseMainCommand) pluginClass.newInstance(), plugin);
+                    Object instance = TInjectHelper.getInstance(pluginClass, plugin).get(0);
+                    registerCommand(baseCommand, baseCommand.name(), (BaseMainCommand) instance, plugin);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -176,5 +177,13 @@ public class TCommandHandler {
 
     public static Map<String, Command> getKnownCommands() {
         return knownCommands;
+    }
+
+    private static <T> T skip(T obj) {
+        return skip(obj, null);
+    }
+
+    private static <T> T skip(T obj, T def) {
+        return Strings.isEmpty(String.valueOf(obj)) ? def : obj;
     }
 }
