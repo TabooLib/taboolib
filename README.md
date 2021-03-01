@@ -37,7 +37,108 @@
     <img src="https://img.shields.io/badge/navigation--no--entity-1.0.0-red.svg">
   </a>
 </p>
-
+  
+## 🌟 Features
++ **Extended Events**
+  + PlayerAttackEvent
+  + PlayerJumpEvent
+  + PlayerKeepAliveEvent
++ **Metrics**
+  + BMetrics
+  + BStats (Legacy)
+  + CStats
++ **Cronus**
+  + CronusBridge (MongoDB Storge API)
+  + RealTime (Period API)
+  + Time (Period API)
++ **Modules**
+  + **AI**
+    + SimpleAi (Pathfinder Goal API)
+  + **Command**
+    + BaseCommand (Full-featured Command Interface)
+    + CommandBuilder (Simple Command Builder)
+  + **Configuration**
+    + TConfig
+    + TConfigMigrate
+    + TConfigWatcher
+    + SecuredFile (Synchronized YAML)
+  + **DB**
+    + Local (Plugin Store API)
+    + LocalPlayer (Player Store API)
+    + SQL...
+    + SQLite...
+    + DBSource (HikariCP Builder)
+  + **Dependency**
+    + Dependency (Third-party Runtime Library Loader)
+    + TDependency
+    + TDependencyLoader
+  + **Effect**
+    + Arc
+    + Circle
+    + Line
+    + Polygon
+    + Sphere
+    + TwoRankBezierCurve
+    + ThreeRankBezierCurve
+  + **Event** 
+    + EventNormal (Extended Event Interface)
+    + EventCancelled
+  + **Hologram**
+    + THologram
+  + **I18n**
+    + I18n (Type Language API)
+  + **Inject**
+    + PlayerContainer (Automatic Releaser)
+    + THook (Placeholder Expansion Loader)
+    + TInject (Assignment API)
+    + TFunction (Method Execution API)
+    + TService (Bukkit Service Loader)
+    + TSchedule (Bukkit Schedule Loader)
+    + TListener (Bukkit Listener Loader)
+  + **Light**
+    + TLight
+  + **Locale**
+    + TLocale (Plugin Langauge API)
+    + TLocale.Display
+    + TLocale.Translate
+    + TColor
+    + TLogger
+  + **NMS**
+    + NMS
+  + **Packet**
+    + TPacket
+  + **Tellraw**
+    + TellrawJson
++ **util**
+  + **asm**
+    + AsmVersionControl (Dynamic NMS Version Conversion API)
+  + **item**
+    + MenuBuilder (Inventory Builder)
+    + MenuLinked (Pageable Inventory Interface)
+    + MenuStoraged (Storable Inventory Interface)
+    + Books
+    + Equipments
+    + ItemBuilder
+    + Items (ItemStack API)
+    + MapBuilder
+    + Effects
+  + Baffle (Period API)
+  + Coerce (Number Conversion API)
+  + Features
+  + Files
+  + Ref (Java Unsafe API)
+  + Strings (Fast Text Replacement API)
++ **kotlin**
+  + **kether**
+    + Kether
+  + **navigation**
+    + Navigation
+  + Demond
+  + Mirror
+  + Reflex
+  + Serializer
+  + Tasks
+    
 ---
 <p align="center">
   <a href="https://tabooproject.org">
