@@ -62,8 +62,8 @@ class TLocaleInstance {
                 }
             });
         } catch (Exception | Error e) {
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("SEND-LOCALE-ERROR"), path));
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.toString()));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("SEND-LOCALE-ERROR"), path));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("LOCALE-ERROR-REASON"), e.toString()));
         }
     }
 

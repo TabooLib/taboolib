@@ -123,8 +123,8 @@ public class TLocaleLoader {
         return localePriority.getOrDefault(plugin.getName(), TabooLib.getConfig().contains("LOCALE.PRIORITY") ? TabooLib.getConfig().getStringList("LOCALE.PRIORITY") : Collections.singletonList("zh_CN"));
     }
 
-    public static List<String> setLocalePriority(Plugin plugin, List<String> priority) {
-        return localePriority.put(plugin.getName(), priority);
+    public static void setLocalePriority(Plugin plugin, List<String> priority) {
+        localePriority.put(plugin.getName(), priority);
     }
 
     private static boolean isLoadLocale(Plugin plugin, boolean isCover) {
@@ -132,11 +132,11 @@ public class TLocaleLoader {
     }
 
     private static void infoLogger(String path, String... args) {
-        TLogger.getGlobalLogger().info(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString(path), args));
+        TLogger.getGlobalLogger().info(Strings.replaceWithOrder(TabooLib.getInternal().getString(path), args));
     }
 
     private static void errorLogger(String... args) {
-        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("ERROR-LOADING-LANG"), args));
+        TLogger.getGlobalLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("ERROR-LOADING-LANG"), args));
     }
 
     private static File getLocalFile(Plugin plugin, String locale) {

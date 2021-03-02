@@ -51,7 +51,7 @@ public class TDependency {
     }
 
     private static boolean downloadMaven(String url, String groupId, String artifactId, String version, File target, String dl) throws ConnectException {
-        System.out.println("[TabooLib] " + Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-DOWNLOAD-START"), target.getName()));
+        System.out.println("[TabooLib] " + Strings.replaceWithOrder(TabooLib.getInternal().getString("DEPENDENCY-DOWNLOAD-START"), target.getName()));
         return Files.downloadFile(dl.length() == 0 ? url + "/" + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar" : dl, Files.file(target));
     }
 }

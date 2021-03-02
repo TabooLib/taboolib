@@ -193,7 +193,7 @@ public class TabooLibLoader {
         try {
             long time = System.currentTimeMillis();
             final List<Class<?>> classes = Lists.newArrayList();
-            File file = plugin.getName().equals("TabooLib") ? TabooLib.getTabooLibFile() : Reflex.Companion.from(JavaPlugin.class).instance(plugin).read("file");
+            File file = plugin.getName().equals("TabooLib") ? TabooLib.getFile() : Reflex.Companion.from(JavaPlugin.class).instance(plugin).read("file");
             File fileClasses = Files.file(TabooLib.getPlugin().getDataFolder(), "cache/classes/" + plugin.getName() + ".txt");
             Files.read(fileClasses, r -> {
                 String fileHash = Files.getFileHash(file, "SHA-1");

@@ -26,7 +26,7 @@ public class TDependencyInjector {
                             break;
                         }
                     } catch (ConnectException t) {
-                        System.out.println("[TabooLib] " + Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("DEPENDENCY-DOWNLOAD-FAIL"), plugin.getName(), dependency.maven()));
+                        System.out.println("[TabooLib] " + Strings.replaceWithOrder(TabooLib.getInternal().getString("DEPENDENCY-DOWNLOAD-FAIL"), plugin.getName(), dependency.maven()));
                     }
                 }
             }

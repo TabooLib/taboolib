@@ -88,7 +88,7 @@ public class TLocaleJson extends TLocaleSerialize {
                     } else {
                         // 这个参数节点并没有找到，于是随便放点字符串进去
                         builder.addAll(Arrays.asList(TextComponent.fromLegacyText(text)));
-                        TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("MISSING-ARGUMENT"), node));
+                        TabooLib.getLogger().warn(Strings.replaceWithOrder(TabooLib.getInternal().getString("MISSING-ARGUMENT"), node));
                     }
                     // 有可能一开头就是 <@xxx>，然后 split 出来就少了一些，于是直接加上
                     if (index < template.length) {

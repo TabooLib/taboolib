@@ -42,8 +42,8 @@ public class TLocale {
         try {
             return TLocaleLoader.asString(Ref.getCallerPlugin(), path, args);
         } catch (Exception e) {
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("FETCH-LOCALE-ERROR"), path));
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("FETCH-LOCALE-ERROR"), path));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return "§4Error: " + path;
         }
     }
@@ -52,8 +52,8 @@ public class TLocale {
         try {
             return TLocaleLoader.asStringList(Ref.getCallerPlugin(), path, args);
         } catch (Exception e) {
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("FETCH-LOCALE-ERROR"), path));
-            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInst().getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("FETCH-LOCALE-ERROR"), path));
+            TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
             return Collections.singletonList("§4Error: " + path);
         }
     }
