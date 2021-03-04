@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.ZipFile;
 
 /**
@@ -32,7 +33,7 @@ public class PluginPatch {
 
     public static void patch(String plugin, String path) {
         try {
-            patchMap.computeIfAbsent(plugin, i -> Lists.newArrayList()).add(new Pair<>(path, IO.readFully(Files.getResourceChecked(TabooLib.getPlugin(), "patch/" + path.substring(path.lastIndexOf("/") + 1) + ".class"))));
+            patchMap.computeIfAbsent(plugin, i -> Lists.newArrayList()).add(new Pair<>(path, IO.readFully(Objects.requireNonNull(Files.getResourceChecked(TabooLib.getPlugin(), "patch/" + path.substring(path.lastIndexOf("/") + 1) + ".class")))));
         } catch (Throwable ignore) {
         }
     }
