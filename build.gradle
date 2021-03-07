@@ -19,7 +19,7 @@ repositories {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     maven { url "http://repo.ptms.ink/repository/codemc-nms/" }
-    maven { url "http://repo.ptms.ink/repository/maven-releases/" }
+    maven { url "http://repo.ptms.ink/repositoory/maven-releases/" }
     mavenCentral()
 }
 
@@ -30,7 +30,7 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.38'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.39'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.4'
 
     implementation 'ink.ptms.core:v11200:11200:all'
