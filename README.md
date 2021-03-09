@@ -25,7 +25,7 @@
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.39-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.42-yellow.svg">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.4-yellow.svg">
