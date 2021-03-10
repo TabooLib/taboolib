@@ -4,6 +4,7 @@ import io.izzel.taboolib.module.command.base.Argument;
 import io.izzel.taboolib.module.command.base.BaseMainCommand;
 import io.izzel.taboolib.module.command.base.BaseSubCommand;
 import io.izzel.taboolib.module.locale.TLocale;
+import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.command.CommandSender;
 
@@ -55,6 +56,12 @@ public class DisplayClassic extends DisplayBase {
     }
 
     public String argument(BaseSubCommand subCommand, Argument argument) {
-        return argument.isRequired() ? TLocale.asString("COMMANDS.DISPLAY.CLASSIC.ARGUMENT-REQUIRED", argument.getName()) : TLocale.asString("COMMANDS.DISPLAY.CLASSIC.ARGUMENT-OPTIONAL", argument.getName());
+        String name;
+        if (argument.getName().startsWith("@")) {
+            name = TLocaleLoader.asString(subCommand.getMainCommand().getRegisterCommand().getPlugin(), argument.getName().substring(1));
+        } else {
+            name = argument.getName();
+        }
+        return argument.isRequired() ? TLocale.asString("COMMANDS.DISPLAY.CLASSIC.ARGUMENT-REQUIRED", name) : TLocale.asString("COMMANDS.DISPLAY.CLASSIC.ARGUMENT-OPTIONAL", name);
     }
 }
