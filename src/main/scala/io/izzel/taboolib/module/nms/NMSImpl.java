@@ -716,7 +716,6 @@ public class NMSImpl extends NMS {
         recalculate(block.getRelative(0, -1, 0), lightType);
         recalculate(block.getRelative(0, 0, 1), lightType);
         recalculate(block.getRelative(0, 0, -1), lightType);
-
     }
 
     @Override
