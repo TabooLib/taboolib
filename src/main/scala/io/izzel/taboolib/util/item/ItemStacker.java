@@ -13,7 +13,9 @@ import org.bukkit.inventory.PlayerInventory;
  * @author 坏黑
  * @since 2019-02-07 23:53
  */
-public class ItemStacker {
+public abstract class ItemStacker {
+
+    abstract public int getMaxStackSize(ItemStack itemStack);
 
     /**
      * 从箱子里移动物品到玩家背包
@@ -22,7 +24,7 @@ public class ItemStacker {
      * @param item   物品
      * @param player 玩家
      */
-    public static void moveItemFromChest(ItemStack item, Player player) {
+    public void moveItemFromChest(ItemStack item, Player player) {
         AddResult result = addItemAndMerge(item, player.getInventory(), new Integer[0]);
         if (result.countOut > 0) {
             item.setAmount(result.countOut);
@@ -32,7 +34,7 @@ public class ItemStacker {
         }
     }
 
-    public static boolean addItemAndSplit(ItemStack item, Inventory inventory, int start) {
+    public boolean addItemAndSplit(ItemStack item, Inventory inventory, int start) {
         return addItemAndSplit(item, inventory, start, false);
     }
 
@@ -47,7 +49,7 @@ public class ItemStacker {
      * @param start     起始位置
      * @return boolean
      */
-    public static boolean addItemAndSplit(ItemStack item, Inventory inventory, int start, boolean desc) {
+    public boolean addItemAndSplit(ItemStack item, Inventory inventory, int start, boolean desc) {
         int size = inventory instanceof PlayerInventory || inventory instanceof CraftingInventory ? 36 : inventory.getSize();
         if (desc) {
             // 8 ~ 0
@@ -66,14 +68,14 @@ public class ItemStacker {
         return false;
     }
 
-    public static boolean addItemFromChestToPlayer(ItemStack item, Inventory inventory) {
+    public boolean addItemFromChestToPlayer(ItemStack item, Inventory inventory) {
         for (int i = 8; i >= 0; i--) {
             if (Items.isNull(inventory.getItem(i))) {
-                if (item.getAmount() > item.getType().getMaxStackSize()) {
+                if (item.getAmount() > getMaxStackSize(item)) {
                     ItemStack itemClone = item.clone();
-                    itemClone.setAmount(item.getType().getMaxStackSize());
+                    itemClone.setAmount(getMaxStackSize(item));
                     inventory.setItem(i, itemClone);
-                    item.setAmount(item.getAmount() - item.getType().getMaxStackSize());
+                    item.setAmount(item.getAmount() - getMaxStackSize(item));
                 } else {
                     ItemStack itemClone = item.clone();
                     itemClone.setAmount(item.getAmount());
@@ -85,11 +87,11 @@ public class ItemStacker {
         }
         for (int i = 35; i >= 9; i--) {
             if (Items.isNull(inventory.getItem(i))) {
-                if (item.getAmount() > item.getType().getMaxStackSize()) {
+                if (item.getAmount() > getMaxStackSize(item)) {
                     ItemStack itemClone = item.clone();
-                    itemClone.setAmount(item.getType().getMaxStackSize());
+                    itemClone.setAmount(getMaxStackSize(item));
                     inventory.setItem(i, itemClone);
-                    item.setAmount(item.getAmount() - item.getType().getMaxStackSize());
+                    item.setAmount(item.getAmount() - getMaxStackSize(item));
                 } else {
                     ItemStack itemClone = item.clone();
                     itemClone.setAmount(item.getAmount());
@@ -110,7 +112,7 @@ public class ItemStacker {
      * @param ignore    忽略位置
      * @return {@link AddResult}
      */
-    public static AddResult addItemAndMerge(ItemStack item, Inventory inventory, Integer[] ignore) {
+    public AddResult addItemAndMerge(ItemStack item, Inventory inventory, Integer[] ignore) {
         boolean changed = false;
         int count = item.getAmount();
         int size = inventory instanceof PlayerInventory || inventory instanceof CraftingInventory ? 36 : inventory.getSize();
@@ -122,7 +124,7 @@ public class ItemStacker {
             if (!item.isSimilar(inventoryItem)) {
                 continue;
             }
-            while (count > 0 && inventoryItem.getAmount() < item.getType().getMaxStackSize()) {
+            while (count > 0 && inventoryItem.getAmount() < getMaxStackSize(item)) {
                 changed = true;
                 inventoryItem.setAmount(inventoryItem.getAmount() + 1);
                 count--;
@@ -134,14 +136,14 @@ public class ItemStacker {
         return new AddResult(count, changed);
     }
 
-    private static boolean check(ItemStack item, Inventory inventory, int i) {
+    private boolean check(ItemStack item, Inventory inventory, int i) {
         if (Items.isNull(inventory.getItem(i))) {
             // 如果物品数量过多
-            if (item.getAmount() > item.getType().getMaxStackSize()) {
+            if (item.getAmount() > getMaxStackSize(item)) {
                 ItemStack itemClone = item.clone();
-                itemClone.setAmount(item.getType().getMaxStackSize());
+                itemClone.setAmount(getMaxStackSize(item));
                 inventory.setItem(i, itemClone);
-                item.setAmount(item.getAmount() - item.getType().getMaxStackSize());
+                item.setAmount(item.getAmount() - getMaxStackSize(item));
             } else {
                 inventory.setItem(i, item.clone());
                 item.setAmount(0);
