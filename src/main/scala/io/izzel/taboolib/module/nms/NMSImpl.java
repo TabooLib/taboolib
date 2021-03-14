@@ -584,7 +584,7 @@ public class NMSImpl extends NMS {
     public boolean createLight(Block block, Type lightType, int lightLevel) {
         int level = getRawLightLevel(block, lightType);
         setRawLightLevel(block, lightType, lightLevel);
-        recalculate(block, lightType);
+        recalculateAround(block, lightType);
         return getRawLightLevel(block, lightType) >= level;
     }
 
@@ -706,6 +706,16 @@ public class NMSImpl extends NMS {
                 }
             }
         }
+    }
+
+    @Override
+    public void recalculateAround(Block block, Type lightType) {
+        recalculate(block.getRelative(1, 0, 0), lightType);
+        recalculate(block.getRelative(-1, 0, 0), lightType);
+        recalculate(block.getRelative(0, 1, 0), lightType);
+        recalculate(block.getRelative(0, -1, 0), lightType);
+        recalculate(block.getRelative(0, 0, 1), lightType);
+        recalculate(block.getRelative(0, 0, -1), lightType);
     }
 
     @Override

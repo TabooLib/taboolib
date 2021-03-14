@@ -27,6 +27,10 @@ public class TLight {
         }
         boolean r = NMS.handle().createLight(block, lightType, lightLevel);
         NMS.handle().update(block.getChunk());
+        for (int i = -1; i <= 1; i++) {
+            NMS.handle().update(block.getWorld().getChunkAt(block.getChunk().getX() + i, block.getChunk().getZ()));
+            NMS.handle().update(block.getWorld().getChunkAt(block.getChunk().getX(), block.getChunk().getZ() + i));
+        }
         return r;
     }
 
