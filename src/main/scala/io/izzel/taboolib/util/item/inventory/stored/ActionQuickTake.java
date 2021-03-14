@@ -18,7 +18,7 @@ public class ActionQuickTake extends Action {
     @Override
     public void setCurrent(ClickEvent e, ItemStack item) {
         if (item != null) {
-            ItemStacker.moveItemFromChest(item, e.getClicker());
+            ItemStacker.MINECRAFT.moveItemFromChest(item, e.getClicker());
         }
         e.getClicker().setItemOnCursor(null);
     }

@@ -15,6 +15,14 @@ import org.bukkit.inventory.PlayerInventory;
  */
 public abstract class ItemStacker {
 
+    public static final ItemStacker MINECRAFT = new ItemStacker() {
+
+        @Override
+        public int getMaxStackSize(ItemStack itemStack) {
+            return itemStack.getMaxStackSize();
+        }
+    };
+
     abstract public int getMaxStackSize(ItemStack itemStack);
 
     /**
