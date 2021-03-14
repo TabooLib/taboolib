@@ -27,6 +27,3 @@ SERVER: false
 
 # 玩家列表（TAB-API）是否根据前缀排序
 TABLIST-SORT: true
-
-# 玩家列表（TAB-API）是否自动清理没有成员的队伍
-TABLIST-AUTO-CLEAN-TEAM: true
