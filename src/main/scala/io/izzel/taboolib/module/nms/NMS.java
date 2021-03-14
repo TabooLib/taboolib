@@ -312,6 +312,14 @@ public abstract class NMS {
     abstract public void update(Chunk chunk);
 
     /**
+     * 更新方块周围的光照
+     *
+     * @param block     方块
+     * @param lightType 光照类型
+     */
+    abstract public void recalculateAround(Block block, Type lightType);
+
+    /**
      * 获取附魔内部名称
      *
      * @param enchantment 附魔
