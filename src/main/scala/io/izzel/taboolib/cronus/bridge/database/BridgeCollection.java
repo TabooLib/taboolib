@@ -48,7 +48,7 @@ public final class BridgeCollection {
     }
 
     public void update(String id) {
-        if (dataMap.containsKey(id)) {
+        if (id != null && dataMap.containsKey(id)) {
             update(id, dataMap.get(id));
         }
     }

@@ -34,11 +34,12 @@ public class LocalPlayerBridge extends LocalPlayerHandler {
         this.client = client;
         this.database = database;
         this.collection = collection;
-        this.bridgeCollection = CronusBridge.get(client, database, collection, LocalPlayer.isUniqueIdMode() ? IndexType.UUID : IndexType.USERNAME);
+        bridgeCollection = CronusBridge.get(client, database, collection, LocalPlayer.isUniqueIdMode() ? IndexType.UUID : IndexType.USERNAME);
     }
 
     public void saveAsync(OfflinePlayer player) {
-        executor.submit(() -> save(player));
+        String name = LocalPlayer.toName(player);
+        executor.submit(() -> bridgeCollection.update(name));
     }
 
     @Override
@@ -49,7 +50,7 @@ public class LocalPlayerBridge extends LocalPlayerHandler {
     @Override
     public void save(OfflinePlayer player) {
         try {
-            this.bridgeCollection.update(LocalPlayer.toName(player));
+            bridgeCollection.update(LocalPlayer.toName(player));
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -58,7 +59,7 @@ public class LocalPlayerBridge extends LocalPlayerHandler {
     @Override
     public FileConfiguration get(OfflinePlayer player) {
         try {
-            return this.bridgeCollection.get(LocalPlayer.toName(player));
+            return bridgeCollection.get(LocalPlayer.toName(player));
         } finally {
             saveAsync(player);
         }
@@ -66,12 +67,12 @@ public class LocalPlayerBridge extends LocalPlayerHandler {
 
     @Override
     public FileConfiguration get0(OfflinePlayer player) {
-        return this.bridgeCollection.get(LocalPlayer.toName(player), false);
+        return bridgeCollection.get(LocalPlayer.toName(player), false);
     }
 
     @Override
     public void set0(OfflinePlayer player, FileConfiguration file) {
-        this.bridgeCollection.update(LocalPlayer.toName(player), new BridgeData(LocalPlayer.toName(player), file));
+        bridgeCollection.update(LocalPlayer.toName(player), new BridgeData(LocalPlayer.toName(player), file));
     }
 
     public String getClient() {
