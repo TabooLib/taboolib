@@ -69,7 +69,7 @@ class THologramHandler implements Listener {
         if (learnTarget == null) {
             return true;
         }
-        if (packet.is("PacketPlayOutSpawnEntityLiving") && packet.read("a", 0) == learnTarget.getEntityId()) {
+        if (packet.is("PacketPlayOutSpawnEntity") && packet.read("a", 0) == learnTarget.getEntityId()) {
             packetSpawn = packet;
             return false;
         }
@@ -100,15 +100,12 @@ class THologramHandler implements Listener {
      * @return 数据包对象
      */
     public static Packet copy(int id, Location location) {
-        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntityLiving"), "c", "g", "h", "i", "j", "k", "l");
+        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntity"), "f", "g", "h", "i", "j", "k", "l");
         packet.write("a", id);
         packet.write("b", UUID.randomUUID());
-        packet.write("d", location.getX());
-        packet.write("e", location.getY());
-        packet.write("f", location.getZ());
-        if (Version.isBefore(Version.v1_15)) {
-            packet.write("m", THologramHandler.getPacketSpawn().read("m"));
-        }
+        packet.write("c", location.getX());
+        packet.write("d", location.getY());
+        packet.write("e", location.getZ());
         return packet;
     }
 
@@ -212,6 +209,22 @@ class THologramHandler implements Listener {
         }.runTaskTimer(TabooLib.getPlugin(), 1, 1);
     }
 
+    public static ArmorStand getLearnTarget() {
+        return learnTarget;
+    }
+
+    public static Packet getPacketSpawn() {
+        return packetSpawn;
+    }
+
+    public static Packet getPacketInit() {
+        return packetInit;
+    }
+
+    public static Packet getPacketName() {
+        return packetName;
+    }
+
     @EventHandler
     public void e(PlayerJoinEvent e) {
         THologram.refresh(e.getPlayer());
@@ -235,21 +248,5 @@ class THologramHandler implements Listener {
     @TSchedule(period = 200, async = true)
     public void e() {
         Bukkit.getOnlinePlayers().forEach(THologram::refresh);
-    }
-
-    public static ArmorStand getLearnTarget() {
-        return learnTarget;
-    }
-
-    public static Packet getPacketSpawn() {
-        return packetSpawn;
-    }
-
-    public static Packet getPacketInit() {
-        return packetInit;
-    }
-
-    public static Packet getPacketName() {
-        return packetName;
     }
 }
