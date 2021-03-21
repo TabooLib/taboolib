@@ -592,7 +592,7 @@ public class NMSImpl extends NMS {
     public boolean deleteLight(Block block, Type lightType) {
         int level = getRawLightLevel(block, lightType);
         setRawLightLevel(block, lightType, 0);
-        recalculate(block, lightType);
+        recalculateAround(block, lightType);
         return getRawLightLevel(block, lightType) != level;
     }
 
