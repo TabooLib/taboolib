@@ -3,6 +3,7 @@ package io.izzel.taboolib.util.item.inventory.linked;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.cronus.CronusUtils;
 import io.izzel.taboolib.kotlin.Indexed;
+import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.item.inventory.ClickEvent;
 import io.izzel.taboolib.util.item.inventory.MenuBuilder;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,13 +53,25 @@ public abstract class MenuLinked<T> {
                 .lockHand(isLockHand())
                 .title(getTitle())
                 .rows(getRows())
-                .buildAsync(this::onBuildAsync)
                 .build(inventory -> {
                     for (int i = 0; i < items.size(); i++) {
                         objectsMap.put(slots.get(i), items.get(i));
-                        inventory.setItem(slots.get(i), generateItem(player, items.get(i), i, slots.get(i)));
+                        ItemStack item = generateItem(player, items.get(i), i, slots.get(i));
+                        if (Items.nonNull(item)) {
+                            inventory.setItem(slots.get(i), item);
+                        }
                     }
                     onBuild(inventory);
+                })
+                .buildAsync(inventory -> {
+                    for (int i = 0; i < items.size(); i++) {
+                        objectsMap.put(slots.get(i), items.get(i));
+                        ItemStack item = generateItemAsync(player, items.get(i), i, slots.get(i));
+                        if (Items.nonNull(item)) {
+                            inventory.setItem(slots.get(i), item);
+                        }
+                    }
+                    onBuildAsync(inventory);
                 })
                 .click(e -> {
                     if (objectsMap.containsKey(e.getRawSlot())) {
@@ -130,6 +144,7 @@ public abstract class MenuLinked<T> {
     /**
      * @return 页面标题
      */
+    @NotNull
     public String getTitle() {
         return "MenuLinked";
     }
@@ -175,7 +190,22 @@ public abstract class MenuLinked<T> {
      * @param slot    位置
      * @return ItemStack 物品
      */
+    @Nullable
     abstract public ItemStack generateItem(@NotNull Player player, @NotNull T element, int index, int slot);
+
+    /**
+     * 异步生成元素所对应的物品
+     *
+     * @param player  玩家
+     * @param element 元素
+     * @param index   序号
+     * @param slot    位置
+     * @return ItemStack 物品
+     */
+    @Nullable
+    public ItemStack generateItemAsync(@NotNull Player player, @NotNull T element, int index, int slot) {
+        return null;
+    }
 
     /**
      * 当界面关闭时

@@ -34,8 +34,8 @@ public class Ref {
     private static final Map<String, List<Method>> cacheMethods = new ConcurrentHashMap<>();
     private static final Map<String, Plugin> cachePlugin = new ConcurrentHashMap<>();
 
-    public static final int ACC_BRIDGE = 0x0040;
-    public static final int ACC_SYNTHETIC = 0x1000;
+    private static final int ACC_BRIDGE = 0x0040;
+    private static final int ACC_SYNTHETIC = 0x1000;
     private static final Unsafe UNSAFE;
     private static final MethodHandles.Lookup LOOKUP;
 
@@ -70,6 +70,7 @@ public class Ref {
         try {
             MethodHandle methodHandle = lookup().unreflectSetter(field);
             if (Modifier.isStatic(field.getModifiers())) {
+                // 我怕海螺先生干我，我不写了
                 methodHandle.invokeWithArguments(value);
             } else {
                 methodHandle.bindTo(src).invokeWithArguments(value);
