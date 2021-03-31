@@ -71,11 +71,11 @@ public class QueryUpdate extends Query {
 
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("update ").append(table.getTableName());
-        builder.append(" ");
+        builder.append("update `").append(table.getTableName());
+        builder.append("` ");
         if (!set.isEmpty()) {
             builder.append("set ");
-            builder.append(set.stream().map(s -> s.getKey() + " = ?").collect(Collectors.joining(", ")));
+            builder.append(set.stream().map(s -> "`" + s.getKey() + "` = ?").collect(Collectors.joining(", ")));
             builder.append(" ");
         }
         if (!where.isEmpty()) {
