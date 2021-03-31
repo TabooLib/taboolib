@@ -74,7 +74,7 @@ public class QuerySelect extends Query {
         builder.append("select");
         builder.append(" ");
         if (!rowName.isEmpty()) {
-            builder.append(String.join(", ", "`" + rowName + "`"));
+            builder.append(rowName.stream().map(i->"`"+i+"`").collect(Collectors.joining(", ")));
         } else if (distinct != null) {
             builder.append("distinct ").append(distinct);
         } else {
