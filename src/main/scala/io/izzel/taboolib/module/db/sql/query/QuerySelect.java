@@ -74,15 +74,15 @@ public class QuerySelect extends Query {
         builder.append("select");
         builder.append(" ");
         if (!rowName.isEmpty()) {
-            builder.append(String.join(", ", rowName));
+            builder.append(rowName.stream().map(i->"`"+i+"`").collect(Collectors.joining(", ")));
         } else if (distinct != null) {
             builder.append("distinct ").append(distinct);
         } else {
             builder.append("*");
         }
         builder.append(" ");
-        builder.append("from ").append(table.getTableName());
-        builder.append(" ");
+        builder.append("from `").append(table.getTableName());
+        builder.append("` ");
         if (!where.isEmpty()) {
             builder.append("where ");
             builder.append(where.stream().map(Where::toQuery).collect(Collectors.joining(" and ")));

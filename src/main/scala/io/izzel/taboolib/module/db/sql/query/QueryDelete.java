@@ -46,8 +46,8 @@ public class QueryDelete extends Query {
     @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("delete from ").append(table.getTableName());
-        builder.append(" ");
+        builder.append("delete from `").append(table.getTableName());
+        builder.append("` ");
         if (!where.isEmpty()) {
             builder.append("where ");
             builder.append(where.stream().map(Where::toQuery).collect(Collectors.joining(" and ")));
