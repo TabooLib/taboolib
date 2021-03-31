@@ -24,7 +24,7 @@ import java.util.UUID;
  * @author 坏黑
  * @since 2018-11-07 22:54
  */
-@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "unchecked", "rawtypes"})
+@SuppressWarnings({"CastCanBeRemovedNarrowingVariableType", "rawtypes"})
 public class InternalTellraw implements AbstractTellraw {
 
     private final boolean v11600 = Version.isAfter(Version.v1_16);

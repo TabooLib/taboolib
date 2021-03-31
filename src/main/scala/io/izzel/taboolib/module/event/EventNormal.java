@@ -11,13 +11,19 @@ import org.bukkit.event.HandlerList;
  * @author sky
  * @since 2019-10-22 10:25
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"rawtypes"})
 public abstract class EventNormal<T extends EventNormal> extends Event {
 
     protected static final HandlerList handlers = new HandlerList();
 
-    protected static HandlerList getHandlerList() {
-        return handlers;
+    public EventNormal() {
+        this(false);
+    }
+
+    public EventNormal(boolean autoAsync) {
+        if (autoAsync) {
+            async(!Bukkit.isPrimaryThread());
+        }
     }
 
     public T call() {
@@ -36,6 +42,10 @@ public abstract class EventNormal<T extends EventNormal> extends Event {
 
     @Override
     public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    protected static HandlerList getHandlerList() {
         return handlers;
     }
 }

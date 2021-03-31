@@ -20,6 +20,6 @@ public class Order {
     }
 
     public String toQuery() {
-        return "`"+row + "` " + (desc ? "desc" : "asc");
+        return "`" + row + "` " + (desc ? "desc" : "asc");
     }
 }

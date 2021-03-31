@@ -35,7 +35,8 @@ public class QueryInsert extends Query {
         return this;
     }
 
-    public QueryInsert onDuplicateKey(Pair<String, Object>... update) {
+    @SafeVarargs
+    public final QueryInsert onDuplicateKey(Pair<String, Object>... update) {
         Collections.addAll(this.update, update);
         return this;
     }
