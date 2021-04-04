@@ -28,7 +28,7 @@
     <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.45-yellow.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.5-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-yellow.svg">
   </a>
   <a>
     <img src="https://img.shields.io/badge/kether--common-1.0.10-red.svg">
