@@ -53,6 +53,7 @@ dependencies {
     implementation 'com.sk89q.worldedit:WorldEdit:7:all'
     implementation 'com.sk89q.worldguard:WorldGuard:7:all'
     implementation 'public:PlaceholderAPI:2.10.9'
+    implementation 'cn.maxmc.menubuilderlib:MenuBuilderLib:1.0.3'
 
     implementation 'org.jetbrains:annotations:19.0.0'
     implementation 'org.scala-lang:scala-library:2.12.8'
@@ -69,11 +70,13 @@ shadowJar {
         it.include it.dependency('com.google.code.gson:.*')
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
+        it.include it.dependency('cn.maxmc.menubuilderlib:.*')
     }
     relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
     relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
+    relocate 'cn.maxmc.menubuilderlib', 'io.izzel.taboolib.internal.menubuilder'
 }
 
 processResources {
