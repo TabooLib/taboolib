@@ -97,7 +97,7 @@ public class Features {
      * @param lines  记分板内容
      * @return {@link org.bukkit.scoreboard}
      */
-    @NotNull
+    @Nullable
     public static Scoreboard displayScoreboard(Player player, String... lines) {
         return Scoreboards.display(player, lines);
     }
@@ -196,7 +196,7 @@ public class Features {
         // 发送书本
         player.getInventory().addItem(
                 new ItemBuilder(
-                        new BookBuilder(XMaterial.WRITABLE_BOOK.parseItem())
+                        new BookBuilder(Objects.requireNonNull(XMaterial.WRITABLE_BOOK.parseItem()))
                                 .pagesRaw(String.join("\n", origin))
                                 .build()
                 ).name("§f" + display).lore("§0Features Input", disposable ? "§0Disposable" : "").build()
