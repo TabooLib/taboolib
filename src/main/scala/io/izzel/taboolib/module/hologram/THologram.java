@@ -41,7 +41,7 @@ public class THologram {
     }
 
     /**
-     * 创建一个 {@link Hologram} 全息字实例
+     * 创建一个 {@link Hologram} 全息字实例 (仅支持Minecraft 1.8+)
      *
      * @param location 全息字需要被放置到的位置
      * @param text     全系字内容
