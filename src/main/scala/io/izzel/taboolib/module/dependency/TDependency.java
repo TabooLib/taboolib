@@ -30,7 +30,7 @@ public class TDependency {
         // 清理大小为 0 的依赖文件
         File libFolder = new File(TabooLib.getPlugin().getDataFolder(), "/libs");
         if (libFolder.exists()) {
-            Arrays.stream(Files.listFile(libFolder)).filter(listFile -> listFile.length() == 0).forEach(File::delete);
+            Arrays.stream(Files.listFile(libFolder)).filter(file -> file.length() < 200).forEach(File::delete);
         }
         if (type.matches(".*:.*:.*")) {
             String[] arr = type.split(":");
