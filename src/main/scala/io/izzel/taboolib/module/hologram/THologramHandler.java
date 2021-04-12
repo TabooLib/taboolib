@@ -37,13 +37,12 @@ import java.util.UUID;
 @TListener
 class THologramHandler implements Listener {
 
+    private static final Queue<THologramSchedule> queueSchedule = Queues.newArrayDeque();
     private static ArmorStand learnTarget = null;
     private static Packet packetInit = null;
     private static Packet packetSpawn = null;
     private static Packet packetName = null;
     private static THologramSchedule currentSchedule = null;
-    private static final Queue<THologramSchedule> queueSchedule = Queues.newArrayDeque();
-
     private static boolean learned = false;
 
     @TPacket(type = TPacket.Type.RECEIVE)
@@ -69,7 +68,7 @@ class THologramHandler implements Listener {
         if (learnTarget == null) {
             return true;
         }
-        if (packet.is("PacketPlayOutSpawnEntityLiving") && packet.read("a", 0) == learnTarget.getEntityId()) {
+        if ((packet.is("PacketPlayOutSpawnEntityLiving") || packet.is("PacketPlayOutSpawnEntity")) && packet.read("a", 0) == learnTarget.getEntityId()) {
             packetSpawn = packet;
             return false;
         }
@@ -99,17 +98,30 @@ class THologramHandler implements Listener {
      * @param location 新的实体坐标
      * @return 数据包对象
      */
-    public static Packet copy(int id, Location location) {
-        Packet packet = THologramHandler.getPacketSpawn().copy(NMS.handle().asNMS("PacketPlayOutSpawnEntityLiving"), "c", "g", "h", "i", "j", "k", "l");
-        packet.write("a", id);
-        packet.write("b", UUID.randomUUID());
-        packet.write("d", location.getX());
-        packet.write("e", location.getY());
-        packet.write("f", location.getZ());
-        if (Version.isBefore(Version.v1_15)) {
-            packet.write("m", THologramHandler.getPacketSpawn().read("m"));
+    public static Packet copy(int id, Location location) throws Exception {
+        try {
+            Packet packet = THologramHandler.getPacketSpawn().copy("g", "h", "i", "j", "k", "l");
+            packet.write("a", id);
+            packet.write("b", UUID.randomUUID());
+            if (THologramHandler.getPacketSpawn().is("PacketPlayOutSpawnEntityLiving")) {
+                packet.write("c", THologramHandler.getPacketSpawn().read("c"));
+                packet.write("d", location.getX());
+                packet.write("e", location.getY());
+                packet.write("f", location.getZ());
+                if (Version.isBefore(Version.v1_15)) {
+                    packet.write("m", THologramHandler.getPacketSpawn().read("m"));
+                    packet.write("n", THologramHandler.getPacketSpawn().read("n"));
+                }
+            } else if (THologramHandler.getPacketSpawn().is("PacketPlayOutSpawnEntity")) {
+                packet.write("c", location.getX());
+                packet.write("d", location.getY());
+                packet.write("e", location.getZ());
+                packet.write("f", THologramHandler.getPacketSpawn().read("f"));
+            }
+            return packet;
+        } catch (Exception e) {
+            throw new Exception("THologram 仅支持Minecraft 1.8+");
         }
-        return packet;
     }
 
     public static Packet copy(int id) {
@@ -212,6 +224,22 @@ class THologramHandler implements Listener {
         }.runTaskTimer(TabooLib.getPlugin(), 1, 1);
     }
 
+    public static ArmorStand getLearnTarget() {
+        return learnTarget;
+    }
+
+    public static Packet getPacketSpawn() {
+        return packetSpawn;
+    }
+
+    public static Packet getPacketInit() {
+        return packetInit;
+    }
+
+    public static Packet getPacketName() {
+        return packetName;
+    }
+
     @EventHandler
     public void e(PlayerJoinEvent e) {
         THologram.refresh(e.getPlayer());
@@ -237,19 +265,5 @@ class THologramHandler implements Listener {
         Bukkit.getOnlinePlayers().forEach(THologram::refresh);
     }
 
-    public static ArmorStand getLearnTarget() {
-        return learnTarget;
-    }
 
-    public static Packet getPacketSpawn() {
-        return packetSpawn;
-    }
-
-    public static Packet getPacketInit() {
-        return packetInit;
-    }
-
-    public static Packet getPacketName() {
-        return packetName;
-    }
 }
