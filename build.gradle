@@ -23,7 +23,7 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.47'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.48'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
     implementation 'ink.ptms.core:v11200:11200:all'
