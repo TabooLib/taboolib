@@ -118,12 +118,12 @@ public class Where {
     }
 
     public String toQuery() {
-        if (between == null) {
-            return "`" + row + "` " + symbol + " ?";
-        } else if (in == null) {
+        if (in != null) {
+            return "`" + row + "` in (" + Arrays.stream(in).map(i -> "?").collect(Collectors.joining(", ")) + ")";
+        } else if (between != null) {
             return "`" + row + "` " + symbol + " ? and ?";
         } else {
-            return "`" + row + "` in (" + Arrays.stream(in).map(i -> "?").collect(Collectors.joining(", ")) + ")";
+            return "`" + row + "` " + symbol + " ?";
         }
     }
 }
