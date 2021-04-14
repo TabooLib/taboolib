@@ -76,7 +76,7 @@ public class TConfigMigrate {
                         arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ": " + dump[0]);
                     } else {
                         Arrays.setAll(dump, i -> space + "  " + dump[i]);
-                        arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ":");
+                        arrayAppend(content, find + line++, space + pair.getKey().substring(index + 1) + ":");
                         arrayAppend(content, find + line, String.join("\n", dump));
                     }
                     migrated = true;
