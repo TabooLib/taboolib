@@ -157,7 +157,8 @@ public class RunnableQuery {
     @Deprecated
     public Object run(Object def) {
         if (dataSource != null) {
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 if (statement != null) {
                     statement.execute(preparedStatement);
                 }
