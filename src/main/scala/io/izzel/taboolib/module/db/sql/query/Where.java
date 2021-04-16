@@ -124,11 +124,11 @@ public class Where {
             for (Object i : in) {
                 joiner.add("?");
             }
-            return Strings.replaceWithOrder("`{0}.{1}` in ({2})", tableName, row, joiner.toString());
+            return Strings.replaceWithOrder("`{0}`.`{1}` in ({2})", tableName, row, joiner.toString());
         } else if (between) {
-            return Strings.replaceWithOrder("`{0}.{1}` between ? and ?", tableName, row);
+            return Strings.replaceWithOrder("`{0}`.`{1}` between ? and ?", tableName, row);
         } else {
-            return Strings.replaceWithOrder("`{0}.{1}` {2} ?", tableName, row, symbol);
+            return Strings.replaceWithOrder("`{0}`.`{1}` {2} ?", tableName, row, symbol);
         }
     }
 }

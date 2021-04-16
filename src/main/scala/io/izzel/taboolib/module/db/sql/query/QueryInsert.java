@@ -62,8 +62,7 @@ public class QueryInsert extends Query {
     @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("insert into `").append(table.getTableName());
-        builder.append("`");
+        builder.append("insert into `").append(table.getTableName()).append("` ");
         if (!columns.isEmpty()) {
             builder.append("(");
             StringJoiner joiner = new StringJoiner(", ");
@@ -71,7 +70,7 @@ public class QueryInsert extends Query {
                 joiner.add(Strings.replaceWithOrder("`{0}`", i));
             }
             builder.append(joiner.toString());
-            builder.append(")");
+            builder.append(") ");
         }
         builder.append("values ");
         for (List<Object> value : value) {
