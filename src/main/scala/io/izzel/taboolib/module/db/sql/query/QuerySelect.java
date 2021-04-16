@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.sql.SQLTable;
+import io.izzel.taboolib.util.Pair;
 import io.izzel.taboolib.util.Strings;
 
 import javax.sql.DataSource;
@@ -15,7 +16,8 @@ import java.util.StringJoiner;
  */
 public class QuerySelect extends Query {
 
-    private List<String> rowName = Lists.newArrayList();
+    private final List<String> rows = Lists.newArrayList();
+    private final List<Pair<String, String>> rowsOuter = Lists.newArrayList();
     private String distinct;
     private final List<Where> where = Lists.newArrayList();
     private final List<Order> order = Lists.newArrayList();
@@ -27,8 +29,17 @@ public class QuerySelect extends Query {
     }
 
     public QuerySelect row(String... row) {
-        this.rowName = Lists.newArrayList(row);
+        this.rows.addAll(Lists.newArrayList(row));
         return this;
+    }
+
+    public QuerySelect rowOuter(String table, String row) {
+        this.rowsOuter.add(Pair.of(table, row));
+        return this;
+    }
+
+    public QuerySelect rowOuter(SQLTable table, String row) {
+        return rowOuter(table.getTableName(), row);
     }
 
     public QuerySelect distinct(String row) {
@@ -100,7 +111,11 @@ public class QuerySelect extends Query {
     }
 
     public String toSelect(String row) {
-        return Strings.replaceWithOrder("`{0}.{1}`", table.getTableName(), row);
+        return toSelect(table.getTableName(), row);
+    }
+
+    public String toSelect(String table, String row) {
+        return Strings.replaceWithOrder("`{0}`.`{1}`", table, row);
     }
 
     @Override
@@ -108,12 +123,21 @@ public class QuerySelect extends Query {
         StringBuilder builder = new StringBuilder();
         builder.append("select");
         builder.append(" ");
-        if (!rowName.isEmpty()) {
-            StringJoiner joiner = new StringJoiner(", ");
-            for (String row : rowName) {
-                joiner.add(toSelect(row));
+        if (!rows.isEmpty() || !rowsOuter.isEmpty()) {
+            StringJoiner joinerRows = new StringJoiner(", ");
+            for (String row : rows) {
+                joinerRows.add(toSelect(row));
             }
-            builder.append(joiner.toString());
+            if (joinerRows.length() > 0) {
+                builder.append(joinerRows.toString());
+            }
+            StringJoiner joinerRowsOuter = new StringJoiner(", ");
+            for (Pair<String, String> row : rowsOuter) {
+                joinerRowsOuter.add(toSelect(row.getKey(), row.getValue()));
+            }
+            if (joinerRowsOuter.length() > 0) {
+                builder.append(joinerRowsOuter.toString());
+            }
         } else if (distinct != null) {
             builder.append("distinct ").append(distinct);
         } else {

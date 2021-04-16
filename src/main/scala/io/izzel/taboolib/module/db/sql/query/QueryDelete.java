@@ -6,6 +6,7 @@ import io.izzel.taboolib.module.db.sql.SQLTable;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -46,11 +47,14 @@ public class QueryDelete extends Query {
     @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("delete from `").append(table.getTableName());
-        builder.append("` ");
+        builder.append("delete from `").append(table.getTableName()).append("` ");
         if (!where.isEmpty()) {
             builder.append("where ");
-            builder.append(where.stream().map(i -> i.toQuery(table.getTableName())).collect(Collectors.joining(" and ")));
+            StringJoiner joiner = new StringJoiner(" and ");
+            for (Where i : where) {
+                joiner.add(i.toQuery(table.getTableName()));
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
         }
         return builder.toString().trim();
