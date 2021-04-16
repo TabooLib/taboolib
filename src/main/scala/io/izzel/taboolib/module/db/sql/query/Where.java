@@ -1,17 +1,18 @@
 package io.izzel.taboolib.module.db.sql.query;
 
+import io.izzel.taboolib.util.Strings;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
 public class Where {
 
     private final String row;
     private String symbol;
     private Object value;
-    private Object between;
     private Object[] in;
+    private boolean between;
 
     Where(String row, String symbol, Object value) {
         this.row = row;
@@ -19,7 +20,7 @@ public class Where {
         this.value = value;
     }
 
-    Where(String row, String symbol, Object value, Object between) {
+    Where(String row, String symbol, Object value, boolean between) {
         this.row = row;
         this.symbol = symbol;
         this.value = value;
@@ -68,11 +69,11 @@ public class Where {
     }
 
     public static Where between(String row, Object value1, Object value2) {
-        return new Where(row, "between", value1, value2);
+        return new Where(row, "between", value1, true);
     }
 
     public static Where betweenNot(String row, Object value1, Object value2) {
-        return new Where(row, "not between", value1, value2);
+        return new Where(row, "not between", value1, true);
     }
 
     public static Where in(String row, Object... value3) {
@@ -80,18 +81,18 @@ public class Where {
     }
 
     public int toStatement(PreparedStatement statement, int index) throws SQLException {
-        if (between == null) {
-            setStatement(statement, index, value);
-            return index + 1;
-        } else if (in == null) {
-            setStatement(statement, index, value);
-            setStatement(statement, index + 1, between);
-            return index + 2;
-        } else {
+        if (in != null) {
             for (int i = 0; i < in.length; i++) {
                 setStatement(statement, index + i, in[i]);
             }
             return index + in.length;
+        } else if (between) {
+            setStatement(statement, index, value);
+            setStatement(statement, index + 1, between);
+            return index + 2;
+        } else {
+            setStatement(statement, index, value);
+            return index + 1;
         }
     }
 
@@ -117,13 +118,17 @@ public class Where {
         }
     }
 
-    public String toQuery() {
+    public String toQuery(String tableName) {
         if (in != null) {
-            return "`" + row + "` in (" + Arrays.stream(in).map(i -> "?").collect(Collectors.joining(", ")) + ")";
-        } else if (between != null) {
-            return "`" + row + "` " + symbol + " ? and ?";
+            StringJoiner joiner = new StringJoiner(", ");
+            for (Object i : in) {
+                joiner.add("?");
+            }
+            return Strings.replaceWithOrder("`{0}.{1}` in ({2})", tableName, row, joiner.toString());
+        } else if (between) {
+            return Strings.replaceWithOrder("`{0}.{1}` between ? and ?", tableName, row);
         } else {
-            return "`" + row + "` " + symbol + " ?";
+            return Strings.replaceWithOrder("`{0}.{1}` {2} ?", tableName, row, symbol);
         }
     }
 }

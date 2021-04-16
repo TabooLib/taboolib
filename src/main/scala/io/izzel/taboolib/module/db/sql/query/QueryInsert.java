@@ -1,14 +1,12 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.izzel.taboolib.module.db.sql.SQLTable;
 import io.izzel.taboolib.util.Pair;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**

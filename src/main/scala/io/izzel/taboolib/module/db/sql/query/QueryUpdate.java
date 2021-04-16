@@ -80,7 +80,7 @@ public class QueryUpdate extends Query {
         }
         if (!where.isEmpty()) {
             builder.append("where ");
-            builder.append(where.stream().map(Where::toQuery).collect(Collectors.joining(" and ")));
+            builder.append(where.stream().map(i -> i.toQuery(table.getTableName())).collect(Collectors.joining(" and ")));
             builder.append(" ");
         }
         return builder.toString().trim();

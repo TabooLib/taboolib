@@ -2,12 +2,12 @@ package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.sql.SQLTable;
-import io.izzel.taboolib.util.ArrayUtil;
+import io.izzel.taboolib.util.Strings;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.StringJoiner;
 
 /**
  * @author sky
@@ -19,6 +19,7 @@ public class QuerySelect extends Query {
     private String distinct;
     private final List<Where> where = Lists.newArrayList();
     private final List<Order> order = Lists.newArrayList();
+    private final List<Join> join = Lists.newArrayList();
     private int limit = -1;
 
     public QuerySelect(SQLTable table) {
@@ -26,7 +27,7 @@ public class QuerySelect extends Query {
     }
 
     public QuerySelect row(String... row) {
-        this.rowName = ArrayUtil.asList(row);
+        this.rowName = Lists.newArrayList(row);
         return this;
     }
 
@@ -55,6 +56,36 @@ public class QuerySelect extends Query {
         return this;
     }
 
+    public QuerySelect innerJoin(SQLTable table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.INNER, table.getTableName(), Lists.newArrayList(where)));
+        return this;
+    }
+
+    public QuerySelect innerJoin(String table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.INNER, table, Lists.newArrayList(where)));
+        return this;
+    }
+
+    public QuerySelect leftJoin(SQLTable table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.LEFT, table.getTableName(), Lists.newArrayList(where)));
+        return this;
+    }
+
+    public QuerySelect leftJoin(String table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.LEFT, table, Lists.newArrayList(where)));
+        return this;
+    }
+
+    public QuerySelect rightJoin(SQLTable table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.RIGHT, table.getTableName(), Lists.newArrayList(where)));
+        return this;
+    }
+
+    public QuerySelect rightJoin(String table, JoinWhere... where) {
+        this.join.add(new Join(JoinType.RIGHT, table, Lists.newArrayList(where)));
+        return this;
+    }
+
     public boolean find(DataSource dataSource) {
         return to(dataSource).find();
     }
@@ -68,13 +99,21 @@ public class QuerySelect extends Query {
         });
     }
 
+    public String toSelect(String row) {
+        return Strings.replaceWithOrder("`{0}.{1}`", table.getTableName(), row);
+    }
+
     @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
         builder.append("select");
         builder.append(" ");
         if (!rowName.isEmpty()) {
-            builder.append(rowName.stream().map(i -> "`" + i + "`").collect(Collectors.joining(", ")));
+            StringJoiner joiner = new StringJoiner(", ");
+            for (String row : rowName) {
+                joiner.add(toSelect(row));
+            }
+            builder.append(joiner.toString());
         } else if (distinct != null) {
             builder.append("distinct ").append(distinct);
         } else {
@@ -83,14 +122,30 @@ public class QuerySelect extends Query {
         builder.append(" ");
         builder.append("from `").append(table.getTableName());
         builder.append("` ");
+        if (!join.isEmpty()) {
+            StringJoiner joiner = new StringJoiner(" ");
+            for (Join join : join) {
+                joiner.add(join.toQuery());
+            }
+            builder.append(joiner.toString());
+            builder.append(" ");
+        }
         if (!where.isEmpty()) {
             builder.append("where ");
-            builder.append(where.stream().map(Where::toQuery).collect(Collectors.joining(" and ")));
+            StringJoiner joiner = new StringJoiner(" and ");
+            for (Where where : where) {
+                joiner.add(where.toQuery(table.getTableName()));
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
         }
         if (!order.isEmpty()) {
             builder.append("order by ");
-            builder.append(order.stream().map(Order::toQuery).collect(Collectors.joining(", ")));
+            StringJoiner joiner = new StringJoiner(", ");
+            for (Order order : order) {
+                joiner.add(order.toQuery(table.getTableName()));
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
         }
         if (limit > -1) {
