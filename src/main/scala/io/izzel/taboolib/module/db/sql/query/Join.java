@@ -41,7 +41,13 @@ public class Join {
         } else {
             StringJoiner joiner = new StringJoiner(" and ");
             for (JoinWhere where : where) {
-                joiner.add(Strings.replaceWithOrder("`{0}.{1}` {2} `{3}.{4}`", where.getLeft(), where.getSymbol(), where.getRight()));
+                joiner.add(Strings.replaceWithOrder("`{0}`.`{1}` {2} `{3}`.`{4}`",
+                        where.getLeftTable(),
+                        where.getLeftField(),
+                        where.getSymbol(),
+                        where.getRightTable(),
+                        where.getRightField()
+                ));
             }
             return Strings.replaceWithOrder("{0} join `{1}` on {2}", type.toKey(), from, joiner.toString());
         }

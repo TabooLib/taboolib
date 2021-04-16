@@ -40,12 +40,20 @@ public class JoinWhere {
         return new JoinWhere(leftTable.getTableName(), leftField, rightTable.getTableName(), rightField, "=");
     }
 
-    public String getLeft() {
-        return leftTable + "." + leftField;
+    public String getLeftTable() {
+        return leftTable;
     }
 
-    public String getRight() {
-        return rightTable + "." + rightField;
+    public String getLeftField() {
+        return leftField;
+    }
+
+    public String getRightTable() {
+        return rightTable;
+    }
+
+    public String getRightField() {
+        return rightField;
     }
 
     public String getSymbol() {
