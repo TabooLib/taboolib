@@ -23,8 +23,10 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.54'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.55'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
+
+    implementation 'ink.ptms:navigation:1.0.4'
 
     implementation 'ink.ptms.core:v11200:11200:all'
     implementation 'ink.ptms.core:v11604:11604:all'
@@ -65,11 +67,13 @@ shadowJar {
     }
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
+        it.include it.dependency('ink.ptms:navigation:.*')
         it.include it.dependency('com.github.cryptomorin:.*')
         it.include it.dependency('com.google.code.gson:.*')
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
     }
+    relocate 'ink.ptms.navigation', 'io.izzel.taboolib.kotlin.navigation'
     relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
