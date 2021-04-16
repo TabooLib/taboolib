@@ -124,20 +124,14 @@ public class QuerySelect extends Query {
         builder.append("select");
         builder.append(" ");
         if (!rows.isEmpty() || !rowsOuter.isEmpty()) {
-            StringJoiner joinerRows = new StringJoiner(", ");
+             StringJoiner joiner = new StringJoiner(", ");
             for (String row : rows) {
-                joinerRows.add(toSelect(row));
+                joiner.add(toSelect(row));
             }
-            if (joinerRows.length() > 0) {
-                builder.append(joinerRows.toString());
-            }
-            StringJoiner joinerRowsOuter = new StringJoiner(", ");
             for (Pair<String, String> row : rowsOuter) {
-                joinerRowsOuter.add(toSelect(row.getKey(), row.getValue()));
+                joiner.add(toSelect(row.getKey(), row.getValue()));
             }
-            if (joinerRowsOuter.length() > 0) {
-                builder.append(joinerRowsOuter.toString());
-            }
+            builder.append(joiner.toString());
         } else if (distinct != null) {
             builder.append("distinct ").append(distinct);
         } else {
