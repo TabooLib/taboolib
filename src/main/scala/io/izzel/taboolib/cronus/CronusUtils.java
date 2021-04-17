@@ -15,18 +15,16 @@ import java.util.Optional;
  */
 public class CronusUtils {
 
-    public static void addItem(Player player, ItemStack item) {
-        player.getInventory().addItem(item).values().forEach(e -> player.getWorld().dropItem(player.getLocation(), e));
-    }
-
-    @Deprecated
-    public static String NonNull(String in) {
+    public static String nonNull(String in) {
         return Strings.isBlank(in) ? "-" : in;
     }
 
-    @Deprecated
-    public static ItemStack NonNull(ItemStack itemStack) {
+    public static ItemStack nonNull(ItemStack itemStack) {
         return Optional.ofNullable(itemStack).orElse(new ItemStack(Material.STONE));
+    }
+
+    public static void addItem(Player player, ItemStack item) {
+        player.getInventory().addItem(item).values().forEach(e -> player.getWorld().dropItem(player.getLocation(), e));
     }
 
     public static ItemStack getUsingItem(Player player, Material material) {
@@ -162,5 +160,15 @@ public class CronusUtils {
             }
         }
         return time;
+    }
+
+    @Deprecated
+    public static String NonNull(String in) {
+        return Strings.isBlank(in) ? "-" : in;
+    }
+
+    @Deprecated
+    public static ItemStack NonNull(ItemStack itemStack) {
+        return Optional.ofNullable(itemStack).orElse(new ItemStack(Material.STONE));
     }
 }
