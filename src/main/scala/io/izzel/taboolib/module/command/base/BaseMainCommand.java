@@ -177,7 +177,7 @@ public abstract class BaseMainCommand implements CommandExecutor, TabExecutor {
                     continue;
                 }
                 if (!subCommand.getType().isType(sender)) {
-                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString("COMMANDS.INTERNAL.TYPE-" + subCommand.getType()), registerCommand.getPlugin().getName());
+                    TLocale.sendTo(sender, "COMMANDS.INTERNAL.TYPE-ERROR", args[0], TLocale.asString(sender, "COMMANDS.INTERNAL.TYPE-" + subCommand.getType()), registerCommand.getPlugin().getName());
                     return true;
                 }
                 String[] subCommandArgs = removeFirst(args);

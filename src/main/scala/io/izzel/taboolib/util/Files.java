@@ -35,7 +35,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author sky
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "UnusedReturnValue"})
 public class Files {
 
     /**

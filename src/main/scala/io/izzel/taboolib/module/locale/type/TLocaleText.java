@@ -1,8 +1,10 @@
 package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
@@ -11,6 +13,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Immutable
@@ -19,10 +22,9 @@ import java.util.stream.Collectors;
 public class TLocaleText extends TLocaleSerialize {
 
     private final Object text;
-    private final boolean usePlaceholder;
 
-    private TLocaleText(Object text, boolean usePlaceholder) {
-        this.usePlaceholder = usePlaceholder;
+    private TLocaleText(Object text, boolean papi, boolean kether) {
+        super(papi, kether);
         if (text instanceof String) {
             this.text = text;
         } else if (text instanceof List) {
@@ -33,23 +35,23 @@ public class TLocaleText extends TLocaleSerialize {
     }
 
     public static TLocaleText of(String s) {
-        return new TLocaleText(TLocale.Translate.setColored(s), TLocale.Translate.isPlaceholderUseDefault());
+        return new TLocaleText(TLocale.Translate.setColored(s), TLocale.Translate.isPlaceholderUseDefault(), TLocale.Translate.isKetherUseDefault());
     }
 
     public static TLocaleText of(Object o) {
-        return o instanceof String ? of(((String) o)) : new TLocaleText(o, false);
+        return o instanceof String ? of(((String) o)) : new TLocaleText(o, false, false);
     }
 
     public static TLocaleText valueOf(Map<String, Object> map) {
         if (map.containsKey("text")) {
             Object object = map.get("text");
             if (object instanceof String[]) {
-                return new TLocaleText(Arrays.stream(((String[]) object)).collect(Collectors.toList()), isPlaceholderEnabled(map));
+                return new TLocaleText(Arrays.stream(((String[]) object)).collect(Collectors.toList()), isPlaceholderEnabled(map), isKetherEnabled(map));
             } else {
-                return new TLocaleText(Objects.toString(object), isPlaceholderEnabled(map));
+                return new TLocaleText(Objects.toString(object), isPlaceholderEnabled(map), isKetherEnabled(map));
             }
         }
-        return new TLocaleText("§cError chat message loaded.", TLocale.Translate.isPlaceholderUseDefault());
+        return new TLocaleText("§cError chat message loaded.", TLocale.Translate.isPlaceholderUseDefault(), TLocale.Translate.isKetherUseDefault());
     }
 
     @Override
@@ -86,11 +88,31 @@ public class TLocaleText extends TLocaleSerialize {
 
     @Override
     public Map<String, Object> serialize() {
-        return usePlaceholder ? Maps.newHashMap(ImmutableMap.of("text", text, "papi", true)) : Maps.newHashMap(ImmutableMap.of("text", text));
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("text", text);
+        if (papi) {
+            map.put("papi", true);
+        }
+        if (kether) {
+            map.put("kether", true);
+        }
+        return map;
     }
 
     private String replaceText(CommandSender sender, String args) {
-        return usePlaceholder ? TLocale.Translate.setPlaceholders(sender, args) : TLocale.Translate.setColored(args);
+        String s = TLocale.Translate.setColored(args);
+        if (papi) {
+            s = PlaceholderHook.replace(sender, s);
+        }
+        if (kether) {
+            s = KetherFunction.INSTANCE.parse(s, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                @Override
+                public void accept(ScriptContext context) {
+                    context.setSender(sender);
+                }
+            });
+        }
+        return s;
     }
 
     private String objectToString(Object text) {

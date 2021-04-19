@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
 import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
@@ -11,23 +13,24 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Immutable
 @SerializableAs("ACTION")
 public class TLocaleActionBar extends TLocaleSerialize {
 
     private final String text;
-    private final boolean papi;
 
-    private TLocaleActionBar(String text, boolean papi) {
+    public TLocaleActionBar(String text, boolean papi, boolean kether) {
+        super(papi, kether);
         this.text = text;
-        this.papi = papi;
     }
 
     public static TLocaleActionBar valueOf(Map<String, Object> map) {
         String text = ChatColor.translateAlternateColorCodes('&', String.valueOf(map.getOrDefault("text", "Empty Action bar message.")));
-        return new TLocaleActionBar(text, isPlaceholderEnabled(map));
+        return new TLocaleActionBar(text, isPlaceholderEnabled(map), isKetherEnabled(map));
     }
 
     @Override
@@ -38,8 +41,19 @@ public class TLocaleActionBar extends TLocaleSerialize {
     }
 
     private String replace(CommandSender sender, String text, String[] args) {
-        String s = Strings.replaceWithOrder(text, args);
-        return papi ? PlaceholderHook.replace(sender, s) : s;
+        String s = TLocale.Translate.setColored(Strings.replaceWithOrder(text, args));
+        if (papi) {
+            s = PlaceholderHook.replace(sender, s);
+        }
+        if (kether) {
+            s = KetherFunction.INSTANCE.parse(s, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                @Override
+                public void accept(ScriptContext context) {
+                    context.setSender(sender);
+                }
+            });
+        }
+        return s;
     }
 
     @Override
@@ -53,6 +67,9 @@ public class TLocaleActionBar extends TLocaleSerialize {
         map.put("text", text);
         if (papi) {
             map.put("papi", true);
+        }
+        if (kether) {
+            map.put("kether", true);
         }
         return map;
     }

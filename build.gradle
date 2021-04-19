@@ -2,11 +2,12 @@ plugins {
     id 'java'
     id 'idea'
     id 'scala'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group = 'io.izzel'
-version = '5.62'
+version = '5.63'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -23,7 +24,7 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.57'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.59'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
     implementation 'ink.ptms:navigation:1.0.4'
@@ -58,6 +59,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:19.0.0'
     implementation 'org.scala-lang:scala-library:2.12.8'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
 }
 
 shadowJar {

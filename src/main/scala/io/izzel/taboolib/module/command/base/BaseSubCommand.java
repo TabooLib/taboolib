@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.command.base;
 
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.util.Strings;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -98,9 +99,13 @@ public abstract class BaseSubCommand {
     }
 
     public String getDescription() {
+        return getDescription(Bukkit.getConsoleSender());
+    }
+
+    public String getDescription(CommandSender sender) {
         String description = annotation.description();
         if (description.startsWith("@")) {
-            return TLocaleLoader.asString(mainCommand.getRegisterCommand().getPlugin(), description.substring(1));
+            return TLocaleLoader.asString(mainCommand.getRegisterCommand().getPlugin(), sender, description.substring(1));
         } else {
             return description;
         }

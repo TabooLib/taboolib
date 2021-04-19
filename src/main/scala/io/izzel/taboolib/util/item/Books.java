@@ -22,8 +22,18 @@ import java.util.function.Consumer;
 @SuppressWarnings("ConstantConditions")
 public class Books {
 
-    private final ItemStack itemStack = XMaterial.WRITABLE_BOOK.parseItem();
-    private final BookMeta itemMeta = (BookMeta) itemStack.getItemMeta();
+    private final ItemStack itemStack;
+    private final BookMeta itemMeta;
+
+    public Books(XMaterial material) {
+        this.itemStack = material.parseItem();
+        this.itemMeta = (BookMeta) itemStack.getItemMeta();
+    }
+
+    public Books write(String raw) {
+        itemMeta.addPage(raw);
+        return this;
+    }
 
     public Books write(TellrawJson json) {
         BookAsm.getHandle().addPages(itemMeta, ComponentSerializer.parse(json.toRawMessage()));
@@ -48,7 +58,7 @@ public class Books {
     }
 
     public static Books create() {
-        return new Books();
+        return new Books(XMaterial.WRITTEN_BOOK);
     }
 
     /**

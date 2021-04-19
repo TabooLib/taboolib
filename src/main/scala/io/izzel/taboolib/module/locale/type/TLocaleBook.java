@@ -2,6 +2,8 @@ package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.module.tellraw.TellrawJson;
@@ -15,9 +17,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -49,12 +53,11 @@ public class TLocaleBook extends TLocaleSerialize {
 
     private final List<TellrawJson> pages;
     private final Map<String, Object> map;
-    private final boolean papi;
 
-    public TLocaleBook(List<TellrawJson> pages, Map<String, Object> map, boolean papi) {
+    public TLocaleBook(List<TellrawJson> pages, Map<String, Object> map, boolean papi, boolean kether) {
+        super(papi, kether);
         this.pages = pages;
         this.map = map;
-        this.papi = papi;
     }
 
     @Override
@@ -83,13 +86,26 @@ public class TLocaleBook extends TLocaleSerialize {
     }
 
     private String format(TellrawJson jsonPage, CommandSender sender, String[] args) {
-        return papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(jsonPage.toRawMessage(), args)) : Strings.replaceWithOrder(jsonPage.toRawMessage(), args);
+        String s = Strings.replaceWithOrder(jsonPage.toRawMessage(), args);
+        if (papi) {
+            s = TLocale.Translate.setPlaceholders(sender, s);
+        }
+        if (kether) {
+            s = KetherFunction.INSTANCE.parse(s, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                @Override
+                public void accept(ScriptContext context) {
+                    context.setSender(sender);
+                }
+            });
+        }
+        return s;
     }
 
+    @SuppressWarnings("unchecked")
     public static TLocaleBook valueOf(Map<String, Object> map) {
         Map<String, Object> pages = map.containsKey("pages") ? (Map<String, Object>) map.get("pages") : new HashMap<>();
         Map<String, Object> section = map.containsKey("args") ? (Map<String, Object>) map.get("args") : new HashMap<>();
         List<TellrawJson> pageJsonList = pages.values().stream().map(page -> TLocaleJson.formatJson(section, page, TellrawJson.create())).collect(Collectors.toList());
-        return new TLocaleBook(pageJsonList, map, isPlaceholderEnabled(map));
+        return new TLocaleBook(pageJsonList, map, isPlaceholderEnabled(map), isKetherEnabled(map));
     }
 }

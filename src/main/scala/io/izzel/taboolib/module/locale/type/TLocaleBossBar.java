@@ -1,6 +1,8 @@
 package io.izzel.taboolib.module.locale.type;
 
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
@@ -14,7 +16,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.NumberConversions;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author sky
@@ -40,21 +44,31 @@ public class TLocaleBossBar extends TLocaleSerialize {
     private final BarStyle style;
     private final float progress;
     private final int timeout;
-    private final boolean papi;
 
-    public TLocaleBossBar(String text, BarColor color, BarStyle style, float progress, int timeout, boolean papi) {
+    public TLocaleBossBar(String text, BarColor color, BarStyle style, float progress, int timeout, boolean papi, boolean kether) {
+        super(papi, kether);
         this.text = text;
         this.color = color;
         this.style = style;
         this.progress = progress;
         this.timeout = timeout;
-        this.papi = papi;
     }
 
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            String title = papi ? TLocale.Translate.setPlaceholders(sender, Strings.replaceWithOrder(text, args)) : TLocale.Translate.setColored(Strings.replaceWithOrder(text, args));
+            String title = TLocale.Translate.setColored(Strings.replaceWithOrder(text, args));
+            if (papi) {
+                title = TLocale.Translate.setPlaceholders(sender, title);
+            }
+            if (kether) {
+                title = KetherFunction.INSTANCE.parse(title, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                    @Override
+                    public void accept(ScriptContext context) {
+                        context.setSender(sender);
+                    }
+                });
+            }
             BossBar bossBar = Bukkit.createBossBar(title, color, style);
             bossBar.setProgress(progress);
             bossBar.addPlayer((Player) sender);
@@ -78,7 +92,8 @@ public class TLocaleBossBar extends TLocaleSerialize {
                 getStyle(String.valueOf(map.get("style"))),
                 NumberConversions.toFloat(map.getOrDefault("progress", 1)),
                 NumberConversions.toInt(map.getOrDefault("timeout", 20)),
-                isPlaceholderEnabled(map));
+                isPlaceholderEnabled(map),
+                isKetherEnabled(map));
     }
 
     private static BarColor getColor(String color) {
