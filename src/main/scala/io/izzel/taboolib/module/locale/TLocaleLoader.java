@@ -2,6 +2,7 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
+import io.izzel.taboolib.common.event.PlayerSelectLocaleEvent;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.locale.type.*;
@@ -58,7 +59,8 @@ public class TLocaleLoader {
      */
     @Nullable
     public static String playerLocaleToPluginLocale(Player player, Plugin plugin) {
-        String locale = localeFormat(player.getLocale());
+        PlayerSelectLocaleEvent event = new PlayerSelectLocaleEvent(player, player.getLocale()).call();
+        String locale = localeFormat(event.getLocale());
         for (String priority : getLocalePriority(plugin)) {
             if (priority.equalsIgnoreCase(locale)) {
                 return priority;
