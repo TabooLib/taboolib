@@ -78,6 +78,6 @@ public class DisplayFlat extends DisplayBase {
         } else {
             name = argument.getName();
         }
-        return TLocale.asString(sender, "COMMANDS.DISPLAY.FLAT.ARGUMENT" + (argument.isRequired() ? "REQUIRED" : "OPTIONAL"), name);
+        return TLocale.asString(sender, "COMMANDS.DISPLAY.FLAT.ARGUMENT-" + (argument.isRequired() ? "REQUIRED" : "OPTIONAL"), name);
     }
 }

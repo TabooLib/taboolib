@@ -78,7 +78,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     TLocaleLoader.sendTo(TabooLib.getPlugin(), path, sender, args);
                 } else {
-                    sender.sendMessage("§8Notfound: " + path);
+                    sender.sendMessage("<" + path + ">");
                 }
             }
 
@@ -87,7 +87,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     return TLocaleLoader.asString(TabooLib.getPlugin(), path, args);
                 } else {
-                    return "§8Notfound: " + path;
+                    return "<" + path + ">";
                 }
             }
 
@@ -96,7 +96,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     return TLocaleLoader.asStringList(TabooLib.getPlugin(), path, args);
                 } else {
-                    return Collections.singletonList("§8Notfound: " + path);
+                    return Collections.singletonList("<" + path + ">");
                 }
             }
         };

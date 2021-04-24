@@ -62,6 +62,6 @@ public class DisplayClassic extends DisplayBase {
         } else {
             name = argument.getName();
         }
-        return TLocale.asString(sender, "COMMANDS.DISPLAY.CLASSIC.ARGUMENT" + (argument.isRequired() ? "REQUIRED" : "OPTIONAL"), name);
+        return TLocale.asString(sender, "COMMANDS.DISPLAY.CLASSIC.ARGUMENT-" + (argument.isRequired() ? "REQUIRED" : "OPTIONAL"), name);
     }
 }

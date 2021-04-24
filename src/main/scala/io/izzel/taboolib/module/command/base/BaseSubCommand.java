@@ -99,11 +99,11 @@ public abstract class BaseSubCommand {
     }
 
     public String getDescription() {
-        return getDescription(Bukkit.getConsoleSender());
+        return annotation.description();
     }
 
     public String getDescription(CommandSender sender) {
-        String description = annotation.description();
+        String description = getDescription();
         if (description.startsWith("@")) {
             return TLocaleLoader.asString(mainCommand.getRegisterCommand().getPlugin(), sender, description.substring(1));
         } else {
