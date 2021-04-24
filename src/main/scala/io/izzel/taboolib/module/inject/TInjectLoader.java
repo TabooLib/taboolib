@@ -108,6 +108,13 @@ public class TInjectLoader implements TabooLibLoader.Loader {
                 Ref.putField(instance, field, Bukkit.getPluginManager().getPlugin(args.value()[0]));
             }
         });
+        // Configuration Contents Inject
+        injectTypes.put(Object.class, ((plugin, field, args, pluginClass, instance) -> {
+            if (Strings.nonEmpty(args.node())) {
+                TConfig config = TConfig.create(plugin, args.value().length == 0 ? "config.yml" : args.value()[0]);
+                Ref.putField(instance, field, config.get(args.node()));
+            }
+        }));
     }
 
     @Override
