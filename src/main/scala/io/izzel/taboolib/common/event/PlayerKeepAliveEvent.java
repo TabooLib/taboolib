@@ -10,9 +10,9 @@ public class PlayerKeepAliveEvent extends EventNormal<PlayerKeepAliveEvent> {
     private final boolean isFirst;
 
     public PlayerKeepAliveEvent(Player player, boolean isFirst) {
+        super(true);
         this.player = player;
         this.isFirst = isFirst;
-        async(!Bukkit.isPrimaryThread());
     }
 
     public Player getPlayer() {

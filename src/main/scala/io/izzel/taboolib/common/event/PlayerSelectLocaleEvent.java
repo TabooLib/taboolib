@@ -9,6 +9,7 @@ public class PlayerSelectLocaleEvent extends EventNormal<PlayerSelectLocaleEvent
     private String locale;
 
     public PlayerSelectLocaleEvent(Player player, String locale) {
+        super(true);
         this.player = player;
         this.locale = locale;
     }

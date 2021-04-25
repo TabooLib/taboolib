@@ -11,9 +11,9 @@ public class PlayerAttackEvent extends EventCancellable<PlayerAttackEvent> {
     private final Entity target;
 
     public PlayerAttackEvent(Player player, Entity target) {
+        super(true);
         this.player = player;
         this.target = target;
-        async(!Bukkit.isPrimaryThread());
     }
 
     public Player getPlayer() {

@@ -140,7 +140,7 @@ public class TLocaleLoader {
                             YamlConfiguration localeConfiguration = Files.loadYaml(file);
                             YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, file);
                             loadPluginLocale(plugin, file, localeConfiguration, localeConfigurationAtStream);
-                        });
+                        }, true);
                     }
                 }
             }
