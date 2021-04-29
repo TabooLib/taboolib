@@ -22,6 +22,8 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import protocolsupport.api.ProtocolSupportAPI;
 import us.myles.ViaVersion.api.Via;
 
@@ -79,12 +81,12 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public String setPlaceholders(Player player, String args) {
+    public @NotNull String setPlaceholders(Player player, String args) {
         return placeholder ? PlaceholderAPI.setPlaceholders(player, args) : args;
     }
 
     @Override
-    public List<String> setPlaceholders(Player player, List<String> args) {
+    public @NotNull List<String> setPlaceholders(Player player, List<String> args) {
         return placeholder ? PlaceholderAPI.setPlaceholders(player, args) : args;
     }
 
@@ -124,12 +126,12 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public Collection<String> worldguardGetRegions(World world) {
+    public @NotNull Collection<String> worldguardGetRegions(World world) {
         return Objects.requireNonNull(worldguardRegionManager(world)).getRegions().keySet();
     }
 
     @Override
-    public List<String> worldguardGetRegion(World world, Location location) {
+    public @NotNull List<String> worldguardGetRegion(World world, Location location) {
         return Objects.requireNonNull(worldguardRegionManager(world)).getRegions().values().stream().filter(r -> r.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ())).map(ProtectedRegion::getId).collect(Collectors.toList());
     }
 
@@ -182,7 +184,7 @@ public class BridgeImpl extends InternalPluginBridge {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Map<String, Object> taboolibTLocaleSerialize(Object in) {
+    public @NotNull Map<String, Object> taboolibTLocaleSerialize(Object in) {
         switch (in.getClass().getSimpleName()) {
             case "TLocaleText": {
                 Map<String, Object> map = Maps.newHashMap();
@@ -224,7 +226,7 @@ public class BridgeImpl extends InternalPluginBridge {
     }
 
     @Override
-    public FileConfiguration taboolibGetPlayerData(String username) {
+    public @Nullable FileConfiguration taboolibGetPlayerData(String username) {
         return PlayerDataManager.getPlayerData(username, true);
     }
 
@@ -233,45 +235,20 @@ public class BridgeImpl extends InternalPluginBridge {
         return ProtocolSupportAPI.getProtocolVersion(player).getId();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public int viaVersionPlayerVersion(Player player) {
         return Via.getAPI().getPlayerVersion(player);
     }
 
     @Override
-    public Class getClass(String name) throws ClassNotFoundException {
+    public @NotNull Class getClass(String name) throws ClassNotFoundException {
         return Class.forName(name);
     }
 
     @Override
-    public ClassLoader getClassLoader() {
+    public @NotNull ClassLoader getClassLoader() {
         return this.getClass().getClassLoader();
-    }
-
-    @Override
-    public void attach(ClassFileTransformer transformer, List<String> c) {
-//        Class<?>[] classes = new Class[c.size()];
-//        for (int i = 0; i < c.size(); i++) {
-//            try {
-//                classes[i] = Class.forName(c.get(i));
-//            } catch (ClassNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        Instrumentation instrumentation = Attacher.instrumentation();
-//        try {
-//            instrumentation.addTransformer(transformer, true);
-//            instrumentation.retransformClasses(classes);
-//        } catch (UnmodifiableClassException e) {
-//            e.printStackTrace();
-//        } finally {
-//            instrumentation.removeTransformer(transformer);
-//        }
-    }
-
-    @Override
-    public void test() {
-//        TDependency.requestPlugin("");
     }
 
     private RegionManager worldguardRegionManager(World world) {

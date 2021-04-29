@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,6 +48,7 @@ public abstract class NMS {
      *
      * @return NMS
      */
+    @NotNull
     public static NMS handle() {
         return impl;
     }
@@ -67,6 +69,7 @@ public abstract class NMS {
      */
     abstract public boolean isRunning();
 
+    @NotNull
     abstract public Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11);
 
     /**
@@ -74,8 +77,10 @@ public abstract class NMS {
      */
     abstract public double[] getTPS();
 
+    @NotNull
     abstract public String getName(ItemStack itemStack);
 
+    @NotNull
     abstract public String getName(Entity entity);
 
     /**
@@ -187,6 +192,7 @@ public abstract class NMS {
      * @param attribute Attribute 映射累
      * @return NMS Attribute
      */
+    @Nullable
     abstract public Object toNMS(Attribute attribute);
 
     /**
@@ -195,18 +201,21 @@ public abstract class NMS {
      * @param id id
      * @return Entity
      */
+    @Nullable
     abstract public Entity getEntityById(int id);
 
     /**
      * @param blockPosition NMS BlockPosition
      * @return 将 nms BlockPosition 类转换为 {@link Position} 映射类
      */
+    @NotNull
     abstract public Position fromBlockPosition(Object blockPosition);
 
     /**
      * @param blockPosition {@link Position}
      * @return 将 {@link Position} 映射类转换为 nms BlockPosition 类
      */
+    @NotNull
     abstract public Object toBlockPosition(Position blockPosition);
 
     /**
@@ -232,6 +241,7 @@ public abstract class NMS {
      * @param event 事件
      * @return Location
      */
+    @Nullable
     abstract public Location getLastLocation(ProjectileHitEvent event);
 
     /**
@@ -251,12 +261,17 @@ public abstract class NMS {
      */
     abstract public void sendPacketEntityTeleport(Player player, int entity, Location location);
 
+    @SuppressWarnings("UnusedReturnValue")
+    @NotNull
     abstract public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e);
 
+    @NotNull
     abstract public Object ofChatComponentText(String source);
 
+    @Nullable
     abstract public Class<?> asNMS(String name);
 
+    @Nullable
     abstract public Object asEntityType(String name);
 
     /**
@@ -337,15 +352,21 @@ public abstract class NMS {
     @NotNull
     abstract public String getPotionEffectTypeKey(PotionEffectType potionEffectType);
 
+    @NotNull
     abstract public CommandDispatcher<?> getDispatcher();
 
+    @NotNull
     abstract public CommandSender getBukkitSender(Object commandWrapperListener);
 
+    @NotNull
     abstract public Object getWrapper(Command command);
 
+    @NotNull
     abstract public Class<?> getArgumentRegistryClass();
 
+    @NotNull
     abstract public Class<?> getMinecraftKeyClass();
 
+    @NotNull
     abstract public Object createMinecraftKey(NamespacedKey key);
 }

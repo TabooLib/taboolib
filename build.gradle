@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.63'
+version = '5.64'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,10 +24,10 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.60'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.64'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
-    implementation 'ink.ptms:navigation:1.0.6'
+    implementation 'ink.ptms:navigation:1.0.7'
 
     implementation 'ink.ptms.core:v11200:11200:all'
     implementation 'ink.ptms.core:v11604:11604:all'

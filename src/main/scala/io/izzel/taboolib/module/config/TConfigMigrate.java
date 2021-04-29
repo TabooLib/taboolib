@@ -30,6 +30,7 @@ public class TConfigMigrate {
      *
      * @param current 目标文件
      * @param source  源文件
+     * @return 合并后的文件内容
      */
     public static List<String> migrate(InputStream current, InputStream source) {
         boolean migrated = false;

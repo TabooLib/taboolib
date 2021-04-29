@@ -1,10 +1,15 @@
 package io.izzel.taboolib.common.event;
 
 import io.izzel.taboolib.module.event.EventCancellable;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+/**
+ * 玩家攻击事件
+ *
+ * @author sky
+ * @since 2021/04/29
+ */
 public class PlayerAttackEvent extends EventCancellable<PlayerAttackEvent> {
 
     private final Player player;

@@ -6,6 +6,7 @@ import io.izzel.taboolib.Version;
 import io.izzel.taboolib.kotlin.Reflex;
 import io.izzel.taboolib.module.lite.SimpleReflection;
 import io.izzel.taboolib.module.locale.logger.TLogger;
+import io.izzel.taboolib.module.nms.impl.Position;
 import io.izzel.taboolib.module.nms.impl.Type;
 import io.izzel.taboolib.module.nms.nbt.NBTList;
 import io.izzel.taboolib.module.nms.nbt.*;
@@ -60,6 +61,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -127,7 +129,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11) {
+    public @NotNull Object toPacketPlayOutWorldParticles(Particle var1, boolean var2, float var3, float var4, float var5, float var6, float var7, float var8, float var9, int var10, Object var11) {
         if (is11300) {
             return new net.minecraft.server.v1_13_R2.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_13_R2.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);
         } else {
@@ -141,7 +143,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public String getName(org.bukkit.inventory.ItemStack itemStack) {
+    public @NotNull String getName(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (Version.isAfter(Version.v1_13)) {
             String name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
@@ -165,7 +167,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public String getName(Entity entity) {
+    public @NotNull String getName(Entity entity) {
         if (Version.isAfter(Version.v1_14)) {
             Object minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getEntityType());
             return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
@@ -342,13 +344,13 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public Object toNMS(Attribute attribute) {
+    public @Nullable Object toNMS(Attribute attribute) {
         SimpleReflection.checkAndSave(GenericAttributes.class);
         return SimpleReflection.getFieldValue(GenericAttributes.class, null, attribute.name());
     }
 
     @Override
-    public Entity getEntityById(int id) {
+    public @Nullable Entity getEntityById(int id) {
         for (World world : Bukkit.getServer().getWorlds()) {
             net.minecraft.server.v1_13_R2.Entity entity = ((CraftWorld) world).getHandle().getEntity(id);
             if (entity != null) {
@@ -359,12 +361,12 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public io.izzel.taboolib.module.nms.impl.Position fromBlockPosition(Object blockPosition) {
+    public @NotNull Position fromBlockPosition(Object blockPosition) {
         return blockPosition instanceof net.minecraft.server.v1_12_R1.BlockPosition ? new io.izzel.taboolib.module.nms.impl.Position(((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getX(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getY(), ((net.minecraft.server.v1_12_R1.BlockPosition) blockPosition).getZ()) : null;
     }
 
     @Override
-    public Object toBlockPosition(io.izzel.taboolib.module.nms.impl.Position blockPosition) {
+    public @NotNull Object toBlockPosition(Position blockPosition) {
         return new net.minecraft.server.v1_12_R1.BlockPosition(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
     }
 
@@ -377,6 +379,7 @@ public class NMSImpl extends NMS {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Object toNBTBase(io.izzel.taboolib.module.nms.nbt.NBTBase base) {
         switch (base.getType().getId()) {
             case 1:
@@ -452,6 +455,7 @@ public class NMSImpl extends NMS {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     private Object fromNBTBase(Object base) {
         if (base instanceof net.minecraft.server.v1_8_R3.NBTTagCompound) {
             NBTCompound nbtCompound = new NBTCompound();
@@ -489,15 +493,11 @@ public class NMSImpl extends NMS {
 
     @Override
     public boolean inBoundingBox(Entity entity, Vector vector) {
-        if (Version.isAfter(Version.v1_14)) {
-            return ((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getBoundingBox().c(new net.minecraft.server.v1_14_R1.Vec3D(vector.getX(), vector.getY(), vector.getZ()));
-        } else {
-            return ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity) entity).getHandle().getBoundingBox().b(new net.minecraft.server.v1_12_R1.Vec3D(vector.getX(), vector.getY(), vector.getZ()));
-        }
+        return NMSFactory.INSTANCE.boundingBox().getBoundingBox(entity).contains(vector);
     }
 
     @Override
-    public Location getLastLocation(ProjectileHitEvent event) {
+    public @Nullable Location getLastLocation(ProjectileHitEvent event) {
         Vector vector = event.getEntity().getVelocity().normalize().multiply(0.1);
         Vector vectorEntity = event.getEntity().getLocation().toVector();
         if (event.getHitBlock() != null) {
@@ -542,8 +542,9 @@ public class NMSImpl extends NMS {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket((net.minecraft.server.v1_13_R2.PacketPlayOutEntityTeleport) teleport);
     }
 
+    @SuppressWarnings({"unchecked", "NullableProblems"})
     @Override
-    public <T extends Entity> T spawn(Location location, Class<T> entity, Consumer<T> e) {
+    public <T extends Entity> @NotNull T spawn(Location location, Class<T> entity, Consumer<T> e) {
         if (Version.isAfter(Version.v1_12)) {
             return location.getWorld().spawn(location, entity, e::accept);
         } else {
@@ -558,12 +559,12 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public Object ofChatComponentText(String source) {
+    public @NotNull Object ofChatComponentText(String source) {
         return new net.minecraft.server.v1_12_R1.ChatComponentText(source);
     }
 
     @Override
-    public Class<?> asNMS(String name) {
+    public @Nullable Class<?> asNMS(String name) {
         try {
             return Class.forName("net.minecraft.server." + Version.getBukkitVersion() + "." + name);
         } catch (Throwable ignored) {
@@ -572,7 +573,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public Object asEntityType(String name) {
+    public @Nullable Object asEntityType(String name) {
         if (Version.isAfter(Version.v1_14)) {
             return net.minecraft.server.v1_14_R1.EntityTypes.a(name).orElse(null);
         } else {
@@ -738,33 +739,33 @@ public class NMSImpl extends NMS {
 
     @SuppressWarnings("deprecation")
     @Override
-    public CommandDispatcher<?> getDispatcher() {
+    public @NotNull CommandDispatcher<?> getDispatcher() {
         return net.minecraft.server.v1_13_R2.MinecraftServer.getServer().getCommandDispatcher().a();
     }
 
     @Override
-    public CommandSender getBukkitSender(Object commandWrapperListener) {
+    public @NotNull CommandSender getBukkitSender(Object commandWrapperListener) {
         Objects.requireNonNull(commandWrapperListener, "commandWrapperListener不能为空");
         return ((net.minecraft.server.v1_13_R2.CommandListenerWrapper)commandWrapperListener).getBukkitSender();
     }
 
     @Override
-    public Object getWrapper(Command command) {
+    public @NotNull Object getWrapper(Command command) {
         return new BukkitCommandWrapper((CraftServer) Bukkit.getServer(),command);
     }
 
     @Override
-    public Class<?> getArgumentRegistryClass() {
+    public @NotNull Class<?> getArgumentRegistryClass() {
         return net.minecraft.server.v1_13_R2.ArgumentRegistry.class;
     }
 
     @Override
-    public Class<?> getMinecraftKeyClass() {
+    public @NotNull Class<?> getMinecraftKeyClass() {
         return net.minecraft.server.v1_13_R2.MinecraftKey.class;
     }
 
     @Override
-    public Object createMinecraftKey(NamespacedKey key) {
+    public @NotNull Object createMinecraftKey(NamespacedKey key) {
         return new net.minecraft.server.v1_13_R2.MinecraftKey(key.getNamespace(),key.getKey());
     }
 

@@ -82,6 +82,8 @@ public class TLocaleJson extends TLocaleSerialize {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("hover")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
+                            } else if (key.equalsIgnoreCase("insertion")) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setInsertion(TLocale.Translate.setColored(String.valueOf(value))));
                             }
                         });
                         // 添加到原来的 list 里面

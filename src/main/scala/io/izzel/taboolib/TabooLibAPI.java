@@ -2,8 +2,10 @@ package io.izzel.taboolib;
 
 import io.izzel.taboolib.common.plugin.InternalPluginBridge;
 import io.izzel.taboolib.module.nms.NMS;
+import io.izzel.taboolib.module.nms.NMSFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TabooLib 中心工具
@@ -45,6 +47,7 @@ public class TabooLibAPI {
      *
      * @return {@link InternalPluginBridge}
      */
+    @NotNull
     public static InternalPluginBridge getPluginBridge() {
         return InternalPluginBridge.handle();
     }
@@ -85,5 +88,13 @@ public class TabooLibAPI {
      */
     public static double[] getTPS() {
         return NMS.handle().getTPS();
+    }
+
+    /**
+     * @return 服务端内部工具
+     */
+    @NotNull
+    public static NMSFactory nmsFactory() {
+        return NMSFactory.INSTANCE;
     }
 }
