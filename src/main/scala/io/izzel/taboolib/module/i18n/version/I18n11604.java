@@ -30,20 +30,20 @@ import java.util.concurrent.Executors;
  * @author sky
  * @since 2020-04-04 19:51
  */
-public class I18n11603 extends I18nBase {
+public class I18n11604 extends I18nBase {
 
-    public static final I18n11603 INSTANCE = new I18n11603();
+    public static final I18n11604 INSTANCE = new I18n11604();
 
-    // 1.16.3
+    // 1.16.4
     public static final String[][] LOCALE = {
             {
-                    "zh_cn", "4ee6d2b4057f6b1af0552a1f44782fa2d5eb5f2e"
+                    "zh_cn", "340457631ac98c2349ef3318ecf9bf0fdca3a6b9"
             },
             {
-                    "zh_tw", "beaa0234d2f130b1c2a1a10df7e8c8ea8042e2d6"
+                    "zh_tw", "d31469e132068029437187e1d384fcdb7babd52d"
             },
             {
-                    "en_gb", "b1384f0bc5d88985539b31b28c0db81a25e7f39b",
+                    "en_gb", "bdd551782a0ef71c2b04537fc9cad75abbbf7cba",
             }
     };
 

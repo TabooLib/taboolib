@@ -52,14 +52,11 @@ public class I18nOrigin extends I18nBase {
 
     @Override
     public @NotNull String getName(Player player, @NotNull Entity entity) {
-        return entity == null ? "-" : lang.getString(NMS.handle().getName(entity).replace(".", "_"), entity.getName());
+        return lang.getString(NMS.handle().getName(entity).replace(".", "_"), entity.getName());
     }
 
     @Override
     public @NotNull String getName(Player player, @NotNull ItemStack itemStack) {
-        if (itemStack == null) {
-            return "-";
-        }
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta instanceof BookMeta && ((BookMeta) itemMeta).getTitle() != null) {
             return ((BookMeta) itemMeta).getTitle();
