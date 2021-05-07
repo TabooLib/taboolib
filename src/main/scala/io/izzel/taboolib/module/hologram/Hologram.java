@@ -132,7 +132,7 @@ public class Hologram {
                         TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), location).get());
                         TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId()).get());
                     }
-                    TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer.getId(), text).get());
+                    TPacketHandler.sendPacket(viewer.getPlayer(), THologramHandler.copy(viewer, text).get());
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
@@ -171,7 +171,7 @@ public class Hologram {
         this.text = text;
         THologram.submit(() -> {
             try {
-                viewers.forEach(v -> TPacketHandler.sendPacket(v.getPlayer(), THologramHandler.copy(v.getId(), text).get()));
+                viewers.forEach(v -> TPacketHandler.sendPacket(v.getPlayer(), THologramHandler.copy(v, text).get()));
             } catch (Throwable t) {
                 t.printStackTrace();
             }

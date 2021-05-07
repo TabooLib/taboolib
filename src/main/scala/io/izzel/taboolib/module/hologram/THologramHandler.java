@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.Version;
+import io.izzel.taboolib.common.event.PlayerHologramDisplayEvent;
 import io.izzel.taboolib.module.inject.TListener;
 import io.izzel.taboolib.module.inject.TSchedule;
 import io.izzel.taboolib.module.lite.SimpleReflection;
@@ -131,9 +132,10 @@ class THologramHandler implements Listener {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static Packet copy(int id, String name) {
+    public static Packet copy(HologramViewer viewer, String name) {
+        PlayerHologramDisplayEvent event = new PlayerHologramDisplayEvent(viewer.getPlayer(), name).call();
         Packet packet = THologramHandler.getPacketName().copy();
-        packet.write("a", id);
+        packet.write("a", viewer.getId());
         List copy = Lists.newArrayList();
         List item = THologramHandler.getPacketName().read("b", List.class);
         for (Object element : item) {
@@ -146,9 +148,9 @@ class THologramHandler implements Listener {
                     SimpleReflection.setFieldValue(element.getClass(), i, "a", a);
                     SimpleReflection.setFieldValue(element.getClass(), i, "c", c);
                     if (Version.isAfter(Version.v1_14)) {
-                        SimpleReflection.setFieldValue(element.getClass(), i, "b", Optional.of(NMS.handle().ofChatComponentText(name)));
+                        SimpleReflection.setFieldValue(element.getClass(), i, "b", Optional.of(NMS.handle().ofChatComponentText(event.getText())));
                     } else {
-                        SimpleReflection.setFieldValue(element.getClass(), i, "b", name);
+                        SimpleReflection.setFieldValue(element.getClass(), i, "b", event.getText());
                     }
                     copy.add(i);
                 } catch (InstantiationException e) {
