@@ -1,6 +1,9 @@
 package io.izzel.taboolib.module.locale.type;
 
 import com.google.common.collect.Maps;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
+import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
 import io.izzel.taboolib.util.Strings;
@@ -9,8 +12,10 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * @author Bkm016
@@ -23,27 +28,32 @@ public class TLocaleTitle extends TLocaleSerialize {
 
     private final String title;
     private final String subtitle;
-    private final int fadein;
-    private final int fadeout;
+    private final int fadeIn;
+    private final int fadeOut;
     private final int stay;
 
-    private final boolean usePlaceholder;
-
-    private TLocaleTitle(String title, String subString, int fadein, int fadeout, int stay, boolean usePlaceholder) {
+    private TLocaleTitle(String title, String subString, int fadeIn, int fadeOut, int stay, boolean papi, boolean kether) {
+        super(papi, kether);
         this.title = title;
         this.subtitle = subString;
-        this.fadein = fadein;
-        this.fadeout = fadeout;
+        this.fadeIn = fadeIn;
+        this.fadeOut = fadeOut;
         this.stay = stay;
-        this.usePlaceholder = usePlaceholder;
     }
 
     public static TLocaleTitle valueOf(Map<String, Object> map) {
         TLocaleTitle title;
         try {
-            title = new TLocaleTitle(getStringOrDefault(map, "title", ""), getStringOrDefault(map, "subtitle", ""), getIntegerOrDefault(map, "fadein", 10), getIntegerOrDefault(map, "fadeout", 10), getIntegerOrDefault(map, "stay", 10), isPlaceholderEnabled(map));
+            title = new TLocaleTitle(
+                    getStringOrDefault(map, "title", ""),
+                    getStringOrDefault(map, "subtitle", ""),
+                    getIntegerOrDefault(map, "fadein", 10),
+                    getIntegerOrDefault(map, "fadeout", 10),
+                    getIntegerOrDefault(map, "stay", 10),
+                    isPlaceholderEnabled(map),
+                    isKetherEnabled(map));
         } catch (Exception e) {
-            title = new TLocaleTitle("Empty Title message.", e.getMessage(), 10, 20, 10, false);
+            title = new TLocaleTitle("Empty Title message.", e.getMessage(), 10, 20, 10, false, false);
         }
         return title;
     }
@@ -51,7 +61,7 @@ public class TLocaleTitle extends TLocaleSerialize {
     @Override
     public void sendTo(CommandSender sender, String... args) {
         if (sender instanceof Player) {
-            TLocale.Display.sendTitle((Player) sender, replaceText(sender, Strings.replaceWithOrder(title, args)), replaceText(sender, Strings.replaceWithOrder(subtitle, args)), fadein, stay, fadeout);
+            TLocale.Display.sendTitle((Player) sender, replaceText(sender, Strings.replaceWithOrder(title, args)), replaceText(sender, Strings.replaceWithOrder(subtitle, args)), fadeIn, stay, fadeOut);
         } else {
             TLocale.Logger.error("LOCALE.TITLE-SEND-TO-NON-PLAYER", asString(args));
         }
@@ -59,7 +69,7 @@ public class TLocaleTitle extends TLocaleSerialize {
 
     @Override
     public String asString(String... args) {
-        return Strings.replaceWithOrder(Strings.replaceWithOrder("TITLE: [title: ''{0}'', subtitle: ''{1}'', fadeIn: {2}, fadeOut: {3}]", title, subtitle, fadein, fadeout), args);
+        return Strings.replaceWithOrder(Strings.replaceWithOrder("TITLE: [title: ''{0}'', subtitle: ''{1}'', fadeIn: {2}, fadeOut: {3}]", title, subtitle, fadeIn, fadeOut), args);
     }
 
     @Override
@@ -70,16 +80,33 @@ public class TLocaleTitle extends TLocaleSerialize {
     @Override
     public Map<String, Object> serialize() {
         HashMap<String, Object> map = Maps.newHashMap();
-        map.put("papi", usePlaceholder);
         map.put("title", title);
         map.put("subtitle", subtitle);
-        map.put("fadein", fadein);
-        map.put("fadeout", fadeout);
+        map.put("fadein", fadeIn);
+        map.put("fadeout", fadeOut);
         map.put("stay", stay);
+        if (papi) {
+            map.put("papi", true);
+        }
+        if (kether) {
+            map.put("kether", true);
+        }
         return map;
     }
 
     private String replaceText(CommandSender sender, String text, String... args) {
-        return usePlaceholder ? TLocale.Translate.setPlaceholders(sender, text) : TLocale.Translate.setColored(text);
+        String s = TLocale.Translate.setColored(Strings.replaceWithOrder(text, args));
+        if (papi) {
+            s = PlaceholderHook.replace(sender, s);
+        }
+        if (kether) {
+            s = KetherFunction.INSTANCE.parse(s, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                @Override
+                public void accept(ScriptContext context) {
+                    context.setSender(sender);
+                }
+            });
+        }
+        return s;
     }
 }

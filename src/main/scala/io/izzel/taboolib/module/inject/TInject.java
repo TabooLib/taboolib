@@ -25,6 +25,9 @@ public @interface TInject {
 
     String cancel() default "";
 
+    @Deprecated
+    String node() default "";
+
     String reload() default "";
 
     String locale() default "";
@@ -34,7 +37,6 @@ public @interface TInject {
     boolean migrate() default false;
 
     enum State {
-
         LOADING, STARTING, ACTIVATED, NONE
     }
 }

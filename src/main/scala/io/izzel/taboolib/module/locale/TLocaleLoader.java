@@ -2,7 +2,7 @@ package io.izzel.taboolib.module.locale;
 
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.TabooLibAPI;
-import io.izzel.taboolib.common.plugin.InternalPlugin;
+import io.izzel.taboolib.common.event.PlayerSelectLocaleEvent;
 import io.izzel.taboolib.module.config.TConfigWatcher;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.locale.type.*;
@@ -12,7 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,8 +29,8 @@ import java.util.stream.Collectors;
  */
 public class TLocaleLoader {
 
-    private static final Map<String, List<String>> localePriority = new HashMap<>();
-    private static final Map<String, TLocaleInstance> map = new ConcurrentHashMap<>();
+    private static final Map<String, List<String>> localePriority = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, TLocaleInstance>> map = new ConcurrentHashMap<>();
 
     static {
         // 插件版载入 > 非插件版（导致非插件版语言文件类型被覆盖）
@@ -48,53 +50,98 @@ public class TLocaleLoader {
         }
     }
 
-    public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
-        if (Bukkit.isPrimaryThread()) {
-            Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
-        } else {
-            synchronized (TLocaleLoader.class) {
-                Optional.ofNullable(map.get(plugin.getName())).ifPresent(localeInstance -> localeInstance.sendTo(path, sender, args));
+    /**
+     * 将玩家的客户端语言转换为插件所支持的语言文件
+     *
+     * @param player 玩家
+     * @param plugin 插件
+     * @return TLocale 语言文件名称
+     */
+    @Nullable
+    public static String playerLocaleToPluginLocale(Player player, Plugin plugin) {
+        PlayerSelectLocaleEvent event = new PlayerSelectLocaleEvent(player, player.getLocale()).call();
+        String locale = localeFormat(event.getLocale());
+        for (String priority : getLocalePriority(plugin)) {
+            if (priority.equalsIgnoreCase(locale)) {
+                return priority;
             }
+        }
+        return getLocalPriorityFirst(plugin);
+    }
+
+    public static String localeFormat(String name) {
+        return TabooLib.getConfig().getString("LOCALE.TRANSFER." + name.toLowerCase(), name);
+    }
+
+    @Nullable
+    public static TLocaleInstance getLocaleInstance(Plugin plugin, CommandSender sender) {
+        Map<String, TLocaleInstance> map = TLocaleLoader.map.get(plugin.getName());
+        if (map == null) {
+            return null;
+        }
+        String locale = null;
+        if (sender instanceof Player) {
+            locale = playerLocaleToPluginLocale(((Player) sender), plugin);
+        } else {
+            String localeTag = localeFormat(Locale.getDefault().toLanguageTag().replace("-", "_"));
+            for (String priority : getLocalePriority(plugin)) {
+                if (priority.equalsIgnoreCase(localeTag)) {
+                    locale = priority;
+                }
+            }
+            if (locale == null) {
+                locale = getLocalPriorityFirst(plugin);
+            }
+        }
+        return locale != null ? map.getOrDefault(locale, map.values().stream().findFirst().orElse(null)) : null;
+    }
+
+    public static void sendTo(Plugin plugin, String path, CommandSender sender, String... args) {
+        TLocaleInstance instance = getLocaleInstance(plugin, sender);
+        if (instance != null) {
+            instance.sendTo(path, sender, args);
         }
     }
 
     public static String asString(Plugin plugin, String path, String... args) {
-        TLocaleInstance tLocaleInstance = map.get(plugin.getName());
-        if (tLocaleInstance != null) {
-            return tLocaleInstance.asString(path, args);
+        return asString(plugin, Bukkit.getConsoleSender(), path, args);
+    }
+
+    public static String asString(Plugin plugin, CommandSender sender, String path, String... args) {
+        TLocaleInstance instance = getLocaleInstance(plugin, sender);
+        if (instance != null) {
+            return instance.asString(path, args);
         } else {
             return "";
         }
     }
 
     public static List<String> asStringList(Plugin plugin, String path, String... args) {
-        TLocaleInstance tLocaleInstance = map.get(plugin.getName());
-        if (tLocaleInstance != null) {
-            return tLocaleInstance.asStringList(path, args);
+        return asStringList(plugin, Bukkit.getConsoleSender(), path, args);
+    }
+
+    public static List<String> asStringList(Plugin plugin, CommandSender sender, String path, String... args) {
+        TLocaleInstance instance = getLocaleInstance(plugin, sender);
+        if (instance != null) {
+            return instance.asStringList(path, args);
         } else {
             return Collections.emptyList();
         }
     }
 
     public static void load(Plugin plugin, boolean isCover) {
-        load(plugin, isCover, true);
-    }
-
-    public static void load(Plugin plugin, boolean isCover, boolean hideMessage) {
         try {
             if (isLoadLocale(plugin, isCover)) {
-                for (File localeFile : getLocaleFile(plugin)) {
-                    if (!TConfigWatcher.getInst().hasListener(localeFile)) {
-                        Runnable listener = () -> {
-                            if (localeFile.getName().equals(getLocalPriorityFirst(plugin) + ".yml")) {
-                                YamlConfiguration localeConfiguration = Files.loadYaml(localeFile);
-                                YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, localeFile);
-                                loadPluginLocale(plugin, localeFile, localeConfiguration, localeConfigurationAtStream, hideMessage);
-                            }
-                        };
-                        TConfigWatcher.getInst().addListener(localeFile, null, obj -> listener.run());
+                for (File file : getLocaleFile(plugin)) {
+                    if (TConfigWatcher.getInst().hasListener(file)) {
+                        TConfigWatcher.getInst().runListener(file);
+                    } else {
+                        TConfigWatcher.getInst().addSimpleListener(file, () -> {
+                            YamlConfiguration localeConfiguration = Files.loadYaml(file);
+                            YamlConfiguration localeConfigurationAtStream = getLocaleAsPlugin(plugin, file);
+                            loadPluginLocale(plugin, file, localeConfiguration, localeConfigurationAtStream);
+                        }, true);
                     }
-                    TConfigWatcher.getInst().runListener(localeFile);
                 }
             }
         } catch (Exception e) {
@@ -108,10 +155,6 @@ public class TLocaleLoader {
 
     public static boolean isLocaleLoaded(Plugin plugin) {
         return map.containsKey(plugin.getName());
-    }
-
-    public static boolean isDependWithTabooLib(Plugin plugin) {
-        return plugin.getClass().getSuperclass().getSimpleName().equals("TabooPlugin");
     }
 
     public static String getLocalPriorityFirst(Plugin plugin) {
@@ -148,16 +191,16 @@ public class TLocaleLoader {
         return getLocalePriority(plugin).stream().map(file -> Files.releaseResource(plugin, "lang/" + file + ".yml")).filter(File::exists).collect(Collectors.toList());
     }
 
-    private static TLocaleInstance getLocaleInstance(Plugin plugin) {
+    private static TLocaleInstance createLocaleInstance(Plugin plugin, String name) {
         TLocaleInstance instance = new TLocaleInstance(plugin);
-        map.put(plugin.getName(), instance);
+        map.computeIfAbsent(plugin.getName(), i -> new ConcurrentHashMap<>()).put(name, instance);
         return instance;
     }
 
     private static YamlConfiguration getLocaleAsPlugin(Plugin plugin, File localeFile) {
-        try (InputStream canonicalResource = Files.getCanonicalResource(plugin, (plugin instanceof InternalPlugin ? "__resources__/" : "") + "lang/" + localeFile.getName())) {
-            if (canonicalResource != null) {
-                return YamlConfiguration.loadConfiguration(new InputStreamReader(canonicalResource, StandardCharsets.UTF_8));
+        try (InputStream inputStream = Files.getResourceChecked(plugin, "lang/" + localeFile.getName())) {
+            if (inputStream != null) {
+                return YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -167,19 +210,11 @@ public class TLocaleLoader {
         return new YamlConfiguration();
     }
 
-    private static void loadPluginLocale(Plugin plugin, File localeFile, YamlConfiguration localeConfiguration, YamlConfiguration localeConfigurationAtStream, boolean hideMessage) {
-        TLocaleInstance localeInstance = getLocaleInstance(plugin);
-        if (localeConfigurationAtStream != null) {
-            localeInstance.load(localeConfigurationAtStream);
+    private static void loadPluginLocale(Plugin plugin, File file, YamlConfiguration source, YamlConfiguration sourceAsStream) {
+        TLocaleInstance instance = createLocaleInstance(plugin, file.getName().substring(0, file.getName().indexOf('.')));
+        if (sourceAsStream != null) {
+            instance.load(sourceAsStream);
         }
-        localeInstance.load(localeConfiguration);
-        if (hideMessage) {
-            return;
-        }
-        if (localeInstance.getLatestUpdateNodes().get() <= 0) {
-            infoLogger("SUCCESS-LOADING-LANG-NORMAL", plugin.getName(), localeFile.getName().split("\\.")[0], String.valueOf(localeInstance.size()));
-        } else {
-            infoLogger("SUCCESS-LOADING-LANG-UPDATE", plugin.getName(), localeFile.getName().split("\\.")[0], String.valueOf(localeInstance.size()), String.valueOf(localeInstance.getLatestUpdateNodes().get()));
-        }
+        instance.load(source);
     }
 }

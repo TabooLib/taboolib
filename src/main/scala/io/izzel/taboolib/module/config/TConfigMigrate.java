@@ -30,6 +30,7 @@ public class TConfigMigrate {
      *
      * @param current 目标文件
      * @param source  源文件
+     * @return 合并后的文件内容
      */
     public static List<String> migrate(InputStream current, InputStream source) {
         boolean migrated = false;
@@ -76,7 +77,7 @@ public class TConfigMigrate {
                         arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ": " + dump[0]);
                     } else {
                         Arrays.setAll(dump, i -> space + "  " + dump[i]);
-                        arrayAppend(content, find + line, space + pair.getKey().substring(index + 1) + ":");
+                        arrayAppend(content, find + line++, space + pair.getKey().substring(index + 1) + ":");
                         arrayAppend(content, find + line, String.join("\n", dump));
                     }
                     migrated = true;

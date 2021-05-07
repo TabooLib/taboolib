@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.kotlin.kether.KetherFunction;
+import io.izzel.taboolib.kotlin.kether.ScriptContext;
 import io.izzel.taboolib.module.compat.PlaceholderHook;
 import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.module.locale.TLocaleSerialize;
@@ -17,6 +19,7 @@ import org.bukkit.util.NumberConversions;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,23 +31,21 @@ public class TLocaleJson extends TLocaleSerialize {
 
     private static final Pattern pattern = Pattern.compile("<([^<>]*)?@([^<>]*)>");
     private final List<BaseComponent[]> components;
-    private final boolean papi;
     private final Map<String, Object> map;
 
-    private TLocaleJson(List<BaseComponent[]> components, boolean papi, Map<String, Object> map) {
+    private TLocaleJson(List<BaseComponent[]> components, Map<String, Object> map, boolean papi, boolean kether) {
+        super(papi, kether);
         this.components = ImmutableList.copyOf(components);
-        this.papi = papi;
         this.map = map;
     }
 
+    @SuppressWarnings("unchecked")
     public static TLocaleJson valueOf(Map<String, Object> map) {
         List<String> textList = getTextList(map.getOrDefault("text", "Empty Node"));
-
         // 分析 args 并替换
         Object argsObj = map.get("args");
         if (argsObj instanceof Map) {
             Map<String, Object> section = new HashMap<>(((Map<?, ?>) argsObj).size());
-
             // valueOf(k) 是因为这个键可能加载为一个 Integer 导致 contains(String) 返回 false
             ((Map<?, ?>) argsObj).forEach((k, v) -> section.put(String.valueOf(k), v));
             List<BaseComponent[]> collect = textList.stream().map(s -> {
@@ -81,6 +82,8 @@ public class TLocaleJson extends TLocaleSerialize {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, String.valueOf(value))));
                             } else if (key.equalsIgnoreCase("hover")) {
                                 Arrays.stream(component).forEach(baseComponent -> baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(TLocale.Translate.setColored(String.valueOf(value))).create())));
+                            } else if (key.equalsIgnoreCase("insertion")) {
+                                Arrays.stream(component).forEach(baseComponent -> baseComponent.setInsertion(TLocale.Translate.setColored(String.valueOf(value))));
                             }
                         });
                         // 添加到原来的 list 里面
@@ -97,9 +100,9 @@ public class TLocaleJson extends TLocaleSerialize {
                 }
                 return builder.toArray(new BaseComponent[0]);
             }).collect(Collectors.toList());
-            return new TLocaleJson(collect, isPlaceholderEnabled(map), map);
+            return new TLocaleJson(collect, map, isPlaceholderEnabled(map), isKetherEnabled(map));
         }
-        return new TLocaleJson(textList.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()), isPlaceholderEnabled(map), map);
+        return new TLocaleJson(textList.stream().map(TextComponent::fromLegacyText).collect(Collectors.toList()), map, isPlaceholderEnabled(map), isKetherEnabled(map));
     }
 
     private static List<String> getTextList(Object textObj) {
@@ -163,9 +166,21 @@ public class TLocaleJson extends TLocaleSerialize {
 
     private String replace(CommandSender sender, String text, String[] args) {
         String s = Strings.replaceWithOrder(text, args);
-        return papi ? PlaceholderHook.replace(sender, s) : s;
+        if (papi) {
+            s = PlaceholderHook.replace(sender, s);
+        }
+        if (kether) {
+            s = KetherFunction.INSTANCE.parse(s, false, true, Collections.emptyList(), new Consumer<ScriptContext>() {
+                @Override
+                public void accept(ScriptContext context) {
+                    context.setSender(sender);
+                }
+            });
+        }
+        return s;
     }
 
+    @SuppressWarnings("unchecked")
     public static TellrawJson formatJson(Map<String, Object> section, Object textObject, TellrawJson pageJson) {
         List<String> textList = textObject instanceof List ? (List<String>) textObject : Collections.singletonList(String.valueOf(textObject));
         // 遍历本页文本
@@ -192,6 +207,7 @@ public class TLocaleJson extends TLocaleSerialize {
         return pageJson;
     }
 
+    @SuppressWarnings("unchecked")
     private static void formatNode(Map<String, Object> section, TellrawJson pageJson, String text, String node) {
         if (section.containsKey(node)) {
             try {

@@ -1,7 +1,7 @@
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: 'This TLocale type can only be sent to player：{0}'
   PLUGIN-NOT-FOUND: 'Invaild plugin: &4{0}'
-  BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TlocaleBook variables identiy failed: {0}'
+  BOOK-ARGUMENTS-IDENTIFICATION-FAILED: 'TLocaleBook variables identiy failed: {0}'
   BAR-COLOR-IDENTIFICATION-FAILED: 'TLocaleBossBar color identify failed: {0}'
   BAR-STYLE-IDENTIFICATION-FAILED: 'TLocaleBossBar type identify failed: {0}'
   CALLER-PLUGIN-NOT-FOUND: '{0} is not called by a plugin'

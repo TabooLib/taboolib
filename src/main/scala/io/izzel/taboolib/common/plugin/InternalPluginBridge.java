@@ -6,6 +6,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.util.Collection;
@@ -32,10 +34,13 @@ public abstract class InternalPluginBridge {
         }
     }
 
+    @Nullable
     abstract public <T> T getRegisteredService(Class<? extends T> clazz);
 
+    @NotNull
     abstract public String setPlaceholders(Player player, String args);
 
+    @NotNull
     abstract public List<String> setPlaceholders(Player player, List<String> args);
 
     abstract public void economyCreate(OfflinePlayer p);
@@ -52,8 +57,10 @@ public abstract class InternalPluginBridge {
 
     abstract public boolean permissionHas(Player player, String perm);
 
+    @NotNull
     abstract public Collection<String> worldguardGetRegions(World world);
 
+    @NotNull
     abstract public List<String> worldguardGetRegion(World world, Location location);
 
     abstract public boolean economyHooked();
@@ -70,19 +77,19 @@ public abstract class InternalPluginBridge {
 
     abstract public void registerExpansionProxy(Class<?> expansionClass);
 
+    @NotNull
     abstract public Map<String, Object> taboolibTLocaleSerialize(Object in);
 
+    @Nullable
     abstract public FileConfiguration taboolibGetPlayerData(String username);
 
     abstract public int protocolSupportPlayerVersion(Player player);
 
     abstract public int viaVersionPlayerVersion(Player player);
 
+    @NotNull
     abstract public Class<?> getClass(String name) throws ClassNotFoundException;
 
+    @NotNull
     abstract public ClassLoader getClassLoader();
-
-    abstract public void attach(ClassFileTransformer transformer, List<String> c);
-
-    abstract public void test();
 }

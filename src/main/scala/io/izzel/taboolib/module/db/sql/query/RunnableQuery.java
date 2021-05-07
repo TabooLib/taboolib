@@ -7,12 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 /**
  * @author sky
@@ -27,6 +25,8 @@ public class RunnableQuery {
     private TaskResult result;
     private TaskResult resultNext;
     private TaskResult resultAutoNext;
+    private Consumer<Connection> connectionFinish;
+    private Consumer<Statement> statementFinish;
 
     public RunnableQuery(String query) {
         this.query = query;
@@ -39,6 +39,16 @@ public class RunnableQuery {
 
     public RunnableQuery statement(TaskStatement statement) {
         this.statement = statement;
+        return this;
+    }
+
+    public RunnableQuery connectionFinish(Consumer<Connection> consumer) {
+        this.connectionFinish = consumer;
+        return this;
+    }
+
+    public RunnableQuery statementFinish(Consumer<Statement> consumer) {
+        this.statementFinish = consumer;
         return this;
     }
 
@@ -120,6 +130,7 @@ public class RunnableQuery {
         return this;
     }
 
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
     public RunnableQuery resultAutoNext(TaskResult result) {
         this.resultAutoNext = result;
@@ -146,9 +157,16 @@ public class RunnableQuery {
     @Deprecated
     public Object run(Object def) {
         if (dataSource != null) {
-            try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            try (Connection connection = dataSource.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 if (statement != null) {
                     statement.execute(preparedStatement);
+                }
+                if (statementFinish != null) {
+                    statementFinish.accept(preparedStatement);
+                }
+                if (connectionFinish != null) {
+                    connectionFinish.accept(connection);
                 }
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     return getResult(resultSet);

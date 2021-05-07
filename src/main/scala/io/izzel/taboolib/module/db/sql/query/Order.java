@@ -1,5 +1,7 @@
 package io.izzel.taboolib.module.db.sql.query;
 
+import io.izzel.taboolib.util.Strings;
+
 /**
  * @author sky
  * @since 2019-10-26 14:02
@@ -19,7 +21,7 @@ public class Order {
         this.desc = desc;
     }
 
-    public String toQuery() {
-        return "`" + row + "` " + (desc ? "desc" : "asc");
+    public String toQuery(String tableName) {
+        return Strings.replaceWithOrder("`{0}.{1}` {2}", tableName, row, (desc ? "desc" : "asc"));
     }
 }

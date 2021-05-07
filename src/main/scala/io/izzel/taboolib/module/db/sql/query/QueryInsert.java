@@ -1,14 +1,14 @@
 package io.izzel.taboolib.module.db.sql.query;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.izzel.taboolib.module.db.sql.SQLTable;
 import io.izzel.taboolib.util.Pair;
+import io.izzel.taboolib.util.Strings;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  */
 public class QueryInsert extends Query {
 
-    private final List<Object> value = Lists.newArrayList();
     private final List<String> columns = Lists.newArrayList();
+    private final List<List<Object>> value = Lists.newArrayList();
     private final List<Pair<String, Object>> update = Lists.newArrayList();
 
     public QueryInsert(SQLTable table) {
@@ -26,7 +26,7 @@ public class QueryInsert extends Query {
     }
 
     public QueryInsert value(Object... value) {
-        Collections.addAll(this.value, value);
+        this.value.add(Lists.newArrayList(value));
         return this;
     }
 
@@ -48,8 +48,10 @@ public class QueryInsert extends Query {
     public RunnableUpdate to(DataSource dataSource) {
         return new RunnableUpdate(toQuery()).dataSource(dataSource).statement(s -> {
             int index = 1;
-            for (Object v : value) {
-                s.setObject(index++, v);
+            for (List<Object> value : value) {
+                for (Object v : value) {
+                    s.setObject(index++, v);
+                }
             }
             for (Pair<String, Object> entry : update) {
                 s.setObject(index++, entry.getValue());
@@ -60,22 +62,34 @@ public class QueryInsert extends Query {
     @Override
     public String toQuery() {
         StringBuilder builder = new StringBuilder();
-        builder.append("insert into `").append(table.getTableName());
-        builder.append("`");
+        builder.append("insert into `").append(table.getTableName()).append("` ");
         if (!columns.isEmpty()) {
             builder.append("(");
-            builder.append(columns.stream().map(i -> "`" + i + "`").collect(Collectors.joining(", ")));
-            builder.append(")");
+            StringJoiner joiner = new StringJoiner(", ");
+            for (String i : columns) {
+                joiner.add(Strings.replaceWithOrder("`{0}`", i));
+            }
+            builder.append(joiner.toString());
+            builder.append(") ");
         }
-        builder.append("values (");
-        if (!value.isEmpty()) {
-            builder.append(value.stream().map(i -> "?").collect(Collectors.joining(", ")));
+        builder.append("values ");
+        for (List<Object> value : value) {
+            builder.append("(");
+            StringJoiner joiner = new StringJoiner(", ");
+            for (Object i : value) {
+                joiner.add("?");
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
+            builder.append(") ");
         }
-        builder.append(")");
         if (!update.isEmpty()) {
             builder.append("ON DUPLICATE KEY UPDATE ");
-            builder.append(update.stream().map(i -> "`" + i.getKey() + "` = ?").collect(Collectors.joining(", ")));
+            StringJoiner joiner = new StringJoiner(", ");
+            for (Pair<String, Object> i : update) {
+                joiner.add(Strings.replaceWithOrder("`{0}` = ?", i.getKey()));
+            }
+            builder.append(joiner.toString());
         }
         return builder.toString().trim();
     }

@@ -3,10 +3,12 @@ package io.izzel.taboolib.module.db.sql.query;
 import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.sql.SQLTable;
 import io.izzel.taboolib.util.Pair;
+import io.izzel.taboolib.util.Strings;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
@@ -75,12 +77,20 @@ public class QueryUpdate extends Query {
         builder.append("` ");
         if (!set.isEmpty()) {
             builder.append("set ");
-            builder.append(set.stream().map(s -> "`" + s.getKey() + "` = ?").collect(Collectors.joining(", ")));
+            StringJoiner joiner = new StringJoiner(", ");
+            for (Pair<String, Object> s : set) {
+                joiner.add(Strings.replaceWithOrder("`{0}` = ?", s.getKey()));
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
         }
         if (!where.isEmpty()) {
             builder.append("where ");
-            builder.append(where.stream().map(Where::toQuery).collect(Collectors.joining(" and ")));
+            StringJoiner joiner = new StringJoiner(" and ");
+            for (Where i : where) {
+                joiner.add(i.toQuery(table.getTableName()));
+            }
+            builder.append(joiner.toString());
             builder.append(" ");
         }
         return builder.toString().trim();

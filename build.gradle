@@ -2,11 +2,12 @@ plugins {
     id 'java'
     id 'idea'
     id 'scala'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group = 'io.izzel'
-version = '5.6'
+version = '5.64'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -23,8 +24,10 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.46'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.64'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
+
+    implementation 'ink.ptms:navigation:1.0.7'
 
     implementation 'ink.ptms.core:v11200:11200:all'
     implementation 'ink.ptms.core:v11604:11604:all'
@@ -57,6 +60,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:19.0.0'
     implementation 'org.scala-lang:scala-library:2.12.8'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
 }
 
 shadowJar {
@@ -66,12 +70,14 @@ shadowJar {
     }
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
+        it.include it.dependency('ink.ptms:navigation:.*')
         it.include it.dependency('com.github.cryptomorin:.*')
         it.include it.dependency('com.google.code.gson:.*')
         it.include it.dependency('org.apache.commons:.*')
         it.include it.dependency('org.ow2.asm:.*')
         it.include it.dependency('cn.maxmc.menubuilderlib:.*')
     }
+    relocate 'ink.ptms.navigation', 'io.izzel.taboolib.kotlin.navigation'
     relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'

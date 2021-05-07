@@ -24,6 +24,7 @@ public class TLocaleSound extends TLocaleSerialize {
     private final List<SoundPack> soundPacks;
 
     public TLocaleSound(List<SoundPack> soundPacks) {
+        super(false, false);
         this.soundPacks = soundPacks;
     }
 

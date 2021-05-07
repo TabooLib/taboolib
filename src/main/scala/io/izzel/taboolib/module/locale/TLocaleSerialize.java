@@ -18,6 +18,19 @@ import java.util.Map;
  */
 public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSerializable {
 
+    protected final boolean papi;
+    protected final boolean kether;
+
+    public TLocaleSerialize(boolean papi, boolean kether) {
+        this.papi = papi;
+        this.kether = kether;
+    }
+
+    public static boolean isKetherEnabled(Map<String, Object> map) {
+        Object ketherObject = map.getOrDefault("kether", TLocale.Translate.isKetherUseDefault());
+        return ketherObject instanceof Boolean ? (boolean) ketherObject : ketherObject instanceof String && "true".equals(ketherObject);
+    }
+
     public static boolean isPlaceholderEnabled(Map<String, Object> map) {
         Object placeholderObject = map.getOrDefault("papi", TLocale.Translate.isPlaceholderUseDefault());
         return placeholderObject instanceof Boolean ? (boolean) placeholderObject : placeholderObject instanceof String && "true".equals(placeholderObject);
@@ -39,7 +52,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
     }
 
     static TLocaleSerialize getEmpty() {
-        return new TLocaleSerialize() {
+        return new TLocaleSerialize(false, false) {
 
             @Override
             public void sendTo(CommandSender sender, String... args) {
@@ -53,7 +66,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
     }
 
     static TLocaleSerialize getEmpty(Plugin plugin, String path) {
-        return new TLocaleSerialize() {
+        return new TLocaleSerialize(false, false) {
 
             @Override
             public Map<String, Object> serialize() {
@@ -65,7 +78,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     TLocaleLoader.sendTo(TabooLib.getPlugin(), path, sender, args);
                 } else {
-                    sender.sendMessage("§8Notfound: " + path);
+                    sender.sendMessage("<" + path + ">");
                 }
             }
 
@@ -74,7 +87,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     return TLocaleLoader.asString(TabooLib.getPlugin(), path, args);
                 } else {
-                    return "§8Notfound: " + path;
+                    return "<" + path + ">";
                 }
             }
 
@@ -83,7 +96,7 @@ public abstract class TLocaleSerialize implements TLocaleSender, ConfigurationSe
                 if (TabooLibAPI.isDependTabooLib(plugin)) {
                     return TLocaleLoader.asStringList(TabooLib.getPlugin(), path, args);
                 } else {
-                    return Collections.singletonList("§8Notfound: " + path);
+                    return Collections.singletonList("<" + path + ">");
                 }
             }
         };

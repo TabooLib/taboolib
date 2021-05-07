@@ -48,6 +48,13 @@ public class TConfigWatcher {
     }
 
     public void addSimpleListener(File file, Runnable runnable) {
+        addSimpleListener(file, runnable, false);
+    }
+
+    public void addSimpleListener(File file, Runnable runnable, boolean runFirst) {
+        if (runFirst) {
+            runnable.run();
+        }
         try {
             addListener(file, null, obj -> runnable.run());
         } catch (Throwable ignored) {

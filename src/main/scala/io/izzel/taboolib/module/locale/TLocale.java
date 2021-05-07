@@ -38,9 +38,9 @@ public class TLocale {
         sender.forEach(i -> TLocaleLoader.sendTo(Ref.getCallerPlugin(), path, i, args));
     }
 
-    static String asString0(String path, String... args) {
+    static String asString0(CommandSender sender, String path, String... args) {
         try {
-            return TLocaleLoader.asString(Ref.getCallerPlugin(), path, args);
+            return TLocaleLoader.asString(Ref.getCallerPlugin(), sender, path, args);
         } catch (Exception e) {
             TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("FETCH-LOCALE-ERROR"), path));
             TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
@@ -48,9 +48,9 @@ public class TLocale {
         }
     }
 
-    static List<String> asStringList0(String path, String... args) {
+    static List<String> asStringList0(CommandSender sender, String path, String... args) {
         try {
-            return TLocaleLoader.asStringList(Ref.getCallerPlugin(), path, args);
+            return TLocaleLoader.asStringList(Ref.getCallerPlugin(), sender, path, args);
         } catch (Exception e) {
             TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("FETCH-LOCALE-ERROR"), path));
             TabooLib.getLogger().error(Strings.replaceWithOrder(TabooLib.getInternal().getString("LOCALE-ERROR-REASON"), e.getMessage()));
@@ -96,29 +96,56 @@ public class TLocale {
 
     @NotNull
     public static String asString(String path, Object... args) {
-        return asString0(path, toArray(args));
+        return asString0(Bukkit.getConsoleSender(), path, toArray(args));
+    }
+
+    @NotNull
+    public static String asString(CommandSender sender, String path, Object... args) {
+        return asString0(sender, path, toArray(args));
     }
 
     @NotNull
     public static String asString(String path, String... args) {
-        return asString0(path, args);
+        return asString0(Bukkit.getConsoleSender(), path, args);
+    }
+
+    @NotNull
+    public static String asString(CommandSender sender, String path, String... args) {
+        return asString0(sender, path, args);
     }
 
     @NotNull
     public static String asString(String path) {
-        return asString0(path);
+        return asString0(Bukkit.getConsoleSender(), path);
+    }
+
+    @NotNull
+    public static String asString(CommandSender sender, String path) {
+        return asString0(sender, path);
     }
 
     public static List<String> asStringList(String path, Object... args) {
-        return asStringList0(path, toArray(args));
+        return asStringList0(Bukkit.getConsoleSender(), path, toArray(args));
+    }
+
+    public static List<String> asStringList(CommandSender sender, String path, Object... args) {
+        return asStringList0(sender, path, toArray(args));
     }
 
     public static List<String> asStringList(String path, String... args) {
-        return asStringList0(path, args);
+        return asStringList0(Bukkit.getConsoleSender(), path, args);
+    }
+
+    public static List<String> asStringList(CommandSender sender, String path, String... args) {
+        return asStringList0(sender, path, args);
     }
 
     public static List<String> asStringList(String path) {
-        return asStringList0(path);
+        return asStringList0(Bukkit.getConsoleSender(), path);
+    }
+
+    public static List<String> asStringList(CommandSender sender, String path) {
+        return asStringList0(sender, path);
     }
 
     public static void reload() {
@@ -197,6 +224,13 @@ public class TLocale {
          */
         public static boolean isPlaceholderUseDefault() {
             return TabooLib.getConfig().getBoolean("LOCALE.USE_PAPI", false);
+        }
+
+        /**
+         * @return 是否启用 Kether 支持
+         */
+        public static boolean isKetherUseDefault() {
+            return TabooLib.getConfig().getBoolean("LOCALE.USE_KETHER", false);
         }
 
         /**
