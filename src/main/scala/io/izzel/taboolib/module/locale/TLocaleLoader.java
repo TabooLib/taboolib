@@ -59,7 +59,7 @@ public class TLocaleLoader {
      */
     @Nullable
     public static String playerLocaleToPluginLocale(Player player, Plugin plugin) {
-        PlayerSelectLocaleEvent event = new PlayerSelectLocaleEvent(player, player.getLocale()).call();
+        PlayerSelectLocaleEvent event = new PlayerSelectLocaleEvent(player, player.spigot().getLocale()).call();
         String locale = localeFormat(event.getLocale());
         for (String priority : getLocalePriority(plugin)) {
             if (priority.equalsIgnoreCase(locale)) {
