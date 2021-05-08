@@ -1,8 +1,3 @@
-GENERAL:
-  LEGACY-PLUGIN-REQUIRED:
-  - '{0} required legacy version (4.X) of TabooLib.'
-  - 'The TabooLib 5.0+ will stop being compatible with its when Minecraft 1.17 is released, update as soon as possible.'
-
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: 'This TLocale type can only be sent to player：{0}'
   PLUGIN-NOT-FOUND: 'Invaild plugin: &4{0}'

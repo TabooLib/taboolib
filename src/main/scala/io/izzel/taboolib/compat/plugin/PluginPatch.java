@@ -3,6 +3,7 @@ package io.izzel.taboolib.compat.plugin;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
+import io.izzel.taboolib.kotlin.FunctionKt;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
@@ -25,12 +26,6 @@ public class PluginPatch {
 
     private static final Map<String, List<Pair<String, byte[]>>> patchMap = Maps.newHashMap();
 
-    static {
-        patch("TabooLib", "me/skymc/taboolib/database/PlayerDataManager");
-        patch("TabooLib", "com/ilummc/tlib/dependency/TDependency");
-        patch("TabooLib", "com/ilummc/tlib/inject/TConfigWatcher");
-    }
-
     public static void patch(String plugin, String path) {
         try {
             patchMap.computeIfAbsent(plugin, i -> Lists.newArrayList()).add(new Pair<>(path, IO.readFully(Objects.requireNonNull(Files.getResourceChecked(TabooLib.getPlugin(), "patch/" + path.substring(path.lastIndexOf("/") + 1) + ".class")))));
@@ -40,6 +35,8 @@ public class PluginPatch {
 
     @TFunction.Init
     static void init() {
+        Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "patch"));
+        Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "patch-output"));
         List<String> p = Lists.newArrayList();
         for (Map.Entry<String, List<Pair<String, byte[]>>> entry : patchMap.entrySet()) {
             File file;
@@ -76,22 +73,15 @@ public class PluginPatch {
             }
         }
         if (!p.isEmpty()) {
-            Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "patch"));
-            Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "patch-output"));
             for (String name : p) {
-                System.out.println("[TabooLib] The \"" + name + "\" has patched.");
+                Bukkit.getLogger().warning("[TabooLib] The \"" + name + "\" has patched.");
             }
-            if (Bukkit.getOnlinePlayers().isEmpty()) {
-                System.out.println("[TabooLib] The Server will be restart now.");
-                try {
-                    Thread.sleep(3000L);
-                } catch (Throwable ignored) {
-                }
-                Bukkit.shutdown();
-            } else {
-                System.out.println("[TabooLib] The Server required restart now.");
+            Bukkit.getLogger().warning("[TabooLib] The Server will be restart now.");
+            try {
+                Thread.sleep(3000L);
+            } catch (Throwable ignored) {
             }
+            Bukkit.shutdown();
         }
     }
-
 }
