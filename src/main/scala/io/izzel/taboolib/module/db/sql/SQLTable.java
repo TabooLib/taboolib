@@ -21,6 +21,7 @@ public class SQLTable {
 
     private final String tableName;
     private final List<IColumn> columns = Lists.newArrayList();
+    private final List<String> primaryKeys = Lists.newArrayList();
 
     /**
      * 创建数据表实例
@@ -77,6 +78,28 @@ public class SQLTable {
      */
     public SQLTable column(IColumn... column) {
         columns.addAll(Arrays.asList(column));
+        return this;
+    }
+
+    /**
+     * 若MySQL版本不兼容 {@link SQLColumnOption} 中的 PRIMARY_KEY 则使用该方法指定主键
+     *
+     * @param columnNames 列名
+     * @return {@link SQLTable}
+     */
+    public SQLTable primaryKeys(String... columnNames) {
+        primaryKeys.addAll(Arrays.asList(columnNames));
+        return this;
+    }
+
+    /**
+     * 若MySQL版本不兼容 {@link SQLColumnOption} 中的 PRIMARY_KEY 则使用该方法指定主键
+     *
+     * @param columnName 列名
+     * @return {@link SQLTable}
+     */
+    public SQLTable primaryKey(String columnName) {
+        primaryKeys.add(columnName);
         return this;
     }
 
@@ -181,7 +204,11 @@ public class SQLTable {
         builder.append(columns.stream()
                 .map(i -> i.convertToCommand().trim())
                 .collect(Collectors.joining(", ")));
-
+        if (!primaryKeys.isEmpty()) {
+            builder.append(", PRIMARY KEY (").append(primaryKeys.stream()
+                    .map(i -> Strings.replaceWithOrder("`{0}`", i))
+                    .collect(Collectors.joining(", "))).append(")");
+        }
         // 5.41 更新，优化 SQL 类型下的建表命令
         {
             List<SQLColumn> uniqueKey = Lists.newArrayList();
