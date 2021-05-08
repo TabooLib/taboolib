@@ -1,3 +1,8 @@
+GENERAL:
+  LEGACY-PLUGIN-REQUIRED:
+    - '插件 {0} 正依赖过时的 TabooLib 版本 (4.X)'
+    - '我们将在 Minecraft 1.17 发布时停止对其的兼容工作, 请尽快更新.'
+
 LOCALE:
   TITLE-SEND-TO-NON-PLAYER: '该语言类型只能发送给玩家：{0}'
   PLUGIN-NOT-FOUND: '无效的语言文件发送形式: &4{0}'
