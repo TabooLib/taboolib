@@ -142,7 +142,7 @@ public enum SQLColumnType {
      * A character string that will require Mxw bytes per row, independent of the actual content length.
      * w is the maximum number of bytes a single character can occupy in the given encoding.
      */
-    CHAR,
+    CHAR(true),
 
     /**
      * VARCHAR(M)
@@ -151,7 +151,7 @@ public enum SQLColumnType {
      * A character string that can store up to M bytes, but requires less space for shorter values.
      * The actual number of characters is further limited by the used encoding and the values of other fields in the row.
      */
-    VARCHAR,
+    VARCHAR(true),
 
     /**
      * TINYTEXT
@@ -236,7 +236,7 @@ public enum SQLColumnType {
      * 定长的字节数组。
      * Shorter values will always be padded to the right with 0x00 unit they fit M.
      */
-    BINARY,
+    BINARY(true),
 
     /**
      * VARBINARY(M)
@@ -245,7 +245,7 @@ public enum SQLColumnType {
      * 可变长度的字节数组。
      * The actual number of bytes is further limited by the values of other fields in the row.
      */
-    VARBINARY,
+    VARBINARY(true),
 
     /**
      * JSON
@@ -395,6 +395,20 @@ public enum SQLColumnType {
      * The only restriction being, that all objects must share a common coordinate system.
      */
     GEOMETRYCOLLECTION;
+
+    private final boolean required;
+
+    SQLColumnType() {
+        this.required = false;
+    }
+
+    SQLColumnType(boolean lengthRequired) {
+        this.required = lengthRequired;
+    }
+
+    public boolean isRequired() {
+        return required;
+    }
 
     /**
      * 5.38 update

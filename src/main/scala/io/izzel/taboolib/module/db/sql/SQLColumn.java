@@ -49,6 +49,7 @@ public class SQLColumn extends IColumn {
     private Object defaultValue;
     private String update;
     private boolean descendingIndex;
+    private IndexType indexType;
 
     private final List<SQLColumnOption> columnOptions = Lists.newArrayList();
 
@@ -83,6 +84,7 @@ public class SQLColumn extends IColumn {
         this.columnName = columnName;
         this.defaultValue = defaultValue;
         this.columnOptions.addAll(Arrays.asList(columnOptions));
+        this.indexType = IndexType.DEFAULT;
     }
 
     public SQLColumn m(int m) {
@@ -114,6 +116,11 @@ public class SQLColumn extends IColumn {
         return this;
     }
 
+    public SQLColumn indexType(IndexType indexType) {
+        this.indexType = indexType;
+        return this;
+    }
+
     /**
      * 5.41 update
      *
@@ -138,9 +145,9 @@ public class SQLColumn extends IColumn {
 
     @Override
     public String convertToCommand() {
-        if (this.m == 0 && this.d == 0) {
+        if (m == 0 && d == 0 && !columnType.isRequired()) {
             return Strings.replaceWithOrder("`{0}` {1} {2}", columnName, columnType.name().toLowerCase(), convertToOptions());
-        } else if (this.d == 0) {
+        } else if (d == 0) {
             return Strings.replaceWithOrder("`{0}` {1}({2}) {3}", columnName, columnType.name().toLowerCase(), m, convertToOptions());
         } else {
             return Strings.replaceWithOrder("`{0}` {1}({2},{3}) {4}", columnName, columnType.name().toLowerCase(), m, d, convertToOptions());
@@ -213,5 +220,9 @@ public class SQLColumn extends IColumn {
 
     public List<SQLColumnOption> getColumnOptions() {
         return columnOptions;
+    }
+
+    public IndexType getIndexType() {
+        return indexType;
     }
 }
