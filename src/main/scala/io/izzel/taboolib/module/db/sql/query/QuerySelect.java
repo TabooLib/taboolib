@@ -115,7 +115,7 @@ public class QuerySelect extends Query {
     }
 
     public String toSelect(String table, String row) {
-        return Strings.replaceWithOrder("`{0}`.`{1}`", table, row);
+        return row.equals("*") ? Strings.replaceWithOrder("`{0}`.*", table) :Strings.replaceWithOrder("`{0}`.`{1}`", table, row);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class QuerySelect extends Query {
         builder.append("select");
         builder.append(" ");
         if (!rows.isEmpty() || !rowsOuter.isEmpty()) {
-             StringJoiner joiner = new StringJoiner(", ");
+            StringJoiner joiner = new StringJoiner(", ");
             for (String row : rows) {
                 joiner.add(toSelect(row));
             }
