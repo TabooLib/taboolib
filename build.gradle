@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.65'
+version = '5.66'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -27,6 +27,7 @@ dependencies {
     implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.66'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
+    implementation 'ink.ptms:blockdb:1.0.0'
     implementation 'ink.ptms:navigation:1.0.7'
 
     implementation 'ink.ptms.core:v11200:11200:all'
@@ -77,12 +78,13 @@ shadowJar {
         it.include it.dependency('org.ow2.asm:.*')
         it.include it.dependency('cn.maxmc.menubuilderlib:.*')
     }
+    relocate 'ink.ptms.blockdb', 'io.izzel.taboolib.kotlin.blockdb'
     relocate 'ink.ptms.navigation', 'io.izzel.taboolib.kotlin.navigation'
+    relocate 'cn.maxmc.menubuilderlib', 'io.izzel.taboolib.internal.menubuilder'
     relocate 'org.apache.commons.lang3', 'io.izzel.taboolib.internal.apache.lang3'
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
     relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
-    relocate 'cn.maxmc.menubuilderlib', 'io.izzel.taboolib.internal.menubuilder'
 }
 
 processResources {
