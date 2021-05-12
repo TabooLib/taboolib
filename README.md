@@ -30,6 +30,7 @@
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green.svg">
   </a>
+  <br>
   <a>
     <img src="https://img.shields.io/badge/kether--common-1.0.10-green.svg">
   </a>
