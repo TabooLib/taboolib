@@ -25,23 +25,22 @@
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.66-yellow.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.66-green.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-yellow.svg">
-  </a>
-  <br>
-  <a>
-    <img src="https://img.shields.io/badge/kether--common-1.0.10-red.svg">
+    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-red.svg">
+    <img src="https://img.shields.io/badge/kether--common-1.0.10-green.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/blockdb-1.0.0-red.svg">
+    <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/menubuilder-1.0.0-red.svg">
+    <img src="https://img.shields.io/badge/blockdb-1.0.0-green.svg">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/menubuilderlib-1.0.0-green.svg">
   </a>
 </p>
   
