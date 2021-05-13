@@ -6,42 +6,42 @@
 <h4 align="center">NO PLUGIN, NO SPAM AND ONLY TOOLS</b><h4>
 <p align="center">
   <a>
-    <img src="https://img.shields.io/github/license/bkm016/taboolib.svg">
+    <img src="https://img.shields.io/github/license/bkm016/taboolib">
   </a>
   <a>
-    <img src="https://img.shields.io/github/downloads/Bkm016/TabooLib/total.svg">
+    <img src="https://img.shields.io/github/downloads/Bkm016/TabooLib/total">
   </a>
   <a>
-    <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib.svg">
+    <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib">
   </a>
   <a>
-    <img src="https://img.shields.io/github/release/Bkm016/TabooLib.svg">
+    <img src="https://img.shields.io/github/release/Bkm016/TabooLib">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue.svg">
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Loader-2.12-blue.svg">
-  </a>
-  <br>
-  <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.66-green.svg">
-  </a>
-  <a>
-    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green.svg">
+    <img src="https://img.shields.io/badge/Loader-2.12-blue">
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/kether--common-1.0.10-green.svg">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.66-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green.svg">
+    <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green">
+  </a>
+  <br>
+  <a>
+    <img src="https://img.shields.io/badge/kether--common-1.0.10-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/blockdb-1.0.0-green.svg">
+    <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/menubuilderlib-1.0.0-green.svg">
+    <img src="https://img.shields.io/badge/blockdb-1.0.2-green">
+  </a>
+  <a>
+    <img src="https://img.shields.io/badge/menubuilderlib-1.0.0-green">
   </a>
 </p>
   

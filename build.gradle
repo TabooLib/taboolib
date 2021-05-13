@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'idea'
     id 'scala'
+    id 'maven'
     id 'org.jetbrains.kotlin.jvm' version '1.4.0'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
@@ -27,7 +28,7 @@ dependencies {
     implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.66'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
-    implementation 'ink.ptms:blockdb:1.0.0'
+    implementation 'ink.ptms:blockdb:1.0.2'
     implementation 'ink.ptms:navigation:1.0.7'
 
     implementation 'ink.ptms.core:v11200:11200:all'
@@ -98,4 +99,22 @@ processResources {
 compileScala {
     options.encoding = scalaCompileOptions.encoding = 'UTF-8'
     scalaCompileOptions.forkOptions.jvmArgs.addAll(['-Djna.nosys=true'])
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://ptms.ink:8081/repository/maven-releases/') {
+                authentication(userName: user, password: password)
+            }
+            pom.artifactId = rootProject.name
+            pom.groupId = 'io.izzel.taboolib'
+            pom.version = project.version
+            pom.packaging = 'jar'
+        }
+    }
+}
+
+jar {
+    classifier('all')
 }
