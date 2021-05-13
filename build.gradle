@@ -66,13 +66,15 @@ dependencies {
 }
 
 shadowJar {
+    classifier('all')
     from(sourceSets.main.allSource) {
         exclude '__resources__/*'
         exclude 'plugin.yml'
     }
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
-        it.include it.dependency('ink.ptms:.*')
+        it.include it.dependency('ink.ptms:blockdb:.*')
+        it.include it.dependency('ink.ptms:navigation:.*')
         it.include it.dependency('com.github.cryptomorin:.*')
         it.include it.dependency('com.google.code.gson:.*')
         it.include it.dependency('org.apache.commons:.*')
@@ -115,6 +117,6 @@ uploadArchives {
     }
 }
 
-jar {
-    classifier('all')
+artifacts {
+    archives shadowJar
 }
