@@ -45,7 +45,7 @@ public class TInjectHelper {
             instance.add(CompatKotlin.getInstance(pluginClass));
         }
         if (CompatKotlin.isCompanion(pluginClass)) {
-            instance.add(CompatKotlin.getCompanion(pluginClass));
+            instance.add(CompatKotlin.getCompanion(pluginClass, plugin));
         }
         TInjectCreator.getInstanceMap().entrySet()
                 .stream()
@@ -94,7 +94,7 @@ public class TInjectHelper {
                 instance.add(CompatKotlin.getInstance(pluginClass));
             }
             if (CompatKotlin.isCompanion(pluginClass)) {
-                instance.add(CompatKotlin.getCompanion(pluginClass));
+                instance.add(CompatKotlin.getCompanion(pluginClass, plugin));
             }
             TInjectCreator.getInstanceMap().entrySet()
                     .stream()
