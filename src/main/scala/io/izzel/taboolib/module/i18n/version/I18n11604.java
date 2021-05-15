@@ -47,7 +47,7 @@ public class I18n11604 extends I18nBase {
             }
     };
 
-    private final File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/1.16.1");
+    private final File folder = new File(TabooLib.getPlugin().getDataFolder(), "simpleI18n/v2/1.16.4");
     private final Map<String, JsonObject> cache = Maps.newHashMap();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
