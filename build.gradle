@@ -107,7 +107,7 @@ uploadArchives {
     repositories {
         mavenDeployer {
             repository(url: 'http://ptms.ink:8081/repository/maven-releases/') {
-                authentication(userName: user, password: password)
+                authentication(userName: project.findProperty('user'), password: project.findProperty('password'))
             }
             pom.artifactId = rootProject.name
             pom.groupId = 'io.izzel.taboolib'
