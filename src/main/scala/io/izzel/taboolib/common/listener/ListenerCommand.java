@@ -35,7 +35,7 @@ public class ListenerCommand implements Listener {
         CommandBuilder.create("taboolib", TabooLib.getPlugin())
                 .aliases("lib")
                 .execute((sender, args) -> {
-                    sender.sendMessage("§8[§fTabooLib§8] §7Currently Version: §fv" + TabooLib.getVersion());
+                    sender.sendMessage("§8[§fTabooLib§8] §7Currently Version: §fv" + TabooLib.getVersion().getSource());
                     sender.sendMessage("§8[§fTabooLib§8] §7Boot: §f" + PluginLoader.getFirstLoaded());
                 }).build();
     }

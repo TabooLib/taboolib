@@ -41,7 +41,7 @@ public class InternalPlugin implements Plugin {
 
     @Override
     public PluginDescriptionFile getDescription() {
-        return new PluginDescriptionFile("TabooLib", String.valueOf(TabooLib.getVersion()), "io.izzel.taboolib.common.plugin.InternalJavaPlugin");
+        return new PluginDescriptionFile("TabooLib", TabooLib.getVersion().getSource(), "io.izzel.taboolib.common.plugin.InternalJavaPlugin");
     }
 
     @Override

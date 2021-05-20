@@ -11,11 +11,8 @@ import io.izzel.taboolib.module.dependency.Dependency;
 import io.izzel.taboolib.module.locale.TLocaleLoader;
 import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.nms.NMS;
-import io.izzel.taboolib.util.Coerce;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.util.NumberConversions;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -74,14 +71,15 @@ public class TabooLib {
 
     private static TConfig config;
 
-    private static double version;
+    private static PluginVersion tabooLibVersion;
 
     static {
         try {
             logger = TLogger.getUnformatted("TabooLib");
             config = TConfig.create(getPlugin(), "settings.yml").migrate();
-            version = Coerce.toDouble(IO.readFully(Files.getResource("__resources__/version"), StandardCharsets.UTF_8));
             internal = SecuredFile.loadConfiguration(IO.readFully(Files.getResource("__resources__/lang/internal.yml"), StandardCharsets.UTF_8));
+            SecuredFile pluginFile = SecuredFile.loadConfiguration((IO.readFully(Files.getResource("plugin.yml"), StandardCharsets.UTF_8)));
+            tabooLibVersion = new PluginVersion(pluginFile.getString("version"));
             // 加载日志屏蔽
             IllegalAccess.init();
             // 加载 TabooLib 语言文件
@@ -135,7 +133,7 @@ public class TabooLib {
         return logger;
     }
 
-    public static double getVersion() {
-        return version;
+    public static PluginVersion getVersion() {
+        return tabooLibVersion;
     }
 }

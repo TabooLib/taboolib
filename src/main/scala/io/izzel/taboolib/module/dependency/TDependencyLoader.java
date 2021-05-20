@@ -42,7 +42,12 @@ public class TDependencyLoader {
                 MethodHandle methodHandle = Ref.lookup().findVirtual(loader.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));
                 methodHandle.invoke(loader, url);
             } else {
-                Field ucpField = loader.getClass().getDeclaredField("ucp");
+                Field ucpField;
+                try {
+                    ucpField = loader.getClass().getDeclaredField("ucp");
+                } catch (NoSuchFieldError | NoSuchFieldException e) {
+                    ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
+                }
                 long ucpOffset = Ref.getUnsafe().objectFieldOffset(ucpField);
                 Object ucp = Ref.getUnsafe().getObject(loader, ucpOffset);
                 MethodHandle methodHandle = Ref.lookup().findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, java.net.URL.class));

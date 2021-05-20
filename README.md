@@ -21,7 +21,7 @@
     <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Loader-2.12-blue">
+    <img src="https://img.shields.io/badge/Loader-2.2.0-blue">
   </a>
   <br>
   <a>
@@ -41,7 +41,7 @@
     <img src="https://img.shields.io/badge/blockdb-1.0.8-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/menubuilderlib-1.0.0-green">
+    <img src="https://img.shields.io/badge/menubuilderlib-2.0.0-green">
   </a>
 </p>
   

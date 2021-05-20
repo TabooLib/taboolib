@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.66'
+version = '5.7.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -71,6 +71,10 @@ shadowJar {
         exclude '__resources__/*'
         exclude 'plugin.yml'
     }
+    from(sourceSets.main.resources.srcDirs) {
+        include 'plugin.yml'
+        expand('version': project.version)
+    }
     dependencies {
         it.include it.dependency('io.izzel.taboolib:.*')
         it.include it.dependency('ink.ptms:blockdb:.*')
@@ -88,14 +92,6 @@ shadowJar {
     relocate 'com.cryptomorin.xseries', 'io.izzel.taboolib.internal.xseries'
     relocate 'org.objectweb.asm', 'io.izzel.taboolib.internal.asm'
     relocate 'com.google.gson', 'io.izzel.taboolib.internal.gson'
-}
-
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        include '__resources__/version'
-        include 'plugin.yml'
-        expand 'version': project.version
-    }
 }
 
 compileScala {
