@@ -15,14 +15,14 @@
     <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Version-5.7.1-blue">
+    <img src="https://img.shields.io/badge/Version-5.7.1-red">
   </a>
   <a>
     <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue">
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Loader-3.0.1-green">
+    <img src="https://img.shields.io/badge/TabooLib Loader-3.0.2-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.70-green">
