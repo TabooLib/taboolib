@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
  */
 public class BridgeLoader extends ClassLoader {
 
-    private static MethodHandles.Lookup lookup;
     private static ClassLoader pluginClassLoader;
 
     private BridgeLoader() {
@@ -31,12 +30,13 @@ public class BridgeLoader extends ClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         try {
-            MethodHandle methodHandle = lookup.findVirtual(ClassLoader.class, "findClass", MethodType.methodType(Class.class, String.class));
+            MethodHandle methodHandle = Ref.lookup().findVirtual(ClassLoader.class, "findClass", MethodType.methodType(Class.class, String.class));
             Object o = methodHandle.invoke(pluginClassLoader, name);
             if (o != null) {
                 return (Class<?>) o;
             }
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
         return super.findClass(name);
     }
