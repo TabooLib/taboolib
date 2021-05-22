@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.7.0'
+version = '5.7.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -99,10 +99,14 @@ compileScala {
     scalaCompileOptions.forkOptions.jvmArgs.addAll(['-Djna.nosys=true'])
 }
 
+artifacts {
+    archives shadowJar
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: 'http://ptms.ink:8081/repository/maven-releases/') {
+            repository(url: project.findProperty('repository')) {
                 authentication(userName: project.findProperty('user'), password: project.findProperty('password'))
             }
             pom.artifactId = rootProject.name
@@ -111,8 +115,4 @@ uploadArchives {
             pom.packaging = 'jar'
         }
     }
-}
-
-artifacts {
-    archives shadowJar
 }
