@@ -32,7 +32,7 @@ dependencies {
     implementation 'ink.ptms:navigation:1.0.7'
 
     implementation 'ink.ptms.core:v11200:11200:all'
-    implementation 'ink.ptms.core:v11604:11604:all'
+    implementation 'ink.ptms.core:v11605:11605'
     implementation 'ink.ptms.core:v11600:11600:all'
     implementation 'ink.ptms.core:v11500:11500:all'
     implementation 'ink.ptms.core:v11400:11400:all'
