@@ -136,7 +136,7 @@ public class NMSImpl extends NMS {
             try {
                 return new net.minecraft.server.v1_16_R3.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_16_R3.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);
             } catch (NoSuchMethodError ex) {
-                return new net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);
+                return new net.minecraft.server.v1_13_R2.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_13_R2.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);
             }
         } else if (is11300) {
             return new net.minecraft.server.v1_13_R2.PacketPlayOutWorldParticles(org.bukkit.craftbukkit.v1_13_R2.CraftParticle.toNMS(var1, var11), var2, var3, var4, var5, var6, var7, var8, var9, var10);

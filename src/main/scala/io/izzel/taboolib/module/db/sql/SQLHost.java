@@ -1,10 +1,12 @@
 package io.izzel.taboolib.module.db.sql;
 
+import com.google.common.collect.Lists;
 import io.izzel.taboolib.module.db.IHost;
 import io.izzel.taboolib.util.Strings;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +25,7 @@ public class SQLHost extends IHost {
     private final String user;
     private final String password;
     private final String database;
-    private final List<String> flags = Arrays.asList("characterEncoding=utf-8", "useSSL=false");
+    private final List<String> flags = Lists.newArrayList("characterEncoding=utf-8", "useSSL=false");
 
     /**
      * 通过配置文件创建数据库地址，结构如下所示：
