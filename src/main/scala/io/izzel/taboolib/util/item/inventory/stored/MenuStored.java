@@ -67,17 +67,18 @@ public abstract class MenuStored {
             // 将 1 格的拖动行为映射成点击
             if (e.castDrag().getRawSlots().size() == 1 && firstSlot < e.castDrag().getInventory().getSize()) {
                 e.setCancelled(true);
-                org.bukkit.event.inventory.ClickType clickType;
-                InventoryAction inventoryAction;
-                if (e.castDrag().getType() == DragType.SINGLE) {
-                    clickType = org.bukkit.event.inventory.ClickType.LEFT;
-                    inventoryAction = InventoryAction.PICKUP_ONE;
-                } else {
-                    clickType = org.bukkit.event.inventory.ClickType.RIGHT;
-                    inventoryAction = InventoryAction.PICKUP_SOME;
-                }
-                InventoryClickEvent clickEvent = new InventoryClickEvent(e.castDrag().getView(), InventoryType.SlotType.CONTAINER, firstSlot, clickType, inventoryAction);
-                onSingleClick(new ClickEvent(ClickType.CLICK, clickEvent, ' '));
+                // 映 N M
+//                org.bukkit.event.inventory.ClickType clickType;
+//                InventoryAction inventoryAction;
+//                if (e.castDrag().getType() == DragType.SINGLE) {
+//                    clickType = org.bukkit.event.inventory.ClickType.LEFT;
+//                    inventoryAction = InventoryAction.PICKUP_ONE;
+//                } else {
+//                    clickType = org.bukkit.event.inventory.ClickType.RIGHT;
+//                    inventoryAction = InventoryAction.PICKUP_SOME;
+//                }
+//                InventoryClickEvent clickEvent = new InventoryClickEvent(e.castDrag().getView(), InventoryType.SlotType.CONTAINER, firstSlot, clickType, inventoryAction);
+//                onSingleClick(new ClickEvent(ClickType.CLICK, clickEvent, ' '));
             }
             // 纯背包内部的拖动不做干涉
             else {
