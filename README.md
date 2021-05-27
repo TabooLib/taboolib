@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Version-5.7.1-red">
+    <img src="https://img.shields.io/badge/Version-5.7.1-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue">
@@ -25,7 +25,7 @@
     <img src="https://img.shields.io/badge/TabooLib Loader-3.0.2-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.70-green">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.71-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green">
@@ -41,7 +41,7 @@
     <img src="https://img.shields.io/badge/blockdb-1.0.8-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/menubuilderlib-2.0.0-green">
+    <img src="https://img.shields.io/badge/menubuilderlib-2.0.2-green">
   </a>
 </p>
   
