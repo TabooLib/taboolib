@@ -4,11 +4,16 @@ import io.izzel.taboolib.util.item.Items;
 import io.izzel.taboolib.util.item.inventory.ClickEvent;
 import io.izzel.taboolib.util.item.inventory.ClickType;
 import io.izzel.taboolib.util.item.inventory.MenuBuilder;
+import io.izzel.taboolib.util.item.inventory.stored.Action;
+import io.izzel.taboolib.util.item.inventory.stored.ActionClick;
+import io.izzel.taboolib.util.item.inventory.stored.ActionKeyboard;
+import io.izzel.taboolib.util.item.inventory.stored.ActionQuickTake;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * 可交互界面构建工具
@@ -56,57 +61,91 @@ public abstract class MenuStored {
         return 1;
     }
 
-    public void onClick(ClickEvent e) {
-        if (e.getClickType() == ClickType.CLICK) {
-            // 自动装填
-            if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= e.getInventory().getSize() && Items.nonNull(e.getCurrentItem())) {
+    public void onClick(@NotNull ClickEvent e) {
+        if (e.getClickType() == ClickType.DRAG) {
+            int firstSlot = e.castDrag().getRawSlots().iterator().next();
+            // 将 1 格的拖动行为映射成点击
+            if (e.castDrag().getRawSlots().size() == 1 && firstSlot < e.castDrag().getInventory().getSize()) {
                 e.setCancelled(true);
-                // 获取有效位置
-                int validSlot = getIntoSlot(e.getInventory(), e.getCurrentItem());
-                if (validSlot >= 0) {
-                    // 设置物品
-                    intoItem(e.getInventory(), e.getCurrentItem(), validSlot);
-                    // 移除物品
-                    e.setCurrentItem(null);
+                org.bukkit.event.inventory.ClickType clickType;
+                InventoryAction inventoryAction;
+                if (e.castDrag().getType() == DragType.SINGLE) {
+                    clickType = org.bukkit.event.inventory.ClickType.LEFT;
+                    inventoryAction = InventoryAction.PICKUP_ONE;
+                } else {
+                    clickType = org.bukkit.event.inventory.ClickType.RIGHT;
+                    inventoryAction = InventoryAction.PICKUP_SOME;
+                }
+                InventoryClickEvent clickEvent = new InventoryClickEvent(e.castDrag().getView(), InventoryType.SlotType.CONTAINER, firstSlot, clickType, inventoryAction);
+                onSingleClick(new ClickEvent(ClickType.CLICK, clickEvent, ' '));
+            }
+            // 纯背包内部的拖动不做干涉
+            else {
+                for (int slot : e.castDrag().getRawSlots()) {
+                    if (slot < e.castDrag().getInventory().getSize()) {
+                        e.setCancelled(true);
+                    }
+                }
+            }
+        }
+        if (e.getClickType() == ClickType.CLICK) {
+            onSingleClick(e);
+        }
+    }
+
+    public void onSingleClick(@NotNull ClickEvent e) {
+        // 自动装填
+        if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= e.getInventory().getSize() && Items.nonNull(e.getCurrentItem())) {
+            e.setCancelled(true);
+            // 获取有效位置
+            int validSlot = getIntoSlot(e.getInventory(), e.getCurrentItem());
+            if (validSlot >= 0) {
+                // 设置物品
+                intoItem(e.getInventory(), e.getCurrentItem(), validSlot);
+                // 移除物品
+                e.setCurrentItem(null);
+                onClicked();
+            }
+        }
+        // 手动装填
+        else {
+            // todo 合并物品
+            if (e.castClick().getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+                e.setCancelled(true);
+                return;
+            }
+            Action action;
+            if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= 0 && e.getRawSlot() < e.getInventory().getSize()) {
+                action = new ActionQuickTake();
+            } else if (e.castClick().getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
+                action = new ActionKeyboard();
+            } else {
+                action = new ActionClick();
+            }
+            // 点击有效位置
+            if (isIntoSlot(e.getInventory(), action.getCurrent(e), action.getCurrentSlot(e))) {
+                e.setCancelled(true);
+                // 提取动作
+                if (Items.isNull(action.getCurrent(e)) && existsItem(e.getInventory(), action.getCurrentSlot(e))) {
+                    // 提取物品
+                    action.setCurrent(e, getItem(e.getInventory(), action.getCurrentSlot(e)));
+                    // 删除物品
+                    intoItem(e.getInventory(), null, action.getCurrentSlot(e));
+                    onClicked();
+                }
+                // 合法的位置
+                else if (shouldIntoSlot(e.getInventory(), action.getCurrent(e), action.getCurrentSlot(e))) {
+                    ItemStack current = action.getCurrent(e);
+                    // 提取物品
+                    action.setCurrent(e, getItem(e.getInventory(), action.getCurrentSlot(e)));
+                    // 写入物品
+                    intoItem(e.getInventory(), current, action.getCurrentSlot(e));
                     onClicked();
                 }
             }
-            // 手动装填
-            else {
-                // todo 合并物品
-                if (e.castClick().getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-                    e.setCancelled(true);
-                    return;
-                }
-                Action action;
-                if (e.castClick().getClick().isShiftClick() && e.getRawSlot() >= 0 && e.getRawSlot() < e.getInventory().getSize()) {
-                    action = new ActionQuickTake();
-                } else if (e.castClick().getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY) {
-                    action = new ActionKeyboard();
-                } else {
-                    action = new ActionClick();
-                }
-                // 点击有效位置
-                if (isIntoSlot(e.getInventory(), action.getCurrent(e), action.getCurrentSlot(e))) {
-                    e.setCancelled(true);
-                    // 提取动作
-                    if (Items.isNull(action.getCurrent(e)) && existsItem(e.getInventory(), action.getCurrentSlot(e))) {
-                        // 提取物品
-                        action.setCurrent(e, getItem(e.getInventory(), action.getCurrentSlot(e)));
-                        // 删除物品
-                        intoItem(e.getInventory(), null, action.getCurrentSlot(e));
-                        onClicked();
-                    }
-                    // 合法的位置
-                    else if (shouldIntoSlot(e.getInventory(), action.getCurrent(e), action.getCurrentSlot(e))) {
-                        ItemStack current = action.getCurrent(e);
-                        // 提取物品
-                        action.setCurrent(e, getItem(e.getInventory(), action.getCurrentSlot(e)));
-                        // 写入物品
-                        intoItem(e.getInventory(), current, action.getCurrentSlot(e));
-                        onClicked();
-                    }
-                }
+            // 点击无效位置
+            else if (e.getRawSlot() >= 0 && e.getRawSlot() < e.getInventory().getSize()) {
+                e.setCancelled(true);
             }
         }
     }
@@ -120,9 +159,9 @@ public abstract class MenuStored {
     /**
      * 当界面关闭时
      *
-     * @param e 事件
+     * @param inventoryCloseEvent 事件
      */
-    public void onClose(InventoryCloseEvent e) {
+    public void onClose(@NotNull InventoryCloseEvent inventoryCloseEvent) {
     }
 
     /**
@@ -130,7 +169,7 @@ public abstract class MenuStored {
      *
      * @param inventory 背包
      */
-    public void refresh(Inventory inventory) {
+    public void refresh(@NotNull Inventory inventory) {
     }
 
     /**
@@ -138,7 +177,7 @@ public abstract class MenuStored {
      *
      * @param inventory 背包
      */
-    public void refreshAsync(Inventory inventory) {
+    public void refreshAsync(@NotNull Inventory inventory) {
     }
 
     /**
@@ -149,7 +188,7 @@ public abstract class MenuStored {
      * @param item      物品
      * @return boolean
      */
-    public boolean shouldIntoSlot(Inventory inventory, ItemStack item, int slot) {
+    public boolean shouldIntoSlot(@NotNull Inventory inventory, @NotNull ItemStack item, int slot) {
         return false;
     }
 
@@ -161,7 +200,7 @@ public abstract class MenuStored {
      * @param inventory 背包
      * @return boolean
      */
-    public boolean isIntoSlot(Inventory inventory, ItemStack item, int slot) {
+    public boolean isIntoSlot(@NotNull Inventory inventory, @NotNull ItemStack item, int slot) {
         return false;
     }
 
@@ -173,7 +212,7 @@ public abstract class MenuStored {
      * @param inventory 背包
      * @return 位置
      */
-    public int getIntoSlot(Inventory inventory, ItemStack item) {
+    public int getIntoSlot(@NotNull Inventory inventory, @NotNull ItemStack item) {
         return -1;
     }
 
@@ -184,7 +223,7 @@ public abstract class MenuStored {
      * @param item      物品
      * @param slot      位置
      */
-    public void intoItem(Inventory inventory, ItemStack item, int slot) {
+    public void intoItem(@NotNull Inventory inventory, @Nullable ItemStack item, int slot) {
         inventory.setItem(slot, item);
     }
 
@@ -193,7 +232,7 @@ public abstract class MenuStored {
      * @param slot      物品
      * @return 是否存在物品
      */
-    public boolean existsItem(Inventory inventory, int slot) {
+    public boolean existsItem(@NotNull Inventory inventory, int slot) {
         return false;
     }
 
@@ -202,7 +241,7 @@ public abstract class MenuStored {
      * @param slot      位置
      * @return 物品
      */
-    public ItemStack getItem(Inventory inventory, int slot) {
+    public @Nullable ItemStack getItem(@NotNull Inventory inventory, int slot) {
         return inventory.getItem(slot);
     }
 }
