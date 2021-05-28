@@ -16,7 +16,7 @@ import java.util.Arrays;
  * 目的时使用整数计算进行快速的版本判断
  *
  * @author 坏黑
- * @since 2019-07-05 14:42
+ * @since 2019-07-05 14:43
  */
 public enum Version {
 
