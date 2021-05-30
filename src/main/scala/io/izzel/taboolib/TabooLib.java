@@ -13,6 +13,8 @@ import io.izzel.taboolib.module.locale.logger.TLogger;
 import io.izzel.taboolib.module.nms.NMS;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
+import net.minecraft.server.v1_16_R3.CommandStop;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -87,21 +89,25 @@ public class TabooLib {
             // 加载 TabooLib
             TabooLibLoader.init();
             // 创建线程检测服务器是否关闭
-            Executors.newSingleThreadExecutor().submit(() -> {
-                while (NMS.handle().isRunning()) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+            Executors.newSingleThreadExecutor().execute(() -> {
+                try {
+                    while (NMS.handle().isRunning()) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    // 保存数据
+                    Local.saveFiles();
+                    LocalPlayer.saveFiles();
+                    // 关闭文件监听
+                    TConfigWatcher.getInst().unregisterAll();
+                    // 关闭插件
+                    PluginLoader.stop(getPlugin());
+                } catch (Throwable e) {
+                    e.printStackTrace();
                 }
-                // 保存数据
-                Local.saveFiles();
-                LocalPlayer.saveFiles();
-                // 关闭文件监听
-                TConfigWatcher.getInst().unregisterAll();
-                // 关闭插件
-                PluginLoader.stop(getPlugin());
             });
         } catch (Throwable e) {
             e.printStackTrace();

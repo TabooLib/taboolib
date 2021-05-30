@@ -126,7 +126,7 @@ public class NMSImpl extends NMS {
 
     @Override
     public boolean isRunning() {
-        return !SimpleReflection.getFieldValue(MinecraftServer.class, ((CraftServer) Bukkit.getServer()).getServer(), "hasStopped", false);
+        return !((Boolean) Reflex.Companion.reflex(Bukkit.getServer(), "console/hasStopped"));
     }
 
     @Override
