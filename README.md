@@ -22,7 +22,7 @@
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Loader-3.0.2-green">
+    <img src="https://img.shields.io/badge/TabooLib Loader-3.0.3-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.71-green">
