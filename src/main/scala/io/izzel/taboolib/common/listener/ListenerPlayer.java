@@ -34,7 +34,7 @@ public class ListenerPlayer {
     static boolean e(Player player, Packet packet) {
         if (packet.is("PacketPlayInUseEntity") && packet.read("action").equals("ATTACK")) {
             try {
-                Entity entityById = NMS.handle().getEntityById(packet.read("a", Integer.TYPE));
+                Entity entityById = NMS.handle().getEntityById(packet.read("a", 0));
                 if (entityById != null && new PlayerAttackEvent(player, entityById).call().isCancelled()) {
                     return false;
                 }

@@ -38,7 +38,7 @@
     <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/blockdb-1.0.8-green">
+    <img src="https://img.shields.io/badge/blockdb-1.0.9-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/menubuilderlib-2.0.2-green">
