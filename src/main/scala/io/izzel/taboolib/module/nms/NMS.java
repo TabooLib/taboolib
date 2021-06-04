@@ -329,10 +329,11 @@ public abstract class NMS {
     /**
      * 更新方块周围的光照
      *
-     * @param block     方块
-     * @param lightType 光照类型
+     * @param block      方块
+     * @param lightType  光照类型
+     * @param lightLevel 光照等级
      */
-    abstract public void recalculateAround(Block block, Type lightType);
+    abstract public void recalculateAround(Block block, Type lightType, int lightLevel);
 
     /**
      * 获取附魔内部名称
