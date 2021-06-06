@@ -3,6 +3,7 @@ plugins {
     id 'idea'
     id 'scala'
     id 'maven'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
     id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
@@ -61,6 +62,7 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:19.0.0'
     implementation 'org.scala-lang:scala-library:2.12.8'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
 }
 
 shadowJar {
