@@ -26,6 +26,7 @@ public class TLight {
             NMS.handle().deleteLight(block, lightType);
         }
         boolean r = NMS.handle().createLight(block, lightType, lightLevel);
+        // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 NMS.handle().update(block.getWorld().getChunkAt(block.getChunk().getX() + x, block.getChunk().getZ() + y));
