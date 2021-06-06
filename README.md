@@ -25,14 +25,14 @@
     <img src="https://img.shields.io/badge/TabooLib Loader-3.0.4-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.71-green">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.72-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green">
   </a>
   <br>
   <a>
-    <img src="https://img.shields.io/badge/kether--common-1.0.10-green">
+    <img src="https://img.shields.io/badge/kether--common-1.0.11-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green">

@@ -25,7 +25,7 @@ dependencies {
     }
 
     implementation 'me.skymc.taboolib:TabooLib:4.9:all'
-    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.71'
+    implementation 'io.izzel.taboolib:TabooLibKotlin:1.0.72'
     implementation 'io.izzel.taboolib:TabooLibDeprecated:1.0.6'
 
     implementation 'ink.ptms:blockdb:1.0.9'
