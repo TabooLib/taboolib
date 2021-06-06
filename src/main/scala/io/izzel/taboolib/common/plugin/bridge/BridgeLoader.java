@@ -1,14 +1,6 @@
 package io.izzel.taboolib.common.plugin.bridge;
 
-import io.izzel.taboolib.util.Ref;
-import io.izzel.taboolib.util.Reflection;
 import org.bukkit.Bukkit;
-import sun.misc.Unsafe;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Method;
 
 /**
  * @author 坏黑

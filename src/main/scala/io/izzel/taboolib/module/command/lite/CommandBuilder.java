@@ -3,7 +3,7 @@ package io.izzel.taboolib.module.command.lite;
 import com.google.common.base.Preconditions;
 import io.izzel.taboolib.TabooLib;
 import io.izzel.taboolib.module.command.TCommandHandler;
- import io.izzel.taboolib.util.Ref;
+import io.izzel.taboolib.util.Ref;
 import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;

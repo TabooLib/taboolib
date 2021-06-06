@@ -216,6 +216,44 @@ public enum Equipments {
     }
 
     /**
+     * 通过特定名称获取
+     *
+     * @param value 名称
+     * @return {@link Equipments}
+     */
+    @Nullable
+    public static Equipments fromString(String value) {
+        switch (value.toLowerCase()) {
+            case "0":
+            case "hand":
+            case "mainhand":
+                return HAND;
+            case "1":
+            case "head":
+            case "helmet":
+                return HEAD;
+            case "2":
+            case "chest":
+            case "chestplate":
+                return CHEST;
+            case "3":
+            case "legs":
+            case "leggings":
+                return LEGS;
+            case "4":
+            case "feet":
+            case "boots":
+                return FEET;
+            case "-1":
+            case "5":
+            case "offhand":
+                return OFF_HAND;
+            default:
+                return null;
+        }
+    }
+
+    /**
      * 通过 nms 物品类型名称获取
      *
      * @param nms 名称

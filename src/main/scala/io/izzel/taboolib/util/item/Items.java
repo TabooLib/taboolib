@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -117,16 +118,35 @@ public class Items {
      * @param args 文本
      * @return Material
      */
-    @Nullable
+    @NotNull
     public static Material asMaterial(String args) {
         if (CronusUtils.isInt(args)) {
             try {
                 return Material.getMaterial(NumberConversions.toInt(args));
             } catch (Throwable ignored) {
-                return XMaterial.matchXMaterial(NumberConversions.toInt(args), (byte) -1).orElse(XMaterial.STONE).parseMaterial();
+                return Objects.requireNonNull(XMaterial.matchXMaterial(NumberConversions.toInt(args), (byte) -1).orElse(XMaterial.STONE).parseMaterial());
             }
         } else {
-            return XMaterial.matchXMaterial(args.toUpperCase()).orElse(XMaterial.STONE).parseMaterial();
+            return Objects.requireNonNull(XMaterial.matchXMaterial(args.toUpperCase()).orElse(XMaterial.STONE).parseMaterial());
+        }
+    }
+
+    /**
+     * 通过文本获取 ItemStack 枚举，获取失败会返回 STONE 类型
+     *
+     * @param args 文本
+     * @return Material
+     */
+    @NotNull
+    public static ItemStack asItemStack(String args) {
+        if (CronusUtils.isInt(args)) {
+            try {
+                return new ItemStack(Material.getMaterial(NumberConversions.toInt(args)));
+            } catch (Throwable ignored) {
+                return Objects.requireNonNull(XMaterial.matchXMaterial(NumberConversions.toInt(args), (byte) -1).orElse(XMaterial.STONE).parseItem());
+            }
+        } else {
+            return Objects.requireNonNull(XMaterial.matchXMaterial(args.toUpperCase()).orElse(XMaterial.STONE).parseItem());
         }
     }
 
@@ -363,13 +383,8 @@ public class Items {
         if (section.contains("json")) {
             return fromJson(section.getString("json"));
         }
-        // 材质
-        Material material = asMaterial(section.contains("material") ? section.getString("material") : section.getString("type"));
-        if (material == null) {
-            return null;
-        }
         // 物品
-        ItemStack item = new ItemStack(material);
+        ItemStack item = new ItemStack(asItemStack(section.getString("material", section.getString("type", "STONE"))));
         // 数量
         item.setAmount(section.contains("amount") ? section.getInt("amount") : section.getInt("count", 1));
         // 耐久

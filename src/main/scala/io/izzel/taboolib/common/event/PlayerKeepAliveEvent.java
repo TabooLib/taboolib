@@ -1,7 +1,6 @@
 package io.izzel.taboolib.common.event;
 
 import io.izzel.taboolib.module.event.EventNormal;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**

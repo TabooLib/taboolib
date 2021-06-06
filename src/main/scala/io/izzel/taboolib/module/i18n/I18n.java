@@ -3,6 +3,7 @@ package io.izzel.taboolib.module.i18n;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.Version;
 import io.izzel.taboolib.module.i18n.version.I18n11604;
+import io.izzel.taboolib.module.i18n.version.I18n11700;
 import io.izzel.taboolib.module.i18n.version.I18n20w14a;
 import io.izzel.taboolib.module.i18n.version.I18nOrigin;
 import io.izzel.taboolib.module.inject.TFunction;
@@ -33,6 +34,7 @@ public class I18n {
         VERSION.put(Version.v1_15, I18n20w14a.INSTANCE);
         VERSION.put(Version.v1_16, I18n11604.INSTANCE);
         VERSION.put(Version.v1_16_R3, I18n11604.INSTANCE);
+        VERSION.put(Version.v1_17, I18n11700.INSTANCE);
     }
 
     @TFunction.Init

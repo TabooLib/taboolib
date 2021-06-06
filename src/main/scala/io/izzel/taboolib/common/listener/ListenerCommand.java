@@ -33,7 +33,8 @@ public class ListenerCommand implements Listener {
     void init() {
         // 版本命令
         CommandBuilder.create("taboolib", TabooLib.getPlugin())
-                .aliases("lib")
+                .forceRegister()
+                .aliases("lib", "lib5")
                 .execute((sender, args) -> {
                     sender.sendMessage("§8[§fTabooLib§8] §7Currently Version: §fv" + TabooLib.getVersion().getSource());
                     sender.sendMessage("§8[§fTabooLib§8] §7Boot: §f" + PluginLoader.getFirstLoaded());

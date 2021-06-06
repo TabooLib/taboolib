@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.izzel'
-version = '5.7.1'
+version = '5.7.2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

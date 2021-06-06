@@ -1,9 +1,7 @@
 package io.izzel.taboolib.compat;
 
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.kotlin.FunctionKt;
 import io.izzel.taboolib.module.inject.TFunction;
-import io.izzel.taboolib.module.locale.TLocale;
 import io.izzel.taboolib.util.Files;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.InvalidDescriptionException;

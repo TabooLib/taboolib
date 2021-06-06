@@ -10,7 +10,6 @@ import io.izzel.taboolib.util.TMap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 

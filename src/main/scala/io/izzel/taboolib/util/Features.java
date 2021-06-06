@@ -48,6 +48,7 @@ import java.util.stream.IntStream;
  * @author sky
  * @since 2020-10-02 03:32
  */
+@SuppressWarnings("UnusedReturnValue")
 public class Features {
 
     private static ScriptEngine scriptEngine;

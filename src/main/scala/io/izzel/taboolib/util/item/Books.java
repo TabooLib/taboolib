@@ -28,6 +28,8 @@ public class Books {
     public Books(XMaterial material) {
         this.itemStack = material.parseItem();
         this.itemMeta = (BookMeta) itemStack.getItemMeta();
+        this.itemMeta.setTitle("Book");
+        this.itemMeta.setAuthor("TabooLib");
     }
 
     public Books write(String raw) {
@@ -36,14 +38,27 @@ public class Books {
     }
 
     public Books write(TellrawJson json) {
+        int i = itemMeta.getPageCount();
         BookAsm.getHandle().addPages(itemMeta, ComponentSerializer.parse(json.toRawMessage()));
+        if (i == itemMeta.getPageCount()) {
+            itemMeta.addPage(json.toRawMessage());
+        }
         return this;
     }
 
     public Books write(Consumer<TellrawJson> json) {
         TellrawJson tellrawJson = TellrawJson.create();
         json.accept(tellrawJson);
-        BookAsm.getHandle().addPages(itemMeta, ComponentSerializer.parse(tellrawJson.toRawMessage()));
+        return write(tellrawJson);
+    }
+
+    public Books title(String name) {
+        itemMeta.setTitle(name);
+        return this;
+    }
+
+    public Books author(String author) {
+        itemMeta.setAuthor(author);
         return this;
     }
 
@@ -59,6 +74,14 @@ public class Books {
 
     public static Books create() {
         return new Books(XMaterial.WRITTEN_BOOK);
+    }
+
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    public BookMeta getItemMeta() {
+        return itemMeta;
     }
 
     /**

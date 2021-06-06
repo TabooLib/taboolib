@@ -3,7 +3,6 @@ package io.izzel.taboolib.compat.plugin;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.izzel.taboolib.TabooLib;
-import io.izzel.taboolib.kotlin.FunctionKt;
 import io.izzel.taboolib.module.inject.TFunction;
 import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;

@@ -27,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import protocolsupport.api.ProtocolSupportAPI;
 import us.myles.ViaVersion.api.Via;
 
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
