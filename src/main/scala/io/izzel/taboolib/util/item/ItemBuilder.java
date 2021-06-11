@@ -178,6 +178,22 @@ public class ItemBuilder {
         }
         return this;
     }
+    
+    
+    public ItemBuilder skullBase64(String base64) {
+        if (itemMeta instanceof SkullMeta) {
+            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            profile.getProperties().put("textures", new Property("textures", base64));
+            try {
+                Field field = itemMeta.getClass().getDeclaredField("profile");
+                field.setAccessible(true);
+                field.set(itemMeta, profile);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
 
     public ItemBuilder unbreakable(boolean value) {
         if (Version.isAfter(Version.v1_12)) {
