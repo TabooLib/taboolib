@@ -25,7 +25,7 @@
     <img src="https://img.shields.io/badge/TabooLib Loader-3.0.4-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.74-green">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.75-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green">
@@ -47,6 +47,7 @@
   
 ## 🌟 Tutorials
 + [TabooLib - 普特莫斯维基 — Purtmars Wikipedia](https://wiki.ptms.ink/index.php?title=TabooLib)
++ [TabooLib Style Guide - 普特莫斯维基 — Purtmars Wikipedia](https://wiki.ptms.ink/index.php?title=TabooLib_Style_Guide)
 + [TLocale 使用文档 - 普特莫斯维基 — Purtmars Wikipedia](https://wiki.ptms.ink/index.php?title=TLocale_使用文档)  
 + [[Maven骨架] TabooLib快速开始 (taboolib-quickstart-archetype)](https://www.mcbbs.net/thread-1149901-1-1.html)
 + [Kotlin与TabooLib的高级应用篇 —— 命令系统](https://www.mcbbs.net/thread-1165853-1-1.html)
