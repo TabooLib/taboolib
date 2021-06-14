@@ -2,7 +2,7 @@ package taboolib.module.nms
 
 /**
  * TabooLib
- * io.izzel.taboolib.module.nms.io.izzel.taboolib.module.nms.Test
+ * taboolib.module.nms.Test
  *
  * @author sky
  * @since 2021/6/14 8:59 下午

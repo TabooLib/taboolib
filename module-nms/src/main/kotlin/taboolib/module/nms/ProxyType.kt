@@ -2,7 +2,7 @@ package taboolib.module.nms
 
 /**
  * TabooLib
- * io.izzel.taboolib.module.nms.ProxyType
+ * taboolib.module.nms.ProxyType
  *
  * @author sky
  * @since 2021/6/14 9:34 下午

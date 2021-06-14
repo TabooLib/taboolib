@@ -13,19 +13,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-/**
- * 反射工具
- *
- * @author izzel
- */
-@SuppressWarnings("restriction")
 public class Ref {
 
     private static final Map<String, List<Field>> cachedFields = new ConcurrentHashMap<>();
     private static final Map<String, List<Method>> cacheMethods = new ConcurrentHashMap<>();
 
-    private static final int ACC_BRIDGE = 0x0040;
-    private static final int ACC_SYNTHETIC = 0x1000;
     private static final Unsafe UNSAFE;
     private static final MethodHandles.Lookup LOOKUP;
 
@@ -44,9 +36,6 @@ public class Ref {
         }
     }
 
-    /**
-     * @return Unsafe 实例
-     */
     public static Unsafe getUnsafe() {
         return UNSAFE;
     }
@@ -59,7 +48,6 @@ public class Ref {
         try {
             MethodHandle methodHandle = lookup().unreflectSetter(field);
             if (Modifier.isStatic(field.getModifiers())) {
-                // 我怕海螺先生干我，我不写了
                 methodHandle.invokeWithArguments(value);
             } else {
                 methodHandle.bindTo(src).invokeWithArguments(value);
@@ -168,8 +156,8 @@ public class Ref {
             return methods;
         } catch (Exception | Error e) {
             try {
-                List<Method> list = Arrays.stream(clazz.getDeclaredMethods())
-                        .filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
+                Method[] methods = clazz.getDeclaredMethods();
+                List<Method> list = Arrays.stream(methods).filter(field -> (field.getModifiers() & excludeModifiers) == 0).collect(Collectors.toList());
                 cacheMethods.putIfAbsent(clazz.getName(), list);
                 return list;
             } catch (Error err) {
