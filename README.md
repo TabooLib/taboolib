@@ -6,13 +6,13 @@
 <h4 align="center">NO PLUGIN, NO SPAM AND ONLY TOOLS</b><h4>
 <p align="center">
   <a>
-    <img src="https://img.shields.io/github/license/bkm016/taboolib">
+    <img src="https://img.shields.io/github/license/taboolib/taboolib">
   </a>
   <a>
-    <img src="https://img.shields.io/github/downloads/Bkm016/TabooLib/total">
+    <img src="https://img.shields.io/github/downloads/taboolib/TabooLib/total">
   </a>
   <a>
-    <img src="https://img.shields.io/github/languages/code-size/bkm016/taboolib">
+    <img src="https://img.shields.io/github/languages/code-size/taboolib/taboolib">
   </a>
   <a>
     <img src="https://img.shields.io/badge/Version-5.7.2-green">
