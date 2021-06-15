@@ -42,3 +42,29 @@ public class Handler {
 
 ## 易错问题
 人类的本质是... (与 @TListener 相同）
+
+# TFunction的子注解
+和TFunction差不多，只是这些子注解在方法上，当插件载入时 TabooLib 会为你 **自动执行** 初始化方法。
+> + @TFunction.Cancel
+> + @TFunction.Init
+> + @TFunction.Load
+
+## 使用环境
+```kotlin
+object test {
+    @TFunction.Init
+    fun init() {
+        println("我在Enable时调用")
+    }
+
+    @TFunction.Cancel
+    fun cancel() {
+        println("我在Disable时调用")
+    }
+
+    @TFunction.Load
+    fun load() {
+        println("我在Load时调用")
+    }
+}
+```

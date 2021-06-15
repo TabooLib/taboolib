@@ -33,12 +33,6 @@ public class Plugin extends JavaPlugin {
             return true;
         }
     };
-    
-    @TInject
-    static SimpleCommandBuilder command = SimpleCommandBuilder.create("cmd", inst)
-        .execute((sender, args) -> {
-            return true;
-        });
 }
 ```
 !> 只可用于静态类型
