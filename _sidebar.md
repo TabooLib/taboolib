@@ -48,11 +48,6 @@
     - [@TListener.java](inject/TListener.md)
     - [@TSchedule.java](inject/TSchedule.md)
     - [@TService.java](inject/TService.md)
-  + lite
-    - [SimpleI8n.java](lite/SimpleI8n.md)
-    - [SimpleEquip.java](lite/SimpleEquip.md)
-    - [SimpleReflection.java](lite/SimpleReflection.md)
-    - [SimpleVersionControl.java](lite/SimpleVersionControl.md)
   + locale
     - [TLocale.java](locale/TLocale.md)
   + locale.logger
