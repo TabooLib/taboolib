@@ -37,8 +37,9 @@
     - [SQLiteColumnType.java](db.sqlite/SQLiteColumnType.md)
     - [SQLiteHost.java](db.sqlite/SQLiteHost.md)
   + dependency
-    - [TDependency.java](dependency/TDependency.md)
     - [@Dependency.java](dependency/Dependency.md)
+    - [@Dependencies.java](dependency/Dependencies.md)
+    - [TDependency.java](dependency/TDependency.md)
   + inject
     - [@PlayerContainer.java](inject/PlayerContainer.md)
     - [@TFunction.java](inject/TFunction.md)

@@ -24,7 +24,7 @@ public class TestMain extends Plugin {
 在 `@Dependency` 里加入 `mavenRepo` 即可，如
 
 ```java
-@Dependency(maven = "io.papermc:paperlib:1.0.6", mavenRepo = "https://papermc.io/repo/repository/maven-public/"),
+@Dependency(maven = "io.papermc:paperlib:1.0.6", mavenRepo = "https://papermc.io/repo/repository/maven-public/")
 public class TestMain extends Plugin {
     // ...
 }
