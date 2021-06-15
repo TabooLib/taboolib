@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    api("com.google.guava:guava:17.0")
-    api("com.google.code.gson:gson:2.3.1")
-    implementation(kotlin("stdlib"))
+    compileOnly("com.google.guava:guava:17.0")
+    compileOnly("com.google.code.gson:gson:2.3.1")
+    compileOnly(kotlin("stdlib"))
 }

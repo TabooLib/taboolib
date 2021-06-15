@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     compileOnly("net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT")
-    implementation(project(":common"))
-    implementation(kotlin("stdlib"))
+    compileOnly(project(":common"))
+    compileOnly(kotlin("stdlib"))
 }

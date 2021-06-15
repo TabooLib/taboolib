@@ -10,7 +10,3 @@ allprojects {
         options.encoding = "UTF-8"
     }
 }
-
-tasks.withType(Delete::class.java) {
-    fileTree("$rootDir/build").forEach { it.delete() }
-}

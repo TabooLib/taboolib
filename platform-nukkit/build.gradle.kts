@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     compileOnly("cn.nukkit:nukkit:2.0.0-SNAPSHOT")
-    implementation(project(":common"))
-    implementation(kotlin("stdlib"))
+    compileOnly(project(":common"))
+    compileOnly(kotlin("stdlib"))
 }

@@ -10,6 +10,6 @@ repositories {
 
 dependencies {
     compileOnly("org.spongepowered:spongeapi:7.2.0")
-    implementation(project(":common"))
-    implementation(kotlin("stdlib"))
+    compileOnly(project(":common"))
+    compileOnly(kotlin("stdlib"))
 }

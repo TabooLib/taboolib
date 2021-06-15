@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    api("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
-    implementation(project(":common"))
-    implementation(kotlin("stdlib"))
+    compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
+    compileOnly(project(":common"))
+    compileOnly(kotlin("stdlib"))
 }

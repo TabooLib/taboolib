@@ -1,5 +1,6 @@
 package taboolib.common.io
 
+import taboolib.common.TabooLibCommon
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -21,7 +22,7 @@ fun URL.getClasses(): List<Class<*>> {
     val classes = ArrayList<Class<*>>()
     JarFile(src).stream().filter { it.name.endsWith(".class") }.forEach {
         try {
-            classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, javaClass.classLoader))
+            classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, TabooLibCommon::class.java.classLoader))
         } catch (ex: Throwable) {
         }
     }

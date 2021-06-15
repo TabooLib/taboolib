@@ -5,16 +5,12 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://nexus.lucko.me/repository/maven-central/")
-    }
-    maven {
-        url = uri("https://repo.ptms.ink/repository/maven-releases/")
-    }
 }
 
 dependencies {
-    api("org.ow2.asm:asm:9.1")
-    api("org.ow2.asm:asm-commons:9.1")
-    implementation(kotlin("stdlib"))
+    compileOnly("org.ow2.asm:asm:9.1")
+    compileOnly("org.ow2.asm:asm-commons:9.1")
+    compileOnly("com.google.guava:guava:17.0")
+    compileOnly(project(":common"))
+    compileOnly(kotlin("stdlib"))
 }
