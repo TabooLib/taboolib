@@ -47,7 +47,6 @@
     - [@TInject.java](inject/TInject.md)
     - [@TListener.java](inject/TListener.md)
     - [@TSchedule.java](inject/TSchedule.md)
-    - [@TService.java](inject/TService.md)
   + locale
     - [TLocale.java](locale/TLocale.md)
   + locale.logger
