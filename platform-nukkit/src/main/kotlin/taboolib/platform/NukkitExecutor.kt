@@ -8,7 +8,7 @@ import taboolib.common.platform.PlatformInstance
  * TabooLib
  * taboolib.platform.NukkitExecutor
  *
- * @author tr
+ * @author CziSKY
  * @since 2021/6/16 0:37
  */
 @PlatformInstance

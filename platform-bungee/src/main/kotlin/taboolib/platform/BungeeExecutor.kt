@@ -5,6 +5,13 @@ import taboolib.common.platform.PlatformInstance
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
+/**
+ * TabooLib
+ * taboolib.platform.BungeeExecutor
+ *
+ * @author CziSKY
+ * @since 2021/6/16 0:13
+ */
 @PlatformInstance
 class BungeeExecutor : PlatformExecutor {
 
