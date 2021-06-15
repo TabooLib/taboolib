@@ -6,6 +6,7 @@ import taboolib.common.io.getClasses
 object PlatformFactory {
 
     lateinit var platformIO: PlatformIO
+    lateinit var platformExecutor: PlatformExecutor
 
     private val unnamedAPI = HashMap<String, Any>()
 
@@ -21,6 +22,9 @@ object PlatformFactory {
                 when {
                     interfaces.contains(PlatformIO::class.java) -> {
                         platformIO = instance as PlatformIO
+                    }
+                    interfaces.contains(PlatformExecutor::class.java) -> {
+                        platformExecutor = instance as PlatformExecutor
                     }
                     else -> {
                         unnamedAPI[it.simpleName] = instance
