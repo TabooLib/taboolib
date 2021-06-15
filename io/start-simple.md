@@ -1,23 +1,23 @@
 # 如何使用 TabooLib 5.0
 > 推荐使用 IntelliJ IDEA
 
-## 0. 获取 [TabooLib-Loader](http://github.com/bkm016/TabooLib-Loader/releases) 启动类
+## 0. 获取 [TabooLib-Loader](https://github.com/TabooLib/TabooLib-Loader/releases) 启动类
 
 源码地址
 ```
-https://github.com/Bkm016/TabooLib-Loader/blob/master/src/io/izzel/taboolib/loader/Plugin.java
+https://github.com/TabooLib/TabooLib-Loader/blob/master/src/main/java/io/izzel/taboolib/loader/Plugin.java
 ```
 发布地址
 ```
-https://github.com/Bkm016/TabooLib-Loader/releases
+https://github.com/TabooLib/TabooLib-Loader/releases
 ```
 > 将启动类 `Plugin.java` 复制到你的项目源代码中
 
-## 1. 获取 [TabooLib](https://github.com/Bkm016/TabooLib/releases) 开发依赖
+## 1. 获取 [TabooLib](https://github.com/TabooLib/TabooLib-Loader/releases) 开发依赖
 
 发布地址
 ```
-https://github.com/Bkm016/TabooLib/releases
+https://github.com/TabooLib/TabooLib-Loader/releases
 ```
 > 将依赖文件添加至开发环境（与添加 BukkitAPI 同理）
 

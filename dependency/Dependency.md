@@ -1,4 +1,4 @@
-# TDependency
+# Dependency
 
 几个简单的注解轻松使用第三方库
 
@@ -9,9 +9,9 @@
 比如，假如你要用 Scala 或者 Kotlin，那么可以：
 
 ```java
-@Dependency(type = Dependency.Type.LIBRARY, maven = "org.scala-lang:scala-library:2.12.6")
-@Dependency(type = Dependency.Type.LIBRARY, maven = "org.jetbrains.kotlin:kotlin-stdlib:1.2.31")
-public class TestMain extends JavaPlugin {
+@Dependency(maven = "org.scala-lang:scala-library:2.12.6")
+@Dependency(maven = "org.jetbrains.kotlin:kotlin-stdlib:1.2.31")
+public class TestMain extends Plugin {
     // ...
 }
 ```
@@ -24,8 +24,8 @@ public class TestMain extends JavaPlugin {
 在 `@Dependency` 里加入 `mavenRepo` 即可，如
 
 ```java
-@Dependency(type = Dependency.Type.LIBRARY, maven = "com.github.Bkm016:TabooLib:dev-SNAPSHOT", mavenRepo = "https://jitpack.io/")
-public class TestMain extends JavaPlugin {
+@Dependency(maven = "io.papermc:paperlib:1.0.6", mavenRepo = "https://papermc.io/repo/repository/maven-public/"),
+public class TestMain extends Plugin {
     // ...
 }
 ```
@@ -33,8 +33,8 @@ public class TestMain extends JavaPlugin {
 ## 使用指定的 URL 的 jar 文件作为库
 
 ```java
-@Dependency(type = Dependency.Type.LIBRARY, maven = "com.sun:tools:1.8.0_151", url = "http://skymc.oss-cn-shanghai.aliyuncs.com/plugins/com.sun.tools.jar")
-public class TestMain extends JavaPlugin {
+@Dependency(maven = "com.sun:tools:1.8.0_151", url = "http://skymc.oss-cn-shanghai.aliyuncs.com/plugins/com.sun.tools.jar")
+public class TestMain extends Plugin {
     // ...
 }
 ```
