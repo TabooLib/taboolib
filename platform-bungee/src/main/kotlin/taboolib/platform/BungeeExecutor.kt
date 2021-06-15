@@ -1,43 +1,92 @@
 package taboolib.platform
 
-import taboolib.common.platform.PlatformInstance
 import taboolib.common.platform.PlatformExecutor
+import taboolib.common.platform.PlatformInstance
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @PlatformInstance
 class BungeeExecutor : PlatformExecutor {
 
+    val plugin = BungeePlugin.instance
+
     override fun execute(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
-        val scheduler = BungeePlugin.instance.proxy.scheduler
+        val scheduler = plugin.proxy.scheduler
         val future = CompletableFuture<Unit>()
         val task: BungeePlatformTask
         val scheduledTask = when {
             period > 0 -> if (async) {
-                scheduler.schedule(BungeePlugin.instance, object : Runnable {
+                scheduler.schedule(plugin, object : Runnable {
 
                     init {
                         task = BungeePlatformTask(future)
                     }
 
                     override fun run() {
-                        scheduler.runAsync(BungeePlugin.instance) {
+                        scheduler.runAsync(plugin) {
                             executor(task)
                         }
                     }
                 }, delay, period * 50, TimeUnit.MILLISECONDS)
             } else {
-                error(",.")
+                scheduler.schedule(plugin, object : Runnable {
+
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+
+                    override fun run() {
+                        executor(task)
+                    }
+                }, delay, period * 50, TimeUnit.MILLISECONDS)
             }
             delay > 0 -> if (async) {
-                error(",.")
+                scheduler.schedule(plugin, object : Runnable {
+
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+
+                    override fun run() {
+                        scheduler.runAsync(plugin) {
+                            executor(task)
+                        }
+                    }
+                }, delay, 0, TimeUnit.MILLISECONDS)
             } else {
-                error(",.")
+                scheduler.schedule(plugin, object : Runnable {
+
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+
+                    override fun run() {
+                        executor(task)
+                    }
+                }, delay, 0, TimeUnit.MILLISECONDS)
             }
             else -> if (async) {
-                error(",.")
+                scheduler.runAsync(plugin, object : Runnable {
+
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+
+                    override fun run() {
+                        executor(task)
+                    }
+                })
             } else {
-                error(",.")
+                scheduler.schedule(plugin, object : Runnable {
+
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+
+                    override fun run() {
+                        executor(task)
+                    }
+                }, 0, 0, TimeUnit.MILLISECONDS)
             }
         }
         future.thenAccept {
