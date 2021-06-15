@@ -2,7 +2,7 @@ package taboolib.platform
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import taboolib.common.platform.PlatformAPI
+import taboolib.common.platform.PlatformInstance
 import taboolib.common.platform.PlatformIO
 import java.io.File
 
@@ -13,7 +13,7 @@ import java.io.File
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
-@PlatformAPI
+@PlatformInstance
 class SpongeIO : PlatformIO {
 
     private val logger: Logger

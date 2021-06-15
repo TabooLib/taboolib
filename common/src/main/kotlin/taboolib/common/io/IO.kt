@@ -13,6 +13,10 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
+val classes by lazy {
+    TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
+}
+
 fun URL.getClasses(): List<Class<*>> {
     val src = try {
         File(toURI())

@@ -1,8 +1,6 @@
 package taboolib.common5
 
-import org.objectweb.asm.ClassReader
-import taboolib.common.env.RuntimeEnv
-import taboolib.common.platform.PlatformAPI
+import taboolib.common.platform.PlatformInstance
 import taboolib.common5.env.AsmEnv
 
 /**
@@ -12,7 +10,7 @@ import taboolib.common5.env.AsmEnv
  * @author sky
  * @since 2021/6/15 4:27 下午
  */
-@PlatformAPI
+@PlatformInstance
 object Common5 {
 
     init {

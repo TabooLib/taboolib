@@ -1,5 +1,7 @@
 package taboolib.common.env;
 
+import taboolib.common.env.runtime.RuntimeEnv;
+
 /**
  * TabooLib
  * taboolib.common.KotlinEnv
@@ -29,7 +31,7 @@ public class KotlinEnv {
     /**
      * 当前是否运行在 Kotlin 环境下
      */
-    public static boolean inKotlinEnvironment() {
+    public static boolean isKotlinEnvironment() {
         return ClassAppender.INSTANCE.isExists("kotlin.KotlinVersion");
     }
 }

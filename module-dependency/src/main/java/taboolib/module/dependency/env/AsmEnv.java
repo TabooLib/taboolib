@@ -1,6 +1,6 @@
 package taboolib.module.dependency.env;
 
-import taboolib.common.env.RuntimeEnv;
+import taboolib.common.env.runtime.RuntimeEnv;
 
 /**
  * TabooLib

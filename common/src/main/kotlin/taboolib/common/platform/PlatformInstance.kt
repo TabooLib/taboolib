@@ -1,3 +1,3 @@
 package taboolib.common.platform
 
-annotation class PlatformAPI
+annotation class PlatformInstance
