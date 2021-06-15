@@ -68,7 +68,6 @@ class SpongeExecutor : PlatformExecutor {
         future.thenAccept {
             scheduledTask.submit(SpongePlugin.instance).cancel()
         }
-        
         return task
     }
 

@@ -1,15 +1,15 @@
-package taboolib.common.env.runtime;
+package taboolib.common.env;
 
 import dev.vankka.dependencydownload.DependencyManager;
 import dev.vankka.dependencydownload.dependency.StandardDependency;
 import dev.vankka.dependencydownload.repository.StandardRepository;
-import taboolib.common.env.ClassAppender;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Flow;
 
 /**
  * TabooLib
@@ -50,7 +50,7 @@ public class RuntimeEnv {
     }
 
     public void run() {
-        if (!ClassAppender.INSTANCE.isExists(checkClass)) {
+        if (checkClass == null || !ClassAppender.INSTANCE.isExists(checkClass)) {
             System.out.println("[TabooLib] Loading " + name + " runtime environment.");
             DependencyManager manager = new DependencyManager(new File("libs").toPath());
             dependency.forEach(manager::addDependency);

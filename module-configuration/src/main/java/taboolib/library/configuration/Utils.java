@@ -3,13 +3,6 @@ package taboolib.library.configuration;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * TabooLib
- * taboolib.module.configuration.Utils
- *
- * @author sky
- * @since 2021/6/15 10:34 下午
- */
 public class Utils {
 
     public static void createParentDirs(File file) throws IOException {

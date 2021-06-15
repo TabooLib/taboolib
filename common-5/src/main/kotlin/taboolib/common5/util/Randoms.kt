@@ -1,10 +1,8 @@
-package taboolib.model.util
+package taboolib.common5.util
 
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.Pair
 
 /**
  * @author sky

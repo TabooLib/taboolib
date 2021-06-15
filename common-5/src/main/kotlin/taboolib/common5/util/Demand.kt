@@ -1,4 +1,4 @@
-package taboolib.model.util
+package taboolib.common5.util
 
 /**
  * @author bkm016

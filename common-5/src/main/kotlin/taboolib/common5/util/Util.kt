@@ -1,10 +1,13 @@
-package taboolib.model.util
+package taboolib.common5
 
+import taboolib.common5.util.Strings
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
+
+fun String.replaceWithOrder(vararg args: Any) = Strings.replaceWithOrder(this, *args)!!
 
 fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)

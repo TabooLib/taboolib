@@ -13,5 +13,6 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
     compileOnly(project(":common"))
+    compileOnly(project(":common-5"))
     compileOnly(kotlin("stdlib"))
 }

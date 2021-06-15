@@ -22,7 +22,7 @@ public class YamlConfiguration extends FileConfiguration {
     protected static final String BLANK_CONFIG = "{}\n";
     private final DumperOptions yamlOptions = new DumperOptions();
     private final Representer yamlRepresenter = new YamlRepresenter();
-    private final Yaml yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions);
+    private final Yaml yaml = new Yaml(yamlRepresenter, yamlOptions);
 
     @Override
     public void set(String path, Object value) {
@@ -109,38 +109,30 @@ public class YamlConfiguration extends FileConfiguration {
     @Override
     public String buildHeader() {
         String header = options().header();
-
         if (options().copyHeader()) {
             Configuration def = getDefaults();
-
             if ((def instanceof FileConfiguration)) {
                 FileConfiguration filedefaults = (FileConfiguration) def;
                 String defaultsHeader = filedefaults.buildHeader();
-
                 if ((defaultsHeader != null) && (defaultsHeader.length() > 0)) {
                     return defaultsHeader;
                 }
             }
         }
-
         if (header == null) {
             return "";
         }
-
         StringBuilder builder = new StringBuilder();
         String[] lines = header.split("\r?\n", -1);
         boolean startedHeader = false;
-
         for (int i = lines.length - 1; i >= 0; i--) {
             builder.insert(0, "\n");
-
             if ((startedHeader) || (lines[i].length() != 0)) {
                 builder.insert(0, lines[i]);
                 builder.insert(0, COMMENT_PREFIX);
                 startedHeader = true;
             }
         }
-
         return builder.toString();
     }
 

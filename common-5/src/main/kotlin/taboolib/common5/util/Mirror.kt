@@ -1,4 +1,4 @@
-package taboolib.model.util
+package taboolib.common5.util
 
 import java.math.BigDecimal
 import java.math.RoundingMode

@@ -61,7 +61,7 @@ public class ClassAppender implements ClasspathAppender {
 
     public boolean isExists(String path) {
         try {
-            Class.forName("kotlin.KotlinVersion", false, TabooLibCommon.class.getClassLoader());
+            Class.forName(path, false, TabooLibCommon.class.getClassLoader());
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;
