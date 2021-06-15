@@ -4,6 +4,8 @@ import java.io.File
 
 interface PlatformIO {
 
+    val platform: Platform
+
     fun info(vararg message: Any?)
 
     fun severe(vararg message: Any?)

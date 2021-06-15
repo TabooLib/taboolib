@@ -3,6 +3,9 @@ package taboolib.common.platform
 import taboolib.common.platform.PlatformFactory.platformExecutor
 import taboolib.common.platform.PlatformFactory.platformIO
 
+val platform: Platform
+    get() = platformIO.platform
+
 fun info(vararg message: Any?) = platformIO.info(*message)
 
 fun severe(vararg message: Any?) = platformIO.severe(*message)

@@ -2,6 +2,7 @@ package taboolib.platform
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformInstance
 import taboolib.common.platform.PlatformIO
 import java.io.File
@@ -22,6 +23,9 @@ class NukkitIO : PlatformIO {
         } catch (ex: Exception) {
             LoggerFactory.getLogger("Anonymous")
         }
+
+    override val platform: Platform
+        get() = Platform.NUKKIT
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }

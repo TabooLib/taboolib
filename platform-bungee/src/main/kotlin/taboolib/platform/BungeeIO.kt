@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformInstance
 import taboolib.common.platform.PlatformIO
 import java.io.File
@@ -21,6 +22,9 @@ class BungeeIO : PlatformIO {
         } catch (ex: Exception) {
             Logger.getAnonymousLogger()
         }
+
+    override val platform: Platform
+        get() = Platform.BUNGEE
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
