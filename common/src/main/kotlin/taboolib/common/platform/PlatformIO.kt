@@ -4,7 +4,9 @@ import java.io.File
 
 interface PlatformIO {
 
-    val platform: Platform
+    val isPrimaryThread: Boolean
+
+    val runningPlatform: Platform
 
     fun info(vararg message: Any?)
 

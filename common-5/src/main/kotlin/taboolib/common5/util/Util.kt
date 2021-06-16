@@ -1,11 +1,24 @@
-package taboolib.common5
+package taboolib.common5.util
 
-import taboolib.common5.util.Strings
+import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
+import javax.script.*
 import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
+
+val scriptEngineManager = ScriptEngineManager()
+
+val scriptEngineFactory by lazy {
+    scriptEngineManager.engineFactories.firstOrNull { it.engineName.contains("Nashorn") } as? NashornScriptEngineFactory
+}
+
+val scriptEngine by lazy {
+    scriptEngineFactory?.getScriptEngine("-doe", "--global-per-engine")
+}
+
+fun String.compileJS() = (scriptEngine as? Compilable)?.compile(this)
 
 fun String.replaceWithOrder(vararg args: Any) = Strings.replaceWithOrder(this, *args)!!
 

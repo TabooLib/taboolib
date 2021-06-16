@@ -1,7 +1,7 @@
 package taboolib.platform
 
 import taboolib.common.platform.PlatformExecutor
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
  * @author CziSKY
  * @since 2021/6/16 0:13
  */
-@PlatformInstance
+@Awake
 class BungeeExecutor : PlatformExecutor {
 
     val plugin = BungeePlugin.instance

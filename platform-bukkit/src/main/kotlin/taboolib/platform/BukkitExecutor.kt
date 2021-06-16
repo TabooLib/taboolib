@@ -2,7 +2,7 @@ package taboolib.platform
 
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformExecutor
 
 /**
@@ -12,7 +12,7 @@ import taboolib.common.platform.PlatformExecutor
  * @author sky
  * @since 2021/6/15 11:17 下午
  */
-@PlatformInstance
+@Awake
 class BukkitExecutor : PlatformExecutor {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin

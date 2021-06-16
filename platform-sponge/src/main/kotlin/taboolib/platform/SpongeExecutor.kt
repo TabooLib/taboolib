@@ -2,7 +2,7 @@ package taboolib.platform
 
 import org.spongepowered.api.scheduler.Task
 import taboolib.common.platform.PlatformExecutor
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  * @author CziSKY
  * @since 2021/6/16 0:43
  */
-@PlatformInstance
+@Awake
 class SpongeExecutor : PlatformExecutor {
 
     val plugin = SpongePlugin.instance

@@ -77,7 +77,6 @@ public class Ref {
         }
     }
 
-
     public static List<Field> getDeclaredFields(Class<?> clazz) {
         return getDeclaredFields(clazz, 0, true);
     }

@@ -1,7 +1,7 @@
 package taboolib.platform
 
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
 import java.util.logging.Logger
@@ -13,7 +13,7 @@ import java.util.logging.Logger
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
-@PlatformInstance
+@Awake
 class BungeeIO : PlatformIO {
 
     private val logger: Logger
@@ -23,8 +23,11 @@ class BungeeIO : PlatformIO {
             Logger.getAnonymousLogger()
         }
 
-    override val platform: Platform
+    override val runningPlatform: Platform
         get() = Platform.BUNGEE
+
+    override val isPrimaryThread: Boolean
+        get() = true
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }

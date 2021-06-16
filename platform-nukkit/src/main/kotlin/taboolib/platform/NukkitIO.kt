@@ -3,7 +3,7 @@ package taboolib.platform
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
 
@@ -14,7 +14,7 @@ import java.io.File
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
-@PlatformInstance
+@Awake
 class NukkitIO : PlatformIO {
 
     private val logger: Logger
@@ -24,7 +24,10 @@ class NukkitIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
-    override val platform: Platform
+    override val isPrimaryThread: Boolean
+        get() = NukkitPlugin.instance.server.isPrimaryThread
+
+    override val runningPlatform: Platform
         get() = Platform.NUKKIT
 
     override fun info(vararg message: Any?) {

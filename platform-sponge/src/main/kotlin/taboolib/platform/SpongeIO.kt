@@ -2,8 +2,9 @@ package taboolib.platform
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.spongepowered.api.Sponge
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
 
@@ -14,7 +15,7 @@ import java.io.File
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
-@PlatformInstance
+@Awake
 class SpongeIO : PlatformIO {
 
     private val logger: Logger
@@ -24,8 +25,11 @@ class SpongeIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
-    override val platform: Platform
+    override val runningPlatform: Platform
         get() = Platform.SPONGE
+
+    override val isPrimaryThread: Boolean
+        get() = Sponge.getServer().isMainThread
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }

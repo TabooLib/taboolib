@@ -5,11 +5,11 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-public/") }
 }
 
 dependencies {
-    compileOnly("net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT")
+    compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-20210614.231150-8@jar")
     compileOnly(project(":common"))
     compileOnly(project(":plugin"))
     compileOnly(kotlin("stdlib"))

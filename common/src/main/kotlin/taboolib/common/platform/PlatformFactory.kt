@@ -6,6 +6,7 @@ import taboolib.common.io.classes
 object PlatformFactory {
 
     lateinit var platformIO: PlatformIO
+    lateinit var platformAdapter: PlatformAdapter
     lateinit var platformExecutor: PlatformExecutor
 
     private val unnamedAPI = HashMap<String, Any>()
@@ -17,12 +18,15 @@ object PlatformFactory {
     fun init() {
         if (KotlinEnv.isKotlinEnvironment()) {
             classes.forEach {
-                if (it.isAnnotationPresent(PlatformInstance::class.java)) {
+                if (it.isAnnotationPresent(Awake::class.java)) {
                     val interfaces = it.interfaces
                     val instance = it.kotlin.objectInstance ?: it.getDeclaredConstructor().newInstance()
                     when {
                         interfaces.contains(PlatformIO::class.java) -> {
                             platformIO = instance as PlatformIO
+                        }
+                        interfaces.contains(PlatformAdapter::class.java) -> {
+                            platformAdapter = instance as PlatformAdapter
                         }
                         interfaces.contains(PlatformExecutor::class.java) -> {
                             platformExecutor = instance as PlatformExecutor

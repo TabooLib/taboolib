@@ -2,7 +2,7 @@ package taboolib.platform
 
 import cn.nukkit.scheduler.NukkitRunnable
 import taboolib.common.platform.PlatformExecutor
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 
 /**
  * TabooLib
@@ -11,7 +11,7 @@ import taboolib.common.platform.PlatformInstance
  * @author CziSKY
  * @since 2021/6/16 0:37
  */
-@PlatformInstance
+@Awake
 class NukkitExecutor : PlatformExecutor {
 
     val plugin = NukkitPlugin.instance

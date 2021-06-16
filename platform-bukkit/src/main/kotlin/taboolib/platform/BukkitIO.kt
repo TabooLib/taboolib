@@ -1,8 +1,9 @@
 package taboolib.platform
 
+import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
 
@@ -13,13 +14,16 @@ import java.io.File
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
-@PlatformInstance
+@Awake
 class BukkitIO : PlatformIO {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
 
-    override val platform: Platform
+    override val runningPlatform: Platform
         get() = Platform.BUKKIT
+
+    override val isPrimaryThread: Boolean
+        get() = Bukkit.isPrimaryThread()
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { plugin.logger.info(it.toString()) }

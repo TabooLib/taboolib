@@ -1,8 +1,8 @@
-package taboolib.common.platform.event
+package taboolib.common.platform
 
 /**
  * TabooLib
- * taboolib.common.platform.event.EventPriority
+ * taboolib.common.platform.EventPriority
  *
  * @author sky
  * @since 2021/6/16 1:07 上午

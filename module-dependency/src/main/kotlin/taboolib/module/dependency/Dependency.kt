@@ -4,7 +4,7 @@ import dev.vankka.dependencydownload.dependency.StandardDependency
 import taboolib.common.env.KotlinEnv
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.io.classes
-import taboolib.common.platform.PlatformInstance
+import taboolib.common.platform.Awake
 
 /**
  * TabooLib
@@ -20,7 +20,7 @@ import taboolib.common.platform.PlatformInstance
 )
 @RuntimeName(group = "org.ow2.asm", name = "asm (9.1)")
 @RuntimeTest(group = "org.ow2.asm", path = ["org.objectweb.asm.ClassVisitor"])
-@PlatformInstance
+@Awake
 object Dependency {
 
     private val names = HashMap<String, String>()
