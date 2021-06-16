@@ -15,10 +15,11 @@ import taboolib.module.dependency.RuntimeTest
  */
 @RuntimeDependencies(
     RuntimeDependency(group = "org.ow2.asm", id = "asm", version = "9.1", hash = "a99500cf6eea30535eeac6be73899d048f8d12a8"),
+    RuntimeDependency(group = "org.ow2.asm", id = "asm-util", version = "9.1", hash = "36464a45d871779f3383a8a9aba2b26562a86729"),
     RuntimeDependency(group = "org.ow2.asm", id = "asm-commons", version = "9.1", hash = "8b971b182eb5cf100b9e8d4119152d83e00e0fdd")
 )
 @RuntimeName(group = "org.ow2.asm", name = "asm (9.1)")
-@RuntimeTest(group = "org.ow2.asm", path = "org.objectweb.asm.ClassVisitor")
+@RuntimeTest(group = "org.ow2.asm", path = ["org.objectweb.asm.ClassVisitor"])
 @PlatformInstance
 object Common5 {
 

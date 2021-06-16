@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
 @RuntimeName(group = "org.yaml", name = "snakeyaml (1.28)")
-@RuntimeTest(group = "org.yaml", path = "org.yaml.snakeyaml.Yaml")
+@RuntimeTest(group = "org.yaml", path = ["org.yaml.snakeyaml.Yaml"])
 @RuntimeDependency(group = "org.yaml", id = "snakeyaml", version = "1.28", hash = "7cae037c3014350c923776548e71c9feb7a69259")
 class SecuredFile : YamlConfiguration() {
 

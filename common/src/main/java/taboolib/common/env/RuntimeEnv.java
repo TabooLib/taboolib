@@ -21,7 +21,7 @@ import java.util.concurrent.Flow;
 public class RuntimeEnv {
 
     private final String name;
-    private String checkClass;
+    private String[] checkClass;
     private final List<StandardDependency> dependency = new ArrayList<>();
     private final List<String> repository = new ArrayList<>();
 
@@ -34,6 +34,11 @@ public class RuntimeEnv {
     }
 
     public RuntimeEnv check(String checkClass) {
+        this.checkClass = new String[]{checkClass};
+        return this;
+    }
+
+    public RuntimeEnv check(String[] checkClass) {
         this.checkClass = checkClass;
         return this;
     }
@@ -50,7 +55,7 @@ public class RuntimeEnv {
     }
 
     public void run() {
-        if (checkClass == null || !ClassAppender.INSTANCE.isExists(checkClass)) {
+        if (checkClass == null || !Arrays.stream(checkClass).allMatch(ClassAppender.INSTANCE::isExists)) {
             System.out.println("[TabooLib] Loading " + name + " runtime environment.");
             DependencyManager manager = new DependencyManager(new File("libs").toPath());
             dependency.forEach(manager::addDependency);
