@@ -1,6 +1,5 @@
 package taboolib.common5.util
 
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import javax.script.*
@@ -11,11 +10,11 @@ import kotlin.math.min
 val scriptEngineManager = ScriptEngineManager()
 
 val scriptEngineFactory by lazy {
-    scriptEngineManager.engineFactories.firstOrNull { it.engineName.contains("Nashorn") } as? NashornScriptEngineFactory
+    scriptEngineManager.engineFactories.firstOrNull { it.engineName.contains("Nashorn") }
 }
 
 val scriptEngine by lazy {
-    scriptEngineFactory?.getScriptEngine("-doe", "--global-per-engine")
+    scriptEngineFactory?.scriptEngine
 }
 
 fun String.compileJS() = (scriptEngine as? Compilable)?.compile(this)
