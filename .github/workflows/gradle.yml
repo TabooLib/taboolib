@@ -5,7 +5,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java: [ 8.0, 11, 13, 15 ]
+        java: [ 11, 13, 15 ]
         os: [ubuntu-20.04, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '8.0' }}
+        if: ${{ runner.os == 'Linux' && matrix.java == '11' }}
         uses: actions/upload-artifact@v2
         with:
           name: Artifacts Java 8.0
