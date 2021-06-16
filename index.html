@@ -13,10 +13,10 @@
 <div id="app">Loading ...</div>
 <script>
     window.$docsify = {
-        name: '',
+        name: 'TabooLib',
         repo: '',
         auto2top: true,
-        coverpage: false,
+        coverpage: true,
         loadSidebar: true,
         subMaxLevel: 4,
         executeScript: true,
@@ -35,10 +35,10 @@
         plugins: [
             function (hook, vm) {
                 hook.beforeEach(function (html) {
-                    var url = 'https://github.com/Bkm016/TabooLib/blob/master/docs/' + vm.route.file;
+                    var url = 'https://github.com/TabooLib/TabooLib/blob/master/docs/' + vm.route.file;
                     return html
                         + '\n\n----\n\n'
-                        + '<a href="https://github.com/Bkm016/TabooLib/" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">TabooLib Document</a>'
+                        + '<a href="https://github.com/TabooLib/TabooLib/" target="_blank" style="color: inherit; font-weight: normal; text-decoration: none;">TabooLib Document</a>'
                 })
             }
         ]

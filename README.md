@@ -14,10 +14,10 @@
     <img src="https://img.shields.io/github/languages/code-size/taboolib/taboolib.svg">
   </a>
   <a>
-    <img src="https://img.shields.io/github/release/taboolib/TabooLib.svg">
+    <img src="https://img.shields.io/badge/Version-5.7.2-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/Bukkit-1.8~1.17-blue.svg">
+    <img src="https://img.shields.io/badge/Bukkit-1.8~1.16-blue.svg">
   </a>
 </p>
 

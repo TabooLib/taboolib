@@ -45,9 +45,9 @@ public class Handler {
 
 # TFunction的子注解
 和TFunction差不多，只是这些子注解在方法上，当插件载入时 TabooLib 会为你 **自动执行** 初始化方法。
-> + @TFunction.Cancel
-> + @TFunction.Init
-> + @TFunction.Load
++ @TFunction.Cancel
++ @TFunction.Init
++ @TFunction.Load
 
 ## 使用环境
 ```kotlin

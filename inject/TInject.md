@@ -6,7 +6,7 @@
 
 ## 可用类型
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     @TInject
     static Plugin inst;
