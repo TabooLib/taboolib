@@ -4,10 +4,8 @@ plugins {
 }
 
 repositories {
+    maven { url = uri("https://repo.codemc.io/repository/nms/") }
     mavenCentral()
-    maven {
-        url = uri("https://repo.codemc.io/repository/nms/")
-    }
 }
 
 dependencies {

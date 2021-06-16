@@ -3,10 +3,16 @@ package taboolib.module.configuration
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.InvalidConfigurationException
 import taboolib.library.configuration.YamlConfiguration
+import taboolib.module.dependency.RuntimeDependency
+import taboolib.module.dependency.RuntimeName
+import taboolib.module.dependency.RuntimeTest
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
+@RuntimeName(group = "org.yaml", name = "snakeyaml (1.28)")
+@RuntimeTest(group = "org.yaml", path = "org.yaml.snakeyaml.Yaml")
+@RuntimeDependency(group = "org.yaml", id = "snakeyaml", version = "1.28", hash = "7cae037c3014350c923776548e71c9feb7a69259")
 class SecuredFile : YamlConfiguration() {
 
     private val lock = Any()

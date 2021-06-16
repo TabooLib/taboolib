@@ -25,6 +25,7 @@ tasks {
             include(dependency("me.lucko:jar-relocator:1.4"))
         }
         relocate("me.lucko", "taboolib.library")
+        relocate("dev.vankka", "taboolib.library")
     }
     build {
         dependsOn(shadowJar)
