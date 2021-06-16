@@ -27,5 +27,5 @@ jobs:
         if: ${{ runner.os == 'Linux' && matrix.java == '11' }}
         uses: actions/upload-artifact@v2
         with:
-          name: Artifacts Java 8.0
+          name: Artifacts Java 11
           path: build/libs/
