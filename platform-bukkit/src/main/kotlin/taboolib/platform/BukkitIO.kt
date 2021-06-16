@@ -38,7 +38,7 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        file.writeBytes(plugin.getResource(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
+        file.writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

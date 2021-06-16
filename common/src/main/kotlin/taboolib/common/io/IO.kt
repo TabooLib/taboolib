@@ -13,8 +13,12 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
-val classes by lazy {
-    TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
+val classes = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
+
+@Suppress("NO_REFLECTION_IN_CLASS_PATH", "UNCHECKED_CAST")
+fun <T> findInstance(clazz: Class<T>): T? {
+    val first = classes.firstOrNull { clazz.isAssignableFrom(it) && clazz != it } ?: return null
+    return (first.kotlin.objectInstance ?: first.getDeclaredConstructor().newInstance()) as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {

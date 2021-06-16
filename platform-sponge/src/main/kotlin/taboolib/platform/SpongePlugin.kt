@@ -9,6 +9,8 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent
 import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.plugin.PluginContainer
+import taboolib.common.TabooLibCommon
+import taboolib.common.io.findInstance
 import java.io.File
 
 /**
@@ -21,6 +23,8 @@ import java.io.File
 @Plugin(id = "@plugin_id", name = "@plugin_name", version = "@plugin_version")
 class SpongePlugin {
 
+    val pluginInstance: taboolib.plugin.Plugin?
+
     @Inject
     lateinit var pluginContainer: PluginContainer
 
@@ -28,24 +32,30 @@ class SpongePlugin {
     @ConfigDir(sharedRoot = false)
     lateinit var pluginConfigDir: File
 
+    init {
+        TabooLibCommon.init()
+        instance = this
+        pluginInstance = findInstance(taboolib.plugin.Plugin::class.java)
+    }
+
     @Listener
     fun e(e: GameConstructionEvent) {
+        pluginInstance?.onLoad()
     }
 
     @Listener
     fun e(e: GameInitializationEvent) {
+        pluginInstance?.onEnable()
     }
 
     @Listener
     fun e(e: GameStartedServerEvent) {
+        pluginInstance?.onActive()
     }
 
     @Listener
     fun e(e: GameStoppingServerEvent) {
-    }
-
-    init {
-        instance = this
+        pluginInstance?.onDisable()
     }
 
     companion object {

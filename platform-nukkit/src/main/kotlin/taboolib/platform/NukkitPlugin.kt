@@ -1,6 +1,10 @@
 package taboolib.platform
 
 import cn.nukkit.plugin.PluginBase
+import taboolib.common.TabooLibCommon
+import taboolib.common.io.findInstance
+import taboolib.common.platform.execute
+import taboolib.plugin.Plugin
 import java.io.File
 
 /**
@@ -12,17 +16,27 @@ import java.io.File
  */
 class NukkitPlugin : PluginBase() {
 
+    val pluginInstance: Plugin?
+
     init {
+        TabooLibCommon.init()
         instance = this
+        pluginInstance = findInstance(Plugin::class.java)
     }
 
     override fun onLoad() {
+        pluginInstance?.onLoad()
     }
 
     override fun onEnable() {
+        pluginInstance?.onEnable()
+        execute {
+            pluginInstance?.onActive()
+        }
     }
 
     override fun onDisable() {
+        pluginInstance?.onDisable()
     }
 
     public override fun getFile(): File {

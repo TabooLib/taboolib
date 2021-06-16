@@ -11,5 +11,6 @@ repositories {
 dependencies {
     compileOnly("cn.nukkit:nukkit:2.0.0-SNAPSHOT")
     compileOnly(project(":common"))
+    compileOnly(project(":plugin"))
     compileOnly(kotlin("stdlib"))
 }
