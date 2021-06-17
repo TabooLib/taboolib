@@ -3,15 +3,14 @@ package taboolib.platform.util
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
-import taboolib.common5.util.Position
 import taboolib.common5.util.Quat
 
-fun Position.toLocation(world: World): Location {
-    return Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+fun taboolib.common.util.Location.toBukkitLocation(world: World): Location {
+    return Location(world, x, y, z)
 }
 
-fun Location.toPosition(): Position {
-    return Position(blockX, blockY, blockZ)
+fun Location.toProxyLocation(): taboolib.common.util.Location {
+    return taboolib.common.util.Location(world?.name, x, y, z, yaw, pitch)
 }
 
 fun Quat.toVector(): Vector {

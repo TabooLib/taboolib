@@ -4,6 +4,7 @@ import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.api.QuestAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.common5.util.Coerce
 import taboolib.module.kether.Kether.expects
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptParser
@@ -40,23 +41,23 @@ class ActionType {
     enum class TypeTo(val transfer: (Any) -> Any) {
 
         INT({
-            taboolib.common5.util.Coerce.toInteger(it)
+            Coerce.toInteger(it)
         }),
 
         LONG({
-            taboolib.common5.util.Coerce.toLong(it)
+            Coerce.toLong(it)
         }),
 
         FLOAT({
-            taboolib.common5.util.Coerce.toFloat(it)
+            Coerce.toFloat(it)
         }),
 
         DOUBLE({
-            taboolib.common5.util.Coerce.toDouble(it)
+            Coerce.toDouble(it)
         }),
 
         BOOLEAN({
-            taboolib.common5.util.Coerce.toInteger(it)
+            Coerce.toInteger(it)
         })
     }
 

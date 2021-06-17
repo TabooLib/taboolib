@@ -1,34 +1,10 @@
 package taboolib.common5.util;
 
-import com.google.common.collect.Lists;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Strings {
-
-    public static String copy(String text, int count) {
-        return IntStream.range(0, count).mapToObj(i -> text).collect(Collectors.joining());
-    }
-
-    public static boolean nonBlack(String var) {
-        return !isBlank(var);
-    }
-
-    public static boolean isBlank(String var) {
-        return var == null || var.trim().isEmpty();
-    }
-
-    public static boolean nonEmpty(CharSequence var) {
-        return !isEmpty(var);
-    }
-
-    public static boolean isEmpty(CharSequence var) {
-        return var == null || var.length() == 0;
-    }
 
     /**
      * 优化过的 String#replace，比默认快了大概 5 倍
