@@ -2,7 +2,7 @@ package taboolib.module.kether.action
 
 import io.izzel.kether.common.api.QuestAction
 import io.izzel.kether.common.api.QuestContext
-import taboolib.common5.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptParser
 import java.util.concurrent.CompletableFuture

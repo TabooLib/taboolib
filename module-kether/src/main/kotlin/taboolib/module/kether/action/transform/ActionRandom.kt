@@ -20,7 +20,7 @@ class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>
 
     override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
         if (action == null) {
-            return CompletableFuture.completedFuture(taboolib.common5.util.random(from, to))
+            return CompletableFuture.completedFuture(taboolib.common.util.random(from, to))
         } else {
             val future = CompletableFuture<Any?>()
             frame.newFrame(action).run<Any?>().thenAcceptAsync( {

@@ -1,8 +1,8 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
-import taboolib.common5.reflect.Reflex.Companion.reflex
-import taboolib.common5.reflect.Reflex.Companion.reflexInvoke
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 
 object MinecraftVersion {
 
