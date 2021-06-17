@@ -5,6 +5,16 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.server.ServerCommandEvent
+import taboolib.common.platform.EventPriority
+
+fun EventPriority.toBukkit() = when (this) {
+    EventPriority.LOWEST -> org.bukkit.event.EventPriority.LOWEST
+    EventPriority.LOW -> org.bukkit.event.EventPriority.LOW
+    EventPriority.NORMAL -> org.bukkit.event.EventPriority.NORMAL
+    EventPriority.HIGH -> org.bukkit.event.EventPriority.HIGH
+    EventPriority.HIGHEST -> org.bukkit.event.EventPriority.HIGHEST
+    EventPriority.MONITOR, EventPriority.CUSTOM -> org.bukkit.event.EventPriority.MONITOR
+}
 
 fun dispatchCommand(sender: CommandSender?, command: String): Boolean {
     if (sender is Player) {

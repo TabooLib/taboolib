@@ -7,12 +7,14 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.EventExecutor
 import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.platform.type.BukkitConsole
 import taboolib.platform.type.BukkitPlayer
+import taboolib.platform.util.toBukkit
 
 /**
  * TabooLib
@@ -50,17 +52,15 @@ class BukkitAdapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        val bukkitListener = BukkitListener(event as Class<Event>, { it.javaClass == event }, { func(it as T) })
-        val bukkitPriority = when (priority) {
-            EventPriority.LOWEST -> org.bukkit.event.EventPriority.LOWEST
-            EventPriority.LOW -> org.bukkit.event.EventPriority.LOW
-            EventPriority.NORMAL -> org.bukkit.event.EventPriority.NORMAL
-            EventPriority.HIGH -> org.bukkit.event.EventPriority.HIGH
-            EventPriority.HIGHEST -> org.bukkit.event.EventPriority.HIGHEST
-            EventPriority.MONITOR, EventPriority.CUSTOM -> org.bukkit.event.EventPriority.MONITOR
-        }
-        Bukkit.getPluginManager().registerEvent(event, bukkitListener, bukkitPriority, bukkitListener, plugin, ignoreCancelled)
-        return bukkitListener
+        val listener = BukkitListener(event as Class<Event>,
+            predicate = {
+                event == if (it is BukkitEvent) it.proxyEvent::class.java else it.javaClass
+            },
+            consumer = {
+                func(it as T)
+            })
+        Bukkit.getPluginManager().registerEvent(event, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
+        return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
@@ -86,6 +86,21 @@ class BukkitAdapter : PlatformAdapter {
                 e.printStackTrace()
             }
         }
+    }
+
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    fun e(e: PlayerMoveEvent) {
+
+    }
+
+    @SubscribeEvent
+    fun e(e: CustomEvent) {
+
+    }
+
+    class CustomEvent : ProxyEvent() {
+
     }
 
     class BukkitEvent(val proxyEvent: ProxyEvent) : Event(), Cancellable {
