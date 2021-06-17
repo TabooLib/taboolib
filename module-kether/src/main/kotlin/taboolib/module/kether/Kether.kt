@@ -5,7 +5,7 @@ import io.izzel.kether.common.api.QuestActionParser
 import io.izzel.kether.common.loader.LoadError
 import io.izzel.kether.common.loader.QuestReader
 import taboolib.module.dependency.*
-import taboolib.module.kether.action.bukkit.PlayerOperator
+import taboolib.module.kether.action.game.PlayerOperator
 import kotlin.reflect.KClass
 
 @RuntimeDependencies(
