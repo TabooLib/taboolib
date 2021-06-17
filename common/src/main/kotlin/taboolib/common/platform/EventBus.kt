@@ -17,11 +17,13 @@ object EventBus {
     }
 
     fun inject(clazz: Class<*>, instance: Any) {
-        clazz.declaredMethods.forEach { method ->
-            if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
-                val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
-                registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
-                    method.invoke(instance, it)
+        if (PlatformFactory.checkPlatform(clazz)) {
+            clazz.declaredMethods.forEach { method ->
+                if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
+                    val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
+                    registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
+                        method.invoke(instance, it)
+                    }
                 }
             }
         }

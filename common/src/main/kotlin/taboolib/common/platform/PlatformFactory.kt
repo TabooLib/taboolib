@@ -18,7 +18,7 @@ object PlatformFactory {
     fun init() {
         if (KotlinEnv.isKotlinEnvironment()) {
             classes.forEach {
-                if (it.isAnnotationPresent(Awake::class.java)) {
+                if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.kotlin.objectInstance ?: it.getDeclaredConstructor().newInstance()
                     when {
@@ -38,5 +38,10 @@ object PlatformFactory {
                 }
             }
         }
+    }
+
+    fun checkPlatform(clazz: Class<*>): Boolean {
+        val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true
+        return runningPlatform in platformSide.value
     }
 }

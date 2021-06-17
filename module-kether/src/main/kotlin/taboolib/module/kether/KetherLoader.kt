@@ -3,6 +3,7 @@ package taboolib.module.kether
 import io.izzel.kether.common.api.QuestActionParser
 import taboolib.common.io.classes
 import taboolib.common.platform.Awake
+import taboolib.common.platform.PlatformFactory
 
 /**
  * TabooLibKotlin
@@ -17,15 +18,17 @@ object KetherLoader {
 
     init {
         classes.forEach base@{ clazz ->
-            val instance = clazz.kotlin.objectInstance ?: return@base
-            clazz.declaredMethods.forEach {
-                if (it.isAnnotationPresent(KetherParser::class.java)) {
-                    val parser = it.getAnnotation(KetherParser::class.java)
-                    if (parser.value.isEmpty()) {
-                        it.invoke(instance)
-                    } else {
-                        parser.value.forEach { name ->
-                            Kether.addAction(name, it.invoke(instance) as QuestActionParser, parser.namespace)
+            if (PlatformFactory.checkPlatform(clazz)) {
+                val instance = clazz.kotlin.objectInstance ?: return@base
+                clazz.declaredMethods.forEach {
+                    if (it.isAnnotationPresent(KetherParser::class.java)) {
+                        val parser = it.getAnnotation(KetherParser::class.java)
+                        if (parser.value.isEmpty()) {
+                            it.invoke(instance)
+                        } else {
+                            parser.value.forEach { name ->
+                                Kether.addAction(name, it.invoke(instance) as QuestActionParser, parser.namespace)
+                            }
                         }
                     }
                 }
