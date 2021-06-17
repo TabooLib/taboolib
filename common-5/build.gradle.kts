@@ -11,8 +11,6 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.ow2.asm:asm:9.1")
-    compileOnly("org.ow2.asm:asm-commons:9.1")
     compileOnly("com.google.guava:guava:21.0")
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))

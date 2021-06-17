@@ -1,4 +1,4 @@
-package taboolib.common5.util;
+package taboolib.common.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,34 +40,6 @@ public class Strings {
             }
         }
         return stringBuilder.toString();
-    }
-
-    public static String hashKeyForDisk(String key) {
-        return hashKeyForDisk(key, "MD5");
-    }
-
-    public static String hashKeyForDisk(String key, String type) {
-        String cacheKey;
-        try {
-            final MessageDigest digest = MessageDigest.getInstance(type);
-            digest.update(key.getBytes());
-            cacheKey = bytesToHexString(digest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            cacheKey = String.valueOf(key.hashCode());
-        }
-        return cacheKey;
-    }
-
-    public static String hashKeyForDisk(byte[] key, String type) {
-        String cacheKey;
-        try {
-            final MessageDigest digest = MessageDigest.getInstance(type);
-            digest.update(key);
-            cacheKey = bytesToHexString(digest.digest());
-        } catch (NoSuchAlgorithmException e) {
-            cacheKey = String.valueOf(Arrays.hashCode(key));
-        }
-        return cacheKey;
     }
 
     /**

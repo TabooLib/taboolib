@@ -9,6 +9,18 @@ package taboolib.module.nms
  */
 class Test {
 
+    @MinecraftServerProxy(side = ProxySide.NMS, type = ProxyType.CONSTRUCTOR)
+    lateinit var packetPlayOutTitle: ProxyCallback<Any>
+        private set
+
+    @MinecraftServerProxy(side = ProxySide.NMS, type = ProxyType.ENUM)
+    lateinit var enumTitleAction: ProxyEnums
+        private set
+
+    @MinecraftServerProxy(side = ProxySide.OBC, type = ProxyType.METHOD, at = "CraftChatMessage")
+    lateinit var fromString: ProxyCallback<Array<*>>
+        private set
+
     @MinecraftServerProxy(side = ProxySide.OBC, type = ProxyType.FIELD, at = "CraftPlayer")
     lateinit var resourcePackStatus: ProxyCallback<Enum<*>>
         private set
@@ -36,4 +48,6 @@ class Test {
     @MinecraftServerProxy(side = ProxySide.NMS, type = ProxyType.METHOD, at = "NetworkManager")
     lateinit var sendPacket: ProxyCallback<Void>
         private set
+
+
 }

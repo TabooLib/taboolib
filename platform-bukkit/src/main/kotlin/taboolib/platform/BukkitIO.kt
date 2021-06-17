@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.Platform
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
+import taboolib.common.platform.PlatformSide
 import java.io.File
 
 /**
@@ -15,6 +16,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@PlatformSide([Platform.BUKKIT])
 class BukkitIO : PlatformIO {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin

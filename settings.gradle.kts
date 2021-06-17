@@ -2,6 +2,7 @@ rootProject.name = "TabooLib"
 include("common", "common-5", "plugin")
 include("module-nms")
 include("module-chat")
+include("module-lang")
 include("module-kether")
 include("module-porticus")
 include("module-dependency")

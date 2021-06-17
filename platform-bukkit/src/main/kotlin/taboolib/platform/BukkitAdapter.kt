@@ -15,6 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
 import taboolib.common.util.Location
 import taboolib.common5.reflect.Reflex.Companion.reflex
+import taboolib.platform.type.BukkitConsole
+import taboolib.platform.type.BukkitPlayer
 import java.net.InetSocketAddress
 import java.util.*
 
@@ -25,6 +27,8 @@ import java.util.*
  * @author sky
  * @since 2021/6/17 12:22 上午
  */
+@Awake
+@PlatformSide([Platform.BUKKIT])
 class BukkitAdapter : PlatformAdapter {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
@@ -43,85 +47,11 @@ class BukkitAdapter : PlatformAdapter {
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
-        val player = any as Player
-        return object : ProxyPlayer {
-
-            override val origin: Any
-                get() = player
-
-            override val name: String
-                get() = player.name
-
-            override val address: InetSocketAddress?
-                get() = player.address
-
-            override val uniqueId: UUID
-                get() = player.uniqueId
-
-            override val ping: Int
-                get() = player.ping
-
-            override val locale: String
-                get() = player.locale
-
-            override val world: String
-                get() = player.world.name
-
-            override val location: Location
-                get() = Location(world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch)
-
-            override fun kick(message: String?) {
-                player.kickPlayer(message)
-            }
-
-            override fun chat(message: String) {
-                player.chat(message)
-            }
-
-            override fun sendRawMessage(message: String) {
-                player.sendRawMessage(message)
-            }
-
-            override fun sendMessage(message: String) {
-                player.sendMessage(message)
-            }
-
-            override fun performCommand(command: String): Boolean {
-                return dispatchCommand(player, command)
-            }
-
-            override fun hasPermission(permission: String): Boolean {
-                return player.hasPermission(permission)
-            }
-
-            override fun teleport(loc: Location) {
-                player.teleport(org.bukkit.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
-            }
-        }
+        return BukkitPlayer(any as Player)
     }
 
     override fun adaptCommandSender(any: Any): ProxyConsole {
-        val sender = any as ConsoleCommandSender
-        return object : ProxyConsole {
-
-            override val origin: Any
-                get() = sender
-
-            override val name: String
-                get() = sender.name
-
-            override fun sendMessage(message: String) {
-                sender.sendMessage(message)
-            }
-
-            override fun performCommand(command: String): Boolean {
-                return dispatchCommand(sender, command)
-            }
-
-            override fun hasPermission(permission: String): Boolean {
-                return sender.hasPermission(permission)
-            }
-        }
+        return BukkitConsole(any as ConsoleCommandSender)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -147,23 +77,6 @@ class BukkitAdapter : PlatformAdapter {
         val bukkitEvent = BukkitEvent(proxyEvent)
         Bukkit.getPluginManager().callEvent(bukkitEvent)
         bukkitEvent.proxyEvent.postCall()
-    }
-
-    fun dispatchCommand(sender: CommandSender?, command: String): Boolean {
-        if (sender is Player) {
-            val event = PlayerCommandPreprocessEvent((sender as Player?)!!, "/$command")
-            Bukkit.getPluginManager().callEvent(event)
-            if (!event.isCancelled && event.message.isNotBlank() && event.message.startsWith("/")) {
-                return Bukkit.dispatchCommand(event.player, event.message.substring(1))
-            }
-        } else {
-            val e = ServerCommandEvent(sender!!, command)
-            Bukkit.getPluginManager().callEvent(e)
-            if (!e.isCancelled && e.command.isNotBlank()) {
-                return Bukkit.dispatchCommand(e.sender, e.command)
-            }
-        }
-        return false
     }
 
     class BukkitListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {

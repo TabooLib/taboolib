@@ -29,7 +29,16 @@ interface ProxyPlayer : ProxyCommandSender {
 
     fun chat(message: String)
 
+    fun playSound(location: Location, sound: String, volume: Float, pitch: Float)
+
+    fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float)
+
+    fun sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int)
+
+    fun sendActionBar(message: String)
+
     fun sendRawMessage(message: String)
 
     fun teleport(loc: Location)
+
 }

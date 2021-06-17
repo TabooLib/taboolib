@@ -1,5 +1,6 @@
 package taboolib.common5.util
 
+import taboolib.common.util.Strings
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom

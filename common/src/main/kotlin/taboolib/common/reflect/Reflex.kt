@@ -1,4 +1,4 @@
-package taboolib.common5.reflect
+package taboolib.common.reflect
 
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -53,24 +53,24 @@ class Reflex(val from: Class<*>) {
 
     fun <T> get(type: Class<T>, index: Int = 0): T? {
         val field = from.reflexFields().values.filter { it.type == type }.getOrNull(index - 1) ?: throw NoSuchFieldException("$type($index) at $from")
-        val obj = Ref.getField(instance, field)
-        return if (obj != null) obj as T else null
+        return Ref.get<T>(instance, field)
     }
 
     fun <T> get(name: String): T? {
         val map = from.reflexFields()
-        val obj = Ref.getField(instance, map[name] ?: throw NoSuchFieldException("$name at $from"))
-        return if (obj != null) obj as T else null
+        // todo 1.17 support
+        return Ref.get<T>(instance, map[name] ?: throw NoSuchFieldException("$name at $from"))
     }
 
     fun set(type: Class<*>, value: Any?, index: Int = 0) {
         val field = from.reflexFields().values.filter { it.type == type }.getOrNull(index - 1) ?: throw NoSuchFieldException("$type($index) at $from")
-        Ref.putField(instance, field, value)
+        Ref.put(instance, field, value)
     }
 
     fun set(name: String, value: Any?) {
         val map = from.reflexFields()
-        Ref.putField(instance, map[name] ?: throw NoSuchFieldException("$name at $from"), value)
+        // todo 1.17 support
+        Ref.put(instance, map[name] ?: throw NoSuchFieldException("$name at $from"), value)
     }
 
     fun <T> invoke(name: String, vararg parameter: Any?): T? {

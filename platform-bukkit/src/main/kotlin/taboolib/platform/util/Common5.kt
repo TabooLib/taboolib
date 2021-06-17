@@ -1,12 +1,13 @@
 package taboolib.platform.util
 
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
 import taboolib.common5.util.Quat
 
-fun taboolib.common.util.Location.toBukkitLocation(world: World): Location {
-    return Location(world, x, y, z)
+fun taboolib.common.util.Location.toBukkitLocation(): Location {
+    return Location(world?.let { Bukkit.getWorld(it) }, x, y, z)
 }
 
 fun Location.toProxyLocation(): taboolib.common.util.Location {

@@ -9,5 +9,5 @@ package taboolib.module.nms
  */
 enum class ProxyType {
 
-    FIELD, METHOD
+    FIELD, METHOD, CONSTRUCTOR, ENUM
 }

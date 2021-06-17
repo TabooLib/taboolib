@@ -1,4 +1,4 @@
-package taboolib.common5.reflect;
+package taboolib.module.nms;
 
 public class AsmClassLoader extends ClassLoader {
 

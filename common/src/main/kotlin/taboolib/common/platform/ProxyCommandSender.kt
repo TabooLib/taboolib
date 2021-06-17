@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import taboolib.common.util.Location
+
 /**
  * TabooLib
  * taboolib.common.platform.ProxyCommandSender
