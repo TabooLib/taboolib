@@ -9,6 +9,8 @@ package taboolib.common.platform
  */
 interface ProxyCommandSender {
 
+    val origin: Any
+
     val name: String
 
     fun sendMessage(message: String)

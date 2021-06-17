@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import taboolib.common.util.Location
+
 /**
  * TabooLib
  * taboolib.common.platform.PlatformAdaptor
@@ -15,9 +17,9 @@ interface PlatformAdapter {
 
     fun onlinePlayers(): List<ProxyPlayer>
 
-    fun adapterPlayer(any: Any): ProxyPlayer
+    fun adaptPlayer(any: Any): ProxyPlayer
 
-    fun adapterCommandSender(any: Any): ProxyCommandSender
+    fun adaptCommandSender(any: Any): ProxyCommandSender
 
     fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener
 

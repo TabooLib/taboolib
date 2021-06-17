@@ -13,6 +13,7 @@ import org.bukkit.event.server.ServerCommandEvent
 import org.bukkit.plugin.EventExecutor
 import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
+import taboolib.common.util.Location
 import taboolib.common5.reflect.Reflex.Companion.reflex
 import java.net.InetSocketAddress
 import java.util.*
@@ -34,16 +35,19 @@ class BukkitAdapter : PlatformAdapter {
     }
 
     override fun console(): ProxyConsole {
-        return adapterCommandSender(Bukkit.getConsoleSender())
+        return adaptCommandSender(Bukkit.getConsoleSender())
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
-        return Bukkit.getOnlinePlayers().map { adapterPlayer(it) }
+        return Bukkit.getOnlinePlayers().map { adaptPlayer(it) }
     }
 
-    override fun adapterPlayer(any: Any): ProxyPlayer {
+    override fun adaptPlayer(any: Any): ProxyPlayer {
         val player = any as Player
         return object : ProxyPlayer {
+
+            override val origin: Any
+                get() = player
 
             override val name: String
                 get() = player.name
@@ -59,6 +63,12 @@ class BukkitAdapter : PlatformAdapter {
 
             override val locale: String
                 get() = player.locale
+
+            override val world: String
+                get() = player.world.name
+
+            override val location: Location
+                get() = Location(world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch)
 
             override fun kick(message: String?) {
                 player.kickPlayer(message)
@@ -83,12 +93,19 @@ class BukkitAdapter : PlatformAdapter {
             override fun hasPermission(permission: String): Boolean {
                 return player.hasPermission(permission)
             }
+
+            override fun teleport(loc: Location) {
+                player.teleport(org.bukkit.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
+            }
         }
     }
 
-    override fun adapterCommandSender(any: Any): ProxyConsole {
+    override fun adaptCommandSender(any: Any): ProxyConsole {
         val sender = any as ConsoleCommandSender
         return object : ProxyConsole {
+
+            override val origin: Any
+                get() = sender
 
             override val name: String
                 get() = sender.name

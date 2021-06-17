@@ -13,6 +13,7 @@ repositories {
 dependencies {
     implementation("dev.vankka.DependencyDownload:common:1.0.0")
     implementation("dev.vankka.DependencyDownload:runtime:1.0.0")
+    compileOnly("com.google.guava:guava:21.0")
     compileOnly(kotlin("stdlib"))
 }
 

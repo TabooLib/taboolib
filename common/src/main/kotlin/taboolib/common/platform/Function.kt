@@ -3,6 +3,7 @@ package taboolib.common.platform
 import taboolib.common.platform.PlatformFactory.platformAdapter
 import taboolib.common.platform.PlatformFactory.platformExecutor
 import taboolib.common.platform.PlatformFactory.platformIO
+import taboolib.common.util.Location
 import java.io.File
 import java.util.*
 
@@ -48,12 +49,12 @@ fun onlinePlayers(): List<ProxyPlayer> {
     return platformAdapter.onlinePlayers()
 }
 
-fun adapterPlayer(any: Any): ProxyPlayer {
-    return platformAdapter.adapterPlayer(any)
+fun adaptPlayer(any: Any): ProxyPlayer {
+    return platformAdapter.adaptPlayer(any)
 }
 
-fun adapterCommandSender(any: Any): ProxyCommandSender {
-    return platformAdapter.adapterCommandSender(any)
+fun adaptCommandSender(any: Any): ProxyCommandSender {
+    return platformAdapter.adaptCommandSender(any)
 }
 
 fun getProxyPlayer(name: String): ProxyPlayer? {
