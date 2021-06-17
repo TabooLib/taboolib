@@ -1,5 +1,6 @@
 package taboolib.common5.util
 
+import java.lang.Exception
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import javax.script.*
@@ -146,4 +147,13 @@ fun random(num1: Double, num2: Double): Double {
     val min = min(num1, num2)
     val max = max(num1, num2)
     return if (min == max) max else ThreadLocalRandom.current().nextDouble(min, max)
+}
+
+fun Any.isInt(): Boolean {
+    return try {
+        Integer.parseInt(this.toString())
+        true
+    } catch (ex: Exception) {
+        false
+    }
 }

@@ -3,6 +3,7 @@ package taboolib.common.platform
 import taboolib.common.platform.PlatformFactory.platformAdapter
 import taboolib.common.platform.PlatformFactory.platformExecutor
 import taboolib.common.platform.PlatformFactory.platformIO
+import java.io.File
 import java.util.*
 
 val isPrimaryThread: Boolean
@@ -11,34 +12,66 @@ val isPrimaryThread: Boolean
 val runningPlatform: Platform
     get() = platformIO.runningPlatform
 
-fun info(vararg message: Any?) = platformIO.info(*message)
+fun info(vararg message: Any?) {
+    platformIO.info(*message)
+}
 
-fun severe(vararg message: Any?) = platformIO.severe(*message)
+fun severe(vararg message: Any?) {
+    platformIO.severe(*message)
+}
 
-fun warning(vararg message: Any?) = platformIO.warning(*message)
+fun warning(vararg message: Any?) {
+    platformIO.warning(*message)
+}
 
-fun releaseResourceFile(path: String, replace: Boolean = false) = platformIO.releaseResourceFile(path, replace)
+fun releaseResourceFile(path: String, replace: Boolean = false): File {
+    return platformIO.releaseResourceFile(path, replace)
+}
 
-fun getJarFile() = platformIO.getJarFile()
+fun getJarFile(): File {
+    return platformIO.getJarFile()
+}
 
 fun execute(async: Boolean = false, delay: Long = 0, period: Long = 0, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
     return platformExecutor.execute(async, delay, period, executor)
 }
 
-fun console() = platformAdapter.console()
+fun <T> server(): T {
+    return platformAdapter.server()
+}
 
-fun onlinePlayers() = platformAdapter.onlinePlayers()
+fun console(): ProxyConsole {
+    return platformAdapter.console()
+}
 
-fun adapterPlayer(any: Any) = platformAdapter.adapterPlayer(any)
+fun onlinePlayers(): List<ProxyPlayer> {
+    return platformAdapter.onlinePlayers()
+}
 
-fun adapterCommandSender(any: Any) = platformAdapter.adapterCommandSender(any)
+fun adapterPlayer(any: Any): ProxyPlayer {
+    return platformAdapter.adapterPlayer(any)
+}
 
-fun getProxyPlayer(name: String) = onlinePlayers().firstOrNull { it.name == name }
+fun adapterCommandSender(any: Any): ProxyCommandSender {
+    return platformAdapter.adapterCommandSender(any)
+}
 
-fun getProxyPlayer(uuid: UUID) = onlinePlayers().firstOrNull { it.uniqueId == uuid }
+fun getProxyPlayer(name: String): ProxyPlayer? {
+    return onlinePlayers().firstOrNull { it.name == name }
+}
 
-fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit) {
+fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
+    return onlinePlayers().firstOrNull { it.uniqueId == uuid }
+}
+
+fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener {
     return platformAdapter.registerListener(event, priority, ignoreCancelled, func)
 }
 
-fun callEvent(proxyEvent: ProxyEvent) = platformAdapter.callEvent(proxyEvent)
+fun unregisterListener(proxyListener: ProxyListener) {
+    platformAdapter.unregisterListener(proxyListener)
+}
+
+fun callEvent(proxyEvent: ProxyEvent) {
+    platformAdapter.callEvent(proxyEvent)
+}

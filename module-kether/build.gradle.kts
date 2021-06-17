@@ -8,6 +8,9 @@ plugins {
 
 repositories {
     maven {
+        url = uri("https://repo1.maven.org/maven2")
+    }
+    maven {
         isAllowInsecureProtocol = true
         url = uri("http://repo.ptms.ink/repository/maven-releases/")
     }
@@ -17,6 +20,7 @@ repositories {
 dependencies {
     implementation("io.izzel.kether:common:1.0.12")
     compileOnly("com.google.guava:guava:17.0")
+    compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module-dependency"))

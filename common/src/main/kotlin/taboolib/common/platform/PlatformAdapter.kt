@@ -9,7 +9,9 @@ package taboolib.common.platform
  */
 interface PlatformAdapter {
 
-    fun console(): ProxyCommandSender
+    fun <T> server(): T
+
+    fun console(): ProxyConsole
 
     fun onlinePlayers(): List<ProxyPlayer>
 
@@ -17,7 +19,9 @@ interface PlatformAdapter {
 
     fun adapterCommandSender(any: Any): ProxyCommandSender
 
-    fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit)
+    fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener
+
+    fun unregisterListener(proxyListener: ProxyListener)
 
     fun callEvent(proxyEvent: ProxyEvent)
 }

@@ -28,7 +28,12 @@ class BukkitAdapter : PlatformAdapter {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
 
-    override fun console(): ProxyCommandSender {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return Bukkit.getServer() as T
+    }
+
+    override fun console(): ProxyConsole {
         return adapterCommandSender(Bukkit.getConsoleSender())
     }
 
@@ -81,9 +86,9 @@ class BukkitAdapter : PlatformAdapter {
         }
     }
 
-    override fun adapterCommandSender(any: Any): ProxyCommandSender {
+    override fun adapterCommandSender(any: Any): ProxyConsole {
         val sender = any as ConsoleCommandSender
-        return object : ProxyCommandSender {
+        return object : ProxyConsole {
 
             override val name: String
                 get() = sender.name
@@ -103,7 +108,7 @@ class BukkitAdapter : PlatformAdapter {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit) {
+    override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val bukkitListener = BukkitListener(event as Class<Event>, { it.javaClass == event }, { func(it as T) })
         val bukkitPriority = when (priority) {
             EventPriority.LOWEST -> org.bukkit.event.EventPriority.LOWEST
@@ -114,6 +119,11 @@ class BukkitAdapter : PlatformAdapter {
             EventPriority.MONITOR, EventPriority.CUSTOM -> org.bukkit.event.EventPriority.MONITOR
         }
         Bukkit.getPluginManager().registerEvent(event, bukkitListener, bukkitPriority, bukkitListener, plugin, ignoreCancelled)
+        return bukkitListener
+    }
+
+    override fun unregisterListener(proxyListener: ProxyListener) {
+        HandlerList.unregisterAll(proxyListener as Listener)
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
@@ -139,7 +149,7 @@ class BukkitAdapter : PlatformAdapter {
         return false
     }
 
-    class BukkitListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor {
+    class BukkitListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
             try {
@@ -154,7 +164,7 @@ class BukkitAdapter : PlatformAdapter {
         }
     }
 
-    class BukkitEvent(val proxyEvent: ProxyEvent): Event(), Cancellable {
+    class BukkitEvent(val proxyEvent: ProxyEvent) : Event(), Cancellable {
 
         init {
             if (proxyEvent.allowAsynchronous) {
