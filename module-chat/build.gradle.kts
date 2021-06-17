@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("net.md-5:bungeecord-chat:1.17-R0.1-20210614.231035-9")
+    compileOnly(project(":common-5"))
     compileOnly(kotlin("stdlib"))
 }
 
