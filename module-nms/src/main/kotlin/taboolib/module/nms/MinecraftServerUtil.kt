@@ -4,6 +4,7 @@ import taboolib.common.io.classes
 import java.util.concurrent.ConcurrentHashMap
 
 private val nmsProxyCacheMap = ConcurrentHashMap<String, Any>()
+private val nmsUtil = nmsProxy(NMS::class.java, "{name}Impl")
 
 fun obcClass(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.legacyVersion}.$name")

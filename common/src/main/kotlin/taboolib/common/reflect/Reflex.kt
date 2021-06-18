@@ -58,6 +58,10 @@ class Reflex(val from: Class<*>) {
         return Ref.get<T>(instance, field ?: throw NoSuchFieldException("$type($index) at $from"))
     }
 
+    fun <T> get(name: String, def: T): T {
+        return get(name) ?: def
+    }
+
     fun <T> get(name: String): T? {
         return Ref.get<T>(instance, ReflexClass.find(from).findField(name) ?: throw NoSuchFieldException("$name at $from"))
     }
