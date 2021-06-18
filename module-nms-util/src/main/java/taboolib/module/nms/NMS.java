@@ -29,8 +29,10 @@ public abstract class NMS {
     @NotNull
     abstract public String getName(Entity entity);
 
+    @NotNull
     abstract public ItemTag getItemTag(ItemStack itemStack);
 
+    @NotNull
     abstract public ItemStack setItemTag(ItemStack itemStack, ItemTag compound);
 
     abstract public Object getEntityType(String name);

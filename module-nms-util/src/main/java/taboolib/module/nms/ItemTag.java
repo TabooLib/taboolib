@@ -2,6 +2,7 @@ package taboolib.module.nms;
 
 import com.google.common.collect.Maps;
 import com.google.gson.*;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -25,9 +26,9 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         this.data = this;
     }
 
-//    public void saveTo(ItemStack item) {
-//        item.setItemMeta(NMS.handle().saveNBT(item, this).getItemMeta());
-//    }
+    public void saveTo(ItemStack item) {
+        item.setItemMeta(NMSUtilKt.getNmsUtil().setItemTag(item, this).getItemMeta());
+    }
 
     public String toJson() {
         return new Gson().toJson(this);

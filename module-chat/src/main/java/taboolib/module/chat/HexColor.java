@@ -2,7 +2,6 @@ package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common5.util.Coerce;
 
 import java.awt.*;
 import java.util.Optional;
@@ -80,6 +79,6 @@ public class HexColor {
         for (int i = start; i < end; i++) {
             builder.append(chars[i]);
         }
-        return Coerce.toInteger(builder.toString());
+        return Integer.parseInt(builder.toString());
     }
 }

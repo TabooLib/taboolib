@@ -29,6 +29,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -174,6 +175,7 @@ public class NMSImpl extends NMS {
         }
     }
 
+    @NotNull
     @Override
     public ItemTag getItemTag(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
@@ -182,7 +184,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public org.bukkit.inventory.ItemStack setItemTag(org.bukkit.inventory.ItemStack itemStack, ItemTag compound) {
+    public @NotNull ItemStack setItemTag(ItemStack itemStack, ItemTag compound) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase(compound));
         return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
