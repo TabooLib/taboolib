@@ -13,7 +13,6 @@ import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
 import java.net.InetSocketAddress
 import java.util.*
-import javax.swing.Action
 
 /**
  * TabooLib
