@@ -33,7 +33,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float)
 
-    fun sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int)
+    fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int)
 
     fun sendActionBar(message: String)
 

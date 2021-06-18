@@ -1,14 +1,19 @@
 package taboolib.platform.type
 
+import net.md_5.bungee.api.ChatMessageType
+import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.common.util.Location
 import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
 import java.net.InetSocketAddress
 import java.util.*
+import javax.swing.Action
 
 /**
  * TabooLib
@@ -18,6 +23,26 @@ import java.util.*
  * @since 2021/6/17 10:33 下午
  */
 class BukkitPlayer(val player: Player) : ProxyPlayer {
+
+    val legacyVersion by lazy {
+        Bukkit.getServer().javaClass.name.split('.')[3]
+    }
+
+    val rChatCompoundText by lazy {
+        nmsClass("ChatComponentText").getDeclaredConstructor(String::class.java)
+    }
+
+    val rPacketPlayOutTitle by lazy {
+        nmsClass("PacketPlayOutTitle").getDeclaredConstructor()
+    }
+
+    val rEnumTitleAction by lazy {
+        nmsClass("PacketPlayOutTitle\$EnumTitleAction").enumConstants
+    }
+
+    fun nmsClass(name: String): Class<*> {
+        return Class.forName("net.minecraft.server.$legacyVersion.$name")
+    }
 
     override val origin: Any
         get() = player
@@ -59,12 +84,40 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.playSound(location.toBukkitLocation(), sound, volume, pitch)
     }
 
-    override fun sendTitle(title: String, subtitle: String, fadein: Int, stay: Int, fadeout: Int) {
-        player.sendTitle(title, subtitle, fadein, stay, fadeout)
+    override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
+        try {
+            player.sendTitle(title, subtitle, fadein, stay, fadeout)
+        } catch (ex: NoSuchMethodError) {
+            val connection = player.reflexInvoke<Any>("getHandle")!!.reflex<Any>("playerConnection")!!
+            if (title != null) {
+                connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                    it.reflex("a", rEnumTitleAction[0])
+                    it.reflex("b", rChatCompoundText.newInstance(title))
+                    it.reflex("c", fadein)
+                    it.reflex("d", stay)
+                    it.reflex("e", fadeout)
+                })
+            }
+            if (subtitle != null) {
+                connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                    it.reflex("a", rEnumTitleAction[1])
+                    it.reflex("b", rChatCompoundText.newInstance(subtitle))
+                    it.reflex("c", fadein)
+                    it.reflex("d", stay)
+                    it.reflex("e", fadeout)
+                })
+            }
+            connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                it.reflex("a", rEnumTitleAction[3])
+                it.reflex("c", fadein)
+                it.reflex("d", stay)
+                it.reflex("e", fadeout)
+            })
+        }
     }
 
     override fun sendActionBar(message: String) {
-        TODO("Not yet implemented")
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message)[0])
     }
 
     override fun sendRawMessage(message: String) {
