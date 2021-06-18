@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation("me.lucko:jar-relocator:1.4")
+//    implementation("me.lucko:jar-relocator:1.4")
     compileOnly("dev.vankka.DependencyDownload:common:1.0.0")
     compileOnly("dev.vankka.DependencyDownload:runtime:1.0.0")
     compileOnly(project(":common"))
@@ -22,7 +22,7 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
         dependencies {
-            include(dependency("me.lucko:jar-relocator:1.4"))
+//            include(dependency("me.lucko:jar-relocator:1.4"))
         }
         relocate("me.lucko", "taboolib.library")
         relocate("dev.vankka", "taboolib.library")

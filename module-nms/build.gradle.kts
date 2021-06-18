@@ -15,7 +15,7 @@ dependencies {
     compileOnly("org.ow2.asm:asm:9.1")
     compileOnly("org.ow2.asm:asm-commons:9.1")
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":module-dependency"))
     compileOnly(project(":platform-bukkit"))
     compileOnly(kotlin("stdlib"))
 }

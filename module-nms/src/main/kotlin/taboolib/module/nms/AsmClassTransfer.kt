@@ -4,10 +4,6 @@ import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.commons.ClassRemapper
-import org.objectweb.asm.commons.SimpleRemapper
-import java.io.InputStream
-import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * TabooLib
@@ -19,12 +15,11 @@ import kotlin.collections.HashMap
 class AsmClassTransfer(val source: String) {
 
     fun run(): Class<*> {
-        // 读取
         val classReader = ClassReader(source)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        val classVisitor: ClassVisitor = ClassRemapper(classWriter, SimpleRemapper(emptyMap()))
+        val classVisitor: ClassVisitor = ClassRemapper(classWriter, MinecraftRemapper(remapper))
         classReader.accept(classVisitor, 0)
-        error(1)
+        return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
     }
 
     companion object {
