@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * @author sky
  * @since 2018-05-26 14:42json
  */
+@SuppressWarnings("UnusedReturnValue")
 public class TellrawJson {
 
     private static final boolean is10900 = Version.getCurrentVersionInt() <= 10900;

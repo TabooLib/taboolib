@@ -9,6 +9,7 @@ import io.izzel.taboolib.util.Files;
 import io.izzel.taboolib.util.IO;
 import io.izzel.taboolib.util.Pair;
 import io.izzel.taboolib.util.Ref;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.plugin.Plugin;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -148,6 +149,9 @@ public class AsmVersionControl {
 
     public Class<?> translate() throws IOException {
         return translate(plugin);
+    }
+
+    public void a(ArmorStand a) {
     }
 
     public Class<?> translate(Plugin plugin) throws IOException {

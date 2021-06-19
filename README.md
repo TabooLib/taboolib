@@ -25,7 +25,7 @@
     <img src="https://img.shields.io/badge/TabooLib Loader-3.0.4-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.75-green">
+    <img src="https://img.shields.io/badge/TabooLib Kotlin-1.0.78-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/TabooLib Deprecated-1.0.6-green">
@@ -38,7 +38,7 @@
     <img src="https://img.shields.io/badge/navigation--no--entity-1.0.7-green">
   </a>
   <a>
-    <img src="https://img.shields.io/badge/blockdb-1.0.9-green">
+    <img src="https://img.shields.io/badge/blockdb-1.0.10-green">
   </a>
   <a>
     <img src="https://img.shields.io/badge/menubuilderlib-2.0.2-green">
