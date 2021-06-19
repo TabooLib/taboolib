@@ -43,9 +43,11 @@ class NukkitPlugin : PluginBase() {
         return super.getFile()
     }
 
+
     companion object {
 
         lateinit var instance: NukkitPlugin
             private set
     }
+
 }

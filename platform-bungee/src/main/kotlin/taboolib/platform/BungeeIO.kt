@@ -46,7 +46,7 @@ class BungeeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        file.writeBytes(BungeePlugin.instance.getResourceAsStream(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
+        file.writeBytes(BungeePlugin.instance.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

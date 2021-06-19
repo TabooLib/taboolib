@@ -1,8 +1,7 @@
 package taboolib.platform
 
 import org.spongepowered.api.scheduler.Task
-import taboolib.common.platform.PlatformExecutor
-import taboolib.common.platform.Awake
+import taboolib.common.platform.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -14,6 +13,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:43
  */
 @Awake
+@PlatformSide([Platform.SPONGE])
 class SpongeExecutor : PlatformExecutor {
 
     val plugin = SpongePlugin.instance
@@ -68,6 +68,7 @@ class SpongeExecutor : PlatformExecutor {
         future.thenAccept {
             scheduledTask.submit(SpongePlugin.instance).cancel()
         }
+        
         return task
     }
 
