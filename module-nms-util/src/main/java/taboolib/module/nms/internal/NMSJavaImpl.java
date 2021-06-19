@@ -1,4 +1,4 @@
-package taboolib.module.nms;
+package taboolib.module.nms.internal;
 
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
@@ -37,9 +37,13 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.platform.FunctionKt;
 import taboolib.common.reflect.Ref;
 import taboolib.common.reflect.Reflex;
+import taboolib.module.nms.MinecraftVersion;
+import taboolib.module.nms.*;
+import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -51,12 +55,12 @@ import java.util.function.Consumer;
  * @since 2021/6/18 8:54 下午
  */
 @SuppressWarnings("ALL")
-public class NMSImpl extends NMS {
+public class NMSJavaImpl extends NMSJava {
 
     private Field entityTypesField;
 
-    public NMSImpl() {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+    public NMSJavaImpl() {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             for (Field declaredField : net.minecraft.server.v1_12_R1.Entity.class.getDeclaredFields()) {
                 if (declaredField.getType().getSimpleName().equals("EntityTypes")) {
                     entityTypesField = declaredField;
@@ -75,13 +79,13 @@ public class NMSImpl extends NMS {
     @NotNull
     public String getName(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             String name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
             if (itemStack.getItemMeta() instanceof PotionMeta) {
                 name += ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("minecraft:(strong_|long_)?", "");
             }
             return name;
-        } else if (MinecraftVersion.INSTANCE.getMajor() >= 3) {
+        } else if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 3) {
             String name = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem().a((net.minecraft.server.v1_12_R1.ItemStack) nmsItem);
             if (itemStack.getItemMeta() instanceof PotionMeta) {
                 return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("(minecraft:)?(strong_|long_)?", "");
@@ -99,10 +103,10 @@ public class NMSImpl extends NMS {
     @Override
     @NotNull
     public String getName(Entity entity) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
             Object minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getEntityType());
             return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
-        } else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+        } else if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             try {
                 String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(Ref.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
                 if (entity instanceof Villager && ((CraftVillager) entity).getCareer() != null) {
@@ -184,14 +188,15 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public @NotNull ItemStack setItemTag(ItemStack itemStack, ItemTag compound) {
+    public @NotNull
+    ItemStack setItemTag(ItemStack itemStack, ItemTag compound) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase(compound));
         return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
     }
 
     private Object toNBTBase(ItemTagData base) {
-        boolean v11500 = MinecraftVersion.INSTANCE.getMajor() >= 7;
+        boolean v11500 = taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 7;
         switch (base.getType().getId()) {
             case 1:
                 if (v11500) {
@@ -243,11 +248,11 @@ public class NMSImpl extends NMS {
                 Object nmsList = new NBTTagList();
                 for (ItemTagData value : base.asList()) {
                     // 1.14+
-                    if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+                    if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
                         ((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).add(((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).size(), (net.minecraft.server.v1_14_R1.NBTBase) toNBTBase(value));
                     }
                     // 1.13
-                    else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+                    else if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
                         ((net.minecraft.server.v1_13_R2.NBTTagList) nmsList).add((net.minecraft.server.v1_13_R2.NBTBase) toNBTBase(value));
                     }
                     // 1.12-
@@ -305,7 +310,7 @@ public class NMSImpl extends NMS {
 
     @Nullable
     public Object getEntityType(String name) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
             return net.minecraft.server.v1_14_R1.EntityTypes.a(name).orElse(null);
         } else {
             return net.minecraft.server.v1_13_R2.EntityTypes.a(name);
@@ -314,7 +319,7 @@ public class NMSImpl extends NMS {
 
     @Override
     public <T extends Entity> T spawnEntity(Location location, Class<T> entity, Consumer<T> e) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 4) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 4) {
             return location.getWorld().spawn(location, entity, e::accept);
         } else {
             Object createEntity = ((CraftWorld) location.getWorld()).createEntity(location, entity);
@@ -328,7 +333,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public boolean createLight(Block block, BukkitLightType lightType, int lightLevel) {
+    public boolean createLight(Block block, LightType lightType, int lightLevel) {
         int level = getRawLightLevel(block, lightType);
         setRawLightLevel(block, lightType, lightLevel);
         recalculateLightAround(block, lightType, lightLevel);
@@ -336,7 +341,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public boolean deleteLight(Block block, BukkitLightType lightType) {
+    public boolean deleteLight(Block block, LightType lightType) {
         int level = getRawLightLevel(block, lightType);
         setRawLightLevel(block, lightType, 0);
         recalculateLightAround(block, lightType, level);
@@ -344,22 +349,22 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public int getRawLightLevel(Block block, BukkitLightType lightType) {
+    public int getRawLightLevel(Block block, LightType lightType) {
         Object world = ((CraftWorld) block.getWorld()).getHandle();
         Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-        if (MinecraftVersion.INSTANCE.getMajor() >= 4) {
-            if (lightType == BukkitLightType.BLOCK) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 4) {
+            if (lightType == LightType.BLOCK) {
                 return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
-            } else if (lightType == BukkitLightType.SKY) {
+            } else if (lightType == LightType.SKY) {
                 return ((net.minecraft.server.v1_13_R2.WorldServer) world).getBrightness(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
             } else {
                 return ((net.minecraft.server.v1_13_R2.WorldServer) world).getLightLevel((net.minecraft.server.v1_13_R2.BlockPosition) position);
             }
         } else {
             Object chunk = ((net.minecraft.server.v1_9_R2.WorldServer) world).getChunkAt(block.getChunk().getX(), block.getChunk().getZ());
-            if (lightType == BukkitLightType.BLOCK) {
+            if (lightType == LightType.BLOCK) {
                 return ((net.minecraft.server.v1_9_R2.Chunk) chunk).getBrightness(net.minecraft.server.v1_9_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_9_R2.BlockPosition) position);
-            } else if (lightType == BukkitLightType.SKY) {
+            } else if (lightType == LightType.SKY) {
                 return ((net.minecraft.server.v1_9_R2.Chunk) world).getBrightness(net.minecraft.server.v1_9_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_9_R2.BlockPosition) position);
             } else {
                 return 15;
@@ -368,16 +373,16 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public void setRawLightLevel(Block block, BukkitLightType lightType, int lightLevel) {
+    public void setRawLightLevel(Block block, LightType lightType, int lightLevel) {
         int level = Math.max(Math.min(lightLevel, 15), 0);
         Object world = ((CraftWorld) block.getWorld()).getHandle();
         Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
             syncLight(((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine(), lightEngine -> {
-                if (lightType == BukkitLightType.BLOCK) {
+                if (lightType == LightType.BLOCK) {
                     Object lightEngineLayer = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK);
                     setRawLightLevelBlock(level, position, lightEngineLayer);
-                } else if (lightType == BukkitLightType.SKY) {
+                } else if (lightType == LightType.SKY) {
                     Object lightEngineLayer = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY);
                     setRawLightLevelSky(level, position, lightEngineLayer);
                 } else {
@@ -388,9 +393,9 @@ public class NMSImpl extends NMS {
                 }
             });
         } else {
-            if (lightType == BukkitLightType.BLOCK) {
+            if (lightType == LightType.BLOCK) {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
-            } else if (lightType == BukkitLightType.SKY) {
+            } else if (lightType == LightType.SKY) {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
             } else {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).a(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position, level);
@@ -400,16 +405,16 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public void recalculateLight(Block block, BukkitLightType lightType) {
+    public void recalculateLight(Block block, LightType lightType) {
         Object world = ((CraftWorld) block.getWorld()).getHandle();
         Object position = new net.minecraft.server.v1_15_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
             Object lightEngine = ((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine();
             if (((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a()) {
                 syncLight(lightEngine, e -> {
-                    if (lightType == BukkitLightType.BLOCK) {
+                    if (lightType == LightType.BLOCK) {
                         ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK)).a(Integer.MAX_VALUE, true, true);
-                    } else if (lightType == BukkitLightType.SKY) {
+                    } else if (lightType == LightType.SKY) {
                         ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.SKY)).a(Integer.MAX_VALUE, true, true);
                     } else {
                         Object b = ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(net.minecraft.server.v1_14_R1.EnumSkyBlock.BLOCK);
@@ -426,9 +431,9 @@ public class NMSImpl extends NMS {
                 });
             }
         } else {
-            if (lightType == BukkitLightType.SKY) {
+            if (lightType == LightType.SKY) {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
-            } else if (lightType == BukkitLightType.BLOCK) {
+            } else if (lightType == LightType.BLOCK) {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.BLOCK, (net.minecraft.server.v1_13_R2.BlockPosition) position);
             } else {
                 ((net.minecraft.server.v1_13_R2.WorldServer) world).c(net.minecraft.server.v1_13_R2.EnumSkyBlock.SKY, (net.minecraft.server.v1_13_R2.BlockPosition) position);
@@ -438,7 +443,7 @@ public class NMSImpl extends NMS {
     }
 
     @Override
-    public void recalculateLightAround(Block block, BukkitLightType lightType, int lightLevel) {
+    public void recalculateLightAround(Block block, LightType lightType, int lightLevel) {
         // 不能重新计算光源方块 否则光就没了
         if (getRawLightLevel(block.getRelative(1, 0, 0), lightType) < lightLevel) {
             recalculateLight(block.getRelative(1, 0, 0), lightType);
@@ -467,9 +472,9 @@ public class NMSImpl extends NMS {
             Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
             Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).world.getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
             if (distance(chunk2, chunk1) < distance(human)) {
-                if (MinecraftVersion.INSTANCE.getMajor() >= 8) {
+                if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 8) {
                     sendPacket(player, new net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate(((net.minecraft.server.v1_16_R1.Chunk) chunk1).getPos(), ((net.minecraft.server.v1_16_R1.Chunk) chunk1).e(), true));
-                } else if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
+                } else if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 6) {
                     sendPacket(player, new PacketPlayOutLightUpdate(((net.minecraft.server.v1_14_R1.Chunk) chunk1).getPos(), ((net.minecraft.server.v1_14_R1.Chunk) chunk1).e()));
                 } else {
                     sendPacket(player, new net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk((net.minecraft.server.v1_14_R1.Chunk) chunk1, 0x1ffff));
@@ -481,17 +486,17 @@ public class NMSImpl extends NMS {
     @Override
     @NotNull
     public String getEnchantmentKey(Enchantment enchantment) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return "enchantment.minecraft." + new Reflex(Keyed.class).instance(enchantment).<NamespacedKey>invoke("getKey").getKey();
         } else {
-            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(enchantment.getId()).g();
+            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(new Reflex(Enchantment.class).instance(enchantment).get("id")).g();
         }
     }
 
     @Override
     @NotNull
     public String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
         } else {
             return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
@@ -511,7 +516,7 @@ public class NMSImpl extends NMS {
     }
 
     private int distance(Object from, Object to) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 8) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 8) {
             String name1 = ((WorldDataServer) ((net.minecraft.server.v1_16_R1.Chunk) from).world.getWorldData()).getName();
             String name2 = ((WorldDataServer) ((net.minecraft.server.v1_16_R1.Chunk) to).world.getWorldData()).getName();
             if (!name1.equals(name2)) {
@@ -524,7 +529,7 @@ public class NMSImpl extends NMS {
         }
         double var2;
         double var4;
-        if (MinecraftVersion.INSTANCE.getMajor() >= 4) {
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 4) {
             var2 = ((net.minecraft.server.v1_12_R1.Chunk) to).locX - ((net.minecraft.server.v1_12_R1.Chunk) from).locX;
             var4 = ((net.minecraft.server.v1_12_R1.Chunk) to).locZ - ((net.minecraft.server.v1_12_R1.Chunk) from).locZ;
         } else {

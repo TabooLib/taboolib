@@ -1,4 +1,4 @@
-package taboolib.module.nms;
+package taboolib.module.nms.internal;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
+import taboolib.module.nms.ItemTag;
+import taboolib.module.nms.type.LightType;
 
 import java.util.function.Consumer;
 
@@ -19,7 +21,7 @@ import java.util.function.Consumer;
  * @author sky
  * @since 2021/6/18 8:54 下午
  */
-public abstract class NMS {
+public abstract class NMSJava {
 
     abstract public void sendPacket(Player player, Object packet);
 
@@ -39,17 +41,17 @@ public abstract class NMS {
 
     abstract public <T extends Entity> T spawnEntity(Location location, Class<T> entity, Consumer<T> e);
 
-    abstract public boolean createLight(Block block, BukkitLightType lightType, int lightLevel);
+    abstract public boolean createLight(Block block, LightType lightType, int lightLevel);
 
-    abstract public boolean deleteLight(Block block, BukkitLightType lightType);
+    abstract public boolean deleteLight(Block block, LightType lightType);
 
-    abstract public int getRawLightLevel(Block block, BukkitLightType lightType);
+    abstract public int getRawLightLevel(Block block, LightType lightType);
 
-    abstract public void setRawLightLevel(Block block, BukkitLightType lightType, int lightLevel);
+    abstract public void setRawLightLevel(Block block, LightType lightType, int lightLevel);
 
-    abstract public void recalculateLight(Block block, BukkitLightType lightType);
+    abstract public void recalculateLight(Block block, LightType lightType);
 
-    abstract public void recalculateLightAround(Block block, BukkitLightType lightType, int lightLevel);
+    abstract public void recalculateLightAround(Block block, LightType lightType, int lightLevel);
 
     abstract public void updateLight(Chunk chunk);
 
