@@ -1,6 +1,9 @@
 package taboolib.module.lang
 
 import org.intellij.lang.annotations.Language
+import taboolib.common.platform.ProxyPlayer
+import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * TabooLib
@@ -23,4 +26,13 @@ object Language {
         "en_gb" to "en_US",
         "en_nz" to "en_US"
     )
+
+    fun getLocale(player: ProxyPlayer): String {
+        return languageCodeTransfer[player.locale] ?: player.locale
+    }
+
+    fun getLocale(): String {
+        val code = Locale.getDefault().toLanguageTag().replace("-", "_")
+        return languageCodeTransfer[code] ?: code
+    }
 }

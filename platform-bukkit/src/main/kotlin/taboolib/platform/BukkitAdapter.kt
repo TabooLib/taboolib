@@ -88,21 +88,6 @@ class BukkitAdapter : PlatformAdapter {
         }
     }
 
-
-    @SubscribeEvent(priority = EventPriority.HIGH)
-    fun e(e: PlayerMoveEvent) {
-
-    }
-
-    @SubscribeEvent
-    fun e(e: CustomEvent) {
-
-    }
-
-    class CustomEvent : ProxyEvent() {
-
-    }
-
     class BukkitEvent(val proxyEvent: ProxyEvent) : Event(), Cancellable {
 
         init {
