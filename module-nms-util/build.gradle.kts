@@ -16,7 +16,6 @@ repositories {
 
 dependencies {
     compileOnly("ink.ptms.core:v11300:11300:all")
-    compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
     compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("ink.ptms.core:v11605:11605")
     compileOnly("ink.ptms.core:v11600:11600:all")
