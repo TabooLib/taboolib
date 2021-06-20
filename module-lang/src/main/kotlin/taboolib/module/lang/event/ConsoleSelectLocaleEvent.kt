@@ -5,12 +5,12 @@ import taboolib.common.platform.ProxyPlayer
 
 /**
  * TabooLib
- * taboolib.module.lang.event.PlayerSelectLocaleEvent
+ * taboolib.module.lang.event.ConsoleSelectLocaleEvent
  *
  * @author sky
  * @since 2021/6/18 11:05 下午
  */
-class PlayerSelectLocaleEvent(val player: ProxyPlayer, var locale: String) : ProxyEvent() {
+class ConsoleSelectLocaleEvent(var locale: String) : ProxyEvent() {
 
     override val allowCancelled: Boolean
         get() = false

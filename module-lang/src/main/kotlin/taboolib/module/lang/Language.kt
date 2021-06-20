@@ -1,7 +1,9 @@
 package taboolib.module.lang
 
-import org.intellij.lang.annotations.Language
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
+import taboolib.module.lang.event.ConsoleSelectLocaleEvent
+import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -13,6 +15,8 @@ import kotlin.collections.HashMap
  * @since 2021/6/18 10:43 下午
  */
 object Language {
+
+    val textTransfer = arrayListOf(TextTransferKether)
 
     val languageFile = HashMap<String, LanguageFile>()
 
@@ -27,12 +31,31 @@ object Language {
         "en_nz" to "en_US"
     )
 
+    val languageType = hashMapOf(
+        "text" to TypeText::class.java,
+        "title" to TypeText::class.java,
+        "sound" to TypeSound::class.java,
+        "actionbar" to TypeActionBar::class.java
+    )
+
     fun getLocale(player: ProxyPlayer): String {
-        return languageCodeTransfer[player.locale] ?: player.locale
+        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale] ?: player.locale).run {
+            call()
+            locale
+        }
     }
 
     fun getLocale(): String {
         val code = Locale.getDefault().toLanguageTag().replace("-", "_")
-        return languageCodeTransfer[code] ?: code
+        return ConsoleSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
+            call()
+            locale
+        }
+    }
+
+    fun String.translate(sender: ProxyCommandSender): String {
+        var s = this
+        textTransfer.forEach { s = it.translate(sender, s) }
+        return s
     }
 }
