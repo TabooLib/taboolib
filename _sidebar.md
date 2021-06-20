@@ -57,6 +57,10 @@
     - [TLocale.java](locale/TLocale.md)
   + locale.logger
     - [TLogger.java](locale.logger/TLogger.md)
+  + nms
+    - [NMS.java](nms/NMS.md)
+  + nms.nbt
+    - [NBTCompound.java](nms.nbt/NBTCompound.md)
   + packet
     - [TPacketHandler.java](packet/TPacketHandler.md)
     - [TPacketListener.java](packet/TPacketListener.md)
@@ -67,7 +71,6 @@
 
 * io.izzel.taboolib.util
   + item
-    - [Books.java](item/Books.md)
     - [ItemBuilder.java](item/ItemBuilder.md)
     - [Items.java](item/Items.md)
   + item.inventory
