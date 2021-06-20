@@ -23,7 +23,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11300:11300:all")
     compileOnly("ink.ptms.core:v10900:10900:all")
     compileOnly("ink.ptms.core:v10800:10800:all")
-    compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
+//    compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
     compileOnly("org.ow2.asm:asm:9.1")
     compileOnly("org.ow2.asm:asm-commons:9.1")
     compileOnly(project(":common"))
