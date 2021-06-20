@@ -1,7 +1,7 @@
 # 如何使用 TabooLib 5.0
 > 推荐使用 IntelliJ IDEA
 
-## 0. 获取 [TabooLib-Loader](https://github.com/TabooLib/TabooLib-Loader/releases) 启动类
+## 获取 [TabooLib-Loader](https://github.com/TabooLib/TabooLib-Loader/releases) 启动类
 
 源码地址
 ```
@@ -13,7 +13,7 @@ https://github.com/TabooLib/TabooLib-Loader/releases
 ```
 > 将启动类 `Plugin.java` 复制到你的项目源代码中
 
-## 1. 获取 [TabooLib](https://github.com/TabooLib/TabooLib-Loader/releases) 开发依赖
+## 获取 [TabooLib](https://github.com/TabooLib/TabooLib-Loader/releases) 开发依赖
 
 发布地址
 ```
@@ -36,7 +36,7 @@ public class Main extends Plugin {
 
 > 原有的 `onLoad`, `onEnable`, `onDisable` 方法替换为 `onLoading`, `onStarting`, `onStopping`
 
-## 3. 注意事项
+## 注意事项
 
 1. 你导入的 TabooLib.jar 或 TabooLib-5.X.jar 不可作为插件直接加载。
 2. 启动类的作用是开服之前**下载依赖**，而开发依赖的作用是让你的代码**通过编译**。

@@ -3,9 +3,9 @@
 
 ## 创建
 
-**1. 从 ConfigurationSection 中读取数据库地址**
+**从 ConfigurationSection 中读取数据库地址**
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     private SQLHost host;
 
@@ -30,9 +30,9 @@ Database:
   database: test
 ```
 
-**2. 使用数据库信息直接创建**
+**使用数据库信息直接创建**
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     private SQLHost host;
 

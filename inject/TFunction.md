@@ -43,8 +43,10 @@ public class Handler {
 ## 易错问题
 人类的本质是... (与 @TListener 相同）
 
+<br>
+
 # TFunction的子注解
-和TFunction差不多，只是这些子注解在方法上，当插件载入时 TabooLib 会为你 **自动执行** 初始化方法。
+和TFunction差不多，只是这些子注解在方法上。
 + @TFunction.Cancel
 + @TFunction.Init
 + @TFunction.Load

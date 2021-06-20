@@ -4,7 +4,7 @@
 
 ## 创建监听
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     @Override
     public void onEnable() {
@@ -26,7 +26,7 @@ public class Plugin extends JavaPlugin {
 
 ## 示范：屏蔽关键字
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     @Override
     public void onEnable() {

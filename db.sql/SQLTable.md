@@ -3,9 +3,9 @@
 阅读前请确保您有相关的数据库使用经验
 
 # 构造方法
-**1. 创建空的 SQLTable**
+**创建空的 SQLTable**
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     private SQLTable table;
 
@@ -16,9 +16,9 @@ public class Plugin extends JavaPlugin {
 }
 ```
 
-**2. 创建含有 SQLColumn 数据的 SQLTable**
+**创建含有 SQLColumn 数据的 SQLTable**
 ```java
-public class Plugin extends JavaPlugin {
+public class Plugin extends Plugin {
 
     private SQLTable table;
 
@@ -34,7 +34,7 @@ public class Plugin extends JavaPlugin {
 
 SQLTable 可以根据添加的列生成数据库创建命令
 ```java
-public class Example extends JavaPlugin {
+public class Example extends Plugin {
 
     private SQLHost host;
     private SQLTable table;
@@ -78,7 +78,7 @@ public class Example extends JavaPlugin {
 insert into table_name values(null, 'Steve', 'Flight')
 ```
 ```java
-public class Example extends JavaPlugin {
+public class Example extends Plugin {
 
     private SQLHost host;
     private SQLTable table;

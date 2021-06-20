@@ -2,11 +2,11 @@
 
 > 数据库线程池创建工具
 
-## 0. 作用
+## 作用
 
 快速创建基于 HikariCP 的数据库（MySQL/SQLite）线程池
 
-## 1. 创建
+## 创建
 
 ```java
 SQLHost host = ...
@@ -15,7 +15,7 @@ DataSource dataSource = DBSource.create(host);
 
 > 当数据库连接失败时，该方法会抛出 `SQLException` 异常
 
-## 2. 关闭
+## 关闭
 
 ```java
 SQLHost host = ...
@@ -24,7 +24,7 @@ DataSource dataSource = DBSource.closeDataSource(conf);
 
 > 创建 `IHost` 时如果没有设置 `AutoClose`，请勿忘记在插件卸载时关闭数据库连接，以兼容热重载。
 
-## 3. 配置
+## 配置
 
 你可以在 `datasource.yml` 文件中线程池的各项设定
 

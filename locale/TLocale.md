@@ -32,20 +32,16 @@ TITLE_TEST:
 ```java
 package com.ilummc.tlib;
 
+import io.izzel.taboolib.loader.Plugin;
+import io.izzel.taboolib.module.inject.TListener;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.player.PlayerJoinEvent;
 import com.ilummc.tlib.resources.TLocale;
 
-public class ExampleMain extends JavaPlugin implements Listener {
-    
-    @Override
-    public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(this, this);
-    }
-    
+@TListener
+public class ExampleMain extends Plugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         TLocale.sendTo(event.getPlayer(), "TEST", event.getPlayer().getName());

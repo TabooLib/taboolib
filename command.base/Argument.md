@@ -1,18 +1,14 @@
 # 标准指令（子命令参数）
 > 坏黑开发插件所使用的标准指令工具中的子命令参数
 
-## 0. 作用
+## 作用
 用于在 ``BaseSubCommand`` 中实现子命令参数，提供了参数补全等功能
 
-## 1. 使用
+## 使用
 ```java
+@BaseCommand(name = "exampleCommand", aliases = {"example"}, permission = "*")
 public class ExampleCommand extends BaseMainCommand {
-
-    @Override
-    public String getCommandTitle() {
-        return "§e§l----- §6§lExample Commands §e§l-----";
-    }
-
+    @SubCommand
     BaseSubCommand ping = new BaseSubCommand() {
 
         @Override
@@ -34,7 +30,7 @@ public class ExampleCommand extends BaseMainCommand {
 }
 ```
 
-## 2. 参数
+## 参数
 在 ``Argument`` 中提供了多种构造函数，他们分别代表不同的作用
 ```java
 new Argument("玩家");
@@ -51,18 +47,18 @@ new Argument("玩家", true, () -> Lists.newArrayList("BlackSKY"));
 ```
 > 参数 "玩家"，不可省略，参数补全候选为 "BlackSKY"。
 
-## 3. 实例
+## 实例
 ```java
-    @SubCommand
-    BaseSubCommand reload = new BaseSubCommand() {
+@SubCommand
+BaseSubCommand reload = new BaseSubCommand() {
 
-        @Override
-        public Argument[] getArguments() {
-            return new Argument[] {
-                    new Argument("服务", () -> Lists.newArrayList(Cronus.getCronusService().getServices().keySet()))
-            };
-        }
-    ...
+    @Override
+    public Argument[] getArguments() {
+        return new Argument[] {
+                new Argument("服务", () -> Lists.newArrayList(Cronus.getCronusService().getServices().keySet()))
+        };
+    }
+...
 ```
 
 > 以上代码片段来自开源项目 Cronus 的指令部分

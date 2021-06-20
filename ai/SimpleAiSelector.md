@@ -1,7 +1,7 @@
 # 生物行为选择器
 > 赋予行为或进行行为相关动作
 
-## 0. 获取
+## 获取
 
 ```java
 PathfinderExecutor executor = SimpleAiSelector.getExecutor();
@@ -9,7 +9,7 @@ PathfinderExecutor executor = SimpleAiSelector.getExecutor();
 
 > 该工具类使用 SimpleVersionControl 进行版本控制
 
-## 1. 函数
+## 函数
 ```java
 public abstract class PathfinderExecutor {
 

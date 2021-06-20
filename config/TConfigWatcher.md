@@ -1,10 +1,10 @@
 # 文件监听
 > 监听文件的修改
 
-## 0. 作用
+## 作用
 当文件被修改时执行动作，为 ``TConfig`` 工具提供自动重载服务
 
-## 1. 注册
+## 注册
 ```java
     @Override
     public void onStarting() {
@@ -14,7 +14,7 @@
     }
 ```
 
-## 2. 注销
+## 注销
 ```java
     @Override
     public void onStopping() {
