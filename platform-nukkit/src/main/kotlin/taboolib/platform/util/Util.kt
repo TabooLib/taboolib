@@ -7,7 +7,6 @@ import cn.nukkit.player.Player
 import taboolib.common.platform.EventPriority
 import taboolib.platform.NukkitPlugin
 
-
 fun EventPriority.toNukkit() = when (this) {
     EventPriority.LOWEST -> cn.nukkit.event.EventPriority.LOWEST
     EventPriority.LOW -> cn.nukkit.event.EventPriority.LOW
@@ -17,7 +16,7 @@ fun EventPriority.toNukkit() = when (this) {
     EventPriority.MONITOR, EventPriority.CUSTOM -> cn.nukkit.event.EventPriority.MONITOR
 }
 
-fun dispatchCommand(sender: CommandSender?, command: String): Boolean {
+fun dispatchCommand(sender: CommandSender, command: String): Boolean {
     if (sender is Player) {
         val event = PlayerCommandPreprocessEvent((sender as Player?)!!, "/$command")
         NukkitPlugin.instance.server.pluginManager.callEvent(event)
@@ -25,7 +24,7 @@ fun dispatchCommand(sender: CommandSender?, command: String): Boolean {
             return NukkitPlugin.instance.server.dispatchCommand(event.player, event.message.substring(1))
         }
     } else {
-        val e = ServerCommandEvent(sender!!, command)
+        val e = ServerCommandEvent(sender, command)
         NukkitPlugin.instance.server.pluginManager.callEvent(e)
         if (!e.isCancelled && e.command.isNotBlank()) {
             return NukkitPlugin.instance.server.dispatchCommand(e.sender, e.command)

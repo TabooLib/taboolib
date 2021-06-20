@@ -15,6 +15,7 @@ class NukkitConsole(val sender: ConsoleCommandSender) : ProxyConsole {
 
     override val origin: Any
         get() = sender
+
     override val name: String
         get() = sender.name
 

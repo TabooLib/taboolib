@@ -89,12 +89,6 @@ class NukkitAdapter : PlatformAdapter {
 
     class NukkitEvent(val proxyEvent: ProxyEvent) : Event(), Cancellable {
 
-        init {
-            if (proxyEvent.allowAsynchronous) {
-                reflex("async", !isPrimaryThread)
-            }
-        }
-
         override fun isCancelled(): Boolean {
             return proxyEvent.isCancelled
         }
