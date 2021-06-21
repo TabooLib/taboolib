@@ -48,11 +48,15 @@ class SpongeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        file.writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
+        file.writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 
     override fun getJarFile(): File {
         return File(SpongePlugin.instance.pluginContainer.source.get().toUri().path)
+    }
+
+    override fun getDataFolder(): File {
+        return SpongePlugin.instance.pluginConfigDir
     }
 }

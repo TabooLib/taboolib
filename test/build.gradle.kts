@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":common-5"))
     implementation(project(":module-dependency"))
+    implementation(project(":module-configuration"))
     compileOnly(kotlin("stdlib"))
 }
 

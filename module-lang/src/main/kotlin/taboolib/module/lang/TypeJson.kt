@@ -4,7 +4,6 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.TellrawJson
-import taboolib.module.lang.Language.translate
 
 /**
  * TabooLib

@@ -51,4 +51,8 @@ class BukkitIO : PlatformIO {
     override fun getJarFile(): File {
         return plugin.file
     }
+
+    override fun getDataFolder(): File {
+        return plugin.dataFolder
+    }
 }

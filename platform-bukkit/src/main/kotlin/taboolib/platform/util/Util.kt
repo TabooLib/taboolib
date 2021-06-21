@@ -17,7 +17,7 @@ fun EventPriority.toBukkit() = when (this) {
     EventPriority.NORMAL -> org.bukkit.event.EventPriority.NORMAL
     EventPriority.HIGH -> org.bukkit.event.EventPriority.HIGH
     EventPriority.HIGHEST -> org.bukkit.event.EventPriority.HIGHEST
-    EventPriority.MONITOR, EventPriority.CUSTOM -> org.bukkit.event.EventPriority.MONITOR
+    EventPriority.MONITOR -> org.bukkit.event.EventPriority.MONITOR
 }
 
 fun dispatchCommand(sender: CommandSender?, command: String): Boolean {

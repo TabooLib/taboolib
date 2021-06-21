@@ -32,6 +32,10 @@ fun getJarFile(): File {
     return platformIO.getJarFile()
 }
 
+fun getDataFolder(): File {
+    return platformIO.getDataFolder()
+}
+
 fun execute(async: Boolean = false, delay: Long = 0, period: Long = 0, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
     return platformExecutor.execute(async, delay, period, executor)
 }

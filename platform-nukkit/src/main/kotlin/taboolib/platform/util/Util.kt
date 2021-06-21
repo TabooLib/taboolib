@@ -13,7 +13,7 @@ fun EventPriority.toNukkit() = when (this) {
     EventPriority.NORMAL -> cn.nukkit.event.EventPriority.NORMAL
     EventPriority.HIGH -> cn.nukkit.event.EventPriority.HIGH
     EventPriority.HIGHEST -> cn.nukkit.event.EventPriority.HIGHEST
-    EventPriority.MONITOR, EventPriority.CUSTOM -> cn.nukkit.event.EventPriority.MONITOR
+    EventPriority.MONITOR -> cn.nukkit.event.EventPriority.MONITOR
 }
 
 fun dispatchCommand(sender: CommandSender, command: String): Boolean {

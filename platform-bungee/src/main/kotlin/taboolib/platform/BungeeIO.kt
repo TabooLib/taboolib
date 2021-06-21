@@ -53,4 +53,8 @@ class BungeeIO : PlatformIO {
     override fun getJarFile(): File {
         return BungeePlugin.instance.file
     }
+
+    override fun getDataFolder(): File {
+        return BungeePlugin.instance.dataFolder
+    }
 }

@@ -58,6 +58,16 @@ class SecuredFile : YamlConfiguration() {
 
     companion object {
 
+        fun dumpAll(key: String, value: Any?): String {
+            val dump = dump(value)
+            return when {
+                dump.startsWith("-") -> "$key:\n$dump"
+                value is List<*> && value.isEmpty() -> "$key: []"
+                value is Map<*, *> -> if (value.isEmpty()) "$key: {}" else "$key:\n$dump"
+                else -> "$key: $dump"
+            }
+        }
+
         fun dump(data: Any?): String {
             if (data == null) {
                 return ""
@@ -77,9 +87,9 @@ class SecuredFile : YamlConfiguration() {
                 }
             }
             val save = if (single) {
-                dump.saveToString().substring("value:".length).trim { it <= ' ' }.split("\n").toTypedArray()
+                dump.saveToString().substring("value:".length).trim().split("\n").toTypedArray()
             } else {
-                dump.saveToString().split("\n").toTypedArray()
+                dump.saveToString().trim().split("\n").toTypedArray()
             }
             return java.lang.String.join("\n", *save)
         }

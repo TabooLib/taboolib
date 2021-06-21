@@ -18,6 +18,5 @@ dependencies {
     compileOnly(project(":common-5"))
     compileOnly(project(":plugin"))
     compileOnly(project(":module-chat"))
-    compileOnly(project(":module-nms-util"))
     compileOnly(kotlin("stdlib"))
 }

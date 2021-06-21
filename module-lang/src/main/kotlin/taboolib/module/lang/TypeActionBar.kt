@@ -3,7 +3,6 @@ package taboolib.module.lang
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.lang.Language.translate
 
 /**
  * TabooLib

@@ -54,4 +54,8 @@ class NukkitIO : PlatformIO {
     override fun getJarFile(): File {
         return NukkitPlugin.instance.file
     }
+
+    override fun getDataFolder(): File {
+        return NukkitPlugin.instance.dataFolder
+    }
 }

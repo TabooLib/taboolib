@@ -20,41 +20,33 @@ class VariableReader(val source: String, val left: Char = '[', val right: Char =
         var escape = false
         source.forEach {
             when (it) {
-                '\\' -> {
-                    if (escape) {
-                        text += it
-                    } else {
-                        escape = true
-                    }
-                }
-                left -> {
-                    if (escape) {
-                        text += it
-                    } else {
-                        s++
-                        if (s == repeat) {
-                            parts += Part(text, false)
-                            text = ""
-                            e = 0
-                        }
-                    }
-                }
-                right -> {
-                    if (escape) {
-                        text += it
-                    } else {
-                        e++
-                        if (s == repeat && e == repeat) {
-                            parts += Part(text, true)
-                            text = ""
-                            s = 0
-                            e = 0
-                        }
-                    }
-                }
-                else -> {
+                '\\' -> if (escape) {
                     text += it
+                } else {
+                    escape = true
                 }
+                left -> if (escape) {
+                    text += it
+                } else {
+                    s++
+                    if (s == repeat) {
+                        parts += Part(text, false)
+                        text = ""
+                        e = 0
+                    }
+                }
+                right -> if (escape) {
+                    text += it
+                } else {
+                    e++
+                    if (s == repeat && e == repeat) {
+                        parts += Part(text, true)
+                        text = ""
+                        s = 0
+                        e = 0
+                    }
+                }
+                else -> text += it
             }
         }
         parts += Part(text, false)

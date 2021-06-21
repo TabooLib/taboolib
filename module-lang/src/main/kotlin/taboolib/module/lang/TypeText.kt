@@ -3,7 +3,6 @@ package taboolib.module.lang
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.lang.Language.translate
 
 /**
  * TabooLib
@@ -16,12 +15,20 @@ class TypeText : Type {
 
     var text: List<String>? = null
 
-    fun asText(def: String? = null) = text?.getOrNull(0) ?: def
+    fun asText(sender: ProxyCommandSender, def: String? = null, vararg args: Any): String? {
+        return text?.getOrNull(0)?.replaceWithOrder(*args)?.translate(sender) ?: def
+    }
 
-    fun asTextList() = text ?: emptyList()
+    fun asTextList(sender: ProxyCommandSender, vararg args: Any): List<String> {
+        return (text ?: emptyList()).map { it.replaceWithOrder(*args).translate(sender) }
+    }
 
     override fun init(source: Map<String, Any>) {
         text = source["text"]?.asList()
+        // if blocked
+        if (text?.all { it.isEmpty() } == true) {
+            text = null
+        }
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {

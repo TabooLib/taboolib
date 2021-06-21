@@ -17,4 +17,6 @@ interface PlatformIO {
     fun releaseResourceFile(path: String, replace: Boolean = false): File
 
     fun getJarFile(): File
+
+    fun getDataFolder(): File
 }

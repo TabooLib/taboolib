@@ -27,7 +27,7 @@ class TellrawJson {
     }
 
     fun toRawMessage(): String {
-        return ComponentSerializer.toString(componentsAll)
+        return ComponentSerializer.toString(*componentsAll.toTypedArray())
     }
 
     fun toLegacyText(): String {

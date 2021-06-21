@@ -4,7 +4,6 @@ import io.izzel.kether.common.util.Coerce
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.lang.Language.translate
 
 /**
  * TabooLib

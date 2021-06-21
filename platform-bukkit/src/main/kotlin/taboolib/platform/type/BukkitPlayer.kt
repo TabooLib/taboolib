@@ -56,7 +56,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.uniqueId
 
     override val ping: Int
-        get() = player.ping
+        get() = player.reflex<Int>("ping")!!
 
     override val locale: String
         get() = player.locale

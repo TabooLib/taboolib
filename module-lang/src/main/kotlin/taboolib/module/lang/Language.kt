@@ -1,9 +1,8 @@
 package taboolib.module.lang
 
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
-import taboolib.module.lang.event.SystemSelectLocaleEvent
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
+import taboolib.module.lang.event.SystemSelectLocaleEvent
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -53,9 +52,8 @@ object Language {
         }
     }
 
-    fun String.translate(sender: ProxyCommandSender): String {
-        var s = this
-        textTransfer.forEach { s = it.translate(sender, s) }
-        return s
+    fun reload() {
+        languageFile.clear()
+        languageFile.putAll(ResourceReader(Language::class.java).files)
     }
 }
