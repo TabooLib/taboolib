@@ -29,8 +29,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.socketAddress
 
     override val uniqueId: UUID
-        // TODO: Fix this s**t.
-        get() = UUID.randomUUID()
+        get() = NukkitPlugin.instance.server.onlinePlayers.filter { it.value == player }.keys.first()
 
     override val ping: Int
         get() = player.ping.toInt()
