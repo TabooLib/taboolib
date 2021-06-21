@@ -3,6 +3,7 @@ package taboolib.platform.type
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.platform.BungeePlugin
@@ -51,11 +52,11 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-//        player.playSound(location.toBukkitLocation(), Sound.valueOf(sound), volume, pitch)
+        error("not support this attribute for bungeecord platform")
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
-//        player.playSound(location.toBukkitLocation(), sound, volume, pitch)
+        error("not support this attribute for bungeecord platform")
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
@@ -78,7 +79,7 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun sendMessage(message: String) {
-        player.sendMessage(TextComponent(message))
+        player.sendMessage(TextComponent(*ComponentSerializer.parse(message)))
     }
 
     override fun performCommand(command: String): Boolean {
