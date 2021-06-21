@@ -24,8 +24,14 @@ object EventBus {
             clazz.declaredMethods.forEach { method ->
                 if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
                     val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
-                    registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
-                        method.invoke(instance, it)
+                    if (runningPlatform == Platform.SPONGE) {
+                        registerListener(method.parameterTypes[0], subscribeEvent.order, subscribeEvent.beforeModifications) {
+                            method.invoke(instance, it)
+                        }
+                    } else {
+                        registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
+                            method.invoke(instance, it)
+                        }
                     }
                 }
             }

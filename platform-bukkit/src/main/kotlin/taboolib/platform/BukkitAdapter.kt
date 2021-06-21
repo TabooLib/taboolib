@@ -108,7 +108,7 @@ class BukkitAdapter : PlatformAdapter {
             if (proxyEvent.allowCancelled) {
                 proxyEvent.isCancelled = value
             } else {
-                error("not cancellable")
+                error("unsupported")
             }
         }
 

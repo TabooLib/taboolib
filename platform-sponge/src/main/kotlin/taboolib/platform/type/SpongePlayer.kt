@@ -45,12 +45,10 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = player.world.name
 
     override val location: Location
-        get() = Location(world,
-            player.location.x,
-            player.location.y,
-            player.location.z,
-            player.headRotation.y.toFloat(),
-            player.headRotation.x.toFloat())
+        get() {
+            val loc = player.location
+            return Location(world, loc.x, loc.y, loc.z, player.headRotation.y.toFloat(), player.headRotation.x.toFloat())
+        }
 
     override fun kick(message: String?) {
         player.kick(Text.of(message ?: ""))
@@ -94,9 +92,9 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        val location =
-            org.spongepowered.api.world.Location(Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { error("The world must not be null!") },
-                Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0))
+        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow()
+        val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
         player.location = location
+        player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)
     }
 }

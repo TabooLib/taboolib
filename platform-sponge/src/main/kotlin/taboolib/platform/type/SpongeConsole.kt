@@ -16,6 +16,7 @@ class SpongeConsole(val sender: ConsoleSource) : ProxyConsole {
 
     override val origin: Any
         get() = sender
+
     override val name: String
         get() = sender.name
 

@@ -5,11 +5,17 @@ import org.spongepowered.api.command.source.ConsoleSource
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Cancellable
 import org.spongepowered.api.event.Event
+import org.spongepowered.api.event.EventListener
+import org.spongepowered.api.event.Order
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.event.cause.EventContextKeys
+import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
 import taboolib.platform.type.SpongeConsole
 import taboolib.platform.type.SpongePlayer
+import org.spongepowered.api.event.block.ChangeBlockEvent
+
 
 /**
  * TabooLib
@@ -46,11 +52,18 @@ class SpongeAdapter : PlatformAdapter {
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        TODO("Not yet implemented")
+        error("unsupported")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
+        val listener = SpongeListener<Event> { func(it as T) }
+        Sponge.getEventManager().registerListener(this, event as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
+        return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
-        Sponge.getEventManager().unregisterListeners(proxyListener as Event)
+        Sponge.getEventManager().unregisterListeners(proxyListener)
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
@@ -59,22 +72,17 @@ class SpongeAdapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-//    class SpongeListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
-//
-//        override fun execute(listener: Listener, event: Event) {
-//            try {
-//                val cast = clazz.cast(event)
-//                if (predicate(cast)) {
-//                    consumer(cast)
-//                }
-//            } catch (ignore: ClassCastException) {
-//            } catch (e: Throwable) {
-//                e.printStackTrace()
-//            }
-//        }
-//    }
+    class SpongeListener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
-    class SpongeEvent(val proxyEvent: ProxyEvent) : Event, Cancellable {
+        override fun handle(event: T) {
+            consumer(event)
+        }
+    }
+
+    class SpongeEvent(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
+
+        val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, SpongePlugin.instance.pluginContainer).build()
+        val eventCause: Cause = Cause.of(eventContext, SpongePlugin.instance.pluginContainer)
 
         override fun isCancelled(): Boolean {
             return proxyEvent.isCancelled
@@ -84,13 +92,12 @@ class SpongeAdapter : PlatformAdapter {
             if (proxyEvent.allowCancelled) {
                 proxyEvent.isCancelled = value
             } else {
-                error("not cancellable")
+                error("unsupported")
             }
         }
 
-        // TODO: Maybe it's has some problems? idk.
         override fun getCause(): Cause {
-            return Cause.of(EventContext.empty(), "")
+            return eventCause
         }
     }
 }

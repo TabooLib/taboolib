@@ -3,7 +3,6 @@ package taboolib.common.platform
 import taboolib.common.platform.PlatformFactory.platformAdapter
 import taboolib.common.platform.PlatformFactory.platformExecutor
 import taboolib.common.platform.PlatformFactory.platformIO
-import taboolib.common.util.Location
 import java.io.File
 import java.util.*
 
@@ -67,6 +66,10 @@ fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
 
 fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener {
     return platformAdapter.registerListener(event, priority, ignoreCancelled, func)
+}
+
+fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
+    return platformAdapter.registerListener(event, order, beforeModifications, func)
 }
 
 fun unregisterListener(proxyListener: ProxyListener) {

@@ -23,6 +23,10 @@ interface PlatformAdapter {
 
     fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener
 
+    fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
+        error("unsupported")
+    }
+
     fun unregisterListener(proxyListener: ProxyListener)
 
     fun callEvent(proxyEvent: ProxyEvent)

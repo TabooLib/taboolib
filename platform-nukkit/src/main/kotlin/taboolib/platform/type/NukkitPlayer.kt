@@ -41,12 +41,10 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.level.name
 
     override val location: Location
-        get() = Location(world,
-            player.location.x.toDouble(),
-            player.location.y.toDouble(),
-            player.location.z.toDouble(),
-            player.location.yaw,
-            player.location.pitch)
+        get() {
+            val loc = player.location
+            return Location(world, loc.x.toDouble(), loc.y.toDouble(), loc.z.toDouble(), loc.yaw, loc.pitch)
+        }
 
     override fun kick(message: String?) {
         player.kick(message)

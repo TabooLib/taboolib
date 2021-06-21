@@ -38,10 +38,10 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
         get() = player.locale.displayName
 
     override val world: String
-        get() = error("not support this attribute for bungeecord platform")
+        get() = error("unsupported")
 
     override val location: Location
-        get() = error("not support this attribute for bungeecord platform")
+        get() = error("unsupported")
 
     override fun kick(message: String?) {
         player.disconnect(TextComponent(message))
@@ -52,11 +52,11 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-        error("not support this attribute for bungeecord platform")
+        error("unsupported")
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
-        error("not support this attribute for bungeecord platform")
+        error("unsupported")
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
@@ -91,6 +91,6 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        error("not support this attribute for bungeecord platform")
+        error("unsupported")
     }
 }
