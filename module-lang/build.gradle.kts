@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     compileOnly("io.izzel.kether:common:1.0.12")
-    compileOnly(project(":common"))
+    implementation(project(":common"))
     compileOnly(project(":module-chat"))
     compileOnly(project(":module-kether"))
     compileOnly(project(":module-configuration"))

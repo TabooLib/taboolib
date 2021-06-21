@@ -8,7 +8,10 @@ object EventBus {
 
     init {
         classes.forEach {
-            inject(it, it.kotlin.objectInstance ?: return@forEach)
+            try {
+                inject(it, it.kotlin.objectInstance ?: return@forEach)
+            } catch (ex: ExceptionInInitializerError) {
+            }
         }
     }
 

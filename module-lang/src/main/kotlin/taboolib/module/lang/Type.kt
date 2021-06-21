@@ -16,8 +16,14 @@ import taboolib.common.platform.ProxyCommandSender
  *   sound: block_stone_break
  *   volume: 1
  *   pitch: 1
- *
- *
+ * - type: json
+ *   text:
+ *   - [hello] [world!]
+ *   args:
+ *   - hover: hello
+ *     command: say hello
+ *   - hover: world!
+ *     command: say world
  *
  * TabooLib
  * taboolib.module.lang.Type

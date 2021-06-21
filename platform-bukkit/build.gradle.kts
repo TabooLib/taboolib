@@ -13,10 +13,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly("ink.ptms.core:v11605:11605")
-//    compileOnly("org.spigotmc:spigot:1.17-R0.1-20210612.142052-2")
+    compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":plugin"))
+    compileOnly(project(":module-chat"))
+    compileOnly(project(":module-nms-util"))
     compileOnly(kotlin("stdlib"))
 }

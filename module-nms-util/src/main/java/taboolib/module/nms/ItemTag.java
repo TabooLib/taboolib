@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import taboolib.module.nms.internal.NMSJava;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -64,7 +65,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         return (ItemTag) fromJson(new JsonParser().parse(json));
     }
 
-    static ItemTagData fromJson(JsonElement element) {
+    public static ItemTagData fromJson(JsonElement element) {
         if (element instanceof JsonObject) {
             JsonObject json = (JsonObject) element;
             // base
@@ -321,6 +322,6 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return NMS_UTILS.itemTagToString(this);
     }
 }

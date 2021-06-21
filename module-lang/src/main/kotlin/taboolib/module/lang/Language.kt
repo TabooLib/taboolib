@@ -2,7 +2,7 @@ package taboolib.module.lang
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
-import taboolib.module.lang.event.ConsoleSelectLocaleEvent
+import taboolib.module.lang.event.SystemSelectLocaleEvent
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import java.util.*
 import kotlin.collections.HashMap
@@ -47,7 +47,7 @@ object Language {
 
     fun getLocale(): String {
         val code = Locale.getDefault().toLanguageTag().replace("-", "_")
-        return ConsoleSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
+        return SystemSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
             call()
             locale
         }

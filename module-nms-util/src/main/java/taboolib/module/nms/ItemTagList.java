@@ -233,6 +233,6 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return NMS_UTILS.itemTagToString(this);
     }
 }

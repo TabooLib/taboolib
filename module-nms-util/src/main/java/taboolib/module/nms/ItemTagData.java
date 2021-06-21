@@ -3,6 +3,7 @@ package taboolib.module.nms;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.NumberConversions;
 import taboolib.common.platform.FunctionKt;
+import taboolib.module.nms.internal.NMSJava;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.IntStream;
 @SuppressWarnings("ALL")
 public class ItemTagData {
 
+    protected static final NMSJava NMS_UTILS = MinecraftServerUtilKt.nmsProxy(NMSJava.class, "{name}Impl");
     protected static final Pattern SHORT_PATTERN = Pattern.compile("\\d+s");
     protected ItemTagType type;
     protected Object data;
@@ -225,14 +227,7 @@ public class ItemTagData {
 
     @Override
     public String toString() {
-        switch (type) {
-            case INT_ARRAY:
-                return Arrays.toString(asIntArray());
-            case BYTE_ARRAY:
-                return Arrays.toString(asByteArray());
-            default:
-                return String.valueOf(data);
-        }
+        return NMS_UTILS.itemTagToString(this);
     }
 
     protected String copy(String text, int count) {

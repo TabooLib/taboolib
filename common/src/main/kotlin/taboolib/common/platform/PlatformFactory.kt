@@ -20,7 +20,11 @@ object PlatformFactory {
             classes.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
-                    val instance = it.kotlin.objectInstance ?: it.getDeclaredConstructor().newInstance()
+                    val instance = try {
+                        it.kotlin.objectInstance ?: it.getDeclaredConstructor().newInstance()
+                    } catch (ex: ExceptionInInitializerError) {
+                        return@forEach
+                    }
                     when {
                         interfaces.contains(PlatformIO::class.java) -> {
                             platformIO = instance as PlatformIO

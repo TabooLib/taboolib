@@ -75,6 +75,27 @@ public class NMSJavaImpl extends NMSJava {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket((net.minecraft.server.v1_13_R2.Packet<?>) packet);
     }
 
+    @NotNull
+    @Override
+    public String getKey(ItemStack itemStack) {
+        Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
+            return itemStack.getType().getKey().getKey();
+        } else {
+            net.minecraft.server.v1_12_R1.Item item = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem();
+            String name = new Reflex(net.minecraft.server.v1_12_R1.Item.class).instance(item).get("name");
+            String r = "";
+            for (char c : name.toCharArray()) {
+                if (Character.isUpperCase(c)) {
+                    r += "_" + Character.toLowerCase(c);
+                } else {
+                    r += c;
+                }
+            }
+            return r;
+        }
+    }
+
     @Override
     @NotNull
     public String getName(org.bukkit.inventory.ItemStack itemStack) {
@@ -193,6 +214,12 @@ public class NMSJavaImpl extends NMSJava {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase(compound));
         return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
+    }
+
+    @NotNull
+    @Override
+    public String itemTagToString(ItemTagData itemTag) {
+        return toNBTBase(itemTag).toString();
     }
 
     private Object toNBTBase(ItemTagData base) {

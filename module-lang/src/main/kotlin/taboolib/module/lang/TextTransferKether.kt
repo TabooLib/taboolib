@@ -14,7 +14,10 @@ import taboolib.module.kether.KetherFunction
 object TextTransferKether : TextTransfer {
 
     var hooked = false
-    val cacheMap = KetherFunction.Cache()
+
+    val cacheMap by lazy {
+        KetherFunction.Cache()
+    }
 
     init {
         try {

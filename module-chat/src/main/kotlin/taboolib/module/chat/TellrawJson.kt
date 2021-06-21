@@ -1,11 +1,12 @@
 package taboolib.module.chat
 
 import net.md_5.bungee.api.chat.*
+import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.chat.ComponentSerializer
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
 import java.util.*
-import java.util.function.Consumer
-import java.util.stream.Collectors
 
 /**
  * @author sky
@@ -15,6 +16,15 @@ class TellrawJson {
 
     var components = ArrayList<BaseComponent>()
     val componentsLatest = ArrayList<BaseComponent>()
+
+    fun sendTo(sender: ProxyCommandSender, builder: TellrawJson.() -> Unit = {}) {
+        builder(this)
+        if (sender is ProxyPlayer) {
+            sender.sendRawMessage(toRawMessage())
+        } else {
+            sender.sendMessage(toPlainText())
+        }
+    }
 
     fun toRawMessage(): String {
         return ComponentSerializer.toString(componentsAll)
@@ -44,18 +54,22 @@ class TellrawJson {
         return this
     }
 
-    fun hoverText(text: String?): TellrawJson {
+    fun hoverText(text: String): TellrawJson {
         componentsLatest.forEach {
             it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text))
         }
         return this
     }
 
-//    fun hoverItem(itemStack: ItemStack): TellrawJson {
-//    }
+    fun hoverItem(id: String, count: Int = 1, tag: String = "{}"): TellrawJson {
+        componentsLatest.forEach {
+            it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, count, ItemTag.ofNbt(tag)))
+        }
+        return this
+    }
 
-    fun insertion(command: String): TellrawJson {
-        componentsLatest.forEach { it.insertion = command }
+    fun insertion(text: String): TellrawJson {
+        componentsLatest.forEach { it.insertion = text }
         return this
     }
 
@@ -64,8 +78,8 @@ class TellrawJson {
         return this
     }
 
-    fun openFile(command: String): TellrawJson {
-        componentsLatest.forEach { it.clickEvent = ClickEvent(ClickEvent.Action.OPEN_FILE, command) }
+    fun openFile(file: String): TellrawJson {
+        componentsLatest.forEach { it.clickEvent = ClickEvent(ClickEvent.Action.OPEN_FILE, file) }
         return this
     }
 
@@ -84,8 +98,8 @@ class TellrawJson {
         return this
     }
 
-    fun copyToClipboard(page: Int): TellrawJson {
-        componentsLatest.forEach { it.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, page.toString()) }
+    fun copyToClipboard(text: String): TellrawJson {
+        componentsLatest.forEach { it.clickEvent = ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, text) }
         return this
     }
 

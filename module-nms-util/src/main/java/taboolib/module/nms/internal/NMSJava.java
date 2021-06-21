@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import taboolib.module.nms.ItemTag;
+import taboolib.module.nms.ItemTagData;
 import taboolib.module.nms.type.LightType;
 
 import java.util.function.Consumer;
@@ -26,6 +27,9 @@ public abstract class NMSJava {
     abstract public void sendPacket(Player player, Object packet);
 
     @NotNull
+    abstract public String getKey(ItemStack itemStack);
+
+    @NotNull
     abstract public String getName(ItemStack itemStack);
 
     @NotNull
@@ -36,6 +40,9 @@ public abstract class NMSJava {
 
     @NotNull
     abstract public ItemStack setItemTag(ItemStack itemStack, ItemTag compound);
+
+    @NotNull
+    abstract public String itemTagToString(ItemTagData itemTag);
 
     abstract public Object getEntityType(String name);
 

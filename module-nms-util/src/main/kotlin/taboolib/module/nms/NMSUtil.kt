@@ -62,6 +62,13 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 /**
  * 获取物品内部名称
  */
+fun ItemStack.getInternalKey(): String {
+    return nmsUtil1.getKey(this)
+}
+
+/**
+ * 获取物品内部名称
+ */
 fun ItemStack.getInternalName(): String {
     return nmsUtil1.getName(this)
 }
