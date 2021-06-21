@@ -80,6 +80,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(Text.of(message))
     }
 
+    // FixMe: 因为一些原因，我打算晚会再写。
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }
