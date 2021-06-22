@@ -2,7 +2,10 @@ package taboolib.common;
 
 import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
+import taboolib.common.env.RuntimeEnv;
 import taboolib.common.platform.PlatformFactory;
+
+import java.io.IOException;
 
 /**
  * TabooLib
@@ -18,8 +21,14 @@ import taboolib.common.platform.PlatformFactory;
 public class TabooLibCommon {
 
     public static void init() {
-        // 初始化跨平台接口
-        PlatformFactory.INSTANCE.init();
+        try {
+            // 加载 Kotlin 运行库
+            RuntimeEnv.inject(TabooLibCommon.class);
+            // 初始化跨平台接口
+            PlatformFactory.INSTANCE.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean isKotlinEnvironment() {
