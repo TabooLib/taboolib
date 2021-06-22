@@ -1,12 +1,10 @@
 package taboolib.module.porticus;
 
 import com.google.common.collect.Lists;
+import taboolib.common.env.RuntimeDependency;
 import taboolib.common.platform.Awake;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
-import taboolib.module.dependency.RuntimeDependency;
-import taboolib.module.dependency.RuntimeName;
-import taboolib.module.dependency.RuntimeTest;
 
 import java.util.List;
 
@@ -16,9 +14,7 @@ import java.util.List;
  * @author 坏黑
  * @since 2020-10-15
  */
-@RuntimeDependency(group = "com.github.ben-manes.caffeine", id = "caffeine", version = "3.0.2", hash = "e26e04138abe2db5ab227bd2b8b3337f83c9cf03")
-@RuntimeName(group = "com.github.ben-manes.caffeine", name = "caffeine (3.0.2)")
-@RuntimeTest(group = "com.github.ben-manes.caffeine", path = "com.github.benmanes.caffeine.cache.Cache")
+@RuntimeDependency(value = "com.github.ben-manes.caffeine:caffeine:3.0.2", test = "com.github.benmanes.caffeine.cache.Cache")
 @Awake
 @PlatformSide({Platform.BUKKIT, Platform.BUNGEE})
 public class Porticus {

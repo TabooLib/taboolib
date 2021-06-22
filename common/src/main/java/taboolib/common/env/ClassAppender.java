@@ -1,6 +1,5 @@
 package taboolib.common.env;
 
-import dev.vankka.dependencydownload.classpath.ClasspathAppender;
 import sun.misc.Unsafe;
 import taboolib.common.TabooLibCommon;
 
@@ -16,9 +15,7 @@ import java.nio.file.Path;
  * @author sky
  * @since 2020-04-12 22:39
  */
-public class ClassAppender implements ClasspathAppender {
-
-    public static final ClassAppender INSTANCE = new ClassAppender();
+public class ClassAppender {
 
     static MethodHandles.Lookup lookup;
     static Unsafe unsafe;
@@ -39,8 +36,7 @@ public class ClassAppender implements ClasspathAppender {
     ClassAppender() {
     }
 
-    @Override
-    public void appendFileToClasspath(Path path) {
+    public static void appendFileToClasspath(Path path) {
         try {
             File file = new File(path.toUri().getPath());
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
@@ -59,7 +55,7 @@ public class ClassAppender implements ClasspathAppender {
         }
     }
 
-    public boolean isExists(String path) {
+    public static boolean isExists(String path) {
         try {
             Class.forName(path, false, TabooLibCommon.class.getClassLoader());
             return true;

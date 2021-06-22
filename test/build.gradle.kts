@@ -14,7 +14,6 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":common-5"))
-    implementation(project(":module-dependency"))
     implementation(project(":module-configuration"))
     compileOnly(kotlin("stdlib"))
 }
@@ -25,7 +24,6 @@ tasks {
         dependencies {
             include(project(":common"))
             include(project(":common-5"))
-            include(project(":module-dependency"))
             include(dependency("dev.vankka.DependencyDownload:common:1.0.0"))
             include(dependency("dev.vankka.DependencyDownload:runtime:1.0.0"))
         }

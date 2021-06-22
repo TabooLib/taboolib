@@ -7,14 +7,12 @@ plugins {
 }
 
 repositories {
+    maven { url = uri("https://maven.aliyun.com/repository/central") }
     mavenCentral()
 }
 
 dependencies {
-//    implementation("me.lucko:jar-relocator:1.4")
-    compileOnly("dev.vankka.DependencyDownload:common:1.0.0")
-    compileOnly("dev.vankka.DependencyDownload:runtime:1.0.0")
-    compileOnly(project(":common"))
+    implementation("me.lucko:commodore:1.10")
     compileOnly(kotlin("stdlib"))
 }
 
@@ -22,10 +20,9 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
         dependencies {
-//            include(dependency("me.lucko:jar-relocator:1.4"))
+            include(dependency("me.lucko:commodore:1.10"))
         }
         relocate("me.lucko", "taboolib.library")
-        relocate("dev.vankka", "taboolib.library")
     }
     build {
         dependsOn(shadowJar)

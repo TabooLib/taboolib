@@ -4,21 +4,14 @@ import io.izzel.kether.common.actions.KetherTypes
 import io.izzel.kether.common.api.QuestActionParser
 import io.izzel.kether.common.loader.LoadError
 import io.izzel.kether.common.loader.QuestReader
-import taboolib.module.dependency.*
+import taboolib.common.env.RuntimeDependencies
+import taboolib.common.env.RuntimeDependency
 import taboolib.module.kether.action.game.PlayerOperator
 import kotlin.reflect.KClass
 
 @RuntimeDependencies(
-    RuntimeDependency(group = "com.google.guava", id = "guava", version = "21.0", hash = "3a3d111be1be1b745edfa7d91678a12d7ed38709"),
-    RuntimeDependency(group = "org.apache.commons", id = "commons-lang3", version = "3.5", hash = "6c6c702c89bfff3cd9e80b04d668c5e190d588c6")
-)
-@RuntimeNames(
-    RuntimeName(group = "com.google.guava", name = "Guava (21.0)"),
-    RuntimeName(group = "org.apache.commons", name = "Apache Commons (3.5)")
-)
-@RuntimeTests(
-    RuntimeTest(group = "com.google.guava", path = ["com.google.common.base.Optional"]),
-    RuntimeTest(group = "org.apache.commons", path = ["org.apache.commons.lang3.Validate"])
+    RuntimeDependency("com.google.guava:guava:21.0", test = "com.google.common.base.Optional"),
+    RuntimeDependency("org.apache.commons:commons-lang3:3.5", test = "com.google.common.base.Optional"),
 )
 object Kether {
 

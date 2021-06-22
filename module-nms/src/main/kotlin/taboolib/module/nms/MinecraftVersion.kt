@@ -1,24 +1,20 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
+import taboolib.common.env.RuntimeDependencies
+import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
-import taboolib.module.dependency.RuntimeDependencies
-import taboolib.module.dependency.RuntimeDependency
-import taboolib.module.dependency.RuntimeName
-import taboolib.module.dependency.RuntimeTest
 
 @RuntimeDependencies(
-    RuntimeDependency(group = "org.ow2.asm", id = "asm", version = "9.1", hash = "a99500cf6eea30535eeac6be73899d048f8d12a8"),
-    RuntimeDependency(group = "org.ow2.asm", id = "asm-util", version = "9.1", hash = "36464a45d871779f3383a8a9aba2b26562a86729"),
-    RuntimeDependency(group = "org.ow2.asm", id = "asm-commons", version = "9.1", hash = "8b971b182eb5cf100b9e8d4119152d83e00e0fdd")
+    RuntimeDependency("org.ow2.asm:asm:9.1", test = "org.objectweb.asm.ClassVisitor"),
+    RuntimeDependency("org.ow2.asm:asm-util:9.1", test = "org.objectweb.asm.util.Printer"),
+    RuntimeDependency("org.ow2.asm:asm-commons:9.1", test = "org.objectweb.asm.commons.Remapper"),
 )
-@RuntimeName(group = "org.ow2.asm", name = "asm (9.1)")
-@RuntimeTest(group = "org.ow2.asm", path = ["org.objectweb.asm.ClassVisitor"])
 @Awake
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {

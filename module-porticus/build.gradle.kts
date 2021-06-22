@@ -20,6 +20,5 @@ dependencies {
     compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-20210614.231150-8@jar")
     compileOnly("ink.ptms.core:v11605:11605")
     compileOnly(project(":common"))
-    compileOnly(project(":module-dependency"))
     compileOnly(kotlin("stdlib"))
 }

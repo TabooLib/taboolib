@@ -1,6 +1,6 @@
 package taboolib.common.platform
 
-import taboolib.common.env.KotlinEnv
+import taboolib.common.TabooLibCommon
 import taboolib.common.io.classes
 
 object PlatformFactory {
@@ -16,7 +16,7 @@ object PlatformFactory {
 
     @Suppress("NO_REFLECTION_IN_CLASS_PATH")
     fun init() {
-        if (KotlinEnv.isKotlinEnvironment()) {
+        if (TabooLibCommon.isKotlinEnvironment()) {
             classes.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces

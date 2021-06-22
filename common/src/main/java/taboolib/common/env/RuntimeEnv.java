@@ -1,15 +1,10 @@
 package taboolib.common.env;
 
-import dev.vankka.dependencydownload.DependencyManager;
-import dev.vankka.dependencydownload.dependency.StandardDependency;
-import dev.vankka.dependencydownload.repository.StandardRepository;
+import taboolib.common.io.IOKt;
+import taboolib.common.platform.Awake;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Flow;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * TabooLib
@@ -18,58 +13,41 @@ import java.util.concurrent.Flow;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
+@Awake
 public class RuntimeEnv {
 
-    private final String name;
-    private String[] checkClass;
-    private final List<StandardDependency> dependency = new ArrayList<>();
-    private final List<String> repository = new ArrayList<>();
-
-    public static RuntimeEnv setup(String name) {
-        return new RuntimeEnv(name).repository("https://maven.aliyun.com/repository/central", "https://repo1.maven.org/maven2");
-    }
-
-    RuntimeEnv(String name) {
-        this.name = name;
-    }
-
-    public RuntimeEnv check(String checkClass) {
-        this.checkClass = new String[]{checkClass};
-        return this;
-    }
-
-    public RuntimeEnv check(String[] checkClass) {
-        this.checkClass = checkClass;
-        return this;
-    }
-
-    public RuntimeEnv repository(String... repository) {
-        this.repository.clear();
-        this.repository.addAll(Arrays.asList(repository));
-        return this;
-    }
-
-    public RuntimeEnv add(String groupId, String artifactId, String version, String hash, String hashingAlgorithm) {
-        dependency.add(new StandardDependency(groupId, artifactId, version, hash, hashingAlgorithm));
-        return this;
-    }
-
-    public void run() {
-        if (checkClass == null || !Arrays.stream(checkClass).allMatch(ClassAppender.INSTANCE::isExists)) {
-            System.out.println("[TabooLib] Loading " + name + " runtime environment.");
-            DependencyManager manager = new DependencyManager(new File("libs").toPath());
-            dependency.forEach(manager::addDependency);
-            long time = System.currentTimeMillis();
-            for (String it : repository) {
-                try {
-                    manager.downloadAll(Runnable::run, Collections.singletonList(new StandardRepository(it))).join();
-                    manager.loadAll(Runnable::run, ClassAppender.INSTANCE).join();
-                    System.out.println("[TabooLib] Loaded (" + (System.currentTimeMillis() - time) + "ms)!");
-                    return;
-                } catch (NullPointerException ignored) {
-                }
+    public RuntimeEnv() {
+        for (Class<?> clazz : IOKt.getClasses()) {
+            try {
+                inject(clazz);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            System.out.println("[TabooLib] Loading failed, check your internet connection and try again.");
+        }
+    }
+
+    public static void inject(Class<?> clazz) throws IOException {
+        RuntimeDependency[] dependencies = null;
+        if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
+            dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
+        } else {
+            RuntimeDependencies annotation = clazz.getAnnotation(RuntimeDependencies.class);
+            if (annotation != null) {
+                dependencies = annotation.value();
+            }
+        }
+        if (dependencies != null) {
+            for (RuntimeDependency dependency : dependencies) {
+                if (dependency.test().length() > 0 && ClassAppender.isExists(dependency.test())) {
+                    continue;
+                }
+                String[] args = dependency.value().split(":");
+                DependencyDownloader downloader = new DependencyDownloader();
+                downloader.addRepository(new Repository(dependency.repository()));
+                downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME));
+                String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
+                downloader.download(new URL(pom).openStream());
+            }
         }
     }
 }

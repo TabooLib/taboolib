@@ -11,6 +11,7 @@ import java.util.Random;
  * <code>clone()</code> in order to get a copy.
  */
 public class Vector implements Cloneable {
+
     private static final long serialVersionUID = -2657651106777219169L;
 
     private static final Random random = new Random();

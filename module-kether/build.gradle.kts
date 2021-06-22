@@ -23,7 +23,6 @@ dependencies {
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
-    compileOnly(project(":module-dependency"))
     compileOnly(project(":module-configuration"))
     compileOnly(kotlin("stdlib"))
 }

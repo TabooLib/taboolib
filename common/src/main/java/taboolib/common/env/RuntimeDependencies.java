@@ -1,4 +1,4 @@
-package taboolib.module.dependency;
+package taboolib.common.env;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,8 +7,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RuntimeTests {
+public @interface RuntimeDependencies {
 
-    RuntimeTest[] value();
+    RuntimeDependency[] value();
 
 }

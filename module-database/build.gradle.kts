@@ -4,15 +4,12 @@ plugins {
 }
 
 repositories {
-    maven {
-        url = uri("https://repo1.maven.org/maven2")
-    }
+    maven { url = uri("https://maven.aliyun.com/repository/central") }
     mavenCentral()
 }
 
 dependencies {
-    compileOnly("com.google.guava:guava:21.0")
-    compileOnly("org.apache.commons:commons-lang3:3.5")
+    compileOnly("com.zaxxer:HikariCP:4.0.3")
     compileOnly(project(":common"))
     compileOnly(kotlin("stdlib"))
 }

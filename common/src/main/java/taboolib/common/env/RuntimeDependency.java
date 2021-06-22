@@ -1,4 +1,4 @@
-package taboolib.module.dependency;
+package taboolib.common.env;
 
 import java.lang.annotation.*;
 
@@ -7,14 +7,13 @@ import java.lang.annotation.*;
 @Repeatable(RuntimeDependencies.class)
 public @interface RuntimeDependency {
 
-    String group();
+    String value();
 
-    String id();
-
-    String version();
-
-    String hash();
+    String test() default "";
 
     String repository() default "https://maven.aliyun.com/repository/central";
 
+    boolean ignoreOptional() default true;
+
+    DependencyScope[] scopes() default {DependencyScope.RUNTIME};
 }
