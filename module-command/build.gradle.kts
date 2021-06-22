@@ -8,6 +8,7 @@ plugins {
 
 repositories {
     maven { url = uri("https://maven.aliyun.com/repository/central") }
+    maven { url = uri("https://libraries.minecraft.net" )}
     mavenCentral()
 }
 
@@ -19,6 +20,7 @@ dependencies {
 tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
+        exclude("**/file/**")
         dependencies {
             include(dependency("me.lucko:commodore:1.10"))
         }

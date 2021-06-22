@@ -19,9 +19,6 @@ public class Test {
 
     public static void main(String[] args) {
         TabooLibCommon.init();
-        RuntimeEnv.setup("yaml")
-                .add("org.yaml", "snakeyaml", "1.28", "7cae037c3014350c923776548e71c9feb7a69259", "sha-1")
-                .run();
         ArrayList<Object> strings = new ArrayList<>();
         strings.add("a");
         strings.add("b");

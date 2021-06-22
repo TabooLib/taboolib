@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     compileOnly("org.yaml:snakeyaml:1.28")
+    compileOnly(project(":common"))
     compileOnly(project(":module-chat"))
     compileOnly(kotlin("stdlib"))
 }
