@@ -36,7 +36,7 @@ public class ClassAppender {
     ClassAppender() {
     }
 
-    public static void appendFileToClasspath(Path path) {
+    public static void addPath(Path path) {
         try {
             File file = new File(path.toUri().getPath());
             ClassLoader loader = TabooLibCommon.class.getClassLoader();

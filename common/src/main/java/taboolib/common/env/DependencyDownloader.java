@@ -15,7 +15,6 @@ import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -81,7 +80,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         for (Dependency dep : dependencies) {
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
-                ClassAppender.appendFileToClasspath(file.toPath());
+                ClassAppender.addPath(file.toPath());
             }
         }
     }
