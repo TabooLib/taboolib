@@ -3,7 +3,6 @@ package taboolib.module.database
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile
 import java.io.File
-import java.lang.Exception
 import java.sql.Connection
 import java.sql.ResultSet
 
@@ -33,4 +32,34 @@ fun <T> Connection.use(func: Connection.() -> T): T {
     } finally {
         close()
     }
+}
+
+internal fun Any.formatColumn(): String {
+    var escape = false
+    var exists = false
+    val join = toString().toCharArray().joinToString("") {
+        when (it) {
+            '`' -> {
+                exists = true
+                it.toString()
+            }
+            '\\' -> {
+                if (escape) {
+                    "\\"
+                } else {
+                    escape = true
+                    ""
+                }
+            }
+            '.' -> {
+                if (escape) {
+                    it.toString()
+                } else {
+                    "`.`"
+                }
+            }
+            else -> it.toString()
+        }
+    }
+    return if (exists) join else "`$join`"
 }

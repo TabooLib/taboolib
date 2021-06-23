@@ -8,8 +8,6 @@ class Order(val row: String, val desc: Boolean = false) {
 
     val query: String
         get() {
-            return "${row.format()} ${if (desc) "desc" else "asc"}"
+            return "`${row.replace(".", "`.`")}` ${if (desc) "DESC" else "ASC"}"
         }
-
-    private fun String.format() = "`${replace(".", "`.`")}`"
 }

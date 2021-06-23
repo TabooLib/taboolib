@@ -10,7 +10,7 @@ package taboolib.module.database
 class Join(val type: JoinType, val from: String, val where: Where) {
 
     val query: String
-        get() = if (where.elements.isEmpty()) {
+        get() = if (where.isEmpty()) {
             "$type JOIN `$from`"
         } else {
             "$type JOIN `$from` ON ${where.query}"

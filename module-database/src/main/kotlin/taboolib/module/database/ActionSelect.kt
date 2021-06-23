@@ -1,8 +1,5 @@
 package taboolib.module.database
 
-import java.util.*
-import kotlin.collections.ArrayList
-
 /**
  * TabooLib
  * taboolib.module.database.ActionSelect
@@ -10,7 +7,7 @@ import kotlin.collections.ArrayList
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionSelect(val table: String) {
+class ActionSelect(val table: String) : WhereExecutor, Action {
 
     private var rows: Array<String> = emptyArray()
     private var where: Where? = null
@@ -19,19 +16,19 @@ class ActionSelect(val table: String) {
     private var limit = -1
     private val join = ArrayList<Join>()
 
-    val query: String
+    override val query: String
         get() {
             var query = "SELECT "
             query += when {
                 rows.isNotEmpty() -> {
-                    rows.joinToString() { it.format() }
+                    rows.joinToString { it.formatColumn() }
                 }
                 distinct != null -> {
-                    "DISTINCT ${distinct!!.format()}"
+                    "DISTINCT ${distinct!!.formatColumn()}"
                 }
                 else -> "*"
             }
-            query += " FROM ${table.format()}"
+            query += " FROM ${table.formatColumn()}"
             if (join.isNotEmpty()) {
                 query += " ${join.joinToString(" ") { it.query }}"
             }
@@ -47,12 +44,31 @@ class ActionSelect(val table: String) {
             return query
         }
 
+    override val elements: List<Any>
+        get() {
+            val el = ArrayList<Any>()
+            el.addAll(join.flatMap { it.elements })
+            el.addAll(where?.elements ?: emptyList())
+            return el
+        }
+
     fun rows(vararg row: String) {
         rows += row
     }
 
+    fun where(whereData: WhereData) {
+        if (where == null) {
+            where = Where()
+        }
+        where!!.data += whereData
+    }
+
     fun where(func: Where.() -> Unit) {
-        where = Where().also(func)
+        if (where == null) {
+            where = Where().also(func)
+        } else {
+            func(where!!)
+        }
     }
 
     fun distinct(distinct: String) {
@@ -79,5 +95,6 @@ class ActionSelect(val table: String) {
         join += Join(JoinType.RIGHT, table, Where().also(func))
     }
 
-    private fun String.format() = "`${replace(".", "`.`")}`"
+    override fun append(whereData: WhereData) {
+    }
 }

@@ -22,12 +22,8 @@ open class Table(val name: String, vararg column: Column) {
         columns.addAll(column)
     }
 
-    open fun execute(dataSource: DataSource? = null, func: Query.() -> Unit): Query {
-        return Query(this, dataSource).also(func)
-    }
-
-    open fun executeCallback(dataSource: DataSource? = null, func: Query.() -> Unit): QueryCallback {
-        return Query(this, dataSource).also(func).callback()
+    open fun workspace(dataSource: DataSource? = null, func: Query.() -> Unit): QueryTask {
+        return Query(this, dataSource).also(func).task ?: EmptyTask
     }
 
     override fun toString(): String {
@@ -38,35 +34,6 @@ open class Table(val name: String, vararg column: Column) {
 
         fun create(name: String, func: Table.() -> Unit = {}): Table {
             return Table(name).also(func)
-        }
-
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val table = create("name") {
-                column(ColumnSQL.PRIMARY_KEY_ID)
-                column(ColumnTypeSQL.VARCHAR("name", 32) {
-                    options += ColumnOptionSQL.UNIQUE_KEY
-                })
-                column(ColumnTypeSQL.VARCHAR("data", 32) {
-                    options += ColumnOptionSQL.NOTNULL
-                })
-            }
-
-            table.executeCallback {
-                select {
-                    where {
-                        "name" eq "bukkitObj"
-                        or {
-                            "world" eq "world"
-                            "world" eq "nether"
-                        }
-                        not("level" between (1 to 100))
-                    }
-                    order("level")
-                }
-            }.first {
-                getString("data")
-            }
         }
     }
 }
