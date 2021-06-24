@@ -1,6 +1,5 @@
 package taboolib.module.configuration
 
-import taboolib.common.env.RuntimeDependency
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.InvalidConfigurationException
 import taboolib.library.configuration.YamlConfiguration
@@ -8,7 +7,6 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
-@RuntimeDependency("org.yaml:snakeyaml:1.28", test = "org.yaml.snakeyaml.Yaml")
 class SecuredFile : YamlConfiguration() {
 
     private val lock = Any()

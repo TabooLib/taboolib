@@ -1,38 +1,21 @@
 package taboolib.common.platform
 
-import taboolib.common.io.classes
+import taboolib.common.inject.Injector
+import java.lang.reflect.Method
 
 @Awake
-@Suppress("NO_REFLECTION_IN_CLASS_PATH")
-object EventBus {
+object EventBus : Injector.Methods {
 
-    init {
-        classes.forEach {
-            try {
-                inject(it, it.kotlin.objectInstance ?: return@forEach)
-            } catch (ex: ExceptionInInitializerError) {
-            }
-        }
-    }
-
-    fun registerEvents(instance: Any) {
-        inject(instance.javaClass, instance)
-    }
-
-    fun inject(clazz: Class<*>, instance: Any) {
-        if (PlatformFactory.checkPlatform(clazz)) {
-            clazz.declaredMethods.forEach { method ->
-                if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
-                    val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
-                    if (runningPlatform == Platform.SPONGE) {
-                        registerListener(method.parameterTypes[0], subscribeEvent.order, subscribeEvent.beforeModifications) {
-                            method.invoke(instance, it)
-                        }
-                    } else {
-                        registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
-                            method.invoke(instance, it)
-                        }
-                    }
+    override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
+        if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
+            val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
+            if (runningPlatform == Platform.SPONGE) {
+                registerListener(method.parameterTypes[0], subscribeEvent.order, subscribeEvent.beforeModifications) {
+                    method.invoke(instance, it)
+                }
+            } else {
+                registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
+                    method.invoke(instance, it)
                 }
             }
         }

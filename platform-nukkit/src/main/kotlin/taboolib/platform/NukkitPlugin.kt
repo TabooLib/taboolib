@@ -37,6 +37,7 @@ class NukkitPlugin : PluginBase() {
 
     override fun onDisable() {
         pluginInstance?.onDisable()
+        TabooLibCommon.cancel()
     }
 
     public override fun getFile(): File {

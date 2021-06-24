@@ -2,7 +2,6 @@ package taboolib.common5
 
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
-import taboolib.common.platform.Awake
 
 /**
  * TabooLib
@@ -19,7 +18,4 @@ import taboolib.common.platform.Awake
     RuntimeDependency("org.apache.commons:commons-lang3:3.5", test = "com.google.common.base.Optional"),
     RuntimeDependency("org.openjdk.nashorn:nashorn-core:15.2", test = "jdk.nashorn.api.scripting.NashornScriptEngineFactory")
 )
-@Awake
-object Common5 {
-
-}
+object Common5

@@ -3,7 +3,6 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
-import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex
@@ -15,7 +14,6 @@ import taboolib.common.reflect.Reflex.Companion.reflexInvoke
     RuntimeDependency("org.ow2.asm:asm-util:9.1", test = "org.objectweb.asm.util.Printer"),
     RuntimeDependency("org.ow2.asm:asm-commons:9.1", test = "org.objectweb.asm.commons.Remapper"),
 )
-@Awake
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 

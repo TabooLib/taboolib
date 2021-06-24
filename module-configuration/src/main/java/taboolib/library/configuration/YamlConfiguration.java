@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +25,11 @@ public class YamlConfiguration extends FileConfiguration {
     private final DumperOptions yamlOptions = new DumperOptions();
     private final Representer yamlRepresenter = new YamlRepresenter();
     private final Yaml yaml = new Yaml(yamlRepresenter, yamlOptions);
+    protected final List<Runnable> hook = new ArrayList<>();
+
+    public void onReload(Runnable runnable) {
+        hook.add(runnable);
+    }
 
     @Override
     public void set(String path, Object value) {
@@ -53,22 +60,20 @@ public class YamlConfiguration extends FileConfiguration {
         } catch (ClassCastException e) {
             throw new InvalidConfigurationException("Top level is not a Map.");
         }
-
         String header = parseHeader(contents);
         if (header.length() > 0) {
             options().header(header);
         }
-
         if (input != null) {
             convertMapsToSections(input, this);
         }
+        hook.forEach(Runnable::run);
     }
 
     protected void convertMapsToSections(Map<?, ?> input, ConfigurationSection section) {
         for (Map.Entry<?, ?> entry : input.entrySet()) {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
-
             if (value instanceof Map) {
                 convertMapsToSections((Map<?, ?>) value, section.createSection(key));
             } else {
@@ -82,19 +87,15 @@ public class YamlConfiguration extends FileConfiguration {
         StringBuilder result = new StringBuilder();
         boolean readingHeader = true;
         boolean foundHeader = false;
-
         for (int i = 0; (i < lines.length) && (readingHeader); i++) {
             String line = lines[i];
-
             if (line.startsWith(COMMENT_PREFIX)) {
                 if (i > 0) {
                     result.append("\n");
                 }
-
                 if (line.length() > COMMENT_PREFIX.length()) {
                     result.append(line.substring(COMMENT_PREFIX.length()));
                 }
-
                 foundHeader = true;
             } else if ((foundHeader) && (line.length() == 0)) {
                 result.append("\n");
@@ -102,7 +103,6 @@ public class YamlConfiguration extends FileConfiguration {
                 readingHeader = false;
             }
         }
-
         return result.toString();
     }
 

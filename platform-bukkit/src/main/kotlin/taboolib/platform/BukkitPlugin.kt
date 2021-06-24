@@ -37,6 +37,7 @@ class BukkitPlugin : JavaPlugin() {
 
     override fun onDisable() {
         pluginInstance?.onDisable()
+        TabooLibCommon.cancel()
     }
 
     override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {

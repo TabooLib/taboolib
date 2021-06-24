@@ -3,6 +3,7 @@ package taboolib.common;
 import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
+import taboolib.common.inject.RuntimeInjector;
 import taboolib.common.platform.PlatformFactory;
 
 import java.io.IOException;
@@ -20,15 +21,17 @@ import java.io.IOException;
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-reflect:1.5.20-RC", test = "kotlin.reflect.jvm.KClassesJvm")
 public class TabooLibCommon {
 
+    public static final RuntimeEnv ENV = new RuntimeEnv();
+
     public static void init() {
-        try {
-            // 加载 Kotlin 运行库
-            RuntimeEnv.inject(TabooLibCommon.class);
-            // 初始化跨平台接口
-            PlatformFactory.INSTANCE.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ENV.inject(TabooLibCommon.class, null);
+        PlatformFactory.INSTANCE.init();
+        RuntimeInjector.INSTANCE.register(ENV);
+        RuntimeInjector.INSTANCE.init();
+    }
+
+    public static void cancel() {
+        PlatformFactory.INSTANCE.cancel();
     }
 
     public static boolean isKotlinEnvironment() {

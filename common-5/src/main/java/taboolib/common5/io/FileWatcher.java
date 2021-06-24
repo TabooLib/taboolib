@@ -2,6 +2,8 @@ package taboolib.common5.io;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.tuple.Triple;
+import taboolib.common.platform.Awake;
+import taboolib.common.platform.Cancel;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,8 @@ import java.util.function.Consumer;
  *
  * @author lzzelAliz
  */
-public class FileWatcher {
+@Awake
+public class FileWatcher implements Cancel {
 
     public final static FileWatcher INSTANCE = new FileWatcher();
 
@@ -108,5 +111,10 @@ public class FileWatcher {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void cancel() {
+        unregisterAll();
     }
 }

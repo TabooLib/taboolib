@@ -1,6 +1,10 @@
+@file:Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
+
 package taboolib.common.io
 
 import taboolib.common.TabooLibCommon
+import taboolib.common.inject.RuntimeInjector
+import taboolib.common.platform.PlatformFactory
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -12,13 +16,22 @@ import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
+import kotlin.jvm.internal.Reflection
 
 val classes = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
-@Suppress("NO_REFLECTION_IN_CLASS_PATH", "UNCHECKED_CAST")
+val <T> Class<T>.instance: T
+    get() {
+        val awoken = PlatformFactory.getAPI<T>(simpleName)
+        return awoken ?: (Reflection.getOrCreateKotlinClass(this).objectInstance ?: getDeclaredConstructor().newInstance()) as T
+    }
+
 fun <T> findInstance(clazz: Class<T>): T? {
-    val first = classes.firstOrNull { clazz.isAssignableFrom(it) && clazz != it } ?: return null
-    return (first.kotlin.objectInstance ?: first.getDeclaredConstructor().newInstance()) as? T
+    return classes.firstOrNull { clazz.isAssignableFrom(it) && clazz != it }?.instance as? T
+}
+
+fun <T> inject(clazz: Class<T>): T {
+    return RuntimeInjector.inject(clazz)
 }
 
 fun URL.getClasses(): List<Class<*>> {

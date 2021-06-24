@@ -3,6 +3,7 @@ package taboolib.platform
 import com.google.inject.Inject
 import org.spongepowered.api.config.ConfigDir
 import org.spongepowered.api.event.Listener
+import org.spongepowered.api.event.game.GameReloadEvent
 import org.spongepowered.api.event.game.state.GameConstructionEvent
 import org.spongepowered.api.event.game.state.GameInitializationEvent
 import org.spongepowered.api.event.game.state.GameStartedServerEvent
@@ -56,6 +57,7 @@ class SpongePlugin {
     @Listener
     fun e(e: GameStoppingServerEvent) {
         pluginInstance?.onDisable()
+        TabooLibCommon.cancel()
     }
 
     companion object {

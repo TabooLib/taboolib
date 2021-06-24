@@ -1,9 +1,9 @@
 package taboolib.module.kether
 
 import io.izzel.kether.common.api.QuestActionParser
-import taboolib.common.io.classes
+import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
-import taboolib.common.platform.PlatformFactory
+import java.lang.reflect.Method
 
 /**
  * TabooLibKotlin
@@ -13,24 +13,16 @@ import taboolib.common.platform.PlatformFactory
  * @since 2021/2/6 3:33 下午
  */
 @Awake
-@Suppress("NO_REFLECTION_IN_CLASS_PATH")
-object KetherLoader {
+object KetherLoader : Injector.Methods {
 
-    init {
-        classes.forEach base@{ clazz ->
-            if (PlatformFactory.checkPlatform(clazz)) {
-                val instance = clazz.kotlin.objectInstance ?: return@base
-                clazz.declaredMethods.forEach {
-                    if (it.isAnnotationPresent(KetherParser::class.java)) {
-                        val parser = it.getAnnotation(KetherParser::class.java)
-                        if (parser.value.isEmpty()) {
-                            it.invoke(instance)
-                        } else {
-                            parser.value.forEach { name ->
-                                Kether.addAction(name, it.invoke(instance) as QuestActionParser, parser.namespace)
-                            }
-                        }
-                    }
+    override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
+        if (method.isAnnotationPresent(KetherParser::class.java)) {
+            val parser = method.getAnnotation(KetherParser::class.java)
+            if (parser.value.isEmpty()) {
+                method.invoke(instance)
+            } else {
+                parser.value.forEach { name ->
+                    Kether.addAction(name, method.invoke(instance) as QuestActionParser, parser.namespace)
                 }
             }
         }

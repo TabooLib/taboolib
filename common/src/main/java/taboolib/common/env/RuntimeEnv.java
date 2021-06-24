@@ -1,5 +1,8 @@
 package taboolib.common.env;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import taboolib.common.inject.Injector;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.Awake;
 
@@ -13,20 +16,10 @@ import java.net.URL;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
-@Awake
-public class RuntimeEnv {
+public class RuntimeEnv implements Injector.Classes {
 
-    public RuntimeEnv() {
-        for (Class<?> clazz : IOKt.getClasses()) {
-            try {
-                inject(clazz);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static void inject(Class<?> clazz) throws IOException {
+    @Override
+    public void inject(@NotNull Class<?> clazz, @Nullable Object instance) {
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -41,13 +34,22 @@ public class RuntimeEnv {
                 if (dependency.test().length() > 0 && ClassAppender.isExists(dependency.test())) {
                     continue;
                 }
-                String[] args = dependency.value().split(":");
-                DependencyDownloader downloader = new DependencyDownloader();
-                downloader.addRepository(new Repository(dependency.repository()));
-                downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME));
-                String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-                downloader.download(new URL(pom).openStream());
+                try {
+                    String[] args = dependency.value().split(":");
+                    DependencyDownloader downloader = new DependencyDownloader();
+                    downloader.addRepository(new Repository(dependency.repository()));
+                    downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME));
+                    String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
+                    downloader.download(new URL(pom).openStream());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
+    }
+
+    @Override
+    public int getPriority() {
+        return 0;
     }
 }

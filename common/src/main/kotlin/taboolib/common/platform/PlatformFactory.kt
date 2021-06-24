@@ -1,20 +1,20 @@
 package taboolib.common.platform
 
 import taboolib.common.TabooLibCommon
+import taboolib.common.inject.Injector
+import taboolib.common.inject.RuntimeInjector
 import taboolib.common.io.classes
 
+@Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
 object PlatformFactory {
 
     lateinit var platformIO: PlatformIO
     lateinit var platformAdapter: PlatformAdapter
     lateinit var platformExecutor: PlatformExecutor
 
-    private val unnamedAPI = HashMap<String, Any>()
+    private val awokenMap = HashMap<String, Any>()
+    private val cancelTasks = ArrayList<Cancel>()
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getAPI(name: String) = unnamedAPI[name] as? T ?: error("not found $name")
-
-    @Suppress("NO_REFLECTION_IN_CLASS_PATH")
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
             classes.forEach {
@@ -25,27 +25,43 @@ object PlatformFactory {
                     } catch (ex: ExceptionInInitializerError) {
                         return@forEach
                     }
-                    when {
-                        interfaces.contains(PlatformIO::class.java) -> {
-                            platformIO = instance as PlatformIO
-                        }
-                        interfaces.contains(PlatformAdapter::class.java) -> {
-                            platformAdapter = instance as PlatformAdapter
-                        }
-                        interfaces.contains(PlatformExecutor::class.java) -> {
-                            platformExecutor = instance as PlatformExecutor
-                        }
-                        else -> {
-                            unnamedAPI[it.simpleName] = instance
-                        }
+                    if (interfaces.contains(PlatformIO::class.java)) {
+                        platformIO = instance as PlatformIO
                     }
+                    if (interfaces.contains(PlatformAdapter::class.java)) {
+                        platformAdapter = instance as PlatformAdapter
+                    }
+                    if (interfaces.contains(PlatformExecutor::class.java)) {
+                        platformExecutor = instance as PlatformExecutor
+                    }
+                    if (interfaces.contains(Injector.Fields::class.java)) {
+                        RuntimeInjector.register(instance as Injector.Fields)
+                    }
+                    if (interfaces.contains(Injector.Methods::class.java)) {
+                        RuntimeInjector.register(instance as Injector.Methods)
+                    }
+                    if (interfaces.contains(Injector.Classes::class.java)) {
+                        RuntimeInjector.register(instance as Injector.Classes)
+                    }
+                    if (interfaces.contains(Cancel::class.java)) {
+                        cancelTasks += instance as Cancel
+                    }
+                    awokenMap[it.simpleName] = instance
                 }
             }
         }
     }
 
+    fun cancel() {
+        cancelTasks.forEach { it.cancel() }
+    }
+
     fun checkPlatform(clazz: Class<*>): Boolean {
         val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true
         return runningPlatform in platformSide.value
+    }
+
+    fun <T> getAPI(name: String): T? {
+        return awokenMap[name] as? T
     }
 }

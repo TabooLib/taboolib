@@ -36,6 +36,7 @@ class BungeePlugin : Plugin() {
 
     override fun onDisable() {
         pluginInstance?.onDisable()
+        TabooLibCommon.cancel()
     }
 
     companion object {
