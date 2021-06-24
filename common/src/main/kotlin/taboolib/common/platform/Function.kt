@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
 import taboolib.common.platform.PlatformFactory.platformAdapter
+import taboolib.common.platform.PlatformFactory.platformCommand
 import taboolib.common.platform.PlatformFactory.platformExecutor
 import taboolib.common.platform.PlatformFactory.platformIO
 import java.io.File
@@ -82,4 +83,8 @@ fun unregisterListener(proxyListener: ProxyListener) {
 
 fun callEvent(proxyEvent: ProxyEvent) {
     platformAdapter.callEvent(proxyEvent)
+}
+
+fun registerCommand(command: Command, executor: CommandExecutor, tabCompleter: CommandTabCompleter) {
+    platformCommand.registerCommand(command, executor, tabCompleter)
 }

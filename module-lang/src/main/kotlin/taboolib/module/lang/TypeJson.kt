@@ -1,6 +1,7 @@
 package taboolib.module.lang
 
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.TellrawJson

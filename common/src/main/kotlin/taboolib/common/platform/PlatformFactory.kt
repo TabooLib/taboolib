@@ -11,6 +11,7 @@ object PlatformFactory {
     lateinit var platformIO: PlatformIO
     lateinit var platformAdapter: PlatformAdapter
     lateinit var platformExecutor: PlatformExecutor
+    lateinit var platformCommand: PlatformCommand
 
     private val awokenMap = HashMap<String, Any>()
     private val cancelTasks = ArrayList<Cancel>()
@@ -33,6 +34,9 @@ object PlatformFactory {
                     }
                     if (interfaces.contains(PlatformExecutor::class.java)) {
                         platformExecutor = instance as PlatformExecutor
+                    }
+                    if (interfaces.contains(PlatformCommand::class.java)) {
+                        platformCommand = instance as PlatformCommand
                     }
                     if (interfaces.contains(Injector.Fields::class.java)) {
                         RuntimeInjector.register(instance as Injector.Fields)

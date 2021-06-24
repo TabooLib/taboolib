@@ -7,26 +7,27 @@ plugins {
 }
 
 repositories {
-    maven { url = uri("https://maven.aliyun.com/repository/central") }
-    maven { url = uri("https://libraries.minecraft.net" )}
+//    maven { url = uri("https://maven.aliyun.com/repository/central") }
+//    maven { url = uri("https://libraries.minecraft.net" )}
     mavenCentral()
 }
 
 dependencies {
-    implementation("me.lucko:commodore:1.10")
+//    implementation("me.lucko:commodore:1.10")
+    compileOnly(project(":common"))
     compileOnly(kotlin("stdlib"))
 }
 
-tasks {
-    named<ShadowJar>("shadowJar") {
-        archiveClassifier.set("")
-        exclude("**/file/**")
-        dependencies {
-            include(dependency("me.lucko:commodore:1.10"))
-        }
-        relocate("me.lucko", "taboolib.library")
-    }
-    build {
-        dependsOn(shadowJar)
-    }
-}
+//tasks {
+//    named<ShadowJar>("shadowJar") {
+//        archiveClassifier.set("")
+//        exclude("**/file/**")
+//        dependencies {
+//            include(dependency("me.lucko:commodore:1.10"))
+//        }
+//        relocate("me.lucko", "taboolib.library")
+//    }
+//    build {
+//        dependsOn(shadowJar)
+//    }
+//}

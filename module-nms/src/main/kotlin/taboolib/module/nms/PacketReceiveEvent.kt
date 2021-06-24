@@ -5,9 +5,9 @@ import taboolib.common.platform.ProxyEvent
 
 /**
  * TabooLib
- * taboolib.module.nms.PacketSend
+ * taboolib.module.nms.PacketReceiveEvent
  *
  * @author sky
  * @since 2021/6/24 5:38 下午
  */
-class PacketSend(val player: Player, val packet: Packet) : ProxyEvent()
+class PacketReceiveEvent(val player: Player, val packet: Packet) : ProxyEvent()

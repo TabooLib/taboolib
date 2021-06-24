@@ -2,6 +2,7 @@ package taboolib.module.kether
 
 import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.util.LocalizedException
+import taboolib.common.util.VariableReader
 import java.util.*
 import java.util.function.Consumer
 import kotlin.collections.HashMap
@@ -10,8 +11,6 @@ import kotlin.collections.HashMap
  * your health {{player health}}, your name {{player name}}
  */
 object KetherFunction {
-
-    val regex = Regex("\\{\\{(.*?)}}")
 
     val mainCache = Cache()
 
@@ -72,16 +71,8 @@ object KetherFunction {
     }
 
     fun String.toFunction(): Function {
-        val element = ArrayList<Element>()
-        var index = 0
-        regex.findAll(this).forEach {
-            element.add(Element(substring(index, it.range.first)))
-            element.add(Element(it.groupValues[1], true))
-            index = it.range.last + 1
-        }
-        val last = Element(substring(index, length))
-        if (last.value.isNotEmpty()) {
-            element.add(last)
+        val element = VariableReader(this, '{', '}', 2).parts.map {
+            Element(it.text, it.isVariable)
         }
         return Function(element, element.filter { it.isFunction }.joinToString(" ") {
             "set ${it.hash} to ${it.value}"

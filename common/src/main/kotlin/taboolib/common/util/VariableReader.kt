@@ -1,4 +1,4 @@
-package taboolib.module.lang
+package taboolib.common.util
 
 /**
  * TabooLib
@@ -21,11 +21,13 @@ class VariableReader(val source: String, val left: Char = '[', val right: Char =
         source.forEach {
             when (it) {
                 '\\' -> if (escape) {
+                    escape = false
                     text += it
                 } else {
                     escape = true
                 }
                 left -> if (escape) {
+                    escape = false
                     text += it
                 } else {
                     s++
@@ -36,6 +38,7 @@ class VariableReader(val source: String, val left: Char = '[', val right: Char =
                     }
                 }
                 right -> if (escape) {
+                    escape = false
                     text += it
                 } else {
                     e++
