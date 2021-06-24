@@ -19,7 +19,7 @@ class ActionDate(val type: Type, val format: String? = null) : QuestAction<Any>(
     enum class Type(val get: () -> Long) {
 
         TIME({
-            System.currentTimeMillis();
+            System.currentTimeMillis()
         }),
 
         YEAR({

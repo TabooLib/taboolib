@@ -50,7 +50,7 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
                 }
             }
         }
-        return future;
+        return future
     }
 
     companion object {

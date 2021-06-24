@@ -7,5 +7,4 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/17 4:18 下午
  */
-interface ProxyConsole : ProxyCommandSender {
-}
+interface ProxyConsole : ProxyCommandSender

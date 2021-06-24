@@ -34,7 +34,7 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: String) : Que
             }
         }
         process(0)
-        return future;
+        return future
     }
 
     override fun toString(): String {

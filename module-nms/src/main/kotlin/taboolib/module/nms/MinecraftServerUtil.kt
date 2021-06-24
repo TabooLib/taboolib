@@ -1,6 +1,9 @@
 package taboolib.module.nms
 
+import org.bukkit.entity.Player
 import taboolib.common.io.classes
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import java.util.concurrent.ConcurrentHashMap
 
 val nmsProxyMap = ConcurrentHashMap<String, Any>()
@@ -29,4 +32,11 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
         }
         instance
     } as T
+}
+
+/**
+ * 向玩家发送数据包
+ */
+fun Player.sendPacket(packet: Any) {
+    reflexInvoke<Any>("getHandle")!!.reflex<Any>("playerConnection")!!.reflexInvoke<Any>("sendPacket", packet)
 }

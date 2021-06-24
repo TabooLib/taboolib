@@ -21,7 +21,6 @@ import org.bukkit.Chunk;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -47,6 +46,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static taboolib.module.nms.MinecraftServerUtilKt.sendPacket;
+
 /**
  * TabooLib
  * taboolib.module.nms.NMS
@@ -68,11 +69,6 @@ public class NMSJavaImpl extends NMSJava {
                 }
             }
         }
-    }
-
-    @Override
-    public void sendPacket(Player player, Object packet) {
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket((net.minecraft.server.v1_13_R2.Packet<?>) packet);
     }
 
     @NotNull

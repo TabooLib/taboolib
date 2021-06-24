@@ -1,5 +1,7 @@
 package taboolib.common5.util
 
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.util.replaceWithOrder
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
@@ -29,24 +31,24 @@ class Mirror {
         })
     }
 
-//    fun collect(opt: Options.() -> Unit = {}): MirrorCollect {
-//        val options = Options(Ref.getCallerPlugin().name).also(opt)
-//        val collect = MirrorCollect(this, options, "/", "/")
-//        dataMap.entries.forEach { mirror ->
-//            var point = collect
-//            mirror.key.split(":").forEach {
-//                point = point.sub.computeIfAbsent(it) { _ -> MirrorCollect(this, options, mirror.key, it) }
-//            }
-//        }
-//        return collect
-//    }
+    fun collect(opt: Options.() -> Unit = {}): MirrorCollect {
+        val options = Options("TabooLib").also(opt)
+        val collect = MirrorCollect(this, options, "/", "/")
+        dataMap.entries.forEach { mirror ->
+            var point = collect
+            mirror.key.split(":").forEach {
+                point = point.sub.computeIfAbsent(it) { _ -> MirrorCollect(this, options, mirror.key, it) }
+            }
+        }
+        return collect
+    }
 
-//    fun collectAndReport(sender: CommandSender, opt: Options.() -> Unit = {}): MirrorCollect {
-//        return collect(opt).run {
-//            print(sender, getTotal(), 0)
-//            this
-//        }
-//    }
+    fun collectAndReport(sender: ProxyCommandSender, opt: Options.() -> Unit = {}): MirrorCollect {
+        return collect(opt).run {
+            print(sender, getTotal(), 0)
+            this
+        }
+    }
 
     class Options(val prefix: String) {
 
@@ -80,26 +82,26 @@ class Mirror {
             return total
         }
 
-//        fun print(sender: CommandSender, all: BigDecimal, space: Int) {
-//            val prefix = "${Strings.copy("···", space)}${if (space > 0) " " else ""}"
-//            val total = getTotal()
-//            val data = mirror.dataMap[key]
-//            if (data != null) {
-//                val count = data.count
-//                val avg = data.getAverage()
-//                val min = data.getLowest()
-//                val max = data.getHighest()
-//                val format = if (sub.isEmpty()) opt.childFormat else opt.parentFormat
-//                sender.sendMessage(format.replaceWithOrder(prefix, path, count, avg, min, max, percent(all, total)))
-//            }
-//            sub.values.map {
-//                it to percent(all, it.getTotal())
-//            }.sortedByDescending {
-//                it.second
-//            }.forEach {
-//                it.first.print(sender, all, if (data != null) space + 1 else space)
-//            }
-//        }
+        fun print(sender: ProxyCommandSender, all: BigDecimal, space: Int) {
+            val prefix = "${"···".repeat(space)}${if (space > 0) " " else ""}"
+            val total = getTotal()
+            val data = mirror.dataMap[key]
+            if (data != null) {
+                val count = data.count
+                val avg = data.getAverage()
+                val min = data.getLowest()
+                val max = data.getHighest()
+                val format = if (sub.isEmpty()) opt.childFormat else opt.parentFormat
+                sender.sendMessage(format.replaceWithOrder(prefix, path, count, avg, min, max, percent(all, total)))
+            }
+            sub.values.map {
+                it to percent(all, it.getTotal())
+            }.sortedByDescending {
+                it.second
+            }.forEach {
+                it.first.print(sender, all, if (data != null) space + 1 else space)
+            }
+        }
 
         fun percent(all: BigDecimal, total: BigDecimal): Double {
             return if (all.toDouble() == 0.0) 0.0 else total.divide(all, 2, RoundingMode.HALF_UP).multiply(BigDecimal("100")).toDouble()

@@ -39,13 +39,6 @@ private val nmsUtil2 = nmsProxy(NMSKt::class.java)
 private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
 
 /**
- * 向玩家发送数据包
- */
-fun Player.sendPacket(packet: Any) {
-    nmsUtil1.sendPacket(this, packet)
-}
-
-/**
  * 获取物品NBT数据
  */
 fun ItemStack.getItemTag(): ItemTag {

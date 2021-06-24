@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author IzzelAliz
  */
-class ActionVariables() : QuestAction<List<String>>() {
+class ActionVariables : QuestAction<List<String>>() {
 
     override fun process(context: QuestContext.Frame): CompletableFuture<List<String>> {
         return CompletableFuture.completedFuture(context.deepVars().keys.toList())

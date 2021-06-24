@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author IzzelAliz
  */
-class ActionPlayers() : QuestAction<List<String>>() {
+class ActionPlayers : QuestAction<List<String>>() {
 
     override fun process(context: QuestContext.Frame): CompletableFuture<List<String>> {
         return CompletableFuture.completedFuture(onlinePlayers().map { it.name }.toList())

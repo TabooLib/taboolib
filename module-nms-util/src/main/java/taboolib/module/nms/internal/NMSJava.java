@@ -24,8 +24,6 @@ import java.util.function.Consumer;
  */
 public abstract class NMSJava {
 
-    abstract public void sendPacket(Player player, Object packet);
-
     @NotNull
     abstract public String getKey(ItemStack itemStack);
 
