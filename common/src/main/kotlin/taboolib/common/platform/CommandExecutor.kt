@@ -9,5 +9,5 @@ package taboolib.common.platform
  */
 interface CommandExecutor {
 
-    fun execute(sender: ProxyCommandSender, command: Command, name: String, args: Array<String>): Boolean
+    fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean
 }

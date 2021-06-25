@@ -1,4 +1,4 @@
-package taboolib.module.command
+package taboolib.common.platform
 
 /**
  * TabooLib
