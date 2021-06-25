@@ -3,8 +3,7 @@ package taboolib.platform
 import net.md_5.bungee.api.plugin.Plugin
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.findInstance
-import taboolib.common.platform.execute
-import java.io.File
+import taboolib.common.platform.submit
 
 /**
  * TabooLib
@@ -29,7 +28,7 @@ class BungeePlugin : Plugin() {
 
     override fun onEnable() {
         pluginInstance?.onEnable()
-        execute {
+        submit {
             pluginInstance?.onActive()
         }
     }

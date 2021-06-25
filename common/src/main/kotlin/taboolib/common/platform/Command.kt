@@ -13,5 +13,6 @@ class Command(
     val description: String,
     val usage: String,
     val permission: String,
-    val permissionMessage: String
+    val permissionMessage: String,
+    val permissionDefault: PermissionDefault
 )

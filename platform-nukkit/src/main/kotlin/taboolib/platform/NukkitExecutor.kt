@@ -16,7 +16,7 @@ class NukkitExecutor : PlatformExecutor {
 
     val plugin = NukkitPlugin.instance
 
-    override fun execute(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
+    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
         val task: NukkitPlatformTask
         when {
             period > 0 -> if (async) {

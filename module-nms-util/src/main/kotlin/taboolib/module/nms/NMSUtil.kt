@@ -1,6 +1,8 @@
 package taboolib.module.nms
 
 import com.google.gson.JsonObject
+import net.minecraft.server.v1_12_R1.CommandTeleport
+import net.minecraft.server.v1_8_R3.LocaleI18n
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
@@ -9,7 +11,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffectType
-import taboolib.common.platform.execute
+import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.common.reflect.Reflex.Companion.static
@@ -151,7 +153,7 @@ fun Player.sendScoreboard(vararg content: String) {
  * @param background 成就背景图片
  */
 fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastFrame.TASK, background: ToastBackground = ToastBackground.ADVENTURE) {
-    execute {
+    submit {
         val cache = Toast(icon, message, frame)
         val namespaceKey = toastMap.computeIfAbsent(cache) {
             inject(
@@ -162,7 +164,7 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
         // 注册成就
         grant(this@sendToast, namespaceKey)
         // 延迟注销，否则会出问题
-        execute(delay = 20) {
+        submit(delay = 20) {
             revoke(this@sendToast, namespaceKey)
         }
     }

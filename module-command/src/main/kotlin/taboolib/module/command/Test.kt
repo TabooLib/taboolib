@@ -12,8 +12,43 @@ import taboolib.common.platform.onlinePlayers
 class Test {
 
     init {
+        // npc create [id] [type]
+        // npc tp <id>
+        command("npc") {
+            literal("create") {
+                required {
+                    val id = argument
+                    required {
+                        val type = id + argument
+                        // API.createNPC(id, argument)
+                    }
+                }
+            }
+            literal("tp") {
+                fun teleport() {
+                    // npc.teleport(xx)
+                }
+                required {
+                    val id = argument
+                    // API.getNPC(id)
+                    teleport()
+                }
+                optional {
+                    // API.getNearNPC()
+                    teleport()
+                }
+            }
+        }
+        // test demo1
+        // 1
         command("test") {
-            literal("demo") {
+            literal("demo1") {
+                literal("demo2") {
+
+                }
+            }
+            required {
+
             }
             optional {
                 complete { onlinePlayers().map { it.name } }
@@ -23,6 +58,9 @@ class Test {
 
                     }
                 }
+            }
+            execute {
+
             }
         }
     }

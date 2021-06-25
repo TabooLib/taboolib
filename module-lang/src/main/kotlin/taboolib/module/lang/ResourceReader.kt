@@ -1,6 +1,6 @@
 package taboolib.module.lang
 
-import taboolib.common.platform.execute
+import taboolib.common.platform.submit
 import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.warning
 import taboolib.common5.io.FileWatcher
@@ -46,7 +46,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 val missingKeys = nodes.keys.filter { !exists.containsKey(it) }
                 if (missingKeys.isNotEmpty() && migrate) {
                     // 更新
-                    execute(async = true) {
+                    submit(async = true) {
                         val append = ArrayList<String>()
                         append += "# ------------------------- #"
                         append += "#  UPDATE ${dateFormat.format(System.currentTimeMillis())}  #"

@@ -18,7 +18,7 @@ class SpongeExecutor : PlatformExecutor {
 
     val plugin = SpongePlugin.instance
 
-    override fun execute(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
+    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
         val future = CompletableFuture<Unit>()
         var task = SpongePlatformTask(future)
         val scheduledTask = when {

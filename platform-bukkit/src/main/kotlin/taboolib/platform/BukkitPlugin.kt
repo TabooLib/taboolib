@@ -4,7 +4,7 @@ import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.findInstance
-import taboolib.common.platform.execute
+import taboolib.common.platform.submit
 import taboolib.plugin.Plugin
 import java.io.File
 
@@ -30,7 +30,7 @@ class BukkitPlugin : JavaPlugin() {
 
     override fun onEnable() {
         pluginInstance?.onEnable()
-        execute {
+        submit {
             pluginInstance?.onActive()
         }
     }

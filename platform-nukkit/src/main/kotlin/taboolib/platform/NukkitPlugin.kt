@@ -3,7 +3,7 @@ package taboolib.platform
 import cn.nukkit.plugin.PluginBase
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.findInstance
-import taboolib.common.platform.execute
+import taboolib.common.platform.submit
 import taboolib.plugin.Plugin
 import java.io.File
 
@@ -30,7 +30,7 @@ class NukkitPlugin : PluginBase() {
 
     override fun onEnable() {
         pluginInstance?.onEnable()
-        execute {
+        submit {
             pluginInstance?.onActive()
         }
     }

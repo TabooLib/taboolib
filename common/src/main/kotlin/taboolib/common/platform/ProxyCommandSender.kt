@@ -20,4 +20,8 @@ interface ProxyCommandSender {
     fun performCommand(command: String): Boolean
 
     fun hasPermission(permission: String): Boolean
+
+    fun <T> cast(type: Class<T>): T {
+        return type.cast(origin)
+    }
 }

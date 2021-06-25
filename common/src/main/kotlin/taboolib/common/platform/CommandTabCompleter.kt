@@ -9,5 +9,5 @@ package taboolib.common.platform
  */
 interface CommandTabCompleter {
 
-    fun execute(sender: Command, command: Command, name: String, args: Array<String>): List<String>
+    fun execute(sender: ProxyCommandSender, command: Command, name: String, args: Array<String>): List<String>?
 }

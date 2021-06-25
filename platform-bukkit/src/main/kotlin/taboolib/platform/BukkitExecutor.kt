@@ -20,7 +20,7 @@ class BukkitExecutor : PlatformExecutor {
 
     private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
 
-    override fun execute(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
+    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
         val task: BukkitPlatformTask
         when {
             period > 0 -> if (async) {

@@ -17,7 +17,7 @@ class BungeeExecutor : PlatformExecutor {
 
     val plugin = BungeePlugin.instance
 
-    override fun execute(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
+    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
         val scheduler = plugin.proxy.scheduler
         val future = CompletableFuture<Unit>()
         val task: BungeePlatformTask

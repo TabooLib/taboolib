@@ -3,7 +3,7 @@ package taboolib.module.kether.action
 import io.izzel.kether.common.api.QuestAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
-import taboolib.common.platform.execute
+import taboolib.common.platform.submit
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptParser
 import java.util.concurrent.CompletableFuture
@@ -15,7 +15,7 @@ class ActionWait(val ticks: Long) : QuestAction<Void>() {
 
     override fun process(frame: QuestContext.Frame): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-        val bukkitTask = execute(delay = ticks) {
+        val bukkitTask = submit(delay = ticks) {
             future.complete(null)
         }
         frame.addClosable(AutoCloseable {

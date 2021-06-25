@@ -57,6 +57,7 @@ object PlatformFactory {
     }
 
     fun cancel() {
+        unregisterCommands()
         cancelTasks.forEach { it.cancel() }
     }
 

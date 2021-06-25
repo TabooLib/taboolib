@@ -37,8 +37,8 @@ fun getDataFolder(): File {
     return platformIO.getDataFolder()
 }
 
-fun execute(async: Boolean = false, delay: Long = 0, period: Long = 0, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
-    return platformExecutor.execute(async, delay, period, executor)
+fun submit(async: Boolean = false, delay: Long = 0, period: Long = 0, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
+    return platformExecutor.submit(async, delay, period, executor)
 }
 
 fun <T> server(): T {
@@ -87,4 +87,12 @@ fun callEvent(proxyEvent: ProxyEvent) {
 
 fun registerCommand(command: Command, executor: CommandExecutor, tabCompleter: CommandTabCompleter) {
     platformCommand.registerCommand(command, executor, tabCompleter)
+}
+
+fun unregisterCommand(command: String) {
+    platformCommand.unregisterCommand(command)
+}
+
+fun unregisterCommands() {
+    platformCommand.unregisterCommands()
 }

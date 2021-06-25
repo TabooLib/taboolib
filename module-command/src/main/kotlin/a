@@ -22,6 +22,10 @@ command("time") {
         literal("midnight") {
             // time set midnight
         }
+        required {
+            restrict(longArgs(1, 10))
+        }
+
         required(complete = onlinePlayers(), restrict = {}) {
             // time set ?
             optional(complete = onlinePlayers()) {
