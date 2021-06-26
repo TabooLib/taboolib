@@ -29,7 +29,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.socketAddress
 
     override val uniqueId: UUID
-        get() = NukkitPlugin.instance.server.onlinePlayers.filter { it.value == player }.keys.first()
+        get() = NukkitPlugin.getInstance().server.onlinePlayers.filter { it.value == player }.keys.first()
 
     override val ping: Int
         get() = player.ping.toInt()
@@ -94,7 +94,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        val level = NukkitPlugin.instance.server.levelManager.getLevelByName(loc.world) ?: player.level
+        val level = NukkitPlugin.getInstance().server.levelManager.getLevelByName(loc.world) ?: player.level
         player.teleport(cn.nukkit.level.Location.from(loc.x.toFloat(), loc.y.toFloat(), loc.z.toFloat(), loc.yaw, loc.pitch, level))
     }
 }

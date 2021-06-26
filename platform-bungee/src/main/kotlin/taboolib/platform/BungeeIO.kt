@@ -18,13 +18,13 @@ class BungeeIO : PlatformIO {
 
     private val logger: Logger
         get() = try {
-            BungeePlugin.instance.logger
+            BungeePlugin.getInstance().logger
         } catch (ex: Exception) {
             Logger.getAnonymousLogger()
         }
 
     override val pluginId: String
-        get() = BungeePlugin.instance.description.name
+        get() = BungeePlugin.getInstance().description.name
 
     override val runningPlatform: Platform
         get() = Platform.BUNGEE
@@ -45,19 +45,19 @@ class BungeeIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(BungeePlugin.instance.dataFolder, path)
+        val file = File(BungeePlugin.getInstance().dataFolder, path)
         if (file.exists() && !replace) {
             return file
         }
-        file.writeBytes(BungeePlugin.instance.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        file.writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 
     override fun getJarFile(): File {
-        return BungeePlugin.instance.file
+        return BungeePlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return BungeePlugin.instance.dataFolder
+        return BungeePlugin.getInstance().dataFolder
     }
 }

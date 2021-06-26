@@ -60,7 +60,7 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-        val titleMessage = BungeePlugin.instance.proxy.createTitle().also {
+        val titleMessage = BungeePlugin.getInstance().proxy.createTitle().also {
             it.title(TextComponent(title ?: ""))
             it.subTitle(TextComponent(title ?: ""))
             it.fadeIn(fadein)
@@ -83,7 +83,7 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        return BungeePlugin.instance.proxy.pluginManager.dispatchCommand(player, command)
+        return BungeePlugin.getInstance().proxy.pluginManager.dispatchCommand(player, command)
     }
 
     override fun hasPermission(permission: String): Boolean {

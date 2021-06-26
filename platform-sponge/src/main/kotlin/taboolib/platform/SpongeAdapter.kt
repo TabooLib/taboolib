@@ -28,7 +28,7 @@ import org.spongepowered.api.event.block.ChangeBlockEvent
 @PlatformSide([Platform.SPONGE])
 class SpongeAdapter : PlatformAdapter {
 
-    private val plugin = SpongePlugin.instance
+    private val plugin = SpongePlugin.getInstance()
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
@@ -81,8 +81,8 @@ class SpongeAdapter : PlatformAdapter {
 
     class SpongeEvent(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
 
-        val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, SpongePlugin.instance.pluginContainer).build()
-        val eventCause: Cause = Cause.of(eventContext, SpongePlugin.instance.pluginContainer)
+        val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, SpongePlugin.getInstance().getPluginContainer()).build()
+        val eventCause: Cause = Cause.of(eventContext, SpongePlugin.getInstance().getPluginContainer())
 
         override fun isCancelled(): Boolean {
             return proxyEvent.isCancelled

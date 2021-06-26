@@ -20,7 +20,7 @@ class SpongeExecutor : PlatformExecutor {
     private var started = false
 
     val plugin by lazy {
-        SpongePlugin.instance
+        SpongePlugin.getInstance()
     }
 
     override fun start() {

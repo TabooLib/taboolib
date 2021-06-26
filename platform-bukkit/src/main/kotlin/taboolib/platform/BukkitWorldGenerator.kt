@@ -1,5 +1,7 @@
 package taboolib.platform
 
+import org.bukkit.generator.ChunkGenerator
+
 /**
  * TabooLib
  * taboolib.platform.BukkitWorldGenerator
@@ -9,5 +11,5 @@ package taboolib.platform
  */
 interface BukkitWorldGenerator {
 
-    fun getDefaultWorldGenerator(worldName: String, name: String?): Any?
+    fun getDefaultWorldGenerator(worldName: String, name: String?): ChunkGenerator?
 }

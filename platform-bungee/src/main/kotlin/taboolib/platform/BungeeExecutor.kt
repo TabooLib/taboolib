@@ -19,7 +19,7 @@ class BungeeExecutor : PlatformExecutor {
     private var started = false
 
     val plugin by lazy {
-        BungeePlugin.instance
+        BungeePlugin.getInstance()
     }
 
     override fun start() {

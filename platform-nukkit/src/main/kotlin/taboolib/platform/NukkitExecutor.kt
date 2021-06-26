@@ -18,7 +18,7 @@ class NukkitExecutor : PlatformExecutor {
     private var started = false
 
     val plugin by lazy {
-        NukkitPlugin.instance
+        NukkitPlugin.getInstance()
     }
 
     override fun start() {

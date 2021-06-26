@@ -20,13 +20,13 @@ class SpongeIO : PlatformIO {
 
     private val logger: Logger
         get() = try {
-            SpongePlugin.instance.pluginContainer.logger
+            SpongePlugin.getInstance().pluginContainer.logger
         } catch (ex: Exception) {
             LoggerFactory.getLogger("Anonymous")
         }
 
     override val pluginId: String
-        get() = SpongePlugin.instance.pluginContainer.id
+        get() = SpongePlugin.getInstance().pluginContainer.id
 
     override val runningPlatform: Platform
         get() = Platform.SPONGE
@@ -47,7 +47,7 @@ class SpongeIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(SpongePlugin.instance.pluginConfigDir, path)
+        val file = File(SpongePlugin.getInstance().pluginConfigDir, path)
         if (file.exists() && !replace) {
             return file
         }
@@ -56,10 +56,10 @@ class SpongeIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(SpongePlugin.instance.pluginContainer.source.get().toUri().path)
+        return File(SpongePlugin.getInstance().pluginContainer.source.get().toUri().path)
     }
 
     override fun getDataFolder(): File {
-        return SpongePlugin.instance.pluginConfigDir
+        return SpongePlugin.getInstance().pluginConfigDir
     }
 }

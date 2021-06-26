@@ -19,16 +19,16 @@ class NukkitIO : PlatformIO {
 
     private val logger: Logger
         get() = try {
-            NukkitPlugin.instance.logger
+            NukkitPlugin.getInstance().logger
         } catch (ex: Exception) {
             LoggerFactory.getLogger("Anonymous")
         }
 
     override val pluginId: String
-        get() = NukkitPlugin.instance.name
+        get() = NukkitPlugin.getInstance().name
 
     override val isPrimaryThread: Boolean
-        get() = NukkitPlugin.instance.server.isPrimaryThread
+        get() = NukkitPlugin.getInstance().server.isPrimaryThread
 
     override val runningPlatform: Platform
         get() = Platform.NUKKIT
@@ -46,19 +46,19 @@ class NukkitIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(NukkitPlugin.instance.dataFolder, path)
+        val file = File(NukkitPlugin.getInstance().dataFolder, path)
         if (file.exists() && !replace) {
             return file
         }
-        file.writeBytes(NukkitPlugin.instance.getResource(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
+        file.writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
         return file
     }
 
     override fun getJarFile(): File {
-        return NukkitPlugin.instance.file
+        return NukkitPlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return NukkitPlugin.instance.dataFolder
+        return NukkitPlugin.getInstance().dataFolder
     }
 }

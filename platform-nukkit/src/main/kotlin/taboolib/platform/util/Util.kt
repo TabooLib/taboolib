@@ -19,15 +19,15 @@ fun EventPriority.toNukkit() = when (this) {
 fun dispatchCommand(sender: CommandSender, command: String): Boolean {
     if (sender is Player) {
         val event = PlayerCommandPreprocessEvent((sender as Player?)!!, "/$command")
-        NukkitPlugin.instance.server.pluginManager.callEvent(event)
+        NukkitPlugin.getInstance().server.pluginManager.callEvent(event)
         if (!event.isCancelled && event.message.isNotBlank() && event.message.startsWith("/")) {
-            return NukkitPlugin.instance.server.dispatchCommand(event.player, event.message.substring(1))
+            return NukkitPlugin.getInstance().server.dispatchCommand(event.player, event.message.substring(1))
         }
     } else {
         val e = ServerCommandEvent(sender, command)
-        NukkitPlugin.instance.server.pluginManager.callEvent(e)
+        NukkitPlugin.getInstance().server.pluginManager.callEvent(e)
         if (!e.isCancelled && e.command.isNotBlank()) {
-            return NukkitPlugin.instance.server.dispatchCommand(e.sender, e.command)
+            return NukkitPlugin.getInstance().server.dispatchCommand(e.sender, e.command)
         }
     }
     return false

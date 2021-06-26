@@ -26,7 +26,7 @@ import java.lang.reflect.Method
 @PlatformSide([Platform.BUKKIT])
 class BungeeAdapter : PlatformAdapter {
 
-    val plugin = BungeePlugin.instance
+    val plugin = BungeePlugin.getInstance()
 
     val eventBus by lazy {
         BungeeCord.getInstance().pluginManager.reflex<EventBus>("eventBus")!!

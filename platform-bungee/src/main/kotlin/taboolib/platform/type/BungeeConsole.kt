@@ -25,7 +25,7 @@ class BungeeConsole(val sender: ConsoleCommandSender) : ProxyConsole {
     }
 
     override fun performCommand(command: String): Boolean {
-        return BungeePlugin.instance.proxy.pluginManager.dispatchCommand(sender, command)
+        return BungeePlugin.getInstance().proxy.pluginManager.dispatchCommand(sender, command)
     }
 
     override fun hasPermission(permission: String): Boolean {
