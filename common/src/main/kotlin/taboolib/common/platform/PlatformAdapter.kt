@@ -21,8 +21,21 @@ interface PlatformAdapter {
 
     fun adaptCommandSender(any: Any): ProxyCommandSender
 
+    /**
+     * bukkit & nukkit
+     */
     fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener
 
+    /**
+     * bungeecord
+     */
+    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener {
+        error("unsupported")
+    }
+
+    /**
+     * sponge
+     */
     fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
         error("unsupported")
     }

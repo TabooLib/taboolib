@@ -8,14 +8,22 @@ object EventBus : Injector.Methods {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
         if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
-            val subscribeEvent = method.getAnnotation(SubscribeEvent::class.java)
-            if (runningPlatform == Platform.SPONGE) {
-                registerListener(method.parameterTypes[0], subscribeEvent.order, subscribeEvent.beforeModifications) {
-                    method.invoke(instance, it)
+            val event = method.getAnnotation(SubscribeEvent::class.java)
+            when (runningPlatform) {
+                Platform.BUNGEE -> {
+                    registerListener(method.parameterTypes[0], if (event.level != 0) event.level else event.priority.level, event.beforeModifications) {
+                        method.invoke(instance, it)
+                    }
                 }
-            } else {
-                registerListener(method.parameterTypes[0], subscribeEvent.priority, subscribeEvent.ignoreCancelled) {
-                    method.invoke(instance, it)
+                Platform.SPONGE -> {
+                    registerListener(method.parameterTypes[0], event.order, event.beforeModifications) {
+                        method.invoke(instance, it)
+                    }
+                }
+                else -> {
+                    registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) {
+                        method.invoke(instance, it)
+                    }
                 }
             }
         }

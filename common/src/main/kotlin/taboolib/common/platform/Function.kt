@@ -90,6 +90,10 @@ fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriorit
     return platformAdapter.registerListener(event, priority, ignoreCancelled, func)
 }
 
+fun <T> registerListener(event: Class<T>, level: Int = 0, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener {
+    return platformAdapter.registerListener(event, level, ignoreCancelled, func)
+}
+
 fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
     return platformAdapter.registerListener(event, order, beforeModifications, func)
 }

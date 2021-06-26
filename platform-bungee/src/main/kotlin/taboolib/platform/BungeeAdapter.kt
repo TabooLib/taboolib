@@ -1,14 +1,19 @@
 package taboolib.platform
 
+import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Cancellable
 import net.md_5.bungee.api.plugin.Event
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.command.ConsoleCommandSender
 import net.md_5.bungee.event.EventBus
+import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.*
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.platform.type.BungeeConsole
 import taboolib.platform.type.BungeePlayer
+import java.lang.reflect.Method
 
 /**
  * TabooLib
@@ -22,6 +27,18 @@ import taboolib.platform.type.BungeePlayer
 class BungeeAdapter : PlatformAdapter {
 
     val plugin = BungeePlugin.instance
+
+    val eventBus by lazy {
+        BungeeCord.getInstance().pluginManager.reflex<EventBus>("eventBus")!!
+    }
+
+    val byListenerAndPriority by lazy {
+        eventBus.reflex<MutableMap<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>>("byListenerAndPriority")!!
+    }
+
+    val byEventBaked by lazy {
+        eventBus.reflex<MutableMap<Class<*>, Array<EventHandlerMethod>>>("byEventBaked")!!
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
@@ -44,12 +61,34 @@ class BungeeAdapter : PlatformAdapter {
         return BungeeConsole(any as ConsoleCommandSender)
     }
 
-    // TODO: Fix these s**t
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        TODO("Not yet implemented")
+        error("unsupported")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
+        val listener = BungeeListener(event, level) { func(it as T) }
+        var array = emptyArray<EventHandlerMethod>()
+        byListenerAndPriority.computeIfAbsent(event::class.java) { HashMap() }.run {
+            computeIfAbsent(level.toByte()) { HashMap() }.run {
+                put(listener, arrayOf(BungeeListener.method))
+                forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } }
+            }
+        }
+        byEventBaked[event::class.java] = array
+        return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
+        val listener = proxyListener as BungeeListener
+        var array = emptyArray<EventHandlerMethod>()
+        byListenerAndPriority[listener.event]?.run {
+            get(listener.level.toByte())?.run {
+                remove(listener)
+                forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } }
+            }
+        }
+        byEventBaked[listener.event] = array
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
@@ -58,28 +97,21 @@ class BungeeAdapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-    class BungeeListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventBus(), ProxyListener {
+    class BungeeListener(val event: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
 
-//        override fun execute(listener: Listener, event: Event) {
-//            try {
-//                val cast = clazz.cast(event)
-//                if (predicate(cast)) {
-//                    consumer(cast)
-//                }
-//            } catch (ignore: ClassCastException) {
-//            } catch (e: Throwable) {
-//                e.printStackTrace()
-//            }
-//        }
+        fun handle(event: Any) {
+            consumer(event)
+        }
+
+        companion object {
+
+            val method: Method = BungeeListener::class.java.getDeclaredMethod("handle", Any::class.java).also {
+                it.isAccessible = true
+            }
+        }
     }
 
     class BungeeEvent(val proxyEvent: ProxyEvent) : Event(), Cancellable {
-
-//        init {
-//            if (proxyEvent.allowAsynchronous) {
-//                reflex("async", !isPrimaryThread)
-//            }
-//        }
 
         override fun isCancelled(): Boolean {
             return proxyEvent.isCancelled
