@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-20210614.231150-8@jar")
+    compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-SNAPSHOT")
     compileOnly(project(":common"))
     compileOnly(kotlin("stdlib"))
 }
