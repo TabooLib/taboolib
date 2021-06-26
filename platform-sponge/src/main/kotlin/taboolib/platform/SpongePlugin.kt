@@ -12,6 +12,7 @@ import org.spongepowered.api.plugin.Plugin
 import org.spongepowered.api.plugin.PluginContainer
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.findInstance
+import taboolib.common.platform.startExecutor
 import java.io.File
 
 /**
@@ -21,7 +22,7 @@ import java.io.File
  * @author sky
  * @since 2021/6/15 1:54 上午
  */
-@Plugin(id = "@plugin_id", name = "@plugin_name", version = "@plugin_version")
+@Plugin(id = "@plugin_id@", name = "@plugin_name@", version = "@plugin_version@")
 class SpongePlugin {
 
     val pluginInstance: taboolib.plugin.Plugin?
@@ -47,6 +48,7 @@ class SpongePlugin {
     @Listener
     fun e(e: GameInitializationEvent) {
         pluginInstance?.onEnable()
+        startExecutor()
     }
 
     @Listener

@@ -27,7 +27,9 @@ import taboolib.platform.util.toBukkit
 @PlatformSide([Platform.BUKKIT])
 class BukkitAdapter : PlatformAdapter {
 
-    private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    val plugin by lazy {
+        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {

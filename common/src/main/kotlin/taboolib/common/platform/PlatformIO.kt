@@ -4,6 +4,8 @@ import java.io.File
 
 interface PlatformIO {
 
+    val pluginId: String
+
     val isPrimaryThread: Boolean
 
     val runningPlatform: Platform

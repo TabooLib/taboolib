@@ -25,6 +25,9 @@ class SpongeIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
+    override val pluginId: String
+        get() = SpongePlugin.instance.pluginContainer.id
+
     override val runningPlatform: Platform
         get() = Platform.SPONGE
 

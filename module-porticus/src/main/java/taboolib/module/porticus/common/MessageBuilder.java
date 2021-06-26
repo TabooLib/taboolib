@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import taboolib.module.porticus.common.util.ByteUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

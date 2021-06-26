@@ -1,4 +1,4 @@
-package taboolib.module.porticus.bungeeside.api;
+package taboolib.module.porticus.bungeeside;
 
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.common.Response;
@@ -34,7 +34,7 @@ public class PorticusBungeeEvent extends Event implements Cancellable, Response 
 
 	@Override
 	public void response(String... args) {
-		Porticus.getAPI().createMission(uid).command(args).run(sender);
+		Porticus.INSTANCE.getAPI().createMission(uid).command(args).run(sender);
 	}
 
 	@Override

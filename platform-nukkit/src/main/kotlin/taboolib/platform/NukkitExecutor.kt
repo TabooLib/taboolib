@@ -14,82 +14,100 @@ import taboolib.common.platform.Awake
 @Awake
 class NukkitExecutor : PlatformExecutor {
 
-    val plugin = NukkitPlugin.instance
+    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
+    private var started = false
 
-    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
-        val task: NukkitPlatformTask
-        when {
-            period > 0 -> if (async) {
-                object : NukkitRunnable() {
+    val plugin by lazy {
+        NukkitPlugin.instance
+    }
 
-                    init {
-                        task = NukkitPlatformTask(this)
+    override fun start() {
+        started = true
+        tasks.forEach { submit(it) }
+    }
+
+    override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        if (started) {
+            val task: NukkitPlatformTask
+            when {
+                runnable.now -> {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                            runnable.executor(task)
+                        }
+                        override fun run() {
+                        }
                     }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskTimerAsynchronously(plugin, delay.toInt(), period.toInt())
-            } else {
-                object : NukkitRunnable() {
-
-                    init {
-                        task = NukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskTimer(plugin, delay.toInt(), period.toInt())
+                }
+                runnable.period > 0 -> if (runnable.async) {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskTimerAsynchronously(plugin, runnable.delay.toInt(), runnable.period.toInt())
+                } else {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskTimer(plugin, runnable.delay.toInt(), runnable.period.toInt())
+                }
+                runnable.delay > 0 -> if (runnable.async) {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskLaterAsynchronously(plugin, runnable.delay.toInt())
+                } else {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskLater(plugin, runnable.delay.toInt())
+                }
+                else -> if (runnable.async) {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskAsynchronously(plugin)
+                } else {
+                    object : NukkitRunnable() {
+                        init {
+                            task = NukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTask(plugin)
+                }
             }
-            delay > 0 -> if (async) {
-                object : NukkitRunnable() {
+            return task
+        } else {
+            tasks += runnable
+            return object : PlatformExecutor.PlatformTask {
 
-                    init {
-                        task = NukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskLaterAsynchronously(plugin, delay.toInt())
-            } else {
-                object : NukkitRunnable() {
-
-                    init {
-                        task = NukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskLater(plugin, delay.toInt())
-            }
-            else -> if (async) {
-                object : NukkitRunnable() {
-
-                    init {
-                        task = NukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskAsynchronously(plugin)
-            } else {
-                object : NukkitRunnable() {
-
-                    init {
-                        task = NukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTask(plugin)
+                override fun cancel() {
+                    tasks -= runnable
+                }
             }
         }
-        return task
     }
 
     class NukkitPlatformTask(val runnable: NukkitRunnable) : PlatformExecutor.PlatformTask {

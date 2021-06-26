@@ -18,82 +18,100 @@ import taboolib.common.platform.PlatformSide
 @PlatformSide([Platform.BUKKIT])
 class BukkitExecutor : PlatformExecutor {
 
-    private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
+    private var started = false
 
-    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
-        val task: BukkitPlatformTask
-        when {
-            period > 0 -> if (async) {
-                object : BukkitRunnable() {
+    val plugin by lazy {
+        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    }
 
-                    init {
-                        task = BukkitPlatformTask(this)
+    override fun start() {
+        started = true
+        tasks.forEach { submit(it) }
+    }
+
+    override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        if (started) {
+            val task: BukkitPlatformTask
+            when {
+                runnable.now -> {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                            runnable.executor(task)
+                        }
+                        override fun run() {
+                        }
                     }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskTimerAsynchronously(plugin, delay, period)
-            } else {
-                object : BukkitRunnable() {
-
-                    init {
-                        task = BukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskTimer(plugin, delay, period)
+                }
+                runnable.period > 0 -> if (runnable.async) {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskTimerAsynchronously(plugin, runnable.delay, runnable.period)
+                } else {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskTimer(plugin, runnable.delay, runnable.period)
+                }
+                runnable.delay > 0 -> if (runnable.async) {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskLaterAsynchronously(plugin, runnable.delay)
+                } else {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskLater(plugin, runnable.delay)
+                }
+                else -> if (runnable.async) {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTaskAsynchronously(plugin)
+                } else {
+                    object : BukkitRunnable() {
+                        init {
+                            task = BukkitPlatformTask(this)
+                        }
+                        override fun run() {
+                            runnable.executor(task)
+                        }
+                    }.runTask(plugin)
+                }
             }
-            delay > 0 -> if (async) {
-                object : BukkitRunnable() {
+            return task
+        } else {
+            tasks += runnable
+            return object : PlatformExecutor.PlatformTask {
 
-                    init {
-                        task = BukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskLaterAsynchronously(plugin, delay)
-            } else {
-                object : BukkitRunnable() {
-
-                    init {
-                        task = BukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskLater(plugin, delay)
-            }
-            else -> if (async) {
-                object : BukkitRunnable() {
-
-                    init {
-                        task = BukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTaskAsynchronously(plugin)
-            } else {
-                object : BukkitRunnable() {
-
-                    init {
-                        task = BukkitPlatformTask(this)
-                    }
-
-                    override fun run() {
-                        executor(task)
-                    }
-                }.runTask(plugin)
+                override fun cancel() {
+                    tasks -= runnable
+                }
             }
         }
-        return task
     }
 
     class BukkitPlatformTask(val runnable: BukkitRunnable) : PlatformExecutor.PlatformTask {

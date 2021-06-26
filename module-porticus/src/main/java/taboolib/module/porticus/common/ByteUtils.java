@@ -1,4 +1,4 @@
-package taboolib.module.porticus.common.util;
+package taboolib.module.porticus.common;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

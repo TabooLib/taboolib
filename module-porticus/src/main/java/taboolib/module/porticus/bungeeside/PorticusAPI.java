@@ -1,5 +1,6 @@
 package taboolib.module.porticus.bungeeside;
 
+import org.jetbrains.annotations.NotNull;
 import taboolib.module.porticus.API;
 import taboolib.module.porticus.APIType;
 import taboolib.module.porticus.PorticusMission;
@@ -17,18 +18,21 @@ public class PorticusAPI extends API {
 
     private static final PorticusListener listener = new PorticusListener();
 
+    @NotNull
     @Override
     public APIType getType() {
         return APIType.SERVER;
     }
 
+    @NotNull
     @Override
     public PorticusMission createMission() {
         return new MissionBungee();
     }
 
+    @NotNull
     @Override
-    public PorticusMission createMission(UUID uid) {
+    public PorticusMission createMission(@NotNull UUID uid) {
         return new MissionBungee(uid);
     }
 }

@@ -7,7 +7,7 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/24 11:49 下午
  */
-interface CommandTabCompleter {
+interface CommandCompleter {
 
     fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>?
 }

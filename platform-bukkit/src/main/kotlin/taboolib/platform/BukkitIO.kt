@@ -19,7 +19,12 @@ import java.io.File
 @PlatformSide([Platform.BUKKIT])
 class BukkitIO : PlatformIO {
 
-    private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    val plugin by lazy {
+        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+    }
+
+    override val pluginId: String
+        get() = plugin.description.name
 
     override val runningPlatform: Platform
         get() = Platform.BUKKIT

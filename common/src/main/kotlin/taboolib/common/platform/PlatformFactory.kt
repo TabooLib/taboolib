@@ -14,7 +14,7 @@ object PlatformFactory {
     lateinit var platformCommand: PlatformCommand
 
     private val awokenMap = HashMap<String, Any>()
-    private val cancelTasks = ArrayList<Cancel>()
+    private val releaseTask = ArrayList<Releasable>()
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
@@ -47,8 +47,8 @@ object PlatformFactory {
                     if (interfaces.contains(Injector.Classes::class.java)) {
                         RuntimeInjector.register(instance as Injector.Classes)
                     }
-                    if (interfaces.contains(Cancel::class.java)) {
-                        cancelTasks += instance as Cancel
+                    if (interfaces.contains(Releasable::class.java)) {
+                        releaseTask += instance as Releasable
                     }
                     awokenMap[it.simpleName] = instance
                 }
@@ -56,16 +56,25 @@ object PlatformFactory {
         }
     }
 
+    /**
+     * 注销方法
+     */
     fun cancel() {
         unregisterCommands()
-        cancelTasks.forEach { it.cancel() }
+        releaseTask.forEach { it.release() }
     }
 
+    /**
+     * 检查指定类是否允许在当前平台运行
+     */
     fun checkPlatform(clazz: Class<*>): Boolean {
         val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true
         return runningPlatform in platformSide.value
     }
 
+    /**
+     * 获取已被唤醒的 API 实例
+     */
     fun <T> getAPI(name: String): T? {
         return awokenMap[name] as? T
     }

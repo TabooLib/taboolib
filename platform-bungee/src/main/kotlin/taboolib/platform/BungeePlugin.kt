@@ -3,6 +3,7 @@ package taboolib.platform
 import net.md_5.bungee.api.plugin.Plugin
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.findInstance
+import taboolib.common.platform.startExecutor
 import taboolib.common.platform.submit
 
 /**
@@ -28,6 +29,7 @@ class BungeePlugin : Plugin() {
 
     override fun onEnable() {
         pluginInstance?.onEnable()
+        startExecutor()
         submit {
             pluginInstance?.onActive()
         }

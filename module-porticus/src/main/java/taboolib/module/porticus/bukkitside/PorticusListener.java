@@ -2,9 +2,9 @@ package taboolib.module.porticus.bukkitside;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import taboolib.common.platform.FunctionKt;
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.PorticusMission;
-import taboolib.module.porticus.bukkitside.api.PorticusBukkitEvent;
 import taboolib.module.porticus.common.Message;
 import taboolib.module.porticus.common.MessageReader;
 import org.bukkit.Bukkit;
@@ -23,14 +23,13 @@ import java.io.IOException;
  */
 public class PorticusListener implements Listener, PluginMessageListener {
 
-    private static final Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
-
     public PorticusListener() {
+        Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "porticus:main", this);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "porticus:main");
+        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "porticus_" + FunctionKt.getPluginId() + ":main", this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "porticus_" + FunctionKt.getPluginId() + ":main");
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            for (PorticusMission mission : Porticus.getMissions()) {
+            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
                 if (mission.isTimeout()) {
                     if (mission.getTimeoutRunnable() != null) {
                         try {
@@ -39,7 +38,7 @@ public class PorticusListener implements Listener, PluginMessageListener {
                             t.printStackTrace();
                         }
                     }
-                    Porticus.getMissions().remove(mission);
+                    Porticus.INSTANCE.getMissions().remove(mission);
                 }
             }
         }, 0, 20);
@@ -47,7 +46,7 @@ public class PorticusListener implements Listener, PluginMessageListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void e(PorticusBukkitEvent e) {
-        for (PorticusMission mission : Porticus.getMissions()) {
+        for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
             if (mission.getUID().equals(e.getUID())) {
                 if (mission.getResponseConsumer() != null) {
                     try {
@@ -56,14 +55,14 @@ public class PorticusListener implements Listener, PluginMessageListener {
                         t.printStackTrace();
                     }
                 }
-                Porticus.getMissions().remove(mission);
+                Porticus.INSTANCE.getMissions().remove(mission);
             }
         }
     }
 
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] bytes) {
-        if (channel.equalsIgnoreCase("porticus:main")) {
+        if (channel.equalsIgnoreCase("porticus_" + FunctionKt.getPluginId() + ":main")) {
             try {
                 Message message = MessageReader.read(bytes);
                 if (message.isCompleted()) {

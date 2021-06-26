@@ -1,9 +1,9 @@
 package taboolib.module.porticus.bungeeside;
 
 import net.md_5.bungee.api.plugin.Plugin;
+import taboolib.common.platform.FunctionKt;
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.PorticusMission;
-import taboolib.module.porticus.bungeeside.api.PorticusBungeeEvent;
 import taboolib.module.porticus.common.Message;
 import taboolib.module.porticus.common.MessageReader;
 import net.md_5.bungee.BungeeCord;
@@ -28,15 +28,15 @@ public class PorticusListener implements Listener {
     private static final Plugin plugin = BungeeCord.getInstance().pluginManager.getPlugins().iterator().next();
 
     public PorticusListener() {
-        ProxyServer.getInstance().registerChannel("porticus:main");
+        ProxyServer.getInstance().registerChannel("porticus_" + FunctionKt.getPluginId() + ":main");
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         BungeeCord.getInstance().getScheduler().schedule(plugin, () -> {
-            for (PorticusMission mission : Porticus.getMissions()) {
+            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
                 if (!mission.isTimeout()) {
                     if (mission.getTimeoutRunnable() != null) {
                         mission.getTimeoutRunnable().run();
                     }
-                    Porticus.getMissions().remove(mission);
+                    Porticus.INSTANCE.getMissions().remove(mission);
                 }
             }
         }, 1, 1, TimeUnit.SECONDS);
@@ -69,7 +69,7 @@ public class PorticusListener implements Listener {
                     break;
             }
         } else {
-            for (PorticusMission mission : Porticus.getMissions()) {
+            for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
                 if (mission.getUID().equals(e.getUID())) {
                     if (mission.getResponseConsumer() != null) {
                         try {
@@ -78,7 +78,7 @@ public class PorticusListener implements Listener {
                             t.printStackTrace();
                         }
                     }
-                    Porticus.getMissions().remove(mission);
+                    Porticus.INSTANCE.getMissions().remove(mission);
                 }
             }
         }
@@ -89,7 +89,7 @@ public class PorticusListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase("porticus:main")) {
+        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase("porticus_" + FunctionKt.getPluginId() + ":main")) {
             try {
                 Message message = MessageReader.read(e.getData());
                 if (message.isCompleted()) {

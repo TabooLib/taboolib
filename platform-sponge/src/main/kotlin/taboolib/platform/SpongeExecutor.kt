@@ -16,60 +16,80 @@ import java.util.concurrent.TimeUnit
 @PlatformSide([Platform.SPONGE])
 class SpongeExecutor : PlatformExecutor {
 
-    val plugin = SpongePlugin.instance
+    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
+    private var started = false
 
-    override fun submit(async: Boolean, delay: Long, period: Long, executor: PlatformExecutor.PlatformTask.() -> Unit): PlatformExecutor.PlatformTask {
-        val future = CompletableFuture<Unit>()
-        var task = SpongePlatformTask(future)
-        val scheduledTask = when {
-            period > 0 -> if (async) {
-                Task.builder()
-                    .async()
-                    .delay(delay * 50, TimeUnit.MILLISECONDS)
-                    .interval(period * 50, TimeUnit.MILLISECONDS)
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
-            } else {
-                Task.builder()
-                    .delay(delay * 50, TimeUnit.MILLISECONDS)
-                    .interval(period * 50, TimeUnit.MILLISECONDS)
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
+    val plugin by lazy {
+        SpongePlugin.instance
+    }
+
+    override fun start() {
+        started = true
+        tasks.forEach { submit(it) }
+    }
+
+    override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        if (started) {
+            val future = CompletableFuture<Unit>()
+            val task = SpongePlatformTask(future)
+            val scheduledTask = when {
+                runnable.now -> {
+                    runnable.executor(task)
+                    null
+                }
+                runnable.period > 0 -> if (runnable.async) {
+                    Task.builder()
+                        .async()
+                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
+                } else {
+                    Task.builder()
+                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
+                }
+                runnable.delay > 0 -> if (runnable.async) {
+                    Task.builder()
+                        .async()
+                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
+                } else {
+                    Task.builder()
+                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
+                }
+                else -> if (runnable.async) {
+                    Task.builder().async().execute(Runnable {
+                        runnable.executor(task)
+                    }).submit(plugin)
+                } else {
+                    Task.builder().execute(Runnable {
+                        runnable.executor(task)
+                    }).submit(plugin)
+                }
             }
-            delay > 0 -> if (async) {
-                Task.builder()
-                    .async()
-                    .delay(delay * 50, TimeUnit.MILLISECONDS)
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
-            } else {
-                Task.builder()
-                    .delay(delay * 50, TimeUnit.MILLISECONDS)
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
+            future.thenAccept {
+                scheduledTask?.cancel()
             }
-            else -> if (async) {
-                Task.builder()
-                    .async()
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
-            } else {
-                Task.builder()
-                    .execute(Runnable {
-                        task = SpongePlatformTask(future)
-                    })
+            return task
+        } else {
+            tasks += runnable
+            return object : PlatformExecutor.PlatformTask {
+
+                override fun cancel() {
+                    tasks -= runnable
+                }
             }
         }
-        future.thenAccept {
-            scheduledTask.submit(SpongePlugin.instance).cancel()
-        }
-        
-        return task
     }
 
     class SpongePlatformTask(private val future: CompletableFuture<Unit>) : PlatformExecutor.PlatformTask {

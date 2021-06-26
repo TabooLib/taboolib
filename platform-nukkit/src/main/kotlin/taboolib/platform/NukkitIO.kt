@@ -24,6 +24,9 @@ class NukkitIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
+    override val pluginId: String
+        get() = NukkitPlugin.instance.name
+
     override val isPrimaryThread: Boolean
         get() = NukkitPlugin.instance.server.isPrimaryThread
 

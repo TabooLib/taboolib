@@ -64,13 +64,13 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
             // 输入参数数量小于约定参数数量
             if (context.args.size < index + 1) {
                 if (inExecute) {
-                    sender.sendMessage("[todo] invalid argument (1)")
+                    lost.invoke(context)
                 }
             } else if (end()) {
                 if (inExecute) {
                     execute?.invoke(join(context.args, index), context)
                 } else {
-                    completeBox.value = complete?.invoke(context)
+                    completeBox.value = complete?.invoke(context) ?: literals.keys.toList()
                 }
             } else {
                 val command = ArgumentCommand(sender, successBox, completeBox, context.args[index])

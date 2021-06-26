@@ -38,7 +38,9 @@ private val nmsUtil1 = nmsProxy(NMSJava::class.java)
 
 private val nmsUtil2 = nmsProxy(NMSKt::class.java)
 
-private val plugin = JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+private val plugin by lazy {
+    JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
+}
 
 /**
  * 获取物品NBT数据

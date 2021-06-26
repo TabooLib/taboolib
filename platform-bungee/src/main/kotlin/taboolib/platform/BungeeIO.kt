@@ -23,6 +23,9 @@ class BungeeIO : PlatformIO {
             Logger.getAnonymousLogger()
         }
 
+    override val pluginId: String
+        get() = BungeePlugin.instance.description.name
+
     override val runningPlatform: Platform
         get() = Platform.BUNGEE
 

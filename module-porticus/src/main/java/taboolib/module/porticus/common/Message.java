@@ -3,7 +3,6 @@ package taboolib.module.porticus.common;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
-import taboolib.module.porticus.common.util.ByteUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;

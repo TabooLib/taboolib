@@ -1,4 +1,4 @@
-package taboolib.module.porticus.bukkitside.api;
+package taboolib.module.porticus.bukkitside;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -35,7 +35,7 @@ public class PorticusBukkitEvent extends Event implements Response {
 
     @Override
     public void response(String... args) {
-        Porticus.getAPI().createMission(uid).command(args).run(sender);
+        Porticus.INSTANCE.getAPI().createMission(uid).command(args).run(sender);
     }
 
     @NotNull

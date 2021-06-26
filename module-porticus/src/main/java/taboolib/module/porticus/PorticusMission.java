@@ -48,7 +48,7 @@ public abstract class PorticusMission {
      */
     public void run(@NotNull Object target) {
         if (consumer != null || runnable != null) {
-            Porticus.getMissions().add(this);
+            Porticus.INSTANCE.getMissions().add(this);
         }
         this.start = System.currentTimeMillis();
     }
