@@ -1,8 +1,8 @@
 package taboolib.common.inject
 
 import taboolib.common.TabooLibCommon
-import taboolib.common.io.classes
-import taboolib.common.io.instance
+import taboolib.common.io.runningClasses
+import taboolib.common.io.getInstance
 import taboolib.common.platform.PlatformFactory
 
 /**
@@ -20,12 +20,12 @@ object RuntimeInjector {
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
-            classes.filter { PlatformFactory.checkPlatform(it) }.forEach { inject(it) }
+            runningClasses.filter { PlatformFactory.checkPlatform(it) }.forEach { inject(it) }
         }
     }
 
-    fun <T> inject(clazz: Class<T>): T {
-        val instance = clazz.instance
+    fun <T> inject(clazz: Class<T>, new: Boolean = false): T? {
+        val instance = clazz.getInstance(new = new) ?: return null
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
         injectFields.forEach { inj -> declaredFields.forEach { inj.inject(it, clazz, instance) } }

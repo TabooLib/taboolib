@@ -13,8 +13,29 @@ val pluginId: String
 val isPrimaryThread: Boolean
     get() = platformIO.isPrimaryThread
 
-val runningPlatform: Platform
-    get() = platformIO.runningPlatform
+val runningPlatform by lazy {
+    try {
+        Class.forName("org.bukkit.Bukkit")
+        return@lazy Platform.BUKKIT
+    } catch (ex: ClassNotFoundException) {
+    }
+    try {
+        Class.forName("net.md_5.bungee.BungeeCord")
+        return@lazy Platform.BUNGEE
+    } catch (ex: ClassNotFoundException) {
+    }
+    try {
+        Class.forName("cn.nukkit.Server")
+        return@lazy Platform.NUKKIT
+    } catch (ex: ClassNotFoundException) {
+    }
+    try {
+        Class.forName("org.spongepowered.api.Sponge")
+        return@lazy Platform.SPONGE
+    } catch (ex: ClassNotFoundException) {
+    }
+    return@lazy Platform.UNKNOWN
+}
 
 fun info(vararg message: Any?) {
     platformIO.info(*message)

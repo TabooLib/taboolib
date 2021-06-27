@@ -8,8 +8,6 @@ interface PlatformIO {
 
     val isPrimaryThread: Boolean
 
-    val runningPlatform: Platform
-
     fun info(vararg message: Any?)
 
     fun severe(vararg message: Any?)

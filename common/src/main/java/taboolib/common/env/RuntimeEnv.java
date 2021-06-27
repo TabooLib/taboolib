@@ -38,9 +38,9 @@ public class RuntimeEnv implements Injector.Classes {
                     String[] args = dependency.value().split(":");
                     DependencyDownloader downloader = new DependencyDownloader();
                     downloader.addRepository(new Repository(dependency.repository()));
-                    downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME));
                     String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
                     downloader.download(new URL(pom).openStream());
+                    downloader.injectClasspath(downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME)));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

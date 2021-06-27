@@ -26,9 +26,6 @@ class BukkitIO : PlatformIO {
     override val pluginId: String
         get() = plugin.description.name
 
-    override val runningPlatform: Platform
-        get() = Platform.BUKKIT
-
     override val isPrimaryThread: Boolean
         get() = Bukkit.isPrimaryThread()
 

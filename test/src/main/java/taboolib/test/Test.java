@@ -1,5 +1,6 @@
 package taboolib.test;
 
+import kotlin.jvm.internal.Intrinsics;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.module.configuration.SecuredFile;
@@ -19,20 +20,7 @@ public class Test {
 
     public static void main(String[] args) {
         TabooLibCommon.init();
-        ArrayList<Object> strings = new ArrayList<>();
-        strings.add("a");
-        strings.add("b");
-        Map<Object, Object> map = new HashMap<>();
-        map.put("c", "d");
-        map.put("e", null);
-        strings.add(map);
-
-        System.out.println(SecuredFile.Companion.dumpAll("key", strings));
-        System.out.println("---");
-        System.out.println(SecuredFile.Companion.dumpAll("key", map));
-        System.out.println("---");
-        System.out.println(SecuredFile.Companion.dumpAll("key", new HashMap()));
-        System.out.println("---");
-        System.out.println(SecuredFile.Companion.dumpAll("key", "aabbcc"));
+        Intrinsics.checkNotNull(null, "123");
+        System.out.println("112233");
     }
 }

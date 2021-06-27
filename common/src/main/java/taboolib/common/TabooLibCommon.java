@@ -18,7 +18,6 @@ import java.io.IOException;
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib:1.5.20-RC", test = "kotlin.KotlinVersion")
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.20-RC", test = "kotlin.jdk7.AutoCloseableKt")
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20-RC", test = "kotlin.collections.jdk8.CollectionsJDK8Kt")
-@RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-reflect:1.5.20-RC", test = "kotlin.reflect.jvm.KClassesJvm")
 public class TabooLibCommon {
 
     public static final RuntimeEnv ENV = new RuntimeEnv();

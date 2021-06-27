@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "taboolib"
-    version = "test-600-0"
+    version = "test-600-7"
 
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))
@@ -17,14 +17,14 @@ allprojects {
 publishing {
     repositories {
         maven {
-            url = uri("https://repo2s.ptms.ink/repository/maven-releases/")
-            credentials {
-                username = project.findProperty("user").toString()
-                password = project.findProperty("password").toString()
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
+            url = uri("/Users/sky/Desktop/repo")
+//            credentials {
+//                username = project.findProperty("user").toString()
+//                password = project.findProperty("password").toString()
+//            }
+//            authentication {
+//                create<BasicAuthentication>("basic")
+//            }
         }
     }
     publications {

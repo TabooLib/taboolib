@@ -24,10 +24,7 @@ tasks {
         dependencies {
             include(project(":common"))
             include(project(":common-5"))
-            include(dependency("dev.vankka.DependencyDownload:common:1.0.0"))
-            include(dependency("dev.vankka.DependencyDownload:runtime:1.0.0"))
         }
-        relocate("dev.vankka", "taboolib.library")
     }
     build {
         dependsOn(shadowJar)

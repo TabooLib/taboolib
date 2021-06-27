@@ -3,7 +3,8 @@ package taboolib.common.platform
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
-import taboolib.common.io.classes
+import taboolib.common.io.runningClasses
+import taboolib.common.io.getInstance
 
 @Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
 object PlatformFactory {
@@ -18,11 +19,11 @@ object PlatformFactory {
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
-            classes.forEach {
+            runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = try {
-                        it.kotlin.objectInstance ?: it.getDeclaredConstructor().newInstance()
+                        it.getInstance(new = true)!!
                     } catch (ex: ExceptionInInitializerError) {
                         return@forEach
                     }

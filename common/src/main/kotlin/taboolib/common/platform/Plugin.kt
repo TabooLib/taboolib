@@ -1,4 +1,4 @@
-package taboolib.common.platform;
+package taboolib.common.platform
 
 /**
  * TabooLib
@@ -7,17 +7,17 @@ package taboolib.common.platform;
  * @author sky
  * @since 2021/6/15 6:19 下午
  */
-public class Plugin {
+abstract class Plugin {
 
-    public void onLoad() {
+    open fun onLoad() {
     }
 
-    public void onEnable() {
+    open fun onEnable() {
     }
 
-    public void onActive() {
+    open fun onActive() {
     }
 
-    public void onDisable() {
+    open fun onDisable() {
     }
 }

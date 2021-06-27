@@ -3,7 +3,6 @@ package taboolib.platform
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.spongepowered.api.Sponge
-import taboolib.common.platform.Platform
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
@@ -27,9 +26,6 @@ class SpongeIO : PlatformIO {
 
     override val pluginId: String
         get() = SpongePlugin.getInstance().pluginContainer.id
-
-    override val runningPlatform: Platform
-        get() = Platform.SPONGE
 
     override val isPrimaryThread: Boolean
         get() = Sponge.getServer().isMainThread

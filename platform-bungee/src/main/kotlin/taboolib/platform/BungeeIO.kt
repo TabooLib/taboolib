@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import taboolib.common.platform.Platform
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformIO
 import java.io.File
@@ -25,9 +24,6 @@ class BungeeIO : PlatformIO {
 
     override val pluginId: String
         get() = BungeePlugin.getInstance().description.name
-
-    override val runningPlatform: Platform
-        get() = Platform.BUNGEE
 
     override val isPrimaryThread: Boolean
         get() = true

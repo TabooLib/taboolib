@@ -28,6 +28,15 @@ import java.util.*;
 public class DependencyDownloader extends AbstractXmlParser {
 
     /**
+     * A set of all of the dependencies that have already been injected into the
+     * classpath, so they should not be reinjected (to prevent cyclic
+     * dependencies from freezing the code in a loop)
+     *
+     * @since 1.0.0
+     */
+    private static final Set<Dependency> injectedDependencies = new HashSet<>();
+
+    /**
      * The directory to download and store artifacts in
      *
      * @since 1.0.0
@@ -39,7 +48,7 @@ public class DependencyDownloader extends AbstractXmlParser {
      *
      * @since 1.0.0
      */
-    private DependencyScope[] dependencyScopes = {DependencyScope.RUNTIME};
+    private DependencyScope[] dependencyScopes = {DependencyScope.RUNTIME, DependencyScope.COMPILE};
 
     /**
      * If debugging information should be logged to {@link System#out}
@@ -47,15 +56,6 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     private boolean isDebugMode = true;
-
-    /**
-     * A set of all of the dependencies that have already been injected into the
-     * classpath, so they should not be reinjected (to prevent cyclic
-     * dependencies from freezing the code in a loop)
-     *
-     * @since 1.0.0
-     */
-    private final Set<Dependency> injectedDependencies = new HashSet<>();
 
     private final Set<Repository> repositories = new HashSet<>();
 

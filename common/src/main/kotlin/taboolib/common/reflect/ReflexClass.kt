@@ -1,6 +1,7 @@
 package taboolib.common.reflect
 
 import java.lang.reflect.Field
+import java.lang.reflect.InaccessibleObjectException
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
@@ -20,21 +21,24 @@ class ReflexClass(val clazz: Class<*>) {
     val savingMethods = ArrayList<Method>()
 
     init {
-        savingFields.addAll(clazz.declaredFields.map {
-            it.isAccessible = true
-            it
-        })
-        savingMethods.addAll(clazz.declaredMethods.map {
-            it.isAccessible = true
-            it
-        })
-        if (clazz.superclass != null && clazz.superclass != Object::class.java) {
-            superclass = ReflexClass(clazz.superclass)
+        println("reflex ${clazz.name}")
+        try {
+            savingFields.addAll(clazz.declaredFields.map {
+                it.isAccessible = true
+                it
+            })
+            savingMethods.addAll(clazz.declaredMethods.map {
+                it.isAccessible = true
+                it
+            })
+            if (clazz.superclass != null && clazz.superclass != Object::class.java) {
+                superclass = ReflexClass(clazz.superclass)
+            }
+            clazz.interfaces.forEach {
+                interfaces.add(ReflexClass(it))
+            }
+        } catch (ex: InaccessibleObjectException) {
         }
-        clazz.interfaces.forEach {
-            interfaces.add(ReflexClass(it))
-        }
-        savingClass[clazz.name] = this
     }
 
     fun findField(f: String): Field? {

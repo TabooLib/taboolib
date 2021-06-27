@@ -5,6 +5,8 @@ package taboolib.common.io
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.static
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -18,20 +20,28 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 import kotlin.jvm.internal.Reflection
 
-val classes = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
+val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
-val <T> Class<T>.instance: T
-    get() {
-        val awoken = PlatformFactory.getAPI<T>(simpleName)
-        return awoken ?: (Reflection.getOrCreateKotlinClass(this).objectInstance ?: getDeclaredConstructor().newInstance()) as T
+fun <T> Class<T>.getInstance(new: Boolean = false): T? {
+    val awoken = PlatformFactory.getAPI<T>(simpleName)
+    if (awoken != null) {
+        return awoken
     }
-
-fun <T> findInstance(clazz: Class<T>): T? {
-    return classes.firstOrNull { clazz.isAssignableFrom(it) && clazz != it }?.instance as? T
+    return try {
+        getDeclaredField("INSTANCE").get(null) as T
+    } catch (ex: IllegalAccessException) {
+        null
+    } catch (ex: NoSuchFieldException) {
+        if (new) getDeclaredConstructor().newInstance() as T else null
+    }
 }
 
-fun <T> inject(clazz: Class<T>): T {
-    return RuntimeInjector.inject(clazz)
+fun <T> Class<T>.findInstance(): T? {
+    return runningClasses.firstOrNull { isAssignableFrom(it) && this != it }?.getInstance(new = true) as? T
+}
+
+fun <T> inject(clazz: Class<T>, new: Boolean): T? {
+    return RuntimeInjector.inject(clazz, new)
 }
 
 fun URL.getClasses(): List<Class<*>> {
