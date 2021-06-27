@@ -2,6 +2,7 @@ package taboolib.module.kether
 
 import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.util.LocalizedException
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import java.util.*
 import java.util.function.Consumer
@@ -20,31 +21,8 @@ object KetherFunction {
         cacheFunction: Boolean = false,
         cacheScript: Boolean = true,
         namespace: List<String> = emptyList(),
-        context: Consumer<ScriptContext>
-    ): String {
-        return parse(input, cacheFunction, cacheScript, namespace, mainCache) {
-            context.accept(this)
-        }
-    }
-
-    @Throws(LocalizedException::class)
-    fun parse(
-        input: String,
-        cacheFunction: Boolean = false,
-        cacheScript: Boolean = true,
-        namespace: List<String> = emptyList(),
-        context: ScriptContext.() -> Unit = {}
-    ): String {
-        return parse(input, cacheFunction, cacheScript, namespace, mainCache, context)
-    }
-
-    @Throws(LocalizedException::class)
-    fun parse(
-        input: String,
-        cacheFunction: Boolean = false,
-        cacheScript: Boolean = true,
-        namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
+        sender: ProxyCommandSender? = null,
         context: ScriptContext.() -> Unit = {}
     ): String {
         val function = if (cacheFunction) cache.functionMap.computeIfAbsent(input) {
@@ -57,10 +35,16 @@ object KetherFunction {
         } else {
             ScriptLoader.load(function.source, namespace)
         }
-        val vars = ScriptContext.create(script).also(context).run {
-            runActions()
-            rootFrame().variables()
-        }
+        val vars = ScriptContext.create(script)
+            .also {
+                if (sender != null) {
+                    it.sender = sender
+                }
+                context(it)
+            }.run {
+                runActions()
+                rootFrame().variables()
+            }
         return function.element.joinToString("") {
             if (it.isFunction) {
                 vars.get<Any>(it.hash).orElse("{{${it.value}}}").toString()

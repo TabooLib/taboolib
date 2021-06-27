@@ -2,11 +2,10 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Multimap
-import io.izzel.kether.common.api.DefaultRegistry
-import io.izzel.kether.common.api.Quest
-import io.izzel.kether.common.api.QuestRegistry
-import io.izzel.kether.common.api.QuestService
+import io.izzel.kether.common.api.*
 import taboolib.common.platform.getJarFile
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.reflect.Reflex.Companion.staticInvoke
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.configuration.SecuredFile
@@ -21,18 +20,22 @@ import java.util.concurrent.ScheduledExecutorService
 /**
  * @author IzzelAliz
  */
-class ScriptService : QuestService<ScriptContext> {
+object ScriptService : QuestService<ScriptContext> {
 
-    companion object {
-
-        @JvmField
-        val INSTANCE = QuestService::class.java.staticInvoke<ScriptService>("instance")!!
+    init {
+        try {
+            ServiceHolder::class.java.static("INSTANCE", ScriptService)
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+        }
     }
 
     private val registry = DefaultRegistry()
     private val syncExecutor = ScriptSchedulerExecutor
     private val asyncExecutor = Executors.newScheduledThreadPool(2)
-    private val locale = SecuredFile.loadConfiguration(ScriptService::class.java.getResourceAsStream("kether.yml").readBytes().toString(StandardCharsets.UTF_8))
+    private val locale = SecuredFile.loadConfiguration(
+        ScriptService::class.java.classLoader.getResourceAsStream("kether.yml")?.readBytes()?.toString(StandardCharsets.UTF_8).toString()
+    )
 
     val mainspace = Workspace(File("kether/${getJarFile().nameWithoutExtension}"))
 

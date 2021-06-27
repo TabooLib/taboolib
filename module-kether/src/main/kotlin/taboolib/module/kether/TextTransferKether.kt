@@ -1,8 +1,10 @@
-package taboolib.module.lang
+package taboolib.module.kether
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.module.kether.Kether
 import taboolib.module.kether.KetherFunction
+import taboolib.module.kether.ScriptService
+import taboolib.module.lang.TextTransfer
 
 /**
  * TabooLib
@@ -13,25 +15,11 @@ import taboolib.module.kether.KetherFunction
  */
 object TextTransferKether : TextTransfer {
 
-    var hooked = false
-
-    val cacheMap by lazy {
-        KetherFunction.Cache()
-    }
-
-    init {
-        try {
-            Kether.registry
-            hooked = true
-        } catch (ex: Throwable) {
-        }
-    }
+    val cacheMap = KetherFunction.Cache()
 
     override fun translate(sender: ProxyCommandSender, source: String): String {
-        if (hooked && source.contains("{{")) {
-            return KetherFunction.parse(source, cache = cacheMap) {
-                this.sender = sender
-            }
+        if (source.contains("{{")) {
+            return KetherFunction.parse(source, cache = cacheMap, sender = sender)
         }
         return source
     }

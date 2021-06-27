@@ -1,5 +1,7 @@
 package taboolib.module.database
 
+import taboolib.common.env.RuntimeDependency
+
 /**
  * TabooLib
  * taboolib.module.database.Action

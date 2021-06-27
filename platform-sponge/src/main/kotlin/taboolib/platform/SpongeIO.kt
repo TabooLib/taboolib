@@ -4,7 +4,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.spongepowered.api.Sponge
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
+import taboolib.common.platform.PlatformSide
 import java.io.File
 
 /**
@@ -15,6 +17,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@PlatformSide([Platform.SPONGE])
 class SpongeIO : PlatformIO {
 
     private val logger: Logger
@@ -47,6 +50,10 @@ class SpongeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
+        if (!file.parentFile.exists()) {
+            file.parentFile.mkdirs()
+        }
+        file.createNewFile()
         file.writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }

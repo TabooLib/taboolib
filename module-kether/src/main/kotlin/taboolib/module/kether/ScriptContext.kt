@@ -60,7 +60,7 @@ open class ScriptContext(service: ScriptService, script: Quest) :
     companion object {
 
         fun create(script: Quest, context: ScriptContext.() -> Unit = {}): ScriptContext {
-            return ScriptContext(ScriptService.INSTANCE, script).also(context)
+            return ScriptContext(ScriptService, script).also(context)
         }
     }
 }

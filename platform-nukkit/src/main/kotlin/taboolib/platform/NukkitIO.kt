@@ -3,7 +3,9 @@ package taboolib.platform
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
+import taboolib.common.platform.PlatformSide
 import java.io.File
 
 /**
@@ -14,6 +16,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@PlatformSide([Platform.NUKKIT])
 class NukkitIO : PlatformIO {
 
     private val logger: Logger
@@ -46,6 +49,10 @@ class NukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
+        if (!file.parentFile.exists()) {
+            file.parentFile.mkdirs()
+        }
+        file.createNewFile()
         file.writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
         return file
     }

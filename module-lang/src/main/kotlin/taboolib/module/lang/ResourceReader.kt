@@ -24,7 +24,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     init {
         val folder = File(getDataFolder(), "lang")
         Language.languageCode.forEach { code ->
-            val resourceAsStream = clazz.getResourceAsStream("lang/$code.yml")
+            val resourceAsStream = clazz.classLoader.getResourceAsStream("lang/$code.yml")
             if (resourceAsStream != null) {
                 val nodes = HashMap<String, Type>()
                 val source = resourceAsStream.readBytes().toString(StandardCharsets.UTF_8)
@@ -36,6 +36,9 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     FileWatcher.INSTANCE.removeListener(file)
                 }
                 if (!file.exists()) {
+                    if (!file.parentFile.exists()) {
+                        file.parentFile.mkdirs()
+                    }
                     file.createNewFile()
                     file.writeText(source, StandardCharsets.UTF_8)
                 }

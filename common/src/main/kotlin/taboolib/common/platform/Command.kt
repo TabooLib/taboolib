@@ -1,7 +1,5 @@
 package taboolib.common.platform
 
-import taboolib.common.util.join
-
 /**
  * TabooLib
  * taboolib.module.command.Command
@@ -22,7 +20,7 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
     protected var lost: ((CommandContext) -> Unit) = {
         // commands.help.failed
         sender.sendMessage("§cUnknown or incomplete command, see below for error")
-        var str = it.args.joinToString(" ")
+        var str = "/${it.name} ${it.args.joinToString(" ")}".trim()
         if (str.length > 10) {
             str = "...${str.substring(str.length - 10, str.length)}"
         }
@@ -41,17 +39,17 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
     }
 
     fun literal(name: String, literal: Command.(CommandContext) -> Unit) {
-        literals[name] = literal
+        this.literals[name] = literal
     }
 
     fun required(required: ArgumentCommand.(CommandContext) -> Unit) {
         this.required = required
-        optional = null
+        this.optional = null
     }
 
     fun optional(optional: ArgumentCommand.(CommandContext) -> Unit) {
         this.optional = optional
-        required = null
+        this.required = null
     }
 
     protected fun end(): Boolean {
@@ -59,46 +57,6 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
     }
 
     protected fun run(sender: ProxyCommandSender, context: CommandContext, index: Int, inExecute: Boolean) {
-        // 检查参数
-        if (literals.isNotEmpty() || required != null) {
-            // 输入参数数量小于约定参数数量
-            if (context.args.size < index + 1) {
-                if (inExecute) {
-                    lost.invoke(context)
-                }
-            } else if (end()) {
-                if (inExecute) {
-                    execute?.invoke(join(context.args, index), context)
-                } else {
-                    completeBox.value = complete?.invoke(context) ?: literals.keys.toList()
-                }
-            } else {
-                val command = ArgumentCommand(sender, successBox, completeBox, context.args[index])
-                val sub = literals[context.args[index]] ?: required!!
-                sub.invoke(command, context)
-                command.run(sender, context, index + 1, inExecute)
-            }
-        }
-        // 存在可选参数
-        else if (optional != null && index < context.args.size) {
-            if (end()) {
-                if (inExecute) {
-                    execute?.invoke(join(context.args, index), context)
-                } else {
-                    completeBox.value = complete?.invoke(context)
-                }
-            } else {
-                val command = ArgumentCommand(sender, successBox, completeBox, context.args[index])
-                optional!!.invoke(command, context)
-                command.run(sender, context, index + 1, inExecute)
-            }
-        } else {
-            if (inExecute) {
-                execute?.invoke(join(context.args, index), context)
-            } else {
-                completeBox.value = complete?.invoke(context)
-            }
-        }
     }
 
     open class BaseCommand(sender: ProxyCommandSender, successBox: CommandBox<Boolean>, completeBox: CommandBox<List<String>?>) :
@@ -106,7 +64,7 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
 
         open fun complete(sender: ProxyCommandSender, context: CommandContext): List<String>? {
             run(sender, context, 0, false)
-            return completeBox.value
+            return if (completeBox.value?.isEmpty() == true) null else completeBox.value
         }
 
         open fun execute(sender: ProxyCommandSender, context: CommandContext): Boolean {
@@ -119,11 +77,11 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
         }
     }
 
-    open class ArgumentCommand(sender: ProxyCommandSender, successBox: CommandBox<Boolean>, completeBox: CommandBox<List<String>?>, val argument: String) :
-        Command(sender, successBox, completeBox) {
+    open class ArgumentCommand(sender: ProxyCommandSender, b1: CommandBox<Boolean>, b2: CommandBox<List<String>?>, val parent: Command, val argument: String) :
+        Command(sender, b1, b2) {
 
         fun complete(func: (CommandContext) -> List<String>?) {
-            complete = func
+            parent.complete = func
         }
 
         fun restrict(func: String.(CommandContext) -> Boolean) {

@@ -26,7 +26,6 @@ object ConfigLoader : Injector.Fields {
                 FileWatcher.INSTANCE.addSimpleListener(file) {
                     if (file.exists()) {
                         conf.load(file)
-                        configFile.nodes.forEach { NodeLoader.inject(it, clazz, instance) }
                     }
                 }
             }
@@ -36,6 +35,9 @@ object ConfigLoader : Injector.Fields {
             files[file.name] = configFile
         }
     }
+
+    override val priority: Byte
+        get() = 0
 
     @Awake
     object NodeLoader : Injector.Fields {
@@ -48,6 +50,9 @@ object ConfigLoader : Injector.Fields {
                 Ref.put(instance, field, file.conf.get(if (node.value.isEmpty()) field.name else node.value))
             }
         }
+
+        override val priority: Byte
+            get() = 1
     }
 
     class ConfigFile(val conf: SecuredFile, val file: File) {

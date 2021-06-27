@@ -7,16 +7,30 @@ import io.izzel.kether.common.loader.QuestReader
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.kether.action.game.PlayerOperator
+import taboolib.module.lang.Language
 import kotlin.reflect.KClass
 
 @RuntimeDependencies(
     RuntimeDependency("com.google.guava:guava:21.0", test = "com.google.common.base.Optional"),
-    RuntimeDependency("org.apache.commons:commons-lang3:3.5", test = "com.google.common.base.Optional"),
 )
 object Kether {
 
-    val registry = ScriptService.INSTANCE.registry.also {
-        KetherTypes.registerInternals(it, ScriptService.INSTANCE)
+    init {
+        try {
+            Language.textTransfer += TextTransferKether
+        } catch (ex: Throwable) {
+        }
+    }
+
+    val registry by lazy {
+        try {
+            ScriptService.registry.also {
+                KetherTypes.registerInternals(it, ScriptService)
+            }
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+            error(ex.toString())
+        }
     }
 
     val operatorsEvent = LinkedHashMap<String, EventOperator<out Any>>()

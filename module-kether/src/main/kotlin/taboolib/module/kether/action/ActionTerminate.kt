@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture
 class ActionTerminate : QuestAction<Void>() {
 
     override fun process(context: QuestContext.Frame): CompletableFuture<Void> {
-        ScriptService.INSTANCE.terminateQuest(context.context() as ScriptContext)
+        ScriptService.terminateQuest(context.context() as ScriptContext)
         return CompletableFuture.completedFuture(null)
     }
 

@@ -12,6 +12,8 @@ import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
@@ -28,6 +30,7 @@ import java.io.File;
         name = "@plugin_name@",
         version = "@plugin_version@"
 )
+@PlatformSide(Platform.SPONGE)
 public class SpongePlugin {
 
     @Nullable

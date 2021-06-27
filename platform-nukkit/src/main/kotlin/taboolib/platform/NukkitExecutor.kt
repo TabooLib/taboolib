@@ -3,6 +3,8 @@ package taboolib.platform
 import cn.nukkit.scheduler.NukkitRunnable
 import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 
 /**
  * TabooLib
@@ -12,6 +14,7 @@ import taboolib.common.platform.Awake
  * @since 2021/6/16 0:37
  */
 @Awake
+@PlatformSide([Platform.NUKKIT])
 class NukkitExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()

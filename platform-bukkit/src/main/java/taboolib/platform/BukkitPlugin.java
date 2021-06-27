@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
@@ -19,14 +21,20 @@ import java.io.File;
  * @since 2021/6/26 8:22 下午
  */
 @SuppressWarnings({"Anonymous2MethodRef", "Convert2Lambda"})
+@PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
     @Nullable
     private static final Plugin pluginInstance;
+    private static BukkitPlugin instance;
 
     static {
         TabooLibCommon.init();
         pluginInstance = IOKt.findInstance(Plugin.class);
+    }
+
+    public BukkitPlugin() {
+        instance = this;
     }
 
     @Override
@@ -69,5 +77,9 @@ public class BukkitPlugin extends JavaPlugin {
     @Override
     public File getFile() {
         return super.getFile();
+    }
+
+    public static BukkitPlugin getInstance() {
+        return instance;
     }
 }

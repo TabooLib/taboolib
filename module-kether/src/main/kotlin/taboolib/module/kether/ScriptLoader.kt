@@ -8,7 +8,7 @@ import java.util.*
 object ScriptLoader {
 
     fun load(str: String, namespace: List<String> = emptyList()): Quest {
-        return SimpleQuestLoader().load(ScriptService.INSTANCE, "temp_${UUID.randomUUID()}", str.toByteArray(StandardCharsets.UTF_8), namespace)
+        return SimpleQuestLoader().load(ScriptService, "temp_${UUID.randomUUID()}", str.toByteArray(StandardCharsets.UTF_8), namespace)
     }
 
     fun load(str: List<String>, namespace: List<String> = emptyList()): Quest {

@@ -6,8 +6,6 @@ import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 
 @RuntimeDependencies(
     RuntimeDependency("org.ow2.asm:asm:9.1", test = "org.objectweb.asm.ClassVisitor"),
@@ -18,7 +16,8 @@ import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 object MinecraftVersion {
 
     val runningVersion by lazy {
-        Bukkit.getServer().reflex<Any>("console")!!.reflexInvoke<String>("getVersion")!!
+        val version = Bukkit.getServer().version.split("MC:")[1]
+        version.substring(0, version.length - 1).trim()
     }
 
     val supportedVersion = arrayOf(
@@ -51,7 +50,7 @@ object MinecraftVersion {
 
     val mapping by lazy {
         if (isUniversal && mappingFields.containsKey(runningVersion)) {
-            Mapping(MinecraftVersion::class.java.getResourceAsStream(mappingFields[runningVersion]!!))
+            Mapping(MinecraftVersion::class.java.classLoader.getResourceAsStream(mappingFields[runningVersion]!!)!!)
         } else {
             null
         }

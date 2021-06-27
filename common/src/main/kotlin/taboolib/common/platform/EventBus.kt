@@ -28,4 +28,7 @@ object EventBus : Injector.Methods {
             }
         }
     }
+
+    override val priority: Byte
+        get() = 0
 }

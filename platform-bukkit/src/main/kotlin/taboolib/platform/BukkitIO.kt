@@ -19,9 +19,8 @@ import java.io.File
 @PlatformSide([Platform.BUKKIT])
 class BukkitIO : PlatformIO {
 
-    val plugin by lazy {
-        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
-    }
+    val plugin: BukkitPlugin
+        get() = BukkitPlugin.getInstance()
 
     override val pluginId: String
         get() = plugin.description.name
@@ -46,6 +45,10 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
+        if (!file.parentFile.exists()) {
+            file.parentFile.mkdirs()
+        }
+        file.createNewFile()
         file.writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }

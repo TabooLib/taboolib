@@ -2,6 +2,8 @@ package taboolib.platform
 
 import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -13,6 +15,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:13
  */
 @Awake
+@PlatformSide([Platform.BUNGEE])
 class BungeeExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()

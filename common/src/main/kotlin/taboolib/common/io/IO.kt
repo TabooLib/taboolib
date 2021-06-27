@@ -23,12 +23,22 @@ import kotlin.jvm.internal.Reflection
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
 fun <T> Class<T>.getInstance(new: Boolean = false): T? {
-    val awoken = PlatformFactory.getAPI<T>(simpleName)
-    if (awoken != null) {
-        return awoken
+    try {
+        val awoken = PlatformFactory.getAPI<T>(simpleName)
+        if (awoken != null) {
+            return awoken
+        }
+    } catch (ex: NoClassDefFoundError) {
+        return null
+    } catch (ex: ClassNotFoundException) {
+        return null
     }
     return try {
         getDeclaredField("INSTANCE").get(null) as T
+    } catch (ex: ExceptionInInitializerError) {
+        null
+    } catch (ex: NoClassDefFoundError) {
+        null
     } catch (ex: IllegalAccessException) {
         null
     } catch (ex: NoSuchFieldException) {
@@ -40,8 +50,8 @@ fun <T> Class<T>.findInstance(): T? {
     return runningClasses.firstOrNull { isAssignableFrom(it) && this != it }?.getInstance(new = true) as? T
 }
 
-fun <T> inject(clazz: Class<T>, new: Boolean): T? {
-    return RuntimeInjector.inject(clazz, new)
+fun <T> inject(clazz: Class<T>) {
+    return RuntimeInjector.injectAll(clazz)
 }
 
 fun URL.getClasses(): List<Class<*>> {

@@ -14,38 +14,47 @@ import taboolib.common.platform.PlatformFactory
  */
 object RuntimeInjector {
 
-    private val injectFields = ArrayList<Injector.Fields>()
-    private val injectMethods = ArrayList<Injector.Methods>()
-    private val injectClasses = ArrayList<Injector.Classes>()
+    private val priorityMap = HashMap<Byte, Injectors>()
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
-            runningClasses.filter { PlatformFactory.checkPlatform(it) }.forEach { inject(it) }
+            val classes = runningClasses.filter { PlatformFactory.checkPlatform(it) }
+            priorityMap.keys.sorted().forEach {
+                classes.forEach { c -> inject(c, priorityMap[it]!!) }
+            }
         }
     }
 
-    fun <T> inject(clazz: Class<T>, new: Boolean = false): T? {
-        val instance = clazz.getInstance(new = new) ?: return null
+    fun <T> injectAll(clazz: Class<T>) {
+        priorityMap.keys.sorted().forEach { inject(clazz, priorityMap[it]!!) }
+    }
+
+    fun <T> inject(clazz: Class<T>, injectors: Injectors): T? {
+        val instance = clazz.getInstance(new = false) ?: return null
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
-        injectFields.forEach { inj -> declaredFields.forEach { inj.inject(it, clazz, instance) } }
-        injectMethods.forEach { inj -> declaredMethods.forEach { inj.inject(it, clazz, instance) } }
-        injectClasses.forEach { it.inject(clazz, instance) }
+        injectors.fields.forEach { inj -> declaredFields.forEach { inj.inject(it, clazz, instance) } }
+        injectors.methods.forEach { inj -> declaredMethods.forEach { inj.inject(it, clazz, instance) } }
+        injectors.classes.forEach { it.inject(clazz, instance) }
         return instance
     }
 
     fun register(injector: Injector.Fields) {
-        injectFields += injector
-        injectFields.sortedBy { it.priority }
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.fields += injector
     }
 
     fun register(injector: Injector.Methods) {
-        injectMethods += injector
-        injectMethods.sortedBy { it.priority }
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.methods += injector
     }
 
     fun register(injector: Injector.Classes) {
-        injectClasses += injector
-        injectClasses.sortedBy { it.priority }
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.classes += injector
+    }
+
+    class Injectors {
+
+        val fields = ArrayList<Injector.Fields>()
+        val methods = ArrayList<Injector.Methods>()
+        val classes = ArrayList<Injector.Classes>()
     }
 }

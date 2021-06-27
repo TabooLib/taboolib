@@ -16,10 +16,9 @@ import java.net.URL;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
-public class RuntimeEnv implements Injector.Classes {
+public class RuntimeEnv {
 
-    @Override
-    public void inject(@NotNull Class<?> clazz, @Nullable Object instance) {
+    public void inject(@NotNull Class<?> clazz) {
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -46,10 +45,5 @@ public class RuntimeEnv implements Injector.Classes {
                 }
             }
         }
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
     }
 }

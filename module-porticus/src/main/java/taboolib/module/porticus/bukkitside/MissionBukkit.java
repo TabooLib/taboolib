@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class MissionBukkit extends PorticusMission {
 
-    private static final Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
+    private final Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
 
     public MissionBukkit() {
     }
@@ -37,7 +37,7 @@ public class MissionBukkit extends PorticusMission {
         sendBukkitMessage((Player) target, command);
     }
 
-    public static void sendBukkitMessage(Player player, String[] command) {
+    public void sendBukkitMessage(Player player, String[] command) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 for (byte[] bytes : MessageBuilder.create(command)) {

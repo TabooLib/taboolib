@@ -18,11 +18,12 @@ repositories {
 }
 
 dependencies {
-    implementation("io.izzel.kether:common:1.0.12")
+    implementation("io.izzel.kether:common:1.0.13")
     compileOnly("com.google.guava:guava:17.0")
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
+    compileOnly(project(":module-lang"))
     compileOnly(project(":module-configuration"))
     compileOnly(kotlin("stdlib"))
 }
@@ -31,7 +32,7 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
         dependencies {
-            include(dependency("io.izzel.kether:common:1.0.12"))
+            include(dependency("io.izzel.kether:common:1.0.13"))
         }
         exclude("io/izzel/kether/common/util/Coerce.class")
         exclude("LICENSE")

@@ -4,6 +4,7 @@ import taboolib.common.platform.ProxyPlayer
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 /**
@@ -15,7 +16,7 @@ import kotlin.collections.HashMap
  */
 object Language {
 
-    val textTransfer = arrayListOf(TextTransferKether)
+    val textTransfer = ArrayList<TextTransfer>()
 
     val languageFile = HashMap<String, LanguageFile>()
 

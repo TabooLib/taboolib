@@ -20,13 +20,12 @@ object PlatformFactory {
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
             runningClasses.forEach {
+                TabooLibCommon.ENV.inject(it)
+            }
+            runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
-                    val instance = try {
-                        it.getInstance(new = true)!!
-                    } catch (ex: ExceptionInInitializerError) {
-                        return@forEach
-                    }
+                    val instance = it.getInstance(new = true) ?: return@forEach
                     if (interfaces.contains(PlatformIO::class.java)) {
                         platformIO = instance as PlatformIO
                     }

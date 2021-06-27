@@ -9,6 +9,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.EventExecutor
+import org.bukkit.plugin.RegisteredListener
 import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
@@ -27,9 +28,10 @@ import taboolib.platform.util.toBukkit
 @PlatformSide([Platform.BUKKIT])
 class BukkitAdapter : PlatformAdapter {
 
-    val plugin by lazy {
-        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
-    }
+    val plugin: BukkitPlugin
+        get() = BukkitPlugin.getInstance()
+
+    val handlerList = HandlerList()
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
@@ -61,7 +63,9 @@ class BukkitAdapter : PlatformAdapter {
             consumer = {
                 func(it as T)
             })
-        Bukkit.getPluginManager().registerEvent(event, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
+        submit(now = true) {
+            handlerList.register(RegisteredListener(listener, listener, priority.toBukkit(), plugin, ignoreCancelled))
+        }
         return listener
     }
 

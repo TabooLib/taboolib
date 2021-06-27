@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.util.concurrent.TimeUnit;
@@ -18,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @since 2021/6/26 8:22 下午
  */
 @SuppressWarnings({"Anonymous2MethodRef", "Convert2Lambda"})
+@PlatformSide(Platform.BUNGEE)
 public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Nullable

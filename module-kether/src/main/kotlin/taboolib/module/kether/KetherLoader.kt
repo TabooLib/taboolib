@@ -27,4 +27,7 @@ object KetherLoader : Injector.Methods {
             }
         }
     }
+
+    override val priority: Byte
+        get() = 0
 }

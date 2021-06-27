@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
@@ -19,6 +21,7 @@ import java.io.File;
  * @since 2021/6/26 8:22 下午
  */
 @SuppressWarnings({"Anonymous2MethodRef", "Convert2Lambda", "FieldCanBeLocal"})
+@PlatformSide(Platform.NUKKIT)
 public class NukkitPlugin extends PluginBase {
 
     @Nullable

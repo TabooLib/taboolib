@@ -26,8 +26,6 @@ import taboolib.platform.type.SpongePlayer
 @PlatformSide([Platform.SPONGE])
 class SpongeAdapter : PlatformAdapter {
 
-    private val plugin = SpongePlugin.getInstance()
-
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
         return Sponge.getServer() as T

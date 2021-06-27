@@ -22,9 +22,8 @@ import java.lang.reflect.Constructor
 @PlatformSide([Platform.BUKKIT])
 class BukkitCommand : PlatformCommand {
 
-    val plugin by lazy {
-        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
-    }
+    val plugin: BukkitPlugin
+        get() = BukkitPlugin.getInstance()
 
     val commandMap by lazy {
         Bukkit.getPluginManager().reflex<SimpleCommandMap>("commandMap")!!

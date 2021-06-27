@@ -71,7 +71,7 @@ public class Repository extends AbstractXmlParser {
      * @since 1.0.0
      */
     @SuppressWarnings("StatementWithEmptyBody")
-    public void download(Dependency dep, File out) throws IOException {
+    public void downloadToFile(Dependency dep, File out) throws IOException {
         URL url = new URL(String.format("%s/%s/%s/%s/%s", getUrl(), dep.getGroupId().replace('.', '/'), dep.getArtifactId(), dep.getVersion(), out.getName()));
         InputStream ins = url.openStream();
         OutputStream outs = new FileOutputStream(out);

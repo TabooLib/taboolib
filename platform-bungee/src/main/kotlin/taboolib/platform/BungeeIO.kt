@@ -1,7 +1,9 @@
 package taboolib.platform
 
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
+import taboolib.common.platform.PlatformSide
 import java.io.File
 import java.util.logging.Logger
 
@@ -13,6 +15,7 @@ import java.util.logging.Logger
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@PlatformSide([Platform.BUNGEE])
 class BungeeIO : PlatformIO {
 
     private val logger: Logger
@@ -45,6 +48,10 @@ class BungeeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
+        if (!file.parentFile.exists()) {
+            file.parentFile.mkdirs()
+        }
+        file.createNewFile()
         file.writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }

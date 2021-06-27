@@ -21,9 +21,8 @@ class BukkitExecutor : PlatformExecutor {
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
-    val plugin by lazy {
-        JavaPlugin.getProvidingPlugin(BukkitIO::class.java) as BukkitPlugin
-    }
+    val plugin: BukkitPlugin
+        get() = BukkitPlugin.getInstance()
 
     override fun start() {
         started = true

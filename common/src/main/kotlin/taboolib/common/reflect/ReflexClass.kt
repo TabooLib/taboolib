@@ -21,7 +21,6 @@ class ReflexClass(val clazz: Class<*>) {
     val savingMethods = ArrayList<Method>()
 
     init {
-        println("reflex ${clazz.name}")
         try {
             savingFields.addAll(clazz.declaredFields.map {
                 it.isAccessible = true

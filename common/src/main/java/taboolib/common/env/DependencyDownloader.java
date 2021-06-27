@@ -11,10 +11,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.*;
 
@@ -80,6 +80,9 @@ public class DependencyDownloader extends AbstractXmlParser {
         for (Dependency dep : dependencies) {
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
+                if (isDebugMode) {
+                    System.out.println("Loading " + dep);
+                }
                 ClassAppender.addPath(file.toPath());
             }
         }
@@ -127,9 +130,6 @@ public class DependencyDownloader extends AbstractXmlParser {
                 }
             }
         }
-        if (isDebugMode) {
-            System.out.println("Loading " + dependency);
-        }
         File pom = dependency.getFile(baseDir, "pom");
         File pom1 = new File(pom.getPath() + ".sha1");
         File jar = dependency.getFile(baseDir, "jar");
@@ -149,11 +149,11 @@ public class DependencyDownloader extends AbstractXmlParser {
         IOException e = null;
         for (Repository repo : repositories) {
             try {
-                repo.download(dependency, pom);
-                repo.download(dependency, new File(pom.getPath() + ".sha1"));
+                repo.downloadToFile(dependency, pom);
+                repo.downloadToFile(dependency, new File(pom.getPath() + ".sha1"));
                 try {
-                    repo.download(dependency, jar);
-                    repo.download(dependency, new File(jar.getPath() + ".sha1"));
+                    repo.downloadToFile(dependency, jar);
+                    repo.downloadToFile(dependency, new File(jar.getPath() + ".sha1"));
                 } catch (IOException exception) {
                     try {
                         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -368,19 +368,28 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     @NotNull
     private String readFileHash(File file) {
-        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+        try {
             MessageDigest digest = MessageDigest.getInstance("sha-1");
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = fileInputStream.read(buffer, 0, 1024)) != -1) {
-                digest.update(buffer, 0, length);
+            try (InputStream inputStream = new FileInputStream(file)) {
+                byte[] buffer = new byte[1024];
+                int total;
+                while ((total = inputStream.read(buffer)) != -1) {
+                    digest.update(buffer, 0, total);
+                }
             }
-            byte[] md5Bytes = digest.digest();
-            return new BigInteger(1, md5Bytes).toString(16);
-        } catch (Throwable t) {
-            t.printStackTrace();
+            return getHash(digest);
+        } catch (IOException | NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
         }
         return "null (" + UUID.randomUUID().toString() + ")";
+    }
+
+    private String getHash(MessageDigest digest) {
+        StringBuilder result = new StringBuilder();
+        for (byte b : digest.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 
     @NotNull

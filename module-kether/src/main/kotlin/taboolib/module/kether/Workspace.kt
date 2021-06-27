@@ -34,7 +34,7 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
 
         scripts.forEach {
             if (Coerce.toBoolean(scriptsSetting[it.value.id]?.get("autostart"))) {
-                ScriptService.INSTANCE.startQuest(ScriptContext.create(it.value))
+                ScriptService.startQuest(ScriptContext.create(it.value))
                 return@forEach
             }
             val trigger = scriptsSetting[it.value.id]?.get("start") ?: return@forEach
@@ -92,7 +92,7 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                     val name = folder.relativize(path).toString().replace(File.separatorChar, '.')
                     if (name.endsWith(extension)) {
                         val bytes = path.toFile().readBytes()
-                        scriptMap[name] = questLoader.load(ScriptService.INSTANCE, name, bytes, namespace)
+                        scriptMap[name] = questLoader.load(ScriptService, name, bytes, namespace)
                     }
                 } catch (e: Exception) {
                     println("[TabooLib] Unexpected exception while parsing kether script:")
@@ -118,7 +118,7 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
         runningScripts.put(id, context)
         context.runActions().thenRunAsync({
             runningScripts.remove(id, context)
-        }, ScriptService.INSTANCE.executor)
+        }, ScriptService.executor)
     }
 
     fun terminateScript(context: ScriptContext) {
