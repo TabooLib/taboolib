@@ -1,4 +1,4 @@
-package taboolib.plugin;
+package taboolib.common.platform;
 
 /**
  * TabooLib

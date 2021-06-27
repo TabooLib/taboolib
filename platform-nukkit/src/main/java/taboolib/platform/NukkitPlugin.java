@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
-import taboolib.plugin.Plugin;
+import taboolib.common.platform.Plugin;
 
 import java.io.File;
 

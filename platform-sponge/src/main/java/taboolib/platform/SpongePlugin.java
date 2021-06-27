@@ -12,7 +12,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.FunctionKt;
-import taboolib.plugin.Plugin;
+import taboolib.common.platform.Plugin;
 
 import java.io.File;
 
@@ -26,8 +26,7 @@ import java.io.File;
 @org.spongepowered.api.plugin.Plugin(
         id = "@plugin_id@",
         name = "@plugin_name@",
-        version = "@plugin_version@",
-        authors = {"@plugin_author@"}
+        version = "@plugin_version@"
 )
 public class SpongePlugin {
 

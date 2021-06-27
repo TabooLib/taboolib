@@ -1,5 +1,5 @@
 rootProject.name = "TabooLib"
-include("common", "common-5", "plugin")
+include("common", "common-5")
 include("module-nms")
 include("module-nms-util")
 include("module-chat")
