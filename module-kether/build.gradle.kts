@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.izzel.kether:common:1.0.13")
+    implementation("io.izzel.kether:common:1.0.14")
     compileOnly("com.google.guava:guava:17.0")
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))

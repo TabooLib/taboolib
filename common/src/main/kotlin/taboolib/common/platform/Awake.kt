@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
-@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
+import taboolib.common.LifeCycle
+
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class Awake
+annotation class Awake(val value: LifeCycle = LifeCycle.CONST)

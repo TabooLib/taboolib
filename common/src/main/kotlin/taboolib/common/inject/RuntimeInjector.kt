@@ -1,8 +1,10 @@
 package taboolib.common.inject
 
+import taboolib.common.LifeCycle
 import taboolib.common.TabooLibCommon
 import taboolib.common.io.runningClasses
 import taboolib.common.io.getInstance
+import taboolib.common.platform.AwakeFunction
 import taboolib.common.platform.PlatformFactory
 
 /**
@@ -16,26 +18,42 @@ object RuntimeInjector {
 
     private val priorityMap = HashMap<Byte, Injectors>()
 
-    fun init() {
+    init {
+        LifeCycle.values().forEach { register(AwakeFunction(it)) }
+    }
+
+    fun lifeCycle(lifeCycle: LifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment()) {
             val classes = runningClasses.filter { PlatformFactory.checkPlatform(it) }
             priorityMap.keys.sorted().forEach {
-                classes.forEach { c -> inject(c, priorityMap[it]!!) }
+                classes.forEach { c -> inject(c, priorityMap[it]!!, lifeCycle) }
             }
         }
     }
 
     fun <T> injectAll(clazz: Class<T>) {
-        priorityMap.keys.sorted().forEach { inject(clazz, priorityMap[it]!!) }
+        priorityMap.keys.sorted().forEach { inject(clazz, priorityMap[it]!!, null) }
     }
 
-    fun <T> inject(clazz: Class<T>, injectors: Injectors): T? {
+    fun <T> inject(clazz: Class<T>, injectors: Injectors, lifeCycle: LifeCycle?): T? {
         val instance = clazz.getInstance(new = false) ?: return null
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
-        injectors.fields.forEach { inj -> declaredFields.forEach { inj.inject(it, clazz, instance) } }
-        injectors.methods.forEach { inj -> declaredMethods.forEach { inj.inject(it, clazz, instance) } }
-        injectors.classes.forEach { it.inject(clazz, instance) }
+        injectors.classes.forEach { inj ->
+            if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
+                inj.inject(clazz, instance)
+            }
+        }
+        injectors.fields.forEach { inj ->
+            if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
+                declaredFields.forEach { inj.inject(it, clazz, instance) }
+            }
+        }
+        injectors.methods.forEach { inj ->
+            if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
+                declaredMethods.forEach { inj.inject(it, clazz, instance) }
+            }
+        }
         return instance
     }
 

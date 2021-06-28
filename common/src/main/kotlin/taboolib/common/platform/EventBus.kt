@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import java.lang.reflect.Method
 
@@ -31,4 +32,7 @@ object EventBus : Injector.Methods {
 
     override val priority: Byte
         get() = 0
+
+    override val lifeCycle: LifeCycle
+        get() = LifeCycle.ENABLE
 }

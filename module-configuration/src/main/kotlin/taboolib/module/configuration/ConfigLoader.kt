@@ -1,5 +1,6 @@
 package taboolib.module.configuration
 
+import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
@@ -46,6 +47,9 @@ object ConfigLoader : Injector.Fields {
     override val priority: Byte
         get() = 0
 
+    override val lifeCycle: LifeCycle
+        get() = LifeCycle.LOAD
+
     @Awake
     object NodeLoader : Injector.Fields {
 
@@ -60,6 +64,9 @@ object ConfigLoader : Injector.Fields {
 
         override val priority: Byte
             get() = 1
+
+        override val lifeCycle: LifeCycle
+            get() = LifeCycle.LOAD
     }
 
     class ConfigFile(val conf: SecuredFile, val file: File) {

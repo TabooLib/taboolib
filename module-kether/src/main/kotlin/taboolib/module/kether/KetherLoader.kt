@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import io.izzel.kether.common.api.QuestActionParser
+import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import java.lang.reflect.Method
@@ -30,4 +31,7 @@ object KetherLoader : Injector.Methods {
 
     override val priority: Byte
         get() = 0
+
+    override val lifeCycle: LifeCycle
+        get() = LifeCycle.LOAD
 }

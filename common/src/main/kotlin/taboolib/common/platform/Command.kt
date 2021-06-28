@@ -109,7 +109,7 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
         return command.literals.isEmpty() && command.required == null
     }
 
-    protected fun run(sender: ProxyCommandSender, context: CommandContext, index: Int, inExecute: Boolean): String {
+    protected fun run(sender: ProxyCommandSender, context: CommandContext, index: Int, inExecute: Boolean): Pair<String, Int> {
         // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
         val executor = Executor()
         val argument = context.args.getOrNull(index) ?: ""
@@ -167,7 +167,7 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
                 }
             }
         }
-        return argument
+        return argument to index
     }
 
     open class BaseCommand(sender: ProxyCommandSender, b1: CommandBox<Boolean>, b2: CommandBox<List<String>?>) :
@@ -176,10 +176,14 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
         val executor = Executor()
 
         open fun complete(sender: ProxyCommandSender, context: CommandContext): List<String>? {
-            val argument = run(sender, context, 0, false)
-            val completed = (if (completeBox.value?.isEmpty() == true) null else completeBox.value) ?: return null
-            val similar = completed.filter { it.startsWith(argument, ignoreCase = true) }
-            return if (similar.isEmpty()) completed else similar
+            val result = run(sender, context, 0, false)
+            if (result.second + 1 == context.args.size) {
+                val completed = (if (completeBox.value?.isEmpty() == true) null else completeBox.value) ?: return null
+                val similar = completed.filter { it.startsWith(result.first, ignoreCase = true) }
+                return if (similar.isEmpty()) completed else similar
+            } else {
+                return null
+            }
         }
 
         open fun execute(sender: ProxyCommandSender, context: CommandContext): Boolean {

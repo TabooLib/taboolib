@@ -1,5 +1,7 @@
 package taboolib.module.lang
 
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
@@ -53,6 +55,7 @@ object Language {
         }
     }
 
+    @Awake(LifeCycle.LOAD)
     fun reload() {
         languageFile.clear()
         languageFile.putAll(ResourceReader(Language::class.java).files)
