@@ -7,6 +7,7 @@ import taboolib.common.platform.releaseResourceFile
 import taboolib.common.reflect.Ref
 import taboolib.common5.io.FileWatcher
 import taboolib.library.configuration.FileConfiguration
+import taboolib.library.configuration.YamlConfiguration
 import java.io.File
 import java.lang.reflect.Field
 
@@ -17,11 +18,17 @@ object ConfigLoader : Injector.Fields {
     val files = HashMap<String, ConfigFile>()
 
     override fun inject(field: Field, clazz: Class<*>, instance: Any?) {
-        if (field.isAnnotationPresent(Config::class.java) && FileConfiguration::class.java.isAssignableFrom(clazz)) {
+        if (field.isAnnotationPresent(Config::class.java)) {
             val file = releaseResourceFile(field.getAnnotation(Config::class.java).value)
             val conf = SecuredFile.loadConfiguration(file)
             val configFile = ConfigFile(conf, file)
-            Ref.put(instance, field, conf)
+            try {
+                // ClassCastException
+                Ref.put(instance, field, conf)
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+                return
+            }
             if (isFileWatcherHook) {
                 FileWatcher.INSTANCE.addSimpleListener(file) {
                     if (file.exists()) {

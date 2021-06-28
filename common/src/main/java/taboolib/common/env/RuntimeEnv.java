@@ -6,6 +6,7 @@ import taboolib.common.inject.Injector;
 import taboolib.common.io.IOKt;
 import taboolib.common.platform.Awake;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -37,8 +38,16 @@ public class RuntimeEnv {
                     String[] args = dependency.value().split(":");
                     DependencyDownloader downloader = new DependencyDownloader();
                     downloader.addRepository(new Repository(dependency.repository()));
-                    String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-                    downloader.download(new URL(pom).openStream());
+                    // 解析依赖
+                    File file1 = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
+                    File file2 = new File(file1.getPath() + ".sha1");
+                    if (file1.exists() && file2.exists() && DependencyDownloader.readFileHash(file1).equals(DependencyDownloader.readFile(file2))) {
+                        downloader.download(file1.toPath().toUri().toURL().openStream());
+                    } else {
+                        String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
+                        downloader.download(new URL(pom).openStream());
+                    }
+                    // 加载自身
                     downloader.injectClasspath(downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME)));
                 } catch (IOException ex) {
                     ex.printStackTrace();

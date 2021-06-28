@@ -137,7 +137,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         Set<Dependency> downloaded = new HashSet<>();
         downloaded.add(dependency);
         if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists()) {
-            if (Objects.equals(readFileHash(pom), readFile(pom1)) && Objects.equals(readFileHash(jar), readFile(jar1))) {
+            if (readFileHash(pom).equals(readFile(pom1)) && readFileHash(jar).equals(readFile(jar1))) {
                 injectedDependencies.add(dependency);
                 if (pom.exists()) {
                     downloaded.addAll(download(pom.toURI().toURL().openStream()));
@@ -367,7 +367,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     }
 
     @NotNull
-    private String readFileHash(File file) {
+    public static String readFileHash(File file) {
         try {
             MessageDigest digest = MessageDigest.getInstance("sha-1");
             try (InputStream inputStream = new FileInputStream(file)) {
@@ -384,7 +384,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         return "null (" + UUID.randomUUID().toString() + ")";
     }
 
-    private String getHash(MessageDigest digest) {
+    private static String getHash(MessageDigest digest) {
         StringBuilder result = new StringBuilder();
         for (byte b : digest.digest()) {
             result.append(String.format("%02x", b));
@@ -393,7 +393,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     }
 
     @NotNull
-    private String readFile(File file) {
+    public static String readFile(File file) {
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
             return readFully(fileInputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -402,11 +402,11 @@ public class DependencyDownloader extends AbstractXmlParser {
         return "null (" + UUID.randomUUID().toString() + ")";
     }
 
-    private String readFully(InputStream inputStream, Charset charset) throws IOException {
+    private static String readFully(InputStream inputStream, Charset charset) throws IOException {
         return new String(readFully(inputStream), charset);
     }
 
-    private byte[] readFully(InputStream inputStream) throws IOException {
+    private static byte[] readFully(InputStream inputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         int len;
