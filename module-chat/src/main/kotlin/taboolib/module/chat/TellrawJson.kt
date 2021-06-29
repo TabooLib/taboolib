@@ -4,6 +4,7 @@ import net.md_5.bungee.api.chat.*
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.chat.ComponentSerializer
+import taboolib.common.io.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import java.util.*
@@ -12,6 +13,7 @@ import java.util.*
  * @author sky
  * @since 2018-05-26 14:42json
  */
+@Isolated
 class TellrawJson {
 
     var components = ArrayList<BaseComponent>()

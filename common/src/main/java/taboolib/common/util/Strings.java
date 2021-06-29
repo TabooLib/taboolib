@@ -1,9 +1,8 @@
 package taboolib.common.util;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import taboolib.common.io.Isolated;
 
+@Isolated
 public class Strings {
 
     /**

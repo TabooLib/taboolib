@@ -1,5 +1,6 @@
 package taboolib.module.nms;
 
+import taboolib.common.io.Isolated;
 import taboolib.common.reflect.Reflex;
 
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Arrays;
  * @author sky
  * @since 2019-12-11 19:31
  */
+@Isolated
 public enum BukkitAttribute {
 
     /**

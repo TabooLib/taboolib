@@ -15,7 +15,6 @@ import java.io.IOException;
  * @author sky
  * @since 2021/6/15 2:45 下午
  */
-@RuntimeDependency(value = "org.apache.commons:commons-lang3:3.5", test = "org.apache.commons.lang3.Validate")
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib:1.5.20-RC", test = "kotlin.KotlinVersion")
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.20-RC", test = "kotlin.jdk7.AutoCloseableKt")
 @RuntimeDependency(value = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.20-RC", test = "kotlin.collections.jdk8.CollectionsJDK8Kt")

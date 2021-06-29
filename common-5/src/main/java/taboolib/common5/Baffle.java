@@ -1,7 +1,8 @@
-package taboolib.common5.util;
+package taboolib.common5;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.io.Isolated;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author sky
  * @since 2020-10-02 04:35
  */
+@Isolated
 public abstract class Baffle {
 
     /**
@@ -76,7 +78,7 @@ public abstract class Baffle {
     }
 
     /**
-     * 按时间阻断（类似 Cooldowns）
+     * 按时间阻断
      * 单位：毫秒
      *
      * @param duration 时间数值

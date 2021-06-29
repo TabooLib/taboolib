@@ -3,7 +3,7 @@ package taboolib.module.lang
 import taboolib.common.platform.submit
 import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.warning
-import taboolib.common5.io.FileWatcher
+import taboolib.common5.FileWatcher
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets

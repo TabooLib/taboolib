@@ -6,9 +6,7 @@ import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.reflect.Ref
-import taboolib.common5.io.FileWatcher
-import taboolib.library.configuration.FileConfiguration
-import taboolib.library.configuration.YamlConfiguration
+import taboolib.common5.FileWatcher
 import java.io.File
 import java.lang.reflect.Field
 

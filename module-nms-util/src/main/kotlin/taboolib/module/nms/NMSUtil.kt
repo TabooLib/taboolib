@@ -1,20 +1,16 @@
 package taboolib.module.nms
 
 import com.google.gson.JsonObject
-import net.minecraft.server.v1_12_R1.CommandTeleport
-import net.minecraft.server.v1_8_R3.LocaleI18n
 import org.bukkit.*
 import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
-import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.reflect.Reflex.Companion.staticInvoke
 import taboolib.module.nms.internal.NMSJava
 import taboolib.module.nms.internal.NMSKt
@@ -22,7 +18,6 @@ import taboolib.module.nms.type.LightType
 import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
 import taboolib.module.nms.type.ToastFrame
-import taboolib.platform.BukkitIO
 import taboolib.platform.BukkitPlugin
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -189,17 +184,14 @@ private fun revoke(player: Player, key: NamespacedKey) {
     }
 }
 
-private fun inject(key: NamespacedKey, toast: String): NamespacedKey {
+private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
         val localMinecraftKey = obcClass("util.CraftNamespacedKey").staticInvoke<Any>("toMinecraft", key)
-        val localJsonObject = nmsClass("AdvancementDataWorld").static<Any>("DESERIALIZER")!!
-            .reflexInvoke<Any>("fromJson", toast, classJsonElement)!!
-            .reflexInvoke<Any>("getAsJsonObject")
         val localMinecraftServer = nmsClass("MinecraftServer").staticInvoke<Any>("getServer")!!
         val localLootPredicateManager = localMinecraftServer.reflexInvoke<Any>("getLootPredicateManager")
         val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").staticInvoke<Any>(
             "a",
-            localJsonObject,
+            toast,
             nmsClass("LootDeserializationContext")
                 .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
                 .newInstance(localMinecraftKey, localLootPredicateManager)
@@ -229,7 +221,7 @@ private fun eject(key: NamespacedKey): NamespacedKey {
     return key
 }
 
-private fun toJsonToast(icon: String, title: String, frame: ToastFrame, background: ToastBackground): String {
+private fun toJsonToast(icon: String, title: String, frame: ToastFrame, background: ToastBackground): JsonObject {
     val json = JsonObject()
     json.add("display", JsonObject().run {
         this.add("icon", JsonObject().run {
@@ -252,7 +244,7 @@ private fun toJsonToast(icon: String, title: String, frame: ToastFrame, backgrou
         })
         this
     })
-    return json.toString()
+    return json
 }
 
 /**

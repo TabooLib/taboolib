@@ -19,7 +19,6 @@ import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
-import kotlin.jvm.internal.Reflection
 
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 

@@ -5,7 +5,7 @@ import io.izzel.kether.common.api.QuestAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import org.apache.commons.lang3.time.DateFormatUtils
-import taboolib.common5.util.Coerce
+import taboolib.common5.Coerce
 import taboolib.module.kether.Kether.expects
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptParser

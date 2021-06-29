@@ -1,4 +1,6 @@
-package taboolib.common5.util;
+package taboolib.common5;
+
+import taboolib.common.io.Isolated;
 
 import java.util.Calendar;
 import java.util.function.Function;
@@ -7,6 +9,7 @@ import java.util.function.Function;
  * @author sky
  * @since 2020-02-18 14:13
  */
+@Isolated
 public enum RealTime {
 
     /**
@@ -82,9 +85,9 @@ public enum RealTime {
         return 0L;
     });
 
-    Function<In, Long> next;
+    Function<NextTime, Long> next;
 
-    RealTime(Function<In, Long> next) {
+    RealTime(Function<NextTime, Long> next) {
         this.next = next;
     }
 
@@ -92,15 +95,15 @@ public enum RealTime {
      * 获取下一周期的起始时间
      */
     public long nextTime(RealTimeUnit unit, int value) {
-        return next.apply(new In(unit, value));
+        return next.apply(new NextTime(unit, value));
     }
 
-    static class In {
+    static class NextTime {
 
         private final RealTimeUnit unit;
         private final int value;
 
-        public In(RealTimeUnit unit, int value) {
+        public NextTime(RealTimeUnit unit, int value) {
             this.unit = unit;
             this.value = value;
         }

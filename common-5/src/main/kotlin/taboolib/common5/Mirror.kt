@@ -1,5 +1,6 @@
-package taboolib.common5.util
+package taboolib.common5
 
+import taboolib.common.io.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.replaceWithOrder
 import java.math.BigDecimal
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2018-12-24 16:32
  */
+@Isolated
 class Mirror {
 
     val dataMap = ConcurrentHashMap<String, MirrorData>()

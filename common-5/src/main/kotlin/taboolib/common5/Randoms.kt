@@ -1,5 +1,6 @@
-package taboolib.common5.util
+package taboolib.common5
 
+import taboolib.common.io.Isolated
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.Pair
@@ -8,6 +9,7 @@ import kotlin.Pair
  * @author sky
  * @since 2020-10-1 10:43
  */
+@Isolated
 class Randoms<T>(vararg element: Pair<T, Int>) {
 
     private val value = CopyOnWriteArrayList<Value<T>>()

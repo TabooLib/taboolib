@@ -1,6 +1,7 @@
 package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
+import taboolib.common.io.Isolated;
 
 import java.util.Optional;
 
@@ -8,6 +9,7 @@ import java.util.Optional;
  * @author sky
  * @since 2021/1/18 2:02 下午
  */
+@Isolated
 public enum KnownColor {
 
     LIGHT_PINK("浅粉红", "FFB6C1"),

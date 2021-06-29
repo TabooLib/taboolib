@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import taboolib.common.io.Isolated
+
 /**
  * TabooLib
  * taboolib.common.platform.PermissionDefault

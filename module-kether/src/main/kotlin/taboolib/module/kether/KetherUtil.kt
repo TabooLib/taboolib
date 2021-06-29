@@ -5,7 +5,7 @@ import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.QuestReader
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
-import taboolib.common5.util.Coerce
+import taboolib.common5.Coerce
 import taboolib.module.kether.Kether.expects
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -190,9 +190,9 @@ inline fun <T> Iterable<T>.divByDouble(selector: (T) -> Double): Double {
 
 fun Any.isInt(): Boolean {
     return try {
-        Integer.parseInt(this.toString())
+        Integer.parseInt(toString())
         true
-    } catch (ex: java.lang.Exception) {
+    } catch (ex: Exception) {
         false
     }
 }

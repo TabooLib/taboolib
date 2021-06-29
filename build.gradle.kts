@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "taboolib"
-    version = "test-600-8"
+    version = "test-600-9"
 
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))

@@ -1,5 +1,7 @@
 package taboolib.common.util
 
+import taboolib.common.io.Isolated
+
 /**
  * TabooLib
  * taboolib.module.lang.VariableReader
@@ -7,6 +9,7 @@ package taboolib.common.util
  * @author sky
  * @since 2021/6/21 3:45 下午
  */
+@Isolated
 class VariableReader(val source: String, val left: Char = '[', val right: Char = ']', val repeat: Int = 1) {
 
     data class Part(val text: String, val isVariable: Boolean)

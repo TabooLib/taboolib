@@ -1,5 +1,7 @@
+@file:Isolated
 package taboolib.common.util
 
+import taboolib.common.io.Isolated
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max

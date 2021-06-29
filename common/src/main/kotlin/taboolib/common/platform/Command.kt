@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.io.Isolated
 import taboolib.common.util.join
 
 /**
@@ -9,6 +10,7 @@ import taboolib.common.util.join
  * @author sky
  * @since 2021/6/25 12:50 上午
  */
+@Isolated
 abstract class Command(val sender: ProxyCommandSender, protected val successBox: CommandBox<Boolean>, protected val completeBox: CommandBox<List<String>?>) {
 
     protected val literals = HashMap<String, LiteralCommandBuilder>()

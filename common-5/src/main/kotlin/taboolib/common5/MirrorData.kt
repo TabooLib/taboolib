@@ -1,8 +1,10 @@
-package taboolib.common5.util
+package taboolib.common5
 
+import taboolib.common.io.Isolated
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+@Isolated([Mirror::class])
 class MirrorData {
 
     private var startTime = 0L
