@@ -1,6 +1,6 @@
 package taboolib.common5
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.replaceWithOrder
 import java.math.BigDecimal

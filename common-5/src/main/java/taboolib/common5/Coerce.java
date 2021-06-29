@@ -27,7 +27,7 @@ package taboolib.common5;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.*;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

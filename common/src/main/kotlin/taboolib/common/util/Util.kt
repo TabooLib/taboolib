@@ -1,13 +1,43 @@
 @file:Isolated
+
 package taboolib.common.util
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
 
-fun String.replaceWithOrder(vararg args: Any) = Strings.replaceWithOrder(this, *args)!!
+fun String.replaceWithOrder(vararg args: Any): String {
+    if (args.isEmpty() || isEmpty()) {
+        return this
+    }
+    val chars = toCharArray()
+    val builder = StringBuilder(length)
+    var i = 0
+    while (i < chars.size) {
+        val mark = i
+        if (chars[i] == '{') {
+            var num = 0
+            while (i + 1 < chars.size && Character.isDigit(chars[i + 1])) {
+                i++
+                num *= 10
+                num += chars[i] - '0'
+            }
+            if (i != mark && i + 1 < chars.size && chars[i + 1] == '}') {
+                i++
+                builder.append(args[num])
+            } else {
+                i = mark
+            }
+        }
+        if (mark == i) {
+            builder.append(chars[i])
+        }
+        i++
+    }
+    return builder.toString()
+}
 
 fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)

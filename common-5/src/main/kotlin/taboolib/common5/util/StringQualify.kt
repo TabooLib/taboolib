@@ -2,7 +2,7 @@
 
 package taboolib.common5.util
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 
 fun String.printed(separator: String = ""): List<String> {
     val result = ArrayList<String>()

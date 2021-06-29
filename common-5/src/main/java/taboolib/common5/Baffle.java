@@ -2,7 +2,7 @@ package taboolib.common5;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

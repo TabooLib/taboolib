@@ -1,8 +1,8 @@
 package taboolib.common5;
 
 import com.google.common.collect.Maps;
-import taboolib.common.io.Isolated;
-import taboolib.common5.util.String2TimeKt;
+import taboolib.common.Isolated;
+import taboolib.common5.util.String2MillisKt;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class TimeCycle {
 
     private static final Map<String, TimeCycle> cacheMap = Maps.newHashMap();
-    private final TimeCycleUnit type;
+    private final Type type;
     private int day;
     private int hour;
     private int minute;
@@ -25,21 +25,21 @@ public class TimeCycle {
     private String origin;
 
     public TimeCycle(String millis) {
-        this(String2TimeKt.parseMillis(millis));
+        this(String2MillisKt.parseMillis(millis));
     }
 
     public TimeCycle(long time) {
-        this.type = TimeCycleUnit.TIME;
+        this.type = Type.TIME;
         this.time = time;
     }
 
     public TimeCycle(int hour, int minute) {
-        this.type = TimeCycleUnit.DAY;
+        this.type = Type.DAY;
         this.hour = hour;
         this.minute = minute;
     }
 
-    public TimeCycle(TimeCycleUnit type, int day, int hour, int minute) {
+    public TimeCycle(Type type, int day, int hour, int minute) {
         this.type = type;
         this.day = day;
         this.hour = hour;
@@ -63,7 +63,7 @@ public class TimeCycle {
             this.end.set(Calendar.SECOND, 0);
             this.end.set(Calendar.MILLISECOND, 0);
             this.cacheEnd.put(start, this.end);
-            if (this.type != TimeCycleUnit.TIME) {
+            if (this.type != Type.TIME) {
                 switch (this.type) {
                     case DAY:
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
@@ -95,7 +95,7 @@ public class TimeCycle {
     }
 
     public boolean isTimeout(long start) {
-        return type == TimeCycleUnit.TIME ? start + time < System.currentTimeMillis() : isTimeout();
+        return type == Type.TIME ? start + time < System.currentTimeMillis() : isTimeout();
     }
 
     public boolean isTimeout() {
@@ -119,7 +119,7 @@ public class TimeCycle {
         }
     }
 
-    public TimeCycleUnit getType() {
+    public Type getType() {
         return type;
     }
 
@@ -159,5 +159,10 @@ public class TimeCycle {
                 ", end=" + end +
                 ", origin='" + origin + '\'' +
                 '}';
+    }
+    
+    public enum Type {
+
+        TIME, DAY, WEEK, MONTH
     }
 }

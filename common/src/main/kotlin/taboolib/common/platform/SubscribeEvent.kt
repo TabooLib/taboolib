@@ -1,10 +1,10 @@
 package taboolib.common.platform
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 
 @Target(AnnotationTarget.FUNCTION)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-@Isolated
+@Isolated([EventBus::class])
 annotation class SubscribeEvent(
     val priority: EventPriority = EventPriority.NORMAL,
     val ignoreCancelled: Boolean = false,

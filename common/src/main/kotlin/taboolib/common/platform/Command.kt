@@ -1,6 +1,6 @@
 package taboolib.common.platform
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import taboolib.common.util.join
 
 /**

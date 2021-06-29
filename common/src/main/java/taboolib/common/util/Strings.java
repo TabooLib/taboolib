@@ -1,45 +1,9 @@
 package taboolib.common.util;
 
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 @Isolated
 public class Strings {
-
-    /**
-     * 优化过的 String#replace，比默认快了大概 5 倍
-     *
-     * @param template 模板替换文件
-     * @param args     替换的参数
-     * @return 替换好的字符串
-     */
-    public static String replaceWithOrder(String template, Object... args) {
-        if (args.length == 0 || template.length() == 0) {
-            return template;
-        }
-        char[] arr = template.toCharArray();
-        StringBuilder stringBuilder = new StringBuilder(template.length());
-        for (int i = 0; i < arr.length; i++) {
-            int mark = i;
-            if (arr[i] == '{') {
-                int num = 0;
-                while (i + 1 < arr.length && Character.isDigit(arr[i + 1])) {
-                    i++;
-                    num *= 10;
-                    num += arr[i] - '0';
-                }
-                if (i != mark && i + 1 < arr.length && arr[i + 1] == '}') {
-                    i++;
-                    stringBuilder.append(args[num]);
-                } else {
-                    i = mark;
-                }
-            }
-            if (mark == i) {
-                stringBuilder.append(arr[i]);
-            }
-        }
-        return stringBuilder.toString();
-    }
 
     /**
      * 获取两段文本的相似度（0.0~1.0)

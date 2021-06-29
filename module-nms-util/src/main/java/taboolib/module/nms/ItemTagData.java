@@ -107,7 +107,7 @@ public class ItemTagData {
     }
 
     public int asInt() {
-        return Coerce.toInteger(data);
+        return NumberConversions.toInt(data);
     }
 
     public int[] asIntArray() {

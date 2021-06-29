@@ -8,7 +8,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.util.Arrays;
 import java.util.Map;

@@ -1,7 +1,5 @@
 package taboolib.common.platform
 
-import taboolib.common.io.Isolated
-
 /**
  * TabooLib
  * taboolib.module.command.CommandContext

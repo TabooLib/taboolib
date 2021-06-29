@@ -1,6 +1,6 @@
 package taboolib.common.platform
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 
 /**
  * Sponge Only
@@ -11,7 +11,7 @@ import taboolib.common.io.Isolated
  * @author sky
  * @since 2021/6/21 6:24 下午
  */
-@Isolated([SubscribeEvent::class])
+@Isolated
 enum class EventOrder {
 
     /**

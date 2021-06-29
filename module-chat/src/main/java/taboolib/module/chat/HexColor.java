@@ -2,7 +2,7 @@ package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.awt.*;
 import java.util.Optional;
@@ -11,7 +11,6 @@ import java.util.Optional;
  * @author sky
  * @since 2021/1/18 2:02 下午
  */
-@Isolated
 public class HexColor {
 
     /**

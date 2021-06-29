@@ -1,6 +1,6 @@
 package taboolib.common5;
 
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.util.Calendar;
 import java.util.function.Function;
@@ -94,19 +94,24 @@ public enum RealTime {
     /**
      * 获取下一周期的起始时间
      */
-    public long nextTime(RealTimeUnit unit, int value) {
+    public long nextTime(Type unit, int value) {
         return next.apply(new NextTime(unit, value));
     }
 
     static class NextTime {
 
-        private final RealTimeUnit unit;
+        private final Type unit;
         private final int value;
 
-        public NextTime(RealTimeUnit unit, int value) {
+        public NextTime(Type unit, int value) {
             this.unit = unit;
             this.value = value;
         }
+    }
+
+    public enum Type {
+
+        HOUR, DAY, WEEK
     }
 }
 

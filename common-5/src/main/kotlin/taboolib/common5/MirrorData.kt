@@ -1,6 +1,6 @@
 package taboolib.common5
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import java.math.BigDecimal
 import java.math.RoundingMode
 

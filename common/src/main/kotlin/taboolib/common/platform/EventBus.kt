@@ -2,11 +2,11 @@ package taboolib.common.platform
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import java.lang.reflect.Method
 
 @Awake
-@Isolated([SubscribeEvent::class])
+@Isolated
 object EventBus : Injector.Methods {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any?) {

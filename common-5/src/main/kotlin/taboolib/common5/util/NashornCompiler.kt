@@ -9,7 +9,7 @@ package taboolib.common5.util
 
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptEngineManager

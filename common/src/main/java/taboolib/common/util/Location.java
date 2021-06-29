@@ -2,7 +2,7 @@ package taboolib.common.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.io.Isolated;
+import taboolib.common.Isolated;
 
 import java.util.Objects;
 
@@ -14,7 +14,6 @@ import java.util.Objects;
  * magnitude than 360 are valid, but may be normalized to any other equivalent
  * representation by the implementation.
  */
-@Isolated
 public class Location implements Cloneable {
 
     private final String world;

@@ -3,8 +3,7 @@ package taboolib.common5;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.tuple.Triple;
 import taboolib.common.env.RuntimeDependency;
-import taboolib.common.io.Isolated;
-import taboolib.common.platform.Awake;
+import taboolib.common.Isolated;
 import taboolib.common.platform.Releasable;
 
 import java.io.File;

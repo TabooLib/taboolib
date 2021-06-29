@@ -2,7 +2,7 @@
 
 package taboolib.common5.util
 
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 
 fun String.parseMillis(): Long {
     var time = 0L

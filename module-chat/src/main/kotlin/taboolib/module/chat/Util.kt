@@ -2,7 +2,7 @@
 package taboolib.module.chat
 
 import net.md_5.bungee.api.ChatColor
-import taboolib.common.io.Isolated
+import taboolib.common.Isolated
 
 fun String.colored() = HexColor.translate(this)
 
