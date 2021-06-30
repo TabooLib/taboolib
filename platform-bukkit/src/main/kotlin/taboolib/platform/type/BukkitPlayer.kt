@@ -136,6 +136,6 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        player.teleport(org.bukkit.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
+        player.teleport(taboolib.common.util.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
     }
 }

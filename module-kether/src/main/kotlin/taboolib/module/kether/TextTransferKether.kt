@@ -1,9 +1,6 @@
 package taboolib.module.kether
 
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.module.kether.Kether
-import taboolib.module.kether.KetherFunction
-import taboolib.module.kether.ScriptService
 import taboolib.module.lang.TextTransfer
 
 /**

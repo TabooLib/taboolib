@@ -6,7 +6,6 @@ import org.bukkit.command.PluginCommand
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
 import java.lang.reflect.Constructor

@@ -6,7 +6,6 @@ import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Consumer
 
 @Isolated
 object KetherShell {

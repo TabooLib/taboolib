@@ -1,19 +1,19 @@
 package taboolib.module.porticus.bukkitside;
 
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import taboolib.common.platform.FunctionKt;
-import taboolib.module.porticus.Porticus;
-import taboolib.module.porticus.PorticusMission;
-import taboolib.module.porticus.common.Message;
-import taboolib.module.porticus.common.MessageReader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.platform.FunctionKt;
+import taboolib.module.porticus.Porticus;
+import taboolib.module.porticus.PorticusMission;
+import taboolib.module.porticus.common.Message;
+import taboolib.module.porticus.common.MessageReader;
 
 import java.io.IOException;
 

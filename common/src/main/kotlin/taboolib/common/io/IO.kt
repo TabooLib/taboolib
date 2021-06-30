@@ -5,9 +5,6 @@ package taboolib.common.io
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.warning
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.static
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

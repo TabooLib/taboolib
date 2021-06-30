@@ -1,8 +1,8 @@
 package taboolib.module.navigation
 
 import com.google.common.collect.Lists
-import org.bukkit.Location
-import org.bukkit.util.Vector
+import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import java.util.*
 
 /**

@@ -1,9 +1,9 @@
 package taboolib.platform
 
 import cn.nukkit.scheduler.NukkitRunnable
-import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformSide
 
 /**

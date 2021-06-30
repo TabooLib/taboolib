@@ -1,13 +1,13 @@
 package taboolib.module.porticus.bungeeside;
 
-import taboolib.module.porticus.Porticus;
-import taboolib.module.porticus.common.Response;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.module.porticus.Porticus;
+import taboolib.module.porticus.common.Response;
 
 import java.util.UUID;
 

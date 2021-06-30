@@ -36,8 +36,10 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.platform.FunctionKt;
 import taboolib.common.reflect.Ref;
 import taboolib.common.reflect.Reflex;
+import taboolib.module.nms.ItemTag;
+import taboolib.module.nms.ItemTagData;
+import taboolib.module.nms.ItemTagList;
 import taboolib.module.nms.MinecraftVersion;
-import taboolib.module.nms.*;
 import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Field;

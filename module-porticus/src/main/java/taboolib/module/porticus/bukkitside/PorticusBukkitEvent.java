@@ -1,13 +1,13 @@
 package taboolib.module.porticus.bukkitside;
 
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
-import taboolib.module.porticus.Porticus;
-import taboolib.module.porticus.common.Response;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.module.porticus.Porticus;
+import taboolib.module.porticus.common.Response;
 
 import java.util.UUID;
 

@@ -1,7 +1,6 @@
 package taboolib.common.util;
 
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.Isolated;
 
 import java.util.Random;
 

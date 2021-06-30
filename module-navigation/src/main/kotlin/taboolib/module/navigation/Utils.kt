@@ -1,11 +1,11 @@
 package taboolib.module.navigation
 
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.util.NumberConversions
-import org.bukkit.util.Vector
+import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import taboolib.module.nms.MinecraftVersion
 
 fun World.getBlockAt(position: Vector) = getBlockAt(position.blockX, position.blockY, position.blockZ)

@@ -1,11 +1,11 @@
 package taboolib.module.porticus.bungeeside;
 
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.plugin.Plugin;
-import taboolib.module.porticus.PorticusMission;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
+import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import taboolib.module.porticus.PorticusMission;
 import taboolib.module.porticus.common.MessageBuilder;
 
 import java.io.IOException;

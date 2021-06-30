@@ -1,9 +1,8 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
-import taboolib.common.platform.Platform
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
 import java.io.File

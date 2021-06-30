@@ -2,7 +2,6 @@ package taboolib.common.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.Isolated;
 
 import java.util.Objects;
 

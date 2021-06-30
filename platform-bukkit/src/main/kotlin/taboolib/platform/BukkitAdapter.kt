@@ -7,10 +7,8 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.plugin.EventExecutor
 import org.bukkit.plugin.RegisteredListener
-import org.bukkit.plugin.java.JavaPlugin
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.platform.type.BukkitConsole

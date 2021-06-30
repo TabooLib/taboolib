@@ -1,7 +1,7 @@
 package taboolib.module.navigation
 
 import org.bukkit.World
-import org.bukkit.util.Vector
+import taboolib.common.util.Vector
 import taboolib.module.navigation.Fluid.Companion.getFluid
 import java.util.*
 import kotlin.math.ceil

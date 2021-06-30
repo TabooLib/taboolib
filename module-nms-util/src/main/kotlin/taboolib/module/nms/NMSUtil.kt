@@ -12,6 +12,7 @@ import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.common.reflect.Reflex.Companion.staticInvoke
+import taboolib.module.nms.i18n.I18n
 import taboolib.module.nms.internal.NMSJava
 import taboolib.module.nms.internal.NMSKt
 import taboolib.module.nms.type.LightType
@@ -64,11 +65,19 @@ fun ItemStack.getInternalName(): String {
     return nmsUtil1.getName(this)
 }
 
+fun ItemStack.getI18nName(player: Player? = null): String {
+    return I18n.get().getName(player, this)
+}
+
 /**
  * 获取实体内部名称
  */
 fun Entity.getInternalName(): String {
     return nmsUtil1.getName(this)
+}
+
+fun Entity.getI18nName(player: Player? = null): String {
+    return I18n.get().getName(player, this)
 }
 
 /**
@@ -78,11 +87,19 @@ fun Enchantment.getInternalName(): String {
     return nmsUtil1.getEnchantmentKey(this)
 }
 
+fun Enchantment.getI18nName(player: Player? = null): String {
+    return I18n.get().getName(player, this)
+}
+
 /**
  * 获取药水效果内部名称
  */
 fun PotionEffectType.getInternalName(): String {
     return nmsUtil1.getPotionEffectTypeKey(this)
+}
+
+fun PotionEffectType.getI18nName(player: Player? = null): String {
+    return I18n.get().getName(player, this)
 }
 
 /**

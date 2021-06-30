@@ -1,9 +1,9 @@
 package taboolib.platform.util
 
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.util.Vector
+import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import taboolib.common5.Quat
 
 fun taboolib.common.util.Location.toBukkitLocation(): Location {

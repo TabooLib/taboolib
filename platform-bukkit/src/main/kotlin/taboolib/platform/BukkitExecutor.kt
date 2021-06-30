@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform

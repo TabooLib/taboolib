@@ -1,8 +1,7 @@
 package taboolib.module.navigation
 
 import org.bukkit.util.NumberConversions
-import org.bukkit.util.Vector
-import taboolib.module.navigation.Fluid.Companion.getFluid
+import taboolib.common.util.Vector
 
 /**
  * Navigation

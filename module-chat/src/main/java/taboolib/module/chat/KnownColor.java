@@ -1,7 +1,6 @@
 package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
-import taboolib.common.Isolated;
 
 import java.util.Optional;
 

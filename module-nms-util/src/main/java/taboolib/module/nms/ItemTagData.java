@@ -5,7 +5,6 @@ import org.bukkit.util.NumberConversions;
 import taboolib.common.platform.FunctionKt;
 import taboolib.module.nms.internal.NMSJava;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

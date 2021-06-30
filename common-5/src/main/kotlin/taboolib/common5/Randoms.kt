@@ -3,7 +3,6 @@ package taboolib.common5
 import taboolib.common.Isolated
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.Pair
 
 /**
  * @author sky

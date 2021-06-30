@@ -1,10 +1,6 @@
 package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import taboolib.common.inject.Injector;
-import taboolib.common.io.IOKt;
-import taboolib.common.platform.Awake;
 
 import java.io.File;
 import java.io.IOException;

@@ -3,7 +3,6 @@ package taboolib.module.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import taboolib.common.env.RuntimeDependency
-import taboolib.common.platform.releaseResourceFile
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
 import javax.sql.DataSource

@@ -6,8 +6,6 @@ import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
 import taboolib.common.platform.PlatformFactory;
 
-import java.io.IOException;
-
 /**
  * TabooLib
  * taboolib.common.TabooLibCommon

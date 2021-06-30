@@ -2,12 +2,8 @@ package taboolib.module.kether
 
 import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.util.LocalizedException
-import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
-import java.util.*
-import java.util.function.Consumer
-import kotlin.collections.HashMap
 
 /**
  * your health {{player health}}, your name {{player name}}

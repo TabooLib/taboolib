@@ -1,7 +1,5 @@
 package taboolib.common.platform
 
-import taboolib.common.Isolated
-
 /**
  * TabooLib
  * taboolib.common.platform.EventPriority

@@ -3,7 +3,7 @@ package taboolib.module.navigation
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.entity.Player
-import org.bukkit.util.Vector
+import taboolib.common.util.Vector
 import kotlin.math.abs
 import kotlin.math.sqrt
 

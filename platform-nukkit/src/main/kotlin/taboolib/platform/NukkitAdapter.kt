@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import cn.nukkit.Nukkit
 import cn.nukkit.Server
 import cn.nukkit.command.ConsoleCommandSender
 import cn.nukkit.event.Cancellable
@@ -10,7 +9,6 @@ import cn.nukkit.event.Listener
 import cn.nukkit.player.Player
 import cn.nukkit.plugin.EventExecutor
 import taboolib.common.platform.*
-import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.platform.type.NukkitConsole
 import taboolib.platform.type.NukkitPlayer
 import taboolib.platform.util.toNukkit

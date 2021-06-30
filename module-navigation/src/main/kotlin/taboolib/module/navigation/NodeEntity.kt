@@ -1,10 +1,10 @@
 package taboolib.module.navigation
 
 import com.google.common.collect.Maps
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.util.Vector
+import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import java.util.*
 
 /**

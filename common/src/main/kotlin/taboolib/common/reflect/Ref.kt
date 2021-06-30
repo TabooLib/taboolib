@@ -2,7 +2,6 @@ package taboolib.common.reflect
 
 import sun.misc.Unsafe
 import java.lang.invoke.MethodHandles
-import java.lang.IllegalStateException
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
