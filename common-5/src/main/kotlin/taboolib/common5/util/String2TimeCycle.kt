@@ -25,6 +25,6 @@ fun String.parseTimeCycle(): TimeCycle {
             Coerce.toInteger(args.getOrNull(2) ?: 0),
             Coerce.toInteger(args.getOrNull(3) ?: 0)
         )
-        else -> TimeCycle(args[0])
+        else -> TimeCycle(args[0].parseMillis())
     }.origin(this)
 }

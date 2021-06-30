@@ -3,6 +3,8 @@
 package taboolib.common5.util
 
 import taboolib.common.Isolated
+import taboolib.common5.Coerce
+import taboolib.common5.TimeCycle
 
 fun String.parseMillis(): Long {
     var time = 0L

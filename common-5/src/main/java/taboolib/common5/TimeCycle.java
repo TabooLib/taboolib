@@ -2,7 +2,6 @@ package taboolib.common5;
 
 import com.google.common.collect.Maps;
 import taboolib.common.Isolated;
-import taboolib.common5.util.String2MillisKt;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -23,10 +22,6 @@ public class TimeCycle {
     private final Map<Long, Calendar> cacheEnd = Maps.newHashMap();
     private Calendar end;
     private String origin;
-
-    public TimeCycle(String millis) {
-        this(String2MillisKt.parseMillis(millis));
-    }
 
     public TimeCycle(long time) {
         this.type = Type.TIME;
@@ -160,7 +155,7 @@ public class TimeCycle {
                 ", origin='" + origin + '\'' +
                 '}';
     }
-    
+
     public enum Type {
 
         TIME, DAY, WEEK, MONTH
