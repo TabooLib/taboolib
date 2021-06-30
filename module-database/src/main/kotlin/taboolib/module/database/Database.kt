@@ -4,17 +4,16 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.releaseResourceFile
+import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
 import javax.sql.DataSource
 
 @RuntimeDependency("com.zaxxer:HikariCP:4.0.3", test = "com.zaxxer.hikari.HikariDataSource")
 object Database {
 
-    var settingsPath = "datasource.yml"
-
-    val settingsFile by lazy {
-        SecuredFile.loadConfiguration(releaseResourceFile(settingsPath))
-    }
+    @Config("datasource.yml")
+    lateinit var settingsFile: SecuredFile
+        private set
 
     fun createDataSource(host: Host, hikariConfig: HikariConfig? = null): DataSource {
         return HikariDataSource(hikariConfig ?: createHikariConfig(host))

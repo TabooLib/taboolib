@@ -8,6 +8,7 @@ import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.reflect.Reflex.Companion.staticInvoke
 import taboolib.common.util.replaceWithOrder
+import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -32,9 +33,9 @@ object ScriptService : QuestService<ScriptContext> {
     private val registry = DefaultRegistry()
     private val syncExecutor = ScriptSchedulerExecutor
     private val asyncExecutor = Executors.newScheduledThreadPool(2)
-    private val locale = SecuredFile.loadConfiguration(
-        ScriptService::class.java.classLoader.getResourceAsStream("kether.yml")?.readBytes()?.toString(StandardCharsets.UTF_8).toString()
-    )
+
+    @Config("kether.yml")
+    private lateinit var locale: SecuredFile
 
     val mainspace = Workspace(File("kether/${getJarFile().nameWithoutExtension}"))
 
