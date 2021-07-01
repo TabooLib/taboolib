@@ -23,8 +23,6 @@ dependencies {
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
-    compileOnly(project(":module-lang"))
-    compileOnly(project(":module-configuration"))
     compileOnly(kotlin("stdlib"))
 }
 
@@ -32,12 +30,13 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
         dependencies {
-            include(dependency("io.izzel.kether:common:1.0.13"))
+            include(dependency("io.izzel.kether:common:1.0.14"))
         }
         exclude("io/izzel/kether/common/util/Coerce.class")
         exclude("LICENSE")
         exclude("LICENSE-Coerce")
         relocate("LICENSE", "LICENSE-Kether")
+        relocate("io.izzel.kether.common.util.Coerce", "taboolib.common5.Coerce")
         relocate("io.izzel.kether.common.api.data", "taboolib.library.kether")
         relocate("io.izzel.kether.common.api", "taboolib.library.kether")
         relocate("io.izzel.kether.common.util", "taboolib.library.kether")
