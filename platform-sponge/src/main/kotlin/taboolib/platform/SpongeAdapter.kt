@@ -77,8 +77,8 @@ class SpongeAdapter : PlatformAdapter {
 
     class SpongeEvent(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
 
-        val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, SpongePlugin.getInstance().getPluginContainer()).build()
-        val eventCause: Cause = Cause.of(eventContext, SpongePlugin.getInstance().getPluginContainer())
+        val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, SpongePlugin.getInstance().pluginContainer).build()
+        val eventCause: Cause = Cause.of(eventContext, SpongePlugin.getInstance().pluginContainer)
 
         override fun isCancelled(): Boolean {
             return proxyEvent.isCancelled
