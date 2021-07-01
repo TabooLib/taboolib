@@ -1,19 +1,15 @@
 package taboolib.module.kether.action.supplier
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
-import taboolib.module.kether.deepVars
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionVariables : QuestAction<List<String>>() {
+class ActionVariables : ScriptAction<List<String>>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<List<String>> {
-        return CompletableFuture.completedFuture(context.deepVars().keys.toList())
+    override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
+        return CompletableFuture.completedFuture(frame.deepVars().keys.toList())
     }
 
     override fun toString(): String {
@@ -23,7 +19,7 @@ class ActionVariables : QuestAction<List<String>>() {
     companion object {
 
         @KetherParser(["vars", "variables"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionVariables()
         }
     }

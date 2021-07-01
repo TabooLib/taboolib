@@ -43,6 +43,12 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     override val location: Location
         get() = error("unsupported")
 
+    override var isOp: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
     override fun kick(message: String?) {
         player.disconnect(TextComponent(message))
     }

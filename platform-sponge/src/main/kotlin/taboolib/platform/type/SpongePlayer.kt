@@ -1,14 +1,19 @@
 package taboolib.platform.type
 
 import com.flowpowered.math.vector.Vector3d
+import org.spongepowered.api.Game
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.data.Property
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.service.permission.SubjectData
+import org.spongepowered.api.service.whitelist.WhitelistService
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
 import org.spongepowered.api.text.title.Title
+import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
@@ -48,6 +53,12 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() {
             val loc = player.location
             return Location(world, loc.x, loc.y, loc.z, player.headRotation.y.toFloat(), player.headRotation.x.toFloat())
+        }
+
+    override var isOp: Boolean
+        get() = player.hasPermission("*")
+        set(value) {
+            player.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
         }
 
     override fun kick(message: String?) {

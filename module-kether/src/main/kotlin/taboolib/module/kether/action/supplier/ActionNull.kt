@@ -1,18 +1,18 @@
 package taboolib.module.kether.action.supplier
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 
 /**
  * @author IzzelAliz
  */
-class ActionNull : QuestAction<Any?>() {
+class ActionNull : ScriptAction<Any?>() {
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
         return CompletableFuture.completedFuture(null)
     }
 
@@ -23,7 +23,7 @@ class ActionNull : QuestAction<Any?>() {
     companion object {
 
         @KetherParser(["null"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionNull()
         }
     }

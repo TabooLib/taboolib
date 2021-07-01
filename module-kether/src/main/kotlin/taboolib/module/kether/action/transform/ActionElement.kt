@@ -1,13 +1,13 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common5.Coerce
 import taboolib.module.kether.Kether.expects
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -19,9 +19,9 @@ import java.util.concurrent.CompletableFuture
  */
 class ActionElement {
 
-    class SizeOf(val array: ParsedAction<*>) : QuestAction<Int>() {
+    class SizeOf(val array: ParsedAction<*>) : ScriptAction<Int>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Int> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Int> {
             return frame.newFrame(array).run<Any>().thenApply {
                 when (it) {
                     is Collection<*> -> it.size
@@ -36,9 +36,9 @@ class ActionElement {
         }
     }
 
-    class ElementOf(val index: ParsedAction<*>, val array: ParsedAction<*>) : QuestAction<Any?>() {
+    class ElementOf(val index: ParsedAction<*>, val array: ParsedAction<*>) : ScriptAction<Any?>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             val future = CompletableFuture<Any?>()
             frame.newFrame(index).run<Any>().thenApply { index ->
                 frame.newFrame(array).run<Any>().thenApply {
@@ -63,7 +63,7 @@ class ActionElement {
          * size &array
          */
         @KetherParser(["size", "length"])
-        fun parser0() = ScriptParser.parser {
+        fun parser0() = scriptParser {
             SizeOf(it.next(ArgTypes.ACTION))
         }
 
@@ -71,7 +71,7 @@ class ActionElement {
          * elem *1 in &array
          */
         @KetherParser(["elem", "element"])
-        fun parser1() = ScriptParser.parser {
+        fun parser1() = scriptParser {
             ElementOf(it.next(ArgTypes.ACTION), it.run {
                 it.expects("in", "of")
                 it.next(ArgTypes.ACTION)

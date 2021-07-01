@@ -1,21 +1,21 @@
 package taboolib.module.kether.action
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common.platform.info
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionPrint(val message: ParsedAction<*>) : QuestAction<Void>() {
+class ActionPrint(val message: ParsedAction<*>) : ScriptAction<Void>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<Void> {
-        return context.newFrame(message).run<Any>().thenAccept {
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+        return frame.newFrame(message).run<Any>().thenAccept {
             info(it.toString().trimIndent())
         }
     }
@@ -27,7 +27,7 @@ class ActionPrint(val message: ParsedAction<*>) : QuestAction<Void>() {
     companion object {
 
         @KetherParser(["log", "print"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionPrint(it.next(ArgTypes.ACTION))
         }
     }

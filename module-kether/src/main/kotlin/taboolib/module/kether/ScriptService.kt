@@ -2,7 +2,10 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Multimap
-import io.izzel.kether.common.api.*
+import io.izzel.kether.common.api.DefaultRegistry
+import io.izzel.kether.common.api.QuestRegistry
+import io.izzel.kether.common.api.QuestService
+import io.izzel.kether.common.api.ServiceHolder
 import taboolib.common.platform.getJarFile
 import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.replaceWithOrder
@@ -40,7 +43,7 @@ object ScriptService : QuestService<ScriptContext> {
         return registry
     }
 
-    override fun getQuest(id: String): Optional<Quest> {
+    override fun getQuest(id: String): Optional<Script> {
         return Optional.ofNullable(mainspace.scripts[id])
     }
 
@@ -48,7 +51,7 @@ object ScriptService : QuestService<ScriptContext> {
         return Collections.unmodifiableMap(mainspace.scriptsSetting.getOrDefault(id, ImmutableMap.of()))!!
     }
 
-    override fun getQuests(): Map<String, Quest> {
+    override fun getQuests(): Map<String, Script> {
         return Collections.unmodifiableMap(mainspace.scripts)
     }
 

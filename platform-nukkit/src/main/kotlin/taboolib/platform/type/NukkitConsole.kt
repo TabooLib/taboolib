@@ -19,6 +19,12 @@ class NukkitConsole(val sender: ConsoleCommandSender) : ProxyConsole {
     override val name: String
         get() = sender.name
 
+    override var isOp: Boolean
+        get() = sender.isOp
+        set(value) {
+            sender.isOp = value
+        }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(message)
     }

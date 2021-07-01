@@ -1,18 +1,18 @@
 package taboolib.module.kether.action.supplier
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 
 /**
  * @author IzzelAliz
  */
-class ActionPass : QuestAction<String>() {
+class ActionPass : ScriptAction<String>() {
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<String> {
+    override fun run(frame: ScriptFrame): CompletableFuture<String> {
         return CompletableFuture.completedFuture("")
     }
 
@@ -23,7 +23,7 @@ class ActionPass : QuestAction<String>() {
     companion object {
 
         @KetherParser(["pass"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionPass()
         }
     }

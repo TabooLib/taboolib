@@ -1,11 +1,11 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -15,9 +15,9 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/3/16 2:56 下午
  */
-class ActionOptional(val value: ParsedAction<*>, val elseOf: ParsedAction<*>) : QuestAction<Any>() {
+class ActionOptional(val value: ParsedAction<*>, val elseOf: ParsedAction<*>) : ScriptAction<Any>() {
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<Any> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         val future = CompletableFuture<Any>()
         frame.newFrame(value).run<Any>().thenApply {
             if (it != null) {
@@ -41,7 +41,7 @@ class ActionOptional(val value: ParsedAction<*>, val elseOf: ParsedAction<*>) : 
          * optional null else 123
          */
         @KetherParser(["optional"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionOptional(it.next(ArgTypes.ACTION), it.run {
                 it.expect("else")
                 it.next(ArgTypes.ACTION)

@@ -1,9 +1,9 @@
 package taboolib.module.kether.action.transform
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -13,9 +13,9 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/1/30 9:26 下午
  */
-class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : QuestAction<List<Any>>() {
+class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : ScriptAction<List<Any>>() {
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<List<Any>> {
+    override fun run(frame: ScriptFrame): CompletableFuture<List<Any>> {
         return if (step == 0.0) {
             CompletableFuture.completedFuture((from.toInt()..to.toInt()).toList())
         } else {
@@ -37,7 +37,7 @@ class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : Qu
     companion object {
 
         @KetherParser(["range"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             val from = it.nextDouble()
             it.expect("to")
             val to = it.nextDouble()

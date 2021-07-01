@@ -67,6 +67,12 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override val location: Location
         get() = Location(world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch)
 
+    override var isOp: Boolean
+        get() = player.isOp
+        set(value) {
+            player.isOp = value
+        }
+
     override fun kick(message: String?) {
         player.kickPlayer(message)
     }
@@ -136,6 +142,6 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        player.teleport(taboolib.common.util.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
+        player.teleport(org.bukkit.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
     }
 }

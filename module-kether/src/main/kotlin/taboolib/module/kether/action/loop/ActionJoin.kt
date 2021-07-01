@@ -1,29 +1,25 @@
 package taboolib.module.kether.action.loop
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.module.kether.*
 import taboolib.module.kether.Kether.expects
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
-import taboolib.module.kether.script
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionJoin(val source: List<ParsedAction<*>>, val separator: String) : QuestAction<String>() {
+class ActionJoin(val source: List<ParsedAction<*>>, val separator: String) : ScriptAction<String>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<String> {
+    override fun run(frame: ScriptFrame): CompletableFuture<String> {
         val future = CompletableFuture<String>()
         val array = ArrayList<Any>()
         fun process(cur: Int) {
             if (cur < source.size) {
-                context.newFrame(source[cur]).run<Any>().thenApply {
+                frame.newFrame(source[cur]).run<Any>().thenApply {
                     array.add(it)
-                    if (context.script().breakLoop) {
-                        context.script().breakLoop = false
+                    if (frame.script().breakLoop) {
+                        frame.script().breakLoop = false
                         future.complete(array.joinToString(separator))
                     } else {
                         process(cur + 1)
@@ -48,7 +44,7 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: String) : Que
          * join [ *a *b *c ] with -
          */
         @KetherParser(["join"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             val source = it.next(ArgTypes.listOf(ArgTypes.ACTION))
             ActionJoin(
                 source, try {

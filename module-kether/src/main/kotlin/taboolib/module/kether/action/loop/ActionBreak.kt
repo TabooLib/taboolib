@@ -1,19 +1,15 @@
 package taboolib.module.kether.action.loop
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
-import taboolib.module.kether.script
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionBreak : QuestAction<Void>() {
+class ActionBreak : ScriptAction<Void>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<Void> {
-        context.script().breakLoop = true
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
+        frame.script().breakLoop = true
         return CompletableFuture.completedFuture(null)
     }
 
@@ -24,7 +20,7 @@ class ActionBreak : QuestAction<Void>() {
     companion object {
 
         @KetherParser(["break"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionBreak()
         }
     }

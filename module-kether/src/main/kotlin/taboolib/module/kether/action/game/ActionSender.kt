@@ -1,20 +1,16 @@
 package taboolib.module.kether.action.game
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import taboolib.common.platform.ProxyConsole
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionSender : QuestAction<String>() {
+class ActionSender : ScriptAction<String>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<String> {
-        val sender = (context.context() as ScriptContext).sender
+    override fun run(frame: ScriptFrame): CompletableFuture<String> {
+        val sender = frame.script().sender
         return if (sender is ProxyConsole) {
             CompletableFuture.completedFuture("console")
         } else {
@@ -29,7 +25,7 @@ class ActionSender : QuestAction<String>() {
     companion object {
 
         @KetherParser(["sender"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionSender()
         }
     }

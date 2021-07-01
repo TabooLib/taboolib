@@ -1,18 +1,18 @@
 package taboolib.module.kether.action.game
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import taboolib.common.platform.onlinePlayers
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-/**
+/*
  * @author IzzelAliz
  */
-class ActionPlayers : QuestAction<List<String>>() {
+class ActionPlayers : ScriptAction<List<String>>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<List<String>> {
+    override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
         return CompletableFuture.completedFuture(onlinePlayers().map { it.name }.toList())
     }
 
@@ -23,7 +23,7 @@ class ActionPlayers : QuestAction<List<String>>() {
     companion object {
 
         @KetherParser(["players"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionPlayers()
         }
     }

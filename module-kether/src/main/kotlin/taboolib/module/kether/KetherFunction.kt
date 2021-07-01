@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
@@ -28,9 +27,9 @@ object KetherFunction {
             input.toFunction()
         }
         val script = if (cacheScript) cache.scriptMap.computeIfAbsent(function.source) {
-            ScriptLoader.load(it, namespace)
+            it.parseKetherScript(namespace)
         } else {
-            ScriptLoader.load(function.source, namespace)
+            function.source.parseKetherScript(namespace)
         }
         val vars = ScriptContext.create(script)
             .also {
@@ -73,7 +72,7 @@ object KetherFunction {
 
     class Cache {
 
-        val scriptMap = HashMap<String, Quest>()
+        val scriptMap = HashMap<String, Script>()
 
         val functionMap = HashMap<String, Function>()
     }

@@ -1,25 +1,55 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
+import io.izzel.kether.common.api.*
 import io.izzel.kether.common.loader.QuestReader
+import io.izzel.kether.common.loader.SimpleQuestLoader
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
 import taboolib.module.kether.Kether.expects
+import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
-fun QuestContext.Frame.script() = context() as ScriptContext
+typealias Script = Quest
 
-fun QuestContext.Frame.deepVars() = HashMap<String, Any?>().also { map ->
-    var parent = parent()
-    while (parent.isPresent) {
-        map.putAll(parent.get().variables().keys().map { it to variables().get<Any>(it).orElse(null) })
-        parent = parent.get().parent()
+typealias ScriptFrame = QuestContext.Frame
+
+fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): QuestActionParser {
+    return object : QuestActionParser {
+
+        @Suppress("UNCHECKED_CAST")
+        override fun <T> resolve(resolver: QuestReader): QuestAction<T> {
+            return resolve.invoke(resolver) as QuestAction<T>
+        }
+
+        override fun complete(params: MutableList<String>): MutableList<String> {
+            return KetherCompleters.seq(KetherCompleters.consume()).apply(params)
+        }
     }
-    map.putAll(variables().keys().map { it to variables().get<Any>(it).orElse(null) })
+}
+
+fun String.parseKetherScript(namespace: List<String> = emptyList()): Script {
+    return SimpleQuestLoader().load(ScriptService, "temp_${UUID.randomUUID()}", toByteArray(StandardCharsets.UTF_8), namespace)
+}
+
+fun List<String>.parseKetherScript(namespace: List<String> = emptyList()): Script {
+    return joinToString("\n").parseKetherScript(namespace)
+}
+
+fun QuestContext.Frame.script(): ScriptContext {
+    return context() as ScriptContext
+}
+
+fun QuestContext.Frame.deepVars(): HashMap<String, Any?> {
+    return HashMap<String, Any?>().also { map ->
+        var parent = parent()
+        while (parent.isPresent) {
+            map.putAll(parent.get().variables().keys().map { it to variables().get<Any>(it).orElse(null) })
+            parent = parent.get().parent()
+        }
+        map.putAll(variables().keys().map { it to variables().get<Any>(it).orElse(null) })
+    }
 }
 
 fun Throwable.printMessage() {
@@ -51,18 +81,20 @@ fun Any?.inferType(): Any? {
     return this
 }
 
-private fun asInteger(obj: Any?) = when (obj) {
-    null -> {
-        Optional.empty()
-    }
-    is Number -> {
-        Optional.of(obj.toInt())
-    }
-    else -> {
-        try {
-            Optional.ofNullable(Integer.valueOf(obj.toString()))
-        } catch (ignored: NumberFormatException) {
+private fun asInteger(obj: Any?): Optional<Int> {
+    return when (obj) {
+        null -> {
             Optional.empty()
+        }
+        is Number -> {
+            Optional.of(obj.toInt())
+        }
+        else -> {
+            try {
+                Optional.ofNullable(Integer.valueOf(obj.toString()))
+            } catch (ignored: NumberFormatException) {
+                Optional.empty()
+            }
         }
     }
 }
@@ -73,7 +105,7 @@ fun ScriptContext.extend(map: Map<String, Any?>) {
     }
 }
 
-fun QuestReader.switch(func: ExpectDSL.() -> Unit): QuestAction<*> {
+fun QuestReader.switch(func: ExpectDSL.() -> Unit): ScriptAction<*> {
     val ed = ExpectDSL()
     func(ed)
     return try {
@@ -87,10 +119,10 @@ fun QuestReader.switch(func: ExpectDSL.() -> Unit): QuestAction<*> {
     }
 }
 
-fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() -> Any?): QuestAction<*> {
-    return object : QuestAction<Any?>() {
+fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() -> Any?): ScriptAction<*> {
+    return object : ScriptAction<Any?>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             return CompletableFuture.completedFuture(func(frame))
         }
 
@@ -100,10 +132,10 @@ fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() ->
     }
 }
 
-fun actionFuture(name: String = "kether-action-del", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): QuestAction<*> {
-    return object : QuestAction<Any?>() {
+fun actionFuture(name: String = "kether-action-del", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): ScriptAction<*> {
+    return object : ScriptAction<Any?>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             val future = CompletableFuture<Any?>()
             func(frame, future)
             return future
@@ -117,17 +149,15 @@ fun actionFuture(name: String = "kether-action-del", func: QuestContext.Frame.(C
 
 class ExpectDSL {
 
-    val method = HashMap<String, QuestReader.() -> QuestAction<*>>()
-    var other: (QuestReader.() -> QuestAction<*>?)? = null
+    val method = HashMap<String, QuestReader.() -> ScriptAction<*>>()
+    var other: (QuestReader.() -> ScriptAction<*>?)? = null
         private set
 
-    fun case(vararg str: String, func: QuestReader.() -> QuestAction<*>) {
-        str.forEach {
-            method[it] = func
-        }
+    fun case(vararg str: String, func: QuestReader.() -> ScriptAction<*>) {
+        str.forEach { method[it] = func }
     }
 
-    fun other(func: QuestReader.() -> QuestAction<*>?) {
+    fun other(func: QuestReader.() -> ScriptAction<*>?) {
         other = func
     }
 }

@@ -1,18 +1,14 @@
 package taboolib.module.kether.action.game
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionEvent(val key: String, val symbol: Symbol, val value: ParsedAction<*>) : QuestAction<Any?>() {
+class ActionEvent(val key: String, val symbol: Symbol, val value: ParsedAction<*>) : ScriptAction<Any?>() {
 
     enum class Symbol {
 
@@ -20,15 +16,15 @@ class ActionEvent(val key: String, val symbol: Symbol, val value: ParsedAction<*
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun process(context: QuestContext.Frame): CompletableFuture<Any?> {
-        val s = (context.context() as ScriptContext)
+    override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
+        val s = frame.script()
         val event = s.event
         val eventOperator = s.eventOperator
         if (event == null || eventOperator == null) {
-            throw RuntimeException("No event selected.")
+            error("No event selected.")
         }
         return if (symbol == Symbol.SET) {
-            context.newFrame(value).run<Any>().thenApply {
+            frame.newFrame(value).run<Any>().thenApply {
                 eventOperator.write(key, event, it)
             }
         } else {
@@ -43,7 +39,7 @@ class ActionEvent(val key: String, val symbol: Symbol, val value: ParsedAction<*
     companion object {
 
         @KetherParser(["event"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             val key = it.nextToken()
             try {
                 it.mark()

@@ -20,6 +20,12 @@ class BungeeConsole(val sender: ConsoleCommandSender) : ProxyConsole {
     override val name: String
         get() = sender.name
 
+    override var isOp: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(TextComponent(message))
     }

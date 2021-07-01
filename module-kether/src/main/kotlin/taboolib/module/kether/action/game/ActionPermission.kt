@@ -1,22 +1,18 @@
 package taboolib.module.kether.action.game
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptContext
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionPermission(val permission: ParsedAction<*>) : QuestAction<Boolean>() {
+class ActionPermission(val permission: ParsedAction<*>) : ScriptAction<Boolean>() {
 
-    override fun process(context: QuestContext.Frame): CompletableFuture<Boolean> {
-        return context.newFrame(permission).run<Any>().thenApply {
-            (context.context() as ScriptContext).sender!!.hasPermission(it.toString())
+    override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
+        return frame.newFrame(permission).run<Any>().thenApply {
+            frame.script().sender!!.hasPermission(it.toString())
         }
     }
 
@@ -27,7 +23,7 @@ class ActionPermission(val permission: ParsedAction<*>) : QuestAction<Boolean>()
     companion object {
 
         @KetherParser(["perm", "permission"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionPermission(it.next(ArgTypes.ACTION))
         }
     }

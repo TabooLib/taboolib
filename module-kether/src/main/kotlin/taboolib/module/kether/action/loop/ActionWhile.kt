@@ -1,26 +1,21 @@
 package taboolib.module.kether.action.loop
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common5.Coerce
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
-import taboolib.module.kether.script
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
+class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) : ScriptAction<Void>() {
 
-class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) : QuestAction<Void>() {
-
-    override fun process(context: QuestContext.Frame): CompletableFuture<Void> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
         fun process() {
-            context.newFrame(condition).run<Any>().thenApply {
+            frame.newFrame(condition).run<Any>().thenApply {
                 if (Coerce.toBoolean(it)) {
-                    context.newFrame(action).run<Any>().thenApply {
-                        if (context.script().breakLoop) {
-                            context.script().breakLoop = false
+                    frame.newFrame(action).run<Any>().thenApply {
+                        if (frame.script().breakLoop) {
+                            frame.script().breakLoop = false
                             future.complete(null)
                         } else {
                             process()
@@ -38,7 +33,7 @@ class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) :
     companion object {
 
         @KetherParser(["while"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             ActionWhile(it.next(ArgTypes.ACTION), it.run {
                 expect("then")
                 next(ArgTypes.ACTION)

@@ -19,7 +19,7 @@ import java.io.File
 @Suppress("UnstableApiUsage")
 class Workspace(val file: File, val extension: String = ".ks", val namespace: List<String> = emptyList()) {
 
-    val scripts = HashMap<String, Quest>()
+    val scripts = HashMap<String, Script>()
     val scriptsSetting = HashMap<String, Map<String, Any?>>()
     val runningScripts = MultimapBuilder.hashKeys().arrayListValues().build<String, ScriptContext>()!!
 

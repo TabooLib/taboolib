@@ -1,8 +1,6 @@
 package taboolib.module.kether.action.game
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
@@ -10,17 +8,17 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author IzzelAliz
  */
-class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) : QuestAction<Void>() {
+class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
 
     @Suppress("UNCHECKED_CAST")
-    override fun process(context: QuestContext.Frame): CompletableFuture<Void> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return CompletableFuture<Void>().also { future ->
-            val s = (context.context() as ScriptContext)
+            val s = frame.script()
             s.listener = future
-            context.addClosable(Closables.listening<Any>(operator.event.java) {
+            frame.addClosable(Closables.listening<Any>(operator.event.java) {
                 s.event = it
                 s.eventOperator = operator
-                context.newFrame(value).run<Any>()
+                frame.newFrame(value).run<Any>()
             })
         }
     }
@@ -32,7 +30,7 @@ class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) :
     companion object {
 
         @KetherParser(["listen", "on"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             val name = it.nextToken()
             val event = Kether.getEventOperator(name) ?: throw KetherError.NOT_EVENT.create(name)
             it.expect("then")

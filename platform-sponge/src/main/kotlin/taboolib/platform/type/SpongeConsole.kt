@@ -2,7 +2,10 @@ package taboolib.platform.type
 
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.source.ConsoleSource
+import org.spongepowered.api.service.context.Context
+import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.text.Text
+import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyConsole
 
 /**
@@ -19,6 +22,12 @@ class SpongeConsole(val sender: ConsoleSource) : ProxyConsole {
 
     override val name: String
         get() = sender.name
+
+    override var isOp: Boolean
+        get() = sender.hasPermission("*")
+        set(value) {
+            sender.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
+        }
 
     override fun sendMessage(message: String) {
         sender.sendMessage(Text.of(message))

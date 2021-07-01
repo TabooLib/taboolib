@@ -1,21 +1,16 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common5.Coerce
-import taboolib.module.kether.KetherError
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.*
 import taboolib.module.kether.action.transform.ActionCheck.Symbol.*
-import taboolib.module.kether.inferType
 import java.util.concurrent.CompletableFuture
 
 /**
  * @author IzzelAliz
  */
-class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val symbol: Symbol) : QuestAction<Boolean>() {
+class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val symbol: Symbol) : ScriptAction<Boolean>() {
 
     enum class Symbol {
 
@@ -36,10 +31,10 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun process(context: QuestContext.Frame): CompletableFuture<Boolean> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
         return CompletableFuture<Boolean>().also { future ->
-            context.newFrame(left).run<Any?>().thenAccept { left ->
-                context.newFrame(right).run<Any?>().thenAccept { right ->
+            frame.newFrame(left).run<Any?>().thenAccept { left ->
+                frame.newFrame(right).run<Any?>().thenAccept { right ->
                     future.complete(check(left, right))
                 }
             }
@@ -53,7 +48,7 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
     companion object {
 
         @KetherParser(["check"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             val left = it.next(ArgTypes.ACTION)
             val symbol = when (val type = it.nextToken()) {
                 "==", "is" -> EQUALS

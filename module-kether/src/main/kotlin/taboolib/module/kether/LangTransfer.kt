@@ -10,7 +10,7 @@ import taboolib.module.lang.TextTransfer
  * @author sky
  * @since 2021/6/20 11:08 下午
  */
-object TextTransferKether : TextTransfer {
+object LangTransfer : TextTransfer {
 
     val cacheMap = KetherFunction.Cache()
 

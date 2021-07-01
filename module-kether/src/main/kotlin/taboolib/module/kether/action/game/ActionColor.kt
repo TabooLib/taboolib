@@ -1,35 +1,34 @@
-package taboolib.module.kether.action.transform
+package taboolib.module.kether.action.game
 
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.loader.types.ArgTypes
-import taboolib.common5.Coerce
+import taboolib.module.chat.colored
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-
 /**
  * @author IzzelAliz
  */
-class ActionScale(val number: ParsedAction<*>) : ScriptAction<Double>() {
+class ActionColor(val source: ParsedAction<*>) : ScriptAction<String>() {
 
-    override fun run(frame: ScriptFrame): CompletableFuture<Double> {
-        return frame.newFrame(number).run<Any>().thenApply {
-            Coerce.format(Coerce.toDouble(it))
+    override fun run(frame: ScriptFrame): CompletableFuture<String> {
+        return frame.newFrame(source).run<Any>().thenApply {
+            it.toString().trimIndent().colored()
         }
     }
 
     override fun toString(): String {
-        return "ActionScale(number=$number)"
+        return "ActionColor(source='$source')"
     }
 
     companion object {
 
-        @KetherParser(["scale", "scaled"])
+        @KetherParser(["color", "colored"])
         fun parser() = scriptParser {
-            ActionScale(it.next(ArgTypes.ACTION))
+            ActionColor(it.next(ArgTypes.ACTION))
         }
     }
 }

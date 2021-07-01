@@ -46,6 +46,12 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
             return Location(world, loc.x.toDouble(), loc.y.toDouble(), loc.z.toDouble(), loc.yaw, loc.pitch)
         }
 
+    override var isOp: Boolean
+        get() = player.isOp
+        set(value) {
+            player.isOp = value
+        }
+
     override fun kick(message: String?) {
         player.kick(message)
     }

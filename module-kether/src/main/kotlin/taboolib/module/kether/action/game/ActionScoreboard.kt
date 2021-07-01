@@ -1,0 +1,45 @@
+package taboolib.module.kether.action.game
+
+import io.izzel.kether.common.api.ParsedAction
+import io.izzel.kether.common.api.QuestContext
+import org.bukkit.entity.Player
+import taboolib.common.util.asList
+import taboolib.module.kether.KetherParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.script
+import taboolib.module.kether.scriptParser
+import taboolib.module.nms.sendScoreboard
+import java.util.concurrent.CompletableFuture
+
+/**
+ * @author IzzelAliz
+ */
+class ActionScoreboard(val content: ParsedAction<*>) : ScriptAction<Void>() {
+
+    override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
+        return frame.newFrame(content).run<Any>().thenAccept { content ->
+            val viewer = frame.script().sender?.origin as? Player ?: error("No player selected.")
+            if (content == null) {
+                viewer.sendScoreboard()
+            } else {
+                val body = if (content is List<*>) content.asList() else content.toString().trimIndent().split("\n")
+                viewer.sendScoreboard(body[0], *body.filterIndexed { index, _ -> index > 0 }.toTypedArray())
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return "ActionScoreboard(content=$content)"
+    }
+
+    companion object {
+
+        /**
+         * scoreboard *"123"
+         */
+        @KetherParser(["scoreboard"])
+        fun parser() = scriptParser {
+            ActionScoreboard(it.nextAction<Any>())
+        }
+    }
+}

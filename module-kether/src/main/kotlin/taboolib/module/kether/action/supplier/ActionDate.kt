@@ -1,20 +1,16 @@
 package taboolib.module.kether.action.supplier
 
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.LoadError
 import org.apache.commons.lang3.time.DateFormatUtils
-import taboolib.module.kether.Kether
+import taboolib.module.kether.*
 import taboolib.module.kether.Kether.expects
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
 import java.util.concurrent.CompletableFuture
 
 
 /**
  * @author IzzelAliz
  */
-class ActionDate(val type: Type, val format: String? = null) : QuestAction<Any>() {
+class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>() {
 
     enum class Type(val get: () -> Long) {
 
@@ -54,12 +50,12 @@ class ActionDate(val type: Type, val format: String? = null) : QuestAction<Any>(
             java.time.LocalDateTime.now().second.toLong()
         });
 
-        fun toParser() = ScriptParser.parser {
+        fun toParser() = scriptParser {
             ActionDate(this)
         }
     }
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<Any> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         return if (format != null) {
             CompletableFuture.completedFuture(DateFormatUtils.format(System.currentTimeMillis(), format))
         } else {
@@ -87,7 +83,7 @@ class ActionDate(val type: Type, val format: String? = null) : QuestAction<Any>(
          * time as "yyyy-MM-dd HH:mm"
          */
         @KetherParser(["time", "date"])
-        fun parserDate() = ScriptParser.parser {
+        fun parserDate() = scriptParser {
             it.mark()
             val format = try {
                 it.expect("as")
@@ -100,7 +96,7 @@ class ActionDate(val type: Type, val format: String? = null) : QuestAction<Any>(
         }
 
         @KetherParser(["day", "days"])
-        fun parserDays() = ScriptParser.parser {
+        fun parserDays() = scriptParser {
             it.expects("of", "in")
             when (it.expects("year", "month", "week")) {
                 "year" -> ActionDate(Type.DAY_OF_YEAR)

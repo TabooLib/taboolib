@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
@@ -19,7 +18,7 @@ object KetherShell {
         namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
         sender: ProxyCommandSender? = null,
-        context: ScriptContext.() -> Unit = {}
+        context: ScriptContext.() -> Unit = {},
     ): CompletableFuture<Any?> {
         return eval(source.joinToString("\n"), cacheScript, namespace, cache, sender, context)
     }
@@ -31,13 +30,13 @@ object KetherShell {
         namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
         sender: ProxyCommandSender? = null,
-        context: ScriptContext.() -> Unit = {}
+        context: ScriptContext.() -> Unit = {},
     ): CompletableFuture<Any?> {
         val s = if (source.startsWith("def")) source else "def main = { $source }"
         val script = if (cacheScript) cache.scriptMap.computeIfAbsent(s) {
-            ScriptLoader.load(it, namespace)
+            it.parseKetherScript(namespace)
         } else {
-            ScriptLoader.load(s, namespace)
+            s.parseKetherScript(namespace)
         }
         return ScriptContext.create(script).also {
             if (sender != null) {
@@ -49,6 +48,6 @@ object KetherShell {
 
     class Cache {
 
-        val scriptMap = ConcurrentHashMap<String, Quest>()
+        val scriptMap = ConcurrentHashMap<String, Script>()
     }
 }

@@ -17,7 +17,7 @@ object Kether {
 
     init {
         try {
-            Language.textTransfer += TextTransferKether
+            Language.textTransfer += LangTransfer
         } catch (ex: Throwable) {
         }
     }

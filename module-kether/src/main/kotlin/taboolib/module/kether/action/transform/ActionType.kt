@@ -1,14 +1,10 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common5.Coerce
+import taboolib.module.kether.*
 import taboolib.module.kether.Kether.expects
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
-import taboolib.module.kether.inferType
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -16,9 +12,9 @@ import java.util.concurrent.CompletableFuture
  */
 class ActionType {
 
-    class ActionType(val any: String) : QuestAction<Any>() {
+    class ActionType(val any: String) : ScriptAction<Any>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Any> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return CompletableFuture.completedFuture(any.inferType())
         }
 
@@ -27,9 +23,9 @@ class ActionType {
         }
     }
 
-    class ActionTypeTo(val to: TypeTo, val action: ParsedAction<*>) : QuestAction<Any>() {
+    class ActionTypeTo(val to: TypeTo, val action: ParsedAction<*>) : ScriptAction<Any>() {
 
-        override fun process(frame: QuestContext.Frame): CompletableFuture<Any> {
+        override fun run(frame: ScriptFrame): CompletableFuture<Any> {
             return frame.newFrame(action).run<Any>().thenApply { to.transfer(it) }
         }
 
@@ -66,7 +62,7 @@ class ActionType {
         val types = TypeTo.values().map { it.name.toLowerCase() }.toTypedArray()
 
         @KetherParser(["type"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             try {
                 it.mark()
                 ActionTypeTo(TypeTo.valueOf(it.expects(*types).toUpperCase()), it.next(ArgTypes.ACTION))

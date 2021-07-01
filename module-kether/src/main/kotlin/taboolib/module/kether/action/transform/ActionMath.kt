@@ -1,8 +1,6 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common5.Coerce
 import taboolib.module.kether.*
@@ -15,7 +13,7 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/3/16 2:56 下午
  */
-class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : QuestAction<Number>() {
+class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptAction<Number>() {
 
     enum class Type(val exec: List<Any>.() -> Number) {
 
@@ -67,7 +65,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : QuestAction
         }
     }
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<Number> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Number> {
         val future = CompletableFuture<Number>()
         val number = ArrayList<Any>()
         fun process(cur: Int) {
@@ -99,7 +97,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : QuestAction
          * math *1 + *1 - *10
          */
         @KetherParser(["math"])
-        fun parser0() = ScriptParser.parser {
+        fun parser0() = scriptParser {
             it.switch {
                 case(*math[0]) {
                     ActionMath(Type.ADD, it.next(ArgTypes.listOf(ArgTypes.ACTION)))

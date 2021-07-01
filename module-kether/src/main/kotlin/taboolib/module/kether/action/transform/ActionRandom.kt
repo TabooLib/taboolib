@@ -1,11 +1,11 @@
 package taboolib.module.kether.action.transform
 
 import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptParser
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
 
@@ -16,9 +16,9 @@ import kotlin.random.Random
  * @author sky
  * @since 2021/1/30 9:26 下午
  */
-class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>? = null) : QuestAction<Any?>() {
+class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>? = null) : ScriptAction<Any?>() {
 
-    override fun process(frame: QuestContext.Frame): CompletableFuture<Any?> {
+    override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
         if (action == null) {
             return CompletableFuture.completedFuture(taboolib.common.util.random(from, to))
         } else {
@@ -56,7 +56,7 @@ class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>
          * random range 1 to 10
          */
         @KetherParser(["random"])
-        fun parser() = ScriptParser.parser {
+        fun parser() = scriptParser {
             it.mark()
             try {
                 var from = 0.0

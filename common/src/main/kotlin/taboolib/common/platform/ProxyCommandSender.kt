@@ -13,6 +13,8 @@ interface ProxyCommandSender {
 
     val name: String
 
+    var isOp: Boolean
+
     fun sendMessage(message: String)
 
     fun performCommand(command: String): Boolean
