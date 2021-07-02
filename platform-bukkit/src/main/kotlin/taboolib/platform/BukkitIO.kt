@@ -1,10 +1,12 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
+import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
+import taboolib.platform.type.BukkitOpenContainer
 import java.io.File
 
 /**
@@ -58,5 +60,16 @@ class BukkitIO : PlatformIO {
 
     override fun getDataFolder(): File {
         return plugin.dataFolder
+    }
+
+    override fun getOpenContainers(): List<OpenContainer> {
+        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BukkitPlugin") }.mapNotNull {
+            try {
+                BukkitOpenContainer(it)
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+                null
+            }
+        }
     }
 }

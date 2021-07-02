@@ -1,11 +1,15 @@
 package taboolib.platform
 
+import cn.nukkit.Server
+import cn.nukkit.console.NukkitConsole
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
+import taboolib.platform.type.NukkitOpenContainer
 import java.io.File
 
 /**
@@ -53,7 +57,7 @@ class NukkitIO : PlatformIO {
             file.parentFile.mkdirs()
         }
         file.createNewFile()
-        file.writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: kotlin.error("resource not found: $path"))
+        file.writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 
@@ -63,5 +67,16 @@ class NukkitIO : PlatformIO {
 
     override fun getDataFolder(): File {
         return NukkitPlugin.getInstance().dataFolder
+    }
+
+    override fun getOpenContainers(): List<OpenContainer> {
+        return Server.getInstance().pluginManager.plugins.values.filter { it.javaClass.name.endsWith("taboolib.platform.NukkitPlugin") }.mapNotNull {
+            try {
+                NukkitOpenContainer(it)
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+                null
+            }
+        }
     }
 }

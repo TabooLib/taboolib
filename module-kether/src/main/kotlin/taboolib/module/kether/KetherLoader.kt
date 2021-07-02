@@ -24,6 +24,7 @@ object KetherLoader : Injector.Methods {
             } else {
                 parser.value.forEach { name ->
                     Kether.addAction(name, method.invoke(instance) as QuestActionParser, parser.namespace)
+                    // todo openAPI 注册到其他插件
                 }
             }
         }

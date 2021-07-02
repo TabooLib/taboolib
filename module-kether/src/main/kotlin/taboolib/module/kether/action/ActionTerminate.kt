@@ -9,7 +9,7 @@ import java.util.concurrent.CompletableFuture
 class ActionTerminate : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        ScriptService.terminateQuest(frame.context() as ScriptContext)
+        ScriptService.terminateQuest(frame.script())
         return CompletableFuture.completedFuture(null)
     }
 

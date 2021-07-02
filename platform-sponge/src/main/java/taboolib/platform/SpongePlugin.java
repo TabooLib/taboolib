@@ -1,6 +1,7 @@
 package taboolib.platform;
 
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
@@ -88,14 +89,22 @@ public class SpongePlugin {
         }
     }
 
+    @NotNull
     public static SpongePlugin getInstance() {
         return instance;
     }
 
+    @Nullable
+    public static Plugin getPluginInstance() {
+        return pluginInstance;
+    }
+
+    @NotNull
     public PluginContainer getPluginContainer() {
         return pluginContainer;
     }
 
+    @NotNull
     public File getPluginConfigDir() {
         return pluginConfigDir;
     }

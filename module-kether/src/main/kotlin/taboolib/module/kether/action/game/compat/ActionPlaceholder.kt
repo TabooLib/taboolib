@@ -1,4 +1,4 @@
-package taboolib.module.kether.action.game
+package taboolib.module.kether.action.game.compat
 
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.api.QuestContext

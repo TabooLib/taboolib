@@ -1,6 +1,6 @@
 package taboolib.module.navigation
 
-import taboolib.common.util.Vector
+import org.bukkit.util.Vector
 
 /**
  * Navigation

@@ -1,7 +1,9 @@
-package taboolib.module.kether.action.game
+package taboolib.module.kether.action.game.bukkit
 
 import io.izzel.kether.common.api.QuestContext
 import org.bukkit.entity.Player
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.module.kether.Kether.expects
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
@@ -15,7 +17,7 @@ import java.util.concurrent.CompletableFuture
 class ActionSound(val sound: String, val volume: Float, val pitch: Float) : ScriptAction<Void>() {
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
-        val viewer = frame.script().sender as? Player ?: error("No player selected.")
+        val viewer = frame.script().sender?.origin as? Player ?: error("No player selected.")
         if (sound.startsWith("resource:")) {
             viewer.playSound(viewer.location, sound.substring("resource:".length), volume, pitch)
         } else {
@@ -33,6 +35,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float) : Scri
         /**
          * sound block_stone_break by 1 1
          */
+        @PlatformSide([Platform.BUKKIT])
         @KetherParser(["sound"])
         fun parser() = scriptParser {
             val sound = it.nextToken()

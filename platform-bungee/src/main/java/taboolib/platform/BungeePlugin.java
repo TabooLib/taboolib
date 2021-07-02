@@ -74,4 +74,9 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     public static BungeePlugin getInstance() {
         return instance;
     }
+
+    @Nullable
+    public static Plugin getPluginInstance() {
+        return pluginInstance;
+    }
 }

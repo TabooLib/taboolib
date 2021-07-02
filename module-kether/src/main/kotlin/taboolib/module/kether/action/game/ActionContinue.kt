@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 class ActionContinue : ScriptAction<Void>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        val s = frame.context() as ScriptContext
+        val s = frame.script()
         s.listener?.complete(null)
         s.listener = null
         return CompletableFuture.completedFuture(null)

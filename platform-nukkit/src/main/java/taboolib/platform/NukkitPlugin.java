@@ -80,4 +80,9 @@ public class NukkitPlugin extends PluginBase {
     public static NukkitPlugin getInstance() {
         return instance;
     }
+
+    @Nullable
+    public static Plugin getPluginInstance() {
+        return pluginInstance;
+    }
 }

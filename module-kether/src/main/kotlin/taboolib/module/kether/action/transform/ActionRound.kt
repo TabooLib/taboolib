@@ -10,7 +10,6 @@ import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
-
 /**
  * @author IzzelAliz
  */

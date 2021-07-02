@@ -32,6 +32,13 @@ interface PlatformAdapter {
     }
 
     /**
+     * velocity
+     */
+    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener {
+        error("unsupported")
+    }
+
+    /**
      * sponge
      */
     fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {

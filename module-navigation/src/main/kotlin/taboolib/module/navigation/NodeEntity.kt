@@ -1,10 +1,10 @@
 package taboolib.module.navigation
 
 import com.google.common.collect.Maps
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import taboolib.common.util.Location
-import taboolib.common.util.Vector
+import org.bukkit.util.Vector
 import java.util.*
 
 /**
@@ -66,7 +66,7 @@ open class NodeEntity(
     }
 
     open fun isWithinRestriction(pos: Vector): Boolean {
-        return if (restrictRadius == -1.0f) true else restrictCenter.distSqr(pos) < (restrictRadius * restrictRadius).toDouble()
+        return if (restrictRadius == -1.0f) true else restrictCenter.distanceSquared(pos) < (restrictRadius * restrictRadius).toDouble()
     }
 
     fun getWalkTargetValue(pos: Vector): Double {

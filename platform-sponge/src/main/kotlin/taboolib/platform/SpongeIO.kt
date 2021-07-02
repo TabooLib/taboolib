@@ -3,10 +3,12 @@ package taboolib.platform
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.spongepowered.api.Sponge
+import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
+import taboolib.platform.type.SpongeOpenContainer
 import java.io.File
 
 /**
@@ -64,5 +66,18 @@ class SpongeIO : PlatformIO {
 
     override fun getDataFolder(): File {
         return SpongePlugin.getInstance().pluginConfigDir
+    }
+
+    override fun getOpenContainers(): List<OpenContainer> {
+        return Sponge.getPluginManager().plugins
+            .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.SpongePlugin") == true }
+            .mapNotNull {
+                try {
+                    SpongeOpenContainer(it)
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                    null
+                }
+            }
     }
 }

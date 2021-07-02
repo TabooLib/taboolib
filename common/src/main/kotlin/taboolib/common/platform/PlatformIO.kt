@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.OpenContainer
 import java.io.File
 
 interface PlatformIO {
@@ -19,4 +20,6 @@ interface PlatformIO {
     fun getJarFile(): File
 
     fun getDataFolder(): File
+
+    fun getOpenContainers(): List<OpenContainer>
 }

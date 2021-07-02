@@ -3,7 +3,7 @@ package taboolib.module.kether.action.game
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
-import org.bukkit.entity.Player
+import taboolib.common.platform.ProxyPlayer
 import taboolib.module.kether.Kether.expects
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
@@ -18,7 +18,7 @@ class ActionSubtitle(val subTitle: ParsedAction<*>, val fadeIn: Int, val stay: I
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
         return frame.newFrame(subTitle).run<Any>().thenAccept { s ->
-            val viewer = frame.script().sender as? Player ?: error("No player selected.")
+            val viewer = frame.script().sender as? ProxyPlayer ?: error("No player selected.")
             val subTitle = s.toString().trimIndent().replace("@sender", viewer.name)
             viewer.sendTitle("", subTitle, fadeIn, stay, fadeOut)
         }

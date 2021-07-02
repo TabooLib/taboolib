@@ -9,7 +9,6 @@ import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
 
-
 /**
  * @author IzzelAliz
  */

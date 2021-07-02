@@ -1,9 +1,12 @@
 package taboolib.platform
 
+import net.md_5.bungee.BungeeCord
+import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
+import taboolib.platform.type.BungeeOpenContainer
 import java.io.File
 import java.util.logging.Logger
 
@@ -62,5 +65,16 @@ class BungeeIO : PlatformIO {
 
     override fun getDataFolder(): File {
         return BungeePlugin.getInstance().dataFolder
+    }
+
+    override fun getOpenContainers(): List<OpenContainer> {
+        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BungeePlugin") }.mapNotNull {
+            try {
+                BungeeOpenContainer(it)
+            } catch (ex: Throwable) {
+                ex.printStackTrace()
+                null
+            }
+        }
     }
 }

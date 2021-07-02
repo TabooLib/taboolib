@@ -7,6 +7,7 @@ import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
 import taboolib.module.kether.Kether.expects
+import java.io.Serializable
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -16,7 +17,9 @@ typealias Script = Quest
 typealias ScriptFrame = QuestContext.Frame
 
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): QuestActionParser {
-    return object : QuestActionParser {
+    return object : QuestActionParser, Serializable {
+
+        private val serialVersionUID = 1L
 
         @Suppress("UNCHECKED_CAST")
         override fun <T> resolve(resolver: QuestReader): QuestAction<T> {

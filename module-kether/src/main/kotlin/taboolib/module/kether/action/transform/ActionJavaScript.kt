@@ -14,7 +14,7 @@ import javax.script.SimpleBindings
 class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Any> {
-        val s = (frame.context() as ScriptContext)
+        val s = frame.script()
         val r = try {
             val bindings = hashMapOf("event" to s.event, "sender" to s.sender, "server" to server())
             bindings.putAll(frame.deepVars())

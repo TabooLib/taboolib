@@ -1,7 +1,6 @@
 package taboolib.module.navigation
 
-import taboolib.common.util.Vector
-import taboolib.module.navigation.*
+import org.bukkit.util.Vector
 import java.util.*
 import kotlin.math.*
 

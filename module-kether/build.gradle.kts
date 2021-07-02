@@ -19,8 +19,8 @@ repositories {
 
 dependencies {
     implementation("io.izzel.kether:common:1.0.14")
-    compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("public:PlaceholderAPI:2.10.9")
+    compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("com.google.guava:guava:17.0")
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly(project(":common"))
@@ -42,6 +42,8 @@ tasks {
         exclude("LICENSE")
         exclude("LICENSE-Coerce")
         relocate("LICENSE", "LICENSE-Kether")
+        relocate("taboolib.module.kether.EventOperator", "openapi.kether.EventOperator")
+        relocate("io.izzel.kether.common.api.QuestActionParser", "openapi.kether.QuestActionParser")
         relocate("io.izzel.kether.common.util.Coerce", "taboolib.common5.Coerce")
         relocate("io.izzel.kether.common.api.data", "taboolib.library.kether")
         relocate("io.izzel.kether.common.api", "taboolib.library.kether")

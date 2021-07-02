@@ -3,6 +3,7 @@ package taboolib.platform;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
@@ -84,7 +85,13 @@ public class BukkitPlugin extends JavaPlugin {
         return super.getFile();
     }
 
+    @NotNull
     public static BukkitPlugin getInstance() {
         return instance;
+    }
+
+    @Nullable
+    public static Plugin getPluginInstance() {
+        return pluginInstance;
     }
 }

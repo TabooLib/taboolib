@@ -1,12 +1,15 @@
 package taboolib.module.kether
 
+import java.io.Serializable
 import kotlin.reflect.KClass
 
 /**
  * @Author sky
  * @Since 2020-08-30 19:22
  */
-class EventOperator<T : Any>(val event: KClass<out T>) {
+class EventOperator<T : Any>(val event: KClass<out T>) : Serializable {
+
+    private val serialVersionUID = 1L
 
     val reader = HashMap<String, Reader<T>>()
     val writer = HashMap<String, Writer<T>>()

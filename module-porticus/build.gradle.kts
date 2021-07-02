@@ -12,10 +12,12 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-public/") }
     maven { url = uri("https://repo.codemc.io/repository/nms/") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://nexus.velocitypowered.com/repository/maven-public/") }
     mavenCentral()
 }
 
 dependencies {
+    compileOnly("com.velocitypowered:velocity-api:1.1.8")
     compileOnly("com.github.ben-manes.caffeine:caffeine:3.0.2")
     compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-20210614.231150-8@jar")
     compileOnly("ink.ptms.core:v11605:11605")

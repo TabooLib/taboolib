@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * TabooLibKotlin
- * taboolib.module.kether.action.transform.ActionRange
+ * taboolib.module.kether.action.transform.ActionArray
  *
  * @author sky
  * @since 2021/1/30 9:26 下午
