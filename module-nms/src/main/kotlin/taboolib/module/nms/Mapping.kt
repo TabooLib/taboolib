@@ -16,13 +16,15 @@ class Mapping(inputStream: InputStream) {
     val classMap = HashMap<String, String>()
 
     init {
-        inputStream.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
-            if (line.startsWith('#')) {
-                return@forEach
-            }
-            val args = line.split(' ')
-            if (args.size == 3) {
-                fields += Field(args[0].replace("/", "."), args[1], args[2])
+        inputStream.use {
+            it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
+                if (line.startsWith('#')) {
+                    return@forEach
+                }
+                val args = line.split(' ')
+                if (args.size == 3) {
+                    fields += Field(args[0].replace("/", "."), args[1], args[2])
+                }
             }
         }
         fields.forEach {

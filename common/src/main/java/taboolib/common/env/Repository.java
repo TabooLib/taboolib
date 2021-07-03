@@ -70,16 +70,9 @@ public class Repository extends AbstractXmlParser {
      * @throws IOException If an I/O error has occurred
      * @since 1.0.0
      */
-    @SuppressWarnings("StatementWithEmptyBody")
     public void downloadToFile(Dependency dep, File out) throws IOException {
         URL url = new URL(String.format("%s/%s/%s/%s/%s", getUrl(), dep.getGroupId().replace('.', '/'), dep.getArtifactId(), dep.getVersion(), out.getName()));
-        InputStream ins = url.openStream();
-        OutputStream outs = new FileOutputStream(out);
-        byte[] buffer = new byte[4096];
-        for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
-            ;
-        outs.close();
-        ins.close();
+        downloadToFile(url, out);
     }
 
     /**
@@ -113,6 +106,17 @@ public class Repository extends AbstractXmlParser {
      */
     public String getUrl() {
         return url;
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    public static void downloadToFile(URL url, File out) throws IOException {
+        InputStream ins = url.openStream();
+        OutputStream outs = new FileOutputStream(out);
+        byte[] buffer = new byte[4096];
+        for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
+            ;
+        outs.close();
+        ins.close();
     }
 
     @Override

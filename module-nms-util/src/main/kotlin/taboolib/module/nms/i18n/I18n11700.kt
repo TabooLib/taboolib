@@ -44,13 +44,13 @@ object I18n11700 : I18nBase() {
                 println("[TabooLib] Loading Assets...")
                 val time = System.currentTimeMillis()
                 try {
-                    locales.forEach { locale ->
-                        val file = File(folder, locale[0])
+                    locales.forEach {
+                        val file = File(folder, it[0])
                         if (!folder.exists()) {
                             folder.mkdirs()
                         }
                         file.createNewFile()
-                        file.writeBytes(URL("https://resources.download.minecraft.net/" + locale[1].substring(0, 2) + "/" + locale[1]).openStream().readBytes())
+                        file.writeBytes(URL("https://resources.download.minecraft.net/" + it[1].substring(0, 2) + "/" + it[1]).openStream().readBytes())
                     }
                     load()
                     println("[TabooLib] Loading Successfully. (${System.currentTimeMillis() - time}ms)")

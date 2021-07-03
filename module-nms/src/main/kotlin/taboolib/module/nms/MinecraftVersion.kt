@@ -3,14 +3,23 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.env.RuntimeResource
+import taboolib.common.env.RuntimeResources
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex
+import java.io.FileInputStream
 
 @RuntimeDependencies(
     RuntimeDependency("org.ow2.asm:asm:9.1", test = "org.objectweb.asm.ClassVisitor"),
     RuntimeDependency("org.ow2.asm:asm-util:9.1", test = "org.objectweb.asm.util.Printer"),
     RuntimeDependency("org.ow2.asm:asm-commons:9.1", test = "org.objectweb.asm.commons.Remapper"),
+)
+@RuntimeResources(
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-e3c5450d-fields.csrg",
+        hash = "e3b7c0dfbce9544ed650230e208865b8c5dea94e"
+    )
 )
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
@@ -50,7 +59,7 @@ object MinecraftVersion {
 
     val mapping by lazy {
         if (isUniversal && mappingFields.containsKey(runningVersion)) {
-            Mapping(MinecraftVersion::class.java.classLoader.getResourceAsStream(mappingFields[runningVersion]!!)!!)
+            Mapping(FileInputStream("assets/${mappingFields[runningVersion]!!}"))
         } else {
             null
         }

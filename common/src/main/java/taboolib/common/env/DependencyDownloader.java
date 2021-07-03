@@ -81,7 +81,7 @@ public class DependencyDownloader extends AbstractXmlParser {
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
                 if (isDebugMode) {
-                    System.out.println("Loading " + dep);
+                    System.out.println("Loading Library " + dep);
                 }
                 ClassAppender.addPath(file.toPath());
             }

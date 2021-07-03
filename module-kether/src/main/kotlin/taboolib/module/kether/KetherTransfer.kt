@@ -5,18 +5,19 @@ import taboolib.module.lang.TextTransfer
 
 /**
  * TabooLib
- * taboolib.module.lang.TextTransferKether
+ * taboolib.module.lang.KetherTransfer
  *
  * @author sky
  * @since 2021/6/20 11:08 下午
  */
-object LangTransfer : TextTransfer {
+object KetherTransfer : TextTransfer {
 
     val cacheMap = KetherFunction.Cache()
+    val namespace = ArrayList<String>()
 
     override fun translate(sender: ProxyCommandSender, source: String): String {
         if (source.contains("{{")) {
-            return KetherFunction.parse(source, cache = cacheMap, sender = sender)
+            return KetherFunction.parse(source, cache = cacheMap, sender = sender, namespace = namespace)
         }
         return source
     }

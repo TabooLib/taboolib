@@ -16,6 +16,41 @@ import java.net.URL;
 public class RuntimeEnv {
 
     public void inject(@NotNull Class<?> clazz) {
+        loadDependency(clazz);
+    }
+
+    public void loadAssets(@NotNull Class<?> clazz) {
+        RuntimeResource[] resources = null;
+        if (clazz.isAnnotationPresent(RuntimeResource.class)) {
+            resources = clazz.getAnnotationsByType(RuntimeResource.class);
+        } else {
+            RuntimeResources annotation = clazz.getAnnotation(RuntimeResources.class);
+            if (annotation != null) {
+                resources = annotation.value();
+            }
+        }
+        if (resources != null) {
+            for (RuntimeResource resource : resources) {
+                File file;
+                if (resource.name().isEmpty()) {
+                    file = new File("assets/" + resource.value().substring(resource.value().lastIndexOf("/")));
+                } else {
+                    file = new File("assets/" + resource.name());
+                }
+                if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
+                    continue;
+                }
+                try {
+                    System.out.println("Loading Assets " + file.getName());
+                    Repository.downloadToFile(new URL(resource.value()), file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void loadDependency(@NotNull Class<?> clazz) {
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);

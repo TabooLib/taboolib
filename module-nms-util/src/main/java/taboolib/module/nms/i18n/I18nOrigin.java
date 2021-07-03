@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.common.env.RuntimeResource;
 import taboolib.common.platform.FunctionKt;
 import taboolib.module.nms.ItemTag;
 import taboolib.module.nms.MinecraftVersion;
@@ -25,6 +26,16 @@ import java.util.Objects;
  * @author sky
  * @since 2020-04-04 19:44
  */
+@RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/i18n_high_zh_CN.yml",
+        hash = "3aa002f314ac0768b00daa3563c08da9b5c674c5",
+        name = "simpleI18n/high/zh_CN.yml"
+)
+@RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/i18n_low_zh_CN.yml",
+        hash = "476754933e2e486048f39726b822f24447d60ecb",
+        name = "simpleI18n/low/zh_CN.yml"
+)
 public class I18nOrigin extends I18nBase {
 
     public static final I18nOrigin INSTANCE = new I18nOrigin();
@@ -88,7 +99,7 @@ public class I18nOrigin extends I18nBase {
     }
 
     private File getLocaleFile() {
-        return FunctionKt.releaseResourceFile("simpleI18n/" + getVersion() + "/zh_CN.yml", false);
+        return new File("assets/simpleI18n/" + getVersion() + "/zh_CN.yml");
     }
 
     private String getVersion() {
