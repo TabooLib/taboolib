@@ -17,11 +17,7 @@ class ActionTell(val message: ParsedAction<*>) : ScriptAction<Void>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionTell(message=$message)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["tell", "send", "message"])
         fun parser() = scriptParser {

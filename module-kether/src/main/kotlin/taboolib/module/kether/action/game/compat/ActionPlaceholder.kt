@@ -22,11 +22,7 @@ class ActionPlaceholder(val source: ParsedAction<*>) : ScriptAction<String>() {
         }, frame.context().executor)
     }
 
-    override fun toString(): String {
-        return "ActionPlaceholder(source='$source')"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["papi", "placeholder"])
         fun parser() = scriptParser {

@@ -16,6 +16,7 @@ import java.net.URL;
 public class RuntimeEnv {
 
     public void inject(@NotNull Class<?> clazz) {
+        loadAssets(clazz);
         loadDependency(clazz);
     }
 
@@ -39,6 +40,9 @@ public class RuntimeEnv {
                 }
                 if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
                     continue;
+                }
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
                 try {
                     System.out.println("Loading Assets " + file.getName());

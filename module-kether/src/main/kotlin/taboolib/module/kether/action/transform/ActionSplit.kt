@@ -24,11 +24,7 @@ class ActionSplit(val value: ParsedAction<*>, val split: String) : ScriptAction<
         }
     }
 
-    override fun toString(): String {
-        return "ActionSplit(value=$value, split='$split')"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * split *"1 2 3" by " "

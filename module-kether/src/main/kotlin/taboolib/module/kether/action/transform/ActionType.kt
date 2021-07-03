@@ -57,7 +57,7 @@ class ActionType {
         })
     }
 
-    companion object {
+    internal object Parser {
 
         val types = TypeTo.values().map { it.name.toLowerCase() }.toTypedArray()
 

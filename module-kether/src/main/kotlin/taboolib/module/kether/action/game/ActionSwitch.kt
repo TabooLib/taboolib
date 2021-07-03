@@ -22,11 +22,7 @@ class ActionSwitch(val sender: ParsedAction<*>) : ScriptAction<Void>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionSwitch(sender=$sender)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["switch"])
         fun parser() = scriptParser {

@@ -30,11 +30,7 @@ class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : Sc
         }
     }
 
-    override fun toString(): String {
-        return "ActionRange(from=$from, to=$to)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["range"])
         fun parser() = scriptParser {

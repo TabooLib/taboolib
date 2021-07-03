@@ -16,11 +16,7 @@ class ActionImport : ScriptAction<Void>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionImport()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["import"])
         fun parser0() = scriptParser {

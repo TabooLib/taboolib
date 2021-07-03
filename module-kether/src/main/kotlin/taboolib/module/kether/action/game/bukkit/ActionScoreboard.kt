@@ -30,11 +30,7 @@ class ActionScoreboard(val content: ParsedAction<*>) : ScriptAction<Void>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionScoreboard(content=$content)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * scoreboard *"123"

@@ -20,11 +20,7 @@ class ActionFunction(val source: ParsedAction<*>) : ScriptAction<String>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionFunction(source='$source')"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["inline", "function"])
         fun parser() = scriptParser {

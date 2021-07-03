@@ -20,11 +20,7 @@ class ActionColor(val source: ParsedAction<*>) : ScriptAction<String>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionColor(source='$source')"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["color", "colored"])
         fun parser() = scriptParser {

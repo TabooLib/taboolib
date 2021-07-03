@@ -12,11 +12,7 @@ class ActionVariables : ScriptAction<List<String>>() {
         return CompletableFuture.completedFuture(frame.deepVars().keys.toList())
     }
 
-    override fun toString(): String {
-        return "ActionVariables()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["vars", "variables"])
         fun parser() = scriptParser {

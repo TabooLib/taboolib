@@ -20,11 +20,7 @@ class ActionWarning(val message: ParsedAction<*>) : ScriptAction<Void>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionWarning(message=$message)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["warn", "warning"])
         fun parser() = scriptParser {

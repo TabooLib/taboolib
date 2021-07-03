@@ -44,13 +44,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
         }, frame.context().executor)
     }
 
-    override fun toString(): String {
-        return "ActionCommand{" +
-                "command='" + command + '\'' +
-                '}'
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["command"])
         fun parser() = scriptParser {

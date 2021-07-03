@@ -18,11 +18,7 @@ class ActionActionBar(val message: ParsedAction<*>) : ScriptAction<Void>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionActionBar(message=$message)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["actionbar"])
         fun parser() = scriptParser {

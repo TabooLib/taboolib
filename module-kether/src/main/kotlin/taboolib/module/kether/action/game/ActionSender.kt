@@ -18,11 +18,7 @@ class ActionSender : ScriptAction<String>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionSender()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["sender"])
         fun parser() = scriptParser {

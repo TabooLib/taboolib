@@ -16,11 +16,7 @@ class ActionPass : ScriptAction<String>() {
         return CompletableFuture.completedFuture("")
     }
 
-    override fun toString(): String {
-        return "ActionPass()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["pass"])
         fun parser() = scriptParser {

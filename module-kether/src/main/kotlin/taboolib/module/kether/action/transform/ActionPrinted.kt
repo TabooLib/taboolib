@@ -21,11 +21,7 @@ class ActionPrinted(val date: ParsedAction<*>, val separator: String) : ScriptAc
         }
     }
 
-    override fun toString(): String {
-        return "ActionPrinted(date=$date, separator='$separator')"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * printed *xxx by "_"

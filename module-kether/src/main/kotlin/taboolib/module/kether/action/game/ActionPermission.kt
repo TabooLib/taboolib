@@ -16,11 +16,7 @@ class ActionPermission(val permission: ParsedAction<*>) : ScriptAction<Boolean>(
         }
     }
 
-    override fun toString(): String {
-        return "ActionPermission(permission='$permission')"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["perm", "permission"])
         fun parser() = scriptParser {

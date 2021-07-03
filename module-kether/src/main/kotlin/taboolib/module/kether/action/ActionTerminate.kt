@@ -13,11 +13,7 @@ class ActionTerminate : ScriptAction<Void>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionTerminate()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["exit", "stop", "terminate"])
         fun parser() = scriptParser {

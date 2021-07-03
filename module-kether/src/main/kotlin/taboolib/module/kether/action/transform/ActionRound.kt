@@ -21,11 +21,7 @@ class ActionRound(val number: ParsedAction<*>) : ScriptAction<Int>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionRound(number=$number)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * round *1.0

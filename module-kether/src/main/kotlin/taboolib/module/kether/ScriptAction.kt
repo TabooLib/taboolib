@@ -17,4 +17,8 @@ abstract class ScriptAction<T> : QuestAction<T>() {
     }
 
     abstract fun run(frame: ScriptFrame): CompletableFuture<T>
+
+    override fun toString(): String {
+        return "${javaClass.simpleName}()"
+    }
 }

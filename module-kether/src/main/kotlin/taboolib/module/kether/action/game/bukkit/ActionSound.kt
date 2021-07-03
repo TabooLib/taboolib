@@ -26,11 +26,7 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float) : Scri
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionSound(sound='$sound', volume=$volume, pitch=$pitch)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * sound block_stone_break by 1 1

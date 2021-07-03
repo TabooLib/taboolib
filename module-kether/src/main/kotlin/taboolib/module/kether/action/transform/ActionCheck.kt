@@ -41,11 +41,7 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
         }
     }
 
-    override fun toString(): String {
-        return "ActionCheck(left=$left, right=$right)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["check"])
         fun parser() = scriptParser {

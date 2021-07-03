@@ -16,11 +16,7 @@ class ActionNull : ScriptAction<Any?>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionNull()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["null"])
         fun parser() = scriptParser {

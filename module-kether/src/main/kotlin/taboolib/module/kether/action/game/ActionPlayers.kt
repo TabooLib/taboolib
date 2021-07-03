@@ -16,11 +16,7 @@ class ActionPlayers : ScriptAction<List<String>>() {
         return CompletableFuture.completedFuture(onlinePlayers().map { it.name }.toList())
     }
 
-    override fun toString(): String {
-        return "ActionPlayers()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["players"])
         fun parser() = scriptParser {

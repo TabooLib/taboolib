@@ -43,10 +43,10 @@ class BukkitCommand : PlatformCommand {
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
         submit(now = true) {
             val pluginCommand = constructor.newInstance(command.name, plugin)
-            pluginCommand.executor = org.bukkit.command.CommandExecutor { sender, _, label, args ->
+            pluginCommand.setExecutor { sender, _, label, args ->
                 executor.execute(adaptCommandSender(sender), command, label, args)
             }
-            pluginCommand.tabCompleter = org.bukkit.command.TabCompleter { sender, _, label, args ->
+            pluginCommand.setTabCompleter { sender, _, label, args ->
                 completer.execute(adaptCommandSender(sender), command, label, args)
             }
             var permission = command.permission

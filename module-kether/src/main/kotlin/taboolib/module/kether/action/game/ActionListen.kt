@@ -23,11 +23,7 @@ class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) :
         }
     }
 
-    override fun toString(): String {
-        return "ActionListen(operator=$operator, value=$value)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["listen", "on"])
         fun parser() = scriptParser {

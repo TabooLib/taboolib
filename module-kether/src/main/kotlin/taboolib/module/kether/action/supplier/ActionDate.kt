@@ -6,7 +6,6 @@ import taboolib.module.kether.*
 import taboolib.module.kether.Kether.expects
 import java.util.concurrent.CompletableFuture
 
-
 /**
  * @author IzzelAliz
  */
@@ -63,11 +62,7 @@ class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>
         }
     }
 
-    override fun toString(): String {
-        return "ActionDate(type=$type, format=$format)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser
         fun parser() {

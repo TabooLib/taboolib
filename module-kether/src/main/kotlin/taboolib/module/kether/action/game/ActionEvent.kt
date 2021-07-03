@@ -32,11 +32,7 @@ class ActionEvent(val key: String, val symbol: Symbol, val value: ParsedAction<*
         }
     }
 
-    override fun toString(): String {
-        return "ActionEvent(key='$key', symbol=$symbol, value=$value)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["event"])
         fun parser() = scriptParser {

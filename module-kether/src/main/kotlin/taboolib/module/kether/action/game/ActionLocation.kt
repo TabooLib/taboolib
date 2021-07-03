@@ -50,11 +50,7 @@ class ActionLocation(
         return location
     }
 
-    override fun toString(): String {
-        return "ActionLocation(world=$world, x=$x, y=$y, z=$z, yaw=$yaw, pitch=$pitch)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * location 10 20 10 and 0 0

@@ -31,11 +31,7 @@ class ActionOptional(val value: ParsedAction<*>, val elseOf: ParsedAction<*>) : 
         return future
     }
 
-    override fun toString(): String {
-        return "ActionOptional(value=$value, elseOf=$elseOf)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * optional null else 123

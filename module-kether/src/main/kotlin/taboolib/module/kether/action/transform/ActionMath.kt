@@ -87,7 +87,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         return future
     }
 
-    companion object {
+    internal object Parser {
 
         val math = arrayOf(arrayOf("add", "+"), arrayOf("sub", "-"), arrayOf("mul", "*"), arrayOf("div", "/"))
         val mathGroup = math.flatten().toTypedArray()

@@ -44,7 +44,7 @@ class ActionFor(val key: String, val values: ParsedAction<*>, val action: Parsed
         return future
     }
 
-    companion object {
+    internal object Parser {
 
         /**
          * for i in players then {  }

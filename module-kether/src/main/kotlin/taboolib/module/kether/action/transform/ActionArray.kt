@@ -34,11 +34,7 @@ class ActionArray(val list: List<ParsedAction<*>>) : ScriptAction<List<Any>>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionArray(list=$list)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * set a to array [ *1 *2 *3 ]

@@ -22,7 +22,7 @@ class ActionFormat(val date: ParsedAction<*>, val format: String) : ScriptAction
         }
     }
 
-    companion object {
+    internal object Parser {
 
         /**
          * format *date with "yyyy-MM-dd HH:mm"

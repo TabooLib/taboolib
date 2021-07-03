@@ -20,11 +20,7 @@ class ActionScale(val number: ParsedAction<*>) : ScriptAction<Double>() {
         }
     }
 
-    override fun toString(): String {
-        return "ActionScale(number=$number)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["scale", "scaled"])
         fun parser() = scriptParser {

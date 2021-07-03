@@ -30,10 +30,6 @@ class ActionElement {
                 }
             }
         }
-
-        override fun toString(): String {
-            return "SizeOf(array=$array)"
-        }
     }
 
     class ElementOf(val index: ParsedAction<*>, val array: ParsedAction<*>) : ScriptAction<Any?>() {
@@ -51,13 +47,9 @@ class ActionElement {
             }
             return future
         }
-
-        override fun toString(): String {
-            return "ElementOf(index=$index, array=$array)"
-        }
     }
 
-    companion object {
+    internal object Parser {
 
         /**
          * size &array

@@ -33,11 +33,7 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: String) : Scr
         return future
     }
 
-    override fun toString(): String {
-        return "ActionJoin(source='$source')"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * join [ *1 *2 *3 ] by -

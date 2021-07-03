@@ -49,7 +49,7 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
         return future
     }
 
-    companion object {
+    internal object Parser {
 
         @KetherParser(["map"])
         fun parser() = scriptParser {

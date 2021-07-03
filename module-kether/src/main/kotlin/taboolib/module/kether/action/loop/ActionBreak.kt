@@ -13,11 +13,7 @@ class ActionBreak : ScriptAction<Void>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionBreak()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["break"])
         fun parser() = scriptParser {

@@ -30,7 +30,7 @@ class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) :
         return future
     }
 
-    companion object {
+    internal object Parser {
 
         @KetherParser(["while"])
         fun parser() = scriptParser {

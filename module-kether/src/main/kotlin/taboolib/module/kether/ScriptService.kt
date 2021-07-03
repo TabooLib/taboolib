@@ -37,7 +37,9 @@ object ScriptService : QuestService<ScriptContext> {
     @Config("kether.yml")
     private lateinit var locale: SecuredFile
 
-    val mainspace = Workspace(File("kether/${getJarFile().nameWithoutExtension}"))
+    val mainspace by lazy {
+        Workspace(File("kether/${getJarFile().nameWithoutExtension}"))
+    }
 
     override fun getRegistry(): QuestRegistry {
         return registry

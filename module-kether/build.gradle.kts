@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.izzel.kether:common:1.0.14")
+    implementation("io.izzel.kether:common:1.0.15")
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("com.google.guava:guava:17.0")
@@ -36,12 +36,13 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveClassifier.set("")
         dependencies {
-            include(dependency("io.izzel.kether:common:1.0.14"))
+            include(dependency("io.izzel.kether:common:1.0.15"))
         }
         exclude("io/izzel/kether/common/util/Coerce.class")
         exclude("LICENSE")
         exclude("LICENSE-Coerce")
         relocate("LICENSE", "LICENSE-Kether")
+        relocate("taboolib.module.kether.PlayerOperator", "openapi.kether.PlayerOperator")
         relocate("taboolib.module.kether.EventOperator", "openapi.kether.EventOperator")
         relocate("io.izzel.kether.common.api.QuestActionParser", "openapi.kether.QuestActionParser")
         relocate("io.izzel.kether.common.util.Coerce", "taboolib.common5.Coerce")

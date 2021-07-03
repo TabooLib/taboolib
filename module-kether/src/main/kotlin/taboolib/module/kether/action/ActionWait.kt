@@ -24,11 +24,7 @@ class ActionWait(val ticks: Long) : ScriptAction<Void>() {
         return future
     }
 
-    override fun toString(): String {
-        return "ActionWait(tick=$ticks)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["wait", "delay", "sleep"])
         fun parser() = scriptParser {

@@ -28,11 +28,7 @@ class ActionTitle(val title: ParsedAction<*>, val subTitle: ParsedAction<*>, val
         }
     }
 
-    override fun toString(): String {
-        return "ActionTitle(title=$title, subTitle=$subTitle, fadeIn=$fadeIn, stay=$stay, fadeOut=$fadeOut)"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["title"])
         fun parser() = scriptParser {

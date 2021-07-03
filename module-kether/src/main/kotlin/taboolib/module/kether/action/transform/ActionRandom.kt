@@ -44,11 +44,7 @@ class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>
         future.complete(if (i.isEmpty()) null else i[Random.nextInt(i.size)])
     }
 
-    override fun toString(): String {
-        return "ActionRandom(from=$from, to=$to, action=$action)"
-    }
-
-    companion object {
+    internal object Parser {
 
         /**
          * random 1 to 10

@@ -16,11 +16,7 @@ class ActionContinue : ScriptAction<Void>() {
         return CompletableFuture.completedFuture(null)
     }
 
-    override fun toString(): String {
-        return "ActionContinue()"
-    }
-
-    companion object {
+    internal object Parser {
 
         @KetherParser(["continue"])
         fun parser() = scriptParser {

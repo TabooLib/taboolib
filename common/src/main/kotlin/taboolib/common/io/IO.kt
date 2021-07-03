@@ -33,6 +33,8 @@ fun <T> Class<T>.getInstance(new: Boolean = false): T? {
     return try {
         getDeclaredField("INSTANCE").get(null) as T
     } catch (ex: ExceptionInInitializerError) {
+        println("error: $this")
+        ex.printStackTrace()
         null
     } catch (ex: NoClassDefFoundError) {
         null

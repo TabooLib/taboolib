@@ -25,10 +25,6 @@ class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
         return CompletableFuture.completedFuture(r)
     }
 
-    override fun toString(): String {
-        return "ActionJavaScript(script=$script)"
-    }
-
     class Event(val bindings: MutableMap<String, Any?>, val context: ScriptContext) : ProxyEvent() {
 
         override val allowAsynchronous: Boolean
@@ -38,7 +34,7 @@ class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
             get() = false
     }
 
-    companion object {
+    internal object Parser {
 
         @KetherParser(["$", "js", "javascript"])
         fun parser() = scriptParser {
