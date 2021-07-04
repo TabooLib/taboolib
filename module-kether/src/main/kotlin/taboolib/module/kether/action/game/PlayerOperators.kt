@@ -81,277 +81,106 @@ enum class PlayerOperators(
 
     COMPASS_Z({ it.compassTarget.blockZ }),
 
-//    COMPASS_X(
-//        PlayerOperator(
-//            {
-//                it.compassTarget.x
-//            })
-//    ),
-//
-//    COMPASS_Y(
-//        PlayerOperator(
-//            {
-//                it.compassTarget.y
-//            })
-//    ),
-//
-//    COMPASS_Z(
-//        PlayerOperator(
-//            {
-//                it.compassTarget.z
-//            })
-//    ),
-//
-//    COMPASS_TARGET(
-//        PlayerOperator(
-//            {
-//                it.compassTarget
-//            },
-//            { p, _, v ->
-//                p.compassTarget = v as org.bukkit.Location
-//            }
-//        )
-//    ),
-//
-//    BED_SPAWN_X(
-//        PlayerOperator(
-//            {
-//                it.bedSpawnLocation?.x
-//            }
-//        )
-//    ),
-//
-//    BED_SPAWN_Y(
-//        PlayerOperator(
-//            {
-//                it.bedSpawnLocation?.y
-//            }
-//        )
-//    ),
-//
-//    BED_SPAWN_Z(
-//        PlayerOperator(
-//            {
-//                it.bedSpawnLocation?.z
-//            }
-//        )
-//    ),
-//
-//    BED_SPAWN(
-//        PlayerOperator(
-//            {
-//                it.bedSpawnLocation
-//            },
-//            { p, _, v ->
-//                p.bedSpawnLocation = v as org.bukkit.Location
-//            }
-//        )
-//    ),
-//
-//    NAME(
-//        PlayerOperator(
-//            {
-//                it.name
-//            })
-//    ),
-//
-//    DISPLAY_NAME(
-//        PlayerOperator(
-//            {
-//                it.displayName
-//            },
-//            { p, _, v ->
-//                p.setDisplayName(v.toString())
-//            })
-//    ),
-//
-//    LIST_NAME(
-//        PlayerOperator(
-//            {
-//                it.playerListName
-//            },
-//            { p, _, v ->
-//                p.setPlayerListName(v.toString())
-//            })
-//    ),
-//
-//    GAMEMODE(
-//        PlayerOperator(
-//            {
-//                it.gameMode.name
-//            },
-//            { p, _, v ->
-//                when (v.toString()) {
-//                    "SURVIVAL", "0" -> p.gameMode = org.bukkit.GameMode.SURVIVAL
-//                    "CREATIVE", "1" -> p.gameMode = org.bukkit.GameMode.CREATIVE
-//                    "ADVENTURE", "2" -> p.gameMode = org.bukkit.GameMode.ADVENTURE
-//                    "SPECTATOR", "3" -> p.gameMode = org.bukkit.GameMode.SPECTATOR
-//                }
-//            })
-//    ),
-//
-//    ADDRESS(
-//        PlayerOperator(
-//            {
-//                it.address?.hostName
-//            }
-//        )
-//    ),
-//
-//    SNEAKING(
-//        PlayerOperator(
-//            {
-//                it.isSneaking
-//            }
-//        )
-//    ),
-//
-//    SPRINTING(
-//        PlayerOperator(
-//            {
-//                it.isSprinting
-//            }
-//        )
-//    ),
-//
-//    BLOCKING(
-//        PlayerOperator(
-//            {
-//                it.isBlocking
-//            }
-//        )
-//    ),
-//
-//    GLIDING(
-//        PlayerOperator(
-//            {
-//                it.isGliding
-//            },
-//            { p, _, v ->
-//                p.isGliding = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    GLOWING(
-//        PlayerOperator(
-//            {
-//                it.isGlowing
-//            },
-//            { p, _, v ->
-//                p.isGlowing = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    SWIMMING(
-//        PlayerOperator(
-//            {
-//                it.isSwimming
-//            },
-//            { p, _, v ->
-//                p.isSwimming = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    WHITELIST(
-//        PlayerOperator(
-//            {
-//                it.isWhitelisted
-//            },
-//            { p, _, v ->
-//                p.isWhitelisted = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    RIPTIDING(
-//        PlayerOperator(
-//            {
-//                it.isRiptiding
-//            }
-//        )
-//    ),
-//
-//    SLEEPING(
-//        PlayerOperator(
-//            {
-//                it.isSleeping
-//            }
-//        )
-//    ),
-//
-//    SLEEP_TICKS(
-//        PlayerOperator(
-//            {
-//                it.sleepTicks
-//            }
-//        )
-//    ),
-//
-//    SLEEP_IGNORED(
-//        PlayerOperator(
-//            {
-//                it.isSleepingIgnored
-//            },
-//            { p, _, v ->
-//                p.isSleepingIgnored = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    DEAD(
-//        PlayerOperator(
-//            {
-//                it.isDead
-//            }
-//        )
-//    ),
-//
-//    CONVERSING(
-//        PlayerOperator(
-//            {
-//                it.isConversing
-//            }
-//        )
-//    ),
-//
-//    LEASHED(
-//        PlayerOperator(
-//            {
-//                it.isLeashed
-//            }
-//        )
-//    ),
-//
-//    ON_GROUND(
-//        PlayerOperator(
-//            {
-//                it.isOnGround
-//            }
-//        )
-//    ),
-//
-//    INSIDE_VEHICLE(
-//        PlayerOperator(
-//            {
-//                it.isInsideVehicle
-//            }
-//        )
-//    ),
-//
-//    JUMPING(
-//        PlayerOperator(
-//            {
-//                it.isJumping
-//            },
-//            { p, _, v ->
-//                p.isJumping = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
+    COMPASS_TARGET(
+        { it.location },
+        { p, _, v -> p.compassTarget = v as taboolib.common.util.Location },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    BED_SPAWN(
+        { it.location },
+        { p, _, v -> p.bedSpawnLocation = v as taboolib.common.util.Location },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    BED_SPAWN_X({ it.bedSpawnLocation?.blockX }),
+
+    BED_SPAWN_Y({ it.bedSpawnLocation?.blockY }),
+
+    BED_SPAWN_Z({ it.bedSpawnLocation?.blockZ }),
+
+    NAME({ it.name }),
+
+    LIST_NAME(
+        { it.playerListName },
+        { p, _, v -> p.playerListName = v?.toString() },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    DISPLAY_NAME(
+        { it.displayName },
+        { p, _, v -> p.displayName = v?.toString() },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    GAMEMODE(
+        { it.gameMode.name },
+        { p, _, v ->
+            p.gameMode = when (v.toString().uppercase(java.util.Locale.getDefault())) {
+                "SURVIVAL", "0" -> taboolib.common.platform.ProxyGameMode.SURVIVAL
+                "CREATIVE", "1" -> taboolib.common.platform.ProxyGameMode.CREATIVE
+                "ADVENTURE", "2" -> taboolib.common.platform.ProxyGameMode.ADVENTURE
+                "SPECTATOR", "3" -> taboolib.common.platform.ProxyGameMode.SPECTATOR
+                else -> error("Unknown GameMode $v")
+            }
+        },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    ADDRESS({ it.address?.hostName }),
+
+    SNEAKING({ it.isSneaking }),
+
+    SPRINTING({ it.isSprinting }),
+
+    BLOCKING({ it.isBlocking }),
+
+    GLIDING(
+        { it.isGliding },
+        { p, _, v -> p.isGliding = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    GLOWING(
+        { it.isGlowing },
+        { p, _, v -> p.isGlowing = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    SWIMMING(
+        { it.isSwimming },
+        { p, _, v -> p.isSwimming = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    RIPTIDING({ it.isRiptiding }),
+
+    SLEEPING({ it.isSleeping }),
+
+    SLEEP_TICKS({ it.sleepTicks }),
+
+    SLEEP_IGNORED(
+        { it.isSleepingIgnored },
+        { p, _, v -> p.isSleepingIgnored = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    DEAD({ it.isDead }),
+
+    CONVERSING({ it.isConversing }),
+
+    LEASHED({ it.isLeashed }),
+
+    ON_GROUND({ it.isOnGround }),
+
+    INSIDE_VEHICLE({ it.isInsideVehicle }),
+
+    JUMPING(
+        { it.isJumping },
+        { p, _, v -> p.isJumping = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
 //    OP(
 //        PlayerOperator(
 //            {

@@ -29,9 +29,9 @@ interface ProxyPlayer : ProxyCommandSender {
 
     var bedSpawnLocation: Location?
 
-    var displayName: String
+    var displayName: String?
 
-    var playerListName: String
+    var playerListName: String?
 
     var gameMode: ProxyGameMode
 
