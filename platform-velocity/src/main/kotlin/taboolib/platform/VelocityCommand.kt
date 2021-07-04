@@ -1,5 +1,7 @@
 package taboolib.platform
 
+import com.velocitypowered.api.command.Command
+import com.velocitypowered.api.command.CommandSource
 import taboolib.common.platform.*
 
 /**
@@ -12,15 +14,29 @@ import taboolib.common.platform.*
 @PlatformSide([Platform.VELOCITY])
 class VelocityCommand : PlatformCommand {
 
+    val registeredCommands = ArrayList<String>()
+
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
-        TODO("Not yet implemented")
+        registeredCommands.add(command.name)
+        VelocityPlugin.getInstance().server.commandManager.register(command.name, object : Command {
+
+            override fun execute(source: CommandSource, args: Array<String>) {
+                executor.execute(adaptCommandSender(source), command, command.name, args)
+            }
+
+            override fun suggest(source: CommandSource, currentArgs: Array<String>): MutableList<String> {
+                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: arrayListOf()
+            }
+        }, *command.aliases.toTypedArray())
     }
 
     override fun unregisterCommand(command: String) {
-        TODO("Not yet implemented")
+        VelocityPlugin.getInstance().server.commandManager.unregister(command)
     }
 
     override fun unregisterCommands() {
-        TODO("Not yet implemented")
+        registeredCommands.onEach {
+            VelocityPlugin.getInstance().server.commandManager.unregister(it)
+        }
     }
 }

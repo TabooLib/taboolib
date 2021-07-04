@@ -37,6 +37,6 @@ class BungeeCommand : PlatformCommand {
     }
 
     override fun unregisterCommands() {
-        BungeeCord.getInstance().pluginManager.unregisterListeners(BungeePlugin.getInstance())
+        BungeeCord.getInstance().pluginManager.unregisterCommands(BungeePlugin.getInstance())
     }
 }
