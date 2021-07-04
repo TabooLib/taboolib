@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.OpenReceiver
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
@@ -16,6 +17,8 @@ object PlatformFactory {
 
     private val awokenMap = HashMap<String, Any>()
     private val releaseTask = ArrayList<Releasable>()
+
+    val openReceiver = ArrayList<OpenReceiver>()
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
@@ -49,6 +52,9 @@ object PlatformFactory {
                     }
                     if (interfaces.contains(Releasable::class.java)) {
                         releaseTask += instance as Releasable
+                    }
+                    if (interfaces.contains(OpenReceiver::class.java)) {
+                        openReceiver += instance as OpenReceiver
                     }
                     awokenMap[it.simpleName] = instance
                 }

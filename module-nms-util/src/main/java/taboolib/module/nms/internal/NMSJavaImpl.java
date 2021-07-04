@@ -44,6 +44,7 @@ import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -129,7 +130,7 @@ public class NMSJavaImpl extends NMSJava {
             try {
                 String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(Ref.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
                 if (entity instanceof Villager && ((CraftVillager) entity).getCareer() != null) {
-                    name += "." + String.valueOf(((CraftVillager) entity).getCareer()).toLowerCase();
+                    name += "." + String.valueOf(((CraftVillager) entity).getCareer()).toLowerCase(Locale.getDefault());
                 }
                 return name;
             } catch (Throwable t) {

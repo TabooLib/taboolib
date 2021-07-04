@@ -2,6 +2,8 @@ package taboolib.module.kether.action.supplier
 
 import io.izzel.kether.common.loader.LoadError
 import org.apache.commons.lang3.time.DateFormatUtils
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.module.kether.*
 import taboolib.module.kether.Kether.expects
 import java.util.concurrent.CompletableFuture
@@ -64,7 +66,7 @@ class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>
 
     internal object Parser {
 
-        @KetherParser
+        @Awake(LifeCycle.LOAD)
         fun parser() {
             Kether.addAction(arrayOf("year", "years"), Type.YEAR.toParser())
             Kether.addAction(arrayOf("month", "months"), Type.MONTH.toParser())

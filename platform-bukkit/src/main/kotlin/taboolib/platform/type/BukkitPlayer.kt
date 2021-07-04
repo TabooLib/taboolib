@@ -73,6 +73,8 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
             player.isOp = value
         }
 
+    // todo 在这里加
+
     override fun kick(message: String?) {
         player.kickPlayer(message)
     }

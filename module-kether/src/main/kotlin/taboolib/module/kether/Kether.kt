@@ -36,7 +36,7 @@ object Kether {
     val operatorsPlayer = LinkedHashMap<String, PlayerOperator>()
 
     fun addAction(name: Array<String>, parser: QuestActionParser) {
-        name.forEach { registry.registerAction(it, parser) }
+        name.forEach { addAction(it, parser) }
     }
 
     fun addAction(name: String, parser: QuestActionParser, namespace: String? = null) {

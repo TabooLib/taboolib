@@ -13,7 +13,7 @@ public interface OpenContainer {
 
     String getName();
 
-    void register(@NotNull Object any);
+    void register(String name, @NotNull byte[] any, @NotNull String[] args);
 
-    void unregister(@NotNull Object any);
+    void unregister(String name, @NotNull byte[] any, @NotNull String[] args);
 }

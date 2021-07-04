@@ -13,18 +13,18 @@ import taboolib.common.reflect.Reflex.Companion.staticInvoke
  */
 class BukkitOpenContainer(val plugin: Plugin) : OpenContainer {
 
-    val main = plugin.description.main!!
+    val main = plugin.description.main
     val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.BukkitPlugin".length) + "common.OpenAPI")
 
     override fun getName(): String {
         return plugin.name
     }
 
-    override fun register(any: Any) {
-        clazz.staticInvoke<Void>("register", any)
+    override fun register(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("register", name, any, args)
     }
 
-    override fun unregister(any: Any) {
-        clazz.staticInvoke<Void>("unregister", any)
+    override fun unregister(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("unregister", name, any, args)
     }
 }

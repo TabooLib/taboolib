@@ -248,7 +248,7 @@ private fun toJsonToast(icon: String, title: String, frame: ToastFrame, backgrou
         this.addProperty("title", title)
         this.addProperty("description", "")
         this.addProperty("background", background.url)
-        this.addProperty("frame", frame.name.toLowerCase())
+        this.addProperty("frame", frame.name.lowercase(Locale.getDefault()))
         this.addProperty("announce_to_chat", false)
         this.addProperty("show_toast", true)
         this.addProperty("hidden", true)

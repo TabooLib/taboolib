@@ -20,6 +20,7 @@ import taboolib.module.nms.MinecraftVersion;
 import taboolib.module.nms.NMSUtilKt;
 
 import java.io.File;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -75,14 +76,14 @@ public class I18nOrigin extends I18nBase {
             if (itemMeta instanceof SpawnEggMeta) {
                 String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {
-                    return lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", "")) + " " + spawnEggType;
+                    return lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")) + " " + spawnEggType;
                 }
             }
         }
         if (itemStack.getType().equals(Material.AIR)) {
             return Objects.requireNonNull(lang.getString("item_air"));
         } else {
-            return Objects.requireNonNull(lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase().replace("_", "")));
+            return Objects.requireNonNull(lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")));
         }
     }
 

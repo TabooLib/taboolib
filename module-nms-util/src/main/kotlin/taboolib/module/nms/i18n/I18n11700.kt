@@ -13,6 +13,7 @@ import java.util.concurrent.Executors
 import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
+import java.util.*
 
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
@@ -82,7 +83,7 @@ object I18n11700 : I18nBase() {
             return "[ERROR LOCALE]"
         }
         val element = locale[itemStack.getInternalName()]
-        return if (element == null) itemStack.type.name.toLowerCase().replace("_", "") else element.asString
+        return if (element == null) itemStack.type.name.lowercase(Locale.getDefault()).replace("_", "") else element.asString
     }
 
     override fun getName(player: Player?, enchantment: Enchantment): String {

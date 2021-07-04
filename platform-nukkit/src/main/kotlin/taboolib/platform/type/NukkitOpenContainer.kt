@@ -20,11 +20,11 @@ class NukkitOpenContainer(val plugin: Plugin): OpenContainer {
         return plugin.description.name
     }
 
-    override fun register(any: Any) {
-        clazz.staticInvoke<Void>("register", any)
+    override fun register(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("register", name, any, args)
     }
 
-    override fun unregister(any: Any) {
-        clazz.staticInvoke<Void>("unregister", any)
+    override fun unregister(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("unregister", name, any, args)
     }
 }

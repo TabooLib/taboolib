@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.OpenContainer
 import taboolib.common.platform.PlatformFactory.platformAdapter
 import taboolib.common.platform.PlatformFactory.platformCommand
 import taboolib.common.platform.PlatformFactory.platformExecutor
@@ -34,6 +35,11 @@ val runningPlatform by lazy {
         return@lazy Platform.SPONGE
     } catch (ex: ClassNotFoundException) {
     }
+    try {
+        Class.forName("com.velocitypowered.api.plugin.Plugin")
+        return@lazy Platform.VELOCITY
+    } catch (ex: ClassNotFoundException) {
+    }
     return@lazy Platform.UNKNOWN
 }
 
@@ -59,6 +65,10 @@ fun getJarFile(): File {
 
 fun getDataFolder(): File {
     return platformIO.getDataFolder()
+}
+
+fun getOpenContainers(): List<OpenContainer> {
+    return platformIO.getOpenContainers()
 }
 
 fun submit(

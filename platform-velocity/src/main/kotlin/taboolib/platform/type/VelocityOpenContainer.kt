@@ -14,17 +14,17 @@ import taboolib.common.reflect.Reflex.Companion.staticInvoke
 class VelocityOpenContainer(val plugin: PluginContainer): OpenContainer {
 
     val main: String = plugin.instance.get().javaClass.name
-    val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.SpongePlugin".length) + "common.OpenAPI")
+    val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.VelocityPlugin".length) + "common.OpenAPI")
 
     override fun getName(): String {
         return plugin.description.id
     }
 
-    override fun register(any: Any) {
-        clazz.staticInvoke<Void>("register", any)
+    override fun register(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("register", name, any, args)
     }
 
-    override fun unregister(any: Any) {
-        clazz.staticInvoke<Void>("unregister", any)
+    override fun unregister(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("unregister", name, any, args)
     }
 }

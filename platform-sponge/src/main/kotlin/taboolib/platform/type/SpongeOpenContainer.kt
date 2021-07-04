@@ -20,11 +20,11 @@ class SpongeOpenContainer(val plugin: PluginContainer): OpenContainer {
         return plugin.id
     }
 
-    override fun register(any: Any) {
-        clazz.staticInvoke<Void>("register", any)
+    override fun register(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("register", name, any, args)
     }
 
-    override fun unregister(any: Any) {
-        clazz.staticInvoke<Void>("unregister", any)
+    override fun unregister(name: String, any: ByteArray, args: Array<String>) {
+        clazz.staticInvoke<Void>("unregister", name, any, args)
     }
 }

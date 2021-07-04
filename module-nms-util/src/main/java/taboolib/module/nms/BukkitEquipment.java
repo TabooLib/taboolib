@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -241,7 +242,7 @@ public enum BukkitEquipment {
      */
     @Nullable
     public static BukkitEquipment fromString(String value) {
-        switch (value.toLowerCase()) {
+        switch (value.toLowerCase(Locale.getDefault())) {
             case "0":
             case "hand":
             case "mainhand":

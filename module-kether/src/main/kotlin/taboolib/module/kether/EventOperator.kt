@@ -25,7 +25,7 @@ class EventOperator<T : Any>(val event: KClass<out T>) : Serializable {
 
     @Suppress("UNCHECKED_CAST")
     fun read(name: String, event: Any): Any? {
-        val reader = reader[name] as? Reader<Any> ?: throw IllegalStateException("Operator \"$name\" not supported.")
+        val reader = reader[name] as? Reader<Any> ?: throw IllegalStateException("Event \"$name\" is not readable.")
         return reader.func(event)
     }
 
@@ -37,7 +37,7 @@ class EventOperator<T : Any>(val event: KClass<out T>) : Serializable {
 
     @Suppress("UNCHECKED_CAST")
     fun write(name: String, event: Any, value: Any?) {
-        val writer = writer[name] as? Writer<Any> ?: throw IllegalStateException("Operator \"$name\" not supported.")
+        val writer = writer[name] as? Writer<Any> ?: throw IllegalStateException("Event \"$name\" is not writable.")
         writer.func(event, value)
     }
 

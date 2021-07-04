@@ -25,6 +25,96 @@ interface ProxyPlayer : ProxyCommandSender {
 
     val location: Location
 
+    var compassTarget: Location
+
+    var bedSpawnLocation: Location
+
+    var displayName: String
+
+    var playerListName: String
+
+    var gameMode: ProxyGameMode
+
+    val isSneaking: Boolean
+
+    val isSprinting: Boolean
+
+    val isBlocking: Boolean
+
+    var isGliding: Boolean
+
+    var isGlowing: Boolean
+
+    var isSwimming: Boolean
+
+    val isRiptiding: Boolean
+
+    val isSleeping: Boolean
+
+    val sleepTicks: Boolean
+
+    var isSleepingIgnored: Boolean
+
+    val isDead: Boolean
+
+    val isConversing: Boolean
+
+    val isLeashed: Boolean
+
+    val isOnGround: Boolean
+
+    val isInsideVehicle: Boolean
+
+    var isJumping: Boolean
+
+    var hasGravity: Boolean
+
+    val attackCooldown: Int
+
+    var playerTime: Long
+
+    val firstPlayed: Long
+
+    val lastPlayed: Long
+
+    val lastLogin: Long
+
+    val lastSeen: Long
+
+    var absorptionAmount: Int
+
+    var noDamageTicks: Int
+
+    var remainingAir: Int
+
+    val maximumAir: Int
+
+    var level: Int
+
+    var exp: Int
+
+    var exhaustion: Float
+
+    var saturation: Float
+
+    var foodLevel: Int
+
+    var health: Double
+
+    var maxHealth: Double
+
+    var allowFlight: Boolean
+
+    var isFlying: Boolean
+
+    var flySpeed: Float
+
+    var walkSpeed: Float
+
+    val pose: String
+
+    val facing: String
+
     fun kick(message: String?)
 
     fun chat(message: String)

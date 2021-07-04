@@ -9,6 +9,8 @@ import org.bukkit.plugin.Plugin
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
 import java.lang.reflect.Constructor
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -51,7 +53,7 @@ class BukkitCommand : PlatformCommand {
             }
             var permission = command.permission
             if (permission.isEmpty()) {
-                permission = plugin.name.toLowerCase() + ".command.use"
+                permission = plugin.name.lowercase(Locale.getDefault()) + ".command.use"
             }
             // 修改属性
             pluginCommand.reflex("description", command.description)

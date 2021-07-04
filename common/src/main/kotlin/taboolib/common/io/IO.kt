@@ -5,9 +5,7 @@ package taboolib.common.io
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.*
 import java.math.BigInteger
 import java.net.URISyntaxException
 import java.net.URL
@@ -150,6 +148,26 @@ fun File.fromZip(destDirPath: String) {
                     File(destDirPath + "/" + entry.name).writeBytes(it.readBytes())
                 }
             }
+        }
+    }
+}
+
+fun Serializable.serialize(builder: ObjectOutputStream.() -> Unit = {}): ByteArray {
+    ByteArrayOutputStream().use { byteArrayOutputStream ->
+        ObjectOutputStream(byteArrayOutputStream).use { objectOutputStream ->
+            builder(objectOutputStream)
+            objectOutputStream.writeObject(this)
+            objectOutputStream.flush()
+        }
+        return byteArrayOutputStream.toByteArray()
+    }
+}
+
+fun <T> ByteArray.deserialize(reader: ObjectInputStream.() -> Unit = {}): T {
+    ByteArrayInputStream(this).use { byteArrayInputStream ->
+        ObjectInputStream(byteArrayInputStream).use { objectInputStream ->
+            reader(objectInputStream)
+            return objectInputStream.readObject() as T
         }
     }
 }

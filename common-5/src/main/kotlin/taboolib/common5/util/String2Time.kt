@@ -3,11 +3,12 @@
 package taboolib.common5.util
 
 import taboolib.common.Isolated
+import java.util.*
 
 fun String.parseMillis(): Long {
     var time = 0L
     var num = ""
-    toLowerCase().forEach {
+    lowercase(Locale.getDefault()).forEach {
         if (it == '.' || it.toString().toIntOrNull() != null) {
             num += it
         } else {
