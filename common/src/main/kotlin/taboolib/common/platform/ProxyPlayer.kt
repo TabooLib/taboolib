@@ -51,7 +51,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     val isSleeping: Boolean
 
-    val sleepTicks: Boolean
+    val sleepTicks: Int
 
     var isSleepingIgnored: Boolean
 
@@ -65,8 +65,6 @@ interface ProxyPlayer : ProxyCommandSender {
 
     val isInsideVehicle: Boolean
 
-    var isJumping: Boolean
-
     var hasGravity: Boolean
 
     val attackCooldown: Int
@@ -77,11 +75,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     val lastPlayed: Long
 
-    val lastLogin: Long
-
-    val lastSeen: Long
-
-    var absorptionAmount: Int
+    var absorptionAmount: Double
 
     var noDamageTicks: Int
 
@@ -91,7 +85,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     var level: Int
 
-    var exp: Int
+    var exp: Float
 
     var exhaustion: Float
 
