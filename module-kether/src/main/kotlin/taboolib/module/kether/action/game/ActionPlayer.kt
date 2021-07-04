@@ -33,7 +33,7 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
 
         init {
             PlayerOperators.values().forEach {
-                Kether.addPlayerOperator(it.name, it.operator)
+                Kether.addPlayerOperator(it.name, it.build())
             }
         }
 

@@ -181,445 +181,129 @@ enum class PlayerOperators(
         PlayerOperator.Method.MODIFY
     ),
 
-//    OP(
-//        PlayerOperator(
-//            {
-//                it.isOp
-//            },
-//            { p, _, v ->
-//                p.isOp = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    GRAVITY(
-//        PlayerOperator(
-//            {
-//                it.hasGravity()
-//            },
-//            { p, _, v ->
-//                p.setGravity(io.izzel.taboolib.util.Coerce.toBoolean(v))
-//            }
-//        )
-//    ),
-//
-//    ATTACK_COOLDOWN(
-//        PlayerOperator(
-//            {
-//                it.attackCooldown
-//            }
-//        )
-//    ),
-//
-//    PLAYER_TIME(
-//        PlayerOperator(
-//            {
-//                it.playerTime
-//            },
-//            { p, a, v ->
-//                p.setPlayerTime(io.izzel.taboolib.util.Coerce.toLong(v), a == Symbol.ADD)
-//            }
-//        )
-//    ),
-//
-//    FIRST_PLAYED(
-//        PlayerOperator(
-//            {
-//                it.firstPlayed
-//            }
-//        )
-//    ),
-//
-//    LAST_PLAYED(
-//        PlayerOperator(
-//            {
-//                it.lastPlayed
-//            }
-//        )
-//    ),
-//
-//    LAST_LOGIN(
-//        PlayerOperator(
-//            {
-//                it.lastLogin
-//            }
-//        )
-//    ),
-//
-//    LAST_SEEN(
-//        PlayerOperator(
-//            {
-//                it.lastSeen
-//            }
-//        )
-//    ),
-//
-//    ABSORPTION_AMOUNT(
-//        PlayerOperator(
-//            {
-//                it.absorptionAmount
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    p.absorptionAmount += io.izzel.taboolib.util.Coerce.toDouble(v)
-//                } else if (a == Symbol.SET) {
-//                    p.absorptionAmount = io.izzel.taboolib.util.Coerce.toDouble(v)
-//                }
-//            }
-//        )
-//    ),
-//
-//    NO_DAMAGE_TICKS(
-//        PlayerOperator(
-//            {
-//                it.noDamageTicks
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    p.noDamageTicks += io.izzel.taboolib.util.Coerce.toInteger(v)
-//                } else if (a == Symbol.SET) {
-//                    p.noDamageTicks = io.izzel.taboolib.util.Coerce.toInteger(v)
-//                }
-//            }
-//        )
-//    ),
-//
-//    REMAINING_AIR(
-//        PlayerOperator(
-//            {
-//                it.remainingAir
-//            },
-//            { p, a, v ->
-//                val d = io.izzel.taboolib.util.Coerce.toInteger(v)
-//                if (a == Symbol.ADD) {
-//                    p.remainingAir = (p.remainingAir + d).coerceAtMost(20).coerceAtLeast(0)
-//                } else if (a == Symbol.SET) {
-//                    p.remainingAir = d.coerceAtMost(20).coerceAtLeast(0)
-//                }
-//            }
-//        )
-//    ),
-//
-//    MAXIMUM_AIR(
-//        PlayerOperator(
-//            {
-//                it.maximumAir
-//            },
-//            { p, a, v ->
-//                val d = io.izzel.taboolib.util.Coerce.toInteger(v)
-//                if (a == Symbol.ADD) {
-//                    p.maximumAir = (p.maximumAir + d).coerceAtMost(20).coerceAtLeast(0)
-//                } else if (a == Symbol.SET) {
-//                    p.maximumAir = d.coerceAtMost(20).coerceAtLeast(0)
-//                }
-//            }
-//        )
-//    ),
-//
-//    EXP_UNTIL_NEXT_LEVEL(
-//        PlayerOperator(
-//            {
-//                io.izzel.taboolib.cronus.CronusUtils.getExpUntilNextLevel(it)
-//            }
-//        )
-//    ),
-//
-//    EXP_AT_LEVEL(
-//        PlayerOperator(
-//            {
-//                io.izzel.taboolib.cronus.CronusUtils.getExpAtLevel(it.level)
-//            }
-//        )
-//    ),
-//
-//    EXP_TO_LEVEL(
-//        PlayerOperator(
-//            {
-//                io.izzel.taboolib.cronus.CronusUtils.getExpToLevel(it.level)
-//            }
-//        )
-//    ),
-//
-//    EXP(
-//        PlayerOperator(
-//            {
-//                io.izzel.taboolib.cronus.CronusUtils.getTotalExperience(it)
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    p.giveExp(io.izzel.taboolib.util.Coerce.toInteger(v))
-//                } else if (a == Symbol.SET) {
-//                    io.izzel.taboolib.cronus.CronusUtils.setTotalExperience(p, io.izzel.taboolib.util.Coerce.toInteger(v))
-//                }
-//            }
-//        )
-//    ),
-//
-//    LEVEL(
-//        PlayerOperator(
-//            {
-//                it.level
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    p.level += io.izzel.taboolib.util.Coerce.toInteger(v)
-//                } else if (a == Symbol.SET) {
-//                    p.level = io.izzel.taboolib.util.Coerce.toInteger(v)
-//                }
-//            }
-//        )
-//    ),
-//
-//    EXHAUSTION(
-//        PlayerOperator(
-//            {
-//                it.exhaustion
-//            },
-//            { p, a, v ->
-//                val f = io.izzel.taboolib.util.Coerce.toFloat(v)
-//                if (a == Symbol.ADD) {
-//                    p.exhaustion = (p.exhaustion + f).coerceAtMost(20f).coerceAtLeast(0f)
-//                } else if (a == Symbol.SET) {
-//                    p.exhaustion = f.coerceAtMost(20f).coerceAtLeast(0f)
-//                }
-//            }
-//        )
-//    ),
-//
-//    SATURATION(
-//        PlayerOperator(
-//            {
-//                it.saturation
-//            },
-//            { p, a, v ->
-//                val f = io.izzel.taboolib.util.Coerce.toFloat(v)
-//                if (a == Symbol.ADD) {
-//                    p.saturation = (p.saturation + f).coerceAtMost(20f).coerceAtLeast(0f)
-//                } else if (a == Symbol.SET) {
-//                    p.saturation = f.coerceAtMost(20f).coerceAtLeast(0f)
-//                }
-//            }
-//        )
-//    ),
-//
-//    FOOD_LEVEL(
-//        PlayerOperator(
-//            {
-//                it.foodLevel
-//            },
-//            { p, a, v ->
-//                val d = io.izzel.taboolib.util.Coerce.toInteger(v)
-//                if (a == Symbol.ADD) {
-//                    p.foodLevel = (p.foodLevel + d).coerceAtMost(20).coerceAtLeast(0)
-//                } else if (a == Symbol.SET) {
-//                    p.foodLevel = d.coerceAtMost(20).coerceAtLeast(0)
-//                }
-//            }
-//        )
-//    ),
-//
-//    HEALTH(
-//        PlayerOperator(
-//            {
-//                it.health
-//            },
-//            { p, a, v ->
-//                val d = io.izzel.taboolib.util.Coerce.toDouble(v)
-//                if (a == Symbol.ADD) {
-//                    p.health = (p.health + d).coerceAtMost(p.maxHealth).coerceAtLeast(0.0)
-//                } else if (a == Symbol.SET) {
-//                    p.health = d.coerceAtMost(p.maxHealth).coerceAtLeast(0.0)
-//                }
-//            }
-//        )
-//    ),
-//
-//    MAX_HEALTH(
-//        PlayerOperator(
-//            {
-//                it.maxHealth
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    p.maxHealth += io.izzel.taboolib.util.Coerce.toDouble(v)
-//                } else if (a == Symbol.SET) {
-//                    p.maxHealth = io.izzel.taboolib.util.Coerce.toDouble(v)
-//                }
-//            }
-//        )
-//    ),
-//
-//    ALLOW_FLIGHT(
-//        PlayerOperator(
-//            {
-//                it.allowFlight
-//            },
-//            { p, _, v ->
-//                p.allowFlight = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    FLYING(
-//        PlayerOperator(
-//            {
-//                it.isFlying
-//            },
-//            { p, _, v ->
-//                p.isFlying = io.izzel.taboolib.util.Coerce.toBoolean(v)
-//            }
-//        )
-//    ),
-//
-//    FLY_SPEED(
-//        PlayerOperator(
-//            {
-//                it.flySpeed
-//            },
-//            { p, a, v ->
-//                val f = io.izzel.taboolib.util.Coerce.toFloat(v)
-//                if (a == Symbol.ADD) {
-//                    p.flySpeed = (p.flySpeed + f).coerceAtMost(0.99f).coerceAtLeast(0f)
-//                } else if (a == Symbol.SET) {
-//                    p.flySpeed = f.coerceAtMost(0.99f).coerceAtLeast(0f)
-//                }
-//            }
-//        )
-//    ),
-//
-//    WALK_SPEED(
-//        PlayerOperator(
-//            {
-//                it.walkSpeed
-//            },
-//            { p, a, v ->
-//                val f = io.izzel.taboolib.util.Coerce.toFloat(v)
-//                if (a == Symbol.ADD) {
-//                    p.walkSpeed = (p.walkSpeed + f).coerceAtMost(0.99f).coerceAtLeast(0f)
-//                } else if (a == Symbol.SET) {
-//                    p.walkSpeed = f.coerceAtMost(0.99f).coerceAtLeast(0f)
-//                }
-//            }
-//        )
-//    ),
-//
-//    BALANCE(
-//        PlayerOperator(
-//            {
-//                TabooLibAPI.getPluginBridge().economyLook(it)
-//            },
-//            { p, a, v ->
-//                if (a == Symbol.ADD) {
-//                    io.izzel.taboolib.module.compat.EconomyHook.add(p, io.izzel.taboolib.util.Coerce.toDouble(v))
-//                } else if (a == Symbol.SET) {
-//                    io.izzel.taboolib.module.compat.EconomyHook.set(p, io.izzel.taboolib.util.Coerce.toDouble(v))
-//                }
-//            }
-//        )
-//    ),
-//
-//    REGION(
-//        PlayerOperator(
-//            {
-//                val region = TabooLibAPI.getPluginBridge().worldguardGetRegion(it.world, it.location)
-//                if (region!!.isEmpty()) "__global__" else region
-//            }
-//        )
-//    ),
-//
-//    PROTOCOL_VERSION(
-//        PlayerOperator(
-//            {
-//                it.protocolVersion
-//            }
-//        )
-//    ),
-//
-//    VERSION(
-//        PlayerOperator(
-//            {
-//                TabooLibAPI.getPluginBridge().viaVersionPlayerVersion(it)
-//            }
-//        )
-//    ),
-//
-//    PING(
-//        PlayerOperator(
-//            {
-//                it.spigot().ping
-//            }
-//        )
-//    ),
-//
-//    POSE(
-//        PlayerOperator(
-//            {
-//                it.pose.name
-//            }
-//        )
-//    ),
-//
-//    FACING(
-//        PlayerOperator(
-//            {
-//                it.facing.name
-//            }
-//        )
-//    ),
-//
-//    IN_LAVA(
-//        PlayerOperator(
-//            {
-//                it.isInLava
-//            }
-//        )
-//    ),
-//
-//    IN_RAIN(
-//        PlayerOperator(
-//            {
-//                it.isInRain
-//            }
-//        )
-//    ),
-//
-//    IN_WATER(
-//        PlayerOperator(
-//            {
-//                it.isInWater
-//            }
-//        )
-//    ),
-//
-//    IN_BUBBLE_COLUMN(
-//        PlayerOperator(
-//            {
-//                it.isInBubbleColumn
-//            }
-//        )
-//    ),
-//
-//    IN_WATER_OR_RAIN(
-//        PlayerOperator(
-//            {
-//                it.isInWaterOrRain
-//            }
-//        )
-//    ),
-//
-//    IN_WATER_OR_BUBBLE_COLUMN(
-//        PlayerOperator(
-//            {
-//                it.isInWaterOrBubbleColumn
-//            }
-//        )
-//    ),
-//
-//    IN_WATER_OR_RAIN_OR_BUBBLE_COLUMN(
-//        PlayerOperator(
-//            {
-//                it.isInWaterOrRainOrBubbleColumn
-//            }
-//        )
-//    ),
+    OP(
+        { it.isOp },
+        { p, _, v -> p.isOp = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    GRAVITY(
+        { it.hasGravity },
+        { p, _, v -> p.hasGravity = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    ATTACK_COOLDOWN({ it.attackCooldown }),
+
+    PLAYER_TIME(
+        { it.playerTime },
+        { p, m, v -> p.playerTime = p.playerTime.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    FIRST_PLAYED({ it.firstPlayed }),
+
+    LAST_PLAYED({ it.lastPlayed }),
+
+    LAST_LOGIN({ it.lastLogin }),
+
+    LAST_SEEN({ it.lastSeen }),
+
+    ABSORPTION_AMOUNT(
+        { it.absorptionAmount },
+        { p, m, v -> p.absorptionAmount = p.absorptionAmount.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    NO_DAMAGE_TICKS(
+        { it.noDamageTicks },
+        { p, m, v -> p.noDamageTicks = p.noDamageTicks.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    REMAINING_AIR(
+        { it.remainingAir },
+        { p, m, v -> p.remainingAir = p.remainingAir.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    MAXIMUM_AIR({ it.maximumAir }),
+
+    EXP(
+        { it.exp },
+        { p, m, v -> p.exp = p.exp.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    LEVEL(
+        { it.level },
+        { p, m, v -> p.level = p.level.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    EXHAUSTION(
+        { it.exhaustion },
+        { p, m, v -> p.exhaustion = p.exhaustion.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    SATURATION(
+        { it.saturation },
+        { p, m, v -> p.saturation = p.saturation.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    FOOD_LEVEL(
+        { it.foodLevel },
+        { p, m, v -> p.foodLevel = p.foodLevel.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    HEALTH(
+        { it.health },
+        { p, m, v -> p.health = p.health.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    MAX_HEALTH(
+        { it.maxHealth },
+        { p, m, v -> p.maxHealth = p.maxHealth.modify(m, v) },
+        *PlayerOperator.Method.values()
+    ),
+
+    ALLOW_FLIGHT(
+        { it.allowFlight },
+        { p, _, v -> p.allowFlight = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    FLYING(
+        { it.isFlying },
+        { p, _, v -> p.isFlying = taboolib.common5.Coerce.toBoolean(v) },
+        PlayerOperator.Method.MODIFY
+    ),
+
+    FLY_SPEED(
+        { it.flySpeed },
+        { p, m, v -> p.flySpeed = p.flySpeed.modify(m, v, max = 0.99f, min = -0.99f) },
+        *PlayerOperator.Method.values()
+    ),
+
+    WALK_SPEED(
+        { it.walkSpeed },
+        { p, m, v -> p.walkSpeed = p.walkSpeed.modify(m, v, max = 0.99f, min = -0.99f) },
+        *PlayerOperator.Method.values()
+    ),
+
+    PING({ it.ping }),
+
+    POSE({ it.pose }),
+
+    FACING({ it.facing });
+
+    fun build() = PlayerOperator(
+        reader = if (reader != null) PlayerOperator.Reader(reader) else null,
+        writer = if (writer != null) PlayerOperator.Writer(writer) else null,
+        usable = arrayOf(*usable)
+    )
 }
