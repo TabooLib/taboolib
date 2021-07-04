@@ -75,6 +75,12 @@ enum class PlayerOperators(
 
     BLOCK_Z({ it.location.blockZ }),
 
+    COMPASS_X({ it.compassTarget.blockX }),
+
+    COMPASS_Y({ it.compassTarget.blockY }),
+
+    COMPASS_Z({ it.compassTarget.blockZ }),
+
 //    COMPASS_X(
 //        PlayerOperator(
 //            {

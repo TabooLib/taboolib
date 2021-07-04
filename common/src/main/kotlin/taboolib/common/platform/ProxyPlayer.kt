@@ -27,7 +27,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     var compassTarget: Location
 
-    var bedSpawnLocation: Location
+    var bedSpawnLocation: Location?
 
     var displayName: String
 
