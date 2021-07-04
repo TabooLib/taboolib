@@ -15,4 +15,6 @@ annotation class SubscribeEvent(
     // only sponge platform
     val order: EventOrder = EventOrder.DEFAULT,
     val beforeModifications: Boolean = false,
+    // optional event
+    val bind: String = ""
 )

@@ -10,12 +10,10 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import taboolib.common.platform.FunctionKt;
-import taboolib.common.platform.Platform;
-import taboolib.common.platform.PlatformSide;
-import taboolib.common.platform.SubscribeEvent;
+import taboolib.common.platform.*;
 import taboolib.platform.BukkitPlugin;
 
 @PlatformSide(Platform.BUKKIT)
@@ -116,6 +114,14 @@ public class ClickListener {
 
     @SubscribeEvent
     public void e(PlayerItemHeldEvent e) {
+        if (e.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder && ((MenuHolder) e.getPlayer().getOpenInventory().getTopInventory().getHolder()).getBuilder().isLockHand()) {
+            e.setCancelled(true);
+        }
+    }
+
+    @SubscribeEvent(bind = "org.bukkit.event.player.PlayerSwapHandItemsEvent")
+    public void onSwap(OptionalEvent ope) {
+        PlayerSwapHandItemsEvent e = ope.cast(PlayerSwapHandItemsEvent.class);
         if (e.getPlayer().getOpenInventory().getTopInventory().getHolder() instanceof MenuHolder && ((MenuHolder) e.getPlayer().getOpenInventory().getTopInventory().getHolder()).getBuilder().isLockHand()) {
             e.setCancelled(true);
         }
