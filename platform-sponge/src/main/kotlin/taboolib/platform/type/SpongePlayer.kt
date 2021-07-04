@@ -125,7 +125,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override val isSleeping: Boolean
         get() = error("unsupported")
 
-    override val sleepTicks: Boolean
+    override val sleepTicks: Int
         get() = error("unsupported")
 
     override var isSleepingIgnored: Boolean
@@ -149,12 +149,6 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override val isInsideVehicle: Boolean
         get() = error("unsupported")
 
-    override var isJumping: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
-        }
-
     override var hasGravity: Boolean
         get() = error("unsupported")
         set(_) {
@@ -176,13 +170,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override val lastPlayed: Long
         get() = error("unsupported")
 
-    override val lastLogin: Long
-        get() = error("unsupported")
-
-    override val lastSeen: Long
-        get() = error("unsupported")
-
-    override var absorptionAmount: Int
+    override var absorptionAmount: Double
         get() = error("unsupported")
         set(_) {
             error("unsupported")
@@ -209,7 +197,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
             error("unsupported")
         }
 
-    override var exp: Int
+    override var exp: Float
         get() = error("unsupported")
         set(_) {
             error("unsupported")

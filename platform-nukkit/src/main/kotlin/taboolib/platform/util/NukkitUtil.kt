@@ -3,6 +3,7 @@ package taboolib.platform.util
 import cn.nukkit.command.CommandSender
 import cn.nukkit.event.player.PlayerCommandPreprocessEvent
 import cn.nukkit.event.server.ServerCommandEvent
+import cn.nukkit.level.Location
 import cn.nukkit.player.Player
 import taboolib.common.platform.EventPriority
 import taboolib.platform.NukkitPlugin
@@ -31,4 +32,8 @@ fun dispatchCommand(sender: CommandSender, command: String): Boolean {
         }
     }
     return false
+}
+
+fun Location.toCommonLocation(): taboolib.common.util.Location {
+    return taboolib.common.util.Location(level.name, x.toDouble(), y.toDouble(), z.toDouble(), yaw, pitch)
 }
