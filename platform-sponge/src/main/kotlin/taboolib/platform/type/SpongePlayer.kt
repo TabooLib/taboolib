@@ -14,6 +14,7 @@ import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
 import org.spongepowered.api.text.title.Title
 import org.spongepowered.api.util.Tristate
+import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
@@ -60,6 +61,219 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         set(value) {
             player.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
         }
+
+    override var compassTarget: Location
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var bedSpawnLocation: Location?
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var displayName: String?
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var playerListName: String?
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var gameMode: ProxyGameMode
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val isSneaking: Boolean
+        get() = error("unsupported")
+
+    override val isSprinting: Boolean
+        get() = error("unsupported")
+
+    override val isBlocking: Boolean
+        get() = error("unsupported")
+
+    override var isGliding: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var isGlowing: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var isSwimming: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val isRiptiding: Boolean
+        get() = error("unsupported")
+
+    override val isSleeping: Boolean
+        get() = error("unsupported")
+
+    override val sleepTicks: Boolean
+        get() = error("unsupported")
+
+    override var isSleepingIgnored: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val isDead: Boolean
+        get() = error("unsupported")
+
+    override val isConversing: Boolean
+        get() = error("unsupported")
+
+    override val isLeashed: Boolean
+        get() = error("unsupported")
+
+    override val isOnGround: Boolean
+        get() = error("unsupported")
+
+    override val isInsideVehicle: Boolean
+        get() = error("unsupported")
+
+    override var isJumping: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var hasGravity: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val attackCooldown: Int
+        get() = error("unsupported")
+
+    override var playerTime: Long
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val firstPlayed: Long
+        get() = error("unsupported")
+
+    override val lastPlayed: Long
+        get() = error("unsupported")
+
+    override val lastLogin: Long
+        get() = error("unsupported")
+
+    override val lastSeen: Long
+        get() = error("unsupported")
+
+    override var absorptionAmount: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var noDamageTicks: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var remainingAir: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val maximumAir: Int
+        get() = error("unsupported")
+
+    override var level: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var exp: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var exhaustion: Float
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var saturation: Float
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var foodLevel: Int
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var health: Double
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var maxHealth: Double
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var allowFlight: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var isFlying: Boolean
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var flySpeed: Float
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override var walkSpeed: Float
+        get() = error("unsupported")
+        set(_) {
+            error("unsupported")
+        }
+
+    override val pose: String
+        get() = error("unsupported")
+
+    override val facing: String
+        get() = error("unsupported")
 
     override fun kick(message: String?) {
         player.kick(Text.of(message ?: ""))

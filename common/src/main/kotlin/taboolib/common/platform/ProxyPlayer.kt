@@ -130,5 +130,4 @@ interface ProxyPlayer : ProxyCommandSender {
     fun sendRawMessage(message: String)
 
     fun teleport(loc: Location)
-
 }
