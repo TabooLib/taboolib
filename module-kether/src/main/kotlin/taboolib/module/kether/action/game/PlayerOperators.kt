@@ -175,12 +175,6 @@ enum class PlayerOperators(
 
     INSIDE_VEHICLE({ it.isInsideVehicle }),
 
-    JUMPING(
-        { it.isJumping },
-        { p, _, v -> p.isJumping = taboolib.common5.Coerce.toBoolean(v) },
-        PlayerOperator.Method.MODIFY
-    ),
-
     OP(
         { it.isOp },
         { p, _, v -> p.isOp = taboolib.common5.Coerce.toBoolean(v) },
@@ -204,10 +198,6 @@ enum class PlayerOperators(
     FIRST_PLAYED({ it.firstPlayed }),
 
     LAST_PLAYED({ it.lastPlayed }),
-
-    LAST_LOGIN({ it.lastLogin }),
-
-    LAST_SEEN({ it.lastSeen }),
 
     ABSORPTION_AMOUNT(
         { it.absorptionAmount },

@@ -4,8 +4,11 @@ import com.flowpowered.math.vector.Vector3d
 import org.spongepowered.api.Game
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Property
+import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
+import org.spongepowered.api.entity.living.player.gamemode.GameMode
+import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.permission.SubjectData
@@ -16,6 +19,7 @@ import org.spongepowered.api.text.title.Title
 import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
 import java.util.*
@@ -75,9 +79,9 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override var displayName: String?
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.displayNameData.displayName().get().toPlain()
+        set(value) {
+            player.displayNameData.displayName().set(Text.of(value ?: ""))
         }
 
     override var playerListName: String?
@@ -87,30 +91,30 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override var gameMode: ProxyGameMode
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = ProxyGameMode.fromString(player.gameMode().get().name)
+        set(value) {
+            player.gameMode().set(GameModes::class.java.static(value.name)!!)
         }
 
     override val isSneaking: Boolean
-        get() = error("unsupported")
+        get() = player.get(Keys.IS_SNEAKING).get()
 
     override val isSprinting: Boolean
-        get() = error("unsupported")
+        get() = player.get(Keys.IS_SPRINTING).get()
 
     override val isBlocking: Boolean
         get() = error("unsupported")
 
     override var isGliding: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.IS_ELYTRA_FLYING).get()
+        set(value) {
+            player.getValue(Keys.IS_ELYTRA_FLYING).get().set(value)
         }
 
     override var isGlowing: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.GLOWING).get()
+        set(value) {
+            player.getValue(Keys.GLOWING).get().set(value)
         }
 
     override var isSwimming: Boolean
@@ -123,19 +127,19 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = error("unsupported")
 
     override val isSleeping: Boolean
-        get() = error("unsupported")
+        get() = player.get(Keys.IS_SLEEPING).get()
 
     override val sleepTicks: Int
         get() = error("unsupported")
 
     override var isSleepingIgnored: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.isSleepingIgnored
+        set(value) {
+            player.isSleepingIgnored = value
         }
 
     override val isDead: Boolean
-        get() = error("unsupported")
+        get() = player.health().get() <= 0
 
     override val isConversing: Boolean
         get() = error("unsupported")
@@ -144,15 +148,15 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = error("unsupported")
 
     override val isOnGround: Boolean
-        get() = error("unsupported")
+        get() = player.isOnGround
 
     override val isInsideVehicle: Boolean
-        get() = error("unsupported")
+        get() = player.vehicle.isPresent
 
     override var hasGravity: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.gravity().get()
+        set(value) {
+            player.gravity().set(value)
         }
 
     override val attackCooldown: Int
@@ -165,31 +169,31 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override val firstPlayed: Long
-        get() = error("unsupported")
+        get() = player.firstPlayed().get().toEpochMilli()
 
     override val lastPlayed: Long
-        get() = error("unsupported")
+        get() = player.lastPlayed().get().toEpochMilli()
 
     override var absorptionAmount: Double
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.ABSORPTION).orElse(0.0)
+        set(value) {
+            player.getValue(Keys.ABSORPTION).get().set(value)
         }
 
     override var noDamageTicks: Int
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.INVULNERABILITY_TICKS).orElse(0)
+        set(value) {
+            player.getValue(Keys.INVULNERABILITY_TICKS).get().set(value)
         }
 
     override var remainingAir: Int
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.REMAINING_AIR).orElse(0)
+        set(value) {
+            player.getValue(Keys.REMAINING_AIR).get().set(value)
         }
 
     override val maximumAir: Int
-        get() = error("unsupported")
+        get() = player.get(Keys.MAX_AIR).orElse(0)
 
     override var level: Int
         get() = error("unsupported")
@@ -204,57 +208,57 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override var exhaustion: Float
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.exhaustion().get().toFloat()
+        set(value) {
+            player.exhaustion().set(value.toDouble())
         }
 
     override var saturation: Float
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.saturation().get().toFloat()
+        set(value) {
+            player.exhaustion().set(value.toDouble())
         }
 
     override var foodLevel: Int
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.foodLevel().get()
+        set(value) {
+            player.foodLevel().set(value)
         }
 
     override var health: Double
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.health().get()
+        set(value) {
+            player.health().set(value)
         }
 
     override var maxHealth: Double
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.maxHealth().get()
+        set(value) {
+            player.maxHealth().set(value)
         }
 
     override var allowFlight: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.CAN_FLY).get()
+        set(it) {
+            player.getValue(Keys.CAN_FLY).get().set(it)
         }
 
     override var isFlying: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.IS_FLYING).get()
+        set(it) {
+            player.getValue(Keys.IS_FLYING).get().set(it)
         }
 
     override var flySpeed: Float
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.FLYING_SPEED).get().toFloat()
+        set(it) {
+            player.getValue(Keys.FLYING_SPEED).get().set(it.toDouble())
         }
 
     override var walkSpeed: Float
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.WALKING_SPEED).get().toFloat()
+        set(it) {
+            player.getValue(Keys.WALKING_SPEED).get().set(it.toDouble())
         }
 
     override val pose: String
@@ -291,7 +295,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(Text.of(message))
     }
 
-    // FixMe: 因为一些原因，我打算晚会再写。
+    // TODO: 2021/7/6 Sponge Raw Message
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }

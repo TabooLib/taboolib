@@ -6,7 +6,7 @@ import taboolib.common.reflect.Reflex.Companion.staticInvoke
 
 /**
  * TabooLib
- * taboolib.platform.type.SpongeOpenContainer
+ * taboolib.platform.type.VelocityOpenContainer
  *
  * @author sky
  * @since 2021/7/3 1:44 上午

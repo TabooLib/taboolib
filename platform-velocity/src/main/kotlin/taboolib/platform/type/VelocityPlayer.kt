@@ -13,7 +13,7 @@ import java.util.*
 
 /**
  * TabooLib
- * taboolib.platform.type.BungeePlayer
+ * taboolib.platform.type.VelocityPlayer
  *
  * @author CziSKY
  * @since 2021/6/21 13:41
@@ -283,6 +283,7 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         player.sendActionBar(Component.text(message))
     }
 
+    // TODO: 2021/7/6 Velocity Raw Message
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }

@@ -21,8 +21,6 @@ import java.util.*
 @PlatformSide([Platform.SPONGE])
 class SpongeCommand : PlatformCommand {
 
-
-    // TODO: NEED FIX!!
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
 //        Sponge.getCommandManager().register(SpongePlugin.getInstance(),
 //            CommandSpec.builder()

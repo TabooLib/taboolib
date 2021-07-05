@@ -289,8 +289,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
-    // 暂时还未找到 Nukkit 如何发 Json 信息的方法...
-    // 所以先这样写, 晚会再找一下实现方法。
+    // TODO: 2021/7/6 Nukkit Raw Message
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }
