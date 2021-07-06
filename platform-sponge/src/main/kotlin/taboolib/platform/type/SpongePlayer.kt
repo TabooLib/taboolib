@@ -1,21 +1,18 @@
 package taboolib.platform.type
 
 import com.flowpowered.math.vector.Vector3d
-import org.spongepowered.api.Game
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.data.Property
 import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
-import org.spongepowered.api.entity.living.player.gamemode.GameMode
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.permission.SubjectData
-import org.spongepowered.api.service.whitelist.WhitelistService
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
 import org.spongepowered.api.text.title.Title
+import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
@@ -23,6 +20,7 @@ import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
 import java.util.*
+import java.util.function.Consumer
 
 /**
  * TabooLib
@@ -196,16 +194,17 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = player.get(Keys.MAX_AIR).orElse(0)
 
     override var level: Int
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.EXPERIENCE_LEVEL).get()
+        set(value) {
+            player.offer(Keys.EXPERIENCE_LEVEL, value)
         }
 
     override var exp: Float
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.get(Keys.EXPERIENCE_SINCE_LEVEL).get().toFloat()
+        set(value) {
+            player.offer(Keys.EXPERIENCE_SINCE_LEVEL, value.toInt())
         }
+
 
     override var exhaustion: Float
         get() = player.exhaustion().get().toFloat()
@@ -262,10 +261,27 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override val pose: String
-        get() = error("unsupported")
+        get() {
+            return if (player.get(Keys.IS_SNEAKING).get()){
+                "SNEAKING"
+            }else if (player.get(Keys.IS_SLEEPING).get()){
+                "SLEEPING"
+            }else if (player.get(Keys.IS_ELYTRA_FLYING).get()){
+                "FALL_FLYING"
+            }else if (player.get(Keys.HEALTH).get() <= 0){
+                "DYING"
+            }else if (player.get(Keys.REMAINING_AIR).get() < player.get(Keys.MAX_AIR).get()){
+                "SWIMMING"
+            }else if (player.isOnGround && player.get(Keys.WALKING_SPEED).get() <= 0){
+                "STANDING"
+            }else{
+                error("unsupported")
+            }
+        }
+
 
     override val facing: String
-        get() = error("unsupported")
+        get() = Direction.getClosest(player.transform.position).name
 
     override fun kick(message: String?) {
         player.kick(Text.of(message ?: ""))
@@ -308,10 +324,13 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         return Sponge.getCommandManager().process(player, command).successCount.isPresent
     }
 
+
     override fun teleport(loc: Location) {
-        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow()
+        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
         val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
         player.location = location
-        player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)
+        // no need to set head rotation, the above code given by Sponge developers
+        // see https://forums.spongepowered.org/t/how-to-teleport-a-player-to-exact-coords/15245/2
+        //player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)
     }
 }
