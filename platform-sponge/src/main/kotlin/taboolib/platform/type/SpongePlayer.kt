@@ -281,7 +281,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
 
 
     override val facing: String
-        get() = Direction.getClosest(player.transform.position).name
+        get() = Direction.getClosest(player.transform.rotation).name
 
     override fun kick(message: String?) {
         player.kick(Text.of(message ?: ""))
