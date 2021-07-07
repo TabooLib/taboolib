@@ -19,6 +19,10 @@ import java.io.FileInputStream
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-e3c5450d-fields.csrg",
         hash = "e3b7c0dfbce9544ed650230e208865b8c5dea94e"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-00fabbe5-fields.csrg",
+        hash = "6e515ad1b4cd49e93e26380e4deca8b876a517a7"
     )
 )
 @PlatformSide([Platform.BUKKIT])
@@ -40,7 +44,7 @@ object MinecraftVersion {
         arrayOf("1.15", "1.15.1", "1.15.2"), // 7
         arrayOf("1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.16.5"), // 8
         // universal >= 9
-        arrayOf("1.17")
+        arrayOf("1.17", "1.17.1")
     )
 
     val major by lazy {
@@ -55,11 +59,11 @@ object MinecraftVersion {
         major >= 9
     }
 
-    val mappingFields = mapOf("1.17" to "bukkit-e3c5450d-fields.csrg")
+    val mappingFields = mapOf("1.17" to "e3c5450d", "1.17.1" to "00fabbe5")
 
     val mapping by lazy {
         if (isUniversal && mappingFields.containsKey(runningVersion)) {
-            Mapping(FileInputStream("assets/${mappingFields[runningVersion]!!}"))
+            Mapping(FileInputStream("assets/bukkit-${mappingFields[runningVersion]!!}-fields.csrg"))
         } else {
             null
         }
