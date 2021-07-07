@@ -34,7 +34,8 @@ object EventBus : Injector.Methods {
                         registerListener(method.parameterTypes[0], level, event.beforeModifications) { method.invoke(instance, it) }
                     }
                 }
-                Platform.SPONGE -> {
+                // TODO: 2021/7/7 Sponge API 8
+                Platform.SPONGE_API_7 -> {
                     if (eventBind != null) {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(instance, OptionalEvent(it)) }

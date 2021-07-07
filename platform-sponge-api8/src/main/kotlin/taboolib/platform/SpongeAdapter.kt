@@ -23,7 +23,7 @@ import taboolib.platform.type.SpongePlayer
  * @since 2021/6/21 17:02
  */
 @Awake
-@PlatformSide([Platform.SPONGE])
+@PlatformSide([Platform.SPONGE_API_8])
 class SpongeAdapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")

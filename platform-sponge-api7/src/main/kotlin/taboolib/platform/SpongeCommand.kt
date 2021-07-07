@@ -4,7 +4,6 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandCallable
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
-import org.spongepowered.api.command.spec.CommandSpec
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
@@ -18,7 +17,7 @@ import java.util.*
  * @author sky
  * @since 2021/7/4 2:45 下午
  */
-@PlatformSide([Platform.SPONGE])
+@PlatformSide([Platform.SPONGE_API_7])
 class SpongeCommand : PlatformCommand {
 
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {

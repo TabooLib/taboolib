@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:43
  */
 @Awake
-@PlatformSide([Platform.SPONGE])
+@PlatformSide([Platform.SPONGE_API_8])
 class SpongeExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()

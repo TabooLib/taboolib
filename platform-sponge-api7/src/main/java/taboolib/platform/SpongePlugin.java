@@ -32,7 +32,7 @@ import java.io.File;
         name = "@plugin_name@",
         version = "@plugin_version@"
 )
-@PlatformSide(Platform.SPONGE)
+@PlatformSide(Platform.SPONGE_API_7)
 public class SpongePlugin {
 
     @Nullable

@@ -31,8 +31,13 @@ val runningPlatform by lazy {
     } catch (ex: ClassNotFoundException) {
     }
     try {
-        Class.forName("org.spongepowered.api.Sponge")
-        return@lazy Platform.SPONGE
+        Class.forName("org.spongepowered.api.plugin.Plugin")
+        return@lazy Platform.SPONGE_API_7
+    } catch (ex: ClassNotFoundException) {
+    }
+    try {
+        Class.forName("org.spongepowered.plugin.jvm.Plugin")
+        return@lazy Platform.SPONGE_API_8
     } catch (ex: ClassNotFoundException) {
     }
     try {

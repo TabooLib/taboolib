@@ -19,7 +19,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
-@PlatformSide([Platform.SPONGE])
+@PlatformSide([Platform.SPONGE_API_7])
 class SpongeIO : PlatformIO {
 
     private val logger: Logger

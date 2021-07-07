@@ -3,12 +3,10 @@ package taboolib.platform;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.api.Client;
 import org.spongepowered.api.Server;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.lifecycle.*;
-import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
@@ -29,7 +27,7 @@ import java.nio.file.Path;
  * @since 2021/6/26 8:39 下午
  */
 @org.spongepowered.plugin.jvm.Plugin("@plugin_id@")
-@PlatformSide(Platform.SPONGE)
+@PlatformSide(Platform.SPONGE_API_8)
 public class SpongePlugin {
 
     @Nullable
