@@ -205,7 +205,6 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
             player.offer(Keys.EXPERIENCE_SINCE_LEVEL, value.toInt())
         }
 
-
     override var exhaustion: Float
         get() = player.exhaustion().get().toFloat()
         set(value) {
@@ -254,6 +253,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
             player.getValue(Keys.FLYING_SPEED).get().set(it.toDouble())
         }
 
+    // TODO: 2021/7/7 可能存在争议
     override var walkSpeed: Float
         get() = player.get(Keys.WALKING_SPEED).get().toFloat()
         set(it) {
@@ -262,20 +262,16 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
 
     override val pose: String
         get() {
-            return if (player.get(Keys.IS_SNEAKING).get()){
-                "SNEAKING"
-            }else if (player.get(Keys.IS_SLEEPING).get()){
-                "SLEEPING"
-            }else if (player.get(Keys.IS_ELYTRA_FLYING).get()){
-                "FALL_FLYING"
-            }else if (player.get(Keys.HEALTH).get() <= 0){
-                "DYING"
-            }else if (player.get(Keys.REMAINING_AIR).get() < player.get(Keys.MAX_AIR).get()){
-                "SWIMMING"
-            }else if (player.isOnGround && player.get(Keys.WALKING_SPEED).get() <= 0){
-                "STANDING"
-            }else{
-                error("unsupported")
+            // TODO: 2021/7/7 可能存在争议，FALL_FLYING，STANDING
+            // SWIMMING 是指 1.13 版本中的游泳，在 1.12 版本中可能不存在该动作。应当在 api7 中不做实现，或使用其他实现方式。
+            return when {
+                player.get(Keys.IS_SNEAKING).get() -> "SNEAKING"
+                player.get(Keys.IS_SLEEPING).get() -> "SLEEPING"
+                player.get(Keys.IS_ELYTRA_FLYING).get() -> "FALL_FLYING"
+                player.get(Keys.HEALTH).get() <= 0 -> "DYING"
+                player.get(Keys.REMAINING_AIR).get() < player.get(Keys.MAX_AIR).get() -> "SWIMMING"
+                player.isOnGround && player.get(Keys.WALKING_SPEED).get() <= 0 -> "STANDING"
+                else -> error("unsupported")
             }
         }
 
@@ -324,7 +320,8 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         return Sponge.getCommandManager().process(player, command).successCount.isPresent
     }
 
-
+    // TODO: 2021/7/7 可能存在争议
+    // 应当保留 Location 接口中的 yaw，pitch 属性
     override fun teleport(loc: Location) {
         val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
         val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
