@@ -1,6 +1,7 @@
 package taboolib.platform;
 
 import com.google.inject.Inject;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.api.Server;
@@ -35,6 +36,7 @@ public class SpongePlugin {
     private static SpongePlugin instance;
 
     private final PluginContainer pluginContainer;
+    private final Logger logger;
 
     @Inject
     @ConfigDir(sharedRoot = false)
@@ -46,24 +48,27 @@ public class SpongePlugin {
     }
 
     @Inject
-    public SpongePlugin(PluginContainer pluginContainer) {
+    public SpongePlugin(final PluginContainer pluginContainer, final Logger logger) {
         instance = this;
         this.pluginContainer = pluginContainer;
+        this.logger = logger;
         TabooLibCommon.lifeCycle(LifeCycle.INIT);
 
     }
 
     // TODO: 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
+    // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
-    private void e(ConstructPluginEvent e) {
+    private void e(final ConstructPluginEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance != null) {
             pluginInstance.onLoad();
+
         }
     }
 
     @Listener
-    private void e(StartingEngineEvent<Server> e) {
+    private void e(final StartingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
         if (pluginInstance != null) {
             pluginInstance.onEnable();
@@ -72,7 +77,7 @@ public class SpongePlugin {
     }
 
     @Listener
-    private void e(StartedEngineEvent<Server> e) {
+    private void e(final StartedEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
         if (pluginInstance != null) {
             pluginInstance.onActive();
@@ -80,7 +85,7 @@ public class SpongePlugin {
     }
 
     @Listener
-    private void e(StoppingEngineEvent<Server> e) {
+    private void e(final StoppingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         if (pluginInstance != null) {
             pluginInstance.onDisable();
@@ -105,5 +110,10 @@ public class SpongePlugin {
     @NotNull
     public File getPluginConfigDir() {
         return pluginConfigDir.toFile();
+    }
+
+    @NotNull
+    public Logger getLogger() {
+        return logger;
     }
 }

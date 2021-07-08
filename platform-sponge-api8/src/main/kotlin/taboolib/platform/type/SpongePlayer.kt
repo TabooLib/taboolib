@@ -1,11 +1,19 @@
 package taboolib.platform.type
 
 import com.flowpowered.math.vector.Vector3d
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.kyori.adventure.title.Title
+import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.data.key.Keys
+import org.spongepowered.api.data.Keys
 import org.spongepowered.api.effect.sound.SoundType
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
+import org.spongepowered.api.entity.living.player.server.ServerPlayer
+import org.spongepowered.api.event.Cause
+import org.spongepowered.api.event.EventContext
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.permission.SubjectData
@@ -13,14 +21,16 @@ import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
 import org.spongepowered.api.text.title.Title
 import org.spongepowered.api.util.Direction
+import org.spongepowered.api.util.Ticks
 import org.spongepowered.api.util.Tristate
+import org.spongepowered.math.vector.Vector3d
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
+import java.time.Duration
 import java.util.*
-import java.util.function.Consumer
 
 /**
  * TabooLib
@@ -29,39 +39,39 @@ import java.util.function.Consumer
  * @author tr
  * @since 2021/6/21 15:49
  */
-class SpongePlayer(val player: Player) : ProxyPlayer {
+class SpongePlayer(val player: ServerPlayer) : ProxyPlayer {
 
     override val origin: Any
         get() = player
 
     override val name: String
-        get() = player.name
+        get() = player.name()
 
     override val address: InetSocketAddress?
-        get() = player.connection.address
+        get() = player.connection().address()
 
     override val uniqueId: UUID
-        get() = player.uniqueId
+        get() = player.uniqueId()
 
     override val ping: Int
-        get() = player.connection.latency
+        get() = player.connection().latency()
 
     override val locale: String
-        get() = player.locale.displayName
+        get() = player.locale().displayName
 
     override val world: String
-        get() = player.world.name
+        get() = PlainTextComponentSerializer.plainText().serialize(player.world().properties().displayName().get())
 
     override val location: Location
         get() {
-            val loc = player.location
-            return Location(world, loc.x, loc.y, loc.z, player.headRotation.y.toFloat(), player.headRotation.x.toFloat())
+            val loc = player.location()
+            return Location(world, loc.x(), loc.y(), loc.z(), player.headRotation().get().y().toFloat(), player.headRotation().get().x().toFloat())
         }
 
     override var isOp: Boolean
         get() = player.hasPermission("*")
         set(value) {
-            player.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
+            player.subjectData().setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
         }
 
     override var compassTarget: Location
@@ -77,9 +87,9 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override var displayName: String?
-        get() = player.displayNameData.displayName().get().toPlain()
+        get() = PlainTextComponentSerializer.plainText().serialize(player.displayName().get() ?: Component.text(player.name()))
         set(value) {
-            player.displayNameData.displayName().set(Text.of(value ?: ""))
+            player.displayName().set(Component.text(value ?: player.name() ?: ""))
         }
 
     override var playerListName: String?
@@ -89,7 +99,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override var gameMode: ProxyGameMode
-        get() = ProxyGameMode.fromString(player.gameMode().get().name)
+        get() = ProxyGameMode.fromString(PlainTextComponentSerializer.plainText().serialize(player.gameMode().get().asComponent()))
         set(value) {
             player.gameMode().set(GameModes::class.java.static(value.name)!!)
         }
@@ -106,13 +116,13 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override var isGliding: Boolean
         get() = player.get(Keys.IS_ELYTRA_FLYING).get()
         set(value) {
-            player.getValue(Keys.IS_ELYTRA_FLYING).get().set(value)
+            player.offer(Keys.IS_ELYTRA_FLYING, value)
         }
 
     override var isGlowing: Boolean
-        get() = player.get(Keys.GLOWING).get()
+        get() = player.get(Keys.IS_GLOWING).get()
         set(value) {
-            player.getValue(Keys.GLOWING).get().set(value)
+            player.offer(Keys.IS_GLOWING, value)
         }
 
     override var isSwimming: Boolean
@@ -128,12 +138,12 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = player.get(Keys.IS_SLEEPING).get()
 
     override val sleepTicks: Int
-        get() = error("unsupported")
+        get() = player.get(Keys.SLEEP_TIMER).get()
 
     override var isSleepingIgnored: Boolean
-        get() = player.isSleepingIgnored
+        get() = player.sleepingIgnored().get()
         set(value) {
-            player.isSleepingIgnored = value
+            player.sleepingIgnored().set(value)
         }
 
     override val isDead: Boolean
@@ -146,15 +156,15 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         get() = error("unsupported")
 
     override val isOnGround: Boolean
-        get() = player.isOnGround
+        get() = player.onGround().get()
 
     override val isInsideVehicle: Boolean
-        get() = player.vehicle.isPresent
+        get() = player.vehicle().isPresent
 
     override var hasGravity: Boolean
-        get() = player.gravity().get()
+        get() = player.gravityAffected().get()
         set(value) {
-            player.gravity().set(value)
+            player.gravityAffected().set(value)
         }
 
     override val attackCooldown: Int
@@ -167,7 +177,7 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
         }
 
     override val firstPlayed: Long
-        get() = player.firstPlayed().get().toEpochMilli()
+        get() = player.firstJoined().get().toEpochMilli()
 
     override val lastPlayed: Long
         get() = player.lastPlayed().get().toEpochMilli()
@@ -175,19 +185,19 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override var absorptionAmount: Double
         get() = player.get(Keys.ABSORPTION).orElse(0.0)
         set(value) {
-            player.getValue(Keys.ABSORPTION).get().set(value)
+            player.offer(Keys.ABSORPTION, value)
         }
 
     override var noDamageTicks: Int
-        get() = player.get(Keys.INVULNERABILITY_TICKS).orElse(0)
+        get() = player.get(Keys.INVULNERABILITY_TICKS).orElse(Ticks.of(0)).ticks().toInt()
         set(value) {
-            player.getValue(Keys.INVULNERABILITY_TICKS).get().set(value)
+            player.offer(Keys.INVULNERABILITY_TICKS, Ticks.of(value.toLong()))
         }
 
     override var remainingAir: Int
         get() = player.get(Keys.REMAINING_AIR).orElse(0)
         set(value) {
-            player.getValue(Keys.REMAINING_AIR).get().set(value)
+            player.offer(Keys.REMAINING_AIR, value)
         }
 
     override val maximumAir: Int
@@ -238,26 +248,26 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     override var allowFlight: Boolean
         get() = player.get(Keys.CAN_FLY).get()
         set(it) {
-            player.getValue(Keys.CAN_FLY).get().set(it)
+            player.offer(Keys.CAN_FLY, it)
         }
 
     override var isFlying: Boolean
         get() = player.get(Keys.IS_FLYING).get()
         set(it) {
-            player.getValue(Keys.IS_FLYING).get().set(it)
+            player.offer(Keys.IS_FLYING, it)
         }
 
     override var flySpeed: Float
         get() = player.get(Keys.FLYING_SPEED).get().toFloat()
         set(it) {
-            player.getValue(Keys.FLYING_SPEED).get().set(it.toDouble())
+            player.offer(Keys.FLYING_SPEED, it.toDouble())
         }
 
     // TODO: 2021/7/7 可能存在争议
     override var walkSpeed: Float
         get() = player.get(Keys.WALKING_SPEED).get().toFloat()
         set(it) {
-            player.getValue(Keys.WALKING_SPEED).get().set(it.toDouble())
+            player.offer(Keys.WALKING_SPEED, it.toDouble())
         }
 
     override val pose: String
@@ -269,26 +279,26 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
                 player.get(Keys.IS_SLEEPING).get() -> "SLEEPING"
                 player.get(Keys.IS_ELYTRA_FLYING).get() -> "FALL_FLYING"
                 player.get(Keys.HEALTH).get() <= 0 -> "DYING"
-                player.get(Keys.REMAINING_AIR).get() < player.get(Keys.MAX_AIR).get() -> "SWIMMING"
-                player.isOnGround && player.get(Keys.WALKING_SPEED).get() <= 0 -> "STANDING"
+                player.get(Keys.IS_IN_WATER).get() -> "SWIMMING"
+                player.onGround().get() && player.get(Keys.WALKING_SPEED).get() <= 0 -> "STANDING"
                 else -> error("unsupported")
             }
         }
 
 
     override val facing: String
-        get() = Direction.getClosest(player.transform.rotation).name
+        get() = Direction.closest(player.transform().rotation()).name
 
     override fun kick(message: String?) {
-        player.kick(Text.of(message ?: ""))
+        player.kick(Component.text(message ?: ""))
     }
 
     override fun chat(message: String) {
-        player.simulateChat(Text.of(message), Cause.of(EventContext.empty(), ""))
+        player.simulateChat(Component.text(message), Cause.of(EventContext.empty(), ""))
     }
 
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-        player.playSound(SoundType.of(sound), Vector3d.from(location.x, location.y, location.z), volume.toDouble(), pitch.toDouble())
+        player.playSound(Sound.sound(Key.key(sound), Sound.Source.MUSIC, volume, pitch), Vector3d.from(location.x, location.y, location.z))
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
@@ -296,7 +306,8 @@ class SpongePlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-        player.sendTitle(Title.builder().title(Text.of(title ?: "")).subtitle(Text.of(subtitle ?: "")).fadeIn(fadein).stay(stay).fadeOut(fadeout).build())
+        player.showTitle(Title.title(Component.text(title), Component.text(subtitle), Title.Times.of(Ticks.of(fadein.toLong()).expectedDuration(Sponge.server()), stay, fadeout)))
+        player.sendMessage(Title.title())sendTitle(Title.builder().title(Text.of(title ?: "")).subtitle(Text.of(subtitle ?: "")).fadeIn(fadein).stay(stay).fadeOut(fadeout).build())
     }
 
     override fun sendActionBar(message: String) {
