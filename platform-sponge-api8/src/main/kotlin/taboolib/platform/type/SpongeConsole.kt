@@ -1,12 +1,6 @@
 package taboolib.platform.type
 
 import org.spongepowered.api.Server
-import org.spongepowered.api.Sponge
-import org.spongepowered.api.command.source.ConsoleSource
-import org.spongepowered.api.service.context.Context
-import org.spongepowered.api.service.permission.SubjectData
-import org.spongepowered.api.text.Text
-import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyConsole
 
 /**
@@ -22,23 +16,23 @@ class SpongeConsole(val sender: Server) : ProxyConsole {
         get() = sender
 
     override val name: String
-        get() = sender.name
+        get() = error("unsupported ap7->api8")
 
     override var isOp: Boolean
-        get() = sender.hasPermission("*")
+        get() = error("unsupported ap7->api8")
         set(value) {
-            sender.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
+            error("unsupported ap7->api8")
         }
 
     override fun sendMessage(message: String) {
-        sender.sendMessage(Text.of(message))
+        error("unsupported ap7->api8")
     }
 
     override fun performCommand(command: String): Boolean {
-        return Sponge.getCommandManager().process(sender, command).successCount.isPresent
+        error("unsupported ap7->api8")
     }
 
     override fun hasPermission(permission: String): Boolean {
-        return sender.hasPermission(permission)
+        error("unsupported ap7->api8")
     }
 }

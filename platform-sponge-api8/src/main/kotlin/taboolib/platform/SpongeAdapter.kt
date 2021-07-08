@@ -34,7 +34,7 @@ class SpongeAdapter : PlatformAdapter {
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
-        return SpongePlayer(any as ServerPlayer)
+        error("unsupported ap7->api8")
     }
 
     override fun adaptCommandSender(any: Any): ProxyConsole {
