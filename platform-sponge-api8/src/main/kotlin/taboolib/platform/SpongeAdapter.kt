@@ -2,12 +2,10 @@ package taboolib.platform
 
 import org.spongepowered.api.Server
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
 import taboolib.platform.type.SpongeConsole
-import taboolib.platform.type.SpongePlayer
 
 /**
  * TabooLib
