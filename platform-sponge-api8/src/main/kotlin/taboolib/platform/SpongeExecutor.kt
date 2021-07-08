@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import org.spongepowered.api.Sponge
 import org.spongepowered.api.scheduler.Task
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -26,11 +27,20 @@ class SpongeExecutor : PlatformExecutor {
         SpongePlugin.getInstance()
     }
 
+    private val schedulerSync by lazy {
+        Sponge.server().scheduler().createExecutor(plugin.pluginContainer)
+    }
+
+    private val schedulerAsync by lazy {
+        Sponge.game().asyncScheduler().createExecutor(plugin.pluginContainer)
+    }
+
     override fun start() {
         started = true
         tasks.forEach { submit(it) }
     }
 
+    // TODO: 2021/7/8 可能存在争议，用法不确定
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         if (started) {
             val future = CompletableFuture<Unit>()
@@ -42,46 +52,52 @@ class SpongeExecutor : PlatformExecutor {
                 }
                 runnable.period > 0 -> if (runnable.async) {
                     Task.builder()
-                        .async()
+                        .plugin(plugin.pluginContainer)
                         .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
                         .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).build()
                 } else {
                     Task.builder()
+                        .plugin(plugin.pluginContainer)
                         .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
                         .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).build()
                 }
                 runnable.delay > 0 -> if (runnable.async) {
                     Task.builder()
-                        .async()
+                        .plugin(plugin.pluginContainer)
                         .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).build()
                 } else {
                     Task.builder()
+                        .plugin(plugin.pluginContainer)
                         .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).build()
                 }
                 else -> if (runnable.async) {
-                    Task.builder().async().execute(Runnable {
-                        runnable.executor(task)
-                    }).submit(plugin)
+                    Task.builder()
+                        .plugin(plugin.pluginContainer)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).build()
                 } else {
-                    Task.builder().execute(Runnable {
-                        runnable.executor(task)
-                    }).submit(plugin)
+                    Task.builder()
+                        .plugin(plugin.pluginContainer)
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).build()
                 }
             }
             future.thenAccept {
-                scheduledTask?.cancel()
+//                scheduledTask?.cancel()
             }
             return task
         } else {

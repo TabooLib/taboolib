@@ -30,10 +30,10 @@ class SpongeIO : PlatformIO {
         }
 
     override val pluginId: String
-        get() = SpongePlugin.getInstance().pluginContainer.id
+        get() = SpongePlugin.getInstance().pluginContainer.metadata().id()
 
     override val isPrimaryThread: Boolean
-        get() = Sponge.getServer().isMainThread
+        get() = Sponge.server().onMainThread()
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -61,7 +61,7 @@ class SpongeIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(SpongePlugin.getInstance().pluginContainer.source.get().toUri().path)
+        return File(SpongePlugin::class.java.protectionDomain.codeSource.location.toURI().path)
     }
 
     override fun getDataFolder(): File {
@@ -69,8 +69,8 @@ class SpongeIO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return Sponge.getPluginManager().plugins
-            .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.SpongePlugin") == true }
+        return Sponge.pluginManager().plugins()
+            .filter { it.instance()?.javaClass?.name?.endsWith("taboolib.platform.SpongePlugin") == true }
             .mapNotNull {
                 try {
                     SpongeOpenContainer(it)

@@ -6,6 +6,7 @@ import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
+import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.permission.SubjectData
@@ -29,7 +30,7 @@ import java.util.function.Consumer
  * @author tr
  * @since 2021/6/21 15:49
  */
-class SpongePlayer(val player: Player) : ProxyPlayer {
+class SpongePlayer(val player: ServerPlayer) : ProxyPlayer {
 
     override val origin: Any
         get() = player

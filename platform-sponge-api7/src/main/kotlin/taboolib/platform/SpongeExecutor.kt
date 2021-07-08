@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import org.spongepowered.api.Sponge
 import org.spongepowered.api.scheduler.Task
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
