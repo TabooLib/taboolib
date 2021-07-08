@@ -38,7 +38,10 @@ public class TabooLibCommon {
     }
 
     /**
+     * 生命周期
      * 依赖于 Minecraft 服务端生命周期的启动或卸载方法
+     *
+     * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle) {
         switch (lifeCycle) {

@@ -1,5 +1,6 @@
 package taboolib.platform.type
 
+
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.SystemSubject
@@ -8,6 +9,8 @@ import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.util.Tristate
+
+
 import taboolib.common.platform.ProxyConsole
 
 /**
@@ -17,21 +20,21 @@ import taboolib.common.platform.ProxyConsole
  * @author tr
  * @since 2021/6/21 15:29
  */
+
 class SpongeConsole(val sender: SystemSubject) : ProxyConsole {
     // TODO: 2021/7/9 There is no more ConsoleSource
-
     override val origin: Any
         get() = sender
 
     // TODO: 2021/7/9 Why console have a name ? could it return "Console" directly?
     override val name: String
-        get() = sender.name
+        get() = error("unsupported ap7->api8")
 
     // TODO: 2021/7/9 if it is console, is there any reason that it do not have all permissions?
     override var isOp: Boolean
-        get() = sender.hasPermission("*")
+        get() = error("unsupported ap7->api8")
         set(value) {
-            sender.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
+            error("unsupported ap7->api8")
         }
 
     override fun sendMessage(message: String) {
@@ -44,6 +47,6 @@ class SpongeConsole(val sender: SystemSubject) : ProxyConsole {
     }
 
     override fun hasPermission(permission: String): Boolean {
-        return sender.hasPermission(permission)
+        error("unsupported ap7->api8")
     }
 }

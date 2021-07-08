@@ -1,5 +1,6 @@
 package taboolib.platform.type
 
+
 import com.flowpowered.math.vector.Vector3d
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -31,6 +32,10 @@ import taboolib.common.util.Location
 import java.net.InetSocketAddress
 import java.time.Duration
 import java.util.*
+
+import org.spongepowered.api.entity.living.player.server.ServerPlayer
+import taboolib.common.platform.ProxyPlayer
+
 
 /**
  * TabooLib
