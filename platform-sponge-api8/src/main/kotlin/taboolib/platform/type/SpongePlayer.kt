@@ -1,26 +1,17 @@
 package taboolib.platform.type
 
-
-import com.flowpowered.math.vector.Vector3d
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.title.Title
-import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
-import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.Cause
 import org.spongepowered.api.event.EventContext
-import org.spongepowered.api.event.cause.Cause
-import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.service.permission.SubjectData
-import org.spongepowered.api.text.Text
-import org.spongepowered.api.text.chat.ChatTypes
-import org.spongepowered.api.text.title.Title
 import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Ticks
 import org.spongepowered.api.util.Tristate
@@ -30,11 +21,7 @@ import taboolib.common.platform.ProxyPlayer
 import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
-import java.time.Duration
 import java.util.*
-
-import org.spongepowered.api.entity.living.player.server.ServerPlayer
-import taboolib.common.platform.ProxyPlayer
 
 
 /**
@@ -311,16 +298,22 @@ class SpongePlayer(val player: ServerPlayer) : ProxyPlayer {
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-        player.showTitle(Title.title(Component.text(title), Component.text(subtitle), Title.Times.of(Ticks.of(fadein.toLong()).expectedDuration(Sponge.server()), stay, fadeout)))
-        player.sendMessage(Title.title())sendTitle(Title.builder().title(Text.of(title ?: "")).subtitle(Text.of(subtitle ?: "")).fadeIn(fadein).stay(stay).fadeOut(fadeout).build())
+        player.showTitle(Title.title(
+            Component.text(title ?: ""),
+            Component.text(subtitle ?: ""),
+            Title.Times.of(
+                Ticks.of(fadein.toLong()).expectedDuration(Sponge.server()),
+                Ticks.of(stay.toLong()).expectedDuration(Sponge.server()),
+                Ticks.of(fadeout.toLong()).expectedDuration(Sponge.server()))
+        ))
     }
 
     override fun sendActionBar(message: String) {
-        player.sendMessage(ChatTypes.ACTION_BAR, Text.of(message))
+        player.sendActionBar(Component.text(message))
     }
 
     override fun sendMessage(message: String) {
-        player.sendMessage(Text.of(message))
+        player.sendMessage(Component.text(message))
     }
 
     // TODO: 2021/7/6 Sponge Raw Message
@@ -333,15 +326,16 @@ class SpongePlayer(val player: ServerPlayer) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        return Sponge.getCommandManager().process(player, command).successCount.isPresent
+//        return Sponge().process(player, command).successCount.isPresent
+        return false
     }
 
     // TODO: 2021/7/7 可能存在争议
     // 应当保留 Location 接口中的 yaw，pitch 属性
     override fun teleport(loc: Location) {
-        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
-        val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
-        player.location = location
+//        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
+//        val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
+//        player.location = location
         // no need to set head rotation, the above code given by Sponge developers
         // see https://forums.spongepowered.org/t/how-to-teleport-a-player-to-exact-coords/15245/2
         //player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)

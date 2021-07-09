@@ -4,13 +4,6 @@ package taboolib.platform.type
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.SystemSubject
-import org.spongepowered.api.command.source.ConsoleSource
-import org.spongepowered.api.service.context.Context
-import org.spongepowered.api.service.permission.SubjectData
-import org.spongepowered.api.text.Text
-import org.spongepowered.api.util.Tristate
-
-
 import taboolib.common.platform.ProxyConsole
 
 /**

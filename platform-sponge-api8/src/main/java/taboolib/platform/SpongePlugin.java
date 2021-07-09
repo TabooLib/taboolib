@@ -56,7 +56,7 @@ public class SpongePlugin {
 
     }
 
-    // TODO: 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
+    // 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
     // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
     private void e(final ConstructPluginEvent e) {

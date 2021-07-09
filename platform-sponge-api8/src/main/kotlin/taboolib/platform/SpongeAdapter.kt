@@ -2,6 +2,7 @@ package taboolib.platform
 
 import org.spongepowered.api.Server
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.SystemSubject
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
@@ -24,7 +25,7 @@ class SpongeAdapter : PlatformAdapter {
     }
 
     override fun console(): ProxyConsole {
-        return adaptCommandSender(Sponge.server())
+        return adaptCommandSender(Sponge.systemSubject())
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
@@ -36,7 +37,7 @@ class SpongeAdapter : PlatformAdapter {
     }
 
     override fun adaptCommandSender(any: Any): ProxyConsole {
-        return SpongeConsole(any as Server)
+        return SpongeConsole(any as SystemSubject)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
