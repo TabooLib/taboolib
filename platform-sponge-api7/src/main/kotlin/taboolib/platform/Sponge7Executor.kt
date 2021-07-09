@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import org.spongepowered.api.Sponge
 import org.spongepowered.api.scheduler.Task
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -18,13 +17,13 @@ import java.util.concurrent.TimeUnit
  */
 @Awake
 @PlatformSide([Platform.SPONGE_API_7])
-class SpongeExecutor : PlatformExecutor {
+class Sponge7Executor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
     val plugin by lazy {
-        SpongePlugin.getInstance()
+        Sponge7Plugin.getInstance()
     }
 
     override fun start() {

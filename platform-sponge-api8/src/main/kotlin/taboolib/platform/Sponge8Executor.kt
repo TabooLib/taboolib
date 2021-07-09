@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit
  */
 @Awake
 @PlatformSide([Platform.SPONGE_API_8])
-class SpongeExecutor : PlatformExecutor {
+class Sponge8Executor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
     val plugin by lazy {
-        SpongePlugin.getInstance()
+        Sponge8Plugin.getInstance()
     }
 
     private val schedulerSync by lazy {

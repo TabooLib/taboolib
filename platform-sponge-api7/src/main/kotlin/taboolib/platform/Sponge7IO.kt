@@ -8,7 +8,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.SpongeOpenContainer
+import taboolib.platform.type.Sponge7OpenContainer
 import java.io.File
 
 /**
@@ -20,17 +20,17 @@ import java.io.File
  */
 @Awake
 @PlatformSide([Platform.SPONGE_API_7])
-class SpongeIO : PlatformIO {
+class Sponge7IO : PlatformIO {
 
     private val logger: Logger
         get() = try {
-            SpongePlugin.getInstance().pluginContainer.logger
+            Sponge7Plugin.getInstance().pluginContainer.logger
         } catch (ex: Exception) {
             LoggerFactory.getLogger("Anonymous")
         }
 
     override val pluginId: String
-        get() = SpongePlugin.getInstance().pluginContainer.id
+        get() = Sponge7Plugin.getInstance().pluginContainer.id
 
     override val isPrimaryThread: Boolean
         get() = Sponge.getServer().isMainThread
@@ -48,7 +48,7 @@ class SpongeIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(SpongePlugin.getInstance().pluginConfigDir, path)
+        val file = File(Sponge7Plugin.getInstance().pluginConfigDir, path)
         if (file.exists() && !replace) {
             return file
         }
@@ -61,11 +61,11 @@ class SpongeIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(SpongePlugin.getInstance().pluginContainer.source.get().toUri().path)
+        return File(Sponge7Plugin.getInstance().pluginContainer.source.get().toUri().path)
     }
 
     override fun getDataFolder(): File {
-        return SpongePlugin.getInstance().pluginConfigDir
+        return Sponge7Plugin.getInstance().pluginConfigDir
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
@@ -73,7 +73,7 @@ class SpongeIO : PlatformIO {
             .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.SpongePlugin") == true }
             .mapNotNull {
                 try {
-                    SpongeOpenContainer(it)
+                    Sponge7OpenContainer(it)
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
                     null

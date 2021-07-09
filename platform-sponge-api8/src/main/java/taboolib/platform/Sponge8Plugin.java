@@ -1,15 +1,14 @@
 package taboolib.platform;
 
 import com.google.inject.Inject;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.Server;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.event.lifecycle.*;
+import org.spongepowered.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.IOKt;
@@ -19,6 +18,7 @@ import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * TabooLib
@@ -27,45 +27,48 @@ import java.io.File;
  * @author sky
  * @since 2021/6/26 8:39 下午
  */
-@org.spongepowered.api.plugin.Plugin(
-        id = "@plugin_id@",
-        name = "@plugin_name@",
-        version = "@plugin_version@"
-)
-@PlatformSide(Platform.SPONGE_API_7)
-public class SpongePlugin {
+@org.spongepowered.plugin.jvm.Plugin("@plugin_id@")
+@PlatformSide(Platform.SPONGE_API_8)
+public class Sponge8Plugin {
 
     @Nullable
     private static final Plugin pluginInstance;
-    private static SpongePlugin instance;
+    private static Sponge8Plugin instance;
 
-    @Inject
-    private PluginContainer pluginContainer;
+    private final PluginContainer pluginContainer;
+    private final Logger logger;
 
     @Inject
     @ConfigDir(sharedRoot = false)
-    private File pluginConfigDir;
+    private Path pluginConfigDir;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST);
         pluginInstance = IOKt.findInstance(Plugin.class);
     }
 
-    public SpongePlugin() {
+    @Inject
+    public Sponge8Plugin(final PluginContainer pluginContainer, final Logger logger) {
         instance = this;
+        this.pluginContainer = pluginContainer;
+        this.logger = logger;
         TabooLibCommon.lifeCycle(LifeCycle.INIT);
+
     }
 
+    // 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
+    // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
-    private void e(GamePreInitializationEvent e) {
+    private void e(final ConstructPluginEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance != null) {
             pluginInstance.onLoad();
+
         }
     }
 
     @Listener
-    private void e(GameInitializationEvent e) {
+    private void e(final StartingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
         if (pluginInstance != null) {
             pluginInstance.onEnable();
@@ -74,7 +77,7 @@ public class SpongePlugin {
     }
 
     @Listener
-    private void e(GameStartedServerEvent e) {
+    private void e(final StartedEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
         if (pluginInstance != null) {
             pluginInstance.onActive();
@@ -82,7 +85,7 @@ public class SpongePlugin {
     }
 
     @Listener
-    private void e(GameStoppedServerEvent e) {
+    private void e(final StoppingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         if (pluginInstance != null) {
             pluginInstance.onDisable();
@@ -90,7 +93,7 @@ public class SpongePlugin {
     }
 
     @NotNull
-    public static SpongePlugin getInstance() {
+    public static Sponge8Plugin getInstance() {
         return instance;
     }
 
@@ -106,6 +109,11 @@ public class SpongePlugin {
 
     @NotNull
     public File getPluginConfigDir() {
-        return pluginConfigDir;
+        return pluginConfigDir.toFile();
+    }
+
+    @NotNull
+    public Logger getLogger() {
+        return logger;
     }
 }

@@ -31,7 +31,7 @@ import java.util.*
  * @author tr
  * @since 2021/6/21 15:49
  */
-class SpongePlayer(val player: ServerPlayer) : ProxyPlayer {
+class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
 
     override val origin: Any
         get() = player

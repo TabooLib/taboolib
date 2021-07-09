@@ -14,7 +14,7 @@ import taboolib.common.platform.ProxyConsole
  * @since 2021/6/21 15:29
  */
 
-class SpongeConsole(val sender: SystemSubject) : ProxyConsole {
+class Sponge8Console(val sender: SystemSubject) : ProxyConsole {
     // TODO: 2021/7/9 There is no more ConsoleSource
     override val origin: Any
         get() = sender

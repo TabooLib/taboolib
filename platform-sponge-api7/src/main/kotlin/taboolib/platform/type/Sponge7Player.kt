@@ -29,7 +29,7 @@ import java.util.function.Consumer
  * @author tr
  * @since 2021/6/21 15:49
  */
-class SpongePlayer(val player: Player) : ProxyPlayer {
+class Sponge7Player(val player: Player) : ProxyPlayer {
 
     override val origin: Any
         get() = player

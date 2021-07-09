@@ -18,7 +18,7 @@ import java.util.*
  * @since 2021/7/4 2:45 下午
  */
 @PlatformSide([Platform.SPONGE_API_7])
-class SpongeCommand : PlatformCommand {
+class Sponge7Command : PlatformCommand {
 
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
 //        Sponge.getCommandManager().register(SpongePlugin.getInstance(),
@@ -26,7 +26,7 @@ class SpongeCommand : PlatformCommand {
 //                .description(Text.of(command.description))
 //
 //        )
-        Sponge.getCommandManager().register(SpongePlugin.getInstance(), object : CommandCallable {
+        Sponge.getCommandManager().register(Sponge7Plugin.getInstance(), object : CommandCallable {
 
             override fun process(source: CommandSource, arguments: String): CommandResult {
                 // Maybe it cause some problems.
@@ -65,7 +65,7 @@ class SpongeCommand : PlatformCommand {
     }
 
     override fun unregisterCommands() {
-        Sponge.getCommandManager().getOwnedBy(SpongePlugin.getInstance()).onEach {
+        Sponge.getCommandManager().getOwnedBy(Sponge7Plugin.getInstance()).onEach {
             Sponge.getCommandManager().removeMapping(it)
         }
     }
