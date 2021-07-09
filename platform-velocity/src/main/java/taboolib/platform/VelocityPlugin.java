@@ -40,7 +40,7 @@ public class VelocityPlugin {
     private static VelocityPlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST);
+        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
         pluginInstance = IOKt.findInstance(Plugin.class);
     }
 

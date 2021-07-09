@@ -31,7 +31,7 @@ public class BukkitPlugin extends JavaPlugin {
     private static BukkitPlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST);
+        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
         pluginInstance = IOKt.findInstance(Plugin.class);
     }
 

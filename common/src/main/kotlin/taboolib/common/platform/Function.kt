@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
 import taboolib.common.OpenContainer
+import taboolib.common.TabooLibCommon
 import taboolib.common.platform.PlatformFactory.platformAdapter
 import taboolib.common.platform.PlatformFactory.platformCommand
 import taboolib.common.platform.PlatformFactory.platformExecutor
@@ -14,39 +15,8 @@ val pluginId: String
 val isPrimaryThread: Boolean
     get() = platformIO.isPrimaryThread
 
-val runningPlatform by lazy {
-    try {
-        Class.forName("org.bukkit.Bukkit")
-        return@lazy Platform.BUKKIT
-    } catch (ex: ClassNotFoundException) {
-    }
-    try {
-        Class.forName("net.md_5.bungee.BungeeCord")
-        return@lazy Platform.BUNGEE
-    } catch (ex: ClassNotFoundException) {
-    }
-    try {
-        Class.forName("cn.nukkit.Server")
-        return@lazy Platform.NUKKIT
-    } catch (ex: ClassNotFoundException) {
-    }
-    try {
-        Class.forName("org.spongepowered.api.plugin.Plugin")
-        return@lazy Platform.SPONGE_API_7
-    } catch (ex: ClassNotFoundException) {
-    }
-    try {
-        Class.forName("org.spongepowered.plugin.jvm.Plugin")
-        return@lazy Platform.SPONGE_API_8
-    } catch (ex: ClassNotFoundException) {
-    }
-    try {
-        Class.forName("com.velocitypowered.api.plugin.Plugin")
-        return@lazy Platform.VELOCITY
-    } catch (ex: ClassNotFoundException) {
-    }
-    return@lazy Platform.UNKNOWN
-}
+val runningPlatform: Platform
+    get() = TabooLibCommon.getRunningPlatform()
 
 fun info(vararg message: Any?) {
     platformIO.info(*message)
@@ -81,7 +51,7 @@ fun submit(
     async: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
-    executor: PlatformExecutor.PlatformTask.() -> Unit
+    executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
     return platformExecutor.submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, executor))
 }

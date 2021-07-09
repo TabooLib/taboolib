@@ -11,9 +11,13 @@ import taboolib.common.io.runningClasses
 object PlatformFactory {
 
     lateinit var platformIO: PlatformIO
+        private set
     lateinit var platformAdapter: PlatformAdapter
+        private set
     lateinit var platformExecutor: PlatformExecutor
+        private set
     lateinit var platformCommand: PlatformCommand
+        private set
 
     private val awokenMap = HashMap<String, Any>()
     private val releaseTask = ArrayList<Releasable>()

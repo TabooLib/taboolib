@@ -1,9 +1,12 @@
 package taboolib.common;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
+import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
 /**
@@ -19,6 +22,11 @@ import taboolib.common.platform.PlatformFactory;
 public class TabooLibCommon {
 
     public static final RuntimeEnv ENV = new RuntimeEnv();
+
+    /**
+     * 保存最近一次初始化的运行环境
+     */
+    private static Platform platform = Platform.UNKNOWN;
 
     /**
      * 用于测试的快速启动方法
@@ -37,13 +45,20 @@ public class TabooLibCommon {
         lifeCycle(LifeCycle.DISABLE);
     }
 
+    public static void lifeCycle(LifeCycle lifeCycle) {
+        lifeCycle(lifeCycle, null);
+    }
+
     /**
      * 生命周期
      * 依赖于 Minecraft 服务端生命周期的启动或卸载方法
      *
      * @param lifeCycle 生命周期
      */
-    public static void lifeCycle(LifeCycle lifeCycle) {
+    public static void lifeCycle(LifeCycle lifeCycle, @Nullable Platform platform) {
+        if (platform != null) {
+            TabooLibCommon.platform = platform;
+        }
         switch (lifeCycle) {
             case CONST:
                 ENV.inject(TabooLibCommon.class);
@@ -70,5 +85,10 @@ public class TabooLibCommon {
 
     public static boolean isKotlinEnvironment() {
         return ClassAppender.isExists("kotlin.KotlinVersion");
+    }
+
+    @NotNull
+    public static Platform getRunningPlatform() {
+        return platform;
     }
 }

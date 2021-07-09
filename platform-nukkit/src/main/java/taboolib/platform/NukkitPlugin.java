@@ -30,7 +30,7 @@ public class NukkitPlugin extends PluginBase {
     private static NukkitPlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST);
+        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.NUKKIT);
         pluginInstance = IOKt.findInstance(Plugin.class);
     }
 

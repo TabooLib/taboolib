@@ -29,7 +29,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     private static BungeePlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST);
+        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
         pluginInstance = IOKt.findInstance(Plugin.class);
     }
 
