@@ -14,7 +14,7 @@ import taboolib.common.reflect.Reflex.Companion.staticInvoke
 class Sponge7OpenContainer(val plugin: PluginContainer): OpenContainer {
 
     val main: String = plugin.instance.get().javaClass.name
-    val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.SpongePlugin".length) + "common.OpenAPI")
+    val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.Sponge7Plugin".length) + "common.OpenAPI")
 
     override fun getName(): String {
         return plugin.id

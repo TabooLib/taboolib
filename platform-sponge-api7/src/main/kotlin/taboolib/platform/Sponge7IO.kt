@@ -70,7 +70,7 @@ class Sponge7IO : PlatformIO {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Sponge.getPluginManager().plugins
-            .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.SpongePlugin") == true }
+            .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.Sponge7Plugin") == true }
             .mapNotNull {
                 try {
                     Sponge7OpenContainer(it)

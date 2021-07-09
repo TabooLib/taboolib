@@ -13,28 +13,28 @@ repositories {
     maven { url = uri("https://repo.spongepowered.org/maven") }
 }
 
-sponge {
-    apiVersion("8.0.0")
-    plugin("platform-sponge-api8") {
-        loader(PluginLoaders.JAVA_PLAIN)
-        displayName("@plugin_name@")
-        version("@plugin_version@")
-        mainClass("taboolib.platform.SpongePlugin")
-        description("taboolib")
-        links {
-            homepage("https://spongepowered.org")
-            source("https://spongepowered.org/source")
-            issues("https://spongepowered.org/issues")
-        }
-        contributor("Eric12324") {
-            description("Lead Developer")
-        }
-        dependency("spongeapi") {
-            loadOrder(PluginDependency.LoadOrder.AFTER)
-            optional(false)
-        }
-    }
-}
+//sponge {
+//    apiVersion("8.0.0")
+//    plugin("platform-sponge-api8") {
+//        loader(PluginLoaders.JAVA_PLAIN)
+//        displayName("@plugin_name@")
+//        version("@plugin_version@")
+//        mainClass("taboolib.platform.SpongePlugin")
+//        description("taboolib")
+//        links {
+//            homepage("https://spongepowered.org")
+//            source("https://spongepowered.org/source")
+//            issues("https://spongepowered.org/issues")
+//        }
+//        contributor("Eric12324") {
+//            description("Lead Developer")
+//        }
+//        dependency("spongeapi") {
+//            loadOrder(PluginDependency.LoadOrder.AFTER)
+//            optional(false)
+//        }
+//    }
+//}
 
 dependencies {
     // this will not work, you must use the sponge gradle plugin

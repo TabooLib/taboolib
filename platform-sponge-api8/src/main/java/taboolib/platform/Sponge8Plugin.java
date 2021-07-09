@@ -63,7 +63,6 @@ public class Sponge8Plugin {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance != null) {
             pluginInstance.onLoad();
-
         }
     }
 

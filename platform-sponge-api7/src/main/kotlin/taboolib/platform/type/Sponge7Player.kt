@@ -8,6 +8,7 @@ import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
+import org.spongepowered.api.item.ItemTypes
 import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
@@ -101,7 +102,10 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         get() = player.get(Keys.IS_SPRINTING).get()
 
     override val isBlocking: Boolean
-        get() = error("unsupported")
+        get() {
+            val item = player.get(Keys.ACTIVE_ITEM).get()
+            return !item.isEmpty && item.type == ItemTypes.SHIELD
+        }
 
     override var isGliding: Boolean
         get() = player.get(Keys.IS_ELYTRA_FLYING).get()

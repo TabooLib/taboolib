@@ -43,41 +43,44 @@ class Sponge7Executor : PlatformExecutor {
                 runnable.period > 0 -> if (runnable.async) {
                     Task.builder()
                         .async()
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
-                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .delayTicks(runnable.delay)
+                        .intervalTicks(runnable.period)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).submit(plugin.pluginContainer)
                 } else {
                     Task.builder()
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
-                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .delayTicks(runnable.delay)
+                        .intervalTicks(runnable.period)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).submit(plugin)
+                        }).submit(plugin.pluginContainer)
                 }
                 runnable.delay > 0 -> if (runnable.async) {
                     Task.builder()
                         .async()
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .delayTicks(runnable.delay)
                         .execute(Runnable {
                             runnable.executor(task)
                         }).submit(plugin)
                 } else {
                     Task.builder()
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .delayTicks(runnable.delay)
                         .execute(Runnable {
                             runnable.executor(task)
                         }).submit(plugin)
                 }
                 else -> if (runnable.async) {
-                    Task.builder().async().execute(Runnable {
-                        runnable.executor(task)
-                    }).submit(plugin)
+                    Task.builder()
+                        .async()
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
                 } else {
-                    Task.builder().execute(Runnable {
-                        runnable.executor(task)
-                    }).submit(plugin)
+                    Task.builder()
+                        .execute(Runnable {
+                            runnable.executor(task)
+                        }).submit(plugin)
                 }
             }
             future.thenAccept {

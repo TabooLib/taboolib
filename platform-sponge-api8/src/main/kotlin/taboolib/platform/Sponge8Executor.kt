@@ -2,6 +2,7 @@ package taboolib.platform
 
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.scheduler.Task
+import org.spongepowered.api.util.Ticks
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformExecutor
@@ -28,11 +29,11 @@ class Sponge8Executor : PlatformExecutor {
     }
 
     private val schedulerSync by lazy {
-        Sponge.server().scheduler().createExecutor(plugin.pluginContainer)
+        Sponge.server().scheduler()
     }
 
     private val schedulerAsync by lazy {
-        Sponge.game().asyncScheduler().createExecutor(plugin.pluginContainer)
+        Sponge.game().asyncScheduler()
     }
 
     override fun start() {
@@ -40,7 +41,6 @@ class Sponge8Executor : PlatformExecutor {
         tasks.forEach { submit(it) }
     }
 
-    // TODO: 2021/7/8 可能存在争议，用法不确定
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         if (started) {
             val future = CompletableFuture<Unit>()
@@ -51,53 +51,53 @@ class Sponge8Executor : PlatformExecutor {
                     null
                 }
                 runnable.period > 0 -> if (runnable.async) {
-                    Task.builder()
+                    schedulerAsync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
-                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .delay(Ticks.of(runnable.delay))
+                        .interval(Ticks.of(runnable.period))
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 } else {
-                    Task.builder()
+                    schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
-                        .interval(runnable.period * 50, TimeUnit.MILLISECONDS)
+                        .delay(Ticks.of(runnable.delay))
+                        .interval(Ticks.of(runnable.period))
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 }
                 runnable.delay > 0 -> if (runnable.async) {
-                    Task.builder()
+                    schedulerAsync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .delay(Ticks.of(runnable.delay))
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 } else {
-                    Task.builder()
+                    schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .delay(runnable.delay * 50, TimeUnit.MILLISECONDS)
+                        .delay(Ticks.of(runnable.delay))
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 }
                 else -> if (runnable.async) {
-                    Task.builder()
+                    schedulerAsync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 } else {
-                    Task.builder()
+                    schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
                         .execute(Runnable {
                             runnable.executor(task)
-                        }).build()
+                        }).build())
                 }
             }
             future.thenAccept {
-//                scheduledTask?.cancel()
+                scheduledTask?.cancel()
             }
             return task
         } else {

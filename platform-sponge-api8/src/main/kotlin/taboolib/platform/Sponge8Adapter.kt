@@ -2,10 +2,12 @@ package taboolib.platform
 
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.SystemSubject
+import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
 import taboolib.platform.type.Sponge8Console
+import taboolib.platform.type.Sponge8Player
 
 /**
  * TabooLib
@@ -32,7 +34,7 @@ class Sponge8Adapter : PlatformAdapter {
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
-        error("unsupported ap7->api8")
+        return Sponge8Player(any as ServerPlayer)
     }
 
     override fun adaptCommandSender(any: Any): ProxyConsole {
