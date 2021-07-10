@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Porticus API 通用入口
@@ -18,12 +19,12 @@ object Porticus {
     /**
      * 获取正在运行的通讯任务
      */
-    val missions: List<PorticusMission> = Lists.newCopyOnWriteArrayList()
+    val missions = CopyOnWriteArrayList<PorticusMission>()
 
     /**
      * 获取 Porticus API
      */
-    val API: API by lazy {
+    val API by lazy {
         try {
             Class.forName("org.bukkit.Bukkit")
             return@lazy taboolib.module.porticus.bukkitside.PorticusAPI()

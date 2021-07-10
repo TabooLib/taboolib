@@ -21,7 +21,7 @@ import java.lang.reflect.Method
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide([Platform.BUNGEE])
 class BungeeAdapter : PlatformAdapter {
 
     val plugin = BungeePlugin.getInstance()

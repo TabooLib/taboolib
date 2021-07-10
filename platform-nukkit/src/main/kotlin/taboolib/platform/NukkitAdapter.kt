@@ -36,9 +36,7 @@ class NukkitAdapter : PlatformAdapter {
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
-        return Server.getInstance().onlinePlayers.values.map {
-            adaptPlayer(it)
-        }
+        return Server.getInstance().onlinePlayers.values.map { adaptPlayer(it) }
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {

@@ -73,13 +73,14 @@ public class BukkitPlugin extends JavaPlugin {
     }
 
     @Override
-    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+    public ChunkGenerator getDefaultWorldGenerator(@NotNull String worldName, String id) {
         if (pluginInstance instanceof BukkitWorldGenerator) {
             return ((BukkitWorldGenerator) pluginInstance).getDefaultWorldGenerator(worldName, id);
         }
         return null;
     }
 
+    @NotNull
     @Override
     public File getFile() {
         return super.getFile();
