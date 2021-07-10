@@ -17,6 +17,7 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit): ItemStack {
     return ItemBuilder(material).also(builder).build()
 }
 
+@Isolated
 class ItemBuilder(val material: XMaterial) {
 
     var amount = 1

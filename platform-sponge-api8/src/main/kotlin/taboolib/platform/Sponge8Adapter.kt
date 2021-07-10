@@ -58,14 +58,14 @@ class Sponge8Adapter : PlatformAdapter {
         error("unsupported")
     }
 
-    class SpongeListener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
+    class Sponge8Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
             consumer(event)
         }
     }
 
-    class SpongeEvent(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
+    class Sponge8Event(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
 
         val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, Sponge8Plugin.getInstance().pluginContainer).build()
         val eventCause: Cause = Cause.of(eventContext, Sponge8Plugin.getInstance().pluginContainer)

@@ -53,7 +53,7 @@ class Sponge7Adapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = SpongeListener<Event> { func(it as T) }
+        val listener = Sponge7Listener<Event> { func(it as T) }
         Sponge.getEventManager().registerListener(this, event as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
         return listener
     }
@@ -63,19 +63,19 @@ class Sponge7Adapter : PlatformAdapter {
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
-        val event = SpongeEvent(proxyEvent)
+        val event = Sponge7Event(proxyEvent)
         Sponge.getEventManager().post(event)
         event.proxyEvent.postCall()
     }
 
-    class SpongeListener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
+    class Sponge7Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
             consumer(event)
         }
     }
 
-    class SpongeEvent(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
+    class Sponge7Event(val proxyEvent: ProxyEvent) : AbstractEvent(), Cancellable {
 
         val eventContext: EventContext = EventContext.builder().add(EventContextKeys.PLUGIN, Sponge7Plugin.getInstance().pluginContainer).build()
         val eventCause: Cause = Cause.of(eventContext, Sponge7Plugin.getInstance().pluginContainer)
