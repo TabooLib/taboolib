@@ -1,8 +1,11 @@
 package taboolib.platform.type
 
 import com.velocitypowered.api.proxy.Player
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
+import net.kyori.adventure.util.Ticks
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
@@ -259,12 +262,13 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         player.spoofChatInput(message)
     }
 
+    // TODO: 2021/7/11 可能存在争议的写法
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-        error("unsupported")
+        player.playSound(Sound.sound(Key.key(sound), Sound.Source.MASTER, volume, pitch), location.x, location.y, location.z)
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
-        error("unsupported")
+        playSound(location, sound, volume, pitch)
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
@@ -272,9 +276,9 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
             Component.text(title ?: ""),
             Component.text(subtitle ?: ""),
             Title.Times.of(
-                Duration.ofSeconds(fadein * 50L),
-                Duration.ofSeconds(stay * 50L),
-                Duration.ofSeconds(fadeout * 50L)
+                Duration.ofMillis(fadein * 50L),
+                Duration.ofMillis(stay * 50L),
+                Duration.ofMillis(fadeout * 50L)
             )
         ))
     }

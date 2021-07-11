@@ -8,6 +8,8 @@ import net.kyori.adventure.title.Title
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
+import org.spongepowered.api.effect.sound.SoundType
+import org.spongepowered.api.effect.sound.SoundTypes
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.Cause
@@ -26,6 +28,7 @@ import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
 import taboolib.platform.util.toPlain
 import java.net.InetSocketAddress
+import java.time.Duration
 import java.util.*
 
 
@@ -292,8 +295,9 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
         player.simulateChat(Component.text(message), Cause.of(EventContext.empty(), ""))
     }
 
+    // TODO: 2021/7/11 可能存在争议的写法
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-        player.playSound(Sound.sound(Key.key(sound), Sound.Source.MUSIC, volume, pitch), Vector3d.from(location.x, location.y, location.z))
+        player.playSound(Sound.sound(Key.key(sound), Sound.Source.MASTER, volume, pitch), Vector3d.from(location.x, location.y, location.z))
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
@@ -305,9 +309,10 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
             Component.text(title ?: ""),
             Component.text(subtitle ?: ""),
             Title.Times.of(
-                Ticks.of(fadein.toLong()).expectedDuration(Sponge.server()),
-                Ticks.of(stay.toLong()).expectedDuration(Sponge.server()),
-                Ticks.of(fadeout.toLong()).expectedDuration(Sponge.server()))
+                Duration.ofMillis(fadein * 50L),
+                Duration.ofMillis(stay * 50L),
+                Duration.ofMillis(fadeout * 50L)
+            )
         ))
     }
 
@@ -335,7 +340,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     // TODO: 2021/7/7 可能存在争议
     // 不确定的世界实例获取方式：ResourceKey.minecraft
     override fun teleport(loc: Location) {
-        val serverWorld = Sponge.server().worldManager().world(ResourceKey.minecraft(loc.world!!)).get()
+        val serverWorld = Sponge.server().worldManager().world(ResourceKey.resolve(loc.world!!)).get()
         val serverLocation = ServerLocation.of(serverWorld, loc.x, loc.y, loc.z)
         player.setLocationAndRotation(serverLocation, Vector3d.from(loc.pitch.toDouble(), loc.yaw.toDouble(), 0.0))
     }
