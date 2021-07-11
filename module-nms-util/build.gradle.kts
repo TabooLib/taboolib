@@ -29,3 +29,9 @@ dependencies {
     compileOnly(project(":platform-bukkit"))
     compileOnly(kotlin("stdlib"))
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

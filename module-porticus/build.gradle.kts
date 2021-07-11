@@ -17,10 +17,16 @@ repositories {
 }
 
 dependencies {
+    compileOnly("com.google.guava:guava:21.0")
     compileOnly("com.velocitypowered:velocity-api:1.1.8")
-    compileOnly("com.github.ben-manes.caffeine:caffeine:3.0.2")
     compileOnly("net.md-5:bungeecord-bootstrap:1.17-R0.1-20210614.231150-8@jar")
     compileOnly("ink.ptms.core:v11605:11605")
     compileOnly(project(":common"))
     compileOnly(kotlin("stdlib"))
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }

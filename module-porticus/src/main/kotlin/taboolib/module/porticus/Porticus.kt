@@ -12,7 +12,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author 坏黑
  * @since 2020-10-15
  */
-@RuntimeDependency(value = "com.github.ben-manes.caffeine:caffeine:3.0.2", test = "com.github.benmanes.caffeine.cache.Cache")
+@RuntimeDependency("com.google.guava:guava:21.0", test = "com.google.common.base.Optional")
 @PlatformSide([Platform.BUKKIT, Platform.BUNGEE])
 object Porticus {
 

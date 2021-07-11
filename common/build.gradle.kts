@@ -10,3 +10,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

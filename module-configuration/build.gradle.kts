@@ -13,3 +13,9 @@ dependencies {
     compileOnly(project(":common-5"))
     compileOnly(kotlin("stdlib"))
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

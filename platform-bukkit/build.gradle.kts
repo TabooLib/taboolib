@@ -19,3 +19,9 @@ dependencies {
     compileOnly(project(":module-chat"))
     compileOnly(kotlin("stdlib"))
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

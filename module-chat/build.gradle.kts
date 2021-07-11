@@ -33,3 +33,9 @@ tasks {
         dependsOn(shadowJar)
     }
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

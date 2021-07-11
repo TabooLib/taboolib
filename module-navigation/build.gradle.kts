@@ -23,3 +23,9 @@ dependencies {
     compileOnly(project(":module-nms"))
     compileOnly(kotlin("stdlib"))
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}

@@ -1,7 +1,7 @@
 package taboolib.module.porticus.common;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class MessageReader {
 
-    private static final Cache<String, Message> queueMessages = Caffeine.newBuilder()
+    private static final Cache<String, Message> queueMessages = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.SECONDS)
             .build();
 
