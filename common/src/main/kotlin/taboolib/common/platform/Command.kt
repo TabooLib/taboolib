@@ -21,14 +21,16 @@ abstract class Command(protected val successBox: CommandBox<Boolean>, protected 
     protected var restrict: (CommandContext.(String) -> Boolean)? = null
 
     protected var lost: (CommandContext.() -> Unit) = {
-        // commands.help.failed
-        sender.sendMessage("§cUnknown or incomplete command, see below for error")
-        var str = "/${name} ${args.joinToString(" ")}".trim()
-        if (str.length > 10) {
-            str = "...${str.substring(str.length - 10, str.length)}"
+        if (sender.isPresent) {
+            // commands.help.failed
+            sender.get().sendMessage("§cUnknown or incomplete command, see below for error")
+            var str = "/${name} ${args.joinToString(" ")}".trim()
+            if (str.length > 10) {
+                str = "...${str.substring(str.length - 10, str.length)}"
+            }
+            // command.context.here
+            sender.get().sendMessage("§7$str§c<--[HERE]")
         }
-        // command.context.here
-        sender.sendMessage("§7$str§c<--[HERE]")
     }
 
     var success: Boolean
