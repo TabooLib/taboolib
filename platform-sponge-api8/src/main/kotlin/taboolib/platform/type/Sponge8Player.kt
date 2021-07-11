@@ -5,6 +5,7 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.title.Title
+import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
@@ -16,6 +17,8 @@ import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Ticks
 import org.spongepowered.api.util.Tristate
+import org.spongepowered.api.world.server.ServerLocation
+import org.spongepowered.api.world.server.ServerWorld
 import org.spongepowered.math.vector.Vector3d
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
@@ -335,13 +338,10 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     }
 
     // TODO: 2021/7/7 可能存在争议
-    // 应当保留 Location 接口中的 yaw，pitch 属性
+    // 不确定的世界实例获取方式：ResourceKey.minecraft
     override fun teleport(loc: Location) {
-//        val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
-//        val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
-//        player.location = location
-        // no need to set head rotation, the above code given by Sponge developers
-        // see https://forums.spongepowered.org/t/how-to-teleport-a-player-to-exact-coords/15245/2
-        //player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)
+        val serverWorld = Sponge.server().worldManager().world(ResourceKey.minecraft(loc.world!!)).get()
+        val serverLocation = ServerLocation.of(serverWorld, loc.x, loc.y, loc.z)
+        player.setLocationAndRotation(serverLocation, Vector3d.from(loc.pitch.toDouble(), loc.yaw.toDouble(), 0.0))
     }
 }

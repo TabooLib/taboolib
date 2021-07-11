@@ -324,14 +324,11 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         return Sponge.getCommandManager().process(player, command).successCount.isPresent
     }
 
-    // TODO: 2021/7/7 可能存在争议
+    // 2021/7/7 可能存在争议
     // 应当保留 Location 接口中的 yaw，pitch 属性
     override fun teleport(loc: Location) {
         val world = Sponge.getServer().getWorld(loc.world ?: return).orElseThrow { Exception() }
         val location = org.spongepowered.api.world.Location(world, Vector3d.from(loc.x, loc.y, loc.z))
-        player.location = location
-        // no need to set head rotation, the above code given by Sponge developers
-        // see https://forums.spongepowered.org/t/how-to-teleport-a-player-to-exact-coords/15245/2
-        //player.headRotation = Vector3d.from(loc.yaw.toDouble(), loc.pitch.toDouble(), 0.0)
+        player.setLocationAndRotation(location, Vector3d.from(loc.pitch.toDouble(), loc.yaw.toDouble(), 0.0))
     }
 }

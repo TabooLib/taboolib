@@ -1,7 +1,6 @@
 package taboolib.common.reflect
 
 import java.lang.reflect.Field
-import java.lang.reflect.InaccessibleObjectException
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
@@ -36,7 +35,7 @@ class ReflexClass(val clazz: Class<*>) {
             clazz.interfaces.forEach {
                 interfaces.add(ReflexClass(it))
             }
-        } catch (ex: InaccessibleObjectException) {
+        } catch (ex: Throwable) {
         }
     }
 
