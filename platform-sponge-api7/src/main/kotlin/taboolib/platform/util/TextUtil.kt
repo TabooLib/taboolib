@@ -1,30 +1,23 @@
+@file:Isolated
+
 package taboolib.platform.util
 
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.serializer.TextSerializers
+import taboolib.common.Isolated
 
-object TextUtil {
-    /**
-     * @param str The string with formatting code, for example: "&4Warning!"
-     * @return Text object
-     */
-    fun toTextWithFormattingCode(str: String?): Text {
-        return TextSerializers.FORMATTING_CODE.deserialize(str)
-    }
+/**
+ * The string with formatting code, for example: "&4Warning!"
+ * @return Text object
+ */
+fun String.toTextWithFormattingCode(): Text {
+    return TextSerializers.FORMATTING_CODE.deserialize(this)
+}
 
-    /**
-     * @param text Text object
-     * @return The string with formatting code, for example: "&4Warning!"
-     */
-    fun toPlainWithFormattingCode(text: Text?): String {
-        return TextSerializers.FORMATTING_CODE.serialize(text)
-    }
-
-    /**
-     * @param text Text object
-     * @return The string without formatting code
-     */
-    fun toPlain(text: Text?): String {
-        return TextSerializers.PLAIN.serialize(text)
-    }
+/**
+ * Text object
+ * @return The string with formatting code, for example: "&4Warning!"
+ */
+fun Text.toPlainWithFormattingCode(): String {
+    return TextSerializers.FORMATTING_CODE.serialize(this)
 }

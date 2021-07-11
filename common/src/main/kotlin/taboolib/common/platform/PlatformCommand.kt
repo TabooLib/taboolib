@@ -9,7 +9,7 @@ package taboolib.common.platform
  */
 interface PlatformCommand {
 
-    fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter)
+    fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: Command.BaseCommand.() -> Unit)
 
     fun unregisterCommand(command: String)
 

@@ -1,21 +1,20 @@
+@file:Isolated
+
 package taboolib.platform.util
 
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import taboolib.common.Isolated
 
-object ComponentUtil {
-    fun toComponentWithFormattingCode(str: String?): TextComponent {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(str!!)
-    }
+fun String.toComponentWithFormattingCode(): TextComponent {
+    return LegacyComponentSerializer.legacyAmpersand().deserialize(this)
+}
 
-    fun toStringWithFormattingCode(component: TextComponent?): String {
-        return LegacyComponentSerializer.legacyAmpersand().serialize(
-            component!!
-        )
-    }
+fun TextComponent.toStringWithFormattingCode(): String {
+    return LegacyComponentSerializer.legacyAmpersand().serialize(this)
+}
 
-    fun toPlain(component: TextComponent?): String {
-        return PlainTextComponentSerializer.plainText().serialize(component!!)
-    }
+fun TextComponent.toPlain(): String {
+    return PlainTextComponentSerializer.plainText().serialize(this)
 }

@@ -12,7 +12,12 @@ import taboolib.common.platform.*
 @PlatformSide([Platform.SPONGE_API_8])
 class Sponge8Command : PlatformCommand {
 
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: Command.BaseCommand.() -> Unit,
+    ) {
     }
 
     override fun unregisterCommand(command: String) {

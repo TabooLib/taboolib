@@ -17,13 +17,19 @@ import taboolib.common.reflect.Reflex.Companion.reflex
 @PlatformSide([Platform.NUKKIT])
 class NukkitCommand : PlatformCommand {
 
-    val structure = ArrayList<CommandStructure>()
+    val knownCommands = ArrayList<CommandStructure>()
 
     val registeredCommands by lazy {
         Server.getInstance().commandRegistry.reflex<MutableMap<String, Command>>("registeredCommands")!!
     }
 
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+    ) {
+
         val registerCommand = object : Command(command.name, CommandData.builder(command.name)
             .setDescription(command.description)
             .setUsageMessage(command.usage)
@@ -35,16 +41,16 @@ class NukkitCommand : PlatformCommand {
                 return executor.execute(adaptCommandSender(sender), command, commandLabel, args)
             }
         }
-        structure += command
+        knownCommands += command
         registeredCommands[command.name] = registerCommand
         command.aliases.forEach { registeredCommands[it] = registerCommand }
     }
 
     override fun unregisterCommand(command: String) {
-        TODO("Not yet implemented")
+        registeredCommands.remove(command)
     }
 
     override fun unregisterCommands() {
-        TODO("Not yet implemented")
+        knownCommands.forEach { registeredCommands.remove(it.name) }
     }
 }

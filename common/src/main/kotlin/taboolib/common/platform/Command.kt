@@ -11,19 +11,19 @@ import taboolib.common.util.join
  * @since 2021/6/25 12:50 上午
  */
 @Isolated
-abstract class Command(val sender: ProxyCommandSender, protected val successBox: CommandBox<Boolean>, protected val completeBox: CommandBox<List<String>?>) {
+abstract class Command(protected val successBox: CommandBox<Boolean>, protected val completeBox: CommandBox<List<String>?>) {
 
     protected val literals = HashMap<String, LiteralCommandBuilder>()
     protected var required: ArgumentCommandBuilder? = null
     protected var optional: ArgumentCommandBuilder? = null
 
-    protected var complete: ((CommandContext) -> List<String>?)? = null
-    protected var restrict: (String.(CommandContext) -> Boolean)? = null
+    protected var complete: (CommandContext.() -> List<String>?)? = null
+    protected var restrict: (CommandContext.(String) -> Boolean)? = null
 
-    protected var lost: ((CommandContext) -> Unit) = {
+    protected var lost: (CommandContext.() -> Unit) = {
         // commands.help.failed
         sender.sendMessage("§cUnknown or incomplete command, see below for error")
-        var str = "/${it.name} ${it.args.joinToString(" ")}".trim()
+        var str = "/${name} ${args.joinToString(" ")}".trim()
         if (str.length > 10) {
             str = "...${str.substring(str.length - 10, str.length)}"
         }
@@ -52,18 +52,17 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
 
     fun optional(optional: ArgumentCommand.(CommandContext) -> Unit) {
         this.optional = ArgumentCommandBuilder(optional, null)
-        this.restrict = { isNotEmpty() }
+        this.restrict = { it.isNotEmpty() }
         this.required = null
     }
 
     protected fun createCommand(
-        sender: ProxyCommandSender,
         context: CommandContext,
         argument: String,
         executor: Executor,
-        commandType: CommandType = CommandType.ALL
+        commandType: CommandType = CommandType.ALL,
     ): Pair<ArgumentCommand, Executor> {
-        val command = ArgumentCommand(sender, successBox, completeBox, this, argument, executor, commandType)
+        val command = ArgumentCommand(successBox, completeBox, this, argument, executor, commandType)
         return command to when (commandType) {
             CommandType.ALL -> {
                 literals[argument]?.builder?.invoke(command, context)
@@ -102,16 +101,14 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
     }
 
     protected fun createComplete(context: CommandContext) {
-        completeBox.value = literals.keys.toMutableList().also {
-            it.addAll(complete?.invoke(context) ?: emptyList())
-        }
+        completeBox.value = literals.keys.toMutableList().also { it.addAll(complete?.invoke(context) ?: emptyList()) }
     }
 
     protected fun isFinally(command: ArgumentCommand): Boolean {
         return command.literals.isEmpty() && command.required == null
     }
 
-    protected fun run(sender: ProxyCommandSender, context: CommandContext, index: Int, inExecute: Boolean): Pair<String, Int> {
+    protected fun run(context: CommandContext, index: Int, inExecute: Boolean): Pair<String, Int> {
         // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
         val executor = Executor()
         val argument = context.args.getOrNull(index) ?: ""
@@ -128,7 +125,7 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
             }
         }
         // 如果不存在子结构则在当前结构下执行逻辑
-        else if (isFinally(createCommand(sender, context, argument, executor, CommandType.ALL).first)) {
+        else if (isFinally(createCommand(context, argument, executor, CommandType.ALL).first)) {
             if (inExecute) {
                 val commandType: CommandType
                 val commandBuilder = when {
@@ -149,18 +146,18 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
                         null
                     }
                 }
-                if (commandBuilder == null || (commandType.allowRestrict && restrict?.invoke(argument, context) == false)) {
+                if (commandBuilder == null || (commandType.allowRestrict && restrict?.invoke(context, argument) == false)) {
                     lost.invoke(context)
                 } else {
-                    createCommand(sender, context, argument, commandBuilder.executor ?: executor, commandType).second(context, join(context.args, index))
+                    createCommand(context, argument, commandBuilder.executor ?: executor, commandType).second(context, join(context.args, index))
                 }
             } else {
                 createComplete(context)
             }
         } else {
             // 向下递归的条件是符合参数及约束条件
-            if (literals.containsKey(argument) && restrict?.invoke(argument, context) != false || optional != null) {
-                return createCommand(sender, context, argument, executor).first.run(sender, context, index + 1, inExecute)
+            if (literals.containsKey(argument) && restrict?.invoke(context, argument) != false || optional != null) {
+                return createCommand(context, argument, executor).first.run(context, index + 1, inExecute)
             } else {
                 if (inExecute) {
                     lost.invoke(context)
@@ -172,60 +169,57 @@ abstract class Command(val sender: ProxyCommandSender, protected val successBox:
         return argument to index
     }
 
-    open class BaseCommand(sender: ProxyCommandSender, b1: CommandBox<Boolean>, b2: CommandBox<List<String>?>) :
-        Command(sender, b1, b2) {
+    open class BaseCommand(b1: CommandBox<Boolean> = CommandBox(true), b2: CommandBox<List<String>?> = CommandBox(null)) : Command(b1, b2) {
 
         val executor = Executor()
 
-        open fun complete(sender: ProxyCommandSender, context: CommandContext): List<String>? {
-            val result = run(sender, context, 0, false)
+        open fun complete(context: CommandContext): List<String>? {
+            val result = run(context, 0, false)
             if (result.second + 1 == context.args.size) {
                 val completed = (if (completeBox.value?.isEmpty() == true) null else completeBox.value) ?: return null
                 val similar = completed.filter { it.startsWith(result.first, ignoreCase = true) }
-                return if (similar.isEmpty()) completed else similar
+                return similar.ifEmpty { completed }
             } else {
                 return null
             }
         }
 
-        open fun execute(sender: ProxyCommandSender, context: CommandContext): Boolean {
-            run(sender, context, 0, true)
+        open fun execute(context: CommandContext): Boolean {
+            run(context, 0, true)
             return success
         }
 
         open fun execute(func: (CommandContext) -> Unit) {
-            executor.func = { func(it) }
+            executor.func = { func(this) }
         }
     }
 
     open class ArgumentCommand(
-        sender: ProxyCommandSender,
         b1: CommandBox<Boolean>,
         b2: CommandBox<List<String>?>,
         val parent: Command,
         val argument: String,
         val executor: Executor,
-        val commandType: CommandType
-    ) :
-        Command(sender, b1, b2) {
+        val commandType: CommandType,
+    ) : Command(b1, b2) {
 
-        open fun complete(func: (CommandContext) -> List<String>?) {
+        open fun complete(func: CommandContext.() -> List<String>?) {
             parent.complete = func
         }
 
-        open fun restrict(func: String.(CommandContext) -> Boolean) {
+        open fun restrict(func: CommandContext.(String) -> Boolean) {
             parent.restrict = func
         }
 
-        open fun execute(func: String.(CommandContext) -> Unit) {
+        open fun execute(func: CommandContext.(String) -> Unit) {
             executor.func = func
         }
     }
 
-    open class Executor(var func: (String.(CommandContext) -> Unit)? = null) {
+    open class Executor(var func: (CommandContext.(String) -> Unit)? = null) {
 
         operator fun invoke(context: CommandContext, argument: String) {
-            func?.invoke(argument, context)
+            func?.invoke(context, argument)
         }
     }
 

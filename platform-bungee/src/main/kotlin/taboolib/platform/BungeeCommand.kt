@@ -16,8 +16,12 @@ import taboolib.common.platform.*
 @PlatformSide([Platform.BUNGEE])
 class BungeeCommand : PlatformCommand {
 
-    @Suppress("ObjectLiteralToLambda")
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+    ) {
         BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name), TabExecutor {
 
             override fun execute(sender: CommandSender, args: Array<String>) {
@@ -31,9 +35,8 @@ class BungeeCommand : PlatformCommand {
     }
 
     override fun unregisterCommand(command: String) {
-        BungeeCord.getInstance().pluginManager.commands.filter { it.key == command }.forEach {
-            BungeeCord.getInstance().pluginManager.unregisterCommand(it.value)
-        }
+        val instance = BungeeCord.getInstance().pluginManager.commands.firstOrNull { it.key == command } ?: return
+        BungeeCord.getInstance().pluginManager.unregisterCommand(instance.value)
     }
 
     override fun unregisterCommands() {

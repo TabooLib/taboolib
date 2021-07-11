@@ -42,7 +42,12 @@ class BukkitCommand : PlatformCommand {
 
     val registeredCommands = ArrayList<CommandStructure>()
 
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+    ) {
         submit(now = true) {
             val pluginCommand = constructor.newInstance(command.name, plugin)
             pluginCommand.setExecutor { sender, _, label, args ->

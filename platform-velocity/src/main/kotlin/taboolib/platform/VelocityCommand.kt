@@ -16,7 +16,12 @@ class VelocityCommand : PlatformCommand {
 
     val registeredCommands = ArrayList<String>()
 
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+    ) {
         registeredCommands.add(command.name)
         VelocityPlugin.getInstance().server.commandManager.register(command.name, object : Command {
 
@@ -25,7 +30,7 @@ class VelocityCommand : PlatformCommand {
             }
 
             override fun suggest(source: CommandSource, currentArgs: Array<String>): MutableList<String> {
-                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: arrayListOf()
+                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: ArrayList()
             }
         }, *command.aliases.toTypedArray())
     }
@@ -35,8 +40,6 @@ class VelocityCommand : PlatformCommand {
     }
 
     override fun unregisterCommands() {
-        registeredCommands.onEach {
-            VelocityPlugin.getInstance().server.commandManager.unregister(it)
-        }
+        registeredCommands.onEach { VelocityPlugin.getInstance().server.commandManager.unregister(it) }
     }
 }

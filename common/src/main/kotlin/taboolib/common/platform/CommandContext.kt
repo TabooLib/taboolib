@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import java.util.*
+
 /**
  * TabooLib
  * taboolib.module.command.CommandContext
@@ -7,4 +9,4 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/25 10:02 上午
  */
-class CommandContext(val command: CommandStructure, val name: String, val args: Array<String>)
+class CommandContext(val sender: Optional<ProxyCommandSender>, val command: CommandStructure, val name: String, val args: Array<String>)

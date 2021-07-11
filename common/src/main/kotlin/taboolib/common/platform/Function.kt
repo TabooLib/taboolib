@@ -116,8 +116,8 @@ fun callEvent(proxyEvent: ProxyEvent) {
     platformAdapter.callEvent(proxyEvent)
 }
 
-fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
-    platformCommand.registerCommand(command, executor, completer)
+fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: Command.BaseCommand.() -> Unit) {
+    platformCommand.registerCommand(command, executor, completer, commandBuilder)
 }
 
 fun unregisterCommand(command: CommandStructure) {

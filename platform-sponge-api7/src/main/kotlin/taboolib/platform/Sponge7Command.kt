@@ -20,7 +20,12 @@ import java.util.*
 @PlatformSide([Platform.SPONGE_API_7])
 class Sponge7Command : PlatformCommand {
 
-    override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter) {
+    override fun registerCommand(
+        command: CommandStructure,
+        executor: CommandExecutor,
+        completer: CommandCompleter,
+        commandBuilder: Command.BaseCommand.() -> Unit,
+    ) {
 //        Sponge.getCommandManager().register(SpongePlugin.getInstance(),
 //            CommandSpec.builder()
 //                .description(Text.of(command.description))
