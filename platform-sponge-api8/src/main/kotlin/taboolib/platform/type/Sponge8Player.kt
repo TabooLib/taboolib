@@ -24,6 +24,7 @@ import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.reflect.Reflex.Companion.static
 import taboolib.common.util.Location
+import taboolib.platform.util.toPlain
 import java.net.InetSocketAddress
 import java.util.*
 
@@ -95,7 +96,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override var gameMode: ProxyGameMode
-        get() = ProxyGameMode.fromString(PlainTextComponentSerializer.plainText().serialize(player.gameMode().get().asComponent()))
+        get() = ProxyGameMode.fromString(player.gameMode().get().asComponent().toPlain())
         set(value) {
             player.gameMode().set(GameModes::class.java.static(value.name)!!)
         }
@@ -142,7 +143,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var isSleepingIgnored: Boolean
         get() = player.sleepingIgnored().get()
         set(value) {
-            player.sleepingIgnored().set(value)
+            player.offer(Keys.IS_SLEEPING_IGNORED, value)
         }
 
     override val isDead: Boolean
@@ -163,7 +164,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var hasGravity: Boolean
         get() = player.gravityAffected().get()
         set(value) {
-            player.gravityAffected().set(value)
+            player.offer(Keys.IS_GRAVITY_AFFECTED, value)
         }
 
     override val attackCooldown: Int
@@ -217,31 +218,31 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var exhaustion: Float
         get() = player.exhaustion().get().toFloat()
         set(value) {
-            player.exhaustion().set(value.toDouble())
+            player.offer(Keys.EXHAUSTION, value.toDouble())
         }
 
     override var saturation: Float
         get() = player.saturation().get().toFloat()
         set(value) {
-            player.exhaustion().set(value.toDouble())
+            player.offer(Keys.SATURATION, value.toDouble())
         }
 
     override var foodLevel: Int
         get() = player.foodLevel().get()
         set(value) {
-            player.foodLevel().set(value)
+            player.offer(Keys.FOOD_LEVEL, value)
         }
 
     override var health: Double
         get() = player.health().get()
         set(value) {
-            player.health().set(value)
+            player.offer(Keys.HEALTH, value)
         }
 
     override var maxHealth: Double
         get() = player.maxHealth().get()
         set(value) {
-            player.maxHealth().set(value)
+            player.offer(Keys.MAX_HEALTH, value)
         }
 
     override var allowFlight: Boolean
@@ -262,7 +263,6 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
             player.offer(Keys.FLYING_SPEED, it.toDouble())
         }
 
-    // TODO: 2021/7/7 可能存在争议
     override var walkSpeed: Float
         get() = player.get(Keys.WALKING_SPEED).get().toFloat()
         set(it) {
@@ -271,19 +271,15 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
 
     override val pose: String
         get() {
-            // TODO: 2021/7/7 可能存在争议，FALL_FLYING，STANDING
-            // SWIMMING 是指 1.13 版本中的游泳，在 1.12 版本中可能不存在该动作。应当在 api7 中不做实现，或使用其他实现方式。
+            // 忽略：SPIN_ATTACK, LONG_JUMPING
             return when {
-                player.get(Keys.IS_SNEAKING).get() -> "SNEAKING"
-                player.get(Keys.IS_SLEEPING).get() -> "SLEEPING"
-                player.get(Keys.IS_ELYTRA_FLYING).get() -> "FALL_FLYING"
-                player.get(Keys.HEALTH).get() <= 0 -> "DYING"
-                player.get(Keys.IS_IN_WATER).get() -> "SWIMMING"
-                player.onGround().get() && player.get(Keys.WALKING_SPEED).get() <= 0 -> "STANDING"
-                else -> error("unsupported")
+                isDead -> "DYING"
+                isGliding -> "FALL_FLYING"
+                isSleeping -> "SLEEPING"
+                isSneaking -> "SNEAKING"
+                else -> "STANDING"
             }
         }
-
 
     override val facing: String
         get() = Direction.closest(player.transform().rotation()).name

@@ -1,5 +1,6 @@
 package taboolib.platform.type
 
+import cn.nukkit.AdventureSettings
 import cn.nukkit.player.GameMode
 import cn.nukkit.player.Player
 import com.nukkitx.math.vector.Vector3f
@@ -227,15 +228,16 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override var allowFlight: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.allowFlight
+        set(value) {
+            player.allowFlight = value
         }
 
     override var isFlying: Boolean
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() = player.adventureSettings.get(AdventureSettings.Type.FLYING)
+        set(value) {
+            player.adventureSettings.set(AdventureSettings.Type.FLYING, value)
+            player.adventureSettings.update()
         }
 
     override var flySpeed: Float
@@ -289,7 +291,6 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
-    // TODO: 2021/7/6 Nukkit Raw Message
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }
@@ -304,6 +305,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
 
     override fun teleport(loc: Location) {
         val level = NukkitPlugin.getInstance().server.levelManager.getLevelByName(loc.world) ?: player.level
-        player.teleport(cn.nukkit.level.Location.from(loc.x.toFloat(), loc.y.toFloat(), loc.z.toFloat(), loc.yaw, loc.pitch, level))
+        val location = cn.nukkit.level.Location.from(loc.x.toFloat(), loc.y.toFloat(), loc.z.toFloat(), loc.yaw, loc.pitch, level)
+        player.teleport(location)
     }
 }

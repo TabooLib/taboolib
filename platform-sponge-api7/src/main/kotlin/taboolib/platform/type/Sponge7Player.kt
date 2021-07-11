@@ -1,6 +1,7 @@
 package taboolib.platform.type
 
 import com.flowpowered.math.vector.Vector3d
+import com.google.common.base.Preconditions
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.key.Keys
 import org.spongepowered.api.effect.sound.SoundType
@@ -96,10 +97,10 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override val isSneaking: Boolean
-        get() = player.get(Keys.IS_SNEAKING).get()
+        get() = player.getOrElse(Keys.IS_SNEAKING, false)
 
     override val isSprinting: Boolean
-        get() = player.get(Keys.IS_SPRINTING).get()
+        get() = player.getOrElse(Keys.IS_SPRINTING, false)
 
     override val isBlocking: Boolean
         get() {
@@ -108,15 +109,15 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override var isGliding: Boolean
-        get() = player.get(Keys.IS_ELYTRA_FLYING).get()
+        get() = player.getOrElse(Keys.IS_ELYTRA_FLYING, false)
         set(value) {
-            player.getValue(Keys.IS_ELYTRA_FLYING).get().set(value)
+            player.offer(Keys.IS_ELYTRA_FLYING, value)
         }
 
     override var isGlowing: Boolean
-        get() = player.get(Keys.GLOWING).get()
+        get() = player.getOrElse(Keys.GLOWING, false)
         set(value) {
-            player.getValue(Keys.GLOWING).get().set(value)
+            player.offer(Keys.GLOWING, value)
         }
 
     override var isSwimming: Boolean
@@ -129,7 +130,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         get() = error("unsupported")
 
     override val isSleeping: Boolean
-        get() = player.get(Keys.IS_SLEEPING).get()
+        get() = player.getOrElse(Keys.IS_SLEEPING, false)
 
     override val sleepTicks: Int
         get() = error("unsupported")
@@ -158,7 +159,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override var hasGravity: Boolean
         get() = player.gravity().get()
         set(value) {
-            player.gravity().set(value)
+            player.offer(Keys.HAS_GRAVITY, value)
         }
 
     override val attackCooldown: Int
@@ -177,108 +178,104 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         get() = player.lastPlayed().get().toEpochMilli()
 
     override var absorptionAmount: Double
-        get() = player.get(Keys.ABSORPTION).orElse(0.0)
+        get() = player.getOrElse(Keys.ABSORPTION, 0.0)
         set(value) {
-            player.getValue(Keys.ABSORPTION).get().set(value)
+            player.offer(Keys.ABSORPTION, value)
         }
 
     override var noDamageTicks: Int
-        get() = player.get(Keys.INVULNERABILITY_TICKS).orElse(0)
+        get() = player.getOrElse(Keys.INVULNERABILITY_TICKS, 0)
         set(value) {
-            player.getValue(Keys.INVULNERABILITY_TICKS).get().set(value)
+            player.offer(Keys.INVULNERABILITY_TICKS, value)
         }
 
     override var remainingAir: Int
-        get() = player.get(Keys.REMAINING_AIR).orElse(0)
+        get() = player.getOrElse(Keys.REMAINING_AIR, 0)
         set(value) {
-            player.getValue(Keys.REMAINING_AIR).get().set(value)
+            player.offer(Keys.REMAINING_AIR, value)
         }
 
     override val maximumAir: Int
-        get() = player.get(Keys.MAX_AIR).orElse(0)
+        get() = player.getOrElse(Keys.MAX_AIR, 0)
 
     override var level: Int
-        get() = player.get(Keys.EXPERIENCE_LEVEL).get()
+        get() = player.getOrElse(Keys.EXPERIENCE_LEVEL, 0)
         set(value) {
             player.offer(Keys.EXPERIENCE_LEVEL, value)
         }
 
     override var exp: Float
-        get() = player.get(Keys.EXPERIENCE_SINCE_LEVEL).get().toFloat()
+        get() = player.getOrElse(Keys.EXPERIENCE_SINCE_LEVEL, 0) / player.getOrElse(Keys.EXPERIENCE_FROM_START_OF_LEVEL, 0).toFloat()
         set(value) {
-            player.offer(Keys.EXPERIENCE_SINCE_LEVEL, value.toInt())
+            Preconditions.checkArgument(value in 0f..1f)
+            player.offer(Keys.EXPERIENCE_SINCE_LEVEL, (player.getOrElse(Keys.EXPERIENCE_FROM_START_OF_LEVEL, 0) * value).toInt())
         }
 
     override var exhaustion: Float
-        get() = player.exhaustion().get().toFloat()
+        get() = player.getOrElse(Keys.EXHAUSTION, 0.0).toFloat()
         set(value) {
-            player.exhaustion().set(value.toDouble())
+            player.offer(Keys.EXHAUSTION, value.toDouble())
         }
 
     override var saturation: Float
-        get() = player.saturation().get().toFloat()
+        get() = player.getOrElse(Keys.SATURATION, 0.0).toFloat()
         set(value) {
-            player.exhaustion().set(value.toDouble())
+            player.offer(Keys.SATURATION, value.toDouble())
         }
 
     override var foodLevel: Int
-        get() = player.foodLevel().get()
+        get() = player.getOrElse(Keys.FOOD_LEVEL, 0)
         set(value) {
-            player.foodLevel().set(value)
+            player.offer(Keys.FOOD_LEVEL, value)
         }
 
     override var health: Double
-        get() = player.health().get()
+        get() = player.getOrElse(Keys.HEALTH, 0.0)
         set(value) {
-            player.health().set(value)
+            player.offer(Keys.HEALTH, value)
         }
 
     override var maxHealth: Double
-        get() = player.maxHealth().get()
+        get() = player.getOrElse(Keys.MAX_HEALTH, 0.0)
         set(value) {
-            player.maxHealth().set(value)
+            player.offer(Keys.MAX_HEALTH, value)
         }
 
     override var allowFlight: Boolean
-        get() = player.get(Keys.CAN_FLY).get()
+        get() = player.getOrElse(Keys.CAN_FLY, false)
         set(it) {
-            player.getValue(Keys.CAN_FLY).get().set(it)
+            player.offer(Keys.CAN_FLY, it)
         }
 
     override var isFlying: Boolean
-        get() = player.get(Keys.IS_FLYING).get()
+        get() = player.getOrElse(Keys.IS_FLYING, false)
         set(it) {
-            player.getValue(Keys.IS_FLYING).get().set(it)
+            player.offer(Keys.IS_FLYING, it)
         }
 
     override var flySpeed: Float
-        get() = player.get(Keys.FLYING_SPEED).get().toFloat()
+        get() = player.getOrElse(Keys.FLYING_SPEED, 0.0).toFloat()
         set(it) {
-            player.getValue(Keys.FLYING_SPEED).get().set(it.toDouble())
+            player.offer(Keys.FLYING_SPEED, it.toDouble())
         }
 
-    // TODO: 2021/7/7 可能存在争议
     override var walkSpeed: Float
-        get() = player.get(Keys.WALKING_SPEED).get().toFloat()
+        get() = player.getOrElse(Keys.WALKING_SPEED, 0.0).toFloat()
         set(it) {
-            player.getValue(Keys.WALKING_SPEED).get().set(it.toDouble())
+            player.offer(Keys.WALKING_SPEED, it.toDouble())
         }
 
     override val pose: String
         get() {
-            // TODO: 2021/7/7 可能存在争议，FALL_FLYING，STANDING
-            // SWIMMING 是指 1.13 版本中的游泳，在 1.12 版本中可能不存在该动作。应当在 api7 中不做实现，或使用其他实现方式。
+            // 忽略：SPIN_ATTACK, LONG_JUMPING
             return when {
-                player.get(Keys.IS_SNEAKING).get() -> "SNEAKING"
-                player.get(Keys.IS_SLEEPING).get() -> "SLEEPING"
-                player.get(Keys.IS_ELYTRA_FLYING).get() -> "FALL_FLYING"
-                player.get(Keys.HEALTH).get() <= 0 -> "DYING"
-                player.get(Keys.REMAINING_AIR).get() < player.get(Keys.MAX_AIR).get() -> "SWIMMING"
-                player.isOnGround && player.get(Keys.WALKING_SPEED).get() <= 0 -> "STANDING"
-                else -> error("unsupported")
+                isDead -> "DYING"
+                isGliding -> "FALL_FLYING"
+                isSleeping -> "SLEEPING"
+                isSneaking -> "SNEAKING"
+                else -> "STANDING"
             }
         }
-
 
     override val facing: String
         get() = Direction.getClosest(player.transform.rotation).name
