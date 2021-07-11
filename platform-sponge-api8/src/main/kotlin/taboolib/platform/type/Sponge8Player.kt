@@ -329,8 +329,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-//        return Sponge().process(player, command).successCount.isPresent
-        return false
+        return Sponge.server().commandManager().process(player, command).isSuccess
     }
 
     // TODO: 2021/7/7 可能存在争议

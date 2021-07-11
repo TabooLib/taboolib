@@ -20,6 +20,10 @@ import taboolib.platform.type.Sponge8Player
 @PlatformSide([Platform.SPONGE_API_8])
 class Sponge8Adapter : PlatformAdapter {
 
+    val plugin by lazy {
+        Sponge8Plugin.getInstance()
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
         return Sponge.server() as T
@@ -47,15 +51,19 @@ class Sponge8Adapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
+        val listener = Sponge8Listener<Event> { func(it as T) }
+        Sponge.eventManager().registerListener(plugin.pluginContainer, event as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
+        return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
-        error("unsupported")
+        Sponge.eventManager().unregisterListeners(proxyListener)
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
-        error("unsupported")
+        val event = Sponge8Event(proxyEvent)
+        Sponge.eventManager().post(event)
+        event.proxyEvent.postCall()
     }
 
     class Sponge8Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {

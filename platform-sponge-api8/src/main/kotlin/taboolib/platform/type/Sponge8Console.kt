@@ -13,25 +13,20 @@ import taboolib.common.platform.ProxyConsole
  * @author tr
  * @since 2021/6/21 15:29
  */
-
 class Sponge8Console(val sender: SystemSubject) : ProxyConsole {
-    // TODO: 2021/7/9 There is no more ConsoleSource
+
     override val origin: Any
         get() = sender
 
-    // TODO: 2021/7/9 Why console have a name ? could it return "Console" directly?
     override val name: String
-        get() = error("unsupported ap7->api8")
+        get() = "console"
 
-    // TODO: 2021/7/9 if it is console, is there any reason that it do not have all permissions?
     override var isOp: Boolean
-        get() = error("unsupported ap7->api8")
-        set(value) {
-            error("unsupported ap7->api8")
+        get() = true
+        set(_) {
         }
 
     override fun sendMessage(message: String) {
-        // try Component.text(message)
         sender.sendMessage(Component.text(message))
     }
 
@@ -40,6 +35,6 @@ class Sponge8Console(val sender: SystemSubject) : ProxyConsole {
     }
 
     override fun hasPermission(permission: String): Boolean {
-        error("unsupported ap7->api8")
+        return true
     }
 }
