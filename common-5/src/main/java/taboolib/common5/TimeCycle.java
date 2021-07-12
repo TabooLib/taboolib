@@ -46,7 +46,7 @@ public class TimeCycle {
         return this;
     }
 
-    public TimeCycle in(long start) {
+    public TimeCycle start(long start) {
         if (this.cacheEnd.containsKey(start)) {
             this.end = this.cacheEnd.get(start);
         } else {

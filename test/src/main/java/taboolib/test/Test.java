@@ -14,7 +14,6 @@ public class Test {
 
     public static void main(String[] args) {
         TabooLibCommon.testSetup();
-        Intrinsics.checkNotNull(null, "123");
-        System.out.println("112233");
+        Test2.main(args);
     }
 }

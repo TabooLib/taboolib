@@ -75,8 +75,7 @@ fun File.digest(algorithm: String): String {
         while (it.read(buffer, 0, 1024).also { i -> length = i } != -1) {
             digest.update(buffer, 0, length)
         }
-        val bytes = digest.digest()
-        BigInteger(1, bytes).toString(16)
+        BigInteger(1, digest.digest()).toString(16)
     }
 }
 
