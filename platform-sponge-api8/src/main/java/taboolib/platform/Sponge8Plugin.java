@@ -108,7 +108,7 @@ public class Sponge8Plugin {
 
     @NotNull
     public File getPluginConfigDir() {
-        return pluginConfigDir.toFile();
+        return pluginConfigDir.resolve(pluginContainer.metadata().id()).toFile();
     }
 
     @NotNull

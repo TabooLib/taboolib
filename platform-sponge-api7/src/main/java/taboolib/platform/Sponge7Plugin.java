@@ -19,6 +19,7 @@ import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * TabooLib
@@ -44,7 +45,7 @@ public class Sponge7Plugin {
 
     @Inject
     @ConfigDir(sharedRoot = false)
-    private File pluginConfigDir;
+    private Path pluginConfigDir;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
@@ -106,6 +107,6 @@ public class Sponge7Plugin {
 
     @NotNull
     public File getPluginConfigDir() {
-        return pluginConfigDir;
+        return pluginConfigDir.resolve(pluginContainer.getId()).toFile();
     }
 }

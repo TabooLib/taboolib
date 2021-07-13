@@ -1,4 +1,4 @@
-package taboolib.module.nms.internal;
+package taboolib.module.nms;
 
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
@@ -36,10 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.platform.FunctionKt;
 import taboolib.common.reflect.Ref;
 import taboolib.common.reflect.Reflex;
-import taboolib.module.nms.ItemTag;
-import taboolib.module.nms.ItemTagData;
-import taboolib.module.nms.ItemTagList;
-import taboolib.module.nms.MinecraftVersion;
 import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Field;
@@ -59,11 +55,11 @@ import static taboolib.module.nms.MinecraftServerUtilKt.sendPacket;
  * @since 2021/6/18 8:54 下午
  */
 @SuppressWarnings("ALL")
-public class NMSJavaImpl extends NMSJava {
+public class NMSGenericImpl extends NMSGeneric {
 
     private Field entityTypesField;
 
-    public NMSJavaImpl() {
+    public NMSGenericImpl() {
         if (taboolib.module.nms.MinecraftVersion.INSTANCE.getMajor() >= 5) {
             for (Field declaredField : net.minecraft.server.v1_12_R1.Entity.class.getDeclaredFields()) {
                 if (declaredField.getType().getSimpleName().equals("EntityTypes")) {

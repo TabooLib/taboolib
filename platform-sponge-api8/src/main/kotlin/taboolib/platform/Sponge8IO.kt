@@ -68,6 +68,15 @@ class Sponge8IO : PlatformIO {
         return Sponge8Plugin.getInstance().pluginConfigDir
     }
 
+    override fun getPlatformData(): Map<String, Any> {
+        val platform = Sponge.game().platform()
+        return mapOf(
+            "minecraftVersion" to platform.minecraftVersion().name(),
+            "onlineMode" to if (Sponge.server().isOnlineModeEnabled) 1 else 0,
+            "spongeImplementation" to platform.container(org.spongepowered.api.Platform.Component.IMPLEMENTATION).metadata().id(),
+        )
+    }
+
     override fun getOpenContainers(): List<OpenContainer> {
         return Sponge.pluginManager().plugins()
             .filter { it.instance()?.javaClass?.name?.endsWith("taboolib.platform.Sponge8Plugin") == true }

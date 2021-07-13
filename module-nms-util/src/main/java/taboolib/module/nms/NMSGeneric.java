@@ -1,4 +1,4 @@
-package taboolib.module.nms.internal;
+package taboolib.module.nms;
 
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * @author sky
  * @since 2021/6/18 8:54 下午
  */
-public abstract class NMSJava {
+public abstract class NMSGeneric {
 
     @NotNull
     abstract public String getKey(ItemStack itemStack);

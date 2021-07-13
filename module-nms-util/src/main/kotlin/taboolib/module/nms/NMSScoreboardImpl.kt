@@ -1,13 +1,11 @@
-package taboolib.module.nms.internal
+package taboolib.module.nms
 
 import net.minecraft.server.v1_16_R3.*
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.sendPacket
 
-class NMSKtImpl : NMSKt() {
+class NMSScoreboardImpl : NMSScoreboard() {
 
     override fun setupScoreboard(player: Player, remove: Boolean) {
         val packet = PacketPlayOutScoreboardObjective()

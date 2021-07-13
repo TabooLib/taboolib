@@ -3,6 +3,7 @@
 package taboolib.common.util
 
 import taboolib.common.Isolated
+import java.io.Closeable
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
@@ -51,14 +52,14 @@ fun <K, V> subMap(map: Map<K, V>, start: Int = 0, end: Int = map.size - 1): List
     return map.entries.filterIndexed { index, _ -> index in start..end }
 }
 
-fun MutableList<Any>.setSafely(index: Int, element: Any, def: Any = "") {
+fun <T> MutableList<T>.setSafely(index: Int, element: T, def: T) {
     while (size <= index) {
         add(def)
     }
     this[index] = element
 }
 
-fun MutableList<Any>.addSafely(index: Int, element: Any, def: Any = "") {
+fun <T> MutableList<T>.addSafely(index: Int, element: T, def: T) {
     while (size <= index) {
         add(def)
     }
@@ -91,4 +92,47 @@ fun random(num1: Double, num2: Double): Double {
     val min = min(num1, num2)
     val max = max(num1, num2)
     return if (min == max) max else ThreadLocalRandom.current().nextDouble(min, max)
+}
+
+fun <T, C : Iterable<T>, R> C.each(start: Int = -1, end: Int = -1, reversed: Boolean = false, action: Closeable.(index: Int, T) -> R?): R? {
+    val trigger = object : Closeable {
+        var closed = false
+        override fun close() {
+            closed = true
+        }
+    }
+    if (reversed) {
+        var index = toList().size
+        for (item in reversed()) {
+            if (index > end && (index <= start || start == -1)) {
+                if (trigger.closed) {
+                    break
+                }
+                val result = action(trigger, index, item)
+                if (result != null && result != Unit) {
+                    return result
+                }
+            }
+            index--
+        }
+    } else {
+        var index = 0
+        for (item in this) {
+            if (index >= start && (index < end || end == -1)) {
+                if (trigger.closed) {
+                    break
+                }
+                val result = action(trigger, index, item)
+                if (result != null && result != Unit) {
+                    return result
+                }
+            }
+            index++
+        }
+    }
+    return null
+}
+
+fun <T> Optional<T>.presentRun(func: T.() -> Unit) {
+    ifPresent(func)
 }

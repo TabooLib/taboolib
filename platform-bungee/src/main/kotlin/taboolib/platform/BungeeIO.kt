@@ -67,6 +67,15 @@ class BungeeIO : PlatformIO {
         return BungeePlugin.getInstance().dataFolder
     }
 
+    override fun getPlatformData(): Map<String, Any> {
+        val proxy = BungeePlugin.getInstance().proxy
+        return mapOf(
+            "managedServers" to proxy.servers.size,
+            "onlineMode" to if (proxy.config.isOnlineMode) 1 else 0,
+            "bungeecordVersion" to proxy.version,
+        )
+    }
+
     override fun getOpenContainers(): List<OpenContainer> {
         return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BungeePlugin") }.mapNotNull {
             try {

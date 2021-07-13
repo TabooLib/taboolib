@@ -47,6 +47,22 @@ object MinecraftVersion {
         arrayOf("1.17", "1.17.1")
     )
 
+    val majorLegacy by lazy {
+        when (major) {
+            0 -> 10800
+            1 -> 10900
+            2 -> 11000
+            3 -> 11100
+            4 -> 11200
+            5 -> 11300
+            6 -> 11400
+            7 -> 11500
+            8 -> 11600
+            9 -> 11700
+            else -> -1
+        }
+    }
+
     val major by lazy {
         supportedVersion.indexOfFirst { it.contains(runningVersion) }
     }

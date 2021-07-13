@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import cn.nukkit.Nukkit
 import cn.nukkit.Server
 import cn.nukkit.console.NukkitConsole
 import org.slf4j.Logger
@@ -67,6 +68,14 @@ class NukkitIO : PlatformIO {
 
     override fun getDataFolder(): File {
         return NukkitPlugin.getInstance().dataFolder
+    }
+
+    override fun getPlatformData(): Map<String, Any> {
+        return mapOf(
+            "nukkitVersion" to Server.getInstance().version,
+            "nukkitName" to Server.getInstance().name,
+            "onlineMode" to 0
+        )
     }
 
     override fun getOpenContainers(): List<OpenContainer> {

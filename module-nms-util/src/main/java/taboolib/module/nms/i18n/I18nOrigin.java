@@ -14,10 +14,9 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.RuntimeResource;
-import taboolib.common.platform.FunctionKt;
 import taboolib.module.nms.ItemTag;
 import taboolib.module.nms.MinecraftVersion;
-import taboolib.module.nms.NMSUtilKt;
+import taboolib.module.nms.NMSKt;
 
 import java.io.File;
 import java.util.Locale;
@@ -51,7 +50,7 @@ public class I18nOrigin extends I18nBase {
     @Override
     public @NotNull
     String getName(Player player, @NotNull Entity entity) {
-        return Objects.requireNonNull(lang.getString(NMSUtilKt.getInternalName(entity).replace(".", "_"), entity.getName()));
+        return Objects.requireNonNull(lang.getString(NMSKt.getInternalName(entity).replace(".", "_"), entity.getName()));
     }
 
     @Override
@@ -64,7 +63,7 @@ public class I18nOrigin extends I18nBase {
         // < 1.11
         if (MinecraftVersion.INSTANCE.getMajor() < 3) {
             if (itemStack.getType().name().equals("MONSTER_EGG")) {
-                ItemTag itemTag = NMSUtilKt.getItemTag(itemStack);
+                ItemTag itemTag = NMSKt.getItemTag(itemStack);
                 if (itemTag.containsKey("EntityTag")) {
                     return lang.getString("item_monsterPlacer_name") + " " + lang.getString("entity_" + itemTag.get("EntityTag").asCompound().get("id").asString() + "_name");
                 }
@@ -76,14 +75,14 @@ public class I18nOrigin extends I18nBase {
             if (itemMeta instanceof SpawnEggMeta) {
                 String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {
-                    return lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")) + " " + spawnEggType;
+                    return lang.getString(NMSKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")) + " " + spawnEggType;
                 }
             }
         }
         if (itemStack.getType().equals(Material.AIR)) {
             return Objects.requireNonNull(lang.getString("item_air"));
         } else {
-            return Objects.requireNonNull(lang.getString(NMSUtilKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")));
+            return Objects.requireNonNull(lang.getString(NMSKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")));
         }
     }
 

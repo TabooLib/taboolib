@@ -110,5 +110,7 @@ class Reflex(val from: Class<*>) {
          * 通过 Reflex 设置 Class 中的静态属性
          */
         fun Class<*>.static(path: String, value: Any?) = Reflex(this).write(path, value)
+
+        fun <T> Class<T>.unsafeInstance() = Ref.unsafe.allocateInstance(this)!!
     }
 }

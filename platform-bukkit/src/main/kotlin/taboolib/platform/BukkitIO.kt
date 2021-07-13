@@ -62,6 +62,14 @@ class BukkitIO : PlatformIO {
         return plugin.dataFolder
     }
 
+    override fun getPlatformData(): Map<String, Any> {
+        return mapOf(
+            "bukkitVersion" to Bukkit.getVersion(),
+            "bukkitName" to Bukkit.getName(),
+            "onlineMode" to if (Bukkit.getOnlineMode()) 1 else 0
+        )
+    }
+
     override fun getOpenContainers(): List<OpenContainer> {
         return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BukkitPlugin") }.mapNotNull {
             try {

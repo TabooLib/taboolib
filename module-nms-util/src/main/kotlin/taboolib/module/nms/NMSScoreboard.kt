@@ -1,8 +1,8 @@
-package taboolib.module.nms.internal
+package taboolib.module.nms
 
 import org.bukkit.entity.Player
 
-abstract class NMSKt {
+abstract class NMSScoreboard {
 
     val uniqueColors = listOf(
         "§黒",

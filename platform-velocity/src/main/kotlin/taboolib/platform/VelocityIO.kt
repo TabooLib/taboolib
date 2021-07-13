@@ -68,6 +68,17 @@ class VelocityIO : PlatformIO {
         return VelocityPlugin.getInstance().configDirectory.toFile()
     }
 
+    override fun getPlatformData(): Map<String, Any> {
+        val server = VelocityPlugin.getInstance().server
+        return mapOf(
+            "managedServers" to server.allServers.size,
+            "onlineMode" to if (server.configuration.isOnlineMode) 1 else 0,
+            "velocityVersionVersion" to server.version.version,
+            "velocityVersionName" to server.version.name,
+            "velocityVersionVendor" to server.version.vendor,
+        )
+    }
+
     override fun getOpenContainers(): List<OpenContainer> {
         return VelocityPlugin.getInstance().server.pluginManager.plugins
             .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.VelocityPlugin") == true }

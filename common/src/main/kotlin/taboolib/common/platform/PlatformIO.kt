@@ -21,5 +21,7 @@ interface PlatformIO {
 
     fun getDataFolder(): File
 
+    fun getPlatformData(): Map<String, Any>
+
     fun getOpenContainers(): List<OpenContainer>
 }

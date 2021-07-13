@@ -191,7 +191,7 @@ abstract class Command(protected val successBox: CommandBox<Boolean>, protected 
             return success
         }
 
-        open fun execute(func: (CommandContext) -> Unit) {
+        open fun execute(func: CommandContext.() -> Unit) {
             executor.func = { func(this) }
         }
     }

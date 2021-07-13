@@ -42,6 +42,10 @@ fun getDataFolder(): File {
     return platformIO.getDataFolder()
 }
 
+fun getPlatformData(): Map<String, Any> {
+    return platformIO.getPlatformData()
+}
+
 fun getOpenContainers(): List<OpenContainer> {
     return platformIO.getOpenContainers()
 }

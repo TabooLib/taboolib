@@ -21,7 +21,8 @@ interface ProxyCommandSender {
 
     fun hasPermission(permission: String): Boolean
 
-    fun <T> cast(type: Class<T>): T {
-        return type.cast(origin)
+    @Suppress("UNCHECKED_CAST")
+    fun <T> cast(): T {
+        return origin as T
     }
 }

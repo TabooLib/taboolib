@@ -13,8 +13,6 @@ import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.common.reflect.Reflex.Companion.staticInvoke
 import taboolib.module.nms.i18n.I18n
-import taboolib.module.nms.internal.NMSJava
-import taboolib.module.nms.internal.NMSKt
 import taboolib.module.nms.type.LightType
 import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
@@ -30,39 +28,36 @@ private val scoreboardMap = ConcurrentHashMap<String, PacketScoreboard>()
 
 private val toastMap = ConcurrentHashMap<Toast, NamespacedKey>()
 
-private val nmsUtil1 = nmsProxy(NMSJava::class.java)
+val nmsGeneric = nmsProxy(NMSGeneric::class.java)
 
-private val nmsUtil2 = nmsProxy(NMSKt::class.java)
-
-private val plugin: BukkitPlugin
-    get() = BukkitPlugin.getInstance()
+val nmsScoreboard = nmsProxy(NMSScoreboard::class.java)
 
 /**
  * 获取物品NBT数据
  */
 fun ItemStack.getItemTag(): ItemTag {
-    return nmsUtil1.getItemTag(this)
+    return nmsGeneric.getItemTag(this)
 }
 
 /**
  * 写入物品NBT数据
  */
 fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
-    return nmsUtil1.setItemTag(this, itemTag)
+    return nmsGeneric.setItemTag(this, itemTag)
 }
 
 /**
  * 获取物品内部名称
  */
 fun ItemStack.getInternalKey(): String {
-    return nmsUtil1.getKey(this)
+    return nmsGeneric.getKey(this)
 }
 
 /**
  * 获取物品内部名称
  */
 fun ItemStack.getInternalName(): String {
-    return nmsUtil1.getName(this)
+    return nmsGeneric.getName(this)
 }
 
 fun ItemStack.getI18nName(player: Player? = null): String {
@@ -73,7 +68,7 @@ fun ItemStack.getI18nName(player: Player? = null): String {
  * 获取实体内部名称
  */
 fun Entity.getInternalName(): String {
-    return nmsUtil1.getName(this)
+    return nmsGeneric.getName(this)
 }
 
 fun Entity.getI18nName(player: Player? = null): String {
@@ -84,7 +79,7 @@ fun Entity.getI18nName(player: Player? = null): String {
  * 获取附魔内部名称
  */
 fun Enchantment.getInternalName(): String {
-    return nmsUtil1.getEnchantmentKey(this)
+    return nmsGeneric.getEnchantmentKey(this)
 }
 
 fun Enchantment.getI18nName(player: Player? = null): String {
@@ -95,7 +90,7 @@ fun Enchantment.getI18nName(player: Player? = null): String {
  * 获取药水效果内部名称
  */
 fun PotionEffectType.getInternalName(): String {
-    return nmsUtil1.getPotionEffectTypeKey(this)
+    return nmsGeneric.getPotionEffectTypeKey(this)
 }
 
 fun PotionEffectType.getI18nName(player: Player? = null): String {
@@ -106,22 +101,22 @@ fun PotionEffectType.getI18nName(player: Player? = null): String {
  * 生成实体并在生成之前执行特定行为
  */
 fun <T : Entity> Location.spawnEntity(entity: Class<T>, func: Consumer<T>) {
-    nmsUtil1.spawnEntity(this, entity, func)
+    nmsGeneric.spawnEntity(this, entity, func)
 }
 
 /**
  * 创建光源
  */
 fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
-    if (nmsUtil1.getRawLightLevel(this, lightType) > lightLevel) {
-        nmsUtil1.deleteLight(this, lightType)
+    if (nmsGeneric.getRawLightLevel(this, lightType) > lightLevel) {
+        nmsGeneric.deleteLight(this, lightType)
     }
-    val result = nmsUtil1.createLight(this, lightType, lightLevel)
+    val result = nmsGeneric.createLight(this, lightType, lightLevel)
     if (update) {
         // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
         (-1..1).forEach { x ->
             (-1..1).forEach { z ->
-                nmsUtil1.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
+                nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
             }
         }
     }
@@ -132,11 +127,11 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
  * 删除光源
  */
 fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
-    val result = nmsUtil1.deleteLight(this, lightType)
+    val result = nmsGeneric.deleteLight(this, lightType)
     if (update) {
         (-1..1).forEach { x ->
             (-1..1).forEach { z ->
-                nmsUtil1.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
+                nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
             }
         }
     }
@@ -170,7 +165,7 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
         val cache = Toast(icon, message, frame)
         val namespaceKey = toastMap.computeIfAbsent(cache) {
             inject(
-                NamespacedKey(plugin, "toast_${UUID.randomUUID()}"),
+                NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"),
                 toJsonToast(icon.reflexInvoke<Any>("getKey").toString(), message, frame, background)
             )
         }
@@ -273,8 +268,8 @@ private class PacketScoreboard(player: Player, title: String, context: List<Stri
     private val currentContent = HashMap<Int, String>()
 
     init {
-        nmsUtil2.setupScoreboard(player, false)
-        nmsUtil2.display(player)
+        nmsScoreboard.setupScoreboard(player, false)
+        nmsScoreboard.display(player)
         sendTitle(player, title)
         sendContent(player, context)
     }
@@ -282,12 +277,12 @@ private class PacketScoreboard(player: Player, title: String, context: List<Stri
     fun sendTitle(player: Player, title: String) {
         if (currentTitle != title) {
             currentTitle = title
-            nmsUtil2.setDisplayName(player, title)
+            nmsScoreboard.setDisplayName(player, title)
         }
     }
 
     fun sendContent(player: Player, lines: List<String>) {
-        nmsUtil2.changeContent(player, lines, currentContent)
+        nmsScoreboard.changeContent(player, lines, currentContent)
         currentContent.clear()
         currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
     }

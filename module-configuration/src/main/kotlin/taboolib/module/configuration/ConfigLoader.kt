@@ -4,10 +4,12 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
+import taboolib.common.platform.info
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.reflect.Ref
 import taboolib.common5.FileWatcher
 import java.io.File
+import java.io.FileInputStream
 import java.lang.reflect.Field
 
 @RuntimeDependency("org.yaml:snakeyaml:1.28", test = "org.yaml.snakeyaml.Yaml")
@@ -19,6 +21,15 @@ object ConfigLoader : Injector.Fields {
     override fun inject(field: Field, clazz: Class<*>, instance: Any?) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val file = releaseResourceFile(field.getAnnotation(Config::class.java).value)
+            if (field.getAnnotation(Config::class.java).migrate) {
+                val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
+                if (resourceAsStream != null) {
+                    val bytes = resourceAsStream.migrateTo(file.inputStream())
+                    if (bytes != null) {
+                        file.writeBytes(bytes)
+                    }
+                }
+            }
             val conf = SecuredFile.loadConfiguration(file)
             val configFile = ConfigFile(conf, file)
             try {

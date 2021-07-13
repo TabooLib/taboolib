@@ -52,13 +52,17 @@ class SecuredFile : YamlConfiguration() {
 
     companion object {
 
-        fun dumpAll(key: String, value: Any?): String {
-            val dump = dump(value)
-            return when {
-                dump.startsWith("-") -> "$key:\n$dump"
-                value is List<*> && value.isEmpty() -> "$key: []"
-                value is Map<*, *> -> if (value.isEmpty()) "$key: {}" else "$key:\n$dump"
-                else -> "$key: $dump"
+        fun dumpAll(key: String, value: Any?, space: Int = 2): String {
+            return if (key.contains('.')) {
+                "${key.substring(0, key.indexOf('.'))}:\n${" ".repeat(space)}${dumpAll(key.substring(key.indexOf('.') + 1), value, space + 2)}"
+            } else {
+                val dump = dump(value)
+                when {
+                    dump.startsWith("-") -> "$key:\n$dump"
+                    value is List<*> && value.isEmpty() -> "$key: []"
+                    value is Map<*, *> -> if (value.isEmpty()) "$key: {}" else "$key:\n$dump"
+                    else -> "$key: $dump"
+                }
             }
         }
 

@@ -27,7 +27,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
     }
 
     public void saveTo(ItemStack item) {
-        item.setItemMeta(NMSUtilKt.setItemTag(item, this).getItemMeta());
+        item.setItemMeta(NMSKt.setItemTag(item, this).getItemMeta());
     }
 
     public String toJson() {
