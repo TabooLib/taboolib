@@ -30,11 +30,11 @@ public class ClickListener {
     public void e(InventoryOpenEvent e) {
         MenuBuilder builder = MenuHolder.get(e.getInventory());
         if (builder != null) {
-            FunctionKt.submit(false, false, 1, 0, platformTask -> {
+            FunctionKt.submit(false, false, 1, 0, "", platformTask -> {
                 builder.getBuildTask().run(e.getInventory());
                 return null;
             });
-            FunctionKt.submit(false, true, 1, 0, platformTask -> {
+            FunctionKt.submit(false, true, 1, 0, "", platformTask -> {
                 builder.getBuildTaskAsync().run(e.getInventory());
                 return null;
             });

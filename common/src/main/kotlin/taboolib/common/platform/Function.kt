@@ -55,9 +55,10 @@ fun submit(
     async: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
+    commit: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return platformExecutor.submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, executor))
+    return platformExecutor.submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, commit, executor))
 }
 
 /**
