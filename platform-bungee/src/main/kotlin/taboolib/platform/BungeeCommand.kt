@@ -29,7 +29,8 @@ class BungeeCommand : PlatformCommand {
             }
 
             override fun onTabComplete(sender: CommandSender, args: Array<String>): MutableIterable<String> {
-                return completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList() ?: arrayListOf()
+                return completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList()
+                    ?: onlinePlayers().map { it.name }.toMutableList()
             }
         })
     }

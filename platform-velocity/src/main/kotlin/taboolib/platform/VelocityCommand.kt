@@ -30,7 +30,8 @@ class VelocityCommand : PlatformCommand {
             }
 
             override fun suggest(source: CommandSource, currentArgs: Array<String>): MutableList<String> {
-                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: ArrayList()
+                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList()
+                    ?: onlinePlayers().map { it.name }.toMutableList()
             }
         }, *command.aliases.toTypedArray())
     }

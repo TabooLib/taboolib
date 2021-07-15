@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.source.ConsoleSource
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Cancellable
@@ -44,7 +45,7 @@ class Sponge7Adapter : PlatformAdapter {
     }
 
     override fun adaptCommandSender(any: Any): ProxyConsole {
-        return Sponge7Console(any as ConsoleSource)
+        return Sponge7Console(any as CommandSource)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {

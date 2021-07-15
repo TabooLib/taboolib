@@ -30,6 +30,7 @@ class NukkitCommand : PlatformCommand {
         completer: CommandCompleter,
         commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
     ) {
+        // TODO: 2021/7/15 Not Support Suggestions
         val registerCommand = object : Command(command.name, CommandData.builder(command.name)
             .setDescription(command.description)
             .setUsageMessage(command.usage)

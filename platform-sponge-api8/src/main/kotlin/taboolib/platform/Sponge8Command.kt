@@ -18,6 +18,7 @@ class Sponge8Command : PlatformCommand {
         completer: CommandCompleter,
         commandBuilder: Command.BaseCommand.() -> Unit,
     ) {
+        // TODO: 2021/7/15 Not Support
     }
 
     override fun unregisterCommand(command: String) {

@@ -1,6 +1,7 @@
 package taboolib.platform.type
 
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.command.source.ConsoleSource
 import org.spongepowered.api.service.context.Context
 import org.spongepowered.api.service.permission.SubjectData
@@ -15,7 +16,7 @@ import taboolib.common.platform.ProxyConsole
  * @author tr
  * @since 2021/6/21 15:29
  */
-class Sponge7Console(val sender: ConsoleSource) : ProxyConsole {
+class Sponge7Console(val sender: CommandSource) : ProxyConsole {
 
     override val origin: Any
         get() = sender

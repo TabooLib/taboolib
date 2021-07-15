@@ -67,9 +67,12 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override var compassTarget: Location
-        get() = error("unsupported")
-        set(_) {
-            error("unsupported")
+        get() {
+            val vector3d = player.get(Keys.TARGETED_LOCATION).get()
+            return Location(world, vector3d.x, vector3d.y, vector3d.z)
+        }
+        set(value) {
+            player.offer(Keys.TARGETED_LOCATION, Vector3d(value.x, value.y, value.z))
         }
 
     override var bedSpawnLocation: Location?
