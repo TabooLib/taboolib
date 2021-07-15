@@ -5,7 +5,6 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformSide
-import taboolib.common.reflect.Reflex.Companion.reflex
 
 /**
  * TabooLib
@@ -32,7 +31,7 @@ class BukkitExecutor : PlatformExecutor {
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
         if (started) {
             val task: BukkitPlatformTask
-            val bukkitTask = when {
+            when {
                 runnable.now -> {
                     object : BukkitRunnable() {
                         init {
@@ -101,9 +100,6 @@ class BukkitExecutor : PlatformExecutor {
                         }
                     }.runTask(plugin)
                 }
-            }
-            if (bukkitTask != null && runnable.commit != null) {
-                bukkitTask.reflex("timingName", runnable.commit)
             }
             return task
         } else {

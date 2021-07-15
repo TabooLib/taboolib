@@ -6,6 +6,7 @@ import cn.nukkit.command.CommandSender
 import cn.nukkit.command.data.CommandData
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
+import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -29,7 +30,6 @@ class NukkitCommand : PlatformCommand {
         completer: CommandCompleter,
         commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
     ) {
-
         val registerCommand = object : Command(command.name, CommandData.builder(command.name)
             .setDescription(command.description)
             .setUsageMessage(command.usage)
