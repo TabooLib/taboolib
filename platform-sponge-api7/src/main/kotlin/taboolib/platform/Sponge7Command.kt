@@ -9,6 +9,7 @@ import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import taboolib.common.platform.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -24,7 +25,7 @@ class Sponge7Command : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: Command.BaseCommand.() -> Unit,
+        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
         Sponge.getCommandManager().register(Sponge7Plugin.getInstance(), object : CommandCallable {
 
@@ -37,8 +38,7 @@ class Sponge7Command : PlatformCommand {
             }
 
             override fun getSuggestions(source: CommandSource, arguments: String, targetPosition: Location<World>?): MutableList<String> {
-                return completer.execute(adaptCommandSender(source), command, command.name, arguments.split(" ").toTypedArray())?.toMutableList() ?:
-                onlinePlayers().map { it.name }.toMutableList()
+                return completer.execute(adaptCommandSender(source), command, command.name, arguments.split(" ").toTypedArray())?.toMutableList() ?: ArrayList()
             }
 
             override fun testPermission(source: CommandSource): Boolean {

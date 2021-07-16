@@ -62,6 +62,12 @@ object PlatformFactory {
                     }
                     awokenMap[it.simpleName] = instance
                 }
+                if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == runningPlatform) {
+                    val interfaces = it.interfaces
+                    if (interfaces.isNotEmpty()) {
+                        awokenMap[interfaces[0].simpleName] = it.getInstance(new = true) ?: return@forEach
+                    }
+                }
             }
         }
     }

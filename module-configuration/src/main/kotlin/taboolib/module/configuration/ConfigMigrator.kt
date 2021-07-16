@@ -50,8 +50,8 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
     val hashSource = contextSource.hash("sha-1")
     var hashTarget = ""
     contextTarget.lines().forEach {
-        if (it.startsWith("# HASH ")) {
-            hashTarget = it.substring("# HASH ".length).trim().split(" ")[0]
+        if (it.startsWith("# VERSION ")) {
+            hashTarget = it.substring("# VERSION ".length).trim().split(" ")[0]
         }
     }
     if (hashSource == hashTarget) {
@@ -106,20 +106,21 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
     if (hashTarget.isEmpty()) {
         contextTarget += listOf(
             "",
-            "# --------------------------------------------- #",
-            "# HASH $hashSource #",
-            "# --------------------------------------------- #",
+            "",
+            "# ------------------------------------------------ #",
+            "# VERSION $hashSource #",
+            "# ------------------------------------------------ #",
         ).joinToString("\n")
     } else {
         val mul = contextTarget.lines().toMutableList()
         mul.forEachIndexed { index, s ->
-            if (s.startsWith("# HASH ")) {
-                mul[index] = "# HASH $hashSource #"
+            if (s.startsWith("# VERSION ")) {
+                mul[index] = "# VERSION $hashSource #"
             }
         }
         contextTarget = mul.joinToString("\n")
     }
-    return null
+    return contextTarget.toByteArray(StandardCharsets.UTF_8)
 }
 
 private fun String.hash(algorithm: String): String {

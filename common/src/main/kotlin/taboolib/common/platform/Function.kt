@@ -73,7 +73,7 @@ fun <T> server(): T {
     return platformAdapter.server()
 }
 
-fun console(): ProxyConsole {
+fun console(): ProxyCommandSender {
     return platformAdapter.console()
 }
 
@@ -121,7 +121,7 @@ fun callEvent(proxyEvent: ProxyEvent) {
     platformAdapter.callEvent(proxyEvent)
 }
 
-fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: Command.BaseCommand.() -> Unit) {
+fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit) {
     platformCommand.registerCommand(command, executor, completer, commandBuilder)
 }
 
@@ -136,4 +136,8 @@ fun unregisterCommand(command: String) {
 
 fun unregisterCommands() {
     platformCommand.unregisterCommands()
+}
+
+fun <T> implementations(clazz: Class<T>): T {
+    return PlatformFactory.getAPI<T>(clazz.simpleName) ?: error("no implementations")
 }

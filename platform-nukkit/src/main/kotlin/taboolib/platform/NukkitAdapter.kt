@@ -1,7 +1,7 @@
 package taboolib.platform
 
 import cn.nukkit.Server
-import cn.nukkit.command.ConsoleCommandSender
+import cn.nukkit.command.CommandSender
 import cn.nukkit.event.Cancellable
 import cn.nukkit.event.Event
 import cn.nukkit.event.HandlerList
@@ -9,7 +9,7 @@ import cn.nukkit.event.Listener
 import cn.nukkit.player.Player
 import cn.nukkit.plugin.EventExecutor
 import taboolib.common.platform.*
-import taboolib.platform.type.NukkitConsole
+import taboolib.platform.type.NukkitCommandSender
 import taboolib.platform.type.NukkitPlayer
 import taboolib.platform.util.toNukkit
 
@@ -31,7 +31,7 @@ class NukkitAdapter : PlatformAdapter {
         return Server.getInstance() as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(Server.getInstance().consoleSender)
     }
 
@@ -43,22 +43,15 @@ class NukkitAdapter : PlatformAdapter {
         return NukkitPlayer(any as Player)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return NukkitConsole(any as ConsoleCommandSender)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is Player) adaptPlayer(any) else NukkitCommandSender(any as CommandSender)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = NukkitListener(event as Class<Event>,
-            predicate = {
-                event == if (it is NukkitEvent) it.proxyEvent::class.java else it.javaClass
-            },
-            consumer = {
-                func(it as T)
-            })
-        submit(now = true) {
-            Server.getInstance().pluginManager.registerEvent(event, listener, priority.toNukkit(), listener, plugin, ignoreCancelled)
-        }
+        val listener = NukkitListener(event as Class<Event>) { func(it as T) }
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) NukkitEvent::class.java else event
+        Server.getInstance().pluginManager.registerEvent(eventClass as Class<Event>, listener, priority.toNukkit(), listener, plugin, ignoreCancelled)
         return listener
     }
 
@@ -72,18 +65,10 @@ class NukkitAdapter : PlatformAdapter {
         })
     }
 
-    class NukkitListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
+    class NukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            try {
-                val cast = clazz.cast(event)
-                if (predicate(cast)) {
-                    consumer(cast)
-                }
-            } catch (ignore: ClassCastException) {
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
+            consumer(if (event is NukkitEvent) event.proxyEvent else event)
         }
     }
 
@@ -107,7 +92,7 @@ class NukkitAdapter : PlatformAdapter {
             val handlers = HandlerList()
 
             @JvmStatic
-            private fun getHandlerList(): HandlerList {
+            fun getHandlerList(): HandlerList {
                 return handlers
             }
         }

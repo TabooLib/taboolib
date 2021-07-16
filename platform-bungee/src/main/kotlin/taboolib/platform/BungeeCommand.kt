@@ -20,7 +20,7 @@ class BungeeCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+        commandBuilder: taboolib.common.platform.CommandBuilder.CommandBase.() -> Unit,
     ) {
         BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name), TabExecutor {
 
@@ -29,8 +29,7 @@ class BungeeCommand : PlatformCommand {
             }
 
             override fun onTabComplete(sender: CommandSender, args: Array<String>): MutableIterable<String> {
-                return completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList()
-                    ?: onlinePlayers().map { it.name }.toMutableList()
+                return completer.execute(adaptCommandSender(sender), command, command.name, args)?.toMutableList() ?: ArrayList()
             }
         })
     }

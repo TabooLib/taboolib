@@ -1,17 +1,17 @@
 package taboolib.platform.type
 
-import cn.nukkit.command.ConsoleCommandSender
-import taboolib.common.platform.ProxyConsole
+import org.bukkit.command.CommandSender
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.platform.util.dispatchCommand
 
 /**
  * TabooLib
- * taboolib.platform.type.NukkitConsole
+ * taboolib.platform.type.BukkitConsole
  *
- * @author CziSKY
- * @since 2021/6/19 23:52
+ * @author sky
+ * @since 2021/6/17 10:35 下午
  */
-class NukkitConsole(val sender: ConsoleCommandSender) : ProxyConsole {
+class BukkitCommandSender(val sender: CommandSender) : ProxyCommandSender {
 
     override val origin: Any
         get() = sender

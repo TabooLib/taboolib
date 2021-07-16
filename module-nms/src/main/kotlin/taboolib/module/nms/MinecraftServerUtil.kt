@@ -38,5 +38,9 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
  * 向玩家发送数据包
  */
 fun Player.sendPacket(packet: Any) {
-    reflexInvoke<Any>("getHandle")!!.reflex<Any>("playerConnection")!!.reflexInvoke<Any>("sendPacket", packet)
+    if (MinecraftVersion.isUniversal) {
+        reflexInvoke<Any>("entity/connection")!!.reflexInvoke<Any>("sendPacket", packet)
+    } else {
+        reflexInvoke<Any>("entity/playerConnection")!!.reflexInvoke<Any>("sendPacket", packet)
+    }
 }

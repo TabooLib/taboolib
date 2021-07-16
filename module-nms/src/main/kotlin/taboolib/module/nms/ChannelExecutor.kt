@@ -22,7 +22,11 @@ object ChannelExecutor {
     private val removeChannelService = Executors.newSingleThreadExecutor()
 
     fun getPlayerChannel(player: Player): Channel {
-        return player.reflexInvoke<Any>("getHandle")!!.reflex<Any>("playerConnection")!!.reflex<Any>("networkManager")!!.reflex<Channel>("channel")!!
+        return if (MinecraftVersion.isUniversal) {
+            player.reflex<Channel>("entity/connection/networkManager/channel")!!
+        } else {
+            player.reflex<Channel>("entity/playerConnection/networkManager/channel")!!
+        }
     }
 
     fun addPlayerChannel(player: Player) {
@@ -41,12 +45,12 @@ object ChannelExecutor {
     }
 
     @SubscribeEvent
-    private fun e(e: PlayerJoinEvent) {
+    internal fun e(e: PlayerJoinEvent) {
         addPlayerChannel(e.player)
     }
 
     @SubscribeEvent
-    private fun e(e: PlayerQuitEvent) {
+    internal fun e(e: PlayerQuitEvent) {
         removePlayerChannel(e.player)
     }
 }

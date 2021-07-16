@@ -2,6 +2,7 @@ package taboolib.platform.type
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.GameMode
 import org.bukkit.Sound
@@ -59,7 +60,13 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.uniqueId
 
     override val ping: Int
-        get() = player.reflex<Int>("ping")!!
+        get() {
+            return try {
+                player.reflex<Int>("entity/latency")!!
+            } catch (ex: NoSuchFieldException) {
+                player.reflex<Int>("entity/ping")!!
+            }
+        }
 
     override val locale: String
         get() = player.locale
@@ -297,7 +304,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
-            val connection = player.reflexInvoke<Any>("getHandle")!!.reflex<Any>("playerConnection")!!
+            val connection = player.reflexInvoke<Any>("entity/playerConnection")!!
             if (title != null) {
                 connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
                     it.reflex("a", rEnumTitleAction[0])
@@ -330,7 +337,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendRawMessage(message: String) {
-        player.sendRawMessage(message)
+        player.spigot().sendMessage(*ComponentSerializer.parse(message))
     }
 
     override fun sendMessage(message: String) {

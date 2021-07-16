@@ -1,6 +1,6 @@
 package taboolib.module.kether.action.game
 
-import taboolib.common.platform.ProxyConsole
+import taboolib.common.util.isConsole
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -11,7 +11,7 @@ class ActionSender : ScriptAction<String>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<String> {
         val sender = frame.script().sender
-        return if (sender is ProxyConsole) {
+        return if (sender.isConsole()) {
             CompletableFuture.completedFuture("console")
         } else {
             CompletableFuture.completedFuture(sender?.name ?: "null")

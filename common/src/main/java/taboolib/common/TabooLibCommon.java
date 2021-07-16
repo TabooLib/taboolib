@@ -78,6 +78,7 @@ public class TabooLibCommon {
                 RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
+                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }

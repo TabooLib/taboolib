@@ -1,12 +1,14 @@
 package taboolib.platform
 
+import net.kyori.adventure.audience.Audience
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.SystemSubject
+import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
-import taboolib.platform.type.Sponge8Console
+import taboolib.platform.type.Sponge8CommandSender
 import taboolib.platform.type.Sponge8Player
 
 /**
@@ -29,7 +31,7 @@ class Sponge8Adapter : PlatformAdapter {
         return Sponge.server() as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(Sponge.systemSubject())
     }
 
@@ -41,8 +43,8 @@ class Sponge8Adapter : PlatformAdapter {
         return Sponge8Player(any as ServerPlayer)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return Sponge8Console(any as SystemSubject)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is ServerPlayer) adaptPlayer(any) else Sponge8CommandSender(any as Audience)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
@@ -52,7 +54,8 @@ class Sponge8Adapter : PlatformAdapter {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = Sponge8Listener<Event> { func(it as T) }
-        Sponge.eventManager().registerListener(plugin.pluginContainer, event as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) Sponge8Event::class.java else event
+        Sponge.eventManager().registerListener(plugin.pluginContainer, eventClass as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
         return listener
     }
 
@@ -69,7 +72,7 @@ class Sponge8Adapter : PlatformAdapter {
     class Sponge8Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            consumer(event)
+            consumer(if (event is Sponge8Event) event.proxyEvent else event)
         }
     }
 

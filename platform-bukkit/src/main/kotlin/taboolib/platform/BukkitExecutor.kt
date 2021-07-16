@@ -41,7 +41,6 @@ class BukkitExecutor : PlatformExecutor {
                         override fun run() {
                         }
                     }
-                    null
                 }
                 runnable.period > 0 -> if (runnable.async) {
                     object : BukkitRunnable() {

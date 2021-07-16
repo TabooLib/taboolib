@@ -1,12 +1,12 @@
 package taboolib.platform
 
+import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.event.EventHandler
 import com.velocitypowered.api.event.ResultedEvent
 import com.velocitypowered.api.event.ResultedEvent.GenericResult
-import com.velocitypowered.api.proxy.ConsoleCommandSource
 import com.velocitypowered.api.proxy.Player
 import taboolib.common.platform.*
-import taboolib.platform.type.VelocityConsole
+import taboolib.platform.type.VelocityCommandSender
 import taboolib.platform.type.VelocityPlayer
 
 /**
@@ -27,7 +27,7 @@ class VelocityAdapter : PlatformAdapter {
         return plugin.server as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(plugin.server.consoleCommandSource)
     }
 
@@ -39,8 +39,8 @@ class VelocityAdapter : PlatformAdapter {
         return VelocityPlayer(any as Player)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return VelocityConsole(any as ConsoleCommandSource)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is Player) adaptPlayer(any) else VelocityCommandSender(any as CommandSource)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
@@ -49,8 +49,9 @@ class VelocityAdapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, postOrder: PostOrder, func: (T) -> Unit): ProxyListener {
-        val listener = VelocityListener<T> { func(it) }
-        plugin.server.eventManager.register(this, event, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
+        val listener = VelocityListener { func(it as T) }
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) VelocityEvent::class.java else event
+        plugin.server.eventManager.register(this, eventClass as Class<Any>, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
         return listener
     }
 
@@ -64,10 +65,10 @@ class VelocityAdapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-    class VelocityListener<T>(val consumer: (T) -> Unit) : ProxyListener, EventHandler<T> {
+    class VelocityListener(val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
 
-        override fun execute(event: T) {
-            consumer(event)
+        override fun execute(event: Any) {
+            consumer(if (event is VelocityEvent) event.proxyEvent else event)
         }
     }
 

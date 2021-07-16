@@ -1,17 +1,16 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
-import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
-import org.bukkit.plugin.RegisteredListener
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.platform.type.BukkitConsole
+import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.type.BukkitPlayer
 import taboolib.platform.util.toBukkit
 
@@ -29,14 +28,12 @@ class BukkitAdapter : PlatformAdapter {
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
 
-    val handlerList = HandlerList()
-
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
         return Bukkit.getServer() as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(Bukkit.getConsoleSender())
     }
 
@@ -48,22 +45,15 @@ class BukkitAdapter : PlatformAdapter {
         return BukkitPlayer(any as Player)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return BukkitConsole(any as ConsoleCommandSender)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is Player) adaptPlayer(any) else BukkitCommandSender(any as CommandSender)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = BukkitListener(event as Class<Event>,
-            predicate = {
-                event == if (it is BukkitEvent) it.proxyEvent::class.java else it.javaClass
-            },
-            consumer = {
-                func(it as T)
-            })
-        submit(now = true) {
-            handlerList.register(RegisteredListener(listener, listener, priority.toBukkit(), plugin, ignoreCancelled))
-        }
+        val listener = BukkitListener(event as Class<Event>) { func(it as T) }
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) BukkitEvent::class.java else event
+        Bukkit.getPluginManager().registerEvent(eventClass as Class<Event>, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
         return listener
     }
 
@@ -77,18 +67,10 @@ class BukkitAdapter : PlatformAdapter {
         bukkitEvent.proxyEvent.postCall()
     }
 
-    class BukkitListener(val clazz: Class<*>, val predicate: (Any) -> Boolean, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
+    class BukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            try {
-                val cast = clazz.cast(event)
-                if (predicate(cast)) {
-                    consumer(cast)
-                }
-            } catch (ignore: ClassCastException) {
-            } catch (e: Throwable) {
-                e.printStackTrace()
-            }
+            consumer(if (event is BukkitEvent) event.proxyEvent else event)
         }
     }
 
@@ -122,7 +104,7 @@ class BukkitAdapter : PlatformAdapter {
             val handlers = HandlerList()
 
             @JvmStatic
-            private fun getHandlerList(): HandlerList {
+            fun getHandlerList(): HandlerList {
                 return handlers
             }
         }

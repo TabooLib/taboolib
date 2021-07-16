@@ -7,21 +7,20 @@
 )
 package taboolib.common5.util
 
+import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import taboolib.common.Isolated
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import javax.script.Compilable
 import javax.script.CompiledScript
-import javax.script.ScriptEngineManager
-
-val scriptEngineManager = ScriptEngineManager()
+import javax.script.ScriptEngine
 
 val scriptEngineFactory by lazy {
-    scriptEngineManager.engineFactories.firstOrNull { it.engineName.contains("Nashorn") }
+    NashornScriptEngineFactory()
 }
 
-val scriptEngine by lazy {
-    scriptEngineFactory?.scriptEngine
+val scriptEngine: ScriptEngine by lazy {
+    scriptEngineFactory.scriptEngine
 }
 
 fun String.compileJS(): CompiledScript? {

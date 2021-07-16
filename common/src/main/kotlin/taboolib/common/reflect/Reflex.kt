@@ -89,7 +89,7 @@ class Reflex(val from: Class<*>) {
         /**
          * 通过 Reflex 获取对象中的属性
          */
-        fun <T> Any.reflex(path: String) = Reflex(javaClass).instance(this).read<T>(path)
+        fun <T> Any.reflex(path: String): T? = Reflex(javaClass).instance(this).read<T>(path)
 
         /**
          * 通过 Reflex 获取对象中的属性

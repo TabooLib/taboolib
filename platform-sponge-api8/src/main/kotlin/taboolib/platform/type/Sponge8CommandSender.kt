@@ -1,10 +1,9 @@
 package taboolib.platform.type
 
-
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.SystemSubject
-import taboolib.common.platform.ProxyConsole
+import taboolib.common.platform.ProxyCommandSender
 
 /**
  * TabooLib
@@ -13,7 +12,7 @@ import taboolib.common.platform.ProxyConsole
  * @author tr
  * @since 2021/6/21 15:29
  */
-class Sponge8Console(val sender: SystemSubject) : ProxyConsole {
+class Sponge8CommandSender(val sender: Audience) : ProxyCommandSender {
 
     override val origin: Any
         get() = sender

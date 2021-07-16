@@ -7,6 +7,7 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/17 12:03 上午
  */
+@Suppress("UNCHECKED_CAST")
 interface ProxyCommandSender {
 
     val origin: Any
@@ -21,8 +22,11 @@ interface ProxyCommandSender {
 
     fun hasPermission(permission: String): Boolean
 
-    @Suppress("UNCHECKED_CAST")
     fun <T> cast(): T {
         return origin as T
+    }
+
+    fun <T> castSafely(): T? {
+        return origin as? T
     }
 }

@@ -46,7 +46,7 @@ class BukkitCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
         submit(now = true) {
             val pluginCommand = constructor.newInstance(command.name, plugin)
@@ -54,7 +54,7 @@ class BukkitCommand : PlatformCommand {
                 executor.execute(adaptCommandSender(sender), command, label, args)
             }
             pluginCommand.setTabCompleter { sender, _, label, args ->
-                completer.execute(adaptCommandSender(sender), command, label, args)
+                completer.execute(adaptCommandSender(sender), command, label, args) ?: emptyList()
             }
             var permission = command.permission
             if (permission.isEmpty()) {

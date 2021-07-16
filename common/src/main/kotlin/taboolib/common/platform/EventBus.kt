@@ -1,12 +1,11 @@
 package taboolib.common.platform
 
-import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
+import java.lang.Exception
 import java.lang.reflect.Method
 
 @Awake
-@Isolated
 object EventBus : Injector.Methods {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
@@ -22,28 +21,36 @@ object EventBus : Injector.Methods {
                 null
             }
             when (runningPlatform) {
+                Platform.BUKKIT, Platform.NUKKIT -> {
+                    if (eventBind != null) {
+                        if (method.parameterTypes[0] == OptionalEvent::class.java) {
+                            registerListener(eventBind, event.priority, event.ignoreCancelled) { method.invoke(instance, OptionalEvent(it)) }
+                        } else {
+                            error("unsupported parameter for optional event")
+                        }
+                    } else {
+                        // FIXME: 2021/7/17
+                        registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) {
+                            try {
+                                method.invoke(instance, it)
+                            } catch (ex: Exception) {
+                                println(it)
+                                println(method)
+                                ex.printStackTrace()
+                            }
+                        }
+                    }
+                }
                 Platform.BUNGEE -> {
                     val level = if (event.level != 0) event.level else event.priority.level
                     if (eventBind != null) {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
-                            registerListener(eventBind, level, event.beforeModifications) { method.invoke(instance, OptionalEvent(it)) }
+                            registerListener(eventBind, level, event.ignoreCancelled) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
                             error("unsupported parameter for optional event")
                         }
                     } else {
-                        registerListener(method.parameterTypes[0], level, event.beforeModifications) { method.invoke(instance, it) }
-                    }
-                }
-                // TODO: 2021/7/7 Sponge API 8
-                Platform.SPONGE_API_7 -> {
-                    if (eventBind != null) {
-                        if (method.parameterTypes[0] == OptionalEvent::class.java) {
-                            registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(instance, OptionalEvent(it)) }
-                        } else {
-                            error("unsupported parameter for optional event")
-                        }
-                    } else {
-                        registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(instance, it) }
+                        registerListener(method.parameterTypes[0], level, event.ignoreCancelled) { method.invoke(instance, it) }
                     }
                 }
                 Platform.VELOCITY -> {
@@ -57,16 +64,18 @@ object EventBus : Injector.Methods {
                         registerListener(method.parameterTypes[0], event.postOrder) { method.invoke(instance, it) }
                     }
                 }
-                else -> {
+                Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
                     if (eventBind != null) {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
-                            registerListener(eventBind, event.priority, event.ignoreCancelled) { method.invoke(instance, OptionalEvent(it)) }
+                            registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
                             error("unsupported parameter for optional event")
                         }
                     } else {
-                        registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) { method.invoke(instance, it) }
+                        registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(instance, it) }
                     }
+                }
+                else -> {
                 }
             }
         }

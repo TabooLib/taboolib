@@ -3,6 +3,8 @@
 package taboolib.common.util
 
 import taboolib.common.Isolated
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
 import java.io.Closeable
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
@@ -44,8 +46,8 @@ fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)
 }
 
-fun <T> subList(list: List<T>, start: Int = 0, end: Int = list.size - 1): List<T> {
-    return list.filterIndexed { index, _ -> index in start..end }
+fun <T> subList(list: List<T>, start: Int = 0, end: Int = list.size): List<T> {
+    return list.filterIndexed { index, _ -> index in start until end }
 }
 
 fun <K, V> subMap(map: Map<K, V>, start: Int = 0, end: Int = map.size - 1): List<Map.Entry<K, V>> {
@@ -135,4 +137,12 @@ fun <T, C : Iterable<T>, R> C.each(start: Int = -1, end: Int = -1, reversed: Boo
 
 fun <T> Optional<T>.presentRun(func: T.() -> Unit) {
     ifPresent(func)
+}
+
+fun <T> Optional<T>.orNull(): T? {
+    return orElse(null)
+}
+
+fun ProxyCommandSender?.isConsole(): Boolean {
+    return this !is ProxyPlayer
 }

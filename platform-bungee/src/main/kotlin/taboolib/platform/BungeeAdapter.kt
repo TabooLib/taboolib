@@ -1,15 +1,15 @@
 package taboolib.platform
 
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Cancellable
 import net.md_5.bungee.api.plugin.Event
-import net.md_5.bungee.command.ConsoleCommandSender
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.platform.type.BungeeConsole
+import taboolib.platform.type.BungeeCommandSender
 import taboolib.platform.type.BungeePlayer
 import java.lang.reflect.Method
 
@@ -43,7 +43,7 @@ class BungeeAdapter : PlatformAdapter {
         return plugin.proxy as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(plugin.proxy.console)
     }
 
@@ -55,8 +55,8 @@ class BungeeAdapter : PlatformAdapter {
         return BungeePlayer(any as ProxiedPlayer)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return BungeeConsole(any as ConsoleCommandSender)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is ProxyPlayer) adaptPlayer(any) else BungeeCommandSender(any as CommandSender)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
@@ -67,26 +67,28 @@ class BungeeAdapter : PlatformAdapter {
     override fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = BungeeListener(event, level) { func(it as T) }
         var array = emptyArray<EventHandlerMethod>()
-        byListenerAndPriority.computeIfAbsent(event::class.java) { HashMap() }.run {
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) BungeeEvent::class.java else event
+        byListenerAndPriority.computeIfAbsent(eventClass) { HashMap() }.run {
             computeIfAbsent(level.toByte()) { HashMap() }.run {
                 put(listener, arrayOf(BungeeListener.method))
                 forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } }
             }
         }
-        byEventBaked[event::class.java] = array
+        byEventBaked[eventClass] = array
         return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
         val listener = proxyListener as BungeeListener
         var array = emptyArray<EventHandlerMethod>()
-        byListenerAndPriority[listener.event]?.run {
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(listener.event)) BungeeEvent::class.java else listener.event
+        byListenerAndPriority[eventClass]?.run {
             get(listener.level.toByte())?.run {
                 remove(listener)
                 forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } }
             }
         }
-        byEventBaked[listener.event] = array
+        byEventBaked[eventClass] = array
     }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
@@ -98,7 +100,7 @@ class BungeeAdapter : PlatformAdapter {
     class BungeeListener(val event: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
 
         fun handle(event: Any) {
-            consumer(event)
+            consumer(if (event is BungeeEvent) event.proxyEvent else event)
         }
 
         companion object {

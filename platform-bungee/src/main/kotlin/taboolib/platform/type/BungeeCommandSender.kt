@@ -1,24 +1,24 @@
 package taboolib.platform.type
 
-import com.velocitypowered.api.proxy.ConsoleCommandSource
-import net.kyori.adventure.text.Component
-import taboolib.common.platform.ProxyConsole
-import taboolib.platform.VelocityPlugin
+import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.chat.TextComponent
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.platform.BungeePlugin
 
 /**
  * TabooLib
- * taboolib.platform.type.VelocityConsole
+ * taboolib.platform.type.BungeeConsole
  *
  * @author CziSKY
  * @since 2021/6/21 13:35
  */
-class VelocityConsole(val sender: ConsoleCommandSource) : ProxyConsole {
+class BungeeCommandSender(val sender: CommandSender) : ProxyCommandSender {
 
     override val origin: Any
         get() = sender
 
     override val name: String
-        get() = "console"
+        get() = sender.name
 
     override var isOp: Boolean
         get() = error("unsupported")
@@ -27,12 +27,11 @@ class VelocityConsole(val sender: ConsoleCommandSource) : ProxyConsole {
         }
 
     override fun sendMessage(message: String) {
-        sender.sendMessage(Component.text(message))
+        sender.sendMessage(TextComponent(message))
     }
 
     override fun performCommand(command: String): Boolean {
-        VelocityPlugin.getInstance().server.commandManager.executeAsync(sender, command)
-        return true
+        return BungeePlugin.getInstance().proxy.pluginManager.dispatchCommand(sender, command)
     }
 
     override fun hasPermission(permission: String): Boolean {

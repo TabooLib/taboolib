@@ -16,7 +16,7 @@ class Sponge8Command : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: Command.BaseCommand.() -> Unit,
+        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
         // TODO: 2021/7/15 Not Support
     }

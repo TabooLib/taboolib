@@ -11,7 +11,7 @@ interface PlatformAdapter {
 
     fun <T> server(): T
 
-    fun console(): ProxyConsole
+    fun console(): ProxyCommandSender
 
     fun onlinePlayers(): List<ProxyPlayer>
 

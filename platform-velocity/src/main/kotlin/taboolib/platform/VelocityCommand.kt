@@ -20,7 +20,7 @@ class VelocityCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: taboolib.common.platform.Command.BaseCommand.() -> Unit,
+        commandBuilder: taboolib.common.platform.CommandBuilder.CommandBase.() -> Unit,
     ) {
         registeredCommands.add(command.name)
         VelocityPlugin.getInstance().server.commandManager.register(command.name, object : Command {
@@ -30,8 +30,7 @@ class VelocityCommand : PlatformCommand {
             }
 
             override fun suggest(source: CommandSource, currentArgs: Array<String>): MutableList<String> {
-                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList()
-                    ?: onlinePlayers().map { it.name }.toMutableList()
+                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: ArrayList()
             }
         }, *command.aliases.toTypedArray())
     }

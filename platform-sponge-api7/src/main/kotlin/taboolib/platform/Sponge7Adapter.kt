@@ -2,7 +2,6 @@ package taboolib.platform
 
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
-import org.spongepowered.api.command.source.ConsoleSource
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.event.Cancellable
 import org.spongepowered.api.event.Event
@@ -13,7 +12,7 @@ import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.event.cause.EventContextKeys
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
-import taboolib.platform.type.Sponge7Console
+import taboolib.platform.type.Sponge7CommandSender
 import taboolib.platform.type.Sponge7Player
 
 /**
@@ -32,7 +31,7 @@ class Sponge7Adapter : PlatformAdapter {
         return Sponge.getServer() as T
     }
 
-    override fun console(): ProxyConsole {
+    override fun console(): ProxyCommandSender {
         return adaptCommandSender(Sponge.getServer().console)
     }
 
@@ -44,8 +43,8 @@ class Sponge7Adapter : PlatformAdapter {
         return Sponge7Player(any as Player)
     }
 
-    override fun adaptCommandSender(any: Any): ProxyConsole {
-        return Sponge7Console(any as CommandSource)
+    override fun adaptCommandSender(any: Any): ProxyCommandSender {
+        return if (any is Player) adaptPlayer(any) else Sponge7CommandSender(any as CommandSource)
     }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
@@ -55,7 +54,8 @@ class Sponge7Adapter : PlatformAdapter {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = Sponge7Listener<Event> { func(it as T) }
-        Sponge.getEventManager().registerListener(this, event as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) Sponge7Event::class.java else event
+        Sponge.getEventManager().registerListener(this, eventClass as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
         return listener
     }
 
@@ -72,7 +72,7 @@ class Sponge7Adapter : PlatformAdapter {
     class Sponge7Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            consumer(event)
+            consumer(if (event is Sponge7Event) event.proxyEvent else event)
         }
     }
 

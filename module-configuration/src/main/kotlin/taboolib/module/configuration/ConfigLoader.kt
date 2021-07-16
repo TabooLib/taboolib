@@ -11,6 +11,8 @@ import taboolib.common5.FileWatcher
 import java.io.File
 import java.io.FileInputStream
 import java.lang.reflect.Field
+import java.nio.charset.StandardCharsets
+import java.util.concurrent.CopyOnWriteArraySet
 
 @RuntimeDependency("org.yaml:snakeyaml:1.28", test = "org.yaml.snakeyaml.Yaml")
 @Awake
@@ -67,7 +69,7 @@ object ConfigLoader : Injector.Fields {
                 val node = field.getAnnotation(ConfigNode::class.java)
                 val file = files[node.bind] ?: return
                 file.nodes += field
-                Ref.put(instance, field, file.conf.get(if (node.value.isEmpty()) field.name else node.value))
+                Ref.put(instance, field, file.conf.get(node.value.ifEmpty { field.name }))
             }
         }
 
@@ -80,7 +82,7 @@ object ConfigLoader : Injector.Fields {
 
     class ConfigFile(val conf: SecuredFile, val file: File) {
 
-        val nodes = ArrayList<Field>()
+        val nodes = CopyOnWriteArraySet<Field>()
     }
 
     val isFileWatcherHook by lazy {
