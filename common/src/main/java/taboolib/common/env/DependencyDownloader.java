@@ -61,6 +61,8 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     private boolean ignoreOptional = true;
 
+    private static boolean notify = false;
+
     /**
      * Makes sure that the {@link DependencyDownloader#baseDir} exists
      *
@@ -80,8 +82,9 @@ public class DependencyDownloader extends AbstractXmlParser {
         for (Dependency dep : dependencies) {
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
-                if (isDebugMode) {
-                    System.out.println("Loading Library " + dep);
+                if (isDebugMode && !notify) {
+                    notify = true;
+                    System.out.println("Loading libraries, please wait...");
                 }
                 ClassAppender.addPath(file.toPath());
             }
@@ -381,7 +384,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         } catch (IOException | NoSuchAlgorithmException ex) {
             ex.printStackTrace();
         }
-        return "null (" + UUID.randomUUID().toString() + ")";
+        return "null (" + UUID.randomUUID() + ")";
     }
 
     private static String getHash(MessageDigest digest) {
@@ -399,14 +402,14 @@ public class DependencyDownloader extends AbstractXmlParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "null (" + UUID.randomUUID().toString() + ")";
+        return "null (" + UUID.randomUUID() + ")";
     }
 
-    private static String readFully(InputStream inputStream, Charset charset) throws IOException {
+    public static String readFully(InputStream inputStream, Charset charset) throws IOException {
         return new String(readFully(inputStream), charset);
     }
 
-    private static byte[] readFully(InputStream inputStream) throws IOException {
+    public static byte[] readFully(InputStream inputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         int len;
@@ -415,4 +418,6 @@ public class DependencyDownloader extends AbstractXmlParser {
         }
         return stream.toByteArray();
     }
+
+
 }

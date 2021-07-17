@@ -53,7 +53,7 @@ class Sponge8Adapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = Sponge8Listener<Event> { func(it as T) }
+        val listener = Sponge8Listener<Event>(event) { func(it as T) }
         val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) Sponge8Event::class.java else event
         Sponge.eventManager().registerListener(plugin.pluginContainer, eventClass as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
         return listener
@@ -69,10 +69,13 @@ class Sponge8Adapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-    class Sponge8Listener<T : Event>(val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
+    class Sponge8Listener<T : Event>(val clazz: Class<*>, val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            consumer(if (event is Sponge8Event) event.proxyEvent else event)
+            val origin: Any = if (event is Sponge8Event) event.proxyEvent else event
+            if (origin.javaClass == clazz) {
+                consumer(origin)
+            }
         }
     }
 

@@ -1,5 +1,9 @@
 package taboolib.platform
 
+import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import taboolib.common.platform.*
 
 /**
@@ -25,5 +29,8 @@ class Sponge8Command : PlatformCommand {
     }
 
     override fun unregisterCommands() {
+    }
+
+    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
     }
 }

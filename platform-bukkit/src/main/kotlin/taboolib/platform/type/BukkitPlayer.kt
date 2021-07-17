@@ -304,7 +304,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
-            val connection = player.reflexInvoke<Any>("entity/playerConnection")!!
+            val connection = player.reflex<Any>("entity/playerConnection")!!
             if (title != null) {
                 connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
                     it.reflex("a", rEnumTitleAction[0])

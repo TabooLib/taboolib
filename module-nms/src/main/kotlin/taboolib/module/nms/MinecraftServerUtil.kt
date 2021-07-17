@@ -14,7 +14,7 @@ fun obcClass(name: String): Class<*> {
 
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        Class.forName(MinecraftVersion.mapping?.classMap?.get(name).toString())
+        Class.forName(MinecraftVersion.mapping!!.classMap[name]!!.replace('/', '.'))
     } else {
         Class.forName("net.minecraft.server.${MinecraftVersion.legacyVersion}.$name")
     }
@@ -23,7 +23,7 @@ fun nmsClass(name: String): Class<*> {
 @Suppress("UNCHECKED_CAST")
 fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
     return nmsProxyMap.computeIfAbsent("${clazz.name}:$bind") {
-        val bindClass = bind.replace("{name}", clazz.name)
+        val bindClass = bind.replace("{name}", clazz.name).replace('.', '/')
         val instance = AsmClassTransfer(bindClass).run().getDeclaredConstructor().newInstance()
         runningClasses.forEach {
             if (it.name.startsWith("$bindClass\$")) {
@@ -39,8 +39,8 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
  */
 fun Player.sendPacket(packet: Any) {
     if (MinecraftVersion.isUniversal) {
-        reflexInvoke<Any>("entity/connection")!!.reflexInvoke<Any>("sendPacket", packet)
+        reflex<Any>("entity/connection")!!.reflexInvoke<Any>("sendPacket", packet)
     } else {
-        reflexInvoke<Any>("entity/playerConnection")!!.reflexInvoke<Any>("sendPacket", packet)
+        reflex<Any>("entity/playerConnection")!!.reflexInvoke<Any>("sendPacket", packet)
     }
 }

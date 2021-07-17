@@ -1,5 +1,6 @@
 package taboolib.common.reflect
 
+import taboolib.common.util.nonPrimitive
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
@@ -64,10 +65,10 @@ class ReflexClass(val clazz: Class<*>) {
             method = it.method(clazz.name, method)
         }
         savingMethods.firstOrNull {
-            if (it.parameterCount == parameter.size) {
+            if (it.name == method && it.parameterCount == parameter.size) {
                 var checked = true
                 it.parameterTypes.forEachIndexed { index, p ->
-                    if (parameter[index] != null && !p.isInstance(parameter[index])) {
+                    if (parameter[index] != null && !p.nonPrimitive().isInstance(parameter[index])) {
                         checked = false
                     }
                 }

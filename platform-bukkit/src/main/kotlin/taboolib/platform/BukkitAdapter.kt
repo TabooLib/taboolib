@@ -70,7 +70,10 @@ class BukkitAdapter : PlatformAdapter {
     class BukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            consumer(if (event is BukkitEvent) event.proxyEvent else event)
+            val origin: Any = if (event is BukkitEvent) event.proxyEvent else event
+            if (origin.javaClass == clazz) {
+                consumer(origin)
+            }
         }
     }
 

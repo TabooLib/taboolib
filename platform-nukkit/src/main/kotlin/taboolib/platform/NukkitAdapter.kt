@@ -68,7 +68,10 @@ class NukkitAdapter : PlatformAdapter {
     class NukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            consumer(if (event is NukkitEvent) event.proxyEvent else event)
+            val origin: Any = if (event is NukkitEvent) event.proxyEvent else event
+            if (origin.javaClass == clazz) {
+                consumer(origin)
+            }
         }
     }
 

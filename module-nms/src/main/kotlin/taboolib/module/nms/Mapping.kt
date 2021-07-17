@@ -10,13 +10,24 @@ import java.nio.charset.StandardCharsets
  * @author sky
  * @since 2021/6/17 10:59 下午
  */
-class Mapping(inputStream: InputStream) {
+class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) {
 
-    val fields = ArrayList<Field>()
     val classMap = HashMap<String, String>()
+    val fields = ArrayList<Field>()
 
     init {
-        inputStream.use {
+        inputStreamCombined.use {
+            it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
+                if (line.startsWith('#')) {
+                    return@forEach
+                }
+                val args = line.split(' ')
+                if (args.size == 2) {
+                    classMap[args[1].substringAfterLast('/', "")] = args[1]
+                }
+            }
+        }
+        inputStreamFields.use {
             it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
                 if (line.startsWith('#')) {
                     return@forEach
@@ -26,9 +37,6 @@ class Mapping(inputStream: InputStream) {
                     fields += Field(args[0].replace("/", "."), args[1], args[2])
                 }
             }
-        }
-        fields.forEach {
-            classMap[it.path.substringAfterLast('.', "")] = it.path
         }
     }
 

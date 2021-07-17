@@ -9,11 +9,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import taboolib.module.nms.getInternalName
-import java.util.concurrent.Executors
 import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.Executors
 
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
@@ -30,33 +30,35 @@ object I18n11700 : I18nBase() {
     )
 
     private val cache: MutableMap<String, JsonObject> = Maps.newHashMap()
-    private val folder = File("assets/1.17")
+    private val folder = File("assets")
     private val executor = Executors.newSingleThreadExecutor()
 
     fun load() {
-        folder.listFiles()?.forEach { cache[it.name] = JsonParser().parse(it.readText(StandardCharsets.UTF_8)).asJsonObject }
+        locales.forEach {
+            val file = File(folder, "${it[1].substring(0, 2)}/${it[1]}")
+            if (file.exists()) {
+                cache[it[0]] = JsonParser().parse(file.readText(StandardCharsets.UTF_8)).asJsonObject
+            }
+        }
     }
 
     override fun init() {
         executor.submit {
-            if (folder.exists() && folder.isDirectory) {
-                load()
-            } else {
-                println("[TabooLib] Loading Assets...")
-                val time = System.currentTimeMillis()
+            load()
+            if (cache.isEmpty()) {
+                println("Loading language files, please wait...")
                 try {
                     locales.forEach {
-                        val file = File(folder, it[0])
-                        if (!folder.exists()) {
-                            folder.mkdirs()
+                        val file = File(folder, "${it[1].substring(0, 2)}/${it[1]}")
+                        if (!file.parentFile.exists()) {
+                            file.parentFile.mkdirs()
                         }
                         file.createNewFile()
                         file.writeBytes(URL("https://resources.download.minecraft.net/" + it[1].substring(0, 2) + "/" + it[1]).openStream().readBytes())
                     }
                     load()
-                    println("[TabooLib] Loading Successfully. (${System.currentTimeMillis() - time}ms)")
-                } catch (ignored: Throwable) {
-                    println("[TabooLib] Loading Failed. (${System.currentTimeMillis() - time}ms)")
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
                 }
             }
         }

@@ -15,19 +15,21 @@ object CommandBuilder {
 
     class CommandBase : CommandComponent(false) {
 
-        internal var unknownNotify = CommandUnknownNotify { context, index ->
-            // commands.help.failed
-            context.sender.sendMessage("§cUnknown or incomplete command, see below for error")
-            var str = "/${context.name}"
-            if (index > 0) {
+        internal var unknownNotify = CommandUnknownNotify { context, index, state ->
+            val args = subList(context.args.toList(), 0, index)
+            var str = context.name
+            if (args.size > 1) {
                 str += " "
-                str += subList(context.args.toList(), 0, index + 1).joinToString(" ").trim()
+                str += subList(args, 0, args.size - 1).joinToString(" ").trim()
             }
             if (str.length > 10) {
                 str = "...${str.substring(str.length - 10, str.length)}"
             }
-            // command.context.here
-            context.sender.sendMessage("§7$str§c<--[HERE]")
+            if (args.isNotEmpty()) {
+                str += " "
+                str += "§c§n${args.last()}"
+            }
+            PlatformFactory.platformCommand.unknownCommand(context.sender, "§7$str", state)
         }
 
         fun execute(context: CommandContext): Boolean {
@@ -37,7 +39,7 @@ object CommandBuilder {
                     executor?.function?.invoke(context, "")
                     true
                 } else {
-                    unknownNotify.function.invoke(context, 0)
+                    unknownNotify.function.invoke(context, -1, 1)
                     false
                 }
             }
@@ -46,7 +48,14 @@ object CommandBuilder {
                 val children = component.children.firstOrNull {
                     when (it) {
                         is CommandComponentLiteral -> it.alias.contains(argument)
-                        is CommandComponentDynamic -> argument.isNotEmpty() && it.restrict.function.invoke(context, argument)
+                        is CommandComponentDynamic -> {
+                            when {
+                                argument.isEmpty() -> false
+                                it.restrict?.function?.invoke(context, argument) == false -> false
+                                it.suggestion?.function?.invoke(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                else -> true
+                            }
+                        }
                         else -> error("out of case")
                     }
                 }
@@ -58,12 +67,12 @@ object CommandBuilder {
                             children.executor?.function?.invoke(context, argument)
                             true
                         } else {
-                            unknownNotify.function.invoke(context, cur)
+                            unknownNotify.function.invoke(context, cur + 1, 1)
                             false
                         }
                     }
                 } else {
-                    unknownNotify.function.invoke(context, cur)
+                    unknownNotify.function.invoke(context, cur + 1, 2)
                     false
                 }
             }
@@ -75,43 +84,43 @@ object CommandBuilder {
             if (context.args.isEmpty()) {
                 return null
             }
-//            fun process(cur: Int, component: CommandComponent): List<String>? {
-//                val argument = context.args[cur]
-//                val children = component.children.firstOrNull {
-//                    when (it) {
-//                        is CommandComponentLiteral -> it.alias.contains(argument)
-//                        is CommandComponentDynamic -> argument.isNotEmpty() && it.restrict.function.invoke(context, argument)
-//                        else -> error("out of case")
-//                    }
-//                }
-//                return if (children != null) {
-//                    if (cur + 1 < context.args.size) {
-//                        process(cur + 1, children)
-//                    } else {
-//                        val suggest = children.children.flatMap {
-//                            when (it) {
-//                                is CommandComponentLiteral -> it.alias.toList()
-//                                is CommandComponentDynamic -> it.suggestion?.function?.invoke(context) ?: emptyList()
-//                                else -> emptyList()
-//                            }
-//                        }
-//                        suggest.filter { it.startsWith(argument, ignoreCase = true) }.ifEmpty { null }
-//                    }
-//                } else {
-//                    val suggest = component.children.flatMap {
-//                        when (it) {
-//                            is CommandComponentLiteral -> it.alias.toList()
-//                            is CommandComponentDynamic -> it.suggestion?.function?.invoke(context) ?: emptyList()
-//                            else -> emptyList()
-//                        }
-//                    }
-//                    suggest.filter { it.startsWith(argument, ignoreCase = true) }.ifEmpty { null }
-//                }
-//            }
-//            return process(0, this)
+            fun process(cur: Int, component: CommandComponent): List<String>? {
+                val argument = context.args[cur]
+                val children = component.children.firstOrNull {
+                    when (it) {
+                        is CommandComponentLiteral -> it.alias.contains(argument)
+                        is CommandComponentDynamic -> {
+                            when {
+                                argument.isEmpty() -> false
+                                it.restrict?.function?.invoke(context, argument) == false -> false
+                                it.suggestion?.function?.invoke(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                else -> true
+                            }
+                        }
+                        else -> error("out of case")
+                    }
+                }
+                return when {
+                    children != null && cur + 1 < context.args.size -> {
+                        process(cur + 1, children)
+                    }
+                    cur + 1 == context.args.size -> {
+                        val suggest = component.children.flatMap {
+                            when (it) {
+                                is CommandComponentLiteral -> it.alias.toList()
+                                is CommandComponentDynamic -> it.suggestion?.function?.invoke(context) ?: emptyList()
+                                else -> emptyList()
+                            }
+                        }
+                        suggest.filter { it.startsWith(argument, ignoreCase = true) }.ifEmpty { null }
+                    }
+                    else -> null
+                }
+            }
+            return process(0, this)
         }
 
-        fun unknown(function: (context: CommandContext, index: Int) -> Unit) {
+        fun unknown(function: (context: CommandContext, index: Int, state: Int) -> Unit) {
             this.unknownNotify = CommandUnknownNotify(function)
         }
 
@@ -126,14 +135,19 @@ object CommandBuilder {
 
     class CommandSuggestion(val function: (context: CommandContext) -> List<String>?)
 
-    class CommandUnknownNotify(val function: (context: CommandContext, index: Int) -> Unit)
+    class CommandUnknownNotify(val function: (context: CommandContext, index: Int, state: Int) -> Unit)
 
-    class CommandComponentLiteral(vararg val alias: String, optional: Boolean) : CommandComponent(optional)
+    class CommandComponentLiteral(vararg val alias: String, optional: Boolean) : CommandComponent(optional) {
+
+        override fun toString(): String {
+            return "CommandComponentLiteral(alias=${alias.contentToString()}) ${super.toString()}"
+        }
+    }
 
     class CommandComponentDynamic(optional: Boolean) : CommandComponent(optional) {
 
         internal var suggestion: CommandSuggestion? = null
-        internal var restrict = CommandRestrict { _, _ -> true }
+        internal var restrict: CommandRestrict? = null
 
         fun suggestion(function: (context: CommandContext) -> List<String>?) {
             this.suggestion = CommandSuggestion(function)

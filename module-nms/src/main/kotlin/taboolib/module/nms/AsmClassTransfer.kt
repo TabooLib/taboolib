@@ -15,34 +15,11 @@ import org.objectweb.asm.commons.ClassRemapper
 class AsmClassTransfer(val source: String) {
 
     fun run(): Class<*> {
-        val classReader = ClassReader(source)
+        val inputStream = AsmClassTransfer::class.java.classLoader.getResourceAsStream(source.replace('.', '/') + ".class")
+        val classReader = ClassReader(inputStream)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        val classVisitor: ClassVisitor = ClassRemapper(classWriter, MinecraftRemapper(remapper))
+        val classVisitor: ClassVisitor = ClassRemapper(classWriter, MinecraftRemapper())
         classReader.accept(classVisitor, 0)
         return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
-    }
-
-    companion object {
-
-        val remapper = HashMap<String, String>()
-
-        init {
-            val nms = "net/minecraft/server/${MinecraftVersion.legacyVersion}/"
-            val mapping = MinecraftVersion.mapping
-            if (mapping != null) {
-                mapping.fields.forEach {
-                    if (MinecraftVersion.isUniversal) {
-                        remapper["$nms${it.className}.${it.translateName}"] = "${it.path}.${it.mojangName}"
-                    }
-                }
-                mapping.classMap.forEach { (k, v) ->
-                    if (MinecraftVersion.isUniversal) {
-                        remapper["$nms$k"] = v
-                    } else {
-                        remapper[v] = "$nms$k"
-                    }
-                }
-            }
-        }
     }
 }

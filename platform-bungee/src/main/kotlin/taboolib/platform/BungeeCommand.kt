@@ -1,7 +1,11 @@
 package taboolib.platform
 
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.CommandSender
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.chat.TranslatableComponent
 import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.TabExecutor
 import taboolib.common.platform.*
@@ -20,7 +24,7 @@ class BungeeCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: taboolib.common.platform.CommandBuilder.CommandBase.() -> Unit,
+        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
         BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name), TabExecutor {
 
@@ -41,5 +45,24 @@ class BungeeCommand : PlatformCommand {
 
     override fun unregisterCommands() {
         BungeeCord.getInstance().pluginManager.unregisterCommands(BungeePlugin.getInstance())
+    }
+
+    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
+        when (state) {
+            1 -> sender.cast<CommandSender>().sendMessage(TranslatableComponent("command.unknown.command").also {
+                it.color = ChatColor.RED
+            })
+            2 -> sender.cast<CommandSender>().sendMessage(TranslatableComponent("command.unknown.argument").also {
+                it.color = ChatColor.RED
+            })
+            else -> return
+        }
+        val components = ArrayList<BaseComponent>()
+        components += TextComponent(command)
+        components += TranslatableComponent("command.context.here").also {
+            it.color = ChatColor.RED
+            it.isItalic = true
+        }
+        sender.cast<CommandSender>().sendMessage(*components.toTypedArray())
     }
 }

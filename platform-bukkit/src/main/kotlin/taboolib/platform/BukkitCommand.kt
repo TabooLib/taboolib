@@ -1,7 +1,12 @@
 package taboolib.platform
 
+import net.md_5.bungee.api.ChatColor
+import net.md_5.bungee.api.chat.BaseComponent
+import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.chat.TranslatableComponent
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.command.PluginCommand
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
@@ -92,5 +97,24 @@ class BukkitCommand : PlatformCommand {
 
     override fun unregisterCommands() {
         registeredCommands.forEach { unregisterCommand(it) }
+    }
+
+    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
+        when (state) {
+            1 -> sender.cast<CommandSender>().spigot().sendMessage(TranslatableComponent("command.unknown.command").also {
+                it.color = ChatColor.RED
+            })
+            2 -> sender.cast<CommandSender>().spigot().sendMessage(TranslatableComponent("command.unknown.argument").also {
+                it.color = ChatColor.RED
+            })
+            else -> return
+        }
+        val components = ArrayList<BaseComponent>()
+        components += TextComponent(command)
+        components += TranslatableComponent("command.context.here").also {
+            it.color = ChatColor.RED
+            it.isItalic = true
+        }
+        sender.cast<CommandSender>().spigot().sendMessage(*components.toTypedArray())
     }
 }

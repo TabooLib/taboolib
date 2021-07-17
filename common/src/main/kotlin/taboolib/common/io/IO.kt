@@ -27,6 +27,10 @@ fun <T> Class<T>.getInstance(new: Boolean = false): T? {
         return null
     } catch (ex: ClassNotFoundException) {
         return null
+    } catch (ex: InternalError) {
+        println(this)
+        ex.printStackTrace()
+        return null
     }
     return try {
         getDeclaredField("INSTANCE").get(null) as T

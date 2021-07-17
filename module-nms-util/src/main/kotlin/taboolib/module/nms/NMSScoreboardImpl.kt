@@ -4,20 +4,30 @@ import net.minecraft.server.v1_16_R3.*
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex
+import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.unsafeInstance
+import java.util.*
 
 class NMSScoreboardImpl : NMSScoreboard() {
 
     override fun setupScoreboard(player: Player, remove: Boolean) {
-        val packet = PacketPlayOutScoreboardObjective()
+        val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         val reflex = Reflex(PacketPlayOutScoreboardObjective::class.java).instance(packet)
-        reflex.set("a", if (remove) "REMOVE" else "TabooScore")
-        if (MinecraftVersion.major >= 5) {
-            reflex.set("b", ChatComponentText("ScoreBoard"))
+        if (MinecraftVersion.isUniversal) {
+            reflex.set("objectiveName", if (remove) "REMOVE" else "TabooScore")
+            reflex.set("displayName", ChatComponentText("ScoreBoard"))
+            reflex.set("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            reflex.set("method", 0)
         } else {
-            reflex.set("b", "ScoreBoard")
+            reflex.set("a", if (remove) "REMOVE" else "TabooScore")
+            if (MinecraftVersion.major >= 5) {
+                reflex.set("b", ChatComponentText("ScoreBoard"))
+            } else {
+                reflex.set("b", "ScoreBoard")
+            }
+            reflex.set("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            reflex.set("d", 0)
         }
-        reflex.set("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
-        reflex.set("d", 0)
         player.sendPacket(packet)
         initTeam(player)
     }
@@ -34,43 +44,48 @@ class NMSScoreboardImpl : NMSScoreboard() {
     }
 
     override fun display(player: Player) {
-        val packet = PacketPlayOutScoreboardDisplayObjective()
+        val packet = PacketPlayOutScoreboardDisplayObjective::class.java.unsafeInstance()
         val reflex = Reflex(PacketPlayOutScoreboardDisplayObjective::class.java).instance(packet)
-        reflex.set("a", 1)
-        reflex.set("b", "TabooScore")
+        if (MinecraftVersion.isUniversal) {
+            reflex.set("slot", 1)
+            reflex.set("objectiveName", "TabooScore")
+        } else {
+            reflex.set("a", 1)
+            reflex.set("b", "TabooScore")
+        }
         player.sendPacket(packet)
     }
 
     override fun setDisplayName(player: Player, title: String) {
-        val packet = PacketPlayOutScoreboardObjective()
+        val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         val reflex = Reflex(PacketPlayOutScoreboardObjective::class.java).instance(packet)
-        reflex.set("a", "TabooScore")
-        if (MinecraftVersion.major >= 5) {
-            reflex.set("b", ChatComponentText(title))
+        if (MinecraftVersion.isUniversal) {
+            reflex.set("objectiveName", "TabooScore")
+            reflex.set("displayName", ChatComponentText(title))
+            reflex.set("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            reflex.set("method", 2)
         } else {
-            reflex.set("b", title)
+            reflex.set("a", "TabooScore")
+            if (MinecraftVersion.major >= 5) {
+                reflex.set("b", ChatComponentText(title))
+            } else {
+                reflex.set("b", title)
+            }
+            reflex.set("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            reflex.set("d", 2)
         }
-        reflex.set("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
-        reflex.set("d", 2)
         player.sendPacket(packet)
     }
 
     /**
      *
      * a -> Team Name
-     *
      * b -> Team Display Name
-     *
      * c -> Team Prefix
-     *
      * d -> Team Suffix
-     *
      * e -> Name Tag Visibility
-     *
      * f -> Color
-     *
      * g -> Players, Player Count
-     *
      * h -> Mode
      *
      *  If 0 then the team is created.
@@ -86,8 +101,22 @@ class NMSScoreboardImpl : NMSScoreboard() {
      */
     private fun initTeam(player: Player) {
         uniqueColors.forEachIndexed { _, color ->
+            if (MinecraftVersion.major >= 9) {
+                val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+                packet.reflex("method", 0)
+                packet.reflex("name", color)
+                packet.reflex("players", listOf(color))
+                val b = universalTeamData.unsafeInstance()
+                b.reflex("displayName", ChatComponentText(color))
+                b.reflex("nametagVisibility", "always")
+                b.reflex("collisionRule", "always")
+                b.reflex("color", EnumChatFormat.RESET)
+                b.reflex("options", -1)
+                packet.reflex("parameters", Optional.of(b))
+                return@forEachIndexed
+            }
             if (MinecraftVersion.major >= 5) {
-                val packet = PacketPlayOutScoreboardTeam()
+                val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
                 val reflex = Reflex(PacketPlayOutScoreboardTeam::class.java).instance(packet)
                 reflex.set("a", color)
                 reflex.set("b", ChatComponentText(color))
@@ -100,7 +129,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 player.sendPacket(packet)
                 return@forEachIndexed
             }
-            val packet = PacketPlayOutScoreboardTeam()
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
             val reflex = Reflex(PacketPlayOutScoreboardTeam::class.java).instance(packet)
             reflex.set("a", color)
             reflex.set("b", color)
@@ -130,8 +159,23 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @param team 为\[content.size - line - 1\]
      */
     private fun sendTeamPrefixSuffix(player: Player, team: String, content: String) {
+        if (MinecraftVersion.major >= 9) {
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+            packet.reflex("method", 2)
+            packet.reflex("name", team)
+            val b = universalTeamData.unsafeInstance()
+            b.reflex("displayName", ChatComponentText(team))
+            b.reflex("playerPrefix", ChatComponentText(content))
+            b.reflex("nametagVisibility", "always")
+            b.reflex("collisionRule", "always")
+            b.reflex("color", EnumChatFormat.RESET)
+            b.reflex("options", -1)
+            packet.reflex("parameters", Optional.of(b))
+            player.sendPacket(packet)
+            return
+        }
         if (MinecraftVersion.major >= 5) {
-            val packet = PacketPlayOutScoreboardTeam()
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
             val reflex = Reflex(PacketPlayOutScoreboardTeam::class.java).instance(packet)
             reflex.set("a", team)
             reflex.set("c", ChatComponentText(content))
@@ -149,7 +193,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 suffix = suffix.substring(0, 16)
             }
         }
-        val packet = PacketPlayOutScoreboardTeam()
+        val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
         val reflex = Reflex(PacketPlayOutScoreboardTeam::class.java).instance(packet)
         reflex.set("a", team)
         reflex.set(if (MinecraftVersion.major >= 1) "i" else "h", 2)
@@ -162,8 +206,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
         validateLineCount(line)
         if (line > lastLineCount) {
             (lastLineCount until line).forEach { i ->
+                if (MinecraftVersion.major >= 9) {
+                    val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
+                    val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
+                    reflex.set("owner", uniqueColors[i])
+                    reflex.set("objectiveName", "TabooScore")
+                    reflex.set("score", i)
+                    reflex.set("method", ScoreboardServer.Action.CHANGE)
+                    player.sendPacket(packet)
+                    return@forEach
+                }
                 if (MinecraftVersion.major >= 5) {
-                    val packet = PacketPlayOutScoreboardScore()
+                    val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                     val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
                     reflex.set("a", uniqueColors[i])
                     reflex.set("b", "TabooScore")
@@ -172,7 +226,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     player.sendPacket(packet)
                     return@forEach
                 }
-                val packet = PacketPlayOutScoreboardScore()
+                val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                 val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
                 reflex.set("a", uniqueColors[i])
                 reflex.set("b", "TabooScore")
@@ -182,8 +236,17 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
         } else {
             (line until lastLineCount).forEach { i ->
+                if (MinecraftVersion.major >= 9) {
+                    val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
+                    val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
+                    reflex.set("owner", uniqueColors[i])
+                    reflex.set("objectiveName", "TabooScore")
+                    reflex.set("method", ScoreboardServer.Action.REMOVE)
+                    player.sendPacket(packet)
+                    return@forEach
+                }
                 if (MinecraftVersion.major >= 5) {
-                    val packet = PacketPlayOutScoreboardScore()
+                    val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                     val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
                     reflex.set("a", uniqueColors[i])
                     reflex.set("b", "TabooScore")
@@ -191,7 +254,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     player.sendPacket(packet)
                     return@forEach
                 }
-                val packet = PacketPlayOutScoreboardScore()
+                val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                 val reflex = Reflex(PacketPlayOutScoreboardScore::class.java).instance(packet)
                 reflex.set("a", uniqueColors[i])
                 reflex.set("b", "TabooScore")

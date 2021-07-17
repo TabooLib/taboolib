@@ -12,4 +12,9 @@ public @interface RuntimeResource {
     String hash();
 
     String name() default "";
+
+    String tag() default "";
+
+    boolean zip() default false;
+
 }

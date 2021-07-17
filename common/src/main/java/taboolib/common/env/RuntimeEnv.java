@@ -1,10 +1,11 @@
 package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.io.IOKt;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.util.zip.ZipFile;
 
 /**
  * TabooLib
@@ -14,6 +15,8 @@ import java.net.URL;
  * @since 2021/6/15 6:23 下午
  */
 public class RuntimeEnv {
+
+    private boolean notify = false;
 
     public void inject(@NotNull Class<?> clazz) {
         loadAssets(clazz);
@@ -34,7 +37,7 @@ public class RuntimeEnv {
             for (RuntimeResource resource : resources) {
                 File file;
                 if (resource.name().isEmpty()) {
-                    file = new File("assets/" + resource.value().substring(resource.value().lastIndexOf("/")));
+                    file = new File("assets/" + resource.hash().substring(0, 2) + "/" + resource.hash());
                 } else {
                     file = new File("assets/" + resource.name());
                 }
@@ -45,8 +48,24 @@ public class RuntimeEnv {
                     file.getParentFile().mkdirs();
                 }
                 try {
-                    System.out.println("Loading Assets " + file.getName());
-                    Repository.downloadToFile(new URL(resource.value()), file);
+                    if (!notify) {
+                        notify = true;
+                        System.out.println("Loading assets, please wait...");
+                    }
+                    if (resource.zip()) {
+                        File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
+                        Repository.downloadToFile(new URL(resource.value() + ".zip"), cacheFile);
+                        try (ZipFile zipFile = new ZipFile(cacheFile)) {
+                            InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(resource.value().substring(resource.value().lastIndexOf('/') + 1)));
+                            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                                fileOutputStream.write(DependencyDownloader.readFully(inputStream));
+                            }
+                        } finally {
+                            cacheFile.delete();
+                        }
+                    } else {
+                        Repository.downloadToFile(new URL(resource.value()), file);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

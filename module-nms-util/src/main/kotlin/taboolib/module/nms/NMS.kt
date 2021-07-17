@@ -61,7 +61,7 @@ fun ItemStack.getInternalName(): String {
 }
 
 fun ItemStack.getI18nName(player: Player? = null): String {
-    return I18n.get().getName(player, this)
+    return I18n.instance.getName(player, this)
 }
 
 /**
@@ -72,7 +72,7 @@ fun Entity.getInternalName(): String {
 }
 
 fun Entity.getI18nName(player: Player? = null): String {
-    return I18n.get().getName(player, this)
+    return I18n.instance.getName(player, this)
 }
 
 /**
@@ -83,7 +83,7 @@ fun Enchantment.getInternalName(): String {
 }
 
 fun Enchantment.getI18nName(player: Player? = null): String {
-    return I18n.get().getName(player, this)
+    return I18n.instance.getName(player, this)
 }
 
 /**
@@ -94,7 +94,7 @@ fun PotionEffectType.getInternalName(): String {
 }
 
 fun PotionEffectType.getI18nName(player: Player? = null): String {
-    return I18n.get().getName(player, this)
+    return I18n.instance.getName(player, this)
 }
 
 /**
@@ -209,8 +209,13 @@ private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
                 .newInstance(localMinecraftKey, localLootPredicateManager)
         )
         if (localSerializedAdvancement != null) {
-            localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("REGISTRY")!!
-                .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+            if (MinecraftVersion.major >= 9) {
+                localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("advancements")!!
+                    .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+            } else {
+                localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("REGISTRY")!!
+                    .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+            }
         }
     }
     return key

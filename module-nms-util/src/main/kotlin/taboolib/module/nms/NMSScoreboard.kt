@@ -35,6 +35,10 @@ abstract class NMSScoreboard {
         "§黭",
     )
 
+    protected val universalTeamData: Class<*> by lazy {
+        Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam\$b")
+    }
+
     abstract fun setupScoreboard(player: Player, remove: Boolean)
 
     abstract fun setDisplayName(player: Player, title: String)

@@ -81,7 +81,7 @@ class BungeeAdapter : PlatformAdapter {
     override fun unregisterListener(proxyListener: ProxyListener) {
         val listener = proxyListener as BungeeListener
         var array = emptyArray<EventHandlerMethod>()
-        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(listener.event)) BungeeEvent::class.java else listener.event
+        val eventClass = if (ProxyEvent::class.java.isAssignableFrom(listener.clazz)) BungeeEvent::class.java else listener.clazz
         byListenerAndPriority[eventClass]?.run {
             get(listener.level.toByte())?.run {
                 remove(listener)
@@ -97,10 +97,13 @@ class BungeeAdapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-    class BungeeListener(val event: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
+    class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
 
         fun handle(event: Any) {
-            consumer(if (event is BungeeEvent) event.proxyEvent else event)
+            val origin: Any = if (event is BungeeEvent) event.proxyEvent else event
+            if (origin.javaClass == clazz) {
+                consumer(origin)
+            }
         }
 
         companion object {

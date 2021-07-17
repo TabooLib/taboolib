@@ -17,6 +17,7 @@ repositories {
 dependencies {
     compileOnly("ink.ptms.core:v11300:11300:all")
     compileOnly("ink.ptms.core:v11200:11200:all")
+    compileOnly("ink.ptms.core:v11700:11700-mapped")
     compileOnly("ink.ptms.core:v11605:11605")
     compileOnly("ink.ptms.core:v11600:11600:all")
     compileOnly("ink.ptms.core:v11500:11500:all")

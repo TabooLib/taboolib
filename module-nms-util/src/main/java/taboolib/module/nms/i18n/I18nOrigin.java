@@ -29,12 +29,12 @@ import java.util.Objects;
 @RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/i18n_high_zh_CN.yml",
         hash = "3aa002f314ac0768b00daa3563c08da9b5c674c5",
-        name = "simpleI18n/high/zh_CN.yml"
+        zip = true
 )
 @RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/i18n_low_zh_CN.yml",
         hash = "476754933e2e486048f39726b822f24447d60ecb",
-        name = "simpleI18n/low/zh_CN.yml"
+        zip = true
 )
 public class I18nOrigin extends I18nBase {
 
@@ -99,10 +99,10 @@ public class I18nOrigin extends I18nBase {
     }
 
     private File getLocaleFile() {
-        return new File("assets/simpleI18n/" + getVersion() + "/zh_CN.yml");
-    }
-
-    private String getVersion() {
-        return MinecraftVersion.INSTANCE.getMajor() >= 5 ? "high" : "low";
+        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+            return new File("assets/3a/3aa002f314ac0768b00daa3563c08da9b5c674c5");
+        } else {
+            return new File("assets/47/476754933e2e486048f39726b822f24447d60ecb");
+        }
     }
 }

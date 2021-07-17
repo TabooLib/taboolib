@@ -14,4 +14,6 @@ interface PlatformCommand {
     fun unregisterCommand(command: String)
 
     fun unregisterCommands()
+
+    fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int)
 }

@@ -49,7 +49,7 @@ class VelocityAdapter : PlatformAdapter {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, postOrder: PostOrder, func: (T) -> Unit): ProxyListener {
-        val listener = VelocityListener { func(it as T) }
+        val listener = VelocityListener(event) { func(it as T) }
         val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) VelocityEvent::class.java else event
         plugin.server.eventManager.register(this, eventClass as Class<Any>, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
         return listener
@@ -65,10 +65,13 @@ class VelocityAdapter : PlatformAdapter {
         event.proxyEvent.postCall()
     }
 
-    class VelocityListener(val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
+    class VelocityListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
 
         override fun execute(event: Any) {
-            consumer(if (event is VelocityEvent) event.proxyEvent else event)
+            val origin: Any = if (event is VelocityEvent) event.proxyEvent else event
+            if (origin.javaClass == clazz) {
+                consumer(origin)
+            }
         }
     }
 

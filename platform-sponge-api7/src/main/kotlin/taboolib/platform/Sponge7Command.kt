@@ -5,11 +5,14 @@ import org.spongepowered.api.command.CommandCallable
 import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.text.Text
+import org.spongepowered.api.text.TranslatableText
+import org.spongepowered.api.text.format.TextColor
+import org.spongepowered.api.text.format.TextColors
+import org.spongepowered.api.text.format.TextStyles
 import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import taboolib.common.platform.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -69,5 +72,17 @@ class Sponge7Command : PlatformCommand {
         Sponge.getCommandManager().getOwnedBy(Sponge7Plugin.getInstance()).onEach {
             Sponge.getCommandManager().removeMapping(it)
         }
+    }
+
+    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
+        when (state) {
+            1 -> sender.cast<CommandSource>().sendMessage(TranslatableText.builder("command.unknown.command").color(TextColors.RED).build())
+            2 -> sender.cast<CommandSource>().sendMessage(TranslatableText.builder("command.unknown.command").color(TextColors.RED).build())
+            else -> return
+        }
+        val components = ArrayList<Text>()
+        components += Text.of(command)
+        components += TranslatableText.builder("command.context.here").color(TextColors.RED).style(TextStyles.ITALIC).build()
+        sender.cast<CommandSource>().sendMessage(Text.join(components))
     }
 }

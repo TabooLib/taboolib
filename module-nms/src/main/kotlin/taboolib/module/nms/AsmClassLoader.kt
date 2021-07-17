@@ -1,21 +1,18 @@
-package taboolib.module.nms;
+package taboolib.module.nms
 
-public class AsmClassLoader extends ClassLoader {
+object AsmClassLoader : ClassLoader() {
 
-    private static final class AsmClassLoaderHolder {
-
-        private static final AsmClassLoader INSTANCE = new AsmClassLoader();
+    override fun findClass(name: String?): Class<*> {
+        try {
+            return Class.forName(name, false, AsmClassLoader::class.java.classLoader)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+        return super.findClass(name)
     }
 
-    public static AsmClassLoader getInstance() {
-        return AsmClassLoaderHolder.INSTANCE;
-    }
-
-    private AsmClassLoader() {
-        super(AsmClassLoader.class.getClassLoader());
-    }
-
-    public static Class<?> createNewClass(String name, byte[] arr) {
-        return getInstance().defineClass(name, arr, 0, arr.length, AsmClassLoader.class.getProtectionDomain());
+    @JvmStatic
+    fun createNewClass(name: String, arr: ByteArray): Class<*> {
+        return AsmClassLoader.defineClass(name.replace('/', '.'), arr, 0, arr.size, AsmClassLoader::class.java.protectionDomain)
     }
 }
