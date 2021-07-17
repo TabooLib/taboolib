@@ -12,8 +12,8 @@ import taboolib.common.reflect.ReflexRemapper
 object RefRemapper : ReflexRemapper {
 
     override fun field(name: String, field: String): String {
-        if (MinecraftVersion.isUniversal && MinecraftVersion.mapping != null) {
-            return MinecraftVersion.mapping!!.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName ?: field
+        if (MinecraftVersion.isUniversal) {
+            return MinecraftVersion.mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName ?: field
         }
         return field
     }

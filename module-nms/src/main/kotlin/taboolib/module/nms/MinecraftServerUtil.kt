@@ -14,7 +14,7 @@ fun obcClass(name: String): Class<*> {
 
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        Class.forName(MinecraftVersion.mapping!!.classMap[name]!!.replace('/', '.'))
+        Class.forName(MinecraftVersion.mapping.classMap[name]!!.replace('/', '.'))
     } else {
         Class.forName("net.minecraft.server.${MinecraftVersion.legacyVersion}.$name")
     }

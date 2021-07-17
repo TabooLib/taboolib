@@ -21,6 +21,7 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Chunk;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -41,7 +42,6 @@ import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Locale;
@@ -576,10 +576,18 @@ public class NMSGenericImpl extends NMSGeneric {
     @Override
     @NotNull
     public String getEnchantmentKey(Enchantment enchantment) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
+        if (MinecraftVersion.INSTANCE.getMajor() > 5) {
             return "enchantment.minecraft." + new Reflex(Keyed.class).instance(enchantment).<NamespacedKey>invoke("getKey").getKey();
-        } else {
+        } else if (MinecraftVersion.INSTANCE.getMajor() == 5) {
             return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(new Reflex(Enchantment.class).instance(enchantment).get("id")).g();
+        } else {
+            Map<String, Enchantment> byName = new Reflex(Enchantment.class).get("byName");
+            for (Map.Entry<String, Enchantment> entry : byName.entrySet()) {
+                if (entry == enchantment) {
+                    return "enchantment.minecraft." + entry.getKey();
+                }
+            }
+            return "null";
         }
     }
 

@@ -29,7 +29,11 @@ object CommandBuilder {
                 str += " "
                 str += "§c§n${args.last()}"
             }
-            PlatformFactory.platformCommand.unknownCommand(context.sender, "§7$str", state)
+            when (state) {
+                1 -> context.sender.sendMessage("§cUnknown or incomplete command, see below for error")
+                2 -> context.sender.sendMessage("§cIncorrect argument for command")
+            }
+            context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
         }
 
         fun execute(context: CommandContext): Boolean {

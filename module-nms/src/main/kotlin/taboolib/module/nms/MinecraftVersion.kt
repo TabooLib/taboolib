@@ -64,15 +64,11 @@ object MinecraftVersion {
     }
 
     val mapping by lazy {
-        if (isUniversal && MappingFile.files.containsKey(runningVersion)) {
-            val mappingFile = MappingFile.files[runningVersion]!!
-            Mapping(
-                FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
-                FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
-            )
-        } else {
-            null
-        }
+        val mappingFile = if (isUniversal) MappingFile.files[runningVersion]!! else MappingFile.files["1.17"]!!
+        Mapping(
+            FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
+            FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
+        )
     }
 
     val legacyVersion by lazy {

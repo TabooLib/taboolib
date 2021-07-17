@@ -22,7 +22,7 @@ open class MinecraftRemapper : Remapper() {
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.legacyVersion}/"
 
     val mapping by lazy {
-        MinecraftVersion.mapping!!
+        MinecraftVersion.mapping
     }
 
     /**
