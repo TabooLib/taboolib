@@ -1,11 +1,12 @@
 package taboolib.common.platform
 
+import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
-import java.lang.Exception
 import java.lang.reflect.Method
 
 @Awake
+@Isolated
 object EventBus : Injector.Methods {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
@@ -29,16 +30,7 @@ object EventBus : Injector.Methods {
                             error("unsupported parameter for optional event")
                         }
                     } else {
-                        // FIXME: 2021/7/17
-                        registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) {
-                            try {
-                                method.invoke(instance, it)
-                            } catch (ex: Exception) {
-                                println(it)
-                                println(method)
-                                ex.printStackTrace()
-                            }
-                        }
+                        registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) { method.invoke(instance, it) }
                     }
                 }
                 Platform.BUNGEE -> {

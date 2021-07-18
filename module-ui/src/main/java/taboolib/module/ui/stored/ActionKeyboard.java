@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
  * @author sky
  * @since 2019-12-03 19:20
  */
-@Isolated(exclude = MenuStored.class)
+@Isolated
 public class ActionKeyboard extends Action {
 
     @Override

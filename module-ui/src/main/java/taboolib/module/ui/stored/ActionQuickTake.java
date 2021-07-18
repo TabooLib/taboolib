@@ -9,7 +9,7 @@ import taboolib.module.ui.ItemStacker;
  * @author sky
  * @since 2019-12-03 19:20
  */
-@Isolated(exclude = MenuStored.class)
+@Isolated
 public class ActionQuickTake extends Action {
 
     @Override
