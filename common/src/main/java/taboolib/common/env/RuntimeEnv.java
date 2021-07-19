@@ -1,9 +1,12 @@
 package taboolib.common.env;
 
+import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.io.IOKt;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.zip.ZipFile;
 
@@ -14,9 +17,28 @@ import java.util.zip.ZipFile;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
+@RuntimeDependency(
+        value = "!org.jetbrains.kotlin:kotlin-stdlib:@kotlin_version@",
+        test = "!taboolib.library.kotlin_@kotlin_version_escape@.KotlinVersion",
+        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
+)
+@RuntimeDependency(
+        value = "!org.jetbrains.kotlin:kotlin-stdlib-jdk7:@kotlin_version@",
+        test = "!taboolib.library.kotlin_@kotlin_version_escape@.jdk7.AutoCloseableKt",
+        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
+)
+@RuntimeDependency(
+        value = "!org.jetbrains.kotlin:kotlin-stdlib-jdk8:@kotlin_version@",
+        test = "!taboolib.library.kotlin_@kotlin_version_escape@.collections.jdk8.CollectionsJDK8Kt",
+        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
+)
 public class RuntimeEnv {
 
     private boolean notify = false;
+
+    public void setup() {
+        loadDependency(RuntimeEnv.class);
+    }
 
     public void inject(@NotNull Class<?> clazz) {
         loadAssets(clazz);
@@ -85,12 +107,19 @@ public class RuntimeEnv {
         }
         if (dependencies != null) {
             for (RuntimeDependency dependency : dependencies) {
-                if (dependency.test().length() > 0 && ClassAppender.isExists(dependency.test())) {
+                String test = dependency.test().startsWith("!") ? dependency.test().substring(1) : dependency.test();
+                if (test.length() > 0 && ClassAppender.isExists(test)) {
                     continue;
                 }
+                Relocation relocation = null;
+                if (dependency.relocate().length == 2) {
+                    String pattern = dependency.relocate()[0].startsWith("!") ? dependency.relocate()[0].substring(1) : dependency.relocate()[0];
+                    String relocatePattern = dependency.relocate()[1].startsWith("!") ? dependency.relocate()[1].substring(1) : dependency.relocate()[1];
+                    relocation = new Relocation(pattern, relocatePattern);
+                }
                 try {
-                    String[] args = dependency.value().split(":");
-                    DependencyDownloader downloader = new DependencyDownloader();
+                    String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
+                    DependencyDownloader downloader = new DependencyDownloader(relocation);
                     downloader.addRepository(new Repository(dependency.repository()));
                     // 解析依赖
                     File file1 = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));

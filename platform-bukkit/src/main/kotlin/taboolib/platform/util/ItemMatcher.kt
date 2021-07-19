@@ -17,7 +17,7 @@ import taboolib.common.Isolated
  * @return boolean
  */
 fun Player.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false): Boolean {
-    return player.inventory.checkItem(item, amount, remove)
+    return inventory.checkItem(item, amount, remove)
 }
 
 /**

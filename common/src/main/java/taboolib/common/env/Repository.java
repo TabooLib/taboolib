@@ -131,4 +131,11 @@ public class Repository extends AbstractXmlParser {
     public int hashCode() {
         return Objects.hash(getUrl());
     }
+
+    @Override
+    public String toString() {
+        return "Repository{" +
+                "url='" + url + '\'' +
+                '}';
+    }
 }

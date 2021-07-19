@@ -1,9 +1,6 @@
 @file:Isolated
 @file:RuntimeDependencies(
-    RuntimeDependency("org.ow2.asm:asm:9.1", test = "org.objectweb.asm.ClassVisitor"),
-    RuntimeDependency("org.ow2.asm:asm-util:9.1", test = "org.objectweb.asm.util.Printer"),
-    RuntimeDependency("org.ow2.asm:asm-commons:9.1", test = "org.objectweb.asm.commons.Remapper"),
-    RuntimeDependency("org.openjdk.nashorn:nashorn-core:15.2", test = "jdk.nashorn.api.scripting.NashornScriptEngineFactory")
+    RuntimeDependency("!org.openjdk.nashorn:nashorn-core:15.2", test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory")
 )
 package taboolib.common5.util
 

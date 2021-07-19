@@ -1,6 +1,9 @@
 package taboolib.common.env;
 
+import me.lucko.jarrelocator.JarRelocator;
+import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,6 +14,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
+import java.lang.reflect.Field;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -27,6 +32,8 @@ import java.util.*;
  */
 public class DependencyDownloader extends AbstractXmlParser {
 
+    private static boolean notify = false;
+
     /**
      * A set of all of the dependencies that have already been injected into the
      * classpath, so they should not be reinjected (to prevent cyclic
@@ -35,6 +42,10 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     private static final Set<Dependency> injectedDependencies = new HashSet<>();
+
+    private final Set<Repository> repositories = new HashSet<>();
+
+    private final Set<Relocation> relocation = new HashSet<>();
 
     /**
      * The directory to download and store artifacts in
@@ -57,11 +68,20 @@ public class DependencyDownloader extends AbstractXmlParser {
      */
     private boolean isDebugMode = true;
 
-    private final Set<Repository> repositories = new HashSet<>();
-
     private boolean ignoreOptional = true;
 
-    private static boolean notify = false;
+    public DependencyDownloader() {
+    }
+
+    public DependencyDownloader(@Nullable Relocation... relocation) {
+        if (relocation != null) {
+            for (Relocation rel : relocation) {
+                if (rel != null) {
+                    this.relocation.add(rel);
+                }
+            }
+        }
+    }
 
     /**
      * Makes sure that the {@link DependencyDownloader#baseDir} exists
@@ -86,7 +106,19 @@ public class DependencyDownloader extends AbstractXmlParser {
                     notify = true;
                     System.out.println("Loading libraries, please wait...");
                 }
-                ClassAppender.addPath(file.toPath());
+                if (relocation.isEmpty()) {
+                    ClassAppender.addPath(file.toPath());
+                } else {
+                    File rel = new File(file.getPath() + ".rel.jar");
+                    if (!rel.exists() || rel.length() == 0) {
+                        try {
+                            new JarRelocator(copyFile(file, File.createTempFile(file.getName(), ".jar")), rel, relocation).run();
+                        } catch (Throwable e) {
+                            throw new RuntimeException(String.format("Unable to relocate %s", dep), e);
+                        }
+                    }
+                    ClassAppender.addPath(rel.toPath());
+                }
             }
         }
     }
@@ -190,7 +222,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                 break;
             } catch (IOException ex) {
                 if (e == null) {
-                    e = new IOException(String.format("Unable to find download for %s", dependency));
+                    e = new IOException(String.format("Unable to find download for %s (%s)", dependency, repo.getUrl()));
                 }
                 e.addSuppressed(ex);
             }
@@ -286,6 +318,20 @@ public class DependencyDownloader extends AbstractXmlParser {
     }
 
     /**
+     * Downloads all of the dependencies specified in the pom for the default
+     * scopes
+     *
+     * @param pom The stream containing the pom file
+     * @return The set of all dependencies that were downloaded
+     * @throws IOException If an I/O error has occurred
+     * @see DependencyDownloader#dependencyScopes
+     * @since 1.0.0
+     */
+    public Set<Dependency> download(InputStream pom) throws IOException {
+        return download(pom, dependencyScopes);
+    }
+
+    /**
      * Downloads all of the dependencies specified in the pom
      *
      * @param pom    The stream containing the pom file
@@ -309,20 +355,6 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public void addRepository(Repository repository) {
         repositories.add(repository);
-    }
-
-    /**
-     * Downloads all of the dependencies specified in the pom for the default
-     * scopes
-     *
-     * @param pom The stream containing the pom file
-     * @return The set of all dependencies that were downloaded
-     * @throws IOException If an I/O error has occurred
-     * @see DependencyDownloader#dependencyScopes
-     * @since 1.0.0
-     */
-    public Set<Dependency> download(InputStream pom) throws IOException {
-        return download(pom, dependencyScopes);
     }
 
     public File getBaseDir() {
@@ -367,6 +399,10 @@ public class DependencyDownloader extends AbstractXmlParser {
     public DependencyDownloader setIgnoreOptional(boolean ignoreOptional) {
         this.ignoreOptional = ignoreOptional;
         return this;
+    }
+
+    public Set<Relocation> getRelocation() {
+        return relocation;
     }
 
     @NotNull
@@ -419,5 +455,12 @@ public class DependencyDownloader extends AbstractXmlParser {
         return stream.toByteArray();
     }
 
-
+    private static File copyFile(File file1, File file2) {
+        try (FileInputStream fileIn = new FileInputStream(file1); FileOutputStream fileOut = new FileOutputStream(file2); FileChannel channelIn = fileIn.getChannel(); FileChannel channelOut = fileOut.getChannel()) {
+            channelIn.transferTo(0, channelIn.size(), channelOut);
+        } catch (IOException t) {
+            t.printStackTrace();
+        }
+        return file2;
+    }
 }

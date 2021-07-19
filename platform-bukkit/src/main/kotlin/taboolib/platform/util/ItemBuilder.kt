@@ -4,6 +4,7 @@ package taboolib.platform.util
 
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
+import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.block.banner.Pattern
@@ -19,11 +20,12 @@ import taboolib.common.platform.warning
 import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.reflect.Reflex.Companion.reflexInvoke
 import taboolib.library.xseries.XMaterial
+import taboolib.module.chat.colored
 import java.util.*
 
 fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit): ItemStack {
     if (material == XMaterial.AIR || material == XMaterial.CAVE_AIR || material == XMaterial.VOID_AIR) {
-        error("is air")
+        error("air")
     }
     return ItemBuilder(material).also(builder).build()
 }
@@ -46,7 +48,7 @@ class ItemBuilder(val material: XMaterial) {
     var spawnType: EntityType? = null
     var skullOwner: String? = null
     var skullTexture: SkullTexture? = null
-    var unbreakable = false
+    var isUnbreakable = false
     var customModelData = -1
 
     fun shiny() {
@@ -58,10 +60,29 @@ class ItemBuilder(val material: XMaterial) {
         flags.addAll(ItemFlag.values())
     }
 
+    fun colored() {
+        if (name != null) {
+            name = try {
+                name!!.colored()
+            } catch (ex: NoClassDefFoundError) {
+                ChatColor.translateAlternateColorCodes('&', name!!)
+            }
+        }
+        if (lore.isNotEmpty()) {
+            val newLore = try {
+                lore.colored()
+            } catch (ex: NoClassDefFoundError) {
+                lore.map { ChatColor.translateAlternateColorCodes('&', it) }
+            }
+            lore.clear()
+            lore += newLore
+        }
+    }
+
     fun build(): ItemStack {
         val itemStack = material.parseItem() ?: ItemStack(Material.STONE)
         val itemMeta = itemStack.itemMeta!!
-        itemMeta.displayName = name
+        itemMeta.setDisplayName(name)
         itemMeta.lore = lore
         itemMeta.addItemFlags(*flags.toTypedArray())
         if (itemMeta is EnchantmentStorageMeta) {
@@ -71,7 +92,7 @@ class ItemBuilder(val material: XMaterial) {
         }
         when (itemMeta) {
             is LeatherArmorMeta -> {
-                itemMeta.color = color
+                itemMeta.setColor(color)
             }
             is PotionMeta -> {
                 itemMeta.color = color
@@ -95,11 +116,11 @@ class ItemBuilder(val material: XMaterial) {
             }
         }
         try {
-            itemMeta.isUnbreakable = unbreakable
+            itemMeta.isUnbreakable = isUnbreakable
         } catch (ex: NoSuchMethodError) {
             try {
-                itemMeta.spigot().isUnbreakable = unbreakable
-            } catch (ex: NoSuchMethodError) {
+                itemMeta.reflexInvoke<Any>("spigot")!!.reflexInvoke<Any>("setUnbreakable", isUnbreakable)
+            } catch (ex: NoSuchMethodException) {
                 warning("Unbreakable not supported yet.")
             }
         }

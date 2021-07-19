@@ -14,7 +14,7 @@ import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.CopyOnWriteArraySet
 
-@RuntimeDependency("org.yaml:snakeyaml:1.28", test = "org.yaml.snakeyaml.Yaml")
+@RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml")
 @Awake
 object ConfigLoader : Injector.Fields {
 

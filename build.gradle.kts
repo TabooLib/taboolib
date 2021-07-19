@@ -34,8 +34,10 @@ publishing {
             version = project.version.toString()
             // subprojects -> classifier
             file("$buildDir/libs").listFiles()?.forEach { file ->
-                artifact(file) {
-                    classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - version.length - 1)
+                if (file.name.endsWith(".jar")) {
+                    artifact(file) {
+                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - version.length - 1)
+                    }
                 }
             }
         }

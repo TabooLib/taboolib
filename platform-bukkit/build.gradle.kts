@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("ink.ptms.core:v11600:11600:all")
+    compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module-chat"))

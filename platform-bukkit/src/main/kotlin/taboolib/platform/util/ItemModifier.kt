@@ -91,10 +91,10 @@ fun ItemStack.replaceLore(loreOld: String, loreNew: String): ItemStack {
  */
 fun ItemStack.replaceName(map: Map<String, String>): ItemStack {
     if (hasName()) {
-        val meta = itemMeta
+        val meta = itemMeta!!
         var name = meta.displayName
         map.forEach { name = name.replace(it.key, it.value) }
-        meta.displayName = name
+        meta.setDisplayName(name)
         itemMeta = meta
     }
     return this
@@ -108,8 +108,8 @@ fun ItemStack.replaceName(map: Map<String, String>): ItemStack {
  */
 fun ItemStack.replaceLore(map: Map<String, String>): ItemStack {
     if (hasLore()) {
-        val meta = itemMeta
-        val lore = meta.lore
+        val meta = itemMeta!!
+        val lore = meta.lore!!
         lore.indices.forEach { i ->
             var line = lore[i]
             map.forEach { line = line.replace(it.key, it.value) }

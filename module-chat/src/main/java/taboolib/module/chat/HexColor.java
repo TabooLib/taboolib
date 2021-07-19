@@ -12,6 +12,16 @@ import java.util.Optional;
  */
 public class HexColor {
 
+    private static boolean isLegacy = false;
+
+    static {
+        try {
+            ChatColor.of(Color.BLACK);
+        } catch (NoSuchMethodError ignored) {
+            isLegacy = true;
+        }
+    }
+
     /**
      * 对字符串中的特殊颜色表达式进行转换
      * 可供转换的格式有：
@@ -26,6 +36,9 @@ public class HexColor {
      */
     @NotNull
     public static String translate(String in) {
+        if (isLegacy) {
+            return ChatColor.translateAlternateColorCodes('&', in);
+        }
         StringBuilder builder = new StringBuilder();
         char[] chars = in.toCharArray();
         for (int i = 0; i < chars.length; i++) {

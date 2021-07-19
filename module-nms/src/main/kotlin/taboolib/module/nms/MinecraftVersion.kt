@@ -8,11 +8,6 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex
 import java.io.FileInputStream
 
-@RuntimeDependencies(
-    RuntimeDependency("org.ow2.asm:asm:9.1", test = "org.objectweb.asm.ClassVisitor"),
-    RuntimeDependency("org.ow2.asm:asm-util:9.1", test = "org.objectweb.asm.util.Printer"),
-    RuntimeDependency("org.ow2.asm:asm-commons:9.1", test = "org.objectweb.asm.commons.Remapper"),
-)
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 

@@ -1,10 +1,12 @@
 package taboolib.module.chat
 
+import com.google.gson.JsonObject
 import net.md_5.bungee.api.chat.*
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.Isolated
+import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 
@@ -12,6 +14,9 @@ import taboolib.common.platform.ProxyPlayer
  * @author sky
  * @since 2018-05-26 14:42json
  */
+@RuntimeDependency(
+    value = "!net.md-5:bungeecord-chat:1.17", test = "!net.md_5.bungee.api.chat.TextComponent", repository = "https://repo2s.ptms.ink/repository/maven-public/"
+)
 @Isolated
 class TellrawJson {
 
@@ -57,14 +62,22 @@ class TellrawJson {
 
     fun hoverText(text: String): TellrawJson {
         componentsLatest.forEach {
-            it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text))
+            try {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text))
+            } catch (ex: NoClassDefFoundError) {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(text))
+            }
         }
         return this
     }
 
-    fun hoverItem(id: String, count: Int = 1, tag: String = "{}"): TellrawJson {
+    fun hoverItem(id: String, tag: String = "{}"): TellrawJson {
         componentsLatest.forEach {
-            it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, count, ItemTag.ofNbt(tag)))
+            try {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(tag)))
+            } catch (ex: NoClassDefFoundError) {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$tag}").create())
+            }
         }
         return this
     }

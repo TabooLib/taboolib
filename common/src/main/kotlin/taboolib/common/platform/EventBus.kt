@@ -6,7 +6,6 @@ import taboolib.common.inject.Injector
 import java.lang.reflect.Method
 
 @Awake
-@Isolated
 object EventBus : Injector.Methods {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any?) {

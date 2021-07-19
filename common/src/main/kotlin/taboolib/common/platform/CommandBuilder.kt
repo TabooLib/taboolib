@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
 import taboolib.common.Isolated
+import taboolib.common.util.join
 import taboolib.common.util.subList
 
 /**
@@ -64,11 +65,11 @@ object CommandBuilder {
                     }
                 }
                 return if (children != null) {
-                    if (cur + 1 < context.args.size) {
+                    if (cur + 1 < context.args.size && children.children.isNotEmpty()) {
                         process(cur + 1, children)
                     } else {
                         if (children.children.isEmpty() || children.children.any { it.optional }) {
-                            children.executor?.function?.invoke(context, argument)
+                            children.executor?.function?.invoke(context, join(context.args, cur))
                             true
                         } else {
                             unknownNotify.function.invoke(context, cur + 1, 1)

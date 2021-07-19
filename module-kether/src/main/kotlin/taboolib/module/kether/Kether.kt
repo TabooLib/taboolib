@@ -10,7 +10,7 @@ import taboolib.module.lang.Language
 import kotlin.reflect.KClass
 
 @RuntimeDependencies(
-    RuntimeDependency("com.google.guava:guava:21.0", test = "com.google.common.base.Optional"),
+    RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional"),
 )
 object Kether {
 
