@@ -21,7 +21,6 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Chunk;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -569,6 +568,44 @@ public class NMSGenericImpl extends NMSGeneric {
                 } else {
                     sendPacket(player, new net.minecraft.server.v1_14_R1.PacketPlayOutMapChunk((net.minecraft.server.v1_14_R1.Chunk) chunk1, 0x1ffff));
                 }
+            }
+        }
+    }
+
+    @Override
+    public void updateLight_1_17(LightType lightType, Block block) {
+        Chunk chunk = block.getChunk();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
+            Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
+            Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).getWorld().getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
+            if (distance(chunk2, chunk1) < distance(human)) {
+                    net.minecraft.server.v1_16_R1.IChunkProvider chunkProvider = ((net.minecraft.server.v1_16_R1.Chunk) chunk1).getWorld().getChunkProvider();
+                    net.minecraft.server.v1_16_R1.PlayerChunk playerChunk = Reflex.Companion.reflexInvoke(chunkProvider, "getChunk", net.minecraft.server.v1_16_R1.ChunkCoordIntPair.pair(chunk.getX(), chunk.getZ()));
+                    BitSet skyChangedLightSectionFilter = new BitSet();
+                    BitSet blockChangedLightSectionFilter = new BitSet();
+
+                    if (lightType == LightType.BLOCK) {
+                        blockChangedLightSectionFilter.set((block.getY() >> 4) + 1);
+                    } else if (lightType == LightType.SKY) {
+                        skyChangedLightSectionFilter.set((block.getY() >> 4) + 1);
+                    } else {
+                        blockChangedLightSectionFilter.set((block.getY() >> 4) + 1);
+                        skyChangedLightSectionFilter.set((block.getY() >> 4) + 1);
+                    }
+
+                    try {
+                        sendPacket(player, packetPlayOutLightUpdateConstructor.newInstance(
+                                ((net.minecraft.server.v1_16_R1.Chunk) chunk1).getPos(),
+                                ((net.minecraft.server.v1_16_R1.Chunk) chunk1).getWorld().getChunkProvider().getLightEngine(),
+                                skyChangedLightSectionFilter,
+                                blockChangedLightSectionFilter,
+                                true
+                        ));
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+
             }
         }
     }

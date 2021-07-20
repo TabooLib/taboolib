@@ -8,8 +8,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
-import taboolib.module.nms.ItemTag;
-import taboolib.module.nms.ItemTagData;
 import taboolib.module.nms.type.LightType;
 
 import java.util.function.Consumer;
@@ -58,6 +56,8 @@ public abstract class NMSGeneric {
     abstract public void recalculateLightAround(Block block, LightType lightType, int lightLevel);
 
     abstract public void updateLight(Chunk chunk);
+
+    abstract public void updateLight_1_17(LightType lightType, Block block);
 
     abstract public String getEnchantmentKey(Enchantment enchantment);
 
