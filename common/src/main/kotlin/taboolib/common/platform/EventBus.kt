@@ -8,7 +8,7 @@ import java.lang.reflect.Method
 @Awake
 object EventBus : Injector.Methods {
 
-    override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
+    override fun inject(method: Method, clazz: Class<*>, instance: Any) {
         if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameterCount == 1) {
             val event = method.getAnnotation(SubscribeEvent::class.java)
             val eventBind = if (event.bind.isNotEmpty()) {

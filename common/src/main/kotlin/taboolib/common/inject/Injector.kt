@@ -14,16 +14,16 @@ class Injector {
 
     interface Fields : InjectorOrder {
 
-        fun inject(field: Field, clazz: Class<*>, instance: Any?)
+        fun inject(field: Field, clazz: Class<*>, instance: Any)
     }
 
     interface Methods : InjectorOrder {
 
-        fun inject(method: Method, clazz: Class<*>, instance: Any?)
+        fun inject(method: Method, clazz: Class<*>, instance: Any)
     }
 
     interface Classes : InjectorOrder {
 
-        fun inject(clazz: Class<*>, instance: Any?)
+        fun inject(clazz: Class<*>, instance: Any)
     }
 }

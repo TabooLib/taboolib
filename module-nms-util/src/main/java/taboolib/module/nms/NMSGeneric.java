@@ -57,7 +57,7 @@ public abstract class NMSGeneric {
 
     abstract public void updateLight(Chunk chunk);
 
-    abstract public void updateLight_1_17(LightType lightType, Block block);
+    abstract public void updateLightUniversal(Block block, LightType lightType);
 
     abstract public String getEnchantmentKey(Enchantment enchantment);
 

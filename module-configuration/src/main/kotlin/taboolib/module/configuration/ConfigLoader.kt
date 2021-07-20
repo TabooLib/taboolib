@@ -20,7 +20,7 @@ object ConfigLoader : Injector.Fields {
 
     val files = HashMap<String, ConfigFile>()
 
-    override fun inject(field: Field, clazz: Class<*>, instance: Any?) {
+    override fun inject(field: Field, clazz: Class<*>, instance: Any) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val file = releaseResourceFile(field.getAnnotation(Config::class.java).value)
             if (field.getAnnotation(Config::class.java).migrate) {
@@ -64,7 +64,7 @@ object ConfigLoader : Injector.Fields {
     @Awake
     object NodeLoader : Injector.Fields {
 
-        override fun inject(field: Field, clazz: Class<*>, instance: Any?) {
+        override fun inject(field: Field, clazz: Class<*>, instance: Any) {
             if (field.isAnnotationPresent(ConfigNode::class.java)) {
                 val node = field.getAnnotation(ConfigNode::class.java)
                 val file = files[node.bind] ?: return

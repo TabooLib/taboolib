@@ -43,7 +43,7 @@ object KetherLoader : Injector.Methods, OpenReceiver {
         }
     }
 
-    override fun inject(method: Method, clazz: Class<*>, instance: Any?) {
+    override fun inject(method: Method, clazz: Class<*>, instance: Any) {
         if (method.isAnnotationPresent(KetherParser::class.java)) {
             val parser = method.getAnnotation(KetherParser::class.java)
             val questActionParser = method.invoke(instance) as QuestActionParser

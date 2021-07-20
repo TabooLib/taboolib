@@ -118,10 +118,9 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
         nmsGeneric.deleteLight(this, lightType)
     }
     val result = nmsGeneric.createLight(this, lightType, lightLevel)
-
     if (update) {
-        if (major >= 9) {
-            nmsGeneric.updateLight_1_17(lightType, this)
+        if (MinecraftVersion.isUniversal) {
+            nmsGeneric.updateLightUniversal(this, lightType)
         } else {
             // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
             (-1..1).forEach { x ->
@@ -141,10 +140,9 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
  */
 fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
     val result = nmsGeneric.deleteLight(this, lightType)
-
     if (update) {
-        if (major >= 9) {
-            nmsGeneric.updateLight_1_17(lightType, this)
+        if (MinecraftVersion.isUniversal) {
+            nmsGeneric.updateLightUniversal(this, lightType)
         } else {
             // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
             (-1..1).forEach { x ->
@@ -228,7 +226,7 @@ private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
                 .newInstance(localMinecraftKey, localLootPredicateManager)
         )
         if (localSerializedAdvancement != null) {
-            if (MinecraftVersion.major >= 9) {
+            if (major >= 9) {
                 localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("advancements")!!
                     .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
             } else {
