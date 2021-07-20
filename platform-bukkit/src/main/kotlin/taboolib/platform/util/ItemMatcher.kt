@@ -10,7 +10,6 @@ import taboolib.common.Isolated
 /**
  * 检查玩家背包中的特定物品是否达到特定数量
  *
- * @param player 玩家
  * @param item   物品
  * @param amount 检查数量
  * @param remove 是否移除
