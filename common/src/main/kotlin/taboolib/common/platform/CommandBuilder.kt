@@ -41,6 +41,7 @@ object CommandBuilder {
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
                 return if (children.any { it.optional }) {
+                    context.cur = 0
                     executor?.function?.invoke(context, "")
                     true
                 } else {
@@ -69,6 +70,7 @@ object CommandBuilder {
                         process(cur + 1, children)
                     } else {
                         if (children.children.isEmpty() || children.children.any { it.optional }) {
+                            context.cur = cur
                             children.executor?.function?.invoke(context, join(context.args, cur))
                             true
                         } else {

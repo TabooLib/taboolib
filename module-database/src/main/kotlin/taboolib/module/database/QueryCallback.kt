@@ -5,12 +5,12 @@ import java.sql.PreparedStatement
 
 /**
  * TabooLib
- * taboolib.module.database.StatementHook
+ * taboolib.module.database.QueryCallback
  *
  * @author sky
  * @since 2021/6/23 10:31 下午
  */
-open class QueryHook {
+open class QueryCallback {
 
     internal var finishFunc: (PreparedStatement.(Connection) -> Unit)? = null
 

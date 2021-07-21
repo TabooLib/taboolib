@@ -12,16 +12,29 @@ class ColumnSQLite(val type: ColumnTypeSQLite, val name: String) : Column() {
      * 类型参数
      * 例如 tinyint(M), int(M)
      */
-    val parameter = arrayOf(0, 0)
+    internal val parameter = arrayOf(0, 0)
 
-    var options = arrayOf<ColumnOptionSQLite>()
+    internal var options = arrayOf<ColumnOptionSQLite>()
 
     /**
      * 为该列赋予一项默认值
      * 如果参数含有单引号则需要添加转义符例如 "\\'"
      * 非字符串的特殊类型需在参数前添加 "$" 符号
      */
-    var def: Any? = null
+    internal var def: Any? = null
+
+    fun parameter(parameter1: Int = 0, parameter2: Int = 0) {
+        parameter[0] = parameter1
+        parameter[1] = parameter2
+    }
+
+    fun options(vararg options: ColumnOptionSQLite) {
+        this.options += options
+    }
+
+    fun def(def: Any? = null) {
+        this.def = def
+    }
 
     override val query: String
         get() = when {
@@ -53,15 +66,5 @@ class ColumnSQLite(val type: ColumnTypeSQLite, val name: String) : Column() {
 
     override fun toString(): String {
         return "ColumnSQLite(type=$type, name='$name', parameter=${parameter.contentToString()}, options=${options.contentToString()}, def=$def, query='$query')"
-    }
-
-    companion object {
-
-        /**
-         * ID 常量（id integer not null auto_increment primary key）
-         */
-        val PRIMARY_KEY_ID = ColumnTypeSQLite.INTEGER("id") {
-            options = arrayOf(ColumnOptionSQLite.NOTNULL, ColumnOptionSQLite.AUTOINCREMENT, ColumnOptionSQLite.PRIMARY_KEY)
-        }
     }
 }

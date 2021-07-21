@@ -7,7 +7,7 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionDelete(val table: String) : QueryHook(), WhereExecutor, Action {
+class ActionDelete(val table: String) : QueryCallback(), WhereExecutor, Action {
 
     private var where: Where? = null
 

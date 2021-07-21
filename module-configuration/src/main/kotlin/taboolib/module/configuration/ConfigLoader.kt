@@ -4,14 +4,11 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
-import taboolib.common.platform.info
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.reflect.Ref
 import taboolib.common5.FileWatcher
 import java.io.File
-import java.io.FileInputStream
 import java.lang.reflect.Field
-import java.nio.charset.StandardCharsets
 import java.util.concurrent.CopyOnWriteArraySet
 
 @RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml")
@@ -59,7 +56,7 @@ object ConfigLoader : Injector.Fields {
         get() = 0
 
     override val lifeCycle: LifeCycle
-        get() = LifeCycle.LOAD
+        get() = LifeCycle.INIT
 
     @Awake
     object NodeLoader : Injector.Fields {
@@ -77,7 +74,7 @@ object ConfigLoader : Injector.Fields {
             get() = 1
 
         override val lifeCycle: LifeCycle
-            get() = LifeCycle.LOAD
+            get() = LifeCycle.INIT
     }
 
     class ConfigFile(val conf: SecuredFile, val file: File) {

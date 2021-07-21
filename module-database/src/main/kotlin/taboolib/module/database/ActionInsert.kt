@@ -7,10 +7,10 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionInsert(val table: String, val keys: Array<String>) : QueryHook(), Action {
+class ActionInsert(val table: String, val keys: Array<String>) : QueryCallback(), Action {
 
-    var values = ArrayList<Array<Any>>()
-    var update = ArrayList<SetData>()
+    private var values = ArrayList<Array<Any>>()
+    private var update = ArrayList<QuerySet>()
 
     override val query: String
         get() {
@@ -45,13 +45,13 @@ class ActionInsert(val table: String, val keys: Array<String>) : QueryHook(), Ac
 
     class DuplicateKey {
 
-        internal val update = ArrayList<SetData>()
+        internal val update = ArrayList<QuerySet>()
 
         fun update(key: String, value: Any) {
             update += if (value is PreValue) {
-                SetData("${key.formatColumn()} = ${value.formatColumn()}")
+                QuerySet("${key.formatColumn()} = ${value.formatColumn()}")
             } else {
-                SetData("${key.formatColumn()} = ?", value)
+                QuerySet("${key.formatColumn()} = ?", value)
             }
         }
     }

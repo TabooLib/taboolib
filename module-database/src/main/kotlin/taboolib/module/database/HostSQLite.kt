@@ -2,7 +2,10 @@ package taboolib.module.database
 
 import java.io.File
 
-data class HostSQLite(val file: File) : Host() {
+data class HostSQLite(val file: File) : Host<SQLite>() {
+
+    override val columnBuilder: ColumnBuilder
+        get() = SQLite()
 
     override val connectionUrl: String
         get() = "jdbc:sqlite:" + file.path

@@ -8,12 +8,15 @@ import taboolib.library.configuration.ConfigurationSection
  * @author sky
  * @since 2018-05-14 19:01
  */
-class HostSQL(val host: String, val port: String, val user: String, val password: String, val database: String) : Host() {
+class HostSQL(val host: String, val port: String, val user: String, val password: String, val database: String) : Host<SQL>() {
 
     val flags = arrayListOf("characterEncoding=utf-8", "useSSL=false")
 
     val flagsURL: String
         get() = if (flags.isEmpty()) "" else "?${flags.joinToString("&")}"
+
+    override val columnBuilder: ColumnBuilder
+        get() = SQL()
 
     override val connectionUrl: String
         get() = "jdbc:mysql://$host:$port/$database$flagsURL"

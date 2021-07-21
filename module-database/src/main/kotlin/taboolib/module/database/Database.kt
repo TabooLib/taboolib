@@ -14,11 +14,11 @@ object Database {
     lateinit var settingsFile: SecuredFile
         private set
 
-    fun createDataSource(host: Host, hikariConfig: HikariConfig? = null): DataSource {
+    fun createDataSource(host: Host<*>, hikariConfig: HikariConfig? = null): DataSource {
         return HikariDataSource(hikariConfig ?: createHikariConfig(host))
     }
 
-    fun createHikariConfig(host: Host): HikariConfig {
+    fun createHikariConfig(host: Host<*>): HikariConfig {
         val config = HikariConfig()
         config.jdbcUrl = host.connectionUrl
         when (host) {
