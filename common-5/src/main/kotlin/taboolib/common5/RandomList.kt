@@ -9,14 +9,12 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @since 2020-10-1 10:43
  */
 @Isolated
-class Randoms<T>(vararg element: Pair<T, Int>) {
+class RandomList<T>(vararg element: Pair<T, Int>) {
 
     private val value = CopyOnWriteArrayList<Value<T>>()
 
     init {
-        element.forEach {
-            add(it.first, it.second)
-        }
+        element.forEach { add(it.first, it.second) }
     }
 
     fun random(): T? {
