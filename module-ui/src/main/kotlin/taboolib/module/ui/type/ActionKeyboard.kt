@@ -1,28 +1,21 @@
-package taboolib.module.ui.stored;
+package taboolib.module.ui.type
 
-import taboolib.common.Isolated;
-import taboolib.module.ui.ClickEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
+import taboolib.module.ui.ClickEvent
 
-/**
- * @author sky
- * @since 2019-12-03 19:20
- */
 @Isolated
-public class ActionKeyboard extends Action {
+class ActionKeyboard : Action() {
 
-    @Override
-    public ItemStack getCurrent(ClickEvent e) {
-        return e.getClicker().getInventory().getItem(e.castClick().getHotbarButton());
+    override fun getCurrent(e: ClickEvent): ItemStack {
+        return e.clicker.inventory.getItem(e.clickEvent().hotbarButton)!!
     }
 
-    @Override
-    public void setCurrent(ClickEvent e, ItemStack item) {
-        e.getClicker().getInventory().setItem(e.castClick().getHotbarButton(), item);
+    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+        e.clicker.inventory.setItem(e.clickEvent().hotbarButton, item)
     }
 
-    @Override
-    public int getCurrentSlot(ClickEvent e) {
-        return e.getRawSlot();
+    override fun getCurrentSlot(e: ClickEvent): Int {
+        return e.rawSlot
     }
 }

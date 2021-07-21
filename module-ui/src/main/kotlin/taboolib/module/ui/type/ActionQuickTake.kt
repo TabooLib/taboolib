@@ -1,32 +1,26 @@
-package taboolib.module.ui.stored;
+package taboolib.module.ui.type
 
-import taboolib.common.Isolated;
-import taboolib.module.ui.ClickEvent;
-import org.bukkit.inventory.ItemStack;
-import taboolib.module.ui.ItemStacker;
+import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
+import taboolib.module.ui.ClickEvent
+import taboolib.module.ui.ItemStacker
+import taboolib.platform.util.isNotAir
 
-/**
- * @author sky
- * @since 2019-12-03 19:20
- */
 @Isolated
-public class ActionQuickTake extends Action {
+class ActionQuickTake : Action() {
 
-    @Override
-    public ItemStack getCurrent(ClickEvent e) {
-        return e.getClicker().getItemOnCursor();
+    override fun getCurrent(e: ClickEvent): ItemStack {
+        return e.clicker.itemOnCursor
     }
 
-    @Override
-    public void setCurrent(ClickEvent e, ItemStack item) {
-        if (item != null) {
-            ItemStacker.MINECRAFT.moveItemFromChest(item, e.getClicker());
+    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+        if (item.isNotAir()) {
+            ItemStacker.MINECRAFT.moveItemFromChest(item, e.clicker)
         }
-        e.getClicker().setItemOnCursor(null);
+        e.clicker.setItemOnCursor(null)
     }
 
-    @Override
-    public int getCurrentSlot(ClickEvent e) {
-        return e.getRawSlot();
+    override fun getCurrentSlot(e: ClickEvent): Int {
+        return e.rawSlot
     }
 }

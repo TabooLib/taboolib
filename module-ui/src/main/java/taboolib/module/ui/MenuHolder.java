@@ -2,7 +2,7 @@ package taboolib.module.ui;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.jetbrains.annotations.NotNull;
+import taboolib.module.ui.type.Basic;
 
 /**
  * @author 坏黑
@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MenuHolder implements InventoryHolder {
 
-    private final MenuBuilder builder;
+    private final Basic builder;
 
-    public MenuHolder(MenuBuilder builder) {
+    public MenuHolder(Basic builder) {
         this.builder = builder;
     }
 
-    public MenuBuilder getBuilder() {
+    public Basic getBuilder() {
         return builder;
     }
 
@@ -25,7 +25,7 @@ public class MenuHolder implements InventoryHolder {
         return null;
     }
 
-    public static MenuBuilder get(Inventory inventory) {
+    public static Basic get(Inventory inventory) {
         return inventory.getHolder() instanceof MenuHolder ? ((MenuHolder) inventory.getHolder()).getBuilder() : null;
     }
 }

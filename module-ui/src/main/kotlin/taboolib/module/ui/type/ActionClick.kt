@@ -1,28 +1,21 @@
-package taboolib.module.ui.stored;
+package taboolib.module.ui.type
 
-import taboolib.common.Isolated;
-import taboolib.module.ui.ClickEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
+import taboolib.module.ui.ClickEvent
 
-/**
- * @author sky
- * @since 2019-12-03 19:17
- */
 @Isolated
-public class ActionClick extends Action {
+class ActionClick : Action() {
 
-    @Override
-    public ItemStack getCurrent(ClickEvent e) {
-        return e.getClicker().getItemOnCursor();
+    override fun getCurrent(e: ClickEvent): ItemStack {
+        return e.clicker.itemOnCursor
     }
 
-    @Override
-    public void setCurrent(ClickEvent e, ItemStack item) {
-        e.getClicker().setItemOnCursor(item);
+    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+        e.clicker.setItemOnCursor(item)
     }
 
-    @Override
-    public int getCurrentSlot(ClickEvent e) {
-        return e.getRawSlot();
+    override fun getCurrentSlot(e: ClickEvent): Int {
+        return e.rawSlot
     }
 }

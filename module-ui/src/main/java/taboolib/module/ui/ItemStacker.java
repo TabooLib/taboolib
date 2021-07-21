@@ -6,6 +6,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import taboolib.common.Isolated;
+import taboolib.platform.util.ItemModifierKt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,7 @@ public abstract class ItemStacker {
 
     public boolean addItemFromChestToPlayer(ItemStack item, Inventory inventory) {
         for (int i = 8; i >= 0; i--) {
-            if (ItemUtils.isNull(inventory.getItem(i))) {
+            if (ItemModifierKt.isAir(inventory.getItem(i))) {
                 if (item.getAmount() > getMaxStackSize(item)) {
                     ItemStack itemClone = item.clone();
                     itemClone.setAmount(getMaxStackSize(item));
@@ -98,7 +99,7 @@ public abstract class ItemStacker {
             }
         }
         for (int i = 35; i >= 9; i--) {
-            if (ItemUtils.isNull(inventory.getItem(i))) {
+            if (ItemModifierKt.isAir(inventory.getItem(i))) {
                 if (item.getAmount() > getMaxStackSize(item)) {
                     ItemStack itemClone = item.clone();
                     itemClone.setAmount(getMaxStackSize(item));
@@ -150,7 +151,7 @@ public abstract class ItemStacker {
     }
 
     private boolean check(ItemStack item, Inventory inventory, int i) {
-        if (ItemUtils.isNull(inventory.getItem(i))) {
+        if (ItemModifierKt.isAir(inventory.getItem(i))) {
             // 如果物品数量过多
             if (item.getAmount() > getMaxStackSize(item)) {
                 ItemStack itemClone = item.clone();
