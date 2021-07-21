@@ -7,7 +7,7 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionSelect(val table: String) : WhereExecutor, Action {
+class ActionSelect(val table: String) : QueryCallback(), WhereExecutor, Action {
 
     private var rows: Array<String> = emptyArray()
     private var where: Where? = null

@@ -14,12 +14,13 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":common-5"))
+    implementation(project(":module-database"))
     implementation(project(":module-configuration"))
     implementation("org.ow2.asm:asm:9.2")
     implementation("org.ow2.asm:asm-util:9.2")
     implementation("org.ow2.asm:asm-commons:9.2")
     implementation("me.lucko:jar-relocator:1.5")
-    compileOnly(kotlin("stdlib"))
+    implementation(kotlin("stdlib"))
 }
 
 tasks {

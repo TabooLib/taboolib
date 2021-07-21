@@ -20,7 +20,7 @@ import java.util.Collections;
 public class Test {
 
     public static void main(String[] args) throws IOException {
-        TabooLibCommon.ENV.setup();
+//        TabooLibCommon.ENV.setup();
 //        File file = new File("/Users/sky/Desktop/kotlin-stdlib-1.5.10.jar");
 //        File fileRel = new File("/Users/sky/Desktop/kotlin-stdlib-1.5.10-rel.jar");
 //

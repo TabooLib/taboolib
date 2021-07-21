@@ -27,6 +27,16 @@ open class QueryTask(val future: Future<ResultSet>) {
         }
     }
 
+    open fun <T> firstOrNull(resultSet: ResultSet.() -> T): T? {
+        return future.call {
+            if (next()) {
+                resultSet(this)
+            } else {
+                null
+            }
+        }
+    }
+
     open fun <T> map(resultSet: ResultSet.() -> T): List<T> {
         return future.call {
             ArrayList<T>().also {

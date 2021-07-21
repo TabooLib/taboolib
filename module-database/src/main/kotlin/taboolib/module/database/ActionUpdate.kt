@@ -7,9 +7,9 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionUpdate(val table: String) : QueryHook(), WhereExecutor, Action {
+class ActionUpdate(val table: String) : QueryCallback(), WhereExecutor, Action {
 
-    private val set = ArrayList<SetData>()
+    private val set = ArrayList<QuerySet>()
     private var where: Where? = null
 
     override val query: String
@@ -34,9 +34,9 @@ class ActionUpdate(val table: String) : QueryHook(), WhereExecutor, Action {
 
     fun set(key: String, value: Any) {
         set += if (value is PreValue) {
-            SetData("${key.formatColumn()} = ${value.formatColumn()}")
+            QuerySet("${key.formatColumn()} = ${value.formatColumn()}")
         } else {
-            SetData("${key.formatColumn()} = ?", value)
+            QuerySet("${key.formatColumn()} = ?", value)
         }
     }
 

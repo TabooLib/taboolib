@@ -5,7 +5,6 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
-import net.kyori.adventure.util.Ticks
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
