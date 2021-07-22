@@ -81,36 +81,32 @@ class Reflex(val from: Class<*>) {
 
         val remapper = ArrayList<ReflexRemapper>()
 
-        /**
-         * 通过 Reflex 执行对象中的方法
-         */
-        fun <T> Any.reflexInvoke(path: String, vararg parameter: Any?) = Reflex(javaClass).instance(this).invoke<T>(path, *parameter)
+        fun <T> Class<T>.unsafeInstance(): Any {
+            return Ref.unsafe.allocateInstance(this)!!
+        }
 
-        /**
-         * 通过 Reflex 获取对象中的属性
-         */
-        fun <T> Any.reflex(path: String): T? = Reflex(javaClass).instance(this).read<T>(path)
+        fun <T> Any.invokeMethod(path: String, vararg parameter: Any?, fixed: Boolean = false): T? {
+            return if (fixed && this is Class<*>) {
+                Reflex(this).invoke(path, *parameter)
+            } else {
+                Reflex(javaClass).instance(this).invoke(path, *parameter)
+            }
+        }
 
-        /**
-         * 通过 Reflex 获取对象中的属性
-         */
-        fun Any.reflex(path: String, value: Any?) = Reflex(javaClass).instance(this).write(path, value)
+        fun <T> Any.getProperty(path: String, fixed: Boolean = false): T? {
+            return if (fixed && this is Class<*>) {
+                Reflex(this).read(path)
+            } else {
+                Reflex(javaClass).instance(this).read(path)
+            }
+        }
 
-        /**
-         * 通过 Reflex 执行 Class 中的静态方法
-         */
-        fun <T> Class<*>.staticInvoke(path: String, vararg parameter: Any?) = Reflex(this).invoke<T>(path, *parameter)
-
-        /**
-         * 通过 Reflex 获取 Class 中的静态属性
-         */
-        fun <T> Class<*>.static(path: String) = Reflex(this).read<T>(path)
-
-        /**
-         * 通过 Reflex 设置 Class 中的静态属性
-         */
-        fun Class<*>.static(path: String, value: Any?) = Reflex(this).write(path, value)
-
-        fun <T> Class<T>.unsafeInstance() = Ref.unsafe.allocateInstance(this)!!
+        fun Any.setProperty(path: String, value: Any?, fixed: Boolean = false) {
+            return if (fixed && this is Class<*>) {
+                Reflex(this).write(path, value)
+            } else {
+                Reflex(javaClass).instance(this).write(path, value)
+            }
+        }
     }
 }

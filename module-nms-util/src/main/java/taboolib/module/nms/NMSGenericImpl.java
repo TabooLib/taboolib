@@ -7,6 +7,7 @@ import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.EnumSkyBlock;
 import net.minecraft.server.v1_14_R1.*;
 import net.minecraft.server.v1_15_R1.LightEngineThreaded;
+import net.minecraft.server.v1_16_R1.Registry;
 import net.minecraft.server.v1_16_R1.WorldDataServer;
 import net.minecraft.server.v1_8_R3.NBTTagByte;
 import net.minecraft.server.v1_8_R3.NBTTagByteArray;
@@ -304,11 +305,11 @@ public class NMSGenericImpl extends NMSGeneric {
                 Object nmsTag = new net.minecraft.server.v1_8_R3.NBTTagCompound();
                 if (MinecraftVersion.INSTANCE.isUniversal()) {
                     for (Map.Entry<String, ItemTagData> entry : base.asCompound().entrySet()) {
-                        ((Map) Reflex.Companion.reflex(nmsTag, "tags")).put(entry.getKey(), toNBTBase(entry.getValue()));
+                        ((Map) Reflex.Companion.getProperty(nmsTag, "tags", false)).put(entry.getKey(), toNBTBase(entry.getValue()));
                     }
                 } else {
                     for (Map.Entry<String, ItemTagData> entry : base.asCompound().entrySet()) {
-                        ((Map) Reflex.Companion.reflex(nmsTag, "map")).put(entry.getKey(), toNBTBase(entry.getValue()));
+                        ((Map) Reflex.Companion.getProperty(nmsTag, "map", false)).put(entry.getKey(), toNBTBase(entry.getValue()));
                     }
                 }
                 return nmsTag;
@@ -321,9 +322,9 @@ public class NMSGenericImpl extends NMSGeneric {
             ItemTag itemTag = new ItemTag();
             Map<String, net.minecraft.server.v1_12_R1.NBTBase> map;
             if (MinecraftVersion.INSTANCE.isUniversal()) {
-                map = Reflex.Companion.reflex(base, "tags");
+                map = Reflex.Companion.getProperty(base, "tags", false);
             } else {
-                map = Reflex.Companion.reflex(base, "map");
+                map = Reflex.Companion.getProperty(base, "map", false);
             }
             for (Map.Entry<String, net.minecraft.server.v1_12_R1.NBTBase> entry : map.entrySet()) {
                 itemTag.put(entry.getKey(), (ItemTagData) fromNBTBase(entry.getValue()));
@@ -331,7 +332,7 @@ public class NMSGenericImpl extends NMSGeneric {
             return itemTag;
         } else if (base instanceof NBTTagList) {
             ItemTagList itemTagList = new ItemTagList();
-            List list = Reflex.Companion.reflex(base, "list");
+            List list = Reflex.Companion.getProperty(base, "list", false);
             for (Object v : list) {
                 itemTagList.add((ItemTagData) fromNBTBase(v));
             }
@@ -565,7 +566,7 @@ public class NMSGenericImpl extends NMSGeneric {
             Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).getWorld().getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
             if (distance(chunk2, chunk1) < distance(human)) {
                 net.minecraft.server.v1_16_R1.IChunkProvider chunkProvider = ((net.minecraft.server.v1_16_R1.Chunk) chunk1).getWorld().getChunkProvider();
-                net.minecraft.server.v1_16_R1.PlayerChunk playerChunk = Reflex.Companion.reflexInvoke(chunkProvider, "getChunk", net.minecraft.server.v1_16_R1.ChunkCoordIntPair.pair(chunk.getX(), chunk.getZ()));
+                net.minecraft.server.v1_16_R1.PlayerChunk playerChunk = Reflex.Companion.invokeMethod(chunkProvider, "getChunk", new Object[]{net.minecraft.server.v1_16_R1.ChunkCoordIntPair.pair(chunk.getX(), chunk.getZ())}, false);
                 BitSet skyChangedLightSectionFilter = new BitSet();
                 BitSet blockChangedLightSectionFilter = new BitSet();
                 if (lightType == LightType.BLOCK) {
@@ -612,6 +613,10 @@ public class NMSGenericImpl extends NMSGeneric {
     @Override
     @NotNull
     public String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
+        if (MinecraftVersion.INSTANCE.isUniversal()) {
+            Registry<MobEffectList> registry = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true);
+            return registry.fromId(potionEffectType.getId()).c();
+        }
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
         } else {

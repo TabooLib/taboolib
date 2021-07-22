@@ -17,8 +17,8 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import taboolib.common.Isolated
 import taboolib.common.platform.warning
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
@@ -109,7 +109,7 @@ class ItemBuilder(val material: XMaterial) {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    itemMeta.reflex("profile", GameProfile(skullTexture!!.uuid, null).also {
+                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, null).also {
                         it.properties.put("textures", Property("textures", skullTexture!!.textures))
                     })
                 }
@@ -119,7 +119,7 @@ class ItemBuilder(val material: XMaterial) {
             itemMeta.isUnbreakable = isUnbreakable
         } catch (ex: NoSuchMethodError) {
             try {
-                itemMeta.reflexInvoke<Any>("spigot")!!.reflexInvoke<Any>("setUnbreakable", isUnbreakable)
+                itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
             } catch (ex: NoSuchMethodException) {
                 warning("Unbreakable not supported yet.")
             }
@@ -133,7 +133,7 @@ class ItemBuilder(val material: XMaterial) {
         }
         try {
             if (customModelData != -1) {
-                itemMeta.reflexInvoke<Void>("setCustomModelData", customModelData)
+                itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
             }
         } catch (ex: NoSuchMethodException) {
             warning("CustomModelData not supported yet.")

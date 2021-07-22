@@ -8,7 +8,7 @@ import net.md_5.bungee.api.plugin.Event
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.*
-import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.platform.type.BungeeCommandSender
 import taboolib.platform.type.BungeePlayer
 import java.lang.reflect.Method
@@ -27,15 +27,15 @@ class BungeeAdapter : PlatformAdapter {
     val plugin = BungeePlugin.getInstance()
 
     val eventBus by lazy {
-        BungeeCord.getInstance().pluginManager.reflex<EventBus>("eventBus")!!
+        BungeeCord.getInstance().pluginManager.getProperty<EventBus>("eventBus")!!
     }
 
     val byListenerAndPriority by lazy {
-        eventBus.reflex<MutableMap<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>>("byListenerAndPriority")!!
+        eventBus.getProperty<MutableMap<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>>("byListenerAndPriority")!!
     }
 
     val byEventBaked by lazy {
-        eventBus.reflex<MutableMap<Class<*>, Array<EventHandlerMethod>>>("byEventBaked")!!
+        eventBus.getProperty<MutableMap<Class<*>, Array<EventHandlerMethod>>>("byEventBaked")!!
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
-import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.setProperty
 
 /**
  * TabooLib
@@ -16,10 +17,10 @@ class OptionalEvent(val source: Any) {
     }
 
     fun <T> read(name: String): T? {
-        return source.reflex<T>(name)
+        return source.getProperty<T>(name)
     }
 
     fun write(name: String, value: Any?) {
-        source.reflex(name, value)
+        source.setProperty(name, value)
     }
 }

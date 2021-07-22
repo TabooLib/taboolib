@@ -1,8 +1,6 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
-import taboolib.common.env.RuntimeDependencies
-import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.reflect.Reflex

@@ -9,8 +9,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.EulerAngle
 import taboolib.common.Isolated
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.static
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import java.util.*
 
@@ -28,7 +27,7 @@ class NMSEntityImpl : NMSEntity {
     fun setFields(any: Any, vararg fields: Pair<String, Any?>): Any {
         fields.forEach { (key, value) ->
             if (value != null) {
-                any.reflex(key, value)
+                any.setProperty(key, value)
             }
         }
         return any

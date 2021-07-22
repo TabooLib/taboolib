@@ -7,7 +7,7 @@ import io.izzel.kether.common.api.QuestRegistry
 import io.izzel.kether.common.api.QuestService
 import io.izzel.kether.common.api.ServiceHolder
 import taboolib.common.platform.getJarFile
-import taboolib.common.reflect.Reflex.Companion.static
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
@@ -24,7 +24,7 @@ object ScriptService : QuestService<ScriptContext> {
 
     init {
         try {
-            ServiceHolder::class.java.static("INSTANCE", ScriptService)
+            ServiceHolder::class.java.setProperty("INSTANCE", ScriptService, fixed = true)
         } catch (ex: Throwable) {
             ex.printStackTrace()
         }

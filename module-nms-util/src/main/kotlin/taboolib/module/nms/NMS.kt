@@ -12,9 +12,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.submit
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
-import taboolib.common.reflect.Reflex.Companion.staticInvoke
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion.major
 import taboolib.module.nms.i18n.I18n
 import taboolib.module.nms.type.LightType
@@ -183,7 +182,7 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
         val namespaceKey = toastMap.computeIfAbsent(cache) {
             inject(
                 NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"),
-                toJsonToast(icon.reflexInvoke<Any>("getKey").toString(), message, frame, background)
+                toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)
             )
         }
         // 注册成就
@@ -215,23 +214,20 @@ private fun revoke(player: Player, key: NamespacedKey) {
 
 private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
-        val localMinecraftKey = obcClass("util.CraftNamespacedKey").staticInvoke<Any>("toMinecraft", key)
-        val localMinecraftServer = nmsClass("MinecraftServer").staticInvoke<Any>("getServer")!!
-        val localLootPredicateManager = localMinecraftServer.reflexInvoke<Any>("getLootPredicateManager")
-        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").staticInvoke<Any>(
-            "a",
-            toast,
-            nmsClass("LootDeserializationContext")
-                .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
-                .newInstance(localMinecraftKey, localLootPredicateManager)
-        )
+        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, fixed = true)
+        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", fixed = true)!!
+        val localLootPredicateManager = localMinecraftServer.invokeMethod<Any>("getLootPredicateManager")
+        val lootDeserializationContext = nmsClass("LootDeserializationContext")
+            .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
+            .newInstance(localMinecraftKey, localLootPredicateManager)
+        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, fixed = true)
         if (localSerializedAdvancement != null) {
             if (major >= 9) {
-                localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("advancements")!!
-                    .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+                localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
+                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
             } else {
-                localMinecraftServer.reflexInvoke<Any>("getAdvancementData")!!.reflex<Any>("REGISTRY")!!
-                    .reflexInvoke<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+                localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("REGISTRY")!!
+                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
             }
         }
     }
@@ -241,10 +237,10 @@ private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
 private fun eject(key: NamespacedKey): NamespacedKey {
     try {
         Bukkit.getUnsafe().removeAdvancement(key)
-        val console = Bukkit.getServer().reflex<Any>("console")!!
-        val advancements = console.reflexInvoke<Any>("getAdvancementData")!!.reflex<MutableMap<Any, Any>>("REGISTRY/advancements")!!
+        val console = Bukkit.getServer().getProperty<Any>("console")!!
+        val advancements = console.invokeMethod<Any>("getAdvancementData")!!.getProperty<MutableMap<Any, Any>>("REGISTRY/advancements")!!
         for ((k, v) in advancements) {
-            if (v.reflex<Any>("name/key") == key.key) {
+            if (v.getProperty<Any>("name/key") == key.key) {
                 advancements.remove(k)
                 break
             }

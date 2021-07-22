@@ -5,8 +5,7 @@ import cn.nukkit.command.Command
 import cn.nukkit.command.CommandSender
 import cn.nukkit.command.data.CommandData
 import taboolib.common.platform.*
-import taboolib.common.reflect.Reflex.Companion.reflex
-import kotlin.collections.ArrayList
+import taboolib.common.reflect.Reflex.Companion.getProperty
 
 /**
  * TabooLib
@@ -21,7 +20,7 @@ class NukkitCommand : PlatformCommand {
     val knownCommands = ArrayList<CommandStructure>()
 
     val registeredCommands by lazy {
-        Server.getInstance().commandRegistry.reflex<MutableMap<String, Command>>("registeredCommands")!!
+        Server.getInstance().commandRegistry.getProperty<MutableMap<String, Command>>("registeredCommands")!!
     }
 
     override fun registerCommand(

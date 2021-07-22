@@ -7,7 +7,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import taboolib.common.reflect.Ref.get
 import taboolib.common.reflect.Ref.put
-import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion.major
 import java.lang.reflect.Field
 
@@ -126,7 +127,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     private fun removeGoal(name: String, targetSelector: Any) {
         val collection = getGoal(targetSelector)
         collection.toList().forEach {
-            val a = it!!.reflex<Any>("a")!!
+            val a = it!!.getProperty<Any>("a")!!
             if (a.javaClass.name.contains(name)) {
                 if (collection is MutableList) {
                     collection.remove(it)
@@ -134,7 +135,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
                     collection.remove(it)
                 }
             }
-            if (a.javaClass.simpleName == "PathfinderCreatorImpl" && a.reflex<Any>("simpleAI")!!.javaClass.name.contains(name)) {
+            if (a.javaClass.simpleName == "PathfinderCreatorImpl" && a.getProperty<Any>("simpleAI")!!.javaClass.name.contains(name)) {
                 if (collection is MutableList) {
                     collection.remove(it)
                 } else if (collection is MutableSet) {
@@ -147,7 +148,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     private fun removeGoal(priority: Int, targetSelector: Any) {
         val collection = getGoal(targetSelector)
         collection.toList().forEach {
-            if (it!!.reflex<Int>("b") == priority) {
+            if (it!!.getProperty<Int>("b") == priority) {
                 if (collection is MutableList) {
                     collection.remove(it)
                 } else if (collection is MutableSet) {
@@ -158,7 +159,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     private fun getGoal(targetSelector: Any): Collection<*> {
-        return if (v11400) targetSelector.reflex<Set<*>>("d")!! else targetSelector.reflex<List<*>>("b")!!
+        return if (v11400) targetSelector.getProperty<Set<*>>("d")!! else targetSelector.getProperty<List<*>>("b")!!
     }
 
     override fun clearGoalAi(entity: LivingEntity) {
@@ -214,7 +215,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun controllerJumpReady(entity: LivingEntity) {
-        (getControllerJump(entity) as ControllerJump).reflex("a", true)
+        (getControllerJump(entity) as ControllerJump).setProperty("a", true)
     }
 
     override fun controllerJumpCurrent(entity: LivingEntity): Boolean {

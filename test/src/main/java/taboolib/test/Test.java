@@ -1,14 +1,6 @@
 package taboolib.test;
 
-import kotlin.jvm.internal.Intrinsics;
-import me.lucko.jarrelocator.JarRelocator;
-import me.lucko.jarrelocator.Relocation;
-import taboolib.common.TabooLibCommon;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * TabooLib

@@ -4,7 +4,6 @@ import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import org.bukkit.entity.Player
-import taboolib.common.platform.info
 
 /**
  * TabooLib

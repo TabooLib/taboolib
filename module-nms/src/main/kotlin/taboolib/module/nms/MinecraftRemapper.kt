@@ -1,8 +1,6 @@
 package taboolib.module.nms
 
 import org.objectweb.asm.commons.Remapper
-import taboolib.common.platform.info
-import taboolib.common.platform.warning
 
 /**
  * TabooLib

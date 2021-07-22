@@ -2,8 +2,6 @@ package taboolib.platform
 
 import net.kyori.adventure.audience.Audience
 import org.spongepowered.api.Sponge
-import org.spongepowered.api.SystemSubject
-import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent

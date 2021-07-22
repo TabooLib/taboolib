@@ -8,7 +8,6 @@ import com.nukkitx.network.util.Preconditions
 import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.reflect.Reflex.Companion.reflex
 import taboolib.common.util.Location
 import taboolib.platform.NukkitPlugin
 import taboolib.platform.util.dispatchCommand

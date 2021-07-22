@@ -4,7 +4,7 @@ import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import me.clip.placeholderapi.PlaceholderAPI
-import taboolib.common.reflect.Reflex.Companion.staticInvoke
+import org.bukkit.entity.Player
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.script
@@ -18,7 +18,7 @@ class ActionPlaceholder(val source: ParsedAction<*>) : ScriptAction<String>() {
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<String> {
         return frame.newFrame(source).run<Any>().thenApplyAsync({
-            PlaceholderAPI::class.java.staticInvoke<String>("setPlaceholders", frame.script().sender ?: error("No event selected."), it.toString().trimIndent())
+            PlaceholderAPI.setPlaceholders(frame.script().sender?.cast<Player>() ?: error("No event selected."), it.toString().trimIndent())
         }, frame.context().executor)
     }
 

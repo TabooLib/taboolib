@@ -8,8 +8,6 @@ import net.kyori.adventure.title.Title
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
-import org.spongepowered.api.effect.sound.SoundType
-import org.spongepowered.api.effect.sound.SoundTypes
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.Cause
@@ -20,11 +18,10 @@ import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Ticks
 import org.spongepowered.api.util.Tristate
 import org.spongepowered.api.world.server.ServerLocation
-import org.spongepowered.api.world.server.ServerWorld
 import org.spongepowered.math.vector.Vector3d
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.reflect.Reflex.Companion.static
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.platform.util.toPlain
 import java.net.InetSocketAddress
@@ -104,7 +101,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().asComponent().toPlain())
         set(value) {
-            player.gameMode().set(GameModes::class.java.static(value.name)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
         }
 
     override val isSneaking: Boolean

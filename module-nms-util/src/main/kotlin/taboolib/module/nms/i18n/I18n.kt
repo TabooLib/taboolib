@@ -1,11 +1,7 @@
 package taboolib.module.nms.i18n
 
-import com.google.common.collect.Maps
-import taboolib.module.nms.MinecraftVersion.major
 import taboolib.common.platform.Awake
-import taboolib.module.nms.i18n.I18nBase
-import taboolib.module.nms.i18n.I18n11700
-import taboolib.module.nms.i18n.I18nOrigin
+import taboolib.module.nms.MinecraftVersion.major
 
 /**
  * 原版语言文件工具

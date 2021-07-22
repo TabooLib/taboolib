@@ -18,11 +18,10 @@ import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.reflect.Reflex.Companion.static
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import java.net.InetSocketAddress
 import java.util.*
-import java.util.function.Consumer
 
 /**
  * TabooLib
@@ -96,7 +95,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().name)
         set(value) {
-            player.gameMode().set(GameModes::class.java.static(value.name)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
         }
 
     override val isSneaking: Boolean

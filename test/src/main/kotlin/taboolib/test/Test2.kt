@@ -2,7 +2,7 @@ package taboolib.test
 
 import taboolib.common.TabooLibCommon
 import taboolib.common.platform.CommandBuilder
-import taboolib.module.configuration.*
+import taboolib.module.configuration.ConfigLoader
 
 object Test2 {
 
