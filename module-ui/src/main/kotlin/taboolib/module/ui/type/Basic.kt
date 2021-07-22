@@ -16,6 +16,8 @@ import taboolib.platform.util.buildItem
 
 class Basic(title: String = "chest") : Menu(title) {
 
+    internal var rows = -1
+    internal var handLocked = true
     internal var items = HashMap<Char, ItemStack>()
     internal var slots = ArrayList<List<Char>>()
 
@@ -24,7 +26,9 @@ class Basic(title: String = "chest") : Menu(title) {
     internal var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     internal var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
-    internal var handLocked = true
+    fun rows(rows: Int) {
+        this.rows = rows
+    }
 
     /**
      * 设置是否锁定玩家手部动作
@@ -126,7 +130,7 @@ class Basic(title: String = "chest") : Menu(title) {
     }
 
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(MenuHolder(this), slots.size * 9, title)
+        val inventory = Bukkit.createInventory(MenuHolder(this), if (rows > 0) rows * 9 else slots.size * 9, title)
         var row = 0
         while (row < slots.size) {
             val line = slots[row]

@@ -10,7 +10,7 @@ import org.bukkit.util.Vector;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class Vectors {
+public class VectorUtil {
 
     public static Item itemDrop(Player player, ItemStack itemStack) {
         return itemDrop(player, itemStack, 0.0, 0.4);

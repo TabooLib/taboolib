@@ -9,11 +9,11 @@ import taboolib.platform.util.isNotAir
 @Isolated
 class ActionQuickTake : Action() {
 
-    override fun getCurrent(e: ClickEvent): ItemStack {
+    override fun getCursor(e: ClickEvent): ItemStack {
         return e.clicker.itemOnCursor
     }
 
-    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+    override fun setCursor(e: ClickEvent, item: ItemStack?) {
         if (item.isNotAir()) {
             ItemStacker.MINECRAFT.moveItemFromChest(item, e.clicker)
         }

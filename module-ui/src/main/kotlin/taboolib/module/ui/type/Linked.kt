@@ -18,8 +18,9 @@ class Linked<T>(title: String) : Menu(title) {
     private var rows = 1
     private var handLocked = true
     private val button = HashMap<Int, ClickEvent.() -> Unit>()
-    private val menuElements = ArrayList<T>()
     private val menuSlots = ArrayList<Int>()
+    private var menuElements: (() -> List<T>) = { emptyList() }
+    private var menuElementsCache = emptyList<T>()
     private var page = 0
     private var onClick: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
@@ -43,9 +44,8 @@ class Linked<T>(title: String) : Menu(title) {
         this.menuSlots += slots
     }
 
-    fun elements(elements: List<T>) {
-        this.menuElements.clear()
-        this.menuElements += elements
+    fun elements(elements: () -> List<T>) {
+        this.menuElements = elements
     }
 
     fun onGenerate(async: Boolean = false, onGenerate: (player: Player, element: T, index: Int, slot: Int) -> ItemStack) {
@@ -114,15 +114,16 @@ class Linked<T>(title: String) : Menu(title) {
     }
 
     fun hasNextPage(): Boolean {
-        return isNext(page, menuElements.size, menuSlots.size)
+        return isNext(page, menuElementsCache.size, menuSlots.size)
     }
 
     override fun build(): Inventory {
+        menuElementsCache = menuElements()
         val objectsMap = HashMap<Int, T>()
-        val items = subList(menuElements, page * menuSlots.size, (page + 1) * menuSlots.size)
+        val items = subList(menuElementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
         return buildMenu<Basic>(title) {
             handLocked(handLocked)
-            map(*(1..rows).map { "" }.toTypedArray())
+            rows(rows)
             onBuild { p, it ->
                 player = p
                 items.forEachIndexed { index, item ->

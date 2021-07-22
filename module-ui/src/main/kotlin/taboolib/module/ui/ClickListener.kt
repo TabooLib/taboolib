@@ -55,7 +55,7 @@ object ClickListener {
         }
         // drop on empty area
         if (e.currentItem.isNotAir() && e.click == org.bukkit.event.inventory.ClickType.DROP) {
-            val item = Vectors.itemDrop(e.whoClicked as Player, e.currentItem)
+            val item = VectorUtil.itemDrop(e.whoClicked as Player, e.currentItem)
             item.pickupDelay = 20
             item.setMetadata("internal-drop", FixedMetadataValue(BukkitPlugin.getInstance(), true))
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
@@ -65,7 +65,7 @@ object ClickListener {
                 e.currentItem = null
             }
         } else if (e.cursor.isNotAir() && e.rawSlot == -999) {
-            val item = Vectors.itemDrop(e.whoClicked as Player, e.cursor)
+            val item = VectorUtil.itemDrop(e.whoClicked as Player, e.cursor)
             item.pickupDelay = 20
             item.setMetadata("internal-drop", FixedMetadataValue(BukkitPlugin.getInstance(), true))
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)

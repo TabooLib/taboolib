@@ -7,11 +7,11 @@ import taboolib.module.ui.ClickEvent
 @Isolated
 class ActionKeyboard : Action() {
 
-    override fun getCurrent(e: ClickEvent): ItemStack {
-        return e.clicker.inventory.getItem(e.clickEvent().hotbarButton)!!
+    override fun getCursor(e: ClickEvent): ItemStack? {
+        return e.clicker.inventory.getItem(e.clickEvent().hotbarButton)
     }
 
-    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+    override fun setCursor(e: ClickEvent, item: ItemStack?) {
         e.clicker.inventory.setItem(e.clickEvent().hotbarButton, item)
     }
 

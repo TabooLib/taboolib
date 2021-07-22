@@ -7,11 +7,11 @@ import taboolib.module.ui.ClickEvent
 @Isolated
 class ActionClick : Action() {
 
-    override fun getCurrent(e: ClickEvent): ItemStack {
+    override fun getCursor(e: ClickEvent): ItemStack {
         return e.clicker.itemOnCursor
     }
 
-    override fun setCurrent(e: ClickEvent, item: ItemStack?) {
+    override fun setCursor(e: ClickEvent, item: ItemStack?) {
         e.clicker.setItemOnCursor(item)
     }
 

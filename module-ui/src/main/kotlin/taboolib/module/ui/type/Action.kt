@@ -7,9 +7,9 @@ import taboolib.module.ui.ClickEvent
 @Isolated
 abstract class Action {
 
-    abstract fun getCurrent(e: ClickEvent): ItemStack
+    abstract fun getCursor(e: ClickEvent): ItemStack?
 
-    abstract fun setCurrent(e: ClickEvent, item: ItemStack?)
+    abstract fun setCursor(e: ClickEvent, item: ItemStack?)
 
     abstract fun getCurrentSlot(e: ClickEvent): Int
 }
