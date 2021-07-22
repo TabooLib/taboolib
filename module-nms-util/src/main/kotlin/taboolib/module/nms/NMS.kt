@@ -9,8 +9,10 @@ import org.bukkit.block.Block
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
+import taboolib.common.platform.registerListener
 import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
@@ -27,11 +29,15 @@ import java.util.function.Consumer
 
 private val classJsonElement = Class.forName("com.google.gson.JsonElement")
 
-private val scoreboardMap = ConcurrentHashMap<String, PacketScoreboard>()
+private val scoreboardMap = ConcurrentHashMap<UUID, PacketScoreboard>().also {
+    registerListener(PlayerQuitEvent::class.java) { event ->
+        it.remove(event.player.uniqueId)
+    }
+}
 
 private val toastMap = ConcurrentHashMap<Toast, NamespacedKey>()
 
-val nmsGeneric = nmsProxy(NMSGeneric::class.java)
+val nmsGeneric = nmsProxy<NMSGeneric>()
 
 val nmsScoreboard = nmsProxy<NMSScoreboard>()
 
@@ -159,8 +165,9 @@ fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = tr
  * @param content 记分板内容（设置为空时注销记分板）
  */
 fun Player.sendScoreboard(vararg content: String) {
-    val scoreboardObj = scoreboardMap.getOrPut(name) {
+    val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         PacketScoreboard(this, content.firstOrNull().toString(), content.filterIndexed { index, _ -> index > 0 })
+        return
     }
 
     scoreboardObj.run {
