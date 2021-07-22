@@ -12,6 +12,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
+import taboolib.common.platform.EventPriority
 import taboolib.common.platform.registerListener
 import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
@@ -30,7 +31,7 @@ import java.util.function.Consumer
 private val classJsonElement = Class.forName("com.google.gson.JsonElement")
 
 private val scoreboardMap = ConcurrentHashMap<UUID, PacketScoreboard>().also {
-    registerListener(PlayerQuitEvent::class.java) { event ->
+    registerListener(PlayerQuitEvent::class.java, priority = EventPriority.NORMAL) { event ->
         it.remove(event.player.uniqueId)
     }
 }
