@@ -33,7 +33,7 @@ private val toastMap = ConcurrentHashMap<Toast, NamespacedKey>()
 
 val nmsGeneric = nmsProxy(NMSGeneric::class.java)
 
-val nmsScoreboard = nmsProxy(NMSScoreboard::class.java)
+val nmsScoreboard = nmsProxy<NMSScoreboard>()
 
 /**
  * 获取物品NBT数据
@@ -159,13 +159,13 @@ fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = tr
  * @param content 记分板内容（设置为空时注销记分板）
  */
 fun Player.sendScoreboard(vararg content: String) {
-    if (scoreboardMap.containsKey(name)) {
-        scoreboardMap[name]?.run {
-            sendTitle(this@sendScoreboard, content.firstOrNull().toString())
-            sendContent(this@sendScoreboard, content.filterIndexed { index, _ -> index > 0 })
-        }
-    } else {
-        scoreboardMap[name] = PacketScoreboard(this, content.firstOrNull().toString(), content.filterIndexed { index, _ -> index > 0 })
+    val scoreboardObj = scoreboardMap.getOrPut(name) {
+        PacketScoreboard(this, content.firstOrNull().toString(), content.filterIndexed { index, _ -> index > 0 })
+    }
+
+    scoreboardObj.run {
+        sendTitle(content.firstOrNull().toString())
+        sendContent(content.filterIndexed { index, _ -> index > 0 })
     }
 }
 
@@ -280,7 +280,7 @@ private fun toJsonToast(icon: String, title: String, frame: ToastFrame, backgrou
 /**
  * 记分板缓存
  */
-private class PacketScoreboard(player: Player, title: String, context: List<String>) {
+private class PacketScoreboard(val player: Player, title: String, context: List<String>) {
 
     private var currentTitle = ""
     private val currentContent = HashMap<Int, String>()
@@ -288,20 +288,20 @@ private class PacketScoreboard(player: Player, title: String, context: List<Stri
     init {
         nmsScoreboard.setupScoreboard(player, false)
         nmsScoreboard.display(player)
-        sendTitle(player, title)
-        sendContent(player, context)
+        sendTitle(title)
+        sendContent(context)
     }
 
-    fun sendTitle(player: Player, title: String) {
+    fun sendTitle(title: String) {
         if (currentTitle != title) {
             currentTitle = title
             nmsScoreboard.setDisplayName(player, title)
         }
     }
 
-    fun sendContent(player: Player, lines: List<String>) {
+    fun sendContent(lines: List<String>) {
         nmsScoreboard.changeContent(player, lines, currentContent)
         currentContent.clear()
-        currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
+        currentContent.putAll(lines.associateBy { s -> lines.indexOf(s) })
     }
 }

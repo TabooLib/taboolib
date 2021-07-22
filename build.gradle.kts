@@ -16,16 +16,17 @@ allprojects {
 
 publishing {
     repositories {
-        maven {
-            url = uri("/Users/sky/Desktop/repo")
-//            credentials {
-//                username = project.findProperty("user").toString()
-//                password = project.findProperty("password").toString()
-//            }
-//            authentication {
-//                create<BasicAuthentication>("basic")
-//            }
-        }
+//        maven {
+//            url = uri("/Users/sky/Desktop/repo")
+////            credentials {
+////                username = project.findProperty("user").toString()
+////                password = project.findProperty("password").toString()
+////            }
+////            authentication {
+////                create<BasicAuthentication>("basic")
+////            }
+//        }
+        mavenLocal()
     }
     publications {
         create<MavenPublication>("maven") {
