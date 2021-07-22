@@ -8,10 +8,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import taboolib.common.Isolated
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
-import taboolib.common.reflect.Reflex.Companion.staticInvoke
-import java.lang.Exception
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
 fun buildBook(builder: BookBuilder.() -> Unit): ItemStack {
     return BookBuilder().also(builder).build()
@@ -23,17 +21,17 @@ fun Player.sendBook(builder: BookBuilder.() -> Unit) {
 
 fun Player.sendBook(itemStack: ItemStack) {
     try {
-        reflexInvoke<Void>("openBook", itemStack)
+        invokeMethod<Void>("openBook", itemStack)
     } catch (ex: NoSuchMethodException) {
         val itemInHand = itemInHand
         setItemInHand(itemStack)
         try {
-            val nmsItemStack = classCraftItemStack.staticInvoke<Any>("asNMSCopy", itemStack)
-            val handle = reflex<Any>("entity")!!
+            val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, fixed = true)
+            val handle = getProperty<Any>("entity")!!
             try {
-                handle.reflexInvoke<Void>("a", nmsItemStack, enumHandMainHand)
+                handle.invokeMethod<Void>("a", nmsItemStack, enumHandMainHand)
             } catch (ex: NoSuchMethodException) {
-                handle.reflexInvoke<Void>("openBook", nmsItemStack, enumHandMainHand)
+                handle.invokeMethod<Void>("openBook", nmsItemStack, enumHandMainHand)
             }
         } catch (ex: Throwable) {
             ex.printStackTrace()
@@ -77,7 +75,7 @@ class BookBuilder {
         try {
             itemMeta.spigot().addPage(ComponentSerializer.parse(text))
         } catch (ex: Exception) {
-            itemMeta.reflex<MutableList<Any>>("pages")!! += nmsClassLegacy("IChatBaseComponent\$ChatSerializer").staticInvoke<Any>("a", text)!!
+            itemMeta.getProperty<MutableList<Any>>("pages")!! += nmsClassLegacy("IChatBaseComponent\$ChatSerializer").invokeMethod<Any>("a", text, fixed = true)!!
         }
     }
 

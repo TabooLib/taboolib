@@ -1,6 +1,5 @@
 package taboolib.module.chat
 
-import com.google.gson.JsonObject
 import net.md_5.bungee.api.chat.*
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text

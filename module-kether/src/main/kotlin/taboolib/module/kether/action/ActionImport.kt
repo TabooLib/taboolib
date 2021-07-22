@@ -1,6 +1,6 @@
 package taboolib.module.kether.action
 
-import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
@@ -20,13 +20,13 @@ class ActionImport : ScriptAction<Void>() {
 
         @KetherParser(["import"])
         fun parser0() = scriptParser {
-            it.reflex<MutableList<String>>("namespace")!!.add(it.nextToken())
+            it.getProperty<MutableList<String>>("namespace")!!.add(it.nextToken())
             ActionImport()
         }
 
         @KetherParser(["release"])
         fun parser1() = scriptParser {
-            it.reflex<MutableList<String>>("namespace")!!.remove(it.nextToken())
+            it.getProperty<MutableList<String>>("namespace")!!.remove(it.nextToken())
             ActionImport()
         }
     }

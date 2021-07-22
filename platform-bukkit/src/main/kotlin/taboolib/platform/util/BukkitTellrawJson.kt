@@ -2,18 +2,17 @@ package taboolib.platform.util
 
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
-import taboolib.common.reflect.Reflex.Companion.staticInvoke
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.chat.TellrawJson
 
 fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
-    val nmsItemStack = classCraftItemStack.staticInvoke<Any>("asNMSCopy", this)!!
+    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", this, fixed = true)!!
     val nmsKey = try {
         itemStack.type.key.key
     } catch (ex: NoSuchMethodError) {
-        val nmsItem = nmsItemStack.reflexInvoke<Any>("getItem")!!
-        val name = nmsItem.reflex<String>("name")!!
+        val nmsItem = nmsItemStack.invokeMethod<Any>("getItem")!!
+        val name = nmsItem.getProperty<String>("name")!!
         var key = ""
         name.forEach { c ->
             if (c.isUpperCase()) {
@@ -24,7 +23,7 @@ fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
         }
         key
     }
-    return hoverItem(nmsKey, nmsItemStack.reflexInvoke<Any>("getTag")?.toString() ?: "{}")
+    return hoverItem(nmsKey, nmsItemStack.invokeMethod<Any>("getTag")?.toString() ?: "{}")
 }
 
 private val classCraftItemStack by lazy {

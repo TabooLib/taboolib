@@ -1,6 +1,5 @@
 package taboolib.common.platform
 
-import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import java.lang.reflect.Method

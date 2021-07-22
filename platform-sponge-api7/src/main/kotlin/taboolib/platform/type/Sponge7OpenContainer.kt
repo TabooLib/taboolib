@@ -2,7 +2,7 @@ package taboolib.platform.type
 
 import org.spongepowered.api.plugin.PluginContainer
 import taboolib.common.OpenContainer
-import taboolib.common.reflect.Reflex.Companion.staticInvoke
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib
@@ -21,10 +21,10 @@ class Sponge7OpenContainer(val plugin: PluginContainer): OpenContainer {
     }
 
     override fun register(name: String, any: ByteArray, args: Array<String>) {
-        clazz.staticInvoke<Void>("register", name, any, args)
+        clazz.invokeMethod<Void>("register", name, any, args, fixed = true)
     }
 
     override fun unregister(name: String, any: ByteArray, args: Array<String>) {
-        clazz.staticInvoke<Void>("unregister", name, any, args)
+        clazz.invokeMethod<Void>("unregister", name, any, args, fixed = true)
     }
 }

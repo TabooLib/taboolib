@@ -1,4 +1,4 @@
-package taboolib.module.nms;
+package taboolib.type;
 
 import com.google.common.collect.Maps;
 import org.bukkit.entity.LivingEntity;
@@ -56,7 +56,6 @@ public enum BukkitEquipment {
     private final EquipmentSlot bukkit;
     private final String nms;
     private final int slot;
-    private final boolean supported = MinecraftVersion.INSTANCE.getMajor() >= 1; // 1.9
 
     BukkitEquipment(EquipmentSlot bukkit, String nms, int slot) {
         this.bukkit = bukkit;
@@ -87,16 +86,14 @@ public enum BukkitEquipment {
         }
         switch (this) {
             case HAND:
-                if (supported) {
+                try {
                     equipment.setItemInMainHand(item);
-                } else {
+                } catch (NoSuchMethodError ex) {
                     equipment.setItemInHand(item);
                 }
                 break;
             case OFF_HAND:
-                if (supported) {
-                    equipment.setItemInOffHand(item);
-                }
+                equipment.setItemInOffHand(item);
                 break;
             case FEET:
                 equipment.setBoots(item);
@@ -126,16 +123,14 @@ public enum BukkitEquipment {
         }
         switch (this) {
             case HAND:
-                if (supported) {
+                try {
                     equipment.setItemInMainHandDropChance(chance);
-                } else {
+                } catch (NoSuchMethodError ex) {
                     equipment.setItemInHandDropChance(chance);
                 }
                 break;
             case OFF_HAND:
-                if (supported) {
-                    equipment.setItemInOffHandDropChance(chance);
-                }
+                equipment.setItemInOffHandDropChance(chance);
                 break;
             case FEET:
                 equipment.setBootsDropChance(chance);
@@ -177,15 +172,13 @@ public enum BukkitEquipment {
         }
         switch (this) {
             case HAND:
-                if (supported) {
+                try {
                     return equipment.getItemInMainHand();
-                } else {
+                } catch (NoSuchMethodError ex) {
                     return equipment.getItemInHand();
                 }
             case OFF_HAND:
-                if (supported) {
-                    return equipment.getItemInOffHand();
-                }
+                return equipment.getItemInOffHand();
             case FEET:
                 return equipment.getBoots();
             case LEGS:
@@ -212,15 +205,13 @@ public enum BukkitEquipment {
         }
         switch (this) {
             case HAND:
-                if (supported) {
+                try {
                     return equipment.getItemInMainHandDropChance();
-                } else {
+                } catch (NoSuchMethodError ex) {
                     return equipment.getItemInHandDropChance();
                 }
             case OFF_HAND:
-                if (supported) {
-                    return equipment.getItemInOffHandDropChance();
-                }
+                return equipment.getItemInOffHandDropChance();
             case FEET:
                 return equipment.getBootsDropChance();
             case LEGS:

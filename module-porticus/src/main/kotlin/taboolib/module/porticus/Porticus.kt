@@ -1,6 +1,5 @@
 package taboolib.module.porticus
 
-import com.google.common.collect.Lists
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

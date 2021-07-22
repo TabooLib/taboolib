@@ -6,7 +6,6 @@ import org.spongepowered.api.command.CommandResult
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.TranslatableText
-import org.spongepowered.api.text.format.TextColor
 import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.format.TextStyles
 import org.spongepowered.api.world.Location

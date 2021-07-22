@@ -1,8 +1,6 @@
 package taboolib.platform
 
-import cn.nukkit.Nukkit
 import cn.nukkit.Server
-import cn.nukkit.console.NukkitConsole
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import taboolib.common.OpenContainer

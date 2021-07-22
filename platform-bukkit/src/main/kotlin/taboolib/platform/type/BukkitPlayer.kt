@@ -9,8 +9,9 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.reflect.Reflex.Companion.reflex
-import taboolib.common.reflect.Reflex.Companion.reflexInvoke
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
@@ -62,9 +63,9 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override val ping: Int
         get() {
             return try {
-                player.reflex<Int>("entity/latency")!!
+                player.getProperty<Int>("entity/latency")!!
             } catch (ex: NoSuchFieldException) {
-                player.reflex<Int>("entity/ping")!!
+                player.getProperty<Int>("entity/ping")!!
             }
         }
 
@@ -304,30 +305,30 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
-            val connection = player.reflex<Any>("entity/playerConnection")!!
+            val connection = player.getProperty<Any>("entity/playerConnection")!!
             if (title != null) {
-                connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                    it.reflex("a", rEnumTitleAction[0])
-                    it.reflex("b", rChatCompoundText.newInstance(title))
-                    it.reflex("c", fadein)
-                    it.reflex("d", stay)
-                    it.reflex("e", fadeout)
+                connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                    it.setProperty("a", rEnumTitleAction[0])
+                    it.setProperty("b", rChatCompoundText.newInstance(title))
+                    it.setProperty("c", fadein)
+                    it.setProperty("d", stay)
+                    it.setProperty("e", fadeout)
                 })
             }
             if (subtitle != null) {
-                connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                    it.reflex("a", rEnumTitleAction[1])
-                    it.reflex("b", rChatCompoundText.newInstance(subtitle))
-                    it.reflex("c", fadein)
-                    it.reflex("d", stay)
-                    it.reflex("e", fadeout)
+                connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                    it.setProperty("a", rEnumTitleAction[1])
+                    it.setProperty("b", rChatCompoundText.newInstance(subtitle))
+                    it.setProperty("c", fadein)
+                    it.setProperty("d", stay)
+                    it.setProperty("e", fadeout)
                 })
             }
-            connection.reflexInvoke<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                it.reflex("a", rEnumTitleAction[3])
-                it.reflex("c", fadein)
-                it.reflex("d", stay)
-                it.reflex("e", fadeout)
+            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                it.setProperty("a", rEnumTitleAction[3])
+                it.setProperty("c", fadein)
+                it.setProperty("d", stay)
+                it.setProperty("e", fadeout)
             })
         }
     }

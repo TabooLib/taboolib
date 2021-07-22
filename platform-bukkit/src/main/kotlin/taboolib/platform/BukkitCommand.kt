@@ -12,10 +12,10 @@ import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
 import taboolib.common.platform.*
-import taboolib.common.reflect.Reflex.Companion.reflex
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import java.lang.reflect.Constructor
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -32,11 +32,11 @@ class BukkitCommand : PlatformCommand {
         get() = BukkitPlugin.getInstance()
 
     val commandMap by lazy {
-        Bukkit.getPluginManager().reflex<SimpleCommandMap>("commandMap")!!
+        Bukkit.getPluginManager().getProperty<SimpleCommandMap>("commandMap")!!
     }
 
     val knownCommands by lazy {
-        commandMap.reflex<MutableMap<String, Command>>("knownCommands")!!
+        commandMap.getProperty<MutableMap<String, Command>>("knownCommands")!!
     }
 
     val constructor: Constructor<PluginCommand> by lazy {
@@ -66,12 +66,12 @@ class BukkitCommand : PlatformCommand {
                 permission = plugin.name.lowercase(Locale.getDefault()) + ".command.use"
             }
             // 修改属性
-            pluginCommand.reflex("description", command.description)
-            pluginCommand.reflex("usageMessage", command.usage)
-            pluginCommand.reflex("aliases", command.aliases)
-            pluginCommand.reflex("activeAliases", command.aliases)
-            pluginCommand.reflex("permission", permission)
-            pluginCommand.reflex("permissionMessage", command.permissionMessage)
+            pluginCommand.setProperty("description", command.description)
+            pluginCommand.setProperty("usageMessage", command.usage)
+            pluginCommand.setProperty("aliases", command.aliases)
+            pluginCommand.setProperty("activeAliases", command.aliases)
+            pluginCommand.setProperty("permission", permission)
+            pluginCommand.setProperty("permissionMessage", command.permissionMessage)
             // 注册权限
             if (command.permissionDefault == PermissionDefault.TRUE || command.permissionDefault == PermissionDefault.NOT_OP) {
                 if (Bukkit.getPluginManager().getPermission(permission) != null) {
