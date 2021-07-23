@@ -97,16 +97,16 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                                     typeInstance.init(map)
                                     nodesMap[node] = typeInstance
                                 } else {
-                                    warning("unsupported language type: $node > $type ($languageCode)")
+                                    warning("Unsupported language type: $node > $type ($languageCode)")
                                 }
                             }
                         } else {
-                            warning("unsupported language node: $node ($languageCode)")
+                            warning("Unsupported language node: $node ($languageCode)")
                         }
                     }
                 }
                 else -> {
-                    warning("unsupported language node: $node ($languageCode)")
+                    warning("Unsupported language node: $node ($languageCode)")
                 }
             }
         }

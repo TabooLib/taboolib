@@ -21,7 +21,7 @@ object ClickListener {
     @Awake(LifeCycle.DISABLE)
     fun onDisable() {
         Bukkit.getOnlinePlayers().forEach {
-            if (MenuHolder.get(it.openInventory.topInventory) != null) {
+            if (MenuHolder.fromInventory(it.openInventory.topInventory) != null) {
                 it.closeInventory()
             }
         }
@@ -29,7 +29,7 @@ object ClickListener {
 
     @SubscribeEvent
     fun e(e: InventoryOpenEvent) {
-        val builder = MenuHolder.get(e.inventory) ?: return
+        val builder = MenuHolder.fromInventory(e.inventory) ?: return
         submit {
             builder.onBuild(e.player as Player, e.inventory)
         }
@@ -40,7 +40,7 @@ object ClickListener {
 
     @SubscribeEvent
     fun e(e: InventoryClickEvent) {
-        val builder = MenuHolder.get(e.inventory) ?: return
+        val builder = MenuHolder.fromInventory(e.inventory) ?: return
         // lock hand
         if (builder.handLocked && (e.rawSlot - e.inventory.size - 27 == e.whoClicked.inventory.heldItemSlot || e.click == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.hotbarButton == e.whoClicked.inventory.heldItemSlot)) {
             e.isCancelled = true
@@ -79,17 +79,17 @@ object ClickListener {
 
     @SubscribeEvent
     fun e(e: InventoryDragEvent) {
-        MenuHolder.get(e.inventory)?.onClick?.invoke(ClickEvent(e, ClickType.DRAG, ' '))
+        MenuHolder.fromInventory(e.inventory)?.onClick?.invoke(ClickEvent(e, ClickType.DRAG, ' '))
     }
 
     @SubscribeEvent
     fun e(e: InventoryCloseEvent) {
-        MenuHolder.get(e.inventory)?.onClose?.invoke(e)
+        MenuHolder.fromInventory(e.inventory)?.onClose?.invoke(e)
     }
 
     @SubscribeEvent
     fun e(e: PlayerDropItemEvent) {
-        val builder = MenuHolder.get(e.player.openInventory.topInventory) ?: return
+        val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked && !e.itemDrop.hasMetadata("internal-drop")) {
             e.isCancelled = true
         }
@@ -97,7 +97,7 @@ object ClickListener {
 
     @SubscribeEvent
     fun e(e: PlayerItemHeldEvent) {
-        val builder = MenuHolder.get(e.player.openInventory.topInventory) ?: return
+        val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked) {
             e.isCancelled = true
         }
@@ -106,7 +106,7 @@ object ClickListener {
     @SubscribeEvent(bind = "org.bukkit.event.player.PlayerSwapHandItemsEvent")
     fun onSwap(ope: OptionalEvent) {
         val e = ope.cast(PlayerSwapHandItemsEvent::class.java)
-        val builder = MenuHolder.get(e.player.openInventory.topInventory) ?: return
+        val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked) {
             e.isCancelled = true
         }

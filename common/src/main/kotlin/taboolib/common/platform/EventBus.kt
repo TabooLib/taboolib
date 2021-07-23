@@ -25,7 +25,7 @@ object EventBus : Injector.Methods {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             registerListener(eventBind, event.priority, event.ignoreCancelled) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
-                            error("unsupported parameter for optional event")
+                            error("Unsupported parameter for optional event")
                         }
                     } else {
                         registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) { method.invoke(instance, it) }
@@ -37,7 +37,7 @@ object EventBus : Injector.Methods {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             registerListener(eventBind, level, event.ignoreCancelled) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
-                            error("unsupported parameter for optional event")
+                            error("Unsupported parameter for optional event")
                         }
                     } else {
                         registerListener(method.parameterTypes[0], level, event.ignoreCancelled) { method.invoke(instance, it) }
@@ -48,7 +48,7 @@ object EventBus : Injector.Methods {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             registerListener(eventBind, event.postOrder) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
-                            error("unsupported parameter for optional event")
+                            error("Unsupported parameter for optional event")
                         }
                     } else {
                         registerListener(method.parameterTypes[0], event.postOrder) { method.invoke(instance, it) }
@@ -59,7 +59,7 @@ object EventBus : Injector.Methods {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(instance, OptionalEvent(it)) }
                         } else {
-                            error("unsupported parameter for optional event")
+                            error("Unsupported parameter for optional event")
                         }
                     } else {
                         registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(instance, it) }
