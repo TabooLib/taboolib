@@ -15,7 +15,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("objectiveName", if (remove) "REMOVE" else "TabooScore")
             packet.setProperty("displayName", ChatComponentText("ScoreBoard"))
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
-            packet.setProperty("method", 0)
+            packet.setProperty("method", if (remove) 1 else 0)
         } else {
             packet.setProperty("a", if (remove) "REMOVE" else "TabooScore")
             if (MinecraftVersion.major >= 5) {
@@ -109,6 +109,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 b.setProperty("color", EnumChatFormat.RESET)
                 b.setProperty("options", -1)
                 packet.setProperty("parameters", Optional.of(b))
+                player.sendPacket(packet)
                 return@forEachIndexed
             }
             if (MinecraftVersion.major >= 5) {
