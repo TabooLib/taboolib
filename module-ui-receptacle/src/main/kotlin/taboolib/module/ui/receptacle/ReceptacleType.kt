@@ -150,9 +150,9 @@ enum class ReceptacleType(val vanillaId: Int, slotRange: IntRange) {
 
     val id by lazy { "minecraft:${toBukkitType().name.toLowerCase()}" }
 
-    val mainSlots = (slotRange.last + 1..slotRange.last + 27).toList()
+    val mainInvSlots = (slotRange.last + 1..slotRange.last + 27).toList()
 
-    val hotBarSlots = (mainSlots.last() + 1..mainSlots.last() + 9).toList()
+    val hotBarSlots = (mainInvSlots.last() + 1..mainInvSlots.last() + 9).toList()
 
     val containerSlots = slotRange.toList()
 

@@ -13,4 +13,14 @@ class ReceptacleInteractEvent(val player: Player, val receptacle: Receptacle, va
     var itemStack: ItemStack?
         set(value) = receptacle.setItem(value, slot)
         get() = receptacle.getItem(slot)
+
+    fun refresh() {
+        if (receptacleClickType.isItemMoveable()) {
+            receptacle.type.hotBarSlots.forEach { receptacle.refresh(it) }
+            receptacle.type.mainInvSlots.forEach { receptacle.refresh(it) }
+            receptacle.type.containerSlots.forEach { receptacle.refresh(it) }
+        } else {
+            receptacle.refresh(slot)
+        }
+    }
 }

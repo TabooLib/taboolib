@@ -18,6 +18,6 @@ import org.bukkit.inventory.ItemStack
  * @param itemStack The to update item stack
  *
  */
-class PacketWindowSetSlot(val slot: Int, val itemStack: ItemStack? = null, val windowId: Int = 119) : PacketInventory {
+class PacketWindowSetSlot(val slot: Int, val itemStack: ItemStack? = null, val windowId: Int = 119, val stateId: Int = 1) : PacketInventory {
 
 }

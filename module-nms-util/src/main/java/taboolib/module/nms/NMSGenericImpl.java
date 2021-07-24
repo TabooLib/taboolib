@@ -619,8 +619,10 @@ public class NMSGenericImpl extends NMSGeneric {
         }
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
-        } else {
+        } else if (MinecraftVersion.INSTANCE.getMajor() >= 1) {
             return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
+        } else {
+            return net.minecraft.server.v1_8_R3.MobEffectList.byId[potionEffectType.getId()].a();
         }
     }
 

@@ -148,7 +148,7 @@ class Linked<T>(title: String) : Menu(title) {
                 }
                 this@Linked.onBuildAsync(it)
             }
-            onClick {
+            onClick(lock = true) {
                 if (objectsMap.containsKey(it.rawSlot)) {
                     this@Linked.onClick(it, objectsMap[it.rawSlot]!!)
                 } else if (button.containsKey(it.rawSlot)) {

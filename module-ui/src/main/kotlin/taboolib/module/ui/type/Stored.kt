@@ -199,6 +199,21 @@ class Stored(title: String) : Menu(title) {
         internal var writeItem: ((inventory: Inventory, itemStack: ItemStack?, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
         internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot -> inventory.getItem(slot) }
 
+        fun checkSlot(intRange: Int, checkSlot: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
+            checkSlot(intRange..intRange, checkSlot)
+        }
+
+        fun checkSlot(intRange: IntRange, checkSlot: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
+            val e = this.checkSlot
+            this.checkSlot = { inventory, itemStack, slot ->
+                if (slot in intRange) {
+                    checkSlot(inventory, itemStack)
+                } else {
+                    e(inventory, itemStack, slot)
+                }
+            }
+        }
+
         fun checkSlot(checkSlot: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) {
             this.checkSlot = checkSlot
         }

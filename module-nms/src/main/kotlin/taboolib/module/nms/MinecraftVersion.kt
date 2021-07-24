@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.info
 import taboolib.common.reflect.Reflex
 import java.io.FileInputStream
 
@@ -40,12 +41,20 @@ object MinecraftVersion {
             7 -> 11500
             8 -> 11600
             9 -> 11700
-            else -> -1
-        }
+            else -> 0
+        } + minor
     }
 
     val major by lazy {
         supportedVersion.indexOfFirst { it.contains(runningVersion) }
+    }
+
+    val minor by lazy {
+        if (major != -1) {
+            supportedVersion[major].indexOf(runningVersion)
+        } else {
+            -1
+        }
     }
 
     val isSupported by lazy {

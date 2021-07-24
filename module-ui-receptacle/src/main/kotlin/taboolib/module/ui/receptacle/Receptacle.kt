@@ -23,6 +23,11 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
 
     private var hidePlayerInventory = false
 
+    private var stateId = 1
+        get() {
+            return field++
+        }
+
     var title = title
         set(value) {
             field = value
@@ -51,7 +56,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
     fun setItem(itemStack: ItemStack? = null, vararg slots: Int, display: Boolean = true) {
         slots.forEach { contents[it] = itemStack }
         if (display && viewer != null) {
-            slots.forEach { PacketWindowSetSlot(it, itemStack).send(viewer!!) }
+            slots.forEach { PacketWindowSetSlot(it, itemStack, stateId = stateId).send(viewer!!) }
         }
     }
 
@@ -66,7 +71,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
         if (viewer != null) {
             setupPlayerInventorySlots()
             if (slot >= 0) {
-                PacketWindowSetSlot(slot, contents[slot]).send(viewer!!)
+                PacketWindowSetSlot(slot, contents[slot], stateId = stateId).send(viewer!!)
             } else {
                 PacketWindowItems(contents).send(viewer!!)
             }
@@ -123,7 +128,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
             if (itemStack != null) {
                 val slot = when (index) {
                     in 0..8 -> type.hotBarSlots[index]
-                    in 9..35 -> type.mainSlots[index - 9]
+                    in 9..35 -> type.mainInvSlots[index - 9]
                     else -> -1
                 }
                 if (slot > 0) {
