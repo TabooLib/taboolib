@@ -7,11 +7,11 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/24 1:58 上午
  */
-interface WhereExecutor {
+abstract class WhereExecutor {
 
-    fun append(whereData: WhereData)
+    abstract fun append(whereData: WhereData)
 
-    infix fun String.eq(value: Any): WhereData {
+    fun String.eq(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} = ${value.formatColumn()}").also {
                 append(it)
@@ -23,7 +23,7 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.lt(value: Any): WhereData {
+    fun String.lt(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} < ${value.formatColumn()}").also {
                 append(it)
@@ -35,7 +35,7 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.lte(value: Any): WhereData {
+    fun String.lte(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} <= ${value.formatColumn()}").also {
                 append(it)
@@ -47,7 +47,7 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.gt(value: Any): WhereData {
+    fun String.gt(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} > ${value.formatColumn()}").also {
                 append(it)
@@ -59,7 +59,7 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.gte(value: Any): WhereData {
+    fun String.gte(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} >= ${value.formatColumn()}").also {
                 append(it)
@@ -71,7 +71,7 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.like(value: Any): WhereData {
+    fun String.like(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} LIKE ${value.formatColumn()}").also {
                 append(it)
@@ -83,11 +83,11 @@ interface WhereExecutor {
         }
     }
 
-    infix fun String.inside(value: Array<String>) = WhereData("${formatColumn()} IN (${value.joinToString { "?" }})", value.toList()).also {
+    fun String.inside(value: Array<String>) = WhereData("${formatColumn()} IN (${value.joinToString { "?" }})", value.toList()).also {
         append(it)
     }
 
-    infix fun String.between(value: Pair<Any, Any>) = WhereData("${formatColumn()} BETWEEN ? AND ?", listOf(value.first, value.second)).also {
+    fun String.between(value: Pair<Any, Any>) = WhereData("${formatColumn()} BETWEEN ? AND ?", listOf(value.first, value.second)).also {
         append(it)
     }
 
