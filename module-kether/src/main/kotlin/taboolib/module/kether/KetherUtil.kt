@@ -1,12 +1,12 @@
 package taboolib.module.kether
 
 import io.izzel.kether.common.api.*
+import io.izzel.kether.common.loader.LoadError
 import io.izzel.kether.common.loader.QuestReader
 import io.izzel.kether.common.loader.SimpleQuestLoader
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
-import taboolib.module.kether.Kether.expects
 import java.io.Serializable
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -106,6 +106,14 @@ fun ScriptContext.extend(map: Map<String, Any?>) {
     rootFrame().variables().run {
         map.forEach { (k, v) -> set(k, v) }
     }
+}
+
+fun QuestReader.expects(vararg args: String): String {
+    val element = nextToken()
+    if (element !in args) {
+        throw LoadError.NOT_MATCH.create("[${args.joinToString(", ")}]", element)
+    }
+    return element
 }
 
 fun QuestReader.switch(func: ExpectDSL.() -> Unit): ScriptAction<*> {

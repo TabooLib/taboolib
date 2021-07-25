@@ -11,7 +11,6 @@ object KetherShell {
 
     val mainCache = Cache()
 
-    @Throws(LocalizedException::class)
     fun eval(
         source: List<String>,
         cacheScript: Boolean = true,
@@ -23,7 +22,6 @@ object KetherShell {
         return eval(source.joinToString("\n"), cacheScript, namespace, cache, sender, context)
     }
 
-    @Throws(LocalizedException::class)
     fun eval(
         source: String,
         cacheScript: Boolean = true,

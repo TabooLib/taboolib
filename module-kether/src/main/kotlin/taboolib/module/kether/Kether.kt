@@ -58,12 +58,4 @@ object Kether {
     fun getEventOperator(name: String): EventOperator<out Any>? {
         return operatorsEvent.entries.firstOrNull { it.key.equals(name, true) }?.value
     }
-
-    fun QuestReader.expects(vararg args: String): String {
-        val element = nextToken()
-        if (element !in args) {
-            throw LoadError.NOT_MATCH.create("[${args.joinToString(", ")}]", element)
-        }
-        return element
-    }
 }
