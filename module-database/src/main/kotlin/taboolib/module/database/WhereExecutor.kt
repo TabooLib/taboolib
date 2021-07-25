@@ -11,7 +11,7 @@ abstract class WhereExecutor {
 
     abstract fun append(whereData: WhereData)
 
-    fun String.eq(value: Any): WhereData {
+    infix fun String.eq(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} = ${value.formatColumn()}").also {
                 append(it)
@@ -23,7 +23,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.lt(value: Any): WhereData {
+    infix fun String.lt(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} < ${value.formatColumn()}").also {
                 append(it)
@@ -35,7 +35,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.lte(value: Any): WhereData {
+    infix fun String.lte(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} <= ${value.formatColumn()}").also {
                 append(it)
@@ -47,7 +47,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.gt(value: Any): WhereData {
+    infix fun String.gt(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} > ${value.formatColumn()}").also {
                 append(it)
@@ -59,7 +59,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.gte(value: Any): WhereData {
+    infix fun String.gte(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} >= ${value.formatColumn()}").also {
                 append(it)
@@ -71,7 +71,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.like(value: Any): WhereData {
+    infix fun String.like(value: Any): WhereData {
         return if (value is PreValue) {
             WhereData("${formatColumn()} LIKE ${value.formatColumn()}").also {
                 append(it)
@@ -83,19 +83,19 @@ abstract class WhereExecutor {
         }
     }
 
-    fun String.inside(value: Array<String>) = WhereData("${formatColumn()} IN (${value.joinToString { "?" }})", value.toList()).also {
+    infix fun String.inside(value: Array<String>) = WhereData("${formatColumn()} IN (${value.joinToString { "?" }})", value.toList()).also {
         append(it)
     }
 
-    fun String.between(value: Pair<Any, Any>) = WhereData("${formatColumn()} BETWEEN ? AND ?", listOf(value.first, value.second)).also {
+    infix fun String.between(value: Pair<Any, Any>) = WhereData("${formatColumn()} BETWEEN ? AND ?", listOf(value.first, value.second)).also {
         append(it)
     }
 
-    fun not(func: WhereData): WhereData {
+    infix fun not(func: WhereData): WhereData {
         return func.copy(query = "NOT (${func.query})")
     }
 
-    fun or(func: Where.() -> Unit): WhereData {
+    infix fun or(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")
@@ -105,7 +105,7 @@ abstract class WhereExecutor {
         }
     }
 
-    fun and(func: Where.() -> Unit): WhereData {
+    infix fun and(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")
