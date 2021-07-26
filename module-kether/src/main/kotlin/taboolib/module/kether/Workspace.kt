@@ -4,9 +4,10 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.MultimapBuilder
 import io.izzel.kether.common.api.Quest
 import io.izzel.kether.common.api.data.ExitStatus
-import io.izzel.kether.common.loader.SimpleQuestLoader
 import io.izzel.kether.common.util.Coerce
 import taboolib.common.platform.getProxyPlayer
+import taboolib.common.platform.warning
+import taboolib.module.kether.action.ActionProperty
 import java.io.File
 
 /**
@@ -38,14 +39,14 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                 return@forEach
             }
             val trigger = scriptsSetting[it.value.id]?.get("start") ?: return@forEach
-            val operator = Kether.getEventOperator(trigger.toString())
+            val operator = Kether.getEvent(trigger.toString())
             if (operator == null) {
-                println("[TabooLib] Unknown starting trigger $trigger")
+                warning("Unknown starting trigger $trigger")
                 return@forEach
             }
-            listeners.add(Closables.listening<Any>(operator.event.java) { e ->
+            listeners.add(Closables.listening<Any>(operator) { e ->
                 val context = ScriptContext.create(it.value) {
-                    val player = operator.readUnsafe("player", e)
+                    val player = ActionProperty.getScriptProperty(e, "bind")
                     if (player != null) {
                         sender = getProxyPlayer(player.toString())
                         id = "${it.value.id}:${sender?.name}"
@@ -53,7 +54,6 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                         id = "${it.value.id}:$trigger"
                     }
                     event = e
-                    eventOperator = operator
                 }
                 runScript(context.id, context)
             })
@@ -78,7 +78,7 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
             file.mkdirs()
         }
         scripts.clear()
-        val questLoader = SimpleQuestLoader()
+        val loader = KetherScriptLoader()
         val folder = file.toPath()
         val scriptMap = HashMap<String, Quest>()
         if (java.nio.file.Files.notExists(folder)) {
@@ -92,13 +92,11 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                     val name = folder.relativize(path).toString().replace(File.separatorChar, '.')
                     if (name.endsWith(extension)) {
                         val bytes = path.toFile().readBytes()
-                        scriptMap[name] = questLoader.load(ScriptService, name, bytes, namespace)
+                        scriptMap[name] = loader.load(ScriptService, name, bytes, namespace)
                     }
                 } catch (e: Exception) {
-                    println("[TabooLib] Unexpected exception while parsing kether script:")
-                    e.localizedMessage?.split("\n")?.forEach {
-                        println("[TabooLib] $it")
-                    }
+                    warning("Unexpected exception while parsing kether script:")
+                    e.localizedMessage?.split("\n")?.forEach { warning(it) }
                 }
             }
         }

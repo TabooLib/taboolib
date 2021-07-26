@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.QuestActionParser
 import taboolib.common.LifeCycle
 import taboolib.common.OpenReceiver
 import taboolib.common.inject.Injector
@@ -9,7 +8,7 @@ import taboolib.common.io.serialize
 import taboolib.common.platform.Awake
 import taboolib.common.platform.getOpenContainers
 import taboolib.common.util.asList
-import java.io.Serializable
+import java.lang.Exception
 import java.lang.reflect.Method
 
 /**
@@ -23,8 +22,8 @@ import java.lang.reflect.Method
 object KetherLoader : Injector.Methods, OpenReceiver {
 
     val registeredParser = ArrayList<ByteArray>()
-    val registeredEventOperator = ArrayList<ByteArray>()
-    val registeredPlayerOperator = ArrayList<ByteArray>()
+    val registeredScriptProperty = ArrayList<ByteArray>()
+    val registeredEvent = ArrayList<String>()
 
     val openContainers by lazy {
         getOpenContainers()
@@ -33,51 +32,77 @@ object KetherLoader : Injector.Methods, OpenReceiver {
     @Awake(LifeCycle.DISABLE)
     fun cancel() {
         registeredParser.forEach { parser ->
-            openContainers.forEach { it.unregister("openapi.kether.QuestActionParser", parser, emptyArray()) }
+            openContainers.forEach { it.unregister("openapi.kether.ScriptActionParser", parser, emptyArray()) }
         }
-        registeredEventOperator.forEach { parser ->
-            openContainers.forEach { it.unregister("openapi.kether.EventOperator", parser, emptyArray()) }
+        registeredScriptProperty.forEach { parser ->
+            openContainers.forEach { it.unregister("openapi.kether.ScriptProperty", parser, emptyArray()) }
         }
-        registeredPlayerOperator.forEach { parser ->
-            openContainers.forEach { it.unregister("openapi.kether.PlayerOperator", parser, emptyArray()) }
+        registeredEvent.forEach { event ->
+            openContainers.forEach { it.unregister("openapi.kether.Event", ByteArray(0), arrayOf(event)) }
         }
     }
 
     override fun inject(method: Method, clazz: Class<*>, instance: Any) {
         if (method.isAnnotationPresent(KetherParser::class.java)) {
-            val parser = method.getAnnotation(KetherParser::class.java)
-            val questActionParser = method.invoke(instance) as QuestActionParser
-            if (questActionParser is Serializable && parser.shared) {
-                val bytes = questActionParser.serialize {
-                    writeObject(parser.value.toList())
-                    writeUTF(parser.namespace)
+            val parser = method.invoke(instance) as ScriptActionParser<*>
+            val annotation = method.getAnnotation(KetherParser::class.java)
+            if (annotation.shared) {
+                val bytes = parser.serialize {
+                    writeObject(annotation.value.toList())
+                    writeUTF(annotation.namespace)
                 }
-                openContainers.forEach { it.register("openapi.kether.QuestActionParser", bytes, emptyArray()) }
+                openContainers.forEach { it.register("openapi.kether.ScriptActionParser", bytes, emptyArray()) }
                 registeredParser.add(bytes)
             } else {
-                parser.value.forEach {
-                    Kether.addAction(it, questActionParser, parser.namespace)
+                annotation.value.forEach {
+                    Kether.addAction(it, parser, annotation.namespace)
                 }
+            }
+        }
+        if (method.isAnnotationPresent(KetherProperty::class.java)) {
+            val property = method.invoke(instance) as ScriptProperty
+            val annotation = method.getAnnotation(KetherProperty::class.java)
+            if (annotation.shared) {
+                val bytes = property.serialize {
+                    writeUTF(annotation.bind.java.name)
+                }
+                openContainers.forEach { it.register("openapi.kether.ScriptProperty", bytes, emptyArray()) }
+                registeredScriptProperty.add(bytes)
+            } else {
+                Kether.registeredScriptProperty.computeIfAbsent(annotation.bind.java) { ArrayList() } += property
             }
         }
     }
 
     override fun register(name: String, any: ByteArray, args: Array<out String>): Boolean {
         return when (name) {
-            "openapi.kether.QuestActionParser" -> {
+            "openapi.kether.ScriptActionParser" -> {
                 var keys = emptyList<String>()
                 var namespace = ""
-                val parser = any.deserialize<QuestActionParser> {
+                val parser = any.deserialize<ScriptActionParser<*>> {
                     keys = readObject().asList()
                     namespace = readUTF()
                 }
                 keys.forEach { Kether.addAction(it, parser, namespace) }
                 true
             }
-            "openapi.kether.EventOperator" -> {
+            "openapi.kether.ScriptProperty" -> {
+                var bind = ""
+                val property = any.deserialize<ScriptProperty> {
+                    bind = readUTF()
+                }
+                try {
+                    Kether.addScriptProperty(Class.forName(bind), property)
+                } catch (ex: Exception) {
+                }
                 true
             }
-            "openapi.kether.PlayerOperator" -> {
+            "openapi.kether.Event" -> {
+                try {
+                    Kether.registeredEvent[args[0]] = Class.forName(args[1])
+                    registeredEvent += args[1]
+                } catch (ex: Exception) {
+                }
                 true
             }
             else -> false
@@ -86,20 +111,32 @@ object KetherLoader : Injector.Methods, OpenReceiver {
 
     override fun unregister(name: String, any: ByteArray, args: Array<out String>): Boolean {
         return when (name) {
-            "openapi.kether.QuestActionParser" -> {
+            "openapi.kether.ScriptActionParser" -> {
                 var keys = emptyList<String>()
                 var namespace = ""
-                any.deserialize<QuestActionParser> {
+                any.deserialize<ScriptActionParser<*>> {
                     keys = readObject().asList()
                     namespace = readUTF()
                 }
                 keys.forEach { Kether.removeAction(it, namespace) }
                 true
             }
-            "openapi.kether.EventOperator" -> {
+            "openapi.kether.ScriptProperty" -> {
+                var bind = ""
+                val property = any.deserialize<ScriptProperty> {
+                    bind = readUTF()
+                }
+                try {
+                    Kether.removeScriptProperty(Class.forName(bind), property)
+                } catch (ex: Exception) {
+                }
                 true
             }
-            "openapi.kether.PlayerOperator" -> {
+            "openapi.kether.Event" -> {
+                try {
+                    Kether.registeredEvent.values.removeIf { it.name == args[0] }
+                } catch (ex: Exception) {
+                }
                 true
             }
             else -> false

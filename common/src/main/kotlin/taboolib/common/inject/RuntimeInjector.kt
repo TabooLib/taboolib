@@ -6,6 +6,8 @@ import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.AwakeFunction
 import taboolib.common.platform.PlatformFactory
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -16,7 +18,7 @@ import taboolib.common.platform.PlatformFactory
  */
 object RuntimeInjector {
 
-    private val priorityMap = HashMap<Byte, Injectors>()
+    private val priorityMap = TreeMap<Byte, Injectors>()
 
     init {
         LifeCycle.values().forEach { register(AwakeFunction(it)) }
@@ -25,14 +27,14 @@ object RuntimeInjector {
     fun lifeCycle(lifeCycle: LifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment()) {
             val classes = runningClasses.filter { PlatformFactory.checkPlatform(it) }
-            priorityMap.keys.sorted().forEach {
-                classes.forEach { c -> inject(c, priorityMap[it]!!, lifeCycle) }
+            priorityMap.forEach {
+                classes.forEach { c -> inject(c, it.value, lifeCycle) }
             }
         }
     }
 
     fun <T> injectAll(clazz: Class<T>) {
-        priorityMap.keys.sorted().forEach { inject(clazz, priorityMap[it]!!, null) }
+        priorityMap.forEach { inject(clazz, it.value, null) }
     }
 
     fun <T> inject(clazz: Class<T>, injectors: Injectors, lifeCycle: LifeCycle?): T? {

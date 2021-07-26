@@ -1,11 +1,11 @@
 package taboolib.module.kether.action.game
 
+import io.izzel.kether.common.actions.LiteralAction
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.kether.*
-import taboolib.module.kether.action.supplier.ActionPass
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -35,7 +35,7 @@ class ActionTitle(val title: ParsedAction<*>, val subTitle: ParsedAction<*>, val
                 it.next(ArgTypes.ACTION)
             } catch (ignored: Exception) {
                 it.reset()
-                ParsedAction(ActionPass())
+                ParsedAction(LiteralAction<String>(""))
             }
             var fadeIn = 0
             var stay = 20

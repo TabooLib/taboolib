@@ -42,10 +42,11 @@ tasks {
         exclude("LICENSE")
         exclude("LICENSE-Coerce")
         relocate("LICENSE", "LICENSE-Kether")
-        relocate("taboolib.module.kether.Property", "openapi.kether.Property")
-        relocate("taboolib.module.kether.PlayerOperator", "openapi.kether.PlayerOperator")
-        relocate("taboolib.module.kether.EventOperator", "openapi.kether.EventOperator")
+        // openapi
+        relocate("taboolib.module.kether.ScriptProperty", "openapi.kether.ScriptProperty")
+        relocate("taboolib.module.kether.ScriptActionParser", "openapi.kether.ScriptActionParser")
         relocate("io.izzel.kether.common.api.QuestActionParser", "openapi.kether.QuestActionParser")
+        // relocate
         relocate("io.izzel.kether.common.util.Coerce", "taboolib.common5.Coerce")
         relocate("io.izzel.kether.common.api.data", "taboolib.library.kether")
         relocate("io.izzel.kether.common.api", "taboolib.library.kether")

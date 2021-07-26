@@ -8,16 +8,15 @@ import java.util.concurrent.CompletableFuture
 /**
  * @author IzzelAliz
  */
-class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
+class ActionListen(val operator: Class<*>, val value: ParsedAction<*>) : ScriptAction<Void>() {
 
     @Suppress("UNCHECKED_CAST")
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
         return CompletableFuture<Void>().also { future ->
             val s = frame.script()
             s.listener = future
-            frame.addClosable(Closables.listening<Any>(operator.event.java) {
+            frame.addClosable(Closables.listening<Any>(operator) {
                 s.event = it
-                s.eventOperator = operator
                 frame.newFrame(value).run<Any>()
             })
         }
@@ -26,11 +25,18 @@ class ActionListen(val operator: EventOperator<*>, val value: ParsedAction<*>) :
     internal object Parser {
 
         @KetherParser(["listen", "on"])
-        fun parser() = scriptParser {
+        fun parser1() = scriptParser {
             val name = it.nextToken()
-            val event = Kether.getEventOperator(name) ?: throw KetherError.NOT_EVENT.create(name)
+            val event = Kether.getEvent(name) ?: throw KetherError.NOT_EVENT.create(name)
             it.expect("then")
             ActionListen(event, it.next(ArgTypes.ACTION))
+        }
+
+        @KetherParser(["event"])
+        fun parser2() = scriptParser {
+            actionNow {
+                CompletableFuture.completedFuture(script().event)
+            }
         }
     }
 }

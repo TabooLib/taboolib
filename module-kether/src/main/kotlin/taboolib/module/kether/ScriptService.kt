@@ -6,6 +6,7 @@ import io.izzel.kether.common.api.DefaultRegistry
 import io.izzel.kether.common.api.QuestRegistry
 import io.izzel.kether.common.api.QuestService
 import io.izzel.kether.common.api.ServiceHolder
+import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.getJarFile
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.replaceWithOrder
@@ -38,7 +39,7 @@ object ScriptService : QuestService<ScriptContext> {
     private lateinit var locale: SecuredFile
 
     val mainspace by lazy {
-        Workspace(File("kether/${getJarFile().nameWithoutExtension}"))
+        Workspace(File(getDataFolder(), "kether"))
     }
 
     override fun getRegistry(): QuestRegistry {
@@ -50,7 +51,7 @@ object ScriptService : QuestService<ScriptContext> {
     }
 
     override fun getQuestSettings(id: String): Map<String, Any?> {
-        return Collections.unmodifiableMap(mainspace.scriptsSetting.getOrDefault(id, ImmutableMap.of()))!!
+        return Collections.unmodifiableMap(mainspace.scriptsSetting.getOrDefault(id, ImmutableMap.of()))
     }
 
     override fun getQuests(): Map<String, Script> {

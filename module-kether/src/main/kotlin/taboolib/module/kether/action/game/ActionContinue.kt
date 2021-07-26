@@ -13,6 +13,7 @@ class ActionContinue : ScriptAction<Void>() {
         val s = frame.script()
         s.listener?.complete(null)
         s.listener = null
+        s.event = null
         return CompletableFuture.completedFuture(null)
     }
 

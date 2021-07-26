@@ -18,7 +18,7 @@ import taboolib.platform.type.Sponge8Player
  */
 @Awake
 @PlatformSide([Platform.SPONGE_API_8])
-class Sponge8Adapter : PlatformAdapter {
+class spSponge8Adapter : PlatformAdapter {
 
     val plugin by lazy {
         Sponge8Plugin.getInstance()

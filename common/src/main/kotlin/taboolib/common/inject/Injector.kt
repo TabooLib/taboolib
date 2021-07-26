@@ -12,6 +12,11 @@ import java.lang.reflect.Method
  */
 class Injector {
 
+    interface Classes : InjectorOrder {
+
+        fun inject(clazz: Class<*>, instance: Any)
+    }
+
     interface Fields : InjectorOrder {
 
         fun inject(field: Field, clazz: Class<*>, instance: Any)
@@ -20,10 +25,5 @@ class Injector {
     interface Methods : InjectorOrder {
 
         fun inject(method: Method, clazz: Class<*>, instance: Any)
-    }
-
-    interface Classes : InjectorOrder {
-
-        fun inject(clazz: Class<*>, instance: Any)
     }
 }

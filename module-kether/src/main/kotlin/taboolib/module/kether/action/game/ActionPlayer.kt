@@ -2,6 +2,7 @@ package taboolib.module.kether.action.game
 
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.loader.types.ArgTypes
+import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.kether.*
 import java.util.*
@@ -35,13 +36,41 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
             PlayerOperators.values().forEach {
                 Kether.addPlayerOperator(it.name, it.build())
             }
+            Kether.addScriptProperty(Player::class.java, object : ScriptProperty(ActionPlayer::class.java.name) {
+
+                override fun read(instance: Any, key: String): OperationResult {
+                    try {
+                        val operator = PlayerOperators.valueOf(key.uppercase())
+                        if (operator.reader != null) {
+                            OperationResult.successful(operator.reader.invoke(instance as ProxyPlayer))
+                        }
+                    } catch (ex: ClassCastException) {
+                        ex.printStackTrace()
+                    } catch (ex: Exception) {
+                    }
+                    return OperationResult.failed()
+                }
+
+                override fun write(instance: Any, key: String, value: Any?): OperationResult {
+                    try {
+                        val operator = PlayerOperators.valueOf(key.uppercase())
+                        if (operator.writer != null) {
+                            OperationResult.successful(operator.writer.invoke(instance as ProxyPlayer, PlayerOperator.Method.MODIFY, value))
+                        }
+                    } catch (ex: ClassCastException) {
+                        ex.printStackTrace()
+                    } catch (ex: Exception) {
+                    }
+                    return OperationResult.failed()
+                }
+            })
         }
 
         @KetherParser(["player"])
         fun parser() = scriptParser {
             it.mark()
             val tokens = arrayListOf(it.nextToken())
-            val structure = Kether.operatorsPlayer.entries.firstOrNull { e ->
+            val structure = Kether.registeredPlayerOperator.entries.firstOrNull { e ->
                 val args = e.key.lowercase(Locale.getDefault()).split("_")
                 var i = 0
                 args.all { a ->

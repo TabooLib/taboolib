@@ -22,12 +22,6 @@ open class ScriptContext(service: ScriptService, script: Script) :
             this["@Event"] = value
         }
 
-    var eventOperator: EventOperator<*>?
-        get() = this["@EventOperator"]
-        set(value) {
-            this["@EventOperator"] = value
-        }
-
     var listener: CompletableFuture<Void>?
         get() = this["@Listener"]
         set(value) {

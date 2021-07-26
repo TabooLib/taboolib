@@ -3,11 +3,9 @@ package taboolib.module.kether
 import io.izzel.kether.common.api.*
 import io.izzel.kether.common.loader.LoadError
 import io.izzel.kether.common.loader.QuestReader
-import io.izzel.kether.common.loader.SimpleQuestLoader
 import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
-import java.io.Serializable
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -17,23 +15,11 @@ typealias Script = Quest
 typealias ScriptFrame = QuestContext.Frame
 
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): QuestActionParser {
-    return object : QuestActionParser, Serializable {
-
-        private val serialVersionUID = 1L
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T> resolve(resolver: QuestReader): QuestAction<T> {
-            return resolve.invoke(resolver) as QuestAction<T>
-        }
-
-        override fun complete(params: MutableList<String>): MutableList<String> {
-            return KetherCompleters.seq(KetherCompleters.consume()).apply(params)
-        }
-    }
+    return ScriptActionParser(resolve)
 }
 
 fun String.parseKetherScript(namespace: List<String> = emptyList()): Script {
-    return SimpleQuestLoader().load(ScriptService, "temp_${UUID.randomUUID()}", toByteArray(StandardCharsets.UTF_8), namespace)
+    return KetherScriptLoader().load(ScriptService, "temp_${UUID.randomUUID()}", toByteArray(StandardCharsets.UTF_8), namespace)
 }
 
 fun List<String>.parseKetherScript(namespace: List<String> = emptyList()): Script {
