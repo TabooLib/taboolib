@@ -9,6 +9,7 @@ allprojects {
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))
     }
+
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
@@ -16,17 +17,17 @@ allprojects {
 
 publishing {
     repositories {
-//        maven {
-//            url = uri("/Users/sky/Desktop/repo")
-////            credentials {
-////                username = project.findProperty("user").toString()
-////                password = project.findProperty("password").toString()
-////            }
-////            authentication {
-////                create<BasicAuthentication>("basic")
-////            }
-//        }
-        mavenLocal()
+        maven {
+            url = uri("/Users/sky/Desktop/repo")
+//            url = uri("https://repo2s.ptms.ink/repository/maven-public/")
+//            credentials {
+//                username = project.findProperty("user").toString()
+//                password = project.findProperty("password").toString()
+//            }
+//            authentication {
+//                create<BasicAuthentication>("basic")
+//            }
+        }
     }
     publications {
         create<MavenPublication>("maven") {

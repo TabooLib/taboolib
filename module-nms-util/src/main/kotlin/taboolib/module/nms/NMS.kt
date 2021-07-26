@@ -169,12 +169,10 @@ fun Player.sendScoreboard(vararg content: String) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
-
     if (content.isEmpty()) {
         scoreboardObj.sendContent(emptyList())
         return
     }
-
     scoreboardObj.run {
         sendTitle(content.firstOrNull().toString())
         sendContent(content.filterIndexed { index, _ -> index > 0 })

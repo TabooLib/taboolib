@@ -7,7 +7,6 @@ import io.izzel.kether.common.api.QuestRegistry
 import io.izzel.kether.common.api.QuestService
 import io.izzel.kether.common.api.ServiceHolder
 import taboolib.common.platform.getDataFolder
-import taboolib.common.platform.getJarFile
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.configuration.Config
