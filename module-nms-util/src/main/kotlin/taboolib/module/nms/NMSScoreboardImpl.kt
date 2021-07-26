@@ -9,36 +9,59 @@ import java.util.*
 
 class NMSScoreboardImpl : NMSScoreboard() {
 
-    override fun setupScoreboard(player: Player, remove: Boolean) {
+    override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("objectiveName", if (remove) "REMOVE" else "TabooScore")
-            packet.setProperty("displayName", ChatComponentText("ScoreBoard"))
+            packet.setProperty("objectiveName", "TabooScore")
+            packet.setProperty("displayName", ChatComponentText(title))
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
-            packet.setProperty("method", if (remove) 1 else 0)
+            packet.setProperty("method", 0)
         } else {
-            packet.setProperty("a", if (remove) "REMOVE" else "TabooScore")
+            packet.setProperty("a", "TabooScore")
             if (MinecraftVersion.major >= 5) {
-                packet.setProperty("b", ChatComponentText("ScoreBoard"))
+                packet.setProperty("b", ChatComponentText(title))
             } else {
-                packet.setProperty("b", "ScoreBoard")
+                packet.setProperty("b", title)
             }
             packet.setProperty("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("d", 0)
         }
         player.sendPacket(packet)
-        initTeam(player)
+        if (color) {
+            initTeam(player)
+        }
     }
 
-    override fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>) {
+    override fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean {
+        if (content.isEmpty()) {
+            val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
+            if (MinecraftVersion.isUniversal) {
+                packet.setProperty("objectiveName", "TabooScore")
+                packet.setProperty("displayName", ChatComponentText("ScoreBoard"))
+                packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+                packet.setProperty("method", 1)
+            } else {
+                packet.setProperty("a", "TabooScore")
+                if (MinecraftVersion.major >= 5) {
+                    packet.setProperty("b", ChatComponentText("ScoreBoard"))
+                } else {
+                    packet.setProperty("b", "ScoreBoard")
+                }
+                packet.setProperty("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+                packet.setProperty("d", 1)
+            }
+            player.sendPacket(packet)
+            return true
+        }
         if (content.size != lastContent.size) {
             updateLineCount(player, content.size, lastContent.size)
         }
         content.forEachIndexed { line, ct ->
-            if (ct != lastContent[content.size - line - 1]) {
+            if (ct != lastContent[line]) {
                 sendTeamPrefixSuffix(player, uniqueColors[content.size - line - 1], ct)
             }
         }
+        return false
     }
 
     override fun display(player: Player) {

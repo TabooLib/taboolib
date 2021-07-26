@@ -39,11 +39,11 @@ abstract class NMSScoreboard {
         Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam\$b")
     }
 
-    abstract fun setupScoreboard(player: Player, remove: Boolean)
+    abstract fun setupScoreboard(player: Player, color: Boolean, title: String = "ScoreBoard")
 
     abstract fun setDisplayName(player: Player, title: String)
 
-    abstract fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>)
+    abstract fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean
 
     abstract fun display(player: Player)
 }

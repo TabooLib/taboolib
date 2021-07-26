@@ -53,7 +53,12 @@ class spSponge8Adapter : PlatformAdapter {
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = Sponge8Listener<Event>(event) { func(it as T) }
         val eventClass = if (ProxyEvent::class.java.isAssignableFrom(event)) Sponge8Event::class.java else event
-        Sponge.eventManager().registerListener(plugin.pluginContainer, eventClass as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
+        Sponge.eventManager().registerListener(EventListenerRegistration.builder(eventClass as Class<Event>).apply {
+            order(Order.values()[order.ordinal])
+            plugin(plugin.pluginContainer)
+            beforeModifications(beforeModifications)
+            listener(listener)
+        }.build())
         return listener
     }
 

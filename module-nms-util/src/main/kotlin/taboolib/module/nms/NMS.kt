@@ -167,7 +167,11 @@ fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = tr
  */
 fun Player.sendScoreboard(vararg content: String) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
-        PacketScoreboard(this, content.firstOrNull().toString(), content.filterIndexed { index, _ -> index > 0 })
+        return@getOrPut PacketScoreboard(this)
+    }
+
+    if (content.isEmpty()) {
+        scoreboardObj.sendContent(emptyList())
         return
     }
 
@@ -288,16 +292,16 @@ private fun toJsonToast(icon: String, title: String, frame: ToastFrame, backgrou
 /**
  * 记分板缓存
  */
-private class PacketScoreboard(val player: Player, title: String, context: List<String>) {
+private class PacketScoreboard(val player: Player) {
 
     private var currentTitle = ""
     private val currentContent = HashMap<Int, String>()
+    var deleted = false
 
     init {
-        nmsScoreboard.setupScoreboard(player, false)
+        nmsScoreboard.setupScoreboard(player, true)
         nmsScoreboard.display(player)
-        sendTitle(title)
-        sendContent(context)
+        sendTitle(currentTitle)
     }
 
     fun sendTitle(title: String) {
@@ -308,8 +312,12 @@ private class PacketScoreboard(val player: Player, title: String, context: List<
     }
 
     fun sendContent(lines: List<String>) {
-        nmsScoreboard.changeContent(player, lines, currentContent)
+        if (deleted) {
+            nmsScoreboard.setupScoreboard(player, false, currentTitle)
+            nmsScoreboard.display(player)
+        }
+        deleted = nmsScoreboard.changeContent(player, lines, currentContent)
         currentContent.clear()
-        currentContent.putAll(lines.associateBy { s -> lines.indexOf(s) })
+        currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
     }
 }
