@@ -1,5 +1,8 @@
 package taboolib.module.database
 
+import java.sql.Connection
+import java.sql.PreparedStatement
+
 /**
  * TabooLib
  * taboolib.module.database.ActionSelect
@@ -7,14 +10,15 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionSelect(val table: String) : QueryCallback(), WhereExecutor, Action {
+class ActionSelect(val table: String) : WhereExecutor(), Action {
 
-    private var rows: Array<String> = emptyArray()
-    private var where: Where? = null
+    private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private var distinct: String? = null
+    private var rows: Array<String> = emptyArray()
+    private val join = ArrayList<Join>()
+    private var where: Where? = null
     private val order = ArrayList<Order>()
     private var limit = -1
-    private val join = ArrayList<Join>()
 
     override val query: String
         get() {
@@ -96,5 +100,13 @@ class ActionSelect(val table: String) : QueryCallback(), WhereExecutor, Action {
     }
 
     override fun append(whereData: WhereData) {
+    }
+
+    override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
+        this.onFinally = onFinally
+    }
+
+    override fun runFinally(preparedStatement: PreparedStatement, connection: Connection) {
+        this.onFinally?.invoke(preparedStatement, connection)
     }
 }

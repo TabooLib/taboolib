@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 
@@ -11,7 +10,6 @@ object KetherFunction {
 
     val mainCache = Cache()
 
-    @Throws(LocalizedException::class)
     fun parse(
         input: String,
         cacheFunction: Boolean = false,
@@ -19,7 +17,7 @@ object KetherFunction {
         namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
         sender: ProxyCommandSender? = null,
-        context: ScriptContext.() -> Unit = {}
+        context: ScriptContext.() -> Unit = {},
     ): String {
         val function = if (cacheFunction) cache.functionMap.computeIfAbsent(input) {
             input.toFunction()
@@ -31,16 +29,15 @@ object KetherFunction {
         } else {
             function.source.parseKetherScript(namespace)
         }
-        val vars = ScriptContext.create(script)
-            .also {
-                if (sender != null) {
-                    it.sender = sender
-                }
-                context(it)
-            }.run {
-                runActions()
-                rootFrame().variables()
+        val vars = ScriptContext.create(script).also {
+            if (sender != null) {
+                it.sender = sender
             }
+            context(it)
+        }.run {
+            runActions()
+            rootFrame().variables()
+        }
         return function.element.joinToString("") {
             if (it.isFunction) {
                 vars.get<Any>(it.hash).orElse("{{${it.value}}}").toString()

@@ -7,9 +7,9 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/24 1:58 上午
  */
-interface WhereExecutor {
+abstract class WhereExecutor {
 
-    fun append(whereData: WhereData)
+    abstract fun append(whereData: WhereData)
 
     infix fun String.eq(value: Any): WhereData {
         return if (value is PreValue) {
@@ -91,11 +91,11 @@ interface WhereExecutor {
         append(it)
     }
 
-    fun not(func: WhereData): WhereData {
+    infix fun not(func: WhereData): WhereData {
         return func.copy(query = "NOT (${func.query})")
     }
 
-    fun or(func: Where.() -> Unit): WhereData {
+    infix fun or(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")
@@ -105,7 +105,7 @@ interface WhereExecutor {
         }
     }
 
-    fun and(func: Where.() -> Unit): WhereData {
+    infix fun and(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")

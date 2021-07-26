@@ -11,11 +11,11 @@ import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
-fun buildBook(builder: BookBuilder.() -> Unit): ItemStack {
+fun buildBook(builder: BookBuilder.() -> Unit = {}): ItemStack {
     return BookBuilder().also(builder).build()
 }
 
-fun Player.sendBook(builder: BookBuilder.() -> Unit) {
+fun Player.sendBook(builder: BookBuilder.() -> Unit = {}) {
     sendBook(buildBook(builder))
 }
 
@@ -74,7 +74,7 @@ class BookBuilder {
     fun writeRaw(text: String) {
         try {
             itemMeta.spigot().addPage(ComponentSerializer.parse(text))
-        } catch (ex: Exception) {
+        } catch (ex: NoSuchMethodError) {
             itemMeta.getProperty<MutableList<Any>>("pages")!! += nmsClassLegacy("IChatBaseComponent\$ChatSerializer").invokeMethod<Any>("a", text, fixed = true)!!
         }
     }

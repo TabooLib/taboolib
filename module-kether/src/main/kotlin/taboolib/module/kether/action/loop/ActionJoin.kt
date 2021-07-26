@@ -3,7 +3,6 @@ package taboolib.module.kether.action.loop
 import io.izzel.kether.common.api.ParsedAction
 import io.izzel.kether.common.loader.types.ArgTypes
 import taboolib.module.kether.*
-import taboolib.module.kether.Kether.expects
 import java.util.concurrent.CompletableFuture
 
 /**

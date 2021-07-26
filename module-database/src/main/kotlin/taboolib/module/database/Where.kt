@@ -1,6 +1,6 @@
 package taboolib.module.database
 
-class Where : WhereExecutor {
+class Where : WhereExecutor() {
 
     internal val data = ArrayList<WhereData>()
 

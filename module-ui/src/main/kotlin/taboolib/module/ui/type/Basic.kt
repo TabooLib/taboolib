@@ -55,7 +55,7 @@ class Basic(title: String = "chest") : Menu(title) {
 
     fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit) {
         val e = this.onClick
-        onClick {
+        onClick(lock = true) {
             if (it.rawSlot == bind) {
                 onClick(it)
             } else {
@@ -66,7 +66,7 @@ class Basic(title: String = "chest") : Menu(title) {
 
     fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit) {
         val e = this.onClick
-        onClick {
+        onClick(lock = true) {
             if (it.slot == bind) {
                 onClick(it)
             } else {

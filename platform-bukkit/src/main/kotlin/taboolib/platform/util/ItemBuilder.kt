@@ -23,7 +23,7 @@ import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.colored
 import java.util.*
 
-fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit): ItemStack {
+fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (material == XMaterial.AIR || material == XMaterial.CAVE_AIR || material == XMaterial.VOID_AIR) {
         error("air")
     }
@@ -101,9 +101,6 @@ class ItemBuilder(val material: XMaterial) {
                     itemMeta.basePotionData = potionData!!
                 }
             }
-            is SpawnEggMeta -> {
-                itemMeta.spawnedType = spawnType
-            }
             is SkullMeta -> {
                 if (skullOwner != null) {
                     itemMeta.owner = skullOwner
@@ -123,6 +120,13 @@ class ItemBuilder(val material: XMaterial) {
             } catch (ex: NoSuchMethodException) {
                 warning("Unbreakable not supported yet.")
             }
+        }
+        try {
+            if (spawnType != null && itemMeta is SpawnEggMeta) {
+                itemMeta.spawnedType = spawnType
+            }
+        } catch (ex: NoClassDefFoundError) {
+            warning("SpawnEggMeta not supported yet.")
         }
         try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {

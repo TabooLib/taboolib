@@ -1,5 +1,8 @@
 package taboolib.module.database
 
+import java.sql.Connection
+import java.sql.PreparedStatement
+
 /**
  * TabooLib
  * taboolib.module.database.ActionInsert
@@ -7,8 +10,9 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionInsert(val table: String, val keys: Array<String>) : QueryCallback(), Action {
+class ActionInsert(val table: String, val keys: Array<String>) : Action {
 
+    private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private var values = ArrayList<Array<Any>>()
     private var update = ArrayList<QuerySet>()
 
@@ -35,6 +39,10 @@ class ActionInsert(val table: String, val keys: Array<String>) : QueryCallback()
             return el
         }
 
+    fun pre(any: Any): PreValue {
+        return PreValue(any)
+    }
+
     fun value(vararg args: Any) {
         values.add(arrayOf(*args))
     }
@@ -56,5 +64,11 @@ class ActionInsert(val table: String, val keys: Array<String>) : QueryCallback()
         }
     }
 
-    fun pre(any: Any) = PreValue(any)
+    override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
+        this.onFinally = onFinally
+    }
+
+    override fun runFinally(preparedStatement: PreparedStatement, connection: Connection) {
+        this.onFinally?.invoke(preparedStatement, connection)
+    }
 }

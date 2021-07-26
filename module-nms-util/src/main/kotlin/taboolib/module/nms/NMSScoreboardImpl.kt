@@ -15,7 +15,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("objectiveName", if (remove) "REMOVE" else "TabooScore")
             packet.setProperty("displayName", ChatComponentText("ScoreBoard"))
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
-            packet.setProperty("method", 0)
+            packet.setProperty("method", if (remove) 1 else 0)
         } else {
             packet.setProperty("a", if (remove) "REMOVE" else "TabooScore")
             if (MinecraftVersion.major >= 5) {
@@ -158,6 +158,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
             packet.setProperty("method", 2)
             packet.setProperty("name", team)
+            packet.setProperty("players", listOf(team))
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", ChatComponentText(team))
             b.setProperty("playerPrefix", ChatComponentText(content))

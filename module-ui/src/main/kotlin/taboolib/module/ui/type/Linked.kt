@@ -122,8 +122,8 @@ class Linked<T>(title: String) : Menu(title) {
         val objectsMap = HashMap<Int, T>()
         val items = subList(menuElementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
         return buildMenu<Basic>(title) {
-            handLocked(handLocked)
-            rows(rows)
+            handLocked(this@Linked.handLocked)
+            rows(this@Linked.rows)
             onBuild { p, it ->
                 player = p
                 items.forEachIndexed { index, item ->
@@ -134,7 +134,7 @@ class Linked<T>(title: String) : Menu(title) {
                         it.setItem(slot, itemStack)
                     }
                 }
-                onBuild(it)
+                this@Linked.onBuild(it)
             }
             onBuild(true) { p, it ->
                 player = p
@@ -146,17 +146,17 @@ class Linked<T>(title: String) : Menu(title) {
                         it.setItem(slot, itemStack)
                     }
                 }
-                onBuildAsync(it)
+                this@Linked.onBuildAsync(it)
             }
-            onClick {
+            onClick(lock = true) {
                 if (objectsMap.containsKey(it.rawSlot)) {
-                    onClick(it, objectsMap[it.rawSlot]!!)
+                    this@Linked.onClick(it, objectsMap[it.rawSlot]!!)
                 } else if (button.containsKey(it.rawSlot)) {
                     button[it.rawSlot]!!(it)
                 }
             }
             onClose {
-                onClose(it)
+                this@Linked.onClose(it)
             }
         }
     }

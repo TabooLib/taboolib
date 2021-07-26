@@ -1,11 +1,9 @@
 package taboolib.module.kether.action.supplier
 
-import io.izzel.kether.common.loader.LoadError
 import org.apache.commons.lang3.time.DateFormatUtils
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.module.kether.*
-import taboolib.module.kether.Kether.expects
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -95,11 +93,16 @@ class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>
         @KetherParser(["day", "days"])
         fun parserDays() = scriptParser {
             it.expects("of", "in")
-            when (it.expects("year", "month", "week")) {
-                "year" -> ActionDate(Type.DAY_OF_YEAR)
-                "month" -> ActionDate(Type.DAY_OF_MONTH)
-                "week" -> ActionDate(Type.DAY_OF_WEEK)
-                else -> throw LoadError.UNHANDLED.create()
+            it.switch {
+                case("year") {
+                    ActionDate(Type.DAY_OF_YEAR)
+                }
+                case("month") {
+                    ActionDate(Type.DAY_OF_MONTH)
+                }
+                case("week") {
+                    ActionDate(Type.DAY_OF_WEEK)
+                }
             }
         }
     }

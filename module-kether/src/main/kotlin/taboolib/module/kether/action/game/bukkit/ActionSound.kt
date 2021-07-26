@@ -4,11 +4,7 @@ import io.izzel.kether.common.api.QuestContext
 import org.bukkit.entity.Player
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.module.kether.Kether.expects
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.script
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
