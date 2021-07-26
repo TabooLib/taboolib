@@ -96,8 +96,8 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @see PacketPlayOutScoreboardTeam
      */
     private fun initTeam(player: Player) {
-        uniqueColors.forEachIndexed { _, color ->
-            if (MinecraftVersion.major >= 9) {
+        uniqueColors.forEach { color ->
+            if (MinecraftVersion.isUniversal) {
                 val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
                 packet.setProperty("method", 0)
                 packet.setProperty("name", color)
@@ -107,10 +107,10 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 b.setProperty("nametagVisibility", "always")
                 b.setProperty("collisionRule", "always")
                 b.setProperty("color", EnumChatFormat.RESET)
-                b.setProperty("options", -1)
+                b.setProperty("options", 3)
                 packet.setProperty("parameters", Optional.of(b))
                 player.sendPacket(packet)
-                return@forEachIndexed
+                return@forEach
             }
             if (MinecraftVersion.major >= 5) {
                 val packet = PacketPlayOutScoreboardTeam()
@@ -123,7 +123,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("i", 0)
                 packet.setProperty("j", -1)
                 player.sendPacket(packet)
-                return@forEachIndexed
+                return@forEach
             }
             val packet = PacketPlayOutScoreboardTeam()
             packet.setProperty("a", color)
@@ -165,7 +165,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("nametagVisibility", "always")
             b.setProperty("collisionRule", "always")
             b.setProperty("color", EnumChatFormat.RESET)
-            b.setProperty("options", -1)
+            b.setProperty("options", 3)
             packet.setProperty("parameters", Optional.of(b))
             player.sendPacket(packet)
             return
