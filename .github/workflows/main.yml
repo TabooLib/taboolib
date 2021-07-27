@@ -25,5 +25,5 @@ jobs:
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: Artifacts Java 8.0
+          name: Artifacts
           path: build/libs/
