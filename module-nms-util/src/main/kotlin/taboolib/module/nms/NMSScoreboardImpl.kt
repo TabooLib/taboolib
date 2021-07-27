@@ -53,13 +53,13 @@ class NMSScoreboardImpl : NMSScoreboard() {
             player.sendPacket(packet)
             return true
         }
-        if (content.size != lastContent.size) {
+//        if (content.size != lastContent.size) {
             updateLineCount(player, content.size, lastContent.size)
-        }
+//        }
         content.forEachIndexed { line, ct ->
-            if (ct != lastContent[line]) {
+//            if (ct != lastContent[line]) {
                 sendTeamPrefixSuffix(player, uniqueColors[content.size - line - 1], ct)
-            }
+//            }
         }
         return false
     }
