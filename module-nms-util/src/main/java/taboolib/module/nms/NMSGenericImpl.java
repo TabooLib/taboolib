@@ -204,6 +204,8 @@ public class NMSGenericImpl extends NMSGeneric {
                         case 5:
                             name = "nitwit";
                             break;
+                        default:
+                            break;
                     }
                     return "entity.Villager." + name;
                 }
@@ -314,6 +316,8 @@ public class NMSGenericImpl extends NMSGeneric {
                     }
                 }
                 return nmsTag;
+            default:
+                break;
         }
         return null;
     }

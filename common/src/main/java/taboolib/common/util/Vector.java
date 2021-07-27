@@ -794,6 +794,18 @@ public class Vector implements Cloneable {
         checkFinite(z, "z not finite");
     }
 
+    public static void checkFinite(double d, @NotNull String message) {
+        if (!isFinite(d)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void checkFinite(float d, @NotNull String message) {
+        if (!isFinite(d)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
     /**
      * Get the threshold used for equals().
      *
@@ -853,18 +865,6 @@ public class Vector implements Cloneable {
 
     public static boolean isFinite(float f) {
         return Math.abs(f) <= Float.MAX_VALUE;
-    }
-
-    public static void checkFinite(double d, @NotNull String message) {
-        if (!isFinite(d)) {
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public static void checkFinite(float d, @NotNull String message) {
-        if (!isFinite(d)) {
-            throw new IllegalArgumentException(message);
-        }
     }
 
     public static double constrainToRange(double value, double min, double max) {
