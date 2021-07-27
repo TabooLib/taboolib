@@ -24,6 +24,7 @@ import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
 import taboolib.module.nms.type.ToastFrame
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.util.isAir
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -46,6 +47,9 @@ val nmsScoreboard = nmsProxy<NMSScoreboard>()
  * 获取物品NBT数据
  */
 fun ItemStack.getItemTag(): ItemTag {
+    if (isAir()) {
+        error("air")
+    }
     return nmsGeneric.getItemTag(this)
 }
 
@@ -53,6 +57,9 @@ fun ItemStack.getItemTag(): ItemTag {
  * 写入物品NBT数据
  */
 fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
+    if (isAir()) {
+        error("air")
+    }
     return nmsGeneric.setItemTag(this, itemTag)
 }
 

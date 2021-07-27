@@ -1,6 +1,6 @@
 @file:Isolated
 @file:RuntimeDependencies(
-    RuntimeDependency("!org.openjdk.nashorn:nashorn-core:15.2", test = "!org.openjdk.nashorn.api.scripting.NashornScriptEngineFactor")
+    RuntimeDependency("!org.openjdk.nashorn:nashorn-core:15.2", test = "!org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory")
 )
 
 package taboolib.common5
@@ -14,7 +14,11 @@ import javax.script.CompiledScript
 import javax.script.ScriptEngine
 
 val scriptEngineFactory by lazy {
-    NashornScriptEngineFactory()
+    try {
+        jdk.nashorn.api.scripting.NashornScriptEngineFactory()
+    } catch (ex: NoClassDefFoundError) {
+        NashornScriptEngineFactory()
+    }
 }
 
 val scriptEngine: ScriptEngine by lazy {
