@@ -7,7 +7,6 @@ import taboolib.common.io.runningClasses
 import taboolib.common.platform.AwakeFunction
 import taboolib.common.platform.PlatformFactory
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * TabooLib

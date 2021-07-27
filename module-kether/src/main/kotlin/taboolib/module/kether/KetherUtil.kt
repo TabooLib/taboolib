@@ -1,6 +1,9 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.*
+import io.izzel.kether.common.api.Quest
+import io.izzel.kether.common.api.QuestAction
+import io.izzel.kether.common.api.QuestActionParser
+import io.izzel.kether.common.api.QuestContext
 import io.izzel.kether.common.loader.LoadError
 import io.izzel.kether.common.loader.QuestReader
 import io.izzel.kether.common.util.LocalizedException

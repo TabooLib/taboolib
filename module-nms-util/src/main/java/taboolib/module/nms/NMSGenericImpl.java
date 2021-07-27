@@ -5,6 +5,7 @@ import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.EnumSkyBlock;
+import net.minecraft.server.v1_14_R1.MobEffectList;
 import net.minecraft.server.v1_14_R1.*;
 import net.minecraft.server.v1_15_R1.LightEngineThreaded;
 import net.minecraft.server.v1_16_R1.Registry;

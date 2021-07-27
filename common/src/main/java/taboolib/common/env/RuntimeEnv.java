@@ -32,6 +32,7 @@ import java.util.zip.ZipFile;
         test = "!taboolib.library.kotlin_@kotlin_version_escape@.collections.jdk8.CollectionsJDK8Kt",
         relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
 )
+@RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class RuntimeEnv {
 
     private boolean notify = false;

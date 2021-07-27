@@ -9,6 +9,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent
 import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.TabExecutor
 import taboolib.common.platform.*
+import taboolib.common.reflect.Reflex.Companion.getProperty
 
 /**
  * TabooLib
@@ -39,8 +40,8 @@ class BungeeCommand : PlatformCommand {
     }
 
     override fun unregisterCommand(command: String) {
-        val instance = BungeeCord.getInstance().pluginManager.commands.firstOrNull { it.key == command } ?: return
-        BungeeCord.getInstance().pluginManager.unregisterCommand(instance.value)
+        val instance = BungeeCord.getInstance().pluginManager.getProperty<MutableMap<String, Command>>("commandMap")!![command] ?: return
+        BungeeCord.getInstance().pluginManager.unregisterCommand(instance)
     }
 
     override fun unregisterCommands() {

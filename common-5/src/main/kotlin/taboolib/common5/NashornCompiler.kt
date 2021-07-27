@@ -1,7 +1,8 @@
 @file:Isolated
 @file:RuntimeDependencies(
-    RuntimeDependency("!org.openjdk.nashorn:nashorn-core:15.2", test = "!jdk.nashorn.api.scripting.NashornScriptEngineFactory")
+    RuntimeDependency("!org.openjdk.nashorn:nashorn-core:15.2", test = "!org.openjdk.nashorn.api.scripting.NashornScriptEngineFactor")
 )
+
 package taboolib.common5
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory

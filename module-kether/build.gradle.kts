@@ -1,22 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-plugins {
-    id("com.github.johnrengelman.shadow") version "7.0.0"
-    java
-    kotlin("jvm") version "1.5.10"
-}
-
-repositories {
-    maven {
-        url = uri("https://repo1.maven.org/maven2")
-    }
-    maven {
-        isAllowInsecureProtocol = true
-        url = uri("http://repo.ptms.ink/repository/maven-releases/")
-    }
-    mavenCentral()
-}
-
 dependencies {
     implementation("io.izzel.kether:common:1.0.15")
     compileOnly("public:PlaceholderAPI:2.10.9")
@@ -33,7 +16,7 @@ dependencies {
 }
 
 tasks {
-    named<ShadowJar>("shadowJar") {
+    withType<ShadowJar> {
         archiveClassifier.set("")
         dependencies {
             include(dependency("io.izzel.kether:common:1.0.15"))
@@ -57,11 +40,5 @@ tasks {
     }
     build {
         dependsOn(shadowJar)
-    }
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }

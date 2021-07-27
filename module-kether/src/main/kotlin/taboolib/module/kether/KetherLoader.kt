@@ -8,7 +8,6 @@ import taboolib.common.io.serialize
 import taboolib.common.platform.Awake
 import taboolib.common.platform.getOpenContainers
 import taboolib.common.util.asList
-import java.lang.Exception
 import java.lang.reflect.Method
 
 /**

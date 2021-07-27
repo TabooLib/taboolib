@@ -1,17 +1,6 @@
-plugins {
-    java
-    kotlin("jvm") version "1.5.10"
-}
-
 repositories {
-    maven {
-        isAllowInsecureProtocol = true
-        url = uri("http://repo.ptms.ink/repository/maven-releases/")
-    }
     maven { url = uri("https://jitpack.io") }
-    maven { url = uri("https://repo.codemc.io/repository/nms/") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/" )}
-    mavenCentral()
 }
 
 dependencies {
@@ -22,11 +11,4 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module-chat"))
-    compileOnly(kotlin("stdlib"))
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
 }

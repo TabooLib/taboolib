@@ -5,7 +5,6 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Cancellable
 import net.md_5.bungee.api.plugin.Event
-import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.*
 import taboolib.common.reflect.Reflex.Companion.getProperty

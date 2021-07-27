@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import java.util.concurrent.CompletableFuture
