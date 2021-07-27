@@ -1,6 +1,0 @@
-name: TabooLib5
-main: io.izzel.taboolib.common.plugin.InternalJavaPlugin
-version: ${version}
-api-version: 1.13
-
-author: 坏黑

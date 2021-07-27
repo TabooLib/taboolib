@@ -1,0 +1,16 @@
+load-error:
+  fail: 'Failed to load script {0}'
+  string-not-close: "The string has no matching end (\" x {0})"
+  not-match: 'Should be entered {0} is actually {1}'
+  unknown-action: 'Unknown action {0}'
+  not-duration: 'Unknown duration {0}'
+  eof: 'Eof'
+  block-error: 'Line {1} of block "{0}": {2}'
+  unhandled: 'Unhandled: {0}'
+  not-symbol: 'Unknown symbol {0}'
+  not-command-sender: 'Unknown command sender {0}'
+  not-event-operator: 'Unknown event operator {0}'
+  not-event: 'Unknown event {0}'
+  not-player-operator: 'Unknown player operator {0}'
+  not-mateiral: 'Unknown material {0}'
+  custom: '{0}'

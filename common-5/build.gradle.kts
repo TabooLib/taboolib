@@ -1,0 +1,6 @@
+dependencies {
+    compileOnly("com.google.guava:guava:21.0")
+    compileOnly("org.apache.commons:commons-lang3:3.5")
+    compileOnly("org.openjdk.nashorn:nashorn-core:15.2")
+    compileOnly(project(":common"))
+}

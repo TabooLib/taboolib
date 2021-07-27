@@ -1,0 +1,50 @@
+package taboolib.module.nms
+
+import org.bukkit.entity.Player
+import taboolib.common.io.runningClasses
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import java.util.concurrent.ConcurrentHashMap
+
+val nmsProxyMap = ConcurrentHashMap<String, Any>()
+
+fun obcClass(name: String): Class<*> {
+    return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.legacyVersion}.$name")
+}
+
+fun nmsClass(name: String): Class<*> {
+    return if (MinecraftVersion.isUniversal) {
+        Class.forName(MinecraftVersion.mapping.classMap[name]!!.replace('/', '.'))
+    } else {
+        Class.forName("net.minecraft.server.${MinecraftVersion.legacyVersion}.$name")
+    }
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
+    return nmsProxyMap.computeIfAbsent("${clazz.name}:$bind") {
+        val bindClass = bind.replace("{name}", clazz.name).replace('.', '/')
+        val instance = AsmClassTransfer(bindClass).run().getDeclaredConstructor().newInstance()
+        runningClasses.forEach {
+            if (it.name.startsWith("$bindClass\$")) {
+                AsmClassTransfer(it.name).run()
+            }
+        }
+        instance
+    } as T
+}
+
+inline fun <reified T> nmsProxy(bind: String = "{name}Impl"): T {
+    return nmsProxy(T::class.java, bind)
+}
+
+/**
+ * 向玩家发送数据包
+ */
+fun Player.sendPacket(packet: Any) {
+    if (MinecraftVersion.isUniversal) {
+        getProperty<Any>("entity/connection")!!.invokeMethod<Any>("sendPacket", packet)
+    } else {
+        getProperty<Any>("entity/playerConnection")!!.invokeMethod<Any>("sendPacket", packet)
+    }
+}
