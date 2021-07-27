@@ -18,7 +18,7 @@ DefaultSettings:
   # 如果您的驱动程序支持JDBC4，我们强烈建议您不要设置此属性
   ConnectionTestQuery: SELECT 1
   # 其他自定义配置
-  DataSourceProperty: {}
+  DataSourceProperty: { }
 #    cachePrepStmts: true
 #    prepStmtCacheSize: 250
 #    prepStmtCacheSqlLimit: 2048

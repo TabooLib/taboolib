@@ -80,6 +80,7 @@ public class Ref {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getField(Object src, Field field, Class<T> cast) {
         Object obj = getField(src, field);
         return obj == null ? null : (T) obj;

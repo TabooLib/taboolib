@@ -9,7 +9,6 @@ import net.minecraft.server.v1_16_R1.ChatMessageType;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Material;
 import org.bukkit.block.ShulkerBox;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
@@ -59,7 +58,7 @@ public class InternalTellraw implements AbstractTellraw {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (Items.nonNull(itemStack) && ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).hasTag()) {
             Object nbtTag = new NBTTagCompound();
-            Map<String, NBTBase> mapNew =  (Map) SimpleReflection.getFieldValue(NBTTagCompound.class, nbtTag, "map");
+            Map<String, NBTBase> mapNew = (Map) SimpleReflection.getFieldValue(NBTTagCompound.class, nbtTag, "map");
             Map<String, NBTBase> mapOrigin = (Map) SimpleReflection.getFieldValue(NBTTagCompound.class, ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag(), "map");
             for (Map.Entry<String, NBTBase> entry : mapOrigin.entrySet()) {
                 if (nbtWhitelist.contains(entry.getKey())) {
@@ -67,7 +66,7 @@ public class InternalTellraw implements AbstractTellraw {
                 }
             }
             ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((NBTTagCompound) nbtTag);
-           return  CraftItemStack.asBukkitCopy(((net.minecraft.server.v1_8_R3.ItemStack) nmsItem));
+            return CraftItemStack.asBukkitCopy(((net.minecraft.server.v1_8_R3.ItemStack) nmsItem));
         }
         return itemStack;
     }
@@ -120,7 +119,7 @@ public class InternalTellraw implements AbstractTellraw {
                 builder.append(",");
             }
             Object value = ((Map.Entry) nbtBaseEntry).getValue();
-            if (value instanceof NBTTagList ) {
+            if (value instanceof NBTTagList) {
                 builder.append(((Map.Entry) nbtBaseEntry).getKey()).append(":").append(nbtListToString(value, version));
             } else if (value instanceof NBTTagCompound) {
                 builder.append(((Map.Entry) nbtBaseEntry).getKey()).append(":").append(nbtToString(value, version));
