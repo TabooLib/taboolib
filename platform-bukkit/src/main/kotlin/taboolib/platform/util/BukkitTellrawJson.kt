@@ -1,7 +1,9 @@
+@file:Isolated
 package taboolib.platform.util
 
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.chat.TellrawJson

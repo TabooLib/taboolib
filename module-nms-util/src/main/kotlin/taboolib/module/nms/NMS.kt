@@ -48,7 +48,7 @@ val nmsScoreboard = nmsProxy<NMSScoreboard>()
  */
 fun ItemStack.getItemTag(): ItemTag {
     if (isAir()) {
-        error("air")
+        error("ItemStack must be not null.")
     }
     return nmsGeneric.getItemTag(this)
 }
@@ -58,7 +58,7 @@ fun ItemStack.getItemTag(): ItemTag {
  */
 fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
     if (isAir()) {
-        error("air")
+        error("ItemStack must be not null.")
     }
     return nmsGeneric.setItemTag(this, itemTag)
 }
@@ -127,6 +127,9 @@ fun <T : Entity> Location.spawnEntity(entity: Class<T>, func: Consumer<T>) {
  * @param update 是否更新区块光照
  */
 fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
+    if (MinecraftVersion.majorLegacy < 11200) {
+        error("Not supported yet.")
+    }
     if (nmsGeneric.getRawLightLevel(this, lightType) > lightLevel) {
         nmsGeneric.deleteLight(this, lightType)
     }
@@ -152,6 +155,9 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
  * @param update 是否更新区块光照
  */
 fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
+    if (MinecraftVersion.majorLegacy < 11200) {
+        error("Not supported yet.")
+    }
     val result = nmsGeneric.deleteLight(this, lightType)
     if (update) {
         if (MinecraftVersion.isUniversal) {
@@ -194,6 +200,9 @@ fun Player.sendScoreboard(vararg content: String) {
  * @param background 成就背景图片
  */
 fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastFrame.TASK, background: ToastBackground = ToastBackground.ADVENTURE) {
+    if (MinecraftVersion.majorLegacy < 11300) {
+        error("Not supported yet.")
+    }
     submit {
         val cache = Toast(icon, message, frame)
         val namespaceKey = toastMap.computeIfAbsent(cache) {
