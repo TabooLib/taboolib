@@ -72,7 +72,7 @@ object MinecraftVersion {
         )
     }
 
-    val legacyVersion by lazy {
+    val minecraftVersion by lazy {
         Bukkit.getServer().javaClass.name.split('.')[3]
     }
 

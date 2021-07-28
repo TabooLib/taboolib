@@ -9,14 +9,14 @@ import java.util.concurrent.ConcurrentHashMap
 val nmsProxyMap = ConcurrentHashMap<String, Any>()
 
 fun obcClass(name: String): Class<*> {
-    return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.legacyVersion}.$name")
+    return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
 }
 
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
         Class.forName(MinecraftVersion.mapping.classMap[name]!!.replace('/', '.'))
     } else {
-        Class.forName("net.minecraft.server.${MinecraftVersion.legacyVersion}.$name")
+        Class.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }
 }
 

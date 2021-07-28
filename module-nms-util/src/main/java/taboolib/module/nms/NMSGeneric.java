@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -62,4 +63,6 @@ public abstract class NMSGeneric {
     abstract public String getEnchantmentKey(Enchantment enchantment);
 
     abstract public String getPotionEffectTypeKey(PotionEffectType potionEffectType);
+
+    abstract public void openSignEditor(Player player, Block block);
 }

@@ -44,6 +44,10 @@ private val classCraftItemStack by lazy {
     obcClassLegacy("inventory.CraftItemStack")
 }
 
+private val classChatSerializer by lazy {
+    nmsClassLegacy("IChatBaseComponent\$ChatSerializer")
+}
+
 private val enumHandMainHand by lazy {
     nmsClassLegacy("EnumHand").enumConstants[0]
 }
@@ -75,7 +79,7 @@ class BookBuilder {
         try {
             itemMeta.spigot().addPage(ComponentSerializer.parse(text))
         } catch (ex: NoSuchMethodError) {
-            itemMeta.getProperty<MutableList<Any>>("pages")!! += nmsClassLegacy("IChatBaseComponent\$ChatSerializer").invokeMethod<Any>("a", text, fixed = true)!!
+            itemMeta.getProperty<MutableList<Any>>("pages")!! += classChatSerializer.invokeMethod<Any>("a", text, fixed = true)!!
         }
     }
 

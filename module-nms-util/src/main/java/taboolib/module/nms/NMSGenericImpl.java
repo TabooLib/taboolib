@@ -631,6 +631,15 @@ public class NMSGenericImpl extends NMSGeneric {
         }
     }
 
+    @Override
+    public void openSignEditor(Player player, Block block) {
+        try {
+            ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer) player).getHandle().playerConnection.sendPacket(new net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ())));
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
     private int distance(Object player) {
         int viewDistance = Bukkit.getViewDistance();
         try {

@@ -15,9 +15,9 @@ open class MinecraftRemapper : Remapper() {
      * 只匹配 1.17 之下的 nms 包名
      */
     val nms1 = "net/minecraft/server/v1_.*?/".toRegex()
-    val nms2 = "net/minecraft/server/${MinecraftVersion.legacyVersion}/"
+    val nms2 = "net/minecraft/server/${MinecraftVersion.minecraftVersion}/"
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
-    val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.legacyVersion}/"
+    val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
 
     val mapping by lazy {
         MinecraftVersion.mapping
@@ -66,7 +66,7 @@ open class MinecraftRemapper : Remapper() {
             // 将高版本包名替换为低版本包名
             // net/minecraft/server/level/EntityPlayer -> net/minecraft/server/v1_17_R1/EntityPlayer
             if (mapping.classMap.containsValue(key.replace('/', '.'))) {
-                "net/minecraft/server/${MinecraftVersion.legacyVersion}/${key.substringAfterLast('/', "")}"
+                "net/minecraft/server/${MinecraftVersion.minecraftVersion}/${key.substringAfterLast('/', "")}"
             } else {
                 key.replace(nms1, nms2)
             }
