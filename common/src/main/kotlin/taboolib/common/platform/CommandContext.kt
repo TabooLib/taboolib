@@ -7,11 +7,9 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/25 10:02 上午
  */
-class CommandContext(val sender: ProxyCommandSender, val command: CommandStructure, val name: String, val args: Array<String>) {
-
-    internal var cur = 0
+class CommandContext<T>(val sender: T, val command: CommandStructure, val name: String, val args: Array<String>, var index: Int = 0) {
 
     fun argument(offset: Int): String {
-        return args[cur + offset]
+        return args[index + offset]
     }
 }

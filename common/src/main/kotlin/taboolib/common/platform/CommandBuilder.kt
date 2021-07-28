@@ -11,12 +11,17 @@ import taboolib.common.util.subList
  * @author sky
  * @since 2021/6/25 12:50 上午
  */
+@Suppress("UNCHECKED_CAST")
 @Isolated
 object CommandBuilder {
 
     class CommandBase : CommandComponent(false) {
 
-        internal var unknownNotify = CommandUnknownNotify { context, index, state ->
+        var commandIncorrectSender: CommandUnknownNotify<*> = CommandUnknownNotify(ProxyCommandSender::class.java) { sender, _, _, _ ->
+            sender.sendMessage("§cIncorrect sender for command")
+        }
+
+        var commandIncorrectCommand: CommandUnknownNotify<*> = CommandUnknownNotify(ProxyCommandSender::class.java) { _, context, index, state ->
             val args = subList(context.args.toList(), 0, index)
             var str = context.name
             if (args.size > 1) {
@@ -37,15 +42,15 @@ object CommandBuilder {
             context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
         }
 
-        fun execute(context: CommandContext): Boolean {
+        fun execute(context: CommandContext<*>): Boolean {
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
                 return if (children.any { it.optional }) {
-                    context.cur = 0
-                    executor?.function?.invoke(context, "")
+                    context.index = 0
+                    commandExecutor?.exec(this, context, "")
                     true
                 } else {
-                    unknownNotify.function.invoke(context, -1, 1)
+                    commandIncorrectCommand.exec(context, -1, 1)
                     false
                 }
             }
@@ -57,8 +62,8 @@ object CommandBuilder {
                         is CommandComponentDynamic -> {
                             when {
                                 argument.isEmpty() -> false
-                                it.restrict?.function?.invoke(context, argument) == false -> false
-                                it.suggestion?.function?.invoke(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                it.commandRestrict?.exec(context, argument) == false -> false
+                                it.commandSuggestion?.exec(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
                                 else -> true
                             }
                         }
@@ -70,23 +75,23 @@ object CommandBuilder {
                         process(cur + 1, children)
                     } else {
                         if (children.children.isEmpty() || children.children.any { it.optional }) {
-                            context.cur = cur
-                            children.executor?.function?.invoke(context, join(context.args, cur))
+                            context.index = cur
+                            children.commandExecutor?.exec(this, context, join(context.args, cur))
                             true
                         } else {
-                            unknownNotify.function.invoke(context, cur + 1, 1)
+                            commandIncorrectCommand.exec(context, cur + 1, 1)
                             false
                         }
                     }
                 } else {
-                    unknownNotify.function.invoke(context, cur + 1, 2)
+                    commandIncorrectCommand.exec(context, cur + 1, 2)
                     false
                 }
             }
             return process(0, this)
         }
 
-        fun suggest(context: CommandContext): List<String>? {
+        fun suggest(context: CommandContext<*>): List<String>? {
             // 空参数不需要触发补全机制
             if (context.args.isEmpty()) {
                 return null
@@ -99,8 +104,8 @@ object CommandBuilder {
                         is CommandComponentDynamic -> {
                             when {
                                 argument.isEmpty() -> false
-                                it.restrict?.function?.invoke(context, argument) == false -> false
-                                it.suggestion?.function?.invoke(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                it.commandRestrict?.exec(context, argument) == false -> false
+                                it.commandSuggestion?.exec(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
                                 else -> true
                             }
                         }
@@ -115,7 +120,7 @@ object CommandBuilder {
                         val suggest = component.children.flatMap {
                             when (it) {
                                 is CommandComponentLiteral -> it.alias.toList()
-                                is CommandComponentDynamic -> it.suggestion?.function?.invoke(context) ?: emptyList()
+                                is CommandComponentDynamic -> it.commandSuggestion?.exec(context) ?: emptyList()
                                 else -> emptyList()
                             }
                         }
@@ -127,22 +132,75 @@ object CommandBuilder {
             return process(0, this)
         }
 
-        fun unknown(function: (context: CommandContext, index: Int, state: Int) -> Unit) {
-            this.unknownNotify = CommandUnknownNotify(function)
+        fun incorrectSender(function: (sender: ProxyCommandSender, context: CommandContext<ProxyCommandSender>) -> Unit) {
+            this.commandIncorrectSender = CommandUnknownNotify(ProxyCommandSender::class.java) { sender, context, _, _ -> function(sender, context) }
+        }
+
+        fun incorrectCommand(function: (sender: ProxyCommandSender, context: CommandContext<ProxyCommandSender>, index: Int, state: Int) -> Unit) {
+            this.commandIncorrectCommand = CommandUnknownNotify(ProxyCommandSender::class.java, function)
         }
 
         override fun toString(): String {
-            return "CommandBase(unknownNotify=$unknownNotify) ${super.toString()}"
+            return "CommandBase(commandIncorrectSender=$commandIncorrectSender, commandIncorrectCommand=$commandIncorrectCommand)"
         }
     }
 
-    class CommandExecutor(val function: (context: CommandContext, argument: String) -> Unit)
+    abstract class CommandBinder<T>(val bind: Class<T>) {
 
-    class CommandRestrict(val function: (context: CommandContext, argument: String) -> Boolean)
+        fun cast(context: CommandContext<*>): T? {
+            return when {
+                bind.isInstance(context.sender) -> context.sender as T
+                bind.isInstance((context.sender as ProxyCommandSender).origin) -> context.sender.origin as T
+                else -> null
+            }
+        }
+    }
 
-    class CommandSuggestion(val function: (context: CommandContext) -> List<String>?)
+    class CommandExecutor<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) : CommandBinder<T>(bind) {
 
-    class CommandUnknownNotify(val function: (context: CommandContext, index: Int, state: Int) -> Unit)
+        fun exec(commandBase: CommandBase, context: CommandContext<*>, argument: String) {
+            val sender = cast(context)
+            if (sender != null) {
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), argument)
+            } else {
+                commandBase.commandIncorrectSender.exec(context, 0, 0)
+            }
+        }
+    }
+
+    class CommandRestrict<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) : CommandBinder<T>(bind) {
+
+        fun exec(context: CommandContext<*>, argument: String): Boolean? {
+            val sender = cast(context)
+            return if (sender != null) {
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), argument)
+            } else {
+                null
+            }
+        }
+    }
+
+    class CommandSuggestion<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>) -> List<String>?) : CommandBinder<T>(bind) {
+
+        fun exec(context: CommandContext<*>): List<String>? {
+            val sender = cast(context)
+            return if (sender != null) {
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index))
+            } else {
+                null
+            }
+        }
+    }
+
+    class CommandUnknownNotify<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>, index: Int, state: Int) -> Unit) : CommandBinder<T>(bind) {
+
+        fun exec(context: CommandContext<*>, index: Int, state: Int) {
+            val sender = cast(context)
+            if (sender != null) {
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), index, state)
+            }
+        }
+    }
 
     class CommandComponentLiteral(vararg val alias: String, optional: Boolean) : CommandComponent(optional) {
 
@@ -153,26 +211,26 @@ object CommandBuilder {
 
     class CommandComponentDynamic(optional: Boolean) : CommandComponent(optional) {
 
-        internal var suggestion: CommandSuggestion? = null
-        internal var restrict: CommandRestrict? = null
+        var commandSuggestion: CommandSuggestion<*>? = null
+        var commandRestrict: CommandRestrict<*>? = null
 
-        fun suggestion(function: (context: CommandContext) -> List<String>?) {
-            this.suggestion = CommandSuggestion(function)
+        inline fun <reified T> suggestion(noinline function: (sender: T, context: CommandContext<T>) -> List<String>?) {
+            this.commandSuggestion = CommandSuggestion(T::class.java, function)
         }
 
-        fun restrict(function: (context: CommandContext, argument: String) -> Boolean) {
-            this.restrict = CommandRestrict(function)
+        inline fun <reified T> restrict(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) {
+            this.commandRestrict = CommandRestrict(T::class.java, function)
         }
 
         override fun toString(): String {
-            return "CommandComponentDynamic(suggestion=$suggestion, restrict=$restrict) ${super.toString()}"
+            return "CommandComponentDynamic(suggestion=$commandSuggestion, restrict=$commandRestrict) ${super.toString()}"
         }
     }
 
     abstract class CommandComponent(val optional: Boolean) {
 
-        internal var executor: CommandExecutor? = null
-        internal val children = ArrayList<CommandComponent>()
+        var commandExecutor: CommandExecutor<*>? = null
+        val children = ArrayList<CommandComponent>()
 
         fun literal(vararg alias: String, optional: Boolean = false, literal: CommandComponentLiteral.() -> Unit) {
             children += CommandComponentLiteral(*alias, optional = optional).also(literal)
@@ -182,12 +240,12 @@ object CommandBuilder {
             children += CommandComponentDynamic(optional).also(dynamic)
         }
 
-        fun execute(function: (context: CommandContext, argument: String) -> Unit) {
-            this.executor = CommandExecutor(function)
+        inline fun <reified T> execute(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {
+            this.commandExecutor = CommandExecutor(T::class.java, function)
         }
 
         override fun toString(): String {
-            return "CommandComponent(optional=$optional, executor=$executor, children=$children)"
+            return "CommandComponent(optional=$optional, executor=$commandExecutor, children=$children)"
         }
     }
 }

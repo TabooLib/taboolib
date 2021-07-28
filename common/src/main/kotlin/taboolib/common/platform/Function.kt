@@ -141,3 +141,7 @@ fun unregisterCommands() {
 fun <T> implementations(clazz: Class<T>): T {
     return PlatformFactory.getAPI<T>(clazz.simpleName) ?: error("no implementations")
 }
+
+inline fun <reified T> implementations(): T {
+    return implementations(T::class.java)
+}

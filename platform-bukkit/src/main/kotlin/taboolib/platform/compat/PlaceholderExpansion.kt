@@ -1,11 +1,21 @@
+@file:Isolated
 package taboolib.platform.compat
 
+import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
 import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.platform.BukkitPlugin
+
+fun String.replacePlaceholder(player: Player): String {
+    return PlaceholderAPI.setPlaceholders(player, this)
+}
+
+fun List<String>.replacePlaceholder(player: Player): List<String> {
+    return PlaceholderAPI.setPlaceholders(player, this)
+}
 
 /**
  * TabooLib
