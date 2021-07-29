@@ -11,6 +11,10 @@ fun Player.giveItem(itemStack: ItemStack) {
     inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) }
 }
 
+fun Player.giveItem(itemStack: ItemStack, amount: Int) {
+    (1..amount).forEach { _ -> this.giveItem(itemStack) }
+}
+
 fun Player.getUsingItem(material: Material): ItemStack? {
     return when {
         itemInHand.type == material -> itemInHand
