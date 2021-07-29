@@ -53,7 +53,7 @@ class Basic(title: String = "chest") : Menu(title) {
         this.onClose = onClose
     }
 
-    fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit) {
+    fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit = {}) {
         val e = this.onClick
         onClick(lock = true) {
             if (it.rawSlot == bind) {
@@ -64,7 +64,7 @@ class Basic(title: String = "chest") : Menu(title) {
         }
     }
 
-    fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit) {
+    fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit = {}) {
         val e = this.onClick
         onClick(lock = true) {
             if (it.slot == bind) {
@@ -75,7 +75,7 @@ class Basic(title: String = "chest") : Menu(title) {
         }
     }
 
-    fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit) {
+    fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit = {}) {
         if (lock) {
             this.onClick = {
                 it.isCancelled = true

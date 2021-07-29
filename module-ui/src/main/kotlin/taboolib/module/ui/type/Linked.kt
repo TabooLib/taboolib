@@ -15,13 +15,15 @@ import taboolib.platform.util.isNotAir
 @Isolated
 class Linked<T>(title: String) : Menu(title) {
 
+    var page = 0
+        private set
+
     private var rows = 1
     private var handLocked = true
     private val button = HashMap<Int, ClickEvent.() -> Unit>()
     private val menuSlots = ArrayList<Int>()
     private var menuElements: (() -> List<T>) = { emptyList() }
     private var menuElementsCache = emptyList<T>()
-    private var page = 0
     private var onClick: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     private var onBuild: ((inventory: Inventory) -> Unit) = {}
@@ -121,7 +123,7 @@ class Linked<T>(title: String) : Menu(title) {
         menuElementsCache = menuElements()
         val objectsMap = HashMap<Int, T>()
         val items = subList(menuElementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
-        return buildMenu<Basic>(title) {
+        return buildMenu<Basic>(title.replace("%p", (page + 1).toString())) {
             handLocked(this@Linked.handLocked)
             rows(this@Linked.rows)
             onBuild { p, it ->

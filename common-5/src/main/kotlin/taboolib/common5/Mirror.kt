@@ -56,7 +56,7 @@ object Mirror {
         internal val time = System.nanoTime()
         internal val future = CompletableFuture<T>()
 
-        fun finish(any: T) {
+        fun finish(any: T?) {
             future.complete(any)
         }
     }

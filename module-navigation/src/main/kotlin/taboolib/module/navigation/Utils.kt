@@ -8,6 +8,10 @@ import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
 import taboolib.module.nms.MinecraftVersion
 
+fun createPathfinder(nodeEntity: NodeEntity): PathFinder {
+    return PathFinder(NodeReader(nodeEntity))
+}
+
 fun World.getBlockAt(position: Vector) = getBlockAt(position.blockX, position.blockY, position.blockZ)
 
 fun World.getBlockAtIfLoaded(position: Vector): Block? {

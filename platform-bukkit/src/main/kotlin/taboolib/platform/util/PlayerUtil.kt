@@ -7,8 +7,10 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 
-fun Player.giveItem(itemStack: ItemStack) {
-    inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) }
+fun Player.giveItem(itemStack: ItemStack, repeat: Int = 1) {
+    (1..repeat).forEach { _ ->
+        inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) }
+    }
 }
 
 fun Player.getUsingItem(material: Material): ItemStack? {
