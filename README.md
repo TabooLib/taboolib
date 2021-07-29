@@ -100,6 +100,7 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 + __module-chat__: Component（Json）信息构建工具与 1.16 RGB 颜色转换
 + __module-configuration__: Yaml 封装接口与配置文件管理工具
 + __module-database__: 数据库管理工具
++ __module-database-mongodb__: 数据库管理工具（MongoDB）
 + __module-effect__: 粒子生成工具
 + __module-kether__: 内建脚本（动作语句）解决方案
 + __module-lang__: 语言文件工具
