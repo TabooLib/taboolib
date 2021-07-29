@@ -6,6 +6,9 @@ import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import java.io.Closeable
+import java.math.BigInteger
+import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
@@ -159,4 +162,10 @@ fun Class<*>.nonPrimitive(): Class<*> {
         this == java.lang.Boolean.TYPE -> java.lang.Boolean::class.java
         else -> this
     }
+}
+
+fun String.hash(algorithm: String): String {
+    val digest = MessageDigest.getInstance(algorithm)
+    digest.update(toByteArray(StandardCharsets.UTF_8))
+    return BigInteger(1, digest.digest()).toString(16)
 }

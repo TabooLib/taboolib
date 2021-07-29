@@ -31,7 +31,7 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemSt
 }
 
 @Isolated
-class ItemBuilder(val material: XMaterial) {
+open class ItemBuilder(val material: XMaterial) {
 
     class SkullTexture(val textures: String, val uuid: UUID? = null)
 
@@ -79,7 +79,7 @@ class ItemBuilder(val material: XMaterial) {
         }
     }
 
-    fun build(): ItemStack {
+    open fun build(): ItemStack {
         val itemStack = material.parseItem() ?: ItemStack(Material.STONE)
         val itemMeta = itemStack.itemMeta!!
         itemMeta.setDisplayName(name)

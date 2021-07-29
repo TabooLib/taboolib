@@ -12,7 +12,7 @@ class SecuredFile : YamlConfiguration() {
     private val lock = Any()
     private var file: File? = null
 
-    override fun set(path: String, value: Any) {
+    override fun set(path: String, value: Any?) {
         synchronized(lock) { super.set(path, value) }
     }
 

@@ -45,7 +45,7 @@ object CommandBuilder {
         fun execute(context: CommandContext<*>): Boolean {
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
-                return if (children.any { it.optional }) {
+                return if (children.isEmpty() || children.any { it.optional }) {
                     context.index = 0
                     commandExecutor?.exec(this, context, "")
                     true

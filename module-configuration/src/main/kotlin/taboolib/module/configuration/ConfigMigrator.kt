@@ -2,6 +2,7 @@ package taboolib.module.configuration
 
 import taboolib.common.util.addSafely
 import taboolib.common.util.each
+import taboolib.common.util.hash
 import taboolib.library.configuration.MemorySection
 import java.io.InputStream
 import java.math.BigInteger
@@ -121,12 +122,6 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
         contextTarget = mul.joinToString("\n")
     }
     return contextTarget.toByteArray(StandardCharsets.UTF_8)
-}
-
-private fun String.hash(algorithm: String): String {
-    val digest = MessageDigest.getInstance(algorithm)
-    digest.update(toByteArray(StandardCharsets.UTF_8))
-    return BigInteger(1, digest.digest()).toString(16)
 }
 
 private fun String.parentNode(): String {

@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.server.ServerCommandEvent
 import taboolib.common.platform.EventPriority
+import taboolib.common.reflect.Reflex.Companion.getProperty
 
 val inventoryCenterSlots = listOf(
     10, 11, 12, 13, 14, 15, 16,
@@ -53,4 +54,13 @@ val EntityDamageByEntityEvent.attacker: LivingEntity?
         (damager as EvokerFangs).owner
     } else {
         null
+    }
+
+val isBukkitServerRunning: Boolean
+    get() {
+        return try {
+            !Bukkit.getServer().getProperty<Boolean>("console/stopped")!!
+        } catch (ex: NoSuchFieldException) {
+            !Bukkit.getServer().getProperty<Boolean>("console/hasStopped")!!
+        }
     }

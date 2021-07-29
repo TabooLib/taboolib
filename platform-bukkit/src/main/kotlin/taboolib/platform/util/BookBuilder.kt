@@ -3,13 +3,14 @@ package taboolib.platform.util
 
 import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.library.xseries.XMaterial
+import taboolib.module.chat.TellrawJson
 
 fun buildBook(builder: BookBuilder.() -> Unit = {}): ItemStack {
     return BookBuilder().also(builder).build()
@@ -61,30 +62,43 @@ private fun nmsClassLegacy(name: String): Class<*> {
 }
 
 @Isolated
-class BookBuilder {
+class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
 
-    val itemStack = ItemStack(Material.WRITTEN_BOOK)
-    val itemMeta = itemStack.itemMeta!! as BookMeta
+    class Text(val text: String, val raw: Boolean = false)
 
-    init {
-        itemMeta.title = "untitled"
-        itemMeta.author = "untitled"
-    }
+    var title = "untitled"
+    var author = "untitled"
+
+    private val bookPages = ArrayList<Text>()
 
     fun write(text: String) {
-        itemMeta.addPage(text)
+        bookPages += Text(text)
+    }
+
+    fun write(text: TellrawJson) {
+        bookPages += Text(text.toRawMessage())
     }
 
     fun writeRaw(text: String) {
-        try {
-            itemMeta.spigot().addPage(ComponentSerializer.parse(text))
-        } catch (ex: NoSuchMethodError) {
-            itemMeta.getProperty<MutableList<Any>>("pages")!! += classChatSerializer.invokeMethod<Any>("a", text, fixed = true)!!
-        }
+        bookPages += Text(text, raw = true)
     }
 
-    fun build(): ItemStack {
-        itemStack.itemMeta = itemMeta
-        return itemStack
+    override fun build(): ItemStack {
+        return super.build().modifyMeta {
+            this as BookMeta
+            title = "untitled"
+            author = "untitled"
+            bookPages.forEach {
+                if (it.raw) {
+                    try {
+                        spigot().addPage(ComponentSerializer.parse(it.text))
+                    } catch (ex: NoSuchMethodError) {
+                        getProperty<MutableList<Any>>("pages")!! += classChatSerializer.invokeMethod<Any>("a", it.text, fixed = true)!!
+                    }
+                } else {
+                    addPage(it.text)
+                }
+            }
+        }
     }
 }
