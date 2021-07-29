@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.EventPriority
 import taboolib.common.platform.registerListener
@@ -24,7 +25,6 @@ import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
 import taboolib.module.nms.type.ToastFrame
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.util.isAir
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -61,6 +61,13 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
         error("ItemStack must be not null.")
     }
     return nmsGeneric.setItemTag(this, itemTag)
+}
+
+/**
+ * 获得物品的名称，如果没有则返回译名
+ */
+fun ItemStack.getName(player: Player? = null): String {
+    return if (itemMeta?.hasDisplayName() == true) itemMeta!!.displayName else getI18nName(player)
 }
 
 /**
@@ -218,6 +225,10 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
             revoke(this@sendToast, namespaceKey)
         }
     }
+}
+
+private fun ItemStack?.isAir(): Boolean {
+    return this == null || type == Material.AIR || type.name.endsWith("_AIR")
 }
 
 private fun grant(player: Player, key: NamespacedKey) {
