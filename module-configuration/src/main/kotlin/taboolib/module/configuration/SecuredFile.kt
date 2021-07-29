@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat
 class SecuredFile : YamlConfiguration() {
 
     private val lock = Any()
+    private var file: File? = null
 
     override fun set(path: String, value: Any) {
         synchronized(lock) { super.set(path, value) }
@@ -19,12 +20,17 @@ class SecuredFile : YamlConfiguration() {
         synchronized(lock) { return super.saveToString() }
     }
 
+    fun reload() {
+        load(file ?: return)
+    }
+
     /**
      * 如果文件读取失败则创建备份
      * 以防出现不可逆的损伤
      */
     @Throws(InvalidConfigurationException::class)
     override fun load(file: File) {
+        this.file = file
         val content = file.readText(StandardCharsets.UTF_8)
         try {
             loadFromString(content)
