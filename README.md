@@ -117,7 +117,7 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 + __platform-sponge-api8__: Sponge (api8) 实现
 + __platform-velocity__: Velocity 实现
 
-# 相关链接
+## 相关链接
 
 + [TabooLib 文档](https://docs.tabooproject.org)
 + [TabooLib SDK](https://github.com/taboolib/taboolib-sdk)
