@@ -112,8 +112,8 @@ public class DependencyDownloader extends AbstractXmlParser {
                     if (!rel.exists() || rel.length() == 0) {
                         try {
                             new JarRelocator(copyFile(file, File.createTempFile(file.getName(), ".jar")), rel, relocation).run();
-                        } catch (Throwable e) {
-                            throw new RuntimeException(String.format("Unable to relocate %s", dep), e);
+                        } catch (IOException e) {
+                            throw new IllegalStateException(String.format("Unable to relocate %s%n", dep), e);
                         }
                     }
                     ClassAppender.addPath(rel.toPath());
@@ -170,14 +170,12 @@ public class DependencyDownloader extends AbstractXmlParser {
         File jar1 = new File(jar.getPath() + ".sha1");
         Set<Dependency> downloaded = new HashSet<>();
         downloaded.add(dependency);
-        if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists()) {
-            if (readFileHash(pom).equals(readFile(pom1)) && readFileHash(jar).equals(readFile(jar1))) {
-                injectedDependencies.add(dependency);
-                if (pom.exists()) {
-                    downloaded.addAll(download(pom.toURI().toURL().openStream()));
-                }
-                return downloaded;
+        if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists() && readFileHash(pom).equals(readFile(pom1)) && readFileHash(jar).equals(readFile(jar1))) {
+            injectedDependencies.add(dependency);
+            if (pom.exists()) {
+                downloaded.addAll(download(pom.toURI().toURL().openStream()));
             }
+            return downloaded;
         }
         pom.getParentFile().mkdirs();
         IOException e = null;
@@ -208,7 +206,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                         ex.addSuppressed(exception);
                         throw new IOException("Unable to parse pom.xml", ex);
                     } catch (IOException ex) {
-                        if (ex != exception) {
+                        if (!ex.equals(exception)) {
                             ex.addSuppressed(exception);
                         }
                         throw ex;

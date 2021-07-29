@@ -61,7 +61,7 @@ open class Query(val table: Table<*, *>, var dataSource: DataSource) {
                         }
                     } catch (ex: SQLException) {
                         warning(query)
-                        throw RuntimeException(ex)
+                        throw ex
                     }
                 }
             }
@@ -84,7 +84,7 @@ open class Query(val table: Table<*, *>, var dataSource: DataSource) {
                         }
                     } catch (ex: SQLException) {
                         warning(query)
-                        throw RuntimeException(ex)
+                        throw ex
                     }
                 }
             }

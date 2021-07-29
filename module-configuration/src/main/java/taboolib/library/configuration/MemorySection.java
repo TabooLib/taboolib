@@ -6,7 +6,9 @@ import java.util.*;
  * A type of {@link ConfigurationSection} that is stored in memory.
  */
 public class MemorySection implements ConfigurationSection {
-    protected final Map<String, Object> map = new LinkedHashMap<String, Object>();
+
+    protected final Map<String, Object> map = new LinkedHashMap<>();
+
     private final Configuration root;
     private final ConfigurationSection parent;
     private final String path;
@@ -616,18 +618,15 @@ public class MemorySection implements ConfigurationSection {
     protected void mapChildrenKeys(Set<String> output, ConfigurationSection section, boolean deep) {
         if (section instanceof MemorySection) {
             MemorySection sec = (MemorySection) section;
-
             for (Map.Entry<String, Object> entry : sec.map.entrySet()) {
                 output.add(createPath(section, entry.getKey(), this));
-
-                if ((deep) && (entry.getValue() instanceof ConfigurationSection)) {
+                if (entry.getValue() instanceof ConfigurationSection && deep) {
                     ConfigurationSection subsection = (ConfigurationSection) entry.getValue();
                     mapChildrenKeys(output, subsection, deep);
                 }
             }
         } else {
             Set<String> keys = section.getKeys(deep);
-
             for (String key : keys) {
                 output.add(createPath(section, key, this));
             }
@@ -637,19 +636,14 @@ public class MemorySection implements ConfigurationSection {
     protected void mapChildrenValues(Map<String, Object> output, ConfigurationSection section, boolean deep) {
         if (section instanceof MemorySection) {
             MemorySection sec = (MemorySection) section;
-
             for (Map.Entry<String, Object> entry : sec.map.entrySet()) {
                 output.put(createPath(section, entry.getKey(), this), entry.getValue());
-
-                if (entry.getValue() instanceof ConfigurationSection) {
-                    if (deep) {
-                        mapChildrenValues(output, (ConfigurationSection) entry.getValue(), deep);
-                    }
+                if (entry.getValue() instanceof ConfigurationSection && deep) {
+                    mapChildrenValues(output, (ConfigurationSection) entry.getValue(), deep);
                 }
             }
         } else {
             Map<String, Object> values = section.getValues(deep);
-
             for (Map.Entry<String, Object> entry : values.entrySet()) {
                 output.put(createPath(section, entry.getKey(), this), entry.getValue());
             }

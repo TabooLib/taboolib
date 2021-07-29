@@ -2,13 +2,11 @@ package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
-import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.SubscribeEvent
 import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.common.util.Vector
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 
@@ -17,10 +15,10 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
     location.y = 0.0
     try {
         sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!, 0.toByte())
-        sendSignChange(location, lines.format())
-    } catch (t: Throwable) {
-        t.printStackTrace()
+    } catch (t: NoSuchMethodError) {
+        sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!.createBlockData())
     }
+    sendSignChange(location, lines.format())
     inputs[name] = function
     nmsProxy<NMSGeneric>().openSignEditor(this, location.block)
 }

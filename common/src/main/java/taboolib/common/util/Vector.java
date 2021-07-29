@@ -747,7 +747,7 @@ public class Vector implements Cloneable {
         try {
             return (Vector) super.clone();
         } catch (CloneNotSupportedException e) {
-            throw new Error(e);
+            throw new IllegalStateException(e);
         }
     }
 
