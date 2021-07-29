@@ -56,22 +56,6 @@ fun ItemStack.hasName(name: String? = null): Boolean {
 }
 
 /**
- * 获得物品的名称如果没有返回物品的中文名
- * @return String 物品名称
- */
-fun ItemStack.getName(player: Player? = null): String {
-    return if (this.hasName()) {
-        this.itemMeta!!.displayName
-    } else {
-        if (player == null) {
-            this.getI18nName()
-        } else {
-            this.getI18nName(player)
-        }
-    }
-}
-
-/**
  * 判断物品是否存在描述或特定描述
  * @param lore 特定描述（留空判断是否存在任意描述）
  */

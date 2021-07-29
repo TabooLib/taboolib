@@ -10,11 +10,19 @@ import taboolib.common.platform.Awake
 import taboolib.platform.BukkitPlugin
 
 fun String.replacePlaceholder(player: Player): String {
-    return PlaceholderAPI.setPlaceholders(player, this)
+    return try {
+        PlaceholderAPI.setPlaceholders(player, this)
+    } catch (ex: NoClassDefFoundError) {
+        this
+    }
 }
 
 fun List<String>.replacePlaceholder(player: Player): List<String> {
-    return PlaceholderAPI.setPlaceholders(player, this)
+    return try {
+        PlaceholderAPI.setPlaceholders(player, this)
+    } catch (ex: NoClassDefFoundError) {
+        this
+    }
 }
 
 /**

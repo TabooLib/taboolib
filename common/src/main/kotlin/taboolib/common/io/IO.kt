@@ -9,6 +9,7 @@ import java.io.*
 import java.math.BigInteger
 import java.net.URISyntaxException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
@@ -69,6 +70,12 @@ fun URL.getClasses(): List<Class<*>> {
         }
     }
     return classes
+}
+
+fun String.digest(algorithm: String): String {
+    val digest = MessageDigest.getInstance(algorithm)
+    digest.update(toByteArray(StandardCharsets.UTF_8))
+    return BigInteger(1, digest.digest()).toString(16)
 }
 
 fun File.digest(algorithm: String): String {
@@ -173,4 +180,22 @@ fun <T> ByteArray.deserialize(reader: ObjectInputStream.() -> Unit = {}): T {
             return objectInputStream.readObject() as T
         }
     }
+}
+
+fun newFile(file: File, path: String, create: Boolean = false): File {
+    return newFile(File(file, path), create)
+}
+
+fun newFile(path: String, create: Boolean = false): File {
+    return newFile(File(path), create)
+}
+
+fun newFile(file: File, create: Boolean = false): File {
+    if (!file.parentFile.exists()) {
+        file.parentFile.mkdirs()
+    }
+    if (!file.exists() && create) {
+        file.createNewFile()
+    }
+    return file
 }

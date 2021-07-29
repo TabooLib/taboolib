@@ -1,13 +1,11 @@
 package taboolib.module.configuration
 
+import taboolib.common.io.digest
 import taboolib.common.util.addSafely
 import taboolib.common.util.each
-import taboolib.common.util.hash
 import taboolib.library.configuration.MemorySection
 import java.io.InputStream
-import java.math.BigInteger
 import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -48,7 +46,7 @@ fun Map<String, Any>.contrastAs(target: Map<String, Any>): Set<Update> {
 fun InputStream.migrateTo(target: InputStream): ByteArray? {
     val contextSource = readBytes().toString(StandardCharsets.UTF_8)
     var contextTarget = target.readBytes().toString(StandardCharsets.UTF_8)
-    val hashSource = contextSource.hash("sha-1")
+    val hashSource = contextSource.digest("sha-1")
     var hashTarget = ""
     contextTarget.lines().forEach {
         if (it.startsWith("# VERSION ")) {

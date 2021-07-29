@@ -37,6 +37,10 @@ class BridgeCollection constructor(val database: BridgeDatabase, val collection:
         dataMap.remove(id)
     }
 
+    fun update(player: ProxyPlayer) {
+        update(if (index == Index.UUID) player.uniqueId.toString() else player.name)
+    }
+
     fun update(id: String?) {
         if (id != null && dataMap.containsKey(id)) {
             update(id, dataMap[id])
