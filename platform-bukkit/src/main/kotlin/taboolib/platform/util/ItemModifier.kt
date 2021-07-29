@@ -4,9 +4,11 @@ package taboolib.platform.util
 
 import com.google.common.collect.ImmutableMap
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.Isolated
+import taboolib.module.nms.getI18nName
 
 fun Material?.isAir(): Boolean {
     return this == null || this == Material.AIR || this.name.endsWith("_AIR")
@@ -51,6 +53,22 @@ fun ItemStack.modifyLore(func: MutableList<String>.() -> Unit): ItemStack {
  */
 fun ItemStack.hasName(name: String? = null): Boolean {
     return if (name == null) itemMeta?.hasDisplayName() == true else itemMeta!!.displayName.contains(name)
+}
+
+/**
+ * 获得物品的名称如果没有返回物品的中文名
+ * @return String 物品名称
+ */
+fun ItemStack.getName(player: Player? = null): String {
+    return if (this.hasName()) {
+        this.itemMeta!!.displayName
+    } else {
+        if (player == null) {
+            this.getI18nName()
+        } else {
+            this.getI18nName(player)
+        }
+    }
 }
 
 /**
