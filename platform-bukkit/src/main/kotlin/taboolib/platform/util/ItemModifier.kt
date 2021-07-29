@@ -4,11 +4,9 @@ package taboolib.platform.util
 
 import com.google.common.collect.ImmutableMap
 import org.bukkit.Material
-import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.Isolated
-import taboolib.module.nms.getI18nName
 
 fun Material?.isAir(): Boolean {
     return this == null || this == Material.AIR || this.name.endsWith("_AIR")
