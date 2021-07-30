@@ -1,7 +1,5 @@
 package taboolib.common.platform
 
-import java.security.Permission
-
 /**
  * TabooLib
  * taboolib.module.command.CommandContext

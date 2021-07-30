@@ -18,8 +18,9 @@ class Basic(title: String = "chest") : Menu(title) {
 
     internal var rows = -1
     internal var handLocked = true
-    internal var items = HashMap<Char, ItemStack>()
-    internal var slots = ArrayList<List<Char>>()
+
+    var items = HashMap<Char, ItemStack>()
+    var slots = ArrayList<List<Char>>()
 
     internal var onClick: ((event: ClickEvent) -> Unit) = {}
     internal var onClose: ((event: InventoryCloseEvent) -> Unit) = {}

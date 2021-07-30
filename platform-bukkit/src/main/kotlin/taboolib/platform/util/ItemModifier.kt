@@ -28,6 +28,9 @@ fun ItemStack?.isNotAir(): Boolean {
  * 编辑物品元数据
  */
 fun ItemStack.modifyMeta(func: ItemMeta.() -> Unit): ItemStack {
+    if (isAir()) {
+        error("air")
+    }
     return also { itemMeta = itemMeta!!.also(func) }
 }
 
@@ -42,6 +45,9 @@ fun ItemMeta.modifyLore(func: MutableList<String>.() -> Unit): ItemMeta {
  * 编辑物品描述
  */
 fun ItemStack.modifyLore(func: MutableList<String>.() -> Unit): ItemStack {
+    if (isAir()) {
+        error("air")
+    }
     return modifyMeta { modifyLore(func) }
 }
 

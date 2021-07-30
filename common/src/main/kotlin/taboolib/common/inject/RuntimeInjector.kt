@@ -55,6 +55,11 @@ object RuntimeInjector {
                 declaredMethods.forEach { inj.inject(it, clazz, instance) }
             }
         }
+        injectors.classes.forEach { inj ->
+            if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
+                inj.postInject(clazz, instance)
+            }
+        }
         return instance
     }
 
@@ -72,8 +77,8 @@ object RuntimeInjector {
 
     class Injectors {
 
+        val classes = ArrayList<Injector.Classes>()
         val fields = ArrayList<Injector.Fields>()
         val methods = ArrayList<Injector.Methods>()
-        val classes = ArrayList<Injector.Classes>()
     }
 }

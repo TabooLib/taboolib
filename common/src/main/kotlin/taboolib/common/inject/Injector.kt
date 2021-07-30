@@ -15,6 +15,8 @@ class Injector {
     interface Classes : InjectorOrder {
 
         fun inject(clazz: Class<*>, instance: Any)
+
+        fun postInject(clazz: Class<*>, instance: Any)
     }
 
     interface Fields : InjectorOrder {

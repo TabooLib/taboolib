@@ -59,7 +59,7 @@ object CommandBuilder {
                 val argument = context.args[cur]
                 val children = component.children(context).firstOrNull {
                     when (it) {
-                        is CommandComponentLiteral -> it.alias.contains(argument)
+                        is CommandComponentLiteral -> it.aliases.contains(argument)
                         is CommandComponentDynamic -> {
                             val suggestion = it.commandSuggestion
                             when {
@@ -102,7 +102,7 @@ object CommandBuilder {
                 val argument = context.args[cur]
                 val children = component.children(context).firstOrNull {
                     when (it) {
-                        is CommandComponentLiteral -> it.alias.contains(argument)
+                        is CommandComponentLiteral -> it.aliases.contains(argument)
                         is CommandComponentDynamic -> {
                             val suggestion = it.commandSuggestion
                             when {
@@ -122,7 +122,7 @@ object CommandBuilder {
                     cur + 1 == context.args.size -> {
                         val suggest = component.children(context).flatMap {
                             when (it) {
-                                is CommandComponentLiteral -> it.alias.toList()
+                                is CommandComponentLiteral -> it.aliases.toList()
                                 is CommandComponentDynamic -> it.commandSuggestion?.exec(context) ?: emptyList()
                                 else -> emptyList()
                             }
@@ -205,10 +205,10 @@ object CommandBuilder {
         }
     }
 
-    class CommandComponentLiteral(vararg val alias: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
+    class CommandComponentLiteral(vararg val aliases: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
 
         override fun toString(): String {
-            return "CommandComponentLiteral(alias=${alias.contentToString()}) ${super.toString()}"
+            return "CommandComponentLiteral(aliases=${aliases.contentToString()}) ${super.toString()}"
         }
     }
 
@@ -239,8 +239,8 @@ object CommandBuilder {
             return children.filter { it.permission.isEmpty() || context.checkPermission(it.permission) }
         }
 
-        fun literal(vararg alias: String, optional: Boolean = false, permission: String = "", literal: CommandComponentLiteral.() -> Unit) {
-            children += CommandComponentLiteral(*alias, optional = optional, permission = permission).also(literal)
+        fun literal(vararg aliases: String, optional: Boolean = false, permission: String = "", literal: CommandComponentLiteral.() -> Unit) {
+            children += CommandComponentLiteral(*aliases, optional = optional, permission = permission).also(literal)
         }
 
         fun dynamic(optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {

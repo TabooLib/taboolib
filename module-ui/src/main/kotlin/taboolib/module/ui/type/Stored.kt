@@ -196,7 +196,7 @@ class Stored(title: String) : Menu(title) {
 
         internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> false }
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
-        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack?, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
+        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
         internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot -> inventory.getItem(slot) }
 
         fun checkSlot(intRange: Int, checkSlot: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
@@ -222,7 +222,7 @@ class Stored(title: String) : Menu(title) {
             this.firstSlot = firstSlot
         }
 
-        fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack?, slot: Int) -> Unit) {
+        fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) {
             this.writeItem = writeItem
         }
 

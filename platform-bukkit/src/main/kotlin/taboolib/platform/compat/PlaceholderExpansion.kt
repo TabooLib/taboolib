@@ -48,6 +48,9 @@ interface PlaceholderExpansion {
             }
         }
 
+        override fun postInject(clazz: Class<*>, instance: Any) {
+        }
+
         override val lifeCycle: LifeCycle
             get() = LifeCycle.ENABLE
 
