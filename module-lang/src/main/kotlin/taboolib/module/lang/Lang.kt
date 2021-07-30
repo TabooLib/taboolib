@@ -41,11 +41,17 @@ fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<Stri
     return if (languageFile == null) {
         listOf("Language file not found")
     } else {
-        val type = languageFile.nodes[node]
-        if (type is TypeText) {
-            type.asTextList(this, *args)
-        } else {
-            listOf("Language node not found: $node")
+        when (val type = languageFile.nodes[node]) {
+            is TypeText -> {
+                val text = type.asText(this, null, *args)
+                if (text != null) listOf(text) else emptyList()
+            }
+            is TypeList -> {
+                type.asTextList(this, *args)
+            }
+            else -> {
+                listOf("Language node not found: $node")
+            }
         }
     }
 }
