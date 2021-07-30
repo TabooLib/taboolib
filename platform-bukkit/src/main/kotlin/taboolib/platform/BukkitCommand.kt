@@ -86,7 +86,12 @@ class BukkitCommand : PlatformCommand {
             }
             // 注册命令
             knownCommands.remove(command.name)
-            commandMap.register(plugin.name, pluginCommand)
+            knownCommands["$pluginId:${pluginCommand.name}"] = pluginCommand
+            knownCommands[pluginCommand.name] = pluginCommand
+            pluginCommand.aliases.forEach {
+                knownCommands[it] = pluginCommand
+            }
+            pluginCommand.register(commandMap)
             registeredCommands.add(command)
         }
     }

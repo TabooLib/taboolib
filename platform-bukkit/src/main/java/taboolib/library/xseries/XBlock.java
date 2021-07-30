@@ -51,18 +51,22 @@ import java.util.*;
  * @see MaterialData
  * @see XMaterial
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({"deprecation", "ConstantConditions"})
 @Isolated
 public final class XBlock {
+
     public static final Set<XMaterial> CROPS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.CARROT, XMaterial.POTATO, XMaterial.NETHER_WART, XMaterial.WHEAT_SEEDS, XMaterial.PUMPKIN_SEEDS,
             XMaterial.MELON_SEEDS, XMaterial.BEETROOT_SEEDS, XMaterial.SUGAR_CANE, XMaterial.BAMBOO_SAPLING, XMaterial.CHORUS_PLANT,
             XMaterial.KELP, XMaterial.SEA_PICKLE, XMaterial.BROWN_MUSHROOM, XMaterial.RED_MUSHROOM
     ));
+
     public static final Set<XMaterial> DANGEROUS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.MAGMA_BLOCK, XMaterial.LAVA, XMaterial.CAMPFIRE, XMaterial.FIRE, XMaterial.SOUL_FIRE
     ));
+
     public static final byte CAKE_SLICES = 6;
+
     private static final boolean ISFLAT = XMaterial.isNewVersion();
 
     private XBlock() {
@@ -70,11 +74,12 @@ public final class XBlock {
 
     public static boolean isLit(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) return false;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) {
+                return false;
+            }
             org.bukkit.block.data.Lightable lightable = (org.bukkit.block.data.Lightable) block.getBlockData();
             return lightable.isLit();
         }
-
         return isMaterial(block, BlockMaterial.REDSTONE_LAMP_ON, BlockMaterial.REDSTONE_TORCH_ON, BlockMaterial.BURNING_FURNACE);
     }
 
@@ -99,16 +104,21 @@ public final class XBlock {
      */
     public static void setLit(Block block, boolean lit) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) return;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Lightable)) {
+                return;
+            }
             org.bukkit.block.data.Lightable lightable = (org.bukkit.block.data.Lightable) block.getBlockData();
             lightable.setLit(lit);
             return;
         }
-
         String name = block.getType().name();
-        if (name.endsWith("FURNACE")) block.setType(BlockMaterial.BURNING_FURNACE.material);
-        else if (name.startsWith("REDSTONE_LAMP")) block.setType(BlockMaterial.REDSTONE_LAMP_ON.material);
-        else block.setType(BlockMaterial.REDSTONE_TORCH_ON.material);
+        if (name.endsWith("FURNACE")) {
+            block.setType(BlockMaterial.BURNING_FURNACE.material);
+        } else if (name.startsWith("REDSTONE_LAMP")) {
+            block.setType(BlockMaterial.REDSTONE_LAMP_ON.material);
+        } else {
+            block.setType(BlockMaterial.REDSTONE_TORCH_ON.material);
+        }
     }
 
     /**
@@ -138,11 +148,12 @@ public final class XBlock {
      */
     public static DyeColor getColor(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof Colorable)) return null;
+            if (!(block.getBlockData() instanceof Colorable)) {
+                return null;
+            }
             Colorable colorable = (Colorable) block.getBlockData();
             return colorable.getColor();
         }
-
         BlockState state = block.getState();
         MaterialData data = state.getData();
         if (data instanceof Wool) {
@@ -186,25 +197,29 @@ public final class XBlock {
 
     public static BlockFace getDirection(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) return BlockFace.SELF;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) {
+                return BlockFace.SELF;
+            }
             org.bukkit.block.data.Directional direction = (org.bukkit.block.data.Directional) block.getBlockData();
             return direction.getFacing();
         }
-
         BlockState state = block.getState();
         MaterialData data = state.getData();
-        if (data instanceof org.bukkit.material.Directional) return ((org.bukkit.material.Directional) data).getFacing();
+        if (data instanceof org.bukkit.material.Directional) {
+            return ((Directional) data).getFacing();
+        }
         return BlockFace.SELF;
     }
 
     public static boolean setDirection(Block block, BlockFace facing) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) return false;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Directional)) {
+                return false;
+            }
             org.bukkit.block.data.Directional direction = (org.bukkit.block.data.Directional) block.getBlockData();
             direction.setFacing(facing);
             return true;
         }
-
         BlockState state = block.getState();
         MaterialData data = state.getData();
         if (data instanceof Directional) {
@@ -217,11 +232,12 @@ public final class XBlock {
 
     public static int getAge(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) return 0;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) {
+                return 0;
+            }
             org.bukkit.block.data.Ageable ageable = (org.bukkit.block.data.Ageable) block.getBlockData();
             return ageable.getAge();
         }
-
         BlockState state = block.getState();
         MaterialData data = state.getData();
         return data.getData();
@@ -229,11 +245,12 @@ public final class XBlock {
 
     public static void setAge(Block block, int age) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) return;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Ageable)) {
+                return;
+            }
             org.bukkit.block.data.Ageable ageable = (org.bukkit.block.data.Ageable) block.getBlockData();
             ageable.setAge(age);
         }
-
         BlockState state = block.getState();
         MaterialData data = state.getData();
         data.setData((byte) age);
@@ -252,15 +269,17 @@ public final class XBlock {
         if (ISFLAT) {
             String type = block.getType().name();
             int index = type.indexOf('_');
-            if (index == -1) return false;
-
+            if (index == -1) {
+                return false;
+            }
             String realType = type.substring(index);
             Material material = Material.getMaterial(color.name() + '_' + realType);
-            if (material == null) return false;
+            if (material == null) {
+                return false;
+            }
             block.setType(material);
             return true;
         }
-
         BlockState state = block.getState();
         state.setRawData(color.getWoolData());
         state.update(true);
@@ -277,7 +296,9 @@ public final class XBlock {
      */
     public static boolean setFluidLevel(Block block, int level) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Levelled)) return false;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Levelled)) {
+                return false;
+            }
             org.bukkit.block.data.Levelled levelled = (org.bukkit.block.data.Levelled) block.getBlockData();
             levelled.setLevel(level);
             return true;
@@ -292,7 +313,9 @@ public final class XBlock {
 
     public static int getFluidLevel(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Levelled)) return -1;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Levelled)) {
+                return -1;
+            }
             org.bukkit.block.data.Levelled levelled = (org.bukkit.block.data.Levelled) block.getBlockData();
             return levelled.getLevel();
         }
@@ -315,7 +338,9 @@ public final class XBlock {
     }
 
     public static boolean isOneOf(Block block, Collection<String> blocks) {
-        if (blocks == null || blocks.isEmpty()) return false;
+        if (blocks == null || blocks.isEmpty()) {
+            return false;
+        }
         String name = block.getType().name();
         XMaterial matched = XMaterial.matchXMaterial(block.getType());
 
@@ -323,19 +348,25 @@ public final class XBlock {
             String checker = comp.toUpperCase(Locale.ENGLISH);
             if (checker.startsWith("CONTAINS:")) {
                 comp = XMaterial.format(checker.substring(9));
-                if (name.contains(comp)) return true;
+                if (name.contains(comp)) {
+                    return true;
+                }
                 continue;
             }
             if (checker.startsWith("REGEX:")) {
                 comp = comp.substring(6);
-                if (name.matches(comp)) return true;
+                if (name.matches(comp)) {
+                    return true;
+                }
                 continue;
             }
 
             // Direct Object Equals
             Optional<XMaterial> xMat = XMaterial.matchXMaterial(comp);
             if (xMat.isPresent()) {
-                if (matched == xMat.get() || isType(block, xMat.get())) return true;
+                if (matched == xMat.get() || isType(block, xMat.get())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -401,7 +432,9 @@ public final class XBlock {
 
     public static boolean setWooden(Block block, XMaterial species) {
         block.setType(species.parseMaterial());
-        if (ISFLAT) return true;
+        if (ISFLAT) {
+            return true;
+        }
 
         TreeSpecies type = species == XMaterial.SPRUCE_LOG ? TreeSpecies.REDWOOD :
                 TreeSpecies.valueOf(species.name().substring(0, species.name().indexOf('_')));
@@ -435,7 +468,9 @@ public final class XBlock {
      */
     @Deprecated
     public static XMaterial getType(Block block) {
-        if (ISFLAT) return XMaterial.matchXMaterial(block.getType());
+        if (ISFLAT) {
+            return XMaterial.matchXMaterial(block.getType());
+        }
         String type = block.getType().name();
         BlockState state = block.getState();
         MaterialData data = state.getData();
@@ -537,51 +572,67 @@ public final class XBlock {
 
     public static boolean isPowered(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Powerable)) return false;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Powerable)) {
+                return false;
+            }
             org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
             return powerable.isPowered();
         }
 
         String name = block.getType().name();
-        if (name.startsWith("REDSTONE_COMPARATOR")) return block.getType() == BlockMaterial.REDSTONE_COMPARATOR_ON.material;
+        if (name.startsWith("REDSTONE_COMPARATOR")) {
+            return block.getType() == BlockMaterial.REDSTONE_COMPARATOR_ON.material;
+        }
         return false;
     }
 
     public static void setPowered(Block block, boolean powered) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Powerable)) return;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Powerable)) {
+                return;
+            }
             org.bukkit.block.data.Powerable powerable = (org.bukkit.block.data.Powerable) block.getBlockData();
             powerable.setPowered(powered);
             return;
         }
 
         String name = block.getType().name();
-        if (name.startsWith("REDSTONE_COMPARATOR")) block.setType(BlockMaterial.REDSTONE_COMPARATOR_ON.material);
+        if (name.startsWith("REDSTONE_COMPARATOR")) {
+            block.setType(BlockMaterial.REDSTONE_COMPARATOR_ON.material);
+        }
     }
 
     public static boolean isOpen(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Openable)) return false;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Openable)) {
+                return false;
+            }
             org.bukkit.block.data.Openable openable = (org.bukkit.block.data.Openable) block.getBlockData();
             return openable.isOpen();
         }
 
         BlockState state = block.getState();
-        if (!(state instanceof Openable)) return false;
+        if (!(state instanceof Openable)) {
+            return false;
+        }
         Openable openable = (Openable) state.getData();
         return openable.isOpen();
     }
 
     public static void setOpened(Block block, boolean opened) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Openable)) return;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Openable)) {
+                return;
+            }
             org.bukkit.block.data.Openable openable = (org.bukkit.block.data.Openable) block.getBlockData();
             openable.setOpen(opened);
             return;
         }
 
         BlockState state = block.getState();
-        if (!(state instanceof Openable)) return;
+        if (!(state instanceof Openable)) {
+            return;
+        }
         Openable openable = (Openable) state.getData();
         openable.setOpen(opened);
         state.setData((MaterialData) openable);
@@ -590,7 +641,9 @@ public final class XBlock {
 
     public static BlockFace getRotation(Block block) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Rotatable)) return null;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Rotatable)) {
+                return null;
+            }
             org.bukkit.block.data.Rotatable rotatable = (org.bukkit.block.data.Rotatable) block.getBlockData();
             return rotatable.getRotation();
         }
@@ -600,7 +653,9 @@ public final class XBlock {
 
     public static void setRotation(Block block, BlockFace facing) {
         if (ISFLAT) {
-            if (!(block.getBlockData() instanceof org.bukkit.block.data.Rotatable)) return;
+            if (!(block.getBlockData() instanceof org.bukkit.block.data.Rotatable)) {
+                return;
+            }
             org.bukkit.block.data.Rotatable rotatable = (org.bukkit.block.data.Rotatable) block.getBlockData();
             rotatable.setRotation(facing);
         }
@@ -609,7 +664,9 @@ public final class XBlock {
     private static boolean isMaterial(Block block, BlockMaterial... materials) {
         Material type = block.getType();
         for (BlockMaterial material : materials) {
-            if (type == material.material) return true;
+            if (type == material.material) {
+                return true;
+            }
         }
         return false;
     }

@@ -6,10 +6,12 @@ repositories {
 dependencies {
     compileOnly("net.milkbowl.vault:Vault:1:all")
     compileOnly("me.clip:placeholderapi:2.10.10")
+    compileOnly("ink.ptms.core:v11701:11701:universal")
     compileOnly("ink.ptms.core:v11600:11600:all")
     compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module-chat"))
     compileOnly(project(":module-lang"))
+    compileOnly(project(":module-configuration"))
 }
