@@ -13,7 +13,7 @@ import taboolib.module.ui.buildMenu
 import taboolib.platform.util.isNotAir
 
 @Isolated
-class Linked<T>(title: String) : Menu(title) {
+open class Linked<T>(title: String) : Menu(title) {
 
     var page = 0
         private set

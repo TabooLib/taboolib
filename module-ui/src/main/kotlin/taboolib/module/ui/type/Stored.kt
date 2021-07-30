@@ -17,7 +17,7 @@ import taboolib.platform.util.buildItem
 import taboolib.platform.util.isNotAir
 
 @Isolated
-class Stored(title: String) : Menu(title) {
+open class Stored(title: String) : Menu(title) {
 
     private var rows = 1
     private var handLocked = true

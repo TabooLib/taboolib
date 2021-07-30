@@ -73,9 +73,11 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     }
 
     override fun inject(field: Field, clazz: Class<*>, instance: Any) {
-        if (clazz.isAnnotationPresent(CommandBody::class.java) && field.type == SimpleCommandBody::class.java) {
+        if (field.type == SimpleCommandBody::class.java) {
             val commandBody = field.get(instance) as SimpleCommandBody
-            commandBody.info = clazz.getAnnotation(CommandBody::class.java)
+            if (clazz.isAnnotationPresent(CommandBody::class.java)) {
+                commandBody.info = clazz.getAnnotation(CommandBody::class.java)
+            }
             body[field.name] = commandBody
         }
     }
@@ -91,8 +93,8 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
                 body.forEach {
-                    val info = it.value.info!!
-                    literal(it.key, *info.aliases, optional = info.optional, permission = info.permission) {
+                    val info = it.value.info
+                    literal(it.key, *info?.aliases ?: emptyArray(), optional = info?.optional ?: false, permission = info?.permission ?: "") {
                         it.value.func(this)
                     }
                 }

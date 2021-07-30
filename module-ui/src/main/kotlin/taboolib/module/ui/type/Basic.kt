@@ -14,7 +14,7 @@ import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 
-class Basic(title: String = "chest") : Menu(title) {
+open class Basic(title: String = "chest") : Menu(title) {
 
     internal var rows = -1
     internal var handLocked = true
