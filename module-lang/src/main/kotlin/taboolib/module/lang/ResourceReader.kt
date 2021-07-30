@@ -80,30 +80,34 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    @Suppress("SimplifiableCallChain")
     fun loadNodes(sourceFile: SecuredFile, nodesMap: HashMap<String, Type>, languageCode: String) {
         sourceFile.getKeys(false).forEach { node ->
             when (val obj = sourceFile.get(node)) {
                 is String -> {
-                    nodesMap[node] = TypeText().also { it.init(mapOf("text" to obj)) }
+                    nodesMap[node] = TypeText(obj)
                 }
                 is List<*> -> {
-                    obj.forEach { sub ->
+                    nodesMap[node] = TypeList(obj.mapNotNull { sub ->
                         if (sub is Map<*, *>) {
                             val map = sub.map { it.key.toString() to it.value!! }.toMap()
                             if (map.containsKey("type")) {
-                                val type = map["type"].toString()
+                                val type = map["type"].toString().lowercase()
                                 val typeInstance = Language.languageType[type]?.getDeclaredConstructor()?.newInstance()
                                 if (typeInstance != null) {
                                     typeInstance.init(map)
-                                    nodesMap[node] = typeInstance
                                 } else {
                                     warning("Unsupported language type: $node > $type ($languageCode)")
                                 }
+                                typeInstance
+                            } else {
+                                warning("Missing language type: $map ($languageCode)")
+                                null
                             }
                         } else {
-                            warning("Unsupported language node: $node ($languageCode)")
+                            TypeText(sub.toString())
                         }
-                    }
+                    })
                 }
                 else -> {
                     warning("Unsupported language node: $node ($languageCode)")

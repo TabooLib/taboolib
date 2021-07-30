@@ -3,6 +3,11 @@ package taboolib.module.lang
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 
+fun registerLanguage(vararg code: String) {
+    Language.languageCode.addAll(code)
+    Language.reload()
+}
+
 fun ProxyCommandSender.sendLang(node: String, vararg args: Any) {
     val languageFile = Language.languageFile[getLocale()] ?: Language.languageFile[Language.languageCode.firstOrNull() ?: "zh_CN"]
     if (languageFile == null) {

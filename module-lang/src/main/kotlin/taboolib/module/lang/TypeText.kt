@@ -1,7 +1,6 @@
 package taboolib.module.lang
 
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
 
 /**
@@ -13,26 +12,31 @@ import taboolib.common.util.replaceWithOrder
  */
 class TypeText : Type {
 
-    var text: List<String>? = null
+    var text: String? = null
 
-    fun asText(sender: ProxyCommandSender, def: String? = null, vararg args: Any): String? {
-        return text?.getOrNull(0)?.replaceWithOrder(*args)?.translate(sender) ?: def
+    constructor()
+    constructor(text: String) {
+        if (text.isNotEmpty()) {
+            this.text = text
+        }
     }
 
-    fun asTextList(sender: ProxyCommandSender, vararg args: Any): List<String> {
-        return (text ?: emptyList()).map { it.replaceWithOrder(*args).translate(sender) }
+    fun asText(sender: ProxyCommandSender, def: String? = null, vararg args: Any): String? {
+        return text?.replaceWithOrder(*args)?.translate(sender) ?: def
     }
 
     override fun init(source: Map<String, Any>) {
-        text = source["text"]?.asList()
+        text = source["text"]?.toString()
         // if blocked
-        if (text?.all { it.isEmpty() } == true) {
+        if (text?.isEmpty() == true) {
             text = null
         }
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
-        text?.forEach { sender.sendMessage(it.replaceWithOrder(*args).translate(sender)) }
+        if (text != null) {
+            sender.sendMessage(text!!.replaceWithOrder(*args).translate(sender))
+        }
     }
 
     override fun toString(): String {
