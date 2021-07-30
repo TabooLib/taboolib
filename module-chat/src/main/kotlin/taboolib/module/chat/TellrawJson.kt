@@ -49,7 +49,7 @@ class TellrawJson {
 
     fun append(text: String): TellrawJson {
         new()
-        componentsLatest.add(TextComponent.fromLegacyText(text)[0])
+        componentsLatest.addAll(TextComponent.fromLegacyText(text))
         return this
     }
 
