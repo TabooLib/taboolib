@@ -11,9 +11,16 @@ inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -
     return T::class.java.getDeclaredConstructor(String::class.java).newInstance(title).also(builder).build()
 }
 
+inline fun <reified T : Menu> buildMenuMenu(title: String = "chest", builder: T.() -> Unit): Menu {
+    return T::class.java.getDeclaredConstructor(String::class.java).newInstance(title).also(builder)
+}
+
 inline fun <reified T : Menu> Player.openMenu(title: String = "chest", builder: T.() -> Unit) {
     try {
-        openInventory(buildMenu(title, builder))
+        buildMenu(title, builder).apply {
+            openInventory(this)
+            buildMenuMenu(title, builder).onOpen(this@openMenu, this)
+        }
     } catch (ex: Throwable) {
         ex.printStackTrace()
     }
