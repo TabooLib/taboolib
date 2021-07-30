@@ -31,7 +31,7 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemSt
 }
 
 @Isolated
-open class ItemBuilder(val material: XMaterial) {
+open class ItemBuilder(var material: XMaterial) {
 
     class SkullTexture(val textures: String, val uuid: UUID? = null)
 
