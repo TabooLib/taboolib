@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import java.security.Permission
+
 /**
  * TabooLib
  * taboolib.module.command.CommandContext
@@ -11,5 +13,9 @@ class CommandContext<T>(val sender: T, val command: CommandStructure, val name: 
 
     fun argument(offset: Int): String {
         return args[index + offset]
+    }
+
+    fun checkPermission(permission: String): Boolean {
+        return (sender as ProxyCommandSender).hasPermission(permission)
     }
 }

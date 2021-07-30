@@ -45,6 +45,7 @@ object CommandBuilder {
         fun execute(context: CommandContext<*>): Boolean {
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
+                val children = children(context)
                 return if (children.isEmpty() || children.any { it.optional }) {
                     context.index = 0
                     commandExecutor?.exec(this, context, "")
@@ -56,14 +57,15 @@ object CommandBuilder {
             }
             fun process(cur: Int, component: CommandComponent): Boolean {
                 val argument = context.args[cur]
-                val children = component.children.firstOrNull {
+                val children = component.children(context).firstOrNull {
                     when (it) {
                         is CommandComponentLiteral -> it.alias.contains(argument)
                         is CommandComponentDynamic -> {
+                            val suggestion = it.commandSuggestion
                             when {
                                 argument.isEmpty() -> false
                                 it.commandRestrict?.exec(context, argument) == false -> false
-                                it.commandSuggestion?.exec(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s.equals(argument, true) } == true -> false
                                 else -> true
                             }
                         }
@@ -71,10 +73,10 @@ object CommandBuilder {
                     }
                 }
                 return if (children != null) {
-                    if (cur + 1 < context.args.size && children.children.isNotEmpty()) {
+                    if (cur + 1 < context.args.size && children.children(context).isNotEmpty()) {
                         process(cur + 1, children)
                     } else {
-                        if (children.children.isEmpty() || children.children.any { it.optional }) {
+                        if (children.children(context).isEmpty() || children.children(context).any { it.optional }) {
                             context.index = cur
                             children.commandExecutor?.exec(this, context, join(context.args, cur))
                             true
@@ -98,14 +100,15 @@ object CommandBuilder {
             }
             fun process(cur: Int, component: CommandComponent): List<String>? {
                 val argument = context.args[cur]
-                val children = component.children.firstOrNull {
+                val children = component.children(context).firstOrNull {
                     when (it) {
                         is CommandComponentLiteral -> it.alias.contains(argument)
                         is CommandComponentDynamic -> {
+                            val suggestion = it.commandSuggestion
                             when {
                                 argument.isEmpty() -> false
                                 it.commandRestrict?.exec(context, argument) == false -> false
-                                it.commandSuggestion?.exec(context)?.none { s -> s.equals(argument, ignoreCase = true) } == true -> false
+                                suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s.equals(argument, true) } == true -> false
                                 else -> true
                             }
                         }
@@ -117,7 +120,7 @@ object CommandBuilder {
                         process(cur + 1, children)
                     }
                     cur + 1 == context.args.size -> {
-                        val suggest = component.children.flatMap {
+                        val suggest = component.children(context).flatMap {
                             when (it) {
                                 is CommandComponentLiteral -> it.alias.toList()
                                 is CommandComponentDynamic -> it.commandSuggestion?.exec(context) ?: emptyList()
@@ -180,7 +183,7 @@ object CommandBuilder {
         }
     }
 
-    class CommandSuggestion<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>) -> List<String>?) : CommandBinder<T>(bind) {
+    class CommandSuggestion<T>(bind: Class<T>, val uncheck: Boolean, val function: (sender: T, context: CommandContext<T>) -> List<String>?) : CommandBinder<T>(bind) {
 
         fun exec(context: CommandContext<*>): List<String>? {
             val sender = cast(context)
@@ -202,20 +205,20 @@ object CommandBuilder {
         }
     }
 
-    class CommandComponentLiteral(vararg val alias: String, optional: Boolean) : CommandComponent(optional) {
+    class CommandComponentLiteral(vararg val alias: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
 
         override fun toString(): String {
             return "CommandComponentLiteral(alias=${alias.contentToString()}) ${super.toString()}"
         }
     }
 
-    class CommandComponentDynamic(optional: Boolean) : CommandComponent(optional) {
+    class CommandComponentDynamic(optional: Boolean, permission: String) : CommandComponent(optional, permission) {
 
         var commandSuggestion: CommandSuggestion<*>? = null
         var commandRestrict: CommandRestrict<*>? = null
 
-        inline fun <reified T> suggestion(noinline function: (sender: T, context: CommandContext<T>) -> List<String>?) {
-            this.commandSuggestion = CommandSuggestion(T::class.java, function)
+        inline fun <reified T> suggestion(uncheck: Boolean = false, noinline function: (sender: T, context: CommandContext<T>) -> List<String>?) {
+            this.commandSuggestion = CommandSuggestion(T::class.java, uncheck, function)
         }
 
         inline fun <reified T> restrict(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) {
@@ -227,17 +230,21 @@ object CommandBuilder {
         }
     }
 
-    abstract class CommandComponent(val optional: Boolean) {
+    abstract class CommandComponent(val optional: Boolean, val permission: String = "") {
 
         var commandExecutor: CommandExecutor<*>? = null
         val children = ArrayList<CommandComponent>()
 
-        fun literal(vararg alias: String, optional: Boolean = false, literal: CommandComponentLiteral.() -> Unit) {
-            children += CommandComponentLiteral(*alias, optional = optional).also(literal)
+        fun children(context: CommandContext<*>): List<CommandComponent> {
+            return children.filter { it.permission.isEmpty() || context.checkPermission(it.permission) }
         }
 
-        fun dynamic(optional: Boolean = false, dynamic: CommandComponentDynamic.() -> Unit) {
-            children += CommandComponentDynamic(optional).also(dynamic)
+        fun literal(vararg alias: String, optional: Boolean = false, permission: String = "", literal: CommandComponentLiteral.() -> Unit) {
+            children += CommandComponentLiteral(*alias, optional = optional, permission = permission).also(literal)
+        }
+
+        fun dynamic(optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
+            children += CommandComponentDynamic(optional, permission).also(dynamic)
         }
 
         inline fun <reified T> execute(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {
