@@ -5,7 +5,7 @@ import taboolib.module.lang.TextTransfer
 
 /**
  * TabooLib
- * taboolib.module.lang.KetherTransfer
+ * taboolib.module.lang.TransferKether
  *
  * @author sky
  * @since 2021/6/20 11:08 下午

@@ -1,10 +1,9 @@
 package taboolib.module.lang
 
 import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
-import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.SkipTo
-import taboolib.common.platform.getJarFile
+import taboolib.common.platform.*
+import taboolib.module.chat.HexColor
+import taboolib.module.chat.colored
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
 import java.util.*
@@ -51,6 +50,15 @@ object Language {
                     languageCode += it.name.substringAfter('/').substringBeforeLast('.')
                 }
             }
+        }
+        try {
+            HexColor.translate("")
+            textTransfer += object : TextTransfer {
+                override fun translate(sender: ProxyCommandSender, source: String): String {
+                    return source.colored()
+                }
+            }
+        } catch (ex: NoClassDefFoundError) {
         }
     }
 
