@@ -56,15 +56,45 @@ annotation class CommandBody(
     val permission: String = "",
 )
 
-class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit) {
+class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {}) {
 
-    var info: CommandBody? = null
+    var name = ""
+    var aliases = emptyArray<String>()
+    var optional = false
+    var permission = ""
+    val children = ArrayList<SimpleCommandBody>()
 }
 
 @Awake
 object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
-    val body = HashMap<String, SimpleCommandBody>()
+    val body = ArrayList<SimpleCommandBody>()
+
+    fun loadBody(field: Field, clazz: Class<*>, instance: Any): SimpleCommandBody? {
+        if (clazz.isAnnotationPresent(CommandBody::class.java)) {
+            val annotation = clazz.getAnnotation(CommandBody::class.java)
+            val ins = field.get(instance)
+            return if (field.type == SimpleCommandBody::class.java) {
+                (ins as SimpleCommandBody).apply {
+                    name = field.name
+                    aliases = annotation.aliases
+                    optional = annotation.optional
+                    permission = annotation.permission
+                }
+            } else {
+                SimpleCommandBody().apply {
+                    name = field.name
+                    aliases = annotation.aliases
+                    optional = annotation.optional
+                    permission = annotation.permission
+                    field.type.declaredFields.forEach {
+                        children += loadBody(it, field.type, ins) ?: return@forEach
+                    }
+                }
+            }
+        }
+        return null
+    }
 
     override fun inject(clazz: Class<*>, instance: Any) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
@@ -73,13 +103,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     }
 
     override fun inject(field: Field, clazz: Class<*>, instance: Any) {
-        if (field.type == SimpleCommandBody::class.java) {
-            val commandBody = field.get(instance) as SimpleCommandBody
-            if (clazz.isAnnotationPresent(CommandBody::class.java)) {
-                commandBody.info = clazz.getAnnotation(CommandBody::class.java)
-            }
-            body[field.name] = commandBody
-        }
+        body += loadBody(field, clazz, instance) ?: return
     }
 
     override fun postInject(clazz: Class<*>, instance: Any) {
@@ -92,11 +116,19 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.permission,
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
-                body.forEach {
-                    val info = it.value.info
-                    literal(it.key, *info?.aliases ?: emptyArray(), optional = info?.optional ?: false, permission = info?.permission ?: "") {
-                        it.value.func(this)
+                body.forEach { body ->
+                    fun register(body: SimpleCommandBody) {
+                        literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
+                            if (body.children.isEmpty()) {
+                                body.func(this)
+                            } else {
+                                body.children.forEach { children ->
+                                    register(children)
+                                }
+                            }
+                        }
                     }
+                    register(body)
                 }
             }
         }
