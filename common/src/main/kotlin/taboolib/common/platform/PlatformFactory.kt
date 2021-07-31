@@ -32,7 +32,7 @@ object PlatformFactory {
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
-                    val instance = it.getInstance(true)?.get() ?: return@forEach
+                    val instance = it.getInstance(true) ?: return@forEach
                     if (interfaces.contains(PlatformIO::class.java)) {
                         platformIO = instance as PlatformIO
                     }

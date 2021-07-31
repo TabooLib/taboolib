@@ -11,7 +11,6 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
-import java.util.function.Supplier
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -19,11 +18,11 @@ import java.util.zip.ZipOutputStream
 
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
-fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
+fun <T> Class<T>.getInstance(newInstance: Boolean = false): T? {
     try {
         val awoken = PlatformFactory.getAPI<T>(simpleName)
         if (awoken != null) {
-            return Supplier { awoken }
+            return awoken
         }
     } catch (ex: ClassNotFoundException) {
         return null
@@ -41,9 +40,9 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
             getDeclaredField("INSTANCE")
         }
         field.isAccessible = true
-        Supplier { field.get(null) as T }
+        field.get(null) as T
     } catch (ex: NoSuchFieldException) {
-        if (newInstance) Supplier { getDeclaredConstructor().newInstance() as T } else null
+        if (newInstance) getDeclaredConstructor().newInstance() as T else null
     } catch (ex: ClassNotFoundException) {
         null
     } catch (ex: NoClassDefFoundError) {
@@ -60,7 +59,7 @@ fun <T> Class<T>.inject() {
 }
 
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true) as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {

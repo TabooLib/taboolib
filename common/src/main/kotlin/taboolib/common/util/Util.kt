@@ -10,6 +10,7 @@ import java.io.Closeable
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
+import java.util.function.Supplier
 import kotlin.math.max
 import kotlin.math.min
 
@@ -167,4 +168,17 @@ fun <T> sync(func: () -> T): T {
     val future = CompletableFuture<T>()
     submit { future.complete(func()) }
     return future.get()
+}
+
+fun <T> lazySupplier(supplier: () -> T): Supplier<T> {
+    return object : Supplier<T> {
+
+        val obj by lazy {
+            supplier()
+        }
+
+        override fun get(): T {
+            return obj
+        }
+    }
 }

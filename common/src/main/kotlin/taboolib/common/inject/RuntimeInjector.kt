@@ -6,6 +6,7 @@ import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.AwakeFunction
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.platform.SkipTo
 import java.util.*
 
 /**
@@ -23,7 +24,19 @@ object RuntimeInjector {
         LifeCycle.values().forEach { register(AwakeFunction(it)) }
     }
 
-    fun lifeCycle(lifeCycle: LifeCycle) {
+    fun register(injector: Injector.Fields) {
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.fields += injector
+    }
+
+    fun register(injector: Injector.Methods) {
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.methods += injector
+    }
+
+    fun register(injector: Injector.Classes) {
+        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.classes += injector
+    }
+
+    fun injectAll(lifeCycle: LifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment()) {
             val classes = runningClasses.filter { PlatformFactory.checkPlatform(it) }
             priorityMap.forEach {
@@ -40,19 +53,25 @@ object RuntimeInjector {
         if (TabooLibCommon.isStopped()) {
             return
         }
+        if (lifeCycle != null && clazz.isAnnotationPresent(SkipTo::class.java)) {
+            val skip = clazz.getAnnotation(SkipTo::class.java).value.ordinal
+            if (skip > lifeCycle.ordinal) {
+                return
+            }
+        }
         val instance = clazz.getInstance() ?: return
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
         injectors.classes.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                inj.inject(clazz, instance.get()!!)
+                inj.inject(clazz, instance)
             }
         }
         injectors.fields.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
                 declaredFields.forEach {
                     it.isAccessible = true
-                    inj.inject(it, clazz, instance.get()!!)
+                    inj.inject(it, clazz, instance)
                 }
             }
         }
@@ -60,27 +79,15 @@ object RuntimeInjector {
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
                 declaredMethods.forEach {
                     it.isAccessible = true
-                    inj.inject(it, clazz, instance.get()!!)
+                    inj.inject(it, clazz, instance)
                 }
             }
         }
         injectors.classes.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                inj.postInject(clazz, instance.get()!!)
+                inj.postInject(clazz, instance)
             }
         }
-    }
-
-    fun register(injector: Injector.Fields) {
-        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.fields += injector
-    }
-
-    fun register(injector: Injector.Methods) {
-        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.methods += injector
-    }
-
-    fun register(injector: Injector.Classes) {
-        priorityMap.computeIfAbsent(injector.priority) { Injectors() }.classes += injector
     }
 
     class Injectors {

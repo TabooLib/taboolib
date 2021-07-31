@@ -67,22 +67,22 @@ public class TabooLibCommon {
             case CONST:
                 ENV.setup();
                 PlatformFactory.INSTANCE.init();
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.CONST);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.CONST);
                 break;
             case INIT:
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.INIT);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.INIT);
                 break;
             case LOAD:
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.LOAD);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.LOAD);
                 break;
             case ENABLE:
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.ENABLE);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.ENABLE);
                 break;
             case ACTIVE:
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.ACTIVE);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
-                RuntimeInjector.INSTANCE.lifeCycle(LifeCycle.DISABLE);
+                RuntimeInjector.INSTANCE.injectAll(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }
