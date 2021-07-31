@@ -8,6 +8,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.platform.BukkitPlugin
+import java.util.function.Supplier
 
 fun String.replacePlaceholder(player: Player): String {
     return try {
@@ -42,13 +43,13 @@ interface PlaceholderExpansion {
     @Awake
     object PlaceholderRegister : Injector.Classes {
 
-        override fun inject(clazz: Class<*>, instance: Any) {
+        override fun inject(clazz: Class<*>, instance: Supplier<*>) {
             if (clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
-                PlaceholderProxy(instance as PlaceholderExpansion).register()
+                PlaceholderProxy(instance.get() as PlaceholderExpansion).register()
             }
         }
 
-        override fun postInject(clazz: Class<*>, instance: Any) {
+        override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
         }
 
         override val lifeCycle: LifeCycle

@@ -9,6 +9,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.getOpenContainers
 import taboolib.common.util.asList
 import java.lang.reflect.Method
+import java.util.function.Supplier
 
 /**
  * TabooLibKotlin
@@ -41,9 +42,9 @@ object KetherLoader : Injector.Methods, OpenReceiver {
         }
     }
 
-    override fun inject(method: Method, clazz: Class<*>, instance: Any) {
+    override fun inject(method: Method, clazz: Class<*>, instance: Supplier<*>) {
         if (method.isAnnotationPresent(KetherParser::class.java)) {
-            val parser = method.invoke(instance) as ScriptActionParser<*>
+            val parser = method.invoke(instance.get()) as ScriptActionParser<*>
             val annotation = method.getAnnotation(KetherParser::class.java)
             if (annotation.shared) {
                 val bytes = parser.serialize {
@@ -59,7 +60,7 @@ object KetherLoader : Injector.Methods, OpenReceiver {
             }
         }
         if (method.isAnnotationPresent(KetherProperty::class.java)) {
-            val property = method.invoke(instance) as ScriptProperty
+            val property = method.invoke(instance.get()) as ScriptProperty
             val annotation = method.getAnnotation(KetherProperty::class.java)
             if (annotation.shared) {
                 val bytes = property.serialize {

@@ -32,7 +32,7 @@ object PlatformFactory {
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
-                    val instance = it.getInstance(true) ?: return@forEach
+                    val instance = it.getInstance(true)?.get() ?: return@forEach
                     if (interfaces.contains(PlatformIO::class.java)) {
                         platformIO = instance as PlatformIO
                     }
@@ -65,7 +65,7 @@ object PlatformFactory {
                 if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == runningPlatform) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
-                        awokenMap[interfaces[0].simpleName] = it.getInstance(true) ?: return@forEach
+                        awokenMap[interfaces[0].simpleName] = it.getInstance(true)?.get() ?: return@forEach
                     }
                 }
             }

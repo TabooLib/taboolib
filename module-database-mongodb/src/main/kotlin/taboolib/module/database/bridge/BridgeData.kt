@@ -1,8 +1,6 @@
 package taboolib.module.database.bridge
 
 import org.bson.Document
-import taboolib.library.configuration.ConfigurationSection
-import taboolib.library.configuration.FileConfiguration
 import taboolib.module.configuration.SecuredFile
 
 /**

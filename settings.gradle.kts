@@ -1,5 +1,6 @@
 rootProject.name = "TabooLib"
 include("common", "common-5")
+include("module-empty")
 include("module-ai")
 include("module-ui")
 include("module-ui-receptacle")

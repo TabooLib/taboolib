@@ -5,12 +5,14 @@ package taboolib.common.io
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.util.lazySupplier
 import java.io.*
 import java.math.BigInteger
 import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
+import java.util.function.Supplier
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -18,11 +20,11 @@ import java.util.zip.ZipOutputStream
 
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
-fun <T> Class<T>.getInstance(newInstance: Boolean = false): T? {
+fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     try {
         val awoken = PlatformFactory.getAPI<T>(simpleName)
         if (awoken != null) {
-            return awoken
+            return Supplier { awoken }
         }
     } catch (ex: ClassNotFoundException) {
         return null
@@ -40,12 +42,12 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): T? {
             getDeclaredField("INSTANCE")
         }
         field.isAccessible = true
-        field.get(null) as T
-    } catch (ex: NoSuchFieldException) {
-        if (newInstance) getDeclaredConstructor().newInstance() as T else null
-    } catch (ex: ClassNotFoundException) {
-        null
+        lazySupplier { field.get(null) as T }
     } catch (ex: NoClassDefFoundError) {
+        null
+    } catch (ex: NoSuchFieldException) {
+        if (newInstance) lazySupplier { getDeclaredConstructor().newInstance() as T } else null
+    } catch (ex: ClassNotFoundException) {
         null
     } catch (ex: ExceptionInInitializerError) {
         println(this)
@@ -59,7 +61,7 @@ fun <T> Class<T>.inject() {
 }
 
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true) as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {

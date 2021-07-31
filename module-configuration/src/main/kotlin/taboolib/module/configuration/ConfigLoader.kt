@@ -10,6 +10,7 @@ import taboolib.common5.FileWatcher
 import java.io.File
 import java.lang.reflect.Field
 import java.util.concurrent.CopyOnWriteArraySet
+import java.util.function.Supplier
 
 @RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml")
 @Awake
@@ -17,7 +18,7 @@ object ConfigLoader : Injector.Fields {
 
     val files = HashMap<String, ConfigFile>()
 
-    override fun inject(field: Field, clazz: Class<*>, instance: Any) {
+    override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val file = releaseResourceFile(field.getAnnotation(Config::class.java).value)
             if (field.getAnnotation(Config::class.java).migrate) {
@@ -33,7 +34,7 @@ object ConfigLoader : Injector.Fields {
             val configFile = ConfigFile(conf, file)
             try {
                 // ClassCastException
-                Ref.put(instance, field, conf)
+                Ref.put(instance.get(), field, conf)
             } catch (ex: Throwable) {
                 ex.printStackTrace()
                 return
@@ -61,12 +62,12 @@ object ConfigLoader : Injector.Fields {
     @Awake
     object NodeLoader : Injector.Fields {
 
-        override fun inject(field: Field, clazz: Class<*>, instance: Any) {
+        override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
             if (field.isAnnotationPresent(ConfigNode::class.java)) {
                 val node = field.getAnnotation(ConfigNode::class.java)
                 val file = files[node.bind] ?: return
                 file.nodes += field
-                Ref.put(instance, field, file.conf.get(node.value.ifEmpty { field.name }))
+                Ref.put(instance.get(), field, file.conf.get(node.value.ifEmpty { field.name }))
             }
         }
 

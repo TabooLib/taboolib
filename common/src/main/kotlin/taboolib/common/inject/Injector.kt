@@ -2,6 +2,7 @@ package taboolib.common.inject
 
 import java.lang.reflect.Field
 import java.lang.reflect.Method
+import java.util.function.Supplier
 
 /**
  * TabooLib
@@ -14,18 +15,18 @@ class Injector {
 
     interface Classes : InjectorOrder {
 
-        fun inject(clazz: Class<*>, instance: Any)
+        fun inject(clazz: Class<*>, instance: Supplier<*>)
 
-        fun postInject(clazz: Class<*>, instance: Any)
+        fun postInject(clazz: Class<*>, instance: Supplier<*>)
     }
 
     interface Fields : InjectorOrder {
 
-        fun inject(field: Field, clazz: Class<*>, instance: Any)
+        fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>)
     }
 
     interface Methods : InjectorOrder {
 
-        fun inject(method: Method, clazz: Class<*>, instance: Any)
+        fun inject(method: Method, clazz: Class<*>, instance: Supplier<*>)
     }
 }

@@ -1,7 +1,6 @@
 package taboolib.platform
 
 import com.velocitypowered.api.command.Command
-import com.velocitypowered.api.command.CommandMeta
 import com.velocitypowered.api.command.CommandSource
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component

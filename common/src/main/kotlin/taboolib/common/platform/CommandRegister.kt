@@ -3,6 +3,7 @@ package taboolib.common.platform
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import java.lang.reflect.Field
+import java.util.function.Supplier
 
 fun command(
     name: String,
@@ -70,12 +71,12 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
     val body = ArrayList<SimpleCommandBody>()
 
-    fun loadBody(field: Field, clazz: Class<*>, instance: Any): SimpleCommandBody? {
+    fun loadBody(field: Field, clazz: Class<*>, instance: Supplier<*>): SimpleCommandBody? {
         if (clazz.isAnnotationPresent(CommandBody::class.java)) {
             val annotation = clazz.getAnnotation(CommandBody::class.java)
-            val ins = field.get(instance)
+            val obj = field.get(instance.get())
             return if (field.type == SimpleCommandBody::class.java) {
-                (ins as SimpleCommandBody).apply {
+                (obj as SimpleCommandBody).apply {
                     name = field.name
                     aliases = annotation.aliases
                     optional = annotation.optional
@@ -88,7 +89,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                     optional = annotation.optional
                     permission = annotation.permission
                     field.type.declaredFields.forEach {
-                        children += loadBody(it, field.type, ins) ?: return@forEach
+                        children += loadBody(it, field.type, instance) ?: return@forEach
                     }
                 }
             }
@@ -96,17 +97,17 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
         return null
     }
 
-    override fun inject(clazz: Class<*>, instance: Any) {
+    override fun inject(clazz: Class<*>, instance: Supplier<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             body.clear()
         }
     }
 
-    override fun inject(field: Field, clazz: Class<*>, instance: Any) {
+    override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
         body += loadBody(field, clazz, instance) ?: return
     }
 
-    override fun postInject(clazz: Class<*>, instance: Any) {
+    override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
             command(annotation.name,
