@@ -107,7 +107,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
         }
     }
 
-    internal fun callEventClick(event: ReceptacleInteractEvent) {
+    fun callEventClick(event: ReceptacleInteractEvent) {
         if (viewer != null) {
             onClick(viewer!!, event)
         }
