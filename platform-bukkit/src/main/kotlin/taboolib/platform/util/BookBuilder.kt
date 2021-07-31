@@ -69,7 +69,7 @@ class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
     var title = "untitled"
     var author = "untitled"
 
-    private val bookPages = ArrayList<Text>()
+    val bookPages = ArrayList<Text>()
 
     fun write(text: String) {
         bookPages += Text(text)

@@ -61,17 +61,14 @@ class BukkitCommand : PlatformCommand {
             pluginCommand.setTabCompleter { sender, _, label, args ->
                 completer.execute(adaptCommandSender(sender), command, label, args) ?: emptyList()
             }
-            var permission = command.permission
-            if (permission.isEmpty()) {
-                permission = plugin.name.lowercase(Locale.getDefault()) + ".command.use"
-            }
+            val permission = command.permission.ifEmpty { "${plugin.name.lowercase()}.command.use" }
             // 修改属性
-            pluginCommand.setProperty("description", command.description)
-            pluginCommand.setProperty("usageMessage", command.usage)
+            pluginCommand.setProperty("description", command.description.ifEmpty { command.name })
+            pluginCommand.setProperty("usageMessage", command.usage.ifEmpty { command.name })
             pluginCommand.setProperty("aliases", command.aliases)
             pluginCommand.setProperty("activeAliases", command.aliases)
             pluginCommand.setProperty("permission", permission)
-            pluginCommand.setProperty("permissionMessage", command.permissionMessage)
+            pluginCommand.setProperty("permissionMessage", command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
             // 注册权限
             if (command.permissionDefault == PermissionDefault.TRUE || command.permissionDefault == PermissionDefault.NOT_OP) {
                 if (Bukkit.getPluginManager().getPermission(permission) != null) {

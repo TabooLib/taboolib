@@ -44,19 +44,19 @@ class Sponge7Command : PlatformCommand {
             }
 
             override fun testPermission(source: CommandSource): Boolean {
-                return source.hasPermission(command.permission)
+                return source.hasPermission(command.permission.ifEmpty { "${pluginId}.command.use" })
             }
 
             override fun getShortDescription(source: CommandSource): Optional<Text> {
-                return Optional.of(Text.of(command.description))
+                return Optional.of(Text.of(command.description.ifEmpty { PlatformCommand.defaultPermissionMessage }))
             }
 
             override fun getHelp(source: CommandSource): Optional<Text> {
-                return Optional.of(Text.of(command.usage))
+                return Optional.of(Text.of(command.usage.ifEmpty { command.name }))
             }
 
             override fun getUsage(source: CommandSource): Text {
-                return Text.of(command.usage)
+                return Text.of(command.usage.ifEmpty { command.name })
             }
         }, command.name, *command.aliases.toTypedArray())
     }

@@ -27,7 +27,8 @@ class BungeeCommand : PlatformCommand {
         completer: CommandCompleter,
         commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
-        BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name), TabExecutor {
+        val permission = command.permission.ifEmpty { "${pluginId}.command.use" }
+        BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name, permission), TabExecutor {
 
             override fun execute(sender: CommandSender, args: Array<String>) {
                 executor.execute(adaptCommandSender(sender), command, command.name, args)

@@ -31,10 +31,10 @@ class NukkitCommand : PlatformCommand {
     ) {
         // TODO: 2021/7/15 Not Support Suggestions
         val registerCommand = object : Command(command.name, CommandData.builder(command.name)
-            .setDescription(command.description)
-            .setUsageMessage(command.usage)
-            .addPermission(command.permission)
-            .setPermissionMessage(command.permissionMessage)
+            .setDescription(command.description.ifEmpty { command.name })
+            .setUsageMessage(command.usage.ifEmpty { command.name })
+            .addPermission(command.permission.ifEmpty { "$pluginId.command.use" })
+            .setPermissionMessage(command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
             .build()) {
 
             override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
