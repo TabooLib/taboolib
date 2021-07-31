@@ -16,6 +16,8 @@ import java.util.*
  */
 object Language {
 
+    private var firstLoaded = false
+
     val textTransfer = ArrayList<TextTransfer>()
 
     val languageFile = HashMap<String, LanguageFile>()
@@ -38,6 +40,13 @@ object Language {
         "actionbar" to TypeActionBar::class.java
     )
 
+    fun addLanguage(vararg code: String) {
+        languageCode += code
+        if (firstLoaded) {
+            reload()
+        }
+    }
+
     fun getLocale(player: ProxyPlayer): String {
         return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale] ?: player.locale).run {
             call()
@@ -55,6 +64,7 @@ object Language {
 
     @Awake(LifeCycle.LOAD)
     fun reload() {
+        firstLoaded = true
         languageFile.clear()
         languageFile.putAll(ResourceReader(Language::class.java).files)
     }
