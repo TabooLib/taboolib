@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import taboolib.common.Isolated
 import taboolib.common.platform.warning
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
@@ -31,10 +32,10 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemSt
 }
 
 @Isolated
-open class ItemBuilder(var material: XMaterial) {
-
+open class ItemBuilder {
     class SkullTexture(val textures: String, val uuid: UUID? = null)
 
+    var material: XMaterial
     var amount = 1
     var damage = 1.toShort()
     var name: String? = null
@@ -50,6 +51,89 @@ open class ItemBuilder(var material: XMaterial) {
     var skullTexture: SkullTexture? = null
     var isUnbreakable = false
     var customModelData = -1
+
+    constructor(material: XMaterial) {
+        this.material = material
+        this.damage = 1.toShort()
+    }
+    
+    constructor(item: ItemStack) {
+        fun <T> applyToList(origin: MutableList<T>?, target: MutableList<T>?) {
+            target?.clear()
+            origin?.let { target?.addAll(it) }
+        }
+        fun <T> applyToList(origin: MutableSet<T>?, target: MutableList<T>?) {
+            target?.clear()
+            origin?.let { target?.addAll(it) }
+        }
+        fun <K, V> applyToMap(origin: MutableMap<K, V>?, target: MutableMap<K, V>?) {
+            target?.clear()
+            origin?.let { target?.putAll(it) }
+        }
+        material = XMaterial.matchXMaterial(item.type)
+        val itemMeta = item.itemMeta
+        name = itemMeta?.displayName
+        applyToList(itemMeta?.lore, lore)
+        applyToList(itemMeta?.itemFlags, flags)
+        if (itemMeta is EnchantmentStorageMeta) {
+            applyToMap(itemMeta.storedEnchants, enchants)
+        } else {
+            applyToMap(itemMeta?.enchants, enchants)
+        }
+
+        when(itemMeta) {
+            is LeatherArmorMeta -> {
+                color = itemMeta.color
+            }
+            is PotionMeta -> {
+                color = itemMeta.color
+                applyToList(potions, itemMeta.customEffects)
+                potionData = itemMeta.basePotionData
+            }
+            is SkullMeta -> {
+                if (itemMeta.owner != null) {
+                    skullOwner = itemMeta.owner
+                }
+                itemMeta.getProperty<GameProfile>("profile").also {
+                    if (it != null) {
+                        skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { it1 -> ItemBuilder.SkullTexture(it1, it.id) }
+                    }
+                }
+            }
+        }
+        try {
+            isUnbreakable = itemMeta?.isUnbreakable ?: false
+        } catch (ex: NoSuchMethodError) {
+            try {
+                isUnbreakable = itemMeta?.invokeMethod<Boolean>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
+            } catch (ex: NoSuchMethodException) {
+                warning("Unbreakable not supported yet.")
+            }
+        }
+        try {
+            if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
+                spawnType = itemMeta.spawnedType
+            }
+        } catch (ex: NoClassDefFoundError) {
+            warning("SpawnEggMeta not supported yet.")
+        }
+        try {
+            if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
+                applyToList(itemMeta.patterns, patterns)
+            }
+        } catch (ex: NoClassDefFoundError) {
+            warning("BannerMeta not supported yet.")
+        }
+        try {
+            itemMeta?.invokeMethod<Int>("getCustomModelData").let {
+                if (it == -1) {
+                    customModelData = it
+                }
+            }
+        } catch (ex: NoSuchMethodException) {
+            warning("CustomModelData not supported yet.")
+        }
+    }
 
     fun shiny() {
         flags += ItemFlag.HIDE_ENCHANTS
