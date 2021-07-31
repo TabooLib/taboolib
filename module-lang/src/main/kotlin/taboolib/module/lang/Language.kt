@@ -3,9 +3,11 @@ package taboolib.module.lang
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.getJarFile
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
 import java.util.*
+import java.util.jar.JarFile
 
 /**
  * TabooLib
@@ -22,7 +24,23 @@ object Language {
 
     val languageFile = HashMap<String, LanguageFile>()
 
-    val languageCode = arrayListOf("zh_CN", "en_US")
+    val languageCode = arrayListOf("zh_CN", "en_US").also { languages ->
+        JarFile(getJarFile()).entries().iterator().forEachRemaining {
+            if (!it.name.startsWith("lang/")) {
+                return@forEachRemaining
+            }
+            val langName = it.name.substringAfter("/").let { name ->
+                if (!name.contains(".")) {
+                    return@let name
+                }
+                name.substringBeforeLast(".")
+            }
+            if (languages.contains(langName)) {
+                return@forEachRemaining
+            }
+            addLanguage(langName)
+        }
+    }
 
     val languageCodeTransfer = hashMapOf(
         "zh_hans_cn" to "zh_CN",
