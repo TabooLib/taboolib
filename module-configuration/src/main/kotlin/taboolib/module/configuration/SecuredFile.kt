@@ -4,13 +4,15 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.InvalidConfigurationException
 import taboolib.library.configuration.YamlConfiguration
 import java.io.File
+import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
 class SecuredFile : YamlConfiguration() {
 
     private val lock = Any()
-    private var file: File? = null
+    var file: File? = null
+        private set
 
     override fun set(path: String, value: Any?) {
         synchronized(lock) { super.set(path, value) }
@@ -18,6 +20,12 @@ class SecuredFile : YamlConfiguration() {
 
     override fun saveToString(): String {
         synchronized(lock) { return super.saveToString() }
+    }
+
+    @Throws(IOException::class)
+    fun saveToFile() {
+        file ?: return
+        this.save(file)
     }
 
     fun reload() {
