@@ -49,7 +49,7 @@ public class Sponge7Plugin {
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
-        pluginInstance = IOKt.findInstance(Plugin.class);
+        pluginInstance = IOKt.findImplementation(Plugin.class);
     }
 
     public Sponge7Plugin() {

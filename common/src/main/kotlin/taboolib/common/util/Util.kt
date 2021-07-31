@@ -5,8 +5,10 @@ package taboolib.common.util
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.submit
 import java.io.Closeable
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
@@ -159,4 +161,10 @@ fun Class<*>.nonPrimitive(): Class<*> {
         this == java.lang.Boolean.TYPE -> java.lang.Boolean::class.java
         else -> this
     }
+}
+
+fun <T> sync(func: () -> T): T {
+    val future = CompletableFuture<T>()
+    submit { future.complete(func()) }
+    return future.get()
 }

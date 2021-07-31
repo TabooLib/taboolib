@@ -41,7 +41,7 @@ public class VelocityPlugin {
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-        pluginInstance = IOKt.findInstance(Plugin.class);
+        pluginInstance = IOKt.findImplementation(Plugin.class);
     }
 
     private final ProxyServer server;

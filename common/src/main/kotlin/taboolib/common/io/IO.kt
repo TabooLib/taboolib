@@ -11,6 +11,7 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
+import java.util.function.Supplier
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -18,15 +19,15 @@ import java.util.zip.ZipOutputStream
 
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
-fun <T> Class<T>.getInstance(new: Boolean = false): T? {
+fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     try {
         val awoken = PlatformFactory.getAPI<T>(simpleName)
         if (awoken != null) {
-            return awoken
+            return Supplier { awoken }
         }
-    } catch (ex: NoClassDefFoundError) {
-        return null
     } catch (ex: ClassNotFoundException) {
+        return null
+    } catch (ex: NoClassDefFoundError) {
         return null
     } catch (ex: InternalError) {
         println(this)
@@ -34,26 +35,32 @@ fun <T> Class<T>.getInstance(new: Boolean = false): T? {
         return null
     }
     return try {
-        getDeclaredField("INSTANCE").get(null) as T
+        val field = if (simpleName == "Companion") {
+            Class.forName(name.substringBeforeLast('$')).getDeclaredField("Companion")
+        } else {
+            getDeclaredField("INSTANCE")
+        }
+        field.isAccessible = true
+        Supplier { field.get(null) as T }
+    } catch (ex: NoSuchFieldException) {
+        if (newInstance) Supplier { getDeclaredConstructor().newInstance() as T } else null
+    } catch (ex: ClassNotFoundException) {
+        null
+    } catch (ex: NoClassDefFoundError) {
+        null
     } catch (ex: ExceptionInInitializerError) {
         println(this)
         ex.printStackTrace()
         null
-    } catch (ex: NoClassDefFoundError) {
-        null
-    } catch (ex: IllegalAccessException) {
-        null
-    } catch (ex: NoSuchFieldException) {
-        if (new) getDeclaredConstructor().newInstance() as T else null
     }
 }
 
-fun <T> Class<T>.findInstance(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && this != it }?.getInstance(new = true) as? T
+fun <T> Class<T>.inject() {
+    return RuntimeInjector.injectAll(this)
 }
 
-fun <T> inject(clazz: Class<T>) {
-    return RuntimeInjector.injectAll(clazz)
+fun <T> Class<T>.findImplementation(): T? {
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {

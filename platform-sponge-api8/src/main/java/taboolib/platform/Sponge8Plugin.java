@@ -47,7 +47,7 @@ public class Sponge8Plugin {
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
-        pluginInstance = IOKt.findInstance(Plugin.class);
+        pluginInstance = IOKt.findImplementation(Plugin.class);
     }
 
     @Inject

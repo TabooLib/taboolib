@@ -36,31 +36,30 @@ object RuntimeInjector {
         priorityMap.forEach { inject(clazz, it.value, null) }
     }
 
-    fun <T> inject(clazz: Class<T>, injectors: Injectors, lifeCycle: LifeCycle?): T? {
-        val instance = clazz.getInstance(new = false) ?: return null
+    fun <T> inject(clazz: Class<T>, injectors: Injectors, lifeCycle: LifeCycle?) {
+        val instance = clazz.getInstance() ?: return
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
         injectors.classes.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                inj.inject(clazz, instance)
+                inj.inject(clazz, instance.get()!!)
             }
         }
         injectors.fields.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                declaredFields.forEach { inj.inject(it, clazz, instance) }
+                declaredFields.forEach { inj.inject(it, clazz, instance.get()!!) }
             }
         }
         injectors.methods.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                declaredMethods.forEach { inj.inject(it, clazz, instance) }
+                declaredMethods.forEach { inj.inject(it, clazz, instance.get()!!) }
             }
         }
         injectors.classes.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                inj.postInject(clazz, instance)
+                inj.postInject(clazz, instance.get()!!)
             }
         }
-        return instance
     }
 
     fun register(injector: Injector.Fields) {

@@ -4,7 +4,7 @@
         test = "!com.google.gson.JsonElement"
     ),
     RuntimeDependency(
-        value = "!com.mongodb:MongoDB:3.12.2:all",
+        value = "!com.mongodb:MongoDB:3.12.7",
         test = "!com.mongodb.client.MongoClient",
         repository = "https://repo2s.ptms.ink/repository/maven-releases/"
     )
