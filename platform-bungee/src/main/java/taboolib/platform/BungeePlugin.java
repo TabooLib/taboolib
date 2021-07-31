@@ -41,7 +41,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onLoad() {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
     }
@@ -49,7 +49,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onEnable() {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
             BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
                 @Override
@@ -65,7 +65,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onDisable() {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }

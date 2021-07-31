@@ -25,6 +25,11 @@ public class TabooLibCommon {
     private static Platform platform = Platform.UNKNOWN;
 
     /**
+     * 是否停止加载
+     */
+    private static boolean stopped = false;
+
+    /**
      * 用于测试的快速启动方法
      */
     public static void testSetup() {
@@ -52,6 +57,9 @@ public class TabooLibCommon {
      * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle, @Nullable Platform platform) {
+        if (stopped) {
+            return;
+        }
         if (platform != null) {
             TabooLibCommon.platform = platform;
         }
@@ -87,5 +95,13 @@ public class TabooLibCommon {
     @NotNull
     public static Platform getRunningPlatform() {
         return platform;
+    }
+
+    public static boolean isStopped() {
+        return stopped;
+    }
+
+    public static void setStopped(boolean value) {
+        stopped = value;
     }
 }

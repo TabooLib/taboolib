@@ -60,11 +60,11 @@ public class VelocityPlugin {
     @Subscribe
     public void e(ProxyInitializeEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
             server.getScheduler().buildTask(this, new Runnable() {
                 @Override
@@ -80,7 +80,7 @@ public class VelocityPlugin {
     @Subscribe
     public void e(ProxyShutdownEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }

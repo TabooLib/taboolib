@@ -60,7 +60,7 @@ public class Sponge7Plugin {
     @Listener
     private void e(GamePreInitializationEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
     }
@@ -68,7 +68,7 @@ public class Sponge7Plugin {
     @Listener
     private void e(GameInitializationEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
         }
         FunctionKt.startExecutor();
@@ -77,7 +77,7 @@ public class Sponge7Plugin {
     @Listener
     private void e(GameStartedServerEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onActive();
         }
     }
@@ -85,7 +85,7 @@ public class Sponge7Plugin {
     @Listener
     private void e(GameStoppedServerEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }

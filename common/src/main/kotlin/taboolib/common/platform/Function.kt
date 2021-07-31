@@ -145,3 +145,7 @@ fun <T> implementations(clazz: Class<T>): T {
 inline fun <reified T> implementations(): T {
     return implementations(T::class.java)
 }
+
+fun disablePlugin() {
+    TabooLibCommon.setStopped(true)
+}

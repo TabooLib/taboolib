@@ -37,6 +37,9 @@ object RuntimeInjector {
     }
 
     fun <T> inject(clazz: Class<T>, injectors: Injectors, lifeCycle: LifeCycle?) {
+        if (TabooLibCommon.isStopped()) {
+            return
+        }
         val instance = clazz.getInstance() ?: return
         val declaredFields = clazz.declaredFields
         val declaredMethods = clazz.declaredMethods
@@ -47,12 +50,18 @@ object RuntimeInjector {
         }
         injectors.fields.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                declaredFields.forEach { inj.inject(it, clazz, instance.get()!!) }
+                declaredFields.forEach {
+                    it.isAccessible = true
+                    inj.inject(it, clazz, instance.get()!!)
+                }
             }
         }
         injectors.methods.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
-                declaredMethods.forEach { inj.inject(it, clazz, instance.get()!!) }
+                declaredMethods.forEach {
+                    it.isAccessible = true
+                    inj.inject(it, clazz, instance.get()!!)
+                }
             }
         }
         injectors.classes.forEach { inj ->

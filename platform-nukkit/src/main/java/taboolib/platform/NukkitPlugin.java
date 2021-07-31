@@ -42,7 +42,7 @@ public class NukkitPlugin extends PluginBase {
     @Override
     public void onLoad() {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
     }
@@ -50,7 +50,7 @@ public class NukkitPlugin extends PluginBase {
     @Override
     public void onEnable() {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
             Server.getInstance().getScheduler().scheduleTask(this, new Runnable() {
                 @Override
@@ -66,7 +66,7 @@ public class NukkitPlugin extends PluginBase {
     @Override
     public void onDisable() {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }

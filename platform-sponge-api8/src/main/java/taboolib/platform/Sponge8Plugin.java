@@ -64,7 +64,7 @@ public class Sponge8Plugin {
     @Listener
     private void e(final ConstructPluginEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
     }
@@ -72,7 +72,7 @@ public class Sponge8Plugin {
     @Listener
     private void e(final StartingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
         }
         FunctionKt.startExecutor();
@@ -81,7 +81,7 @@ public class Sponge8Plugin {
     @Listener
     private void e(final StartedEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onActive();
         }
     }
@@ -89,7 +89,7 @@ public class Sponge8Plugin {
     @Listener
     private void e(final StoppingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null) {
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }
