@@ -64,6 +64,10 @@ class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {
     var optional = false
     var permission = ""
     val children = ArrayList<SimpleCommandBody>()
+
+    override fun toString(): String {
+        return "SimpleCommandBody(name='$name', children=$children)"
+    }
 }
 
 @Awake
@@ -71,9 +75,9 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
     val body = ArrayList<SimpleCommandBody>()
 
-    fun loadBody(field: Field, clazz: Class<*>, instance: Supplier<*>): SimpleCommandBody? {
-        if (clazz.isAnnotationPresent(CommandBody::class.java)) {
-            val annotation = clazz.getAnnotation(CommandBody::class.java)
+    fun loadBody(field: Field, instance: Supplier<*>): SimpleCommandBody? {
+        if (field.isAnnotationPresent(CommandBody::class.java)) {
+            val annotation = field.getAnnotation(CommandBody::class.java)
             val obj = field.get(instance.get())
             return if (field.type == SimpleCommandBody::class.java) {
                 (obj as SimpleCommandBody).apply {
@@ -89,7 +93,8 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                     optional = annotation.optional
                     permission = annotation.permission
                     field.type.declaredFields.forEach {
-                        children += loadBody(it, field.type, instance) ?: return@forEach
+                        it.isAccessible = true
+                        children += loadBody(it, instance) ?: return@forEach
                     }
                 }
             }
@@ -104,12 +109,13 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     }
 
     override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
-        body += loadBody(field, clazz, instance) ?: return
+        body += loadBody(field, instance) ?: return
     }
 
     override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
+            println(body)
             command(annotation.name,
                 annotation.aliases.toList(),
                 annotation.description,
@@ -118,18 +124,18 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
                 body.forEach { body ->
-                    fun register(body: SimpleCommandBody) {
-                        literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
+                    fun register(body: SimpleCommandBody, component: CommandBuilder.CommandComponent) {
+                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
                             if (body.children.isEmpty()) {
                                 body.func(this)
                             } else {
                                 body.children.forEach { children ->
-                                    register(children)
+                                    register(children, this)
                                 }
                             }
                         }
                     }
-                    register(body)
+                    register(body, this)
                 }
             }
         }

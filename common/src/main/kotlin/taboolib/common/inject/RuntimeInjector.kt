@@ -60,8 +60,16 @@ object RuntimeInjector {
             }
         }
         val instance = clazz.getInstance() ?: return
-        val declaredFields = clazz.declaredFields
-        val declaredMethods = clazz.declaredMethods
+        val declaredFields = try {
+            clazz.declaredFields
+        } catch (ignored: NoClassDefFoundError) {
+            return
+        }
+        val declaredMethods = try {
+            clazz.declaredMethods
+        } catch (ignored: NoClassDefFoundError) {
+            return
+        }
         injectors.classes.forEach { inj ->
             if (lifeCycle == null || lifeCycle == inj.lifeCycle) {
                 inj.inject(clazz, instance)

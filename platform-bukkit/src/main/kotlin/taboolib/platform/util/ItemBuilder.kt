@@ -33,11 +33,12 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemSt
 
 @Isolated
 open class ItemBuilder {
+
     class SkullTexture(val textures: String, val uuid: UUID? = null)
 
     var material: XMaterial
     var amount = 1
-    var damage = 1.toShort()
+    var damage = 0
     var name: String? = null
     val lore = ArrayList<String>()
     val flags = ArrayList<ItemFlag>()
@@ -54,40 +55,26 @@ open class ItemBuilder {
 
     constructor(material: XMaterial) {
         this.material = material
-        this.damage = 1.toShort()
     }
-    
-    constructor(item: ItemStack) {
-        fun <T> applyToList(origin: MutableList<T>?, target: MutableList<T>?) {
-            target?.clear()
-            origin?.let { target?.addAll(it) }
-        }
-        fun <T> applyToList(origin: MutableSet<T>?, target: MutableList<T>?) {
-            target?.clear()
-            origin?.let { target?.addAll(it) }
-        }
-        fun <K, V> applyToMap(origin: MutableMap<K, V>?, target: MutableMap<K, V>?) {
-            target?.clear()
-            origin?.let { target?.putAll(it) }
-        }
-        material = XMaterial.matchXMaterial(item.type)
-        val itemMeta = item.itemMeta
-        name = itemMeta?.displayName
-        applyToList(itemMeta?.lore, lore)
-        applyToList(itemMeta?.itemFlags, flags)
-        if (itemMeta is EnchantmentStorageMeta) {
-            applyToMap(itemMeta.storedEnchants, enchants)
-        } else {
-            applyToMap(itemMeta?.enchants, enchants)
-        }
 
-        when(itemMeta) {
+    constructor(item: ItemStack) {
+        material = XMaterial.matchXMaterial(item.type)
+        val itemMeta = item.itemMeta ?: return
+        name = itemMeta.displayName
+        lore += itemMeta.lore ?: emptyList()
+        flags += itemMeta.itemFlags
+        enchants += if (itemMeta is EnchantmentStorageMeta) {
+            itemMeta.storedEnchants
+        } else {
+            itemMeta.enchants
+        }
+        when (itemMeta) {
             is LeatherArmorMeta -> {
                 color = itemMeta.color
             }
             is PotionMeta -> {
                 color = itemMeta.color
-                applyToList(potions, itemMeta.customEffects)
+                potions += itemMeta.customEffects
                 potionData = itemMeta.basePotionData
             }
             is SkullMeta -> {
@@ -96,18 +83,21 @@ open class ItemBuilder {
                 }
                 itemMeta.getProperty<GameProfile>("profile").also {
                     if (it != null) {
-                        skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { it1 -> ItemBuilder.SkullTexture(it1, it.id) }
+                        skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { it1 -> SkullTexture(it1, it.id) }
                     }
                 }
             }
         }
         try {
-            isUnbreakable = itemMeta?.isUnbreakable ?: false
+            customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
+        } catch (ex: NoSuchMethodException) {
+        }
+        try {
+            isUnbreakable = itemMeta.isUnbreakable
         } catch (ex: NoSuchMethodError) {
             try {
-                isUnbreakable = itemMeta?.invokeMethod<Boolean>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
+                isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
             } catch (ex: NoSuchMethodException) {
-                warning("Unbreakable not supported yet.")
             }
         }
         try {
@@ -115,23 +105,12 @@ open class ItemBuilder {
                 spawnType = itemMeta.spawnedType
             }
         } catch (ex: NoClassDefFoundError) {
-            warning("SpawnEggMeta not supported yet.")
         }
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
-                applyToList(itemMeta.patterns, patterns)
+                patterns += itemMeta.patterns
             }
         } catch (ex: NoClassDefFoundError) {
-            warning("BannerMeta not supported yet.")
-        }
-        try {
-            itemMeta?.invokeMethod<Int>("getCustomModelData").let {
-                if (it == -1) {
-                    customModelData = it
-                }
-            }
-        } catch (ex: NoSuchMethodException) {
-            warning("CustomModelData not supported yet.")
         }
     }
 
@@ -227,6 +206,7 @@ open class ItemBuilder {
             warning("CustomModelData not supported yet.")
         }
         itemStack.itemMeta = itemMeta
+        itemStack.durability = damage.toShort()
         return itemStack
     }
 }

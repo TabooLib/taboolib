@@ -17,6 +17,8 @@ object CommandBuilder {
 
     class CommandBase : CommandComponent(false) {
 
+        internal var result = true
+
         var commandIncorrectSender: CommandUnknownNotify<*> = CommandUnknownNotify(ProxyCommandSender::class.java) { sender, _, _, _ ->
             sender.sendMessage("§cIncorrect sender for command")
         }
@@ -43,13 +45,14 @@ object CommandBuilder {
         }
 
         fun execute(context: CommandContext<*>): Boolean {
+            result = true
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
                 val children = children(context)
                 return if (children.isEmpty() || children.any { it.optional }) {
                     context.index = 0
                     commandExecutor?.exec(this, context, "")
-                    true
+                    result
                 } else {
                     commandIncorrectCommand.exec(context, -1, 1)
                     false
@@ -79,7 +82,7 @@ object CommandBuilder {
                         if (children.children(context).isEmpty() || children.children(context).any { it.optional }) {
                             context.index = cur
                             children.commandExecutor?.exec(this, context, join(context.args, cur))
-                            true
+                            result
                         } else {
                             commandIncorrectCommand.exec(context, cur + 1, 1)
                             false
@@ -141,6 +144,10 @@ object CommandBuilder {
 
         fun incorrectCommand(function: (sender: ProxyCommandSender, context: CommandContext<ProxyCommandSender>, index: Int, state: Int) -> Unit) {
             this.commandIncorrectCommand = CommandUnknownNotify(ProxyCommandSender::class.java, function)
+        }
+
+        fun setResult(value: Boolean) {
+            result = value
         }
 
         override fun toString(): String {

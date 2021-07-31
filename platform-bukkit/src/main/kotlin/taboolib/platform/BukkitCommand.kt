@@ -63,7 +63,7 @@ class BukkitCommand : PlatformCommand {
             val permission = command.permission.ifEmpty { "${plugin.name.lowercase()}.command.use" }
             // 修改属性
             pluginCommand.setProperty("description", command.description.ifEmpty { command.name })
-            pluginCommand.setProperty("usageMessage", command.usage.ifEmpty { command.name })
+            pluginCommand.setProperty("usageMessage", command.usage)
             pluginCommand.setProperty("aliases", command.aliases)
             pluginCommand.setProperty("activeAliases", command.aliases)
             pluginCommand.setProperty("permission", permission)

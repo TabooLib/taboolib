@@ -52,11 +52,11 @@ class Sponge7Command : PlatformCommand {
             }
 
             override fun getHelp(source: CommandSource): Optional<Text> {
-                return Optional.of(Text.of(command.usage.ifEmpty { command.name }))
+                return Optional.of(Text.of(command.usage))
             }
 
             override fun getUsage(source: CommandSource): Text {
-                return Text.of(command.usage.ifEmpty { command.name })
+                return Text.of(command.usage)
             }
         }, command.name, *command.aliases.toTypedArray())
     }
