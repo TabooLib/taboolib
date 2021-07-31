@@ -115,7 +115,6 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
-            println(body)
             command(annotation.name,
                 annotation.aliases.toList(),
                 annotation.description,
