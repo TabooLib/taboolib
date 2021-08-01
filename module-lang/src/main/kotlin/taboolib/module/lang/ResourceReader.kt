@@ -4,6 +4,7 @@ import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.submit
 import taboolib.common.platform.warning
 import taboolib.common5.FileWatcher
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -81,7 +82,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     }
 
     @Suppress("SimplifiableCallChain")
-    fun loadNodes(sourceFile: SecuredFile, nodesMap: HashMap<String, Type>, languageCode: String) {
+    fun loadNodes(sourceFile: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
         sourceFile.getKeys(false).forEach { node ->
             when (val obj = sourceFile.get(node)) {
                 is String -> {
@@ -90,29 +91,38 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 is List<*> -> {
                     nodesMap[node] = TypeList(obj.mapNotNull { sub ->
                         if (sub is Map<*, *>) {
-                            val map = sub.map { it.key.toString() to it.value!! }.toMap()
-                            if (map.containsKey("type")) {
-                                val type = map["type"].toString().lowercase()
-                                val typeInstance = Language.languageType[type]?.getDeclaredConstructor()?.newInstance()
-                                if (typeInstance != null) {
-                                    typeInstance.init(map)
-                                } else {
-                                    warning("Unsupported language type: $node > $type ($languageCode)")
-                                }
-                                typeInstance
-                            } else {
-                                warning("Missing language type: $map ($languageCode)")
-                                null
-                            }
+                            loadNode(sub.map { it.key.toString() to it.value!! }.toMap(), code, node)
                         } else {
                             TypeText(sub.toString())
                         }
                     })
                 }
+                is ConfigurationSection -> {
+                    val type = loadNode(obj.getValues(false).map { it.key.toString() to it.value!! }.toMap(), code, node)
+                    if (type != null) {
+                        nodesMap[node] = type
+                    }
+                }
                 else -> {
-                    warning("Unsupported language node: $node ($languageCode)")
+                    warning("Unsupported language node: $node ($code)")
                 }
             }
+        }
+    }
+
+    private fun loadNode(map: Map<String, Any>, code: String, node: String?): Type? {
+        return if (map.containsKey("type")) {
+            val type = map["type"].toString().lowercase()
+            val typeInstance = Language.languageType[type]?.getDeclaredConstructor()?.newInstance()
+            if (typeInstance != null) {
+                typeInstance.init(map)
+            } else {
+                warning("Unsupported language type: $node > $type ($code)")
+            }
+            typeInstance
+        } else {
+            warning("Missing language type: $map ($code)")
+            null
         }
     }
 

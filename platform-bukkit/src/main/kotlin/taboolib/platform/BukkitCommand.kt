@@ -82,7 +82,7 @@ class BukkitCommand : PlatformCommand {
             }
             // 注册命令
             knownCommands.remove(command.name)
-            knownCommands["$pluginId:${pluginCommand.name}"] = pluginCommand
+            knownCommands["${pluginId.lowercase()}:${pluginCommand.name}"] = pluginCommand
             knownCommands[pluginCommand.name] = pluginCommand
             pluginCommand.aliases.forEach {
                 knownCommands[it] = pluginCommand
