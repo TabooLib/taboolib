@@ -90,13 +90,13 @@ class SQLite : ColumnBuilder() {
     }
 
     /**
-     * ID 常量（id integer not null auto_increment primary key）
+     * ID 常量（id integer not null primary key）
      */
     fun id() {
         name = "id"
         type = ColumnTypeSQLite.INTEGER
         extra {
-            options = arrayOf(ColumnOptionSQLite.NOTNULL, ColumnOptionSQLite.AUTOINCREMENT, ColumnOptionSQLite.PRIMARY_KEY)
+            options = arrayOf(ColumnOptionSQLite.NOTNULL, ColumnOptionSQLite.PRIMARY_KEY)
         }
     }
 
