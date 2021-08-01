@@ -13,16 +13,15 @@ import java.text.MessageFormat
  */
 
 fun ProxyCommandSender.buildMessage(level: LevelType, message: String, vararg args: Any): String {
-    val languageFile =
-        Language.languageFile[getLocale()] ?: Language.languageFile[Language.languageCode.firstOrNull() ?: "zh_CN"]
-    if (languageFile == null) {
+    val file = getLocaleFile()
+    if (file == null) {
         return "Language file not found"
     } else {
-        val prefix = languageFile.nodes["Plugin.Prefix"]
+        val prefix = file.nodes["Plugin.Prefix"]
         if (prefix != null) {
             when (level) {
                 LevelType.INFO, LevelType.WARN, LevelType.ERROR -> {
-                    val info = languageFile.nodes[level.node()]
+                    val info = file.nodes[level.node()]
                     if (info != null) {
                         return (asLangText("Plugin.Prefix") + asLangText(level.node()) + MessageFormat.format(
                             message,
