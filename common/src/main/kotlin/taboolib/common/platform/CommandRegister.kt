@@ -73,7 +73,7 @@ class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {
 @Awake
 object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
-    val body = ArrayList<SimpleCommandBody>()
+    val body = HashMap<String, MutableList<SimpleCommandBody>>()
 
     fun loadBody(field: Field, instance: Supplier<*>): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
@@ -103,13 +103,10 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     }
 
     override fun inject(clazz: Class<*>, instance: Supplier<*>) {
-        if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
-            body.clear()
-        }
     }
 
     override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
-        body += loadBody(field, instance) ?: return
+        body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
     }
 
     override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
@@ -122,7 +119,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.permission,
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
-                body.forEach { body ->
+                body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandBuilder.CommandComponent) {
                         component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
                             if (body.children.isEmpty()) {

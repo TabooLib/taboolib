@@ -8,11 +8,14 @@ package taboolib.common.platform
  * @since 2021/6/24 11:48 下午
  */
 class CommandStructure(
-    val name: String,
+    name: String,
     val aliases: List<String>,
     val description: String,
     val usage: String,
     val permission: String,
     val permissionMessage: String,
     val permissionDefault: PermissionDefault
-)
+) {
+
+    val name = name.lowercase()
+}

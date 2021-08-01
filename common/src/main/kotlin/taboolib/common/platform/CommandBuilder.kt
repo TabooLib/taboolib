@@ -130,6 +130,7 @@ object CommandBuilder {
                                 else -> emptyList()
                             }
                         }
+                        context.index = cur
                         suggest.filter { it.startsWith(argument, ignoreCase = true) }.ifEmpty { null }
                     }
                     else -> null
