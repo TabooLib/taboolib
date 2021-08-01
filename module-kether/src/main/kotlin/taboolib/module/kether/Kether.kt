@@ -2,8 +2,10 @@ package taboolib.module.kether
 
 import io.izzel.kether.common.actions.KetherTypes
 import io.izzel.kether.common.api.QuestActionParser
+import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.platform.Awake
 import taboolib.module.lang.Language
 
 @RuntimeDependencies(
@@ -11,7 +13,8 @@ import taboolib.module.lang.Language
 )
 object Kether {
 
-    init {
+    @Awake(LifeCycle.INIT)
+    fun init() {
         try {
             Language.textTransfer += KetherTransfer
         } catch (ex: NoClassDefFoundError) {

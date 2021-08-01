@@ -1,7 +1,10 @@
+@file:Isolated
+
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.SubscribeEvent
@@ -19,11 +22,9 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
         sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!.createBlockData())
     }
     sendSignChange(location, lines.format())
-    inputs[name] = function
+    SignsListener.inputs[name] = function
     nmsProxy<NMSGeneric>().openSignEditor(this, location.block)
 }
-
-private val inputs = ConcurrentHashMap<String, (Array<String>) -> Unit>()
 
 private fun Array<String>.format(): Array<String> {
     val list = toMutableList()
@@ -36,10 +37,13 @@ private fun Array<String>.format(): Array<String> {
     return list.toTypedArray()
 }
 
+@Isolated
 @PlatformSide([Platform.BUKKIT])
 internal object SignsListener {
 
-    private val classChatSerializer by lazy {
+    val inputs = ConcurrentHashMap<String, (Array<String>) -> Unit>()
+
+    val classChatSerializer by lazy {
         nmsClass("IChatBaseComponent\$ChatSerializer")
     }
 

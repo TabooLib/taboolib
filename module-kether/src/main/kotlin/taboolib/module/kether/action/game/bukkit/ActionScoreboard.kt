@@ -24,7 +24,7 @@ class ActionScoreboard(val content: ParsedAction<*>) : ScriptAction<Void>() {
             if (content == null) {
                 viewer.sendScoreboard()
             } else {
-                val body = if (content is List<*>) content.asList() else content.toString().trimIndent().split("\n")
+                val body = if (content is List<*>) content.asList() else content.toString().trimIndent().split('\n')
                 viewer.sendScoreboard(body[0], *body.filterIndexed { index, _ -> index > 0 }.toTypedArray())
             }
         }

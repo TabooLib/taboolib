@@ -96,7 +96,7 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                     }
                 } catch (e: Exception) {
                     warning("Unexpected exception while parsing kether script:")
-                    e.localizedMessage?.split("\n")?.forEach { warning(it) }
+                    e.localizedMessage?.split('\n')?.forEach { warning(it) }
                 }
             }
         }

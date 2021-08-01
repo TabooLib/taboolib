@@ -100,9 +100,9 @@ class SecuredFile : YamlConfiguration() {
                 }
             }
             val save = if (single) {
-                dump.saveToString().substring("value:".length).trim().split("\n").toTypedArray()
+                dump.saveToString().substring("value:".length).trim().split('\n').toTypedArray()
             } else {
-                dump.saveToString().trim().split("\n").toTypedArray()
+                dump.saveToString().trim().split('\n').toTypedArray()
             }
             return java.lang.String.join("\n", *save)
         }

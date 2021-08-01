@@ -32,6 +32,10 @@ class KetherScriptLoader : SimpleQuestLoader() {
 
     class KetherScriptReader(service: QuestService<*>, parser: Parser, namespace: MutableList<String>) : SimpleReader(service, parser, namespace) {
 
+        override fun nextToken(): String {
+            return super.nextToken().replace("\\s", " ")
+        }
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : Any?> nextAction(): ParsedAction<T> {
             skipBlank()

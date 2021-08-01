@@ -16,6 +16,9 @@ import taboolib.common.Isolated
  * @return boolean
  */
 fun Player.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false): Boolean {
+    if (item.isAir()) {
+        error("air")
+    }
     return inventory.checkItem(item, amount, remove)
 }
 
@@ -28,6 +31,9 @@ fun Player.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false):
  * @return boolean
  */
 fun Inventory.checkItem(item: ItemStack, amount: Int = 1, remove: Boolean = false): Boolean {
+    if (item.isAir()) {
+        error("air")
+    }
     return hasItem(amount) { it.isSimilar(item) } && (!remove || takeItem(amount) { it.isSimilar(item) })
 }
 
