@@ -123,6 +123,7 @@ object CommandBuilder {
                         process(cur + 1, children)
                     }
                     cur + 1 == context.args.size -> {
+                        context.index = cur
                         val suggest = component.children(context).flatMap {
                             when (it) {
                                 is CommandComponentLiteral -> it.aliases.toList()
@@ -130,7 +131,6 @@ object CommandBuilder {
                                 else -> emptyList()
                             }
                         }
-                        context.index = cur
                         suggest.filter { it.startsWith(argument, ignoreCase = true) }.ifEmpty { null }
                     }
                     else -> null
