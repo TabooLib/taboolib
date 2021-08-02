@@ -2,6 +2,7 @@ package taboolib.platform
 
 import net.md_5.bungee.BungeeCord
 import taboolib.common.OpenContainer
+import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
@@ -51,11 +52,7 @@ class BungeeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
-        file.createNewFile()
-        file.writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

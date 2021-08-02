@@ -2,6 +2,7 @@ package taboolib.common.env;
 
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.TabooLibCommon;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,7 +33,6 @@ import java.util.zip.ZipFile;
         test = "!taboolib.library.kotlin_@kotlin_version_escape@.collections.jdk8.CollectionsJDK8Kt",
         relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
 )
-@RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class RuntimeEnv {
 
     private boolean notify = false;
@@ -97,6 +97,9 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull Class<?> clazz) {
+        if (TabooLibCommon.isKotlinSkipped() && clazz.equals(RuntimeEnv.class)) {
+            return;
+        }
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);

@@ -2,6 +2,7 @@ package taboolib.platform
 
 import org.bukkit.Bukkit
 import taboolib.common.OpenContainer
+import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
@@ -46,11 +47,7 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
-        file.createNewFile()
-        file.writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

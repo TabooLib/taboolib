@@ -3,6 +3,7 @@ package taboolib.common;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.ClassAppender;
+import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
 import taboolib.common.platform.Platform;
@@ -15,6 +16,7 @@ import taboolib.common.platform.PlatformFactory;
  * @author sky
  * @since 2021/6/15 2:45 下午
  */
+@RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLibCommon {
 
     public static final RuntimeEnv ENV = new RuntimeEnv();
@@ -28,6 +30,11 @@ public class TabooLibCommon {
      * 是否停止加载
      */
     private static boolean stopped = false;
+
+    /**
+     * 是否跳过 Kotlin 环境
+     */
+    private static boolean kotlinSkipped = false;
 
     /**
      * 用于测试的快速启动方法
@@ -103,5 +110,13 @@ public class TabooLibCommon {
 
     public static void setStopped(boolean value) {
         stopped = value;
+    }
+
+    public static boolean isKotlinSkipped() {
+        return kotlinSkipped;
+    }
+
+    public static void setKotlinSkipped(boolean value) {
+        kotlinSkipped = value;
     }
 }

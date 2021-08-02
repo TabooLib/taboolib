@@ -4,6 +4,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.spongepowered.api.Sponge
 import taboolib.common.OpenContainer
+import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformIO
@@ -52,11 +53,7 @@ class Sponge7IO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        if (!file.parentFile.exists()) {
-            file.parentFile.mkdirs()
-        }
-        file.createNewFile()
-        file.writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

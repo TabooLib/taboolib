@@ -33,6 +33,10 @@ fun command(
     )
 }
 
+fun mainCommand(func: CommandBuilder.CommandBase.() -> Unit): SimpleCommandMain {
+    return SimpleCommandMain(func)
+}
+
 fun subCommand(func: CommandBuilder.CommandComponent.() -> Unit): SimpleCommandBody {
     return SimpleCommandBody(func)
 }
@@ -57,6 +61,8 @@ annotation class CommandBody(
     val permission: String = "",
 )
 
+class SimpleCommandMain(val func: CommandBuilder.CommandBase.() -> Unit = {})
+
 class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {}) {
 
     var name = ""
@@ -73,28 +79,35 @@ class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {
 @Awake
 object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
+    val main = HashMap<String, SimpleCommandMain>()
     val body = HashMap<String, MutableList<SimpleCommandBody>>()
 
     fun loadBody(field: Field, instance: Supplier<*>): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
             val annotation = field.getAnnotation(CommandBody::class.java)
             val obj = field.get(instance.get())
-            return if (field.type == SimpleCommandBody::class.java) {
-                (obj as SimpleCommandBody).apply {
-                    name = field.name
-                    aliases = annotation.aliases
-                    optional = annotation.optional
-                    permission = annotation.permission
+            return when (field.type) {
+                SimpleCommandMain::class.java -> {
+                    null
                 }
-            } else {
-                SimpleCommandBody().apply {
-                    name = field.name
-                    aliases = annotation.aliases
-                    optional = annotation.optional
-                    permission = annotation.permission
-                    field.type.declaredFields.forEach {
-                        it.isAccessible = true
-                        children += loadBody(it, instance) ?: return@forEach
+                SimpleCommandBody::class.java -> {
+                    (obj as SimpleCommandBody).apply {
+                        name = field.name
+                        aliases = annotation.aliases
+                        optional = annotation.optional
+                        permission = annotation.permission
+                    }
+                }
+                else -> {
+                    SimpleCommandBody().apply {
+                        name = field.name
+                        aliases = annotation.aliases
+                        optional = annotation.optional
+                        permission = annotation.permission
+                        field.type.declaredFields.forEach {
+                            it.isAccessible = true
+                            children += loadBody(it, instance) ?: return@forEach
+                        }
                     }
                 }
             }
@@ -106,7 +119,11 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
     }
 
     override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
-        body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
+        if (field.isAnnotationPresent(CommandBody::class.java) && field.type == SimpleCommandMain::class.java) {
+            main[clazz.name] = field.get(instance) as SimpleCommandMain
+        } else {
+            body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
+        }
     }
 
     override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
@@ -119,6 +136,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.permission,
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
+                main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandBuilder.CommandComponent) {
                         component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
