@@ -119,8 +119,8 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     packet.setProperty("e", emptyList<Any>())
                     packet.setProperty("f", 0)
                     packet.setProperty("g", 0)
-                    packet.setProperty("h", image.width)
-                    packet.setProperty("i", image.height)
+                    packet.setProperty("h", 128)
+                    packet.setProperty("i", 128)
                     packet.setProperty("j", buffer)
                 }
                 MinecraftVersion.major >= 4 -> {
@@ -134,8 +134,8 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     packet.setProperty("d", emptyList<Any>())
                     packet.setProperty("e", 0)
                     packet.setProperty("f", 0)
-                    packet.setProperty("g", image.width)
-                    packet.setProperty("j", image.height)
+                    packet.setProperty("g", 128)
+                    packet.setProperty("j", 128)
                     packet.setProperty("i", buffer)
                 }
                 else -> {
@@ -144,8 +144,8 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     packet.setProperty("c", emptyList<Any>())
                     packet.setProperty("d", 0)
                     packet.setProperty("e", 0)
-                    packet.setProperty("f", image.width)
-                    packet.setProperty("g", image.height)
+                    packet.setProperty("f", 128)
+                    packet.setProperty("g", 128)
                     packet.setProperty("h", buffer)
                 }
             }
