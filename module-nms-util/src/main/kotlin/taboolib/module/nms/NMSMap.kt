@@ -31,7 +31,8 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
         val classPacketPlayOutSetSlot = nmsClass("PacketPlayOutSetSlot")
         val classPacketPlayOutMap = nmsClass("PacketPlayOutMap")
         val classCraftItemStack = obcClass("inventory.CraftItemStack")
-        val classMapData = nmsClass("net.minecraft.world.level.saveddata.maps.WorldMap\$b")
+
+        val classMapData by lazy { Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap\$b") }
     }
 
     val mapRenderer = object : MapRenderer() {
@@ -61,7 +62,9 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
             }
         }
         if (MinecraftVersion.major >= 5) {
-            map.modifyMeta<MapMeta> { mapView = mapView }
+            map.modifyMeta<MapMeta> {
+                mapView = this@NMSMap.mapView
+            }
         } else {
             map
         }
@@ -103,8 +106,8 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     packet.setProperty("colorPatch", classMapData.unsafeInstance().also {
                         it.setProperty("startX", 0)
                         it.setProperty("startY", 0)
-                        it.setProperty("width", image.width)
-                        it.setProperty("height", image.height)
+                        it.setProperty("width", 128)
+                        it.setProperty("height", 128)
                         it.setProperty("mapColors", buffer)
                     })
                 }
