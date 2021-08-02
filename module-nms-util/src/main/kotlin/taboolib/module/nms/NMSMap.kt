@@ -17,6 +17,7 @@ import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 import taboolib.platform.util.modifyMeta
 import java.awt.image.BufferedImage
+import java.lang.reflect.Array.newInstance
 
 /**
  * 地图发包工具
@@ -57,7 +58,7 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
             buildItem(XMaterial.FILLED_MAP, builder)
         } else {
             buildItem(XMaterial.FILLED_MAP) {
-                damage = mapView.id
+                damage = mapView.invokeMethod<Short>("getId")!!.toInt()
                 builder(this)
             }
         }
@@ -116,7 +117,7 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     packet.setProperty("b", mapView.scale.value)
                     packet.setProperty("c", false)
                     packet.setProperty("d", false)
-                    packet.setProperty("e", emptyList<Any>())
+                    packet.setProperty("e", ArrayList<Any>())
                     packet.setProperty("f", 0)
                     packet.setProperty("g", 0)
                     packet.setProperty("h", 128)
@@ -127,11 +128,11 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                     if (MinecraftVersion.major >= 5) {
                         packet.setProperty("a", (mapItem.itemMeta as MapMeta).mapId)
                     } else {
-                        packet.setProperty("a", mapView.id)
+                        packet.setProperty("a", mapView.invokeMethod<Short>("getId")!!.toInt())
                     }
                     packet.setProperty("b", mapView.scale.value)
                     packet.setProperty("c", false)
-                    packet.setProperty("d", emptyList<Any>())
+                    packet.setProperty("d", java.lang.reflect.Array.newInstance(nmsClass("MapIcon"), 0))
                     packet.setProperty("e", 0)
                     packet.setProperty("f", 0)
                     packet.setProperty("g", 128)
@@ -141,7 +142,7 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
                 else -> {
                     packet.setProperty("a", mapView.id)
                     packet.setProperty("b", mapView.scale.value)
-                    packet.setProperty("c", emptyList<Any>())
+                    packet.setProperty("c", java.lang.reflect.Array.newInstance(nmsClass("MapIcon"), 0))
                     packet.setProperty("d", 0)
                     packet.setProperty("e", 0)
                     packet.setProperty("f", 128)
