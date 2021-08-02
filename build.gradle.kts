@@ -31,17 +31,20 @@ subprojects {
 
 publishing {
     repositories {
-        maven {
-            url = uri("https://repo2s.ptms.ink/repository/maven-releases/")
-            credentials {
-                username = project.findProperty("user").toString()
-                password = project.findProperty("password").toString()
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
+        mavenLocal()
     }
+//    repositories {
+//        maven {
+//            url = uri("https://repo2s.ptms.ink/repository/maven-releases/")
+//            credentials {
+//                username = project.findProperty("user").toString()
+//                password = project.findProperty("password").toString()
+//            }
+//            authentication {
+//                create<BasicAuthentication>("basic")
+//            }
+//        }
+//    }
     publications {
         create<MavenPublication>("maven") {
             artifactId = "taboolib"

@@ -5,8 +5,6 @@ package taboolib.module.nms
 import org.bukkit.entity.Player
 import taboolib.common.Isolated
 import taboolib.platform.util.ItemBuilder
-import java.awt.geom.AffineTransform
-import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
@@ -41,8 +39,7 @@ fun Player.sendMap(image: BufferedImage, width: Int = 128, height: Int = 128, bu
  * 地图最佳显示分辨率为128*128
  */
 fun BufferedImage.zoomed(width: Int = 128, height: Int = 128): BufferedImage {
-    val wRatio = width * 1.0 / width
-    val hRatio = height * 1.0 / height
-    val ato = AffineTransformOp(AffineTransform.getScaleInstance(wRatio, hRatio), null)
-    return ato.filter(this, null)
+    val tag = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+    tag.graphics.drawImage(this, 0, 0, width, height, null)
+    return tag
 }
