@@ -17,19 +17,19 @@ fun ProxyCommandSender.buildMessage(level: LevelType, message: String, vararg ar
     if (file == null) {
         return "Language file not found"
     } else {
-        val prefix = file.nodes["Plugin.Prefix"]
+        val prefix = file.nodes["Level-Prefix"]
         if (prefix != null) {
             when (level) {
                 LevelType.INFO, LevelType.WARN, LevelType.ERROR -> {
                     val info = file.nodes[level.node()]
-                    if (info != null) {
-                        return (asLangText("Plugin.Prefix") + asLangText(level.node()) + MessageFormat.format(
+                    return if (info != null) {
+                        (asLangText("Level-Prefix") + asLangText(level.node()) + MessageFormat.format(
                             message,
                             args
                         ))
                             .colored()
                     } else {
-                        return "Language node not found: ${level.node()}"
+                        "Language node not found: ${level.node()}"
                     }
                 }
                 else -> {
@@ -38,7 +38,7 @@ fun ProxyCommandSender.buildMessage(level: LevelType, message: String, vararg ar
                 }
             }
         } else {
-            return "Language node not found: Plugin.Prefix"
+            return "Language node not found: Level-Prefix"
         }
     }
 }
@@ -127,50 +127,14 @@ fun logAction(action: String, obj: String, vararg args: Any) {
 }
 
 fun printStackTrace(exception: Throwable, packageFilter: String?) {
-    val msg = exception.localizedMessage
-    log("&7===================================&c&l printStackTrace &7===================================")
-    log("&7Exception Type ▶")
-    log("&c" + exception.javaClass.name)
-    log("&c" + if (msg == null || msg.isEmpty()) "&7No description." else msg)
-    // org.serverct.parrot.plugin.Plugin
-    // org.serverct.parrot.plugin.Plugin
-    var lastPackage = ""
-    for (elem in exception.stackTrace) {
-        val key = elem.className
-        var pass = true
-        if (packageFilter != null) {
-            pass = key.contains(packageFilter)
-        }
-        val nameSet = key.split("[.]").toTypedArray()
-        val className = nameSet[nameSet.size - 1]
-        val packageSet = arrayOfNulls<String>(nameSet.size - 2)
-        System.arraycopy(nameSet, 0, packageSet, 0, nameSet.size - 2)
-        val packageName = StringBuilder()
-        var counter = 0
-        for (nameElem in packageSet) {
-            packageName.append(nameElem)
-            if (counter < packageSet.size - 1) {
-                packageName.append(".")
-            }
-            counter++
-        }
-        if (pass) {
-            if (packageName.toString() != lastPackage) {
-                lastPackage = packageName.toString()
-                log("")
-                log("&7Package &c$packageName &7▶")
-            }
-            log("  &7▶ at Class &c" + className + "&7, Method &c" + elem.methodName + "&7. (&c" + elem.fileName + "&7, Line &c" + elem.lineNumber + "&7)")
-        }
-    }
-    log("&7===================================&c&l printStackTrace &7===================================")
+    StackTracePrinter.printStackTrace(exception, packageFilter)
 }
 
 fun logError(action: String, obj: String, exception: String, vararg args: Any) {
-    logError("&7{0} &c{1} &7时遇到错误(&c{2}&7).", action, obj, MessageFormat.format(exception, args))
+    logError("&7$action &c$obj &7时遇到错误(&c{0}&7).", MessageFormat.format(exception, args))
 }
 
 fun logError(action: String, obj: String, e: Throwable, packageFilter: String?) {
-    logError(action, obj, e.toString())
+    logError(action, obj, e.javaClass.name)
     printStackTrace(e, packageFilter)
 }
