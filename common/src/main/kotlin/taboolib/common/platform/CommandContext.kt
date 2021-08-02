@@ -20,12 +20,9 @@ class CommandContext<T>(
     }
 
     fun argument(offset: Int): String {
-        return arguments()[index + offset]
-    }
-
-    fun arguments(): Array<String> {
-        return args.filterIndexed { i, _ -> i <= index }.toTypedArray().also {
-            it[index] = "${it[index]} ${args.filterIndexed { i, _ -> i > index }.joinToString(" ")}"
+        val args = args.filterIndexed { i, _ -> i <= index }.toTypedArray().also {
+            it[index] = "${it[index]} ${args.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim()
         }
+        return args[index + offset]
     }
 }
