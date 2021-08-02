@@ -24,7 +24,7 @@ fun createLocal(path: String): SecuredFile {
             Local.saveAll()
         }
     }
-    return files.computeIfAbsent(path) { SecuredFile.loadConfiguration(newFile(getDataFolder(), path)) }
+    return files.computeIfAbsent(path) { SecuredFile.loadConfiguration(newFile(getDataFolder(), path, create = true)) }
 }
 
 @Isolated

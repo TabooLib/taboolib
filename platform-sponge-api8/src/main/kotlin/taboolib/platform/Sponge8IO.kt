@@ -53,7 +53,7 @@ class Sponge8IO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file, create = true).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

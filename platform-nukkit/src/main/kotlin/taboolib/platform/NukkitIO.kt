@@ -53,7 +53,7 @@ class NukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file, create = true).writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 
