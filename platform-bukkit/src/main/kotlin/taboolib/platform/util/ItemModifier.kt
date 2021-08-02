@@ -27,11 +27,12 @@ fun ItemStack?.isNotAir(): Boolean {
 /**
  * 编辑物品元数据
  */
-fun ItemStack.modifyMeta(func: ItemMeta.() -> Unit): ItemStack {
+@Suppress("UNCHECKED_CAST")
+fun <T : ItemMeta> ItemStack.modifyMeta(func: T.() -> Unit): ItemStack {
     if (isAir()) {
         error("air")
     }
-    return also { itemMeta = itemMeta!!.also(func) }
+    return also { itemMeta = (itemMeta as? T)?.also(func) ?: itemMeta }
 }
 
 /**
@@ -48,7 +49,7 @@ fun ItemStack.modifyLore(func: MutableList<String>.() -> Unit): ItemStack {
     if (isAir()) {
         error("air")
     }
-    return modifyMeta { modifyLore(func) }
+    return modifyMeta<ItemMeta> { modifyLore(func) }
 }
 
 /**

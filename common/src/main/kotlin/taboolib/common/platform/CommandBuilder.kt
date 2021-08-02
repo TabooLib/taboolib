@@ -61,6 +61,7 @@ object CommandBuilder {
             fun process(cur: Int, component: CommandComponent): Boolean {
                 val argument = context.args[cur]
                 val children = component.children(context).firstOrNull {
+                    context.index = cur
                     when (it) {
                         is CommandComponentLiteral -> it.aliases.contains(argument)
                         is CommandComponentDynamic -> {

@@ -84,8 +84,7 @@ class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
     }
 
     override fun build(): ItemStack {
-        return super.build().modifyMeta {
-            this as BookMeta
+        return super.build().modifyMeta<BookMeta> {
             title = "untitled"
             author = "untitled"
             bookPages.forEach {

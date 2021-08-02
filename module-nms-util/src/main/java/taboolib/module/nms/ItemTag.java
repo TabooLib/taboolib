@@ -16,9 +16,9 @@ import java.util.function.Function;
  * @author 坏黑
  * @since 2019-05-24 17:44
  */
-public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
+public class ItemTag extends ItemTagData implements NMSMap<String, ItemTagData> {
 
-    private final Map<String, ItemTagData> value = Maps.newConcurrentMap();
+    private final NMSMap<String, ItemTagData> value = Maps.newConcurrentMap();
 
     public ItemTag() {
         super(0);
@@ -218,7 +218,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void putAll(@NotNull Map m) {
+    public void putAll(@NotNull NMSMap m) {
         this.value.putAll(m);
     }
 

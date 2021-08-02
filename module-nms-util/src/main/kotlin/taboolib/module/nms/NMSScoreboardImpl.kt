@@ -32,7 +32,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
-    override fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean {
+    override fun changeContent(player: Player, content: List<String>, lastContent: NMSMap<Int, String>): Boolean {
         if (content.isEmpty()) {
             val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
             if (MinecraftVersion.isUniversal) {
