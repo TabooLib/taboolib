@@ -43,7 +43,7 @@ abstract class NMSScoreboard {
 
     abstract fun setDisplayName(player: Player, title: String)
 
-    abstract fun changeContent(player: Player, content: List<String>, lastContent: NMSMap<Int, String>): Boolean
+    abstract fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean
 
     abstract fun display(player: Player)
 }
