@@ -9,5 +9,21 @@ package taboolib.common.platform
  */
 enum class Platform {
 
-    BUKKIT, NUKKIT, BUNGEE, VELOCITY, SPONGE_API_7, SPONGE_API_8, UNKNOWN
+    BUKKIT,
+
+    NUKKIT,
+
+    BUNGEE,
+
+    VELOCITY,
+
+    SPONGE_API_7,
+
+    SPONGE_API_8,
+
+    MINESTOM,
+
+    APPLICATION,
+
+    UNKNOWN
 }

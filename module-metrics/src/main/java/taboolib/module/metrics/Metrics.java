@@ -62,6 +62,8 @@ public class Metrics {
             case SPONGE_API_8:
                 platform = "sponge";
                 break;
+            default:
+                throw new IllegalStateException("Unsupported");
         }
         metricsBase = new MetricsBase(
                 platform,
