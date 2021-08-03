@@ -117,6 +117,7 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 + __platform-sponge-api7__: Sponge (api7) 实现
 + __platform-sponge-api8__: Sponge (api8) 实现
 + __platform-velocity__: Velocity 实现
++ __platform-application__: 独立程序实现
 
 ## 相关链接
 
