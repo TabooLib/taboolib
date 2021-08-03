@@ -84,9 +84,8 @@ open class ItemBuilder {
                 itemMeta.getProperty<GameProfile>("profile").also {
                     if (it != null) {
                         try {
-                            skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { it1 -> SkullTexture(it1, it.id) }
-                        } catch (t: Throwable) {
-
+                            skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { t -> SkullTexture(t, it.id) }
+                        } catch (ignored: Throwable) {
                         }
                     }
                 }
