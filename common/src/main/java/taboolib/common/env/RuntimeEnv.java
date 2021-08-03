@@ -73,7 +73,11 @@ public class RuntimeEnv {
                 try {
                     if (!notify) {
                         notify = true;
-                        System.out.println("Loading assets, please wait...");
+                        if (TabooLibCommon.isSysoutCatcherFound()) {
+                            System.console().printf("Loading assets, please wait...\n");
+                        } else {
+                            System.out.println("Loading assets, please wait...");
+                        }
                     }
                     if (resource.zip()) {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");

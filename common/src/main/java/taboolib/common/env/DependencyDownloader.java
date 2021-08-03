@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import taboolib.common.TabooLibCommon;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -103,7 +104,11 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (file.exists()) {
                 if (isDebugMode && !notify) {
                     notify = true;
-                    System.out.println("Loading libraries, please wait...");
+                    if (TabooLibCommon.isSysoutCatcherFound()) {
+                        System.console().printf("Loading libraries, please wait...\n");
+                    } else {
+                        System.out.println("Loading libraries, please wait...");
+                    }
                 }
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());

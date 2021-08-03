@@ -60,9 +60,17 @@ open class Linked<T>(title: String) : Menu(title) {
 
     fun onBuild(async: Boolean = false, onBuild: (inventory: Inventory) -> Unit) {
         if (async) {
-            this.onBuildAsync = onBuild
+            val e = this.onBuildAsync
+            this.onBuildAsync = { inventory ->
+                onBuild(inventory)
+                e(inventory)
+            }
         } else {
-            this.onBuild = onBuild
+            val e = this.onBuild
+            this.onBuild = { inventory ->
+                onBuild(inventory)
+                e(inventory)
+            }
         }
     }
 

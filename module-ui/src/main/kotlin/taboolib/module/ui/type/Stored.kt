@@ -47,9 +47,17 @@ open class Stored(title: String) : Menu(title) {
 
     fun onBuild(async: Boolean = false, onBuild: (player: Player, inventory: Inventory) -> Unit) {
         if (async) {
-            this.onBuildAsync = onBuild
+            val e = this.onBuildAsync
+            this.onBuildAsync = { player, inventory ->
+                onBuild(player, inventory)
+                e(player, inventory)
+            }
         } else {
-            this.onBuild = onBuild
+            val e = this.onBuild
+            this.onBuild = { player, inventory ->
+                onBuild(player, inventory)
+                e(player, inventory)
+            }
         }
     }
 

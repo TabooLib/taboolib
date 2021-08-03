@@ -36,6 +36,17 @@ public class TabooLibCommon {
      */
     private static boolean kotlinSkipped = false;
 
+    private static boolean sysoutCatcherFound = false;
+
+    static {
+        try {
+            // 无法理解 paper 的伞兵行为
+            Class.forName("io.papermc.paper.logging.SysoutCatcher");
+            sysoutCatcherFound = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+    }
+
     /**
      * 用于测试的快速启动方法
      */
@@ -118,5 +129,9 @@ public class TabooLibCommon {
 
     public static void setKotlinSkipped(boolean value) {
         kotlinSkipped = value;
+    }
+
+    public static boolean isSysoutCatcherFound() {
+        return sysoutCatcherFound;
     }
 }
