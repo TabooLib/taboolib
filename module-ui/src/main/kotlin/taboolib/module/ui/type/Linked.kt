@@ -84,10 +84,8 @@ open class Linked<T>(title: String) : Menu(title) {
 
     fun set(slot: Int, itemStack: ItemStack, onClick: ClickEvent.() -> Unit = {}) {
         button[slot] = onClick
-        val e = onBuild
         onBuild {
             it.setItem(slot, itemStack)
-            e(it)
         }
     }
 
@@ -98,10 +96,8 @@ open class Linked<T>(title: String) : Menu(title) {
                 player.openInventory(build())
             }
         }
-        val e = onBuild
         onBuild {
             it.setItem(slot, onGenerate(page, hasNextPage()))
-            e(it)
         }
     }
 
@@ -112,10 +108,8 @@ open class Linked<T>(title: String) : Menu(title) {
                 player.openInventory(build())
             }
         }
-        val e = onBuild
         onBuild {
             it.setItem(slot, onGenerate(page, hasPreviousPage()))
-            e(it)
         }
     }
 
