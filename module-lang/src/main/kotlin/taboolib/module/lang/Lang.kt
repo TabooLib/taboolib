@@ -57,11 +57,7 @@ fun ProxyCommandSender.getLocale(): String {
 
 fun ProxyCommandSender.getLocaleFile(): LanguageFile? {
     val locale = getLocale()
-    sendMessage("locale 2: $locale")
-    val file = Language.languageFile.entries.firstOrNull { it.key.equals(locale, true) }?.value ?: Language.languageFile.values.firstOrNull()
-    sendMessage("locale 3: ${Language.languageFile.keys}")
-    sendMessage("locale 4: ${file?.file}")
-    return file
+    return Language.languageFile.entries.firstOrNull { it.key.equals(locale, true) }?.value ?: Language.languageFile.values.firstOrNull()
 }
 
 fun registerLanguage(vararg code: String) {
