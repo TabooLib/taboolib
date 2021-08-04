@@ -84,9 +84,8 @@ open class ItemBuilder {
                 itemMeta.getProperty<GameProfile>("profile").also {
                     if (it != null) {
                         try {
-                            skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { it1 -> SkullTexture(it1, it.id) }
-                        } catch (t: Throwable) {
-
+                            skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { t -> SkullTexture(t, it.id) }
+                        } catch (ignored: Throwable) {
                         }
                     }
                 }
@@ -152,6 +151,7 @@ open class ItemBuilder {
         itemMeta.setDisplayName(name)
         itemMeta.lore = lore
         itemMeta.addItemFlags(*flags.toTypedArray())
+        itemStack.amount = amount
         if (itemMeta is EnchantmentStorageMeta) {
             enchants.forEach { (e, lvl) -> itemMeta.addStoredEnchant(e, lvl, true) }
         } else {
@@ -210,7 +210,7 @@ open class ItemBuilder {
             warning("CustomModelData not supported yet.")
         }
         itemStack.itemMeta = itemMeta
-        itemStack.durability = damage.toShort()
+        itemStack.durability = (if (material.data.toInt() == 0) damage else material.data).toShort()
         return itemStack
     }
 }

@@ -27,7 +27,7 @@ class TellrawJson {
         if (sender is ProxyPlayer) {
             sender.sendRawMessage(toRawMessage())
         } else {
-            sender.sendMessage(toPlainText())
+            sender.sendMessage(toLegacyText())
         }
     }
 
