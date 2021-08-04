@@ -71,10 +71,13 @@ object Language {
     }
 
     fun getLocale(player: ProxyPlayer): String {
-        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale] ?: player.locale).run {
+        player.sendMessage("locale 0: ${player.locale} -> ${languageCodeTransfer[player.locale]}")
+        val locale = PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale] ?: player.locale).run {
             call()
             locale
         }
+        player.sendMessage("locale 1: $locale")
+        return locale
     }
 
     fun getLocale(): String {

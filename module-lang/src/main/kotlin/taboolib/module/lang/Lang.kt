@@ -57,11 +57,10 @@ fun ProxyCommandSender.getLocale(): String {
 
 fun ProxyCommandSender.getLocaleFile(): LanguageFile? {
     val locale = getLocale()
-    sendMessage("locale 0: $locale")
-
+    sendMessage("locale 2: $locale")
     val file = Language.languageFile.entries.firstOrNull { it.key.equals(locale, true) }?.value ?: Language.languageFile.values.firstOrNull()
-    sendMessage("locale 1: ${Language.languageFile.keys}")
-    sendMessage("locale 2: ${file?.file}")
+    sendMessage("locale 3: ${Language.languageFile.keys}")
+    sendMessage("locale 4: ${file?.file}")
     return file
 }
 
