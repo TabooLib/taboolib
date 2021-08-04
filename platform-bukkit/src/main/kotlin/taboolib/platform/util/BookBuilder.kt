@@ -76,7 +76,7 @@ class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
     }
 
     fun write(text: TellrawJson) {
-        bookPages += Text(text.toRawMessage())
+        writeRaw(text.toRawMessage())
     }
 
     fun writeRaw(text: String) {

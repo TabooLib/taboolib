@@ -21,8 +21,8 @@ class TypeText : Type {
         }
     }
 
-    fun asText(sender: ProxyCommandSender, def: String? = null, vararg args: Any): String? {
-        return text?.replaceWithOrder(*args)?.translate(sender) ?: def
+    fun asText(sender: ProxyCommandSender, vararg args: Any): String? {
+        return text?.replaceWithOrder(*args)?.translate(sender)
     }
 
     override fun init(source: Map<String, Any>) {

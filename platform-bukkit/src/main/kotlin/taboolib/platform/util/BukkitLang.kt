@@ -13,8 +13,8 @@ fun CommandSender.sendLang(node: String, vararg args: Any) {
     adaptCommandSender(this).sendLang(node, *args)
 }
 
-fun CommandSender.asLangText(node: String, vararg args: Any): String? {
-    return adaptCommandSender(this).asLangText(node, null, *args)
+fun CommandSender.asLangText(node: String, vararg args: Any): String {
+    return adaptCommandSender(this).asLangText(node, *args)
 }
 
 fun CommandSender.asLangTextList(node: String, vararg args: Any): List<String> {
