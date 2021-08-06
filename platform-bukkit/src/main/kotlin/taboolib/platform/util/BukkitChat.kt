@@ -33,6 +33,7 @@ internal object ChatListener {
     fun e(e: AsyncPlayerChatEvent) {
         if (inputs.containsKey(e.player.name)) {
             inputs.remove(e.player.name)?.invoke(e.message)
+            e.isCancelled = true
         }
     }
 }
