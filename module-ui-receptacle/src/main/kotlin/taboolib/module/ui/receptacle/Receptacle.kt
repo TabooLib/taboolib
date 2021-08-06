@@ -19,7 +19,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
 
     private var onClick: ((player: Player, event: ReceptacleInteractEvent) -> Unit) = { _, _ -> }
 
-    private val contents = arrayOfNulls<ItemStack?>(type.totalSize)
+    private val contents by lazy { arrayOfNulls<ItemStack?>(type.totalSize) }
 
     private var hidePlayerInventory = false
 

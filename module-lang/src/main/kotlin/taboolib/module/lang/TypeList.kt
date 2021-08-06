@@ -12,7 +12,7 @@ import taboolib.common.platform.ProxyCommandSender
 class TypeList(val list: List<Type>) : Type {
 
     fun asTextList(sender: ProxyCommandSender, vararg args: Any): List<String> {
-        return list.filterIsInstance<TypeText>().mapNotNull { it.asText(sender, null, *args) }
+        return list.filterIsInstance<TypeText>().mapNotNull { it.asText(sender, *args) }
     }
 
     override fun init(source: Map<String, Any>) {

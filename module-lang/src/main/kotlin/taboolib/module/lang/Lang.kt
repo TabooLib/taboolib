@@ -17,14 +17,14 @@ fun ProxyCommandSender.sendLang(node: String, vararg args: Any) {
     }
 }
 
-fun ProxyCommandSender.asLangText(node: String, def: String? = null, vararg args: Any): String {
+fun ProxyCommandSender.asLangText(node: String, vararg args: Any): String {
     val file = getLocaleFile()
     return if (file == null) {
         "Language file not found"
     } else {
         val type = file.nodes[node]
         if (type is TypeText) {
-            type.asText(this, def, *args).toString()
+            type.asText(this, *args) ?: ""
         } else {
             "Language node not found: $node"
         }
@@ -38,7 +38,7 @@ fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<Stri
     } else {
         when (val type = file.nodes[node]) {
             is TypeText -> {
-                val text = type.asText(this, null, *args)
+                val text = type.asText(this, *args)
                 if (text != null) listOf(text) else emptyList()
             }
             is TypeList -> {
