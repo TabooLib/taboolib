@@ -24,7 +24,7 @@ import taboolib.platform.util.toNukkit
 @PlatformSide([Platform.NUKKIT])
 class NukkitAdapter : PlatformAdapter {
 
-    private val plugin = NukkitPlugin.getInstance()
+    private val plugin by lazy { NukkitPlugin.getInstance() }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {

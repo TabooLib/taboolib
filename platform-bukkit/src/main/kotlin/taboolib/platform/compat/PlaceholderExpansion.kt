@@ -43,9 +43,34 @@ interface PlaceholderExpansion {
     @Awake
     object PlaceholderRegister : Injector.Classes {
 
+        val hooked = try {
+            Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion")
+            true
+        } catch (ignored: ClassNotFoundException) {
+            false
+        }
+
         override fun inject(clazz: Class<*>, instance: Supplier<*>) {
-            if (clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
-                PlaceholderProxy(instance.get() as PlaceholderExpansion).register()
+            if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
+                val expansion = instance.get() as PlaceholderExpansion
+                object : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
+
+                    override fun getIdentifier(): String {
+                        return expansion.identifier
+                    }
+
+                    override fun getAuthor(): String {
+                        return BukkitPlugin.getInstance().description.authors.toString()
+                    }
+
+                    override fun getVersion(): String {
+                        return BukkitPlugin.getInstance().description.version
+                    }
+
+                    override fun onPlaceholderRequest(player: Player, params: String): String {
+                        return expansion.onPlaceholderRequest(player, params)
+                    }
+                }.register()
             }
         }
 
@@ -57,24 +82,5 @@ interface PlaceholderExpansion {
 
         override val priority: Byte
             get() = 0
-    }
-
-    class PlaceholderProxy(val expansion: PlaceholderExpansion) : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
-
-        override fun getIdentifier(): String {
-            return expansion.identifier
-        }
-
-        override fun getAuthor(): String {
-            return BukkitPlugin.getInstance().description.authors.toString()
-        }
-
-        override fun getVersion(): String {
-            return BukkitPlugin.getInstance().description.version
-        }
-
-        override fun onPlaceholderRequest(player: Player, params: String): String {
-            return expansion.onPlaceholderRequest(player, params)
-        }
     }
 }

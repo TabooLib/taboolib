@@ -20,7 +20,7 @@ import taboolib.platform.type.VelocityPlayer
 @PlatformSide([Platform.VELOCITY])
 class VelocityAdapter : PlatformAdapter {
 
-    val plugin = VelocityPlugin.getInstance()
+    val plugin by lazy { VelocityPlugin.getInstance() }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> server(): T {
