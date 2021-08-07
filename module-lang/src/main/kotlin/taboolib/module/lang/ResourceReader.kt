@@ -1,6 +1,5 @@
 package taboolib.module.lang
 
-import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.platform.submit
 import taboolib.common.platform.warning
@@ -24,7 +23,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm")
 
     init {
-        val folder = File(getDataFolder(), "lang")
         Language.languageCode.forEach { code ->
             val resourceAsStream = clazz.classLoader.getResourceAsStream("lang/$code.yml")
             if (resourceAsStream != null) {
