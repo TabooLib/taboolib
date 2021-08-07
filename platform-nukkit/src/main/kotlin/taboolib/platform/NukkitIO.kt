@@ -33,6 +33,9 @@ class NukkitIO : PlatformIO {
     override val pluginId: String
         get() = NukkitPlugin.getInstance().name
 
+    override val pluginVersion: String
+        get() = NukkitPlugin.getInstance().description.version
+
     override val isPrimaryThread: Boolean
         get() = NukkitPlugin.getInstance().server.isPrimaryThread
 
@@ -53,7 +56,7 @@ class NukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file, create = true).writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(NukkitPlugin.getInstance().getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

@@ -7,6 +7,8 @@ interface PlatformIO {
 
     val pluginId: String
 
+    val pluginVersion: String
+
     val isPrimaryThread: Boolean
 
     fun info(vararg message: Any?)

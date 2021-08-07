@@ -32,6 +32,9 @@ class BungeeIO : PlatformIO {
     override val pluginId: String
         get() = BungeePlugin.getInstance().description.name
 
+    override val pluginVersion: String
+        get() = BungeePlugin.getInstance().description.version
+
     override val isPrimaryThread: Boolean
         get() = true
 
@@ -52,7 +55,7 @@ class BungeeIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file, create = true).writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

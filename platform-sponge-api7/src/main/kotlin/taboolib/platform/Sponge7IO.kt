@@ -33,6 +33,9 @@ class Sponge7IO : PlatformIO {
     override val pluginId: String
         get() = Sponge7Plugin.getInstance().pluginContainer.id
 
+    override val pluginVersion: String
+        get() = Sponge7Plugin.getInstance().pluginContainer.version.orElse("null")
+
     override val isPrimaryThread: Boolean
         get() = Sponge.getServer().isMainThread
 
@@ -53,7 +56,7 @@ class Sponge7IO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file, create = true).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

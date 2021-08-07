@@ -12,6 +12,9 @@ import java.util.*
 val pluginId: String
     get() = platformIO.pluginId
 
+val pluginVersion: String
+    get() = platformIO.pluginVersion
+
 val isPrimaryThread: Boolean
     get() = platformIO.isPrimaryThread
 

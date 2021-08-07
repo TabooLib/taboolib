@@ -27,6 +27,9 @@ class BukkitIO : PlatformIO {
     override val pluginId: String
         get() = plugin.description.name
 
+    override val pluginVersion: String
+        get() = plugin.description.version
+
     override val isPrimaryThread: Boolean
         get() = Bukkit.isPrimaryThread()
 
@@ -47,7 +50,7 @@ class BukkitIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file, create = true).writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

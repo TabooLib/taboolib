@@ -33,6 +33,9 @@ class VelocityIO : PlatformIO {
     override val pluginId: String
         get() = VelocityPlugin::class.java.getAnnotation(Plugin::class.java).id
 
+    override val pluginVersion: String
+        get() = VelocityPlugin::class.java.getAnnotation(Plugin::class.java).version
+
     override val isPrimaryThread: Boolean
         get() = true
 
@@ -53,7 +56,7 @@ class VelocityIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file, create = true).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(javaClass.classLoader.getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
         return file
     }
 

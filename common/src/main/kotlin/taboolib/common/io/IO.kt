@@ -14,9 +14,7 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.util.function.Supplier
 import java.util.jar.JarFile
-import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
-import java.util.zip.ZipOutputStream
+import java.util.zip.*
 
 val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
 
@@ -123,40 +121,15 @@ fun File.deepDelete() {
     }
 }
 
-fun File.toZip(target: File) {
-    FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { it -> it.toZip(this, "") } }
+fun File.zip(target: File) {
+    FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { it.putFile(this, "") } }
 }
 
-fun File.toZipSkipDirectory(target: File) {
-    FileOutputStream(target).use { fileOutputStream ->
-        ZipOutputStream(fileOutputStream).use { zipOutputStream ->
-            if (isDirectory) {
-                listFiles()?.forEach { zipOutputStream.toZip(it, "") }
-            } else {
-                zipOutputStream.toZip(this, "")
-            }
-        }
-    }
+fun File.unzip(target: File) {
+    unzip(target.path)
 }
 
-fun ZipOutputStream.toZip(file: File, path: String) {
-    if (file.isDirectory) {
-        file.listFiles()?.forEach { toZip(it, path + file.name + "/") }
-    } else {
-        FileInputStream(file).use {
-            putNextEntry(ZipEntry(path + file.name))
-            write(it.readBytes())
-            flush()
-            closeEntry()
-        }
-    }
-}
-
-fun File.fromZip(target: File) {
-    fromZip(target.path)
-}
-
-fun File.fromZip(destDirPath: String) {
+fun File.unzip(destDirPath: String) {
     ZipFile(this).use { zipFile ->
         zipFile.stream().forEach { entry ->
             if (entry.isDirectory) {
@@ -166,6 +139,24 @@ fun File.fromZip(destDirPath: String) {
                     File(destDirPath + "/" + entry.name).writeBytes(it.readBytes())
                 }
             }
+        }
+    }
+}
+
+fun ByteArray.zip(): ByteArray {
+    ByteArrayOutputStream().use { byteArrayOutputStream ->
+        GZIPOutputStream(byteArrayOutputStream).use { gzipOutputStream ->
+            gzipOutputStream.write(this)
+            gzipOutputStream.flush()
+        }
+        return byteArrayOutputStream.toByteArray()
+    }
+}
+
+fun ByteArray.unzip(): ByteArray {
+    ByteArrayInputStream(this).use { byteArrayOutputStream ->
+        GZIPInputStream(byteArrayOutputStream).use { gzipInputStream ->
+            return gzipInputStream.readBytes()
         }
     }
 }
@@ -190,15 +181,15 @@ fun <T> ByteArray.deserialize(reader: ObjectInputStream.() -> Unit = {}): T {
     }
 }
 
-fun newFile(file: File, path: String, create: Boolean = false): File {
+fun newFile(file: File, path: String, create: Boolean = true): File {
     return newFile(File(file, path), create)
 }
 
-fun newFile(path: String, create: Boolean = false): File {
+fun newFile(path: String, create: Boolean = true): File {
     return newFile(File(path), create)
 }
 
-fun newFile(file: File, create: Boolean = false): File {
+fun newFile(file: File, create: Boolean = true): File {
     if (!file.parentFile.exists()) {
         file.parentFile.mkdirs()
     }
@@ -206,4 +197,17 @@ fun newFile(file: File, create: Boolean = false): File {
         file.createNewFile()
     }
     return file
+}
+
+private fun ZipOutputStream.putFile(file: File, path: String) {
+    if (file.isDirectory) {
+        file.listFiles()?.forEach { putFile(it, path + file.name + "/") }
+    } else {
+        FileInputStream(file).use {
+            putNextEntry(ZipEntry(path + file.name))
+            write(it.readBytes())
+            flush()
+            closeEntry()
+        }
+    }
 }
