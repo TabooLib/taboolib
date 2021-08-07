@@ -94,7 +94,7 @@ open class ItemBuilder {
         }
         try {
             customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
-        } catch (ex: NoSuchMethodException) {
+        } catch (ex: NoSuchFieldException) {
         }
         try {
             isUnbreakable = itemMeta.isUnbreakable
@@ -185,30 +185,26 @@ open class ItemBuilder {
         } catch (ex: NoSuchMethodError) {
             try {
                 itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Any>("setUnbreakable", isUnbreakable)
-            } catch (ex: NoSuchMethodException) {
-                warning("Unbreakable not supported yet.")
+            } catch (ignored: NoSuchMethodException) {
             }
         }
         try {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
-        } catch (ex: NoClassDefFoundError) {
-            warning("SpawnEggMeta not supported yet.")
+        } catch (ignored: NoClassDefFoundError) {
         }
         try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
-        } catch (ex: NoClassDefFoundError) {
-            warning("BannerMeta not supported yet.")
+        } catch (ignored: NoClassDefFoundError) {
         }
         try {
             if (customModelData != -1) {
                 itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
             }
-        } catch (ex: NoSuchMethodException) {
-            warning("CustomModelData not supported yet.")
+        } catch (ignored: NoSuchMethodException) {
         }
         itemStack.itemMeta = itemMeta
         itemStack.durability = (if (material.data.toInt() == 0) damage else material.data).toShort()

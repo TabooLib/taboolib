@@ -1,5 +1,7 @@
 package taboolib.module.lang
 
+import taboolib.common.io.newFile
+import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.platform.submit
 import taboolib.common.platform.warning
@@ -23,6 +25,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm")
 
     init {
+        val folder = File(getDataFolder(), "lang")
         Language.languageCode.forEach { code ->
             val resourceAsStream = clazz.classLoader.getResourceAsStream("lang/$code.yml")
             if (resourceAsStream != null) {
@@ -32,10 +35,13 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = releaseResourceFile("lang/$code.yml")
+                val file = File(folder, "$code.yml")
                 // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
+                }
+                if (!file.exists()) {
+                    newFile(file).writeText(source, StandardCharsets.UTF_8)
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
