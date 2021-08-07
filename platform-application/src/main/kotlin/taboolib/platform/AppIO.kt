@@ -22,6 +22,9 @@ class AppIO : PlatformIO {
     override val pluginId: String
         get() = "application"
 
+    override val pluginVersion: String
+        get() = "application"
+
     override val isPrimaryThread: Boolean
         get() = true
 
