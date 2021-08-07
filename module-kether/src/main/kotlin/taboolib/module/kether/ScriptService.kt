@@ -7,7 +7,6 @@ import io.izzel.kether.common.api.QuestRegistry
 import io.izzel.kether.common.api.QuestService
 import io.izzel.kether.common.api.ServiceHolder
 import taboolib.common.platform.getDataFolder
-import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
@@ -23,11 +22,7 @@ import java.util.concurrent.ScheduledExecutorService
 object ScriptService : QuestService<ScriptContext> {
 
     init {
-        try {
-            ServiceHolder::class.java.setProperty("INSTANCE", ScriptService, fixed = true)
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
-        }
+        ServiceHolder.setQuestServiceInstance(this)
     }
 
     private val registry = DefaultRegistry()
@@ -74,7 +69,7 @@ object ScriptService : QuestService<ScriptContext> {
     }
 
     override fun getLocalizedText(node: String, vararg params: Any): String {
-        return locale.getString(node, "<ERROR:${node}>:${params.joinToString(",") { it.toString() }}").replaceWithOrder(*params)
+        return locale.getString(node, "{$node}").replaceWithOrder(*params)
     }
 
     override fun startQuest(context: ScriptContext) {

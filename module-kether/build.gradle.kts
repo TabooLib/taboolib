@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
-    implementation("io.izzel.kether:common:1.0.15")
+    implementation("io.izzel.kether:common:1.0.16")
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("ink.ptms.core:v11200:11200:all")
     compileOnly("com.google.guava:guava:17.0")
@@ -19,7 +19,7 @@ tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
         dependencies {
-            include(dependency("io.izzel.kether:common:1.0.15"))
+            include(dependency("io.izzel.kether:common:1.0.16"))
         }
         exclude("io/izzel/kether/common/util/Coerce.class")
         exclude("LICENSE")
@@ -28,7 +28,17 @@ tasks {
         // openapi
         relocate("taboolib.module.kether.ScriptProperty", "openapi.kether.ScriptProperty")
         relocate("taboolib.module.kether.ScriptActionParser", "openapi.kether.ScriptActionParser")
-        relocate("io.izzel.kether.common.api.QuestActionParser", "openapi.kether.QuestActionParser")
+        relocate("io.izzel.kether.common.loader.QuestReader", "openapi.kether.QuestReader")
+        relocate("io.izzel.kether.common.loader.LoadError", "openapi.kether.LoadError")
+        relocate("io.izzel.kether.common.loader.ArgType", "openapi.kether.ArgType")
+        relocate("io.izzel.kether.common.loader.types", "openapi.kether")
+        relocate("io.izzel.kether.common.util", "openapi.kether")
+        relocate("io.izzel.kether.common.api.ServiceHolder", "openapi.kether.ServiceHolder")
+        relocate("io.izzel.kether.common.api.ParsedAction", "openapi.kether.ParsedAction")
+        relocate("io.izzel.kether.common.api.Quest", "openapi.kether.Quest")
+        relocate("io.izzel.kether.common.api.data.ExitStatus", "openapi.kether.ExitStatus")
+        relocate("io.izzel.kether.common.api.data.QuestFuture", "openapi.kether.QuestFuture")
+        relocate("io.izzel.kether.common.api.data.VarString", "openapi.kether.VarString")
         // relocate
         relocate("io.izzel.kether.common.util.Coerce", "taboolib.common5.Coerce")
         relocate("io.izzel.kether.common.api.data", "taboolib.library.kether")

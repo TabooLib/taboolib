@@ -16,7 +16,7 @@ import java.util.jar.JarFile
  * @author sky
  * @since 2021/6/18 10:43 下午
  */
-@SkipTo(LifeCycle.LOAD)
+@SkipTo(LifeCycle.INIT)
 object Language {
 
     private var firstLoaded = false
@@ -72,14 +72,14 @@ object Language {
     }
 
     fun getLocale(player: ProxyPlayer): String {
-        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale] ?: player.locale).run {
+        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale.lowercase()] ?: player.locale).run {
             call()
             locale
         }
     }
 
     fun getLocale(): String {
-        val code = Locale.getDefault().toLanguageTag().replace("-", "_")
+        val code = Locale.getDefault().toLanguageTag().replace("-", "_").lowercase()
         return SystemSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
             call()
             locale

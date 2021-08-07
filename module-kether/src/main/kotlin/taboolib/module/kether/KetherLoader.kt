@@ -9,7 +9,9 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.getOpenContainers
 import taboolib.common.util.asList
 import java.lang.reflect.Method
+import java.util.*
 import java.util.function.Supplier
+import kotlin.collections.ArrayList
 
 /**
  * TabooLibKotlin

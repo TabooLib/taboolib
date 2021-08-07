@@ -16,7 +16,7 @@ import java.util.function.Supplier
 import java.util.jar.JarFile
 import java.util.zip.*
 
-val runningClasses = TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()
+val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
 
 fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     try {

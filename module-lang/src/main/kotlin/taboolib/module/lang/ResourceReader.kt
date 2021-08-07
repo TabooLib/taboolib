@@ -1,7 +1,5 @@
 package taboolib.module.lang
 
-import taboolib.common.io.newFile
-import taboolib.common.platform.getDataFolder
 import taboolib.common.platform.releaseResourceFile
 import taboolib.common.platform.submit
 import taboolib.common.platform.warning
@@ -25,7 +23,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     val dateFormat = SimpleDateFormat("yyyy/MM/dd HH:mm")
 
     init {
-        val folder = File(getDataFolder(), "lang")
         Language.languageCode.forEach { code ->
             val resourceAsStream = clazz.classLoader.getResourceAsStream("lang/$code.yml")
             if (resourceAsStream != null) {
@@ -35,13 +32,10 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = File(folder, "$code.yml")
+                val file = releaseResourceFile("lang/$code.yml")
                 // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
-                }
-                if (!file.exists()) {
-                    newFile(file).writeText(source, StandardCharsets.UTF_8)
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
@@ -70,7 +64,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     @Suppress("SimplifiableCallChain")
     fun loadNodes(file: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
-        checkLegacyVersion(file)
+        migrateLegacyVersion(file)
         file.getKeys(false).forEach { node ->
             when (val obj = file.get(node)) {
                 is String -> {
@@ -99,8 +93,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     }
 
     private fun loadNode(map: Map<String, Any>, code: String, node: String?): Type? {
-        return if (map.containsKey("type")) {
-            val type = map["type"].toString().lowercase()
+        return if (map.containsKey("type") || map.containsKey("==")) {
+            val type = (map["type"] ?: map["=="]).toString().lowercase()
             val typeInstance = Language.languageType[type]?.getDeclaredConstructor()?.newInstance()
             if (typeInstance != null) {
                 typeInstance.init(map)
@@ -114,7 +108,10 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
-    private fun checkLegacyVersion(file: SecuredFile) {
+    private fun migrateLegacyVersion(file: SecuredFile) {
+        if (file.file == null) {
+            return
+        }
         var fixed = false
         file.getValues(true).forEach {
             if (it.key.contains('.')) {

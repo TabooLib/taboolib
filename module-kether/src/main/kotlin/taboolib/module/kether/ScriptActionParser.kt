@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.KetherCompleters
 import io.izzel.kether.common.api.QuestAction
 import io.izzel.kether.common.api.QuestActionParser
 import io.izzel.kether.common.loader.QuestReader
@@ -26,6 +25,6 @@ class ScriptActionParser<T>(val resolve: (QuestReader) -> QuestAction<T>) : Ques
     }
 
     override fun complete(params: MutableList<String>): MutableList<String> {
-        return KetherCompleters.seq(KetherCompleters.consume()).apply(params)
+        return ArrayList()
     }
 }
