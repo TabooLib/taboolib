@@ -1,6 +1,7 @@
 package taboolib.module.lang
 
 import taboolib.common.platform.getDataFolder
+import taboolib.common.platform.releaseResourceFile
 import taboolib.common.platform.submit
 import taboolib.common.platform.warning
 import taboolib.common5.FileWatcher
@@ -32,16 +33,11 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 val sourceFile = SecuredFile.loadConfiguration(source)
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
-                val file = File(folder, "$code.yml")
+                // 释放文件
+                val file = releaseResourceFile("lang/$code.yml")
+                // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
-                }
-                if (!file.exists()) {
-                    if (!file.parentFile.exists()) {
-                        file.parentFile.mkdirs()
-                    }
-                    file.createNewFile()
-                    file.writeText(source, StandardCharsets.UTF_8)
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
@@ -49,21 +45,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 检查缺失
                 val missingKeys = nodes.keys.filter { !exists.containsKey(it) }
                 if (missingKeys.isNotEmpty() && migrate) {
-                    // 更新
-                    submit(async = true) {
-                        val append = ArrayList<String>()
-                        append += "# ------------------------- #"
-                        append += "#  UPDATE ${dateFormat.format(System.currentTimeMillis())}  #"
-                        append += "# ------------------------- #"
-                        append += ""
-                        missingKeys.forEach { key ->
-                            val obj = sourceFile[key]
-                            if (obj != null) {
-                                append += SecuredFile.dumpAll(key, obj)
-                            }
-                        }
-                        file.appendText("\n${append.joinToString("\n")}")
-                    }
+                    // 更新文件
+                    migrateFile(missingKeys, sourceFile, file)
                 }
                 nodes += exists
                 files[code] = LanguageFile(file, nodes).also {
@@ -82,9 +65,10 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     }
 
     @Suppress("SimplifiableCallChain")
-    fun loadNodes(sourceFile: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
-        sourceFile.getKeys(false).forEach { node ->
-            when (val obj = sourceFile.get(node)) {
+    fun loadNodes(file: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
+        checkLegacyVersion(file)
+        file.getKeys(false).forEach { node ->
+            when (val obj = file.get(node)) {
                 is String -> {
                     nodesMap[node] = TypeText(obj)
                 }
@@ -123,6 +107,37 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         } else {
             warning("Missing language type: $map ($code)")
             null
+        }
+    }
+
+    private fun checkLegacyVersion(file: SecuredFile) {
+        var fixed = false
+        file.getValues(true).forEach {
+            if (it.key.contains('.')) {
+                fixed = true
+                file.set(it.key, null)
+                file.set(it.key.replace('.', '-'), it.value)
+            }
+        }
+        if (fixed) {
+            file.saveToFile()
+        }
+    }
+
+    private fun migrateFile(missing: List<String>, source: SecuredFile, file: File) {
+        submit(async = true) {
+            val append = ArrayList<String>()
+            append += "# ------------------------- #"
+            append += "#  UPDATE ${dateFormat.format(System.currentTimeMillis())}  #"
+            append += "# ------------------------- #"
+            append += ""
+            missing.forEach { key ->
+                val obj = source[key]
+                if (obj != null) {
+                    append += SecuredFile.dumpAll(key, obj)
+                }
+            }
+            file.appendText("\n${append.joinToString("\n")}")
         }
     }
 
