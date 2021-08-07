@@ -2,6 +2,7 @@
 
 package taboolib.platform.util
 
+import com.google.common.collect.Multimap
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import org.bukkit.ChatColor
@@ -82,11 +83,17 @@ open class ItemBuilder {
                     skullOwner = itemMeta.owner
                 }
                 itemMeta.getProperty<GameProfile>("profile").also {
-                    if (it != null) {
-                        try {
-                            skullTexture = it.properties.getProperty<Property>("textures")?.value?.let { t -> SkullTexture(t, it.id) }
-                        } catch (ignored: Throwable) {
+                    try {
+                        var name: String? = null
+                        for (property in it!!.properties.get("textures")) {
+                            if (property.name == "textures") {
+                                name = property.value
+                                break
+                            }
                         }
+                        skullTexture = SkullTexture(name!!, it.id)
+                    } catch (ignored: Throwable) {
+
                     }
                 }
             }
