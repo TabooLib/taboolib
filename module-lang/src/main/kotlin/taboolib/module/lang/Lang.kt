@@ -6,35 +6,33 @@ import taboolib.common.platform.ProxyPlayer
 fun ProxyCommandSender.sendLang(node: String, vararg args: Any) {
     val file = getLocaleFile()
     if (file == null) {
-        sendMessage("Language file not found")
+        sendMessage("{$node}")
     } else {
         val type = file.nodes[node]
         if (type != null) {
             type.send(this, *args)
         } else {
-            sendMessage("Language node not found: $node")
+            sendMessage("{$node}")
         }
     }
 }
 
 fun ProxyCommandSender.asLangText(node: String, vararg args: Any): String {
+    return asLangTextOrNull(node, *args) ?: "{$node}"
+}
+
+fun ProxyCommandSender.asLangTextOrNull(node: String, vararg args: Any): String? {
     val file = getLocaleFile()
-    return if (file == null) {
-        "Language file not found"
-    } else {
-        val type = file.nodes[node]
-        if (type is TypeText) {
-            type.asText(this, *args) ?: ""
-        } else {
-            "Language node not found: $node"
-        }
+    if (file != null) {
+        return (file.nodes[node] as? TypeText)?.asText(this, *args)
     }
+    return null
 }
 
 fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<String> {
     val file = getLocaleFile()
     return if (file == null) {
-        listOf("Language file not found")
+        listOf("{$node}")
     } else {
         when (val type = file.nodes[node]) {
             is TypeText -> {
@@ -45,7 +43,7 @@ fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<Stri
                 type.asTextList(this, *args)
             }
             else -> {
-                listOf("Language node not found: $node")
+                listOf("{$node}")
             }
         }
     }

@@ -30,15 +30,16 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
+import taboolib.common.reflect.Reflex;
+import taboolib.platform.util.ItemBuilder;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -80,8 +81,8 @@ public class XSkull {
     }
 
     @SuppressWarnings("deprecation")
-    @Nonnull
-    public static ItemStack getSkull(@Nonnull UUID id) {
+    @NotNull
+    public static ItemStack getSkull(@NotNull UUID id) {
         ItemStack head = XMaterial.PLAYER_HEAD.parseItem();
         SkullMeta meta = (SkullMeta) head.getItemMeta();
         if (SUPPORTS_UUID) {
@@ -94,8 +95,8 @@ public class XSkull {
     }
 
     @SuppressWarnings("deprecation")
-    @Nonnull
-    public static SkullMeta applySkin(@Nonnull ItemMeta head, @Nonnull OfflinePlayer identifier) {
+    @NotNull
+    public static SkullMeta applySkin(@NotNull ItemMeta head, @NotNull OfflinePlayer identifier) {
         SkullMeta meta = (SkullMeta) head;
         if (SUPPORTS_UUID) {
             meta.setOwningPlayer(identifier);
@@ -105,29 +106,31 @@ public class XSkull {
         return meta;
     }
 
-    @Nonnull
-    public static SkullMeta applySkin(@Nonnull ItemMeta head, @Nonnull UUID identifier) {
+    @NotNull
+    public static SkullMeta applySkin(@NotNull ItemMeta head, @NotNull UUID identifier) {
         return applySkin(head, Bukkit.getOfflinePlayer(identifier));
     }
 
     @SuppressWarnings("deprecation")
-    @Nonnull
-    public static SkullMeta applySkin(@Nonnull ItemMeta head, @Nonnull String identifier) {
+    public static void applySkin(@NotNull ItemMeta head, @NotNull String identifier) {
         SkullMeta meta = (SkullMeta) head;
         if (isUsername(identifier)) {
-            return applySkin(head, Bukkit.getOfflinePlayer(identifier));
+            applySkin(head, Bukkit.getOfflinePlayer(identifier));
+            return;
         }
         if (identifier.contains("textures.minecraft.net")) {
-            return getValueFromTextures(meta, identifier);
+            getValueFromTextures(meta, identifier);
+            return;
         }
         if (identifier.length() > 100 && isBase64(identifier)) {
-            return getSkullByValue(meta, identifier);
+            getSkullByValue(meta, identifier);
+            return;
         }
-        return getTexturesFromUrlValue(meta, identifier);
+        getTexturesFromUrlValue(meta, identifier);
     }
 
-    @Nonnull
-    protected static SkullMeta getSkullByValue(@Nonnull SkullMeta head, @Nonnull String value) {
+    @NotNull
+    protected static SkullMeta getSkullByValue(@NotNull SkullMeta head, @NotNull String value) {
         Validate.notEmpty(value, "Skull value cannot be null or empty");
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         profile.getProperties().put("textures", new Property("textures", value));
@@ -139,18 +142,18 @@ public class XSkull {
         return head;
     }
 
-    @Nonnull
-    private static SkullMeta getValueFromTextures(@Nonnull SkullMeta head, @Nonnull String url) {
+    @NotNull
+    private static SkullMeta getValueFromTextures(@NotNull SkullMeta head, @NotNull String url) {
         return getSkullByValue(head, encodeBase64(VALUE_PROPERTY + url + "\"}}}"));
     }
 
-    @Nonnull
-    private static SkullMeta getTexturesFromUrlValue(@Nonnull SkullMeta head, @Nonnull String urlValue) {
+    @NotNull
+    private static SkullMeta getTexturesFromUrlValue(@NotNull SkullMeta head, @NotNull String urlValue) {
         return getValueFromTextures(head, TEXTURES + urlValue);
     }
 
-    @Nonnull
-    private static String encodeBase64(@Nonnull String str) {
+    @NotNull
+    private static String encodeBase64(@NotNull String str) {
         return Base64.getEncoder().encodeToString(str.getBytes());
     }
 
@@ -158,7 +161,7 @@ public class XSkull {
      * While RegEx is a little faster for small strings, this always checks strings with a length
      * greater than 100, so it'll perform a lot better.
      */
-    private static boolean isBase64(@Nonnull String base64) {
+    private static boolean isBase64(@NotNull String base64) {
         try {
             Base64.getDecoder().decode(base64);
             return true;
@@ -168,21 +171,16 @@ public class XSkull {
     }
 
     @Nullable
-    public static String getSkinValue(@Nonnull ItemMeta skull) {
-        Objects.requireNonNull(skull, "Skull ItemStack cannot be null");
-        SkullMeta meta = (SkullMeta) skull;
+    public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
         GameProfile profile = null;
         try {
-            Field profileField = meta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profile = (GameProfile) profileField.get(meta);
-        } catch (SecurityException | NoSuchFieldException | IllegalAccessException ex) {
-            ex.printStackTrace();
+            profile = Reflex.Companion.getProperty(skull, "profile", false);
+        } catch (Exception ignored) {
         }
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
             for (Property property : profile.getProperties().get("textures")) {
                 if (!property.getValue().isEmpty()) {
-                    return property.getValue();
+                    return new ItemBuilder.SkullTexture(property.getValue(), profile.getId());
                 }
             }
         }
@@ -196,7 +194,7 @@ public class XSkull {
      *
      * @return true if the string matches the Minecraft username rule, otherwise false.
      */
-    private static boolean isUsername(@Nonnull String name) {
+    private static boolean isUsername(@NotNull String name) {
         int len = name.length();
         if (len < 3 || len > 16) {
             return false;

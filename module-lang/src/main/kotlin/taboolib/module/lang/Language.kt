@@ -41,6 +41,7 @@ object Language {
         "json" to TypeJson::class.java,
         "title" to TypeText::class.java,
         "sound" to TypeSound::class.java,
+        "command" to TypeCommand::class.java,
         "actionbar" to TypeActionBar::class.java
     )
 
@@ -85,7 +86,7 @@ object Language {
         }
     }
 
-    @Awake(LifeCycle.LOAD)
+    @Awake(LifeCycle.INIT)
     fun reload() {
         firstLoaded = true
         languageFile.clear()

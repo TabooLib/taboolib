@@ -7,10 +7,15 @@ import taboolib.common.Isolated
 import taboolib.common.platform.adaptCommandSender
 import taboolib.module.lang.asLangText
 import taboolib.module.lang.asLangTextList
+import taboolib.module.lang.asLangTextOrNull
 import taboolib.module.lang.sendLang
 
 fun CommandSender.sendLang(node: String, vararg args: Any) {
     adaptCommandSender(this).sendLang(node, *args)
+}
+
+fun CommandSender.asLangTextOrNull(node: String, vararg args: Any): String? {
+    return adaptCommandSender(this).asLangTextOrNull(node, *args)
 }
 
 fun CommandSender.asLangText(node: String, vararg args: Any): String {

@@ -526,6 +526,28 @@ public class Location implements Cloneable {
     }
 
     /**
+     * 源位置参照制坐标
+     *
+     * 偏移量 offset
+     * -90 源位置的左边
+     * 90  源位置的右边
+     * 180 源位置的后面
+     * 想要定于前面，可使用负数乘法
+     *
+     * @param offset 偏移量
+     * @param multiply 乘 越大越远之类
+     * @param height 高度
+     */
+    public Location referTo(float offset, double multiply, double height) {
+        Location referLoc = clone();
+        referLoc.yaw = yaw + offset;
+        Vector vectorAdd = referLoc.getDirection().normalize().multiply(multiply);
+        referLoc.add(vectorAdd);
+        referLoc.add(0.0, height, 0.0);
+        return referLoc;
+    }
+
+    /**
      * Safely converts a double (location coordinate) to an int (block
      * coordinate)
      *

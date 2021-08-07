@@ -22,6 +22,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
+import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
 import java.util.*
 
@@ -82,20 +83,7 @@ open class ItemBuilder {
                 if (itemMeta.owner != null) {
                     skullOwner = itemMeta.owner
                 }
-                itemMeta.getProperty<GameProfile>("profile").also {
-                    try {
-                        var name: String? = null
-                        for (property in it!!.properties.get("textures")) {
-                            if (property.name == "textures") {
-                                name = property.value
-                                break
-                            }
-                        }
-                        skullTexture = SkullTexture(name!!, it.id)
-                    } catch (ignored: Throwable) {
-
-                    }
-                }
+                skullTexture = XSkull.getSkinValue(itemMeta)
             }
         }
         try {
