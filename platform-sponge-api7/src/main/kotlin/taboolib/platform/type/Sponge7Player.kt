@@ -3,23 +3,32 @@ package taboolib.platform.type
 import com.flowpowered.math.vector.Vector3d
 import com.google.common.base.Preconditions
 import org.spongepowered.api.Sponge
+import org.spongepowered.api.block.BlockState
+import org.spongepowered.api.block.BlockTypes
 import org.spongepowered.api.data.key.Keys
+import org.spongepowered.api.effect.particle.*
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.event.cause.Cause
 import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.item.ItemTypes
+import org.spongepowered.api.item.inventory.ItemStack
 import org.spongepowered.api.service.permission.SubjectData
 import org.spongepowered.api.text.Text
 import org.spongepowered.api.text.chat.ChatTypes
+import org.spongepowered.api.text.serializer.TextSerializers
 import org.spongepowered.api.text.title.Title
+import org.spongepowered.api.util.Color
 import org.spongepowered.api.util.Direction
 import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import java.net.InetSocketAddress
 import java.util.*
 
@@ -310,9 +319,56 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         player.sendMessage(Text.of(message))
     }
 
-    // TODO: 2021/7/6 Sponge Raw Message
+    // 2021/7/6 Sponge Raw Message
     override fun sendRawMessage(message: String) {
-        sendMessage(message)
+        player.sendMessage(TextSerializers.JSON.deserialize(message))
+    }
+
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        if (particle.aliases[0] == "~") {
+            warning("Unsupported particle ${particle.name}")
+            return
+        }
+        var type: ParticleType? = null
+        for (alias in particle.aliases) {
+            try {
+                type = if (alias == "@") {
+                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, fixed = true)
+                } else {
+                    ParticleTypes::class.java.getProperty<ParticleType>(alias, fixed = true)
+                }
+            } catch (ignored: NoSuchFieldException) {
+            }
+        }
+        if (type == null) {
+            warning("Unsupported particle ${particle.name}")
+            return
+        }
+        val builder = ParticleEffect.builder().type(type)
+            .offset(Vector3d.from(offset.x, offset.y, offset.z))
+            .velocity(Vector3d.from(speed))
+            .quantity(count)
+        when (data) {
+            is ProxyParticle.DustData -> {
+                builder.option(ParticleOptions.COLOR, Color.ofRgb(data.color.rgb))
+            }
+            is ProxyParticle.ItemData -> {
+                try {
+                    val itemStack = ItemStack.of(ItemTypes::class.java.getProperty(data.material)!!, data.data)
+                    itemStack.offer(Keys.DISPLAY_NAME, Text.of(data.name))
+                    itemStack.offer(Keys.ITEM_LORE, data.lore.map { Text.of(it) })
+                    builder.option(ParticleOptions.ITEM_STACK_SNAPSHOT, itemStack.createSnapshot())
+                } catch (ignored: NoSuchFieldException) {
+                }
+            }
+            is ProxyParticle.BlockData -> {
+                try {
+                    builder.option(ParticleOptions.BLOCK_STATE, BlockState.builder().blockType(BlockTypes::class.java.getProperty(data.material)!!).build())
+                } catch (ignored: NoSuchFieldException) {
+                }
+            }
+        }
+        player.spawnParticles(builder.build(), Vector3d.from(location.x, location.y, location.z))
     }
 
     override fun hasPermission(permission: String): Boolean {

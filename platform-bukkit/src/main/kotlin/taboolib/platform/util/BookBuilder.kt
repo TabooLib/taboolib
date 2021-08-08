@@ -62,7 +62,7 @@ private fun nmsClassLegacy(name: String): Class<*> {
 }
 
 @Isolated
-class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
+open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
 
     class Text(val text: String, val raw: Boolean = false)
 
@@ -88,6 +88,7 @@ class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
             title = "untitled"
             author = "untitled"
             bookPages.forEach {
+                println("text ${it.text} row ${it.raw}")
                 if (it.raw) {
                     try {
                         spigot().addPage(ComponentSerializer.parse(it.text))

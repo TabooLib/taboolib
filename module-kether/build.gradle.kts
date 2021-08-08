@@ -32,7 +32,7 @@ tasks {
         relocate("io.izzel.kether.common.loader.LoadError", "openapi.kether.LoadError")
         relocate("io.izzel.kether.common.loader.ArgType", "openapi.kether.ArgType")
         relocate("io.izzel.kether.common.loader.types", "openapi.kether")
-        relocate("io.izzel.kether.common.util", "openapi.kether")
+        relocate("io.izzel.kether.common.util.LocalizedException", "openapi.kether.LocalizedException")
         relocate("io.izzel.kether.common.api.ServiceHolder", "openapi.kether.ServiceHolder")
         relocate("io.izzel.kether.common.api.ParsedAction", "openapi.kether.ParsedAction")
         relocate("io.izzel.kether.common.api.Quest", "openapi.kether.Quest")

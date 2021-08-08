@@ -1,6 +1,7 @@
 package taboolib.platform.type
 
 import cn.nukkit.AdventureSettings
+import cn.nukkit.command.defaults.ParticleCommand
 import cn.nukkit.player.GameMode
 import cn.nukkit.player.Player
 import com.nukkitx.math.vector.Vector3f
@@ -9,6 +10,8 @@ import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
+import taboolib.common.platform.ProxyParticle
+import taboolib.common.util.Vector
 import taboolib.platform.NukkitPlugin
 import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toCommonLocation
@@ -292,6 +295,10 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
 
     override fun sendRawMessage(message: String) {
         sendMessage(message)
+    }
+
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        error("unsupported") // ParticleCommand::class.java
     }
 
     override fun hasPermission(permission: String): Boolean {

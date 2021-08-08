@@ -4,10 +4,13 @@ import com.velocitypowered.api.proxy.Player
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.title.Title
 import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import taboolib.platform.VelocityPlugin
 import java.net.InetSocketAddress
 import java.time.Duration
@@ -286,13 +289,17 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         player.sendActionBar(Component.text(message))
     }
 
-    // TODO: 2021/7/6 Velocity Raw Message
-    override fun sendRawMessage(message: String) {
-        sendMessage(message)
-    }
-
     override fun sendMessage(message: String) {
         player.sendMessage(Component.text(message))
+    }
+
+    // 2021/7/6 Velocity Raw Message
+    override fun sendRawMessage(message: String) {
+        player.sendMessage(GsonComponentSerializer.gson().deserialize(message))
+    }
+
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        error("unsupported")
     }
 
     override fun performCommand(command: String): Boolean {

@@ -32,7 +32,7 @@ fun <T : ItemMeta> ItemStack.modifyMeta(func: T.() -> Unit): ItemStack {
     if (isAir()) {
         error("air")
     }
-    return also { itemMeta = (itemMeta as? T)?.also(func) ?: itemMeta }
+    return also { itemMeta = ((itemMeta as? T)?.also(func) ?: itemMeta) }
 }
 
 /**

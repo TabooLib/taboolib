@@ -16,7 +16,6 @@ import org.bukkit.inventory.meta.*
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import taboolib.common.Isolated
-import taboolib.common.platform.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
@@ -63,10 +62,14 @@ open class ItemBuilder {
 
     constructor(material: XMaterial) {
         this.material = material
+        if (!XMaterial.isNewVersion()) {
+            this.damage = material.data.toInt()
+        }
     }
 
     constructor(item: ItemStack) {
         material = XMaterial.matchXMaterial(item.type)
+        damage = item.durability.toInt()
         val itemMeta = item.itemMeta ?: return
         name = itemMeta.displayName
         lore += itemMeta.lore ?: emptyList()
@@ -207,7 +210,9 @@ open class ItemBuilder {
         } catch (ignored: NoSuchMethodException) {
         }
         itemStack.itemMeta = itemMeta
-        itemStack.durability = (if (material.data.toInt() == 0) damage else material.data).toShort()
+        if (damage != 0) {
+            itemStack.durability = damage.toShort()
+        }
         return itemStack
     }
 }

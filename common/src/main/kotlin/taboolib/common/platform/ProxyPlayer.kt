@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import java.net.InetSocketAddress
 import java.util.*
 
@@ -122,6 +123,8 @@ interface ProxyPlayer : ProxyCommandSender {
     fun sendActionBar(message: String)
 
     fun sendRawMessage(message: String)
+
+    fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?)
 
     fun teleport(loc: Location)
 }

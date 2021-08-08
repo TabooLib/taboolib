@@ -5,8 +5,10 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
 import taboolib.platform.BungeePlugin
 import java.net.InetSocketAddress
 import java.util.*
@@ -282,12 +284,16 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
         player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent(message))
     }
 
+    override fun sendMessage(message: String) {
+        player.sendMessage(TextComponent(*ComponentSerializer.parse(message)))
+    }
+
     override fun sendRawMessage(message: String) {
         sendMessage(message)
     }
 
-    override fun sendMessage(message: String) {
-        player.sendMessage(TextComponent(*ComponentSerializer.parse(message)))
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        error("unsupported")
     }
 
     override fun performCommand(command: String): Boolean {

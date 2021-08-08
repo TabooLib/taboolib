@@ -3,16 +3,21 @@ package taboolib.platform.type
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.chat.ComponentSerializer
-import org.bukkit.Bukkit
-import org.bukkit.GameMode
-import org.bukkit.Sound
+import org.bukkit.*
 import org.bukkit.entity.Player
+import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
+import taboolib.library.xseries.parseToMaterial
+import taboolib.library.xseries.parseToXMaterial
+import taboolib.platform.util.buildItem
 import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
@@ -345,6 +350,52 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        try {
+            val bukkitParticle = Particle.valueOf(particle.name)
+            player.spawnParticle(bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, when (data) {
+                is ProxyParticle.DustData -> {
+                    Particle.DustOptions(Color.fromRGB(data.color.rgb), data.size)
+                }
+                is ProxyParticle.DustTransitionData -> {
+                    Particle.DustTransition(Color.fromRGB(data.color.rgb), Color.fromRGB(data.toColor.rgb), data.size)
+                }
+                is ProxyParticle.ItemData -> {
+                    buildItem(data.material.parseToXMaterial()) {
+                        name = data.name
+                        if (data.data != 0) {
+                            damage = data.data
+                        }
+                        name = data.name
+                        lore += data.lore
+                        customModelData = data.customModelData
+                    }
+                }
+                is ProxyParticle.BlockData -> {
+                    if (bukkitParticle.dataType == MaterialData::class.java) {
+                        MaterialData(data.material.parseToMaterial(), data.data.toByte())
+                    } else {
+                        data.material.parseToMaterial().createBlockData()
+                    }
+                }
+                is ProxyParticle.VibrationData -> {
+                    Vibration(data.origin.toBukkitLocation(), when (val destination = data.destination) {
+                        is ProxyParticle.VibrationData.LocationDestination -> {
+                            Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
+                        }
+                        is ProxyParticle.VibrationData.EntityDestination -> {
+                            Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
+                        }
+                        else -> error("out of case")
+                    }, data.arrivalTime)
+                }
+                else -> null
+            })
+        } catch (ignored: IllegalArgumentException) {
+            warning("Unsupported particle ${particle.name}")
+        }
+    }
+
     override fun performCommand(command: String): Boolean {
         return dispatchCommand(player, command)
     }
@@ -354,6 +405,6 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(loc: Location) {
-        player.teleport(org.bukkit.Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
+        player.teleport(Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
     }
 }

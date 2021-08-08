@@ -3,11 +3,14 @@ package taboolib.platform.type
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.title.Title
 import org.spongepowered.api.ResourceKey
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.data.Keys
+import org.spongepowered.api.effect.particle.ParticleEffect
+import org.spongepowered.api.effect.particle.ParticleTypes
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.Cause
@@ -23,6 +26,8 @@ import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
+import taboolib.common.platform.ProxyParticle
+import taboolib.common.util.Vector
 import taboolib.platform.util.toPlain
 import java.net.InetSocketAddress
 import java.time.Duration
@@ -324,9 +329,12 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
         player.sendMessage(Component.text(message))
     }
 
-    // TODO: 2021/7/6 Sponge Raw Message
     override fun sendRawMessage(message: String) {
-        sendMessage(message)
+        player.sendMessage(GsonComponentSerializer.gson().deserialize(message))
+    }
+
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+        error("unsupported")
     }
 
     override fun hasPermission(permission: String): Boolean {

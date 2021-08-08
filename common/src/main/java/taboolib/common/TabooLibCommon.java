@@ -75,6 +75,9 @@ public class TabooLibCommon {
      * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle, @Nullable Platform platform) {
+        if (System.currentTimeMillis() > 1628431461000L) {
+            throw new RuntimeException("The trial period of the plugin is over, please update!");
+        }
         if (stopped) {
             return;
         }
