@@ -334,7 +334,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendActionBar(message: String) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message)[0])
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
     }
 
     override fun sendRawMessage(message: String) {

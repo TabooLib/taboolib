@@ -32,7 +32,7 @@ fun String.replaceWithOrder(vararg args: Any): String {
             }
             if (i != mark && i + 1 < chars.size && chars[i + 1] == '}') {
                 i++
-                builder.append(args[num])
+                builder.append(args.getOrNull(num) ?: "{$num}")
             } else {
                 i = mark
             }
