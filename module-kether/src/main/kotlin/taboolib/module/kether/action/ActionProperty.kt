@@ -23,7 +23,7 @@ object ActionProperty {
     fun getScriptProperty(obj: Any, key: String): Any? {
         for (property in getScriptProperty(obj) ?: return null) {
             val result = property.read(obj, key)
-            if (result.successful) {
+            if (result.isSuccessful) {
                 return result.value
             }
         }
@@ -42,7 +42,7 @@ object ActionProperty {
                     val propertyList = getScriptProperty(instance) ?: error("${instance.javaClass.simpleName}[$key] not supported yet.")
                     for (property in propertyList) {
                         val result = property.write(instance, key, value)
-                        if (result.successful) {
+                        if (result.isSuccessful) {
                             future.complete(null)
                             return@close
                         }
@@ -64,7 +64,7 @@ object ActionProperty {
                 val propertyList = getScriptProperty(it) ?: error("${it.javaClass.simpleName}[$key] not supported yet.")
                 for (property in propertyList) {
                     val result = property.read(it, key)
-                    if (result.successful) {
+                    if (result.isSuccessful) {
                         return@thenApply result.value
                     }
                 }

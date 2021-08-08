@@ -18,7 +18,7 @@ typealias Script = Quest
 typealias ScriptFrame = QuestContext.Frame
 
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): QuestActionParser {
-    return ScriptActionParser(resolve)
+    return ScriptActionParser { resolve.invoke(it) }
 }
 
 fun String.parseKetherScript(namespace: List<String> = emptyList()): Script {

@@ -46,7 +46,7 @@ object KetherLoader : Injector.Methods, OpenReceiver {
 
     override fun inject(method: Method, clazz: Class<*>, instance: Supplier<*>) {
         if (method.isAnnotationPresent(KetherParser::class.java)) {
-            val parser = method.invoke(instance.get()) as ScriptActionParser<*>
+            val parser = method.invoke(instance.get()) as ScriptActionParser
             val annotation = method.getAnnotation(KetherParser::class.java)
             if (annotation.shared) {
                 val bytes = parser.serialize {
@@ -81,7 +81,7 @@ object KetherLoader : Injector.Methods, OpenReceiver {
             "openapi.kether.ScriptActionParser" -> {
                 var keys = emptyList<String>()
                 var namespace = ""
-                val parser = any.deserialize<ScriptActionParser<*>> {
+                val parser = any.deserialize<ScriptActionParser> {
                     keys = readObject().asList()
                     namespace = readUTF()
                 }
@@ -116,7 +116,7 @@ object KetherLoader : Injector.Methods, OpenReceiver {
             "openapi.kether.ScriptActionParser" -> {
                 var keys = emptyList<String>()
                 var namespace = ""
-                any.deserialize<ScriptActionParser<*>> {
+                any.deserialize<ScriptActionParser> {
                     keys = readObject().asList()
                     namespace = readUTF()
                 }
