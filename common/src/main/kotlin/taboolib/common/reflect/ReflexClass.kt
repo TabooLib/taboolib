@@ -1,6 +1,7 @@
 package taboolib.common.reflect
 
 import taboolib.common.util.nonPrimitive
+import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
@@ -19,6 +20,7 @@ class ReflexClass(val clazz: Class<*>) {
 
     val savingFields = ArrayList<Field>()
     val savingMethods = ArrayList<Method>()
+    val savingConstructor = ArrayList<Constructor<*>>()
 
     init {
         try {
@@ -27,6 +29,10 @@ class ReflexClass(val clazz: Class<*>) {
                 it
             })
             savingMethods.addAll(clazz.declaredMethods.map {
+                it.isAccessible = true
+                it
+            })
+            savingConstructor.addAll(clazz.declaredConstructors.map {
                 it.isAccessible = true
                 it
             })
@@ -85,6 +91,24 @@ class ReflexClass(val clazz: Class<*>) {
             it.findMethod(method)?.run {
                 return this
             }
+        }
+        return null
+    }
+
+    fun findConstructor(vararg parameter: Any?): Constructor<*>? {
+        savingConstructor.firstOrNull {
+            if (it.parameterCount == parameter.size) {
+                var checked = true
+                it.parameterTypes.forEachIndexed { index, p ->
+                    if (parameter[index] != null && !p.nonPrimitive().isInstance(parameter[index])) {
+                        checked = false
+                    }
+                }
+                return@firstOrNull checked
+            }
+            return@firstOrNull false
+        }?.run {
+            return this
         }
         return null
     }

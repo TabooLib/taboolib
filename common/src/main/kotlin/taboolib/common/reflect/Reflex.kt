@@ -1,5 +1,8 @@
 package taboolib.common.reflect
 
+import taboolib.common.util.nonPrimitive
+import java.lang.reflect.Constructor
+
 /**
  * @author sky
  * @since 2020-10-02 01:40
@@ -75,7 +78,9 @@ class Reflex(val from: Class<*>) {
         return if (obj != null) obj as T else null
     }
 
-    private fun of(instance: Any) = Reflex(instance.javaClass).instance(instance)
+    private fun of(instance: Any): Reflex {
+        return Reflex(instance.javaClass).instance(instance)
+    }
 
     companion object {
 
@@ -83,6 +88,11 @@ class Reflex(val from: Class<*>) {
 
         fun <T> Class<T>.unsafeInstance(): Any {
             return Ref.unsafe.allocateInstance(this)!!
+        }
+
+        fun <T> Class<T>.invokeConstructor(vararg parameter: Any?): T {
+            val map = ReflexClass.find(this).findConstructor(*parameter) ?: throw NoSuchMethodException("<init>(${parameter.joinToString(", ") { it?.javaClass?.name.toString() }}) at $this")
+            return map.newInstance(*parameter) as T
         }
 
         fun <T> Any.invokeMethod(path: String, vararg parameter: Any?, fixed: Boolean = false): T? {
