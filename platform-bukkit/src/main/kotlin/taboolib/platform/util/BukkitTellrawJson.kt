@@ -9,7 +9,7 @@ import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.chat.TellrawJson
 
 fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
-    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", this, fixed = true)!!
+    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, fixed = true)!!
     val nmsKey = try {
         itemStack.type.key.key
     } catch (ex: NoSuchMethodError) {
