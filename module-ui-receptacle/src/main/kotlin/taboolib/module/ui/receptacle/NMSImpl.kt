@@ -104,7 +104,7 @@ class NMSImpl : NMS() {
                                 "a" to it.windowId,
                                 "b" to it.type.id,
                                 "c" to ChatComponentText(it.title),
-                                "d" to it.type.containerSize
+                                "d" to it.type.containerSize - 1 // Fixed ViaVersion can not view 6x9 menu bug.
                             )
                         }
                     }
