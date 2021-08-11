@@ -24,14 +24,14 @@ import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
 import java.util.*
 
-fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+inline fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (itemStack.type == Material.AIR || itemStack.type.name.endsWith("_AIR")) {
         error("air")
     }
     return ItemBuilder(itemStack).also(builder).build()
 }
 
-fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+inline fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (material == XMaterial.AIR || material == XMaterial.CAVE_AIR || material == XMaterial.VOID_AIR) {
         error("air")
     }
