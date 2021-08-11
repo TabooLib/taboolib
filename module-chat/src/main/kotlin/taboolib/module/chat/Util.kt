@@ -6,7 +6,7 @@ import taboolib.common.Isolated
 
 fun String.colored() = HexColor.translate(this)
 
-fun String.uncolored() = ChatColor.stripColor(this)!!
+fun String.uncolored() = ChatColor.stripColor(this.colored())!!
 
 fun List<String>.colored() = map { it.colored() }
 

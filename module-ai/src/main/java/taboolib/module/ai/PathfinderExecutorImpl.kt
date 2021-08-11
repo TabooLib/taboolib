@@ -26,9 +26,9 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     private val v11400 = major >= 6
 
     init {
-        pathfinderGoalSelectorSet = PathfinderGoalSelector::class.java.getField(if (v11400) "d" else "b")
+        pathfinderGoalSelectorSet = PathfinderGoalSelector::class.java.getDeclaredField(if (v11400) "d" else "b")
         pathfinderGoalSelectorSet.isAccessible = true
-        controllerJumpCurrent = ControllerJump::class.java.getField("a")
+        controllerJumpCurrent = ControllerJump::class.java.getDeclaredField("a")
         controllerJumpCurrent.isAccessible = true
         for (field in NavigationAbstract::class.java.declaredFields) {
             if (field.type == PathEntity::class.java) {
