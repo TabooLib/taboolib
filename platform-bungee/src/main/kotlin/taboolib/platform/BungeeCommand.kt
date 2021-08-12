@@ -18,6 +18,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
  * @author sky
  * @since 2021/7/3 1:03 上午
  */
+@Awake
 @PlatformSide([Platform.BUNGEE])
 class BungeeCommand : PlatformCommand {
 

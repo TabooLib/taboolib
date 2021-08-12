@@ -9,6 +9,7 @@ import taboolib.common.platform.*
  * @author sky
  * @since 2021/7/4 2:45 下午
  */
+@Awake
 @PlatformSide([Platform.SPONGE_API_8])
 class Sponge8Command : PlatformCommand {
 
