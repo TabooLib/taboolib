@@ -14,6 +14,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
  * @author sky
  * @since 2021/7/3 1:15 上午
  */
+@Awake
 @PlatformSide([Platform.NUKKIT])
 class NukkitCommand : PlatformCommand {
 

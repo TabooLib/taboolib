@@ -59,7 +59,7 @@ fun <T> Class<T>.inject() {
 }
 
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.getInstance(true)?.get() as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {

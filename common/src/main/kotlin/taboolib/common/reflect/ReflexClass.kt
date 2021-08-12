@@ -48,8 +48,10 @@ class ReflexClass(val clazz: Class<*>) {
 
     fun findField(f: String): Field? {
         var field = f
-        Reflex.remapper.forEach {
-            field = it.field(clazz.name, field)
+        if (Reflex.bukkit) {
+            Reflex.remapper.forEach {
+                field = it.field(clazz.name, field)
+            }
         }
         savingFields.firstOrNull { it.name == field }?.run {
             return this
@@ -67,8 +69,10 @@ class ReflexClass(val clazz: Class<*>) {
 
     fun findMethod(m: String, vararg parameter: Any?): Method? {
         var method = m
-        Reflex.remapper.forEach {
-            method = it.method(clazz.name, method)
+        if (Reflex.bukkit) {
+            Reflex.remapper.forEach {
+                method = it.method(clazz.name, method)
+            }
         }
         savingMethods.firstOrNull {
             if (it.name == method && it.parameterCount == parameter.size) {
