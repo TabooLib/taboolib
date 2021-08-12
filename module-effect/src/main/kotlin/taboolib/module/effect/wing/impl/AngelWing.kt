@@ -17,14 +17,14 @@ class AngelWing {
     val wingRenderer = WingRenderUtil(7, 5)
 
     init {
-        wingRenderer.addShape(arrayOf(' ', 'a', ' ', ' ', ' '))
-        wingRenderer.addShape(arrayOf(' ', 'a', 'a', ' ', ' '))
-        wingRenderer.addShape(arrayOf(' ', 'a', 'a', 'a', ' '))
-        wingRenderer.addShape(arrayOf(' ', ' ', 'a', 'a', 'a'))
-        wingRenderer.addShape(arrayOf(' ', ' ', 'a', 'a', 'a'))
-        wingRenderer.addShape(arrayOf(' ', 'a', 'a', 'a', 'a'))
-        wingRenderer.addShape(arrayOf(' ', 'a', 'a', 'a', ' '))
-        wingRenderer.addShape(arrayOf(' ', 'a', ' ', ' ', ' '))
+        wingRenderer.addShape(" a   ")
+        wingRenderer.addShape(" aa  ")
+        wingRenderer.addShape(" aaa ")
+        wingRenderer.addShape("  aaa")
+        wingRenderer.addShape("  aaa")
+        wingRenderer.addShape(" aaaa")
+        wingRenderer.addShape(" aaa ")
+        wingRenderer.addShape(" a   ")
         wingRenderer.setMask('a', WingParticle(ProxyParticle.REDSTONE, 255, 255, 255))
 //      这里指定了a这个字符为白色粒子。 如果需要使用rgb颜色，务必使用REDSTONE效果
     }

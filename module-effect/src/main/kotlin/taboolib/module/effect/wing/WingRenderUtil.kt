@@ -12,23 +12,37 @@ import kotlin.math.sin
  */
 class WingRenderUtil(var height: Int, var width: Int) {
 
-    val shape: Array<Array<Char>> = Array(height + 1) { Array(width) { ' ' } }
+    private fun getSpace(count: Int): String {
+        val stringBuilder = StringBuilder()
+        for (i in 0..count) {
+            stringBuilder.append(" ")
+        }
+        return stringBuilder.toString()
+    }
 
-    var i = 0
+    val shape: Array<String> = Array(height + 1) { getSpace(width) }
+
+    private var i = 0
 
     /**
-     * 添加一行形状
+     * 添加一行形状 每个char都对应一种特效
      */
-    fun addShape(array: Array<Char>) {
-        shape[i] = array
+    fun addShape(str: String) {
+        setShape(str, i)
         i++
     }
 
     /**
      * 设置形状 每个char都对应一种特效
      */
-    fun setShape(array: Array<Char>, row: Int) {
-        shape[row] = array
+    fun setShape(str: String, row: Int) {
+        if (row >= height) {
+            throw IllegalArgumentException("row${row} not match defined height($height)")
+        }
+        if (str.length != width) {
+            throw IllegalArgumentException("string length(${str.length}) not match defined width($width)")
+        }
+        shape[row] = str
     }
 
     val masks: MutableMap<Char, WingParticle> = HashMap()
