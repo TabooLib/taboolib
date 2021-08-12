@@ -21,7 +21,7 @@ class TypeActionBar : Type {
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         if (sender is ProxyPlayer) {
-            sender.sendActionBar(text.replaceWithOrder(*args).translate(sender))
+            sender.sendActionBar(text.translate(sender).replaceWithOrder(*args))
         } else {
             sender.sendMessage(toString())
         }

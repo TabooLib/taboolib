@@ -30,7 +30,7 @@ class TypeTitle : Type {
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         if (sender is ProxyPlayer) {
-            sender.sendTitle(title?.replaceWithOrder(*args)?.translate(sender), subtitle?.replaceWithOrder(*args)?.translate(sender), fadein, stay, fadeout)
+            sender.sendTitle(title?.translate(sender)?.replaceWithOrder(*args), subtitle?.translate(sender)?.replaceWithOrder(*args), fadein, stay, fadeout)
         } else {
             sender.sendMessage(toString())
         }

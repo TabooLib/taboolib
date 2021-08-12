@@ -33,30 +33,30 @@ class TypeJson : Type {
             var i = 0
             json.forEachIndexed { index, line ->
                 line.forEach { part ->
-                    append(part.text.replaceWithOrder(*args).translate(sender))
+                    append(part.text.translate(sender).replaceWithOrder(*args))
                     if (part.isVariable) {
                         val arg = jsonArgs.getOrNull(++i)
                         if (arg != null) {
                             if (arg.containsKey("hover")) {
-                                hoverText(arg["hover"].toString().replaceWithOrder(*args).translate(sender))
+                                hoverText(arg["hover"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("command")) {
-                                runCommand(arg["command"].toString().replaceWithOrder(*args).translate(sender))
+                                runCommand(arg["command"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("suggest")) {
-                                suggestCommand(arg["suggest"].toString().replaceWithOrder(*args).translate(sender))
+                                suggestCommand(arg["suggest"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("insertion")) {
-                                insertion(arg["insertion"].toString().replaceWithOrder(*args).translate(sender))
+                                insertion(arg["insertion"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("copy")) {
-                                copyToClipboard(arg["copy"].toString().replaceWithOrder(*args).translate(sender))
+                                copyToClipboard(arg["copy"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("file")) {
-                                openFile(arg["file"].toString().replaceWithOrder(*args).translate(sender))
+                                openFile(arg["file"].toString().translate(sender).replaceWithOrder(*args))
                             }
                             if (arg.containsKey("url")) {
-                                openURL(arg["url"].toString().replaceWithOrder(*args).translate(sender))
+                                openURL(arg["url"].toString().translate(sender).replaceWithOrder(*args))
                             }
                         }
                     }

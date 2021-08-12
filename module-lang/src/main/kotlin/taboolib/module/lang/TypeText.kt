@@ -22,7 +22,7 @@ class TypeText : Type {
     }
 
     fun asText(sender: ProxyCommandSender, vararg args: Any): String? {
-        return text?.replaceWithOrder(*args)?.translate(sender)
+        return text?.translate(sender)?.replaceWithOrder(*args)
     }
 
     override fun init(source: Map<String, Any>) {
@@ -35,7 +35,7 @@ class TypeText : Type {
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         if (text != null) {
-            sender.sendMessage(text!!.replaceWithOrder(*args).translate(sender))
+            sender.sendMessage(text!!.translate(sender).replaceWithOrder(*args))
         }
     }
 
