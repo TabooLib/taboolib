@@ -15,6 +15,7 @@ import taboolib.common.platform.*
  * @author sky
  * @since 2021/7/4 2:39 下午
  */
+@Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityCommand : PlatformCommand {
 

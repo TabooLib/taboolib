@@ -20,6 +20,7 @@ import java.util.*
  * @author sky
  * @since 2021/7/4 2:45 下午
  */
+@Awake
 @PlatformSide([Platform.SPONGE_API_7])
 class Sponge7Command : PlatformCommand {
 

@@ -1,6 +1,8 @@
 package taboolib.module.nms.i18n
 
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.module.nms.MinecraftVersion.major
 
 /**
@@ -10,6 +12,7 @@ import taboolib.module.nms.MinecraftVersion.major
  * @since 2020-04-04 19:33
  */
 @Awake
+@PlatformSide([Platform.BUKKIT])
 object I18n {
 
     val version = HashMap<Int, I18nBase>()

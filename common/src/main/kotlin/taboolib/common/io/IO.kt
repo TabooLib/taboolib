@@ -5,6 +5,7 @@ package taboolib.common.io
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.platform.PlatformFactory.checkPlatform
 import taboolib.common.util.lazySupplier
 import java.io.*
 import java.math.BigInteger
@@ -59,7 +60,7 @@ fun <T> Class<T>.inject() {
 }
 
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && checkPlatform(it) }?.getInstance(true)?.get() as? T
 }
 
 fun URL.getClasses(): List<Class<*>> {
