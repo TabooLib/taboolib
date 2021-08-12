@@ -1,12 +1,12 @@
 package taboolib.library.kether;
 
-import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.NotNull;
-import taboolib.library.kether.actions.GetAction;
 import taboolib.library.kether.actions.LiteralAction;
+import taboolib.module.kether.action.ActionGet;
 
-import java.util.*;
-import java.util.function.BiFunction;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class SimpleReader extends AbstractStringReader implements QuestReader {
 
@@ -83,7 +83,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
             case '&': {
                 skip(1);
                 beforeParse();
-                return wrap(new GetAction<>(nextToken()));
+                return wrap(new ActionGet<>(nextToken()));
             }
             case '*': {
                 skip(1);
@@ -125,12 +125,4 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
     public BlockReader getBlockParser() {
         return blockParser;
     }
-
-    //    @Override
-//    public Map<String, Object> serialize() {
-//        Map<String, Object> result = super.serialize();
-//        result.put("namespace", namespace);
-//        result.put("parser", parser.serialize());
-//        return result;
-//    }
 }

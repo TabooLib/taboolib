@@ -1,9 +1,7 @@
 package taboolib.module.kether.action.supplier
 
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.actionNow
-import taboolib.module.kether.deepVars
-import taboolib.module.kether.scriptParser
+import taboolib.common.OpenResult
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 
@@ -30,6 +28,21 @@ internal object Actions {
     fun parser3() = scriptParser {
         actionNow {
             CompletableFuture.completedFuture(deepVars().keys.toList())
+        }
+    }
+
+    @KetherProperty(bind = String::class)
+    fun property() = object : ScriptProperty("string") {
+
+        override fun read(instance: Any, key: String): OpenResult {
+            return when (key) {
+                "length", "size" -> OpenResult.successful((instance as String).length)
+                else -> OpenResult.failed()
+            }
+        }
+
+        override fun write(instance: Any, key: String, value: Any?): OpenResult {
+            return OpenResult.failed()
         }
     }
 }

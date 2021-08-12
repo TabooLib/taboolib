@@ -3,7 +3,6 @@ package taboolib.platform.type
 import com.velocitypowered.api.plugin.PluginContainer
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
 /**
@@ -28,7 +27,6 @@ class VelocityOpenContainer(plugin: PluginContainer) : OpenContainer {
     }
 
     override fun call(name: String, args: Array<Any>): OpenResult {
-        val result = clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed()
-        return OpenResult(result.getProperty("successful")!!, result.getProperty("value"))
+        return OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed())
     }
 }

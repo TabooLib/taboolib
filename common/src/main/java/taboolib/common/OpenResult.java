@@ -2,6 +2,7 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.common.reflect.Reflex;
 
 public class OpenResult {
 
@@ -39,5 +40,9 @@ public class OpenResult {
     @NotNull
     public static OpenResult failed() {
         return new OpenResult(false, null);
+    }
+
+    public static OpenResult deserialize(Object source) {
+        return new OpenResult(Boolean.TRUE.equals(Reflex.Companion.getProperty(source, "successful", false)), Reflex.Companion.getProperty(source, "value", false));
     }
 }

@@ -43,6 +43,4 @@ public interface QuestReader {
     default <T> T next(@NotNull ArgType<T> argType) throws LocalizedException {
         return argType.read(this);
     }
-
-//    Map<String, Object> serialize();
 }

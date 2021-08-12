@@ -1,10 +1,10 @@
 package taboolib.module.kether.action
 
-import taboolib.library.kether.actions.LiteralAction
+import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext
-import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture
@@ -35,6 +35,10 @@ class ActionSet {
 
     internal object Parser {
 
+        /**
+         * set xx to xx
+         * set property xx from xx to xx
+         */
         @KetherParser(["set"])
         fun parser0() = scriptParser {
             it.mark()
@@ -53,11 +57,21 @@ class ActionSet {
             } else {
                 it.mark()
                 try {
+                    it.expect("property")
+                    val property = it.nextToken()
+                    val source = it.next(ArgTypes.ACTION)
                     it.expect("to")
-                    ForAction(token, it.next(ArgTypes.ACTION))
+                    ActionProperty.Set(source, property, it.next(ArgTypes.ACTION))
                 } catch (ex: Exception) {
                     it.reset()
-                    ForConstant(token, it.nextToken())
+                    it.mark()
+                    try {
+                        it.expect("to")
+                        ForAction(token, it.next(ArgTypes.ACTION))
+                    } catch (ex: Exception) {
+                        it.reset()
+                        ForConstant(token, it.nextToken())
+                    }
                 }
             }
         }

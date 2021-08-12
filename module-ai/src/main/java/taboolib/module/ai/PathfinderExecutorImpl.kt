@@ -67,7 +67,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun getPathEntity(entity: LivingEntity): Any {
-        return get<Any>(getNavigation(entity), pathEntity!!)!!
+        return get(getNavigation(entity), pathEntity!!)!!
     }
 
     override fun setPathEntity(entity: LivingEntity, pathEntity: Any) {

@@ -3,8 +3,6 @@ package taboolib.library.kether;
 import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -186,21 +184,6 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
                 }
             }
         }
-//
-//        @Override
-//        public Map<String, Object> serialize() {
-//            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("parent", parent.serialize());
-//            List<Map<String, Object>> framesList = new ArrayList<>();
-//            for (Frame frame : frames) {
-//                framesList.add(frame.serialize());
-//            }
-//            result.put("frames", framesList);
-//            result.put("varTable", varTable.serialize());
-//            result.put("future", future);
-//            result.put("closeables", closeables);
-//            return result;
-//        }
     }
 
     public static class SimpleNamedFrame extends AbstractFrame {
@@ -289,21 +272,6 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
                 return (block = next).get(sp = np++);
             } else return Optional.empty();
         }
-//
-//        @Override
-//        public Map<String, Object> serialize() {
-//            Map<String, Object> result = super.serialize();
-//            result.put("name", name);
-//            result.put("block", block.serialize());
-//            result.put("next", block.serialize());
-//            result.put("sp", sp);
-//            result.put("np", np);
-//            return result;
-//        }
-//
-//        public static SimpleNamedFrame deserialize(Map<String, Object> map) {
-//
-//        }
     }
 
     public static class SimpleActionFrame extends AbstractFrame {
@@ -346,13 +314,6 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
             this.varTable.initialize(this);
             return (CompletableFuture<T>) (this.future = this.action.process(this));
         }
-//
-//        @Override
-//        public Map<String, Object> serialize() {
-//            Map<String, Object> result = super.serialize();
-//            result.put("action", action.serialize());
-//            return result;
-//        }
     }
 
     public static class SimpleVarTable implements VarTable {
@@ -452,13 +413,5 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
                 }
             }
         }
-//
-//        @Override
-//        public Map<String, Object> serialize() {
-//            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("parent", parent.serialize());
-//            result.put("map", map);
-//            return result;
-//        }
     }
 }

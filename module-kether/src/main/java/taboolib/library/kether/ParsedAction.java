@@ -83,24 +83,6 @@ public class ParsedAction<A> {
         return new ParsedAction<>(QuestAction.noop());
     }
 
-//    public Map<String, Object> serialize() {
-//        Map<String, Object> result = new LinkedHashMap<>();
-//        result.put("id", FunctionKt.getPluginId());
-//        result.put("action", action);
-//        result.put("properties", properties);
-//        return result;
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    public static ParsedAction<Object> deserialize(Map<String, Object> map) {
-//        OpenContainer container = FunctionKt.getOpenContainer(map.get("id").toString());
-//        if (container == null) {
-//            throw new IllegalStateException("Not found " + map.get("id"));
-//        }
-//        RemoteQuestAction<Object> action = new RemoteQuestAction<>(container, map.get("action"));
-//        return new ParsedAction<>(action, (Map<String, Object>) map.get("properties"));
-//    }
-
     public static final class ActionProperty<T> {
 
         private final String id;

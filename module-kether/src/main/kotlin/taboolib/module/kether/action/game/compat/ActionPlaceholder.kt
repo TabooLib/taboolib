@@ -18,7 +18,7 @@ class ActionPlaceholder(val source: ParsedAction<*>) : ScriptAction<String>() {
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<String> {
         return frame.newFrame(source).run<Any>().thenApplyAsync({
-            PlaceholderAPI.setPlaceholders(frame.script().sender?.cast<Player>() ?: error("No event selected."), it.toString().trimIndent())
+            PlaceholderAPI.setPlaceholders(frame.script().sender?.castSafely<Player>() ?: error("No event selected."), it.toString().trimIndent())
         }, frame.context().executor)
     }
 

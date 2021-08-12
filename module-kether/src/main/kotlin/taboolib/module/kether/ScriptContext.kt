@@ -16,18 +16,6 @@ open class ScriptContext(service: ScriptService, script: Script) : AbstractQuest
 
     lateinit var id: String
 
-//    var event: Any?
-//        get() = this["@Event"]
-//        set(value) {
-//            this["@Event"] = value
-//        }
-//
-//    var listener: CompletableFuture<Void>?
-//        get() = this["@Listener"]
-//        set(value) {
-//            this["@Listener"] = value
-//        }
-
     var sender: ProxyCommandSender?
         set(value) {
             this["@Sender"] = value?.origin

@@ -1,10 +1,8 @@
 package taboolib.module.kether.action
 
+import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.Kether
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.ScriptProperty
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -16,8 +14,8 @@ import java.util.concurrent.CompletableFuture
  */
 object ActionProperty {
 
-    fun getScriptProperty(obj: Any): List<ScriptProperty>? {
-        return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value
+    fun getScriptProperty(obj: Any): Collection<ScriptProperty>? {
+        return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value?.values
     }
 
     fun getScriptProperty(obj: Any, key: String): Any? {

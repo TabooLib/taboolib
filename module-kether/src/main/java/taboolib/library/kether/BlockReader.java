@@ -125,31 +125,4 @@ public class BlockReader extends AbstractStringReader {
     public String getCurrentBlock() {
         return currentBlock;
     }
-
-    //    @Override
-//    public Map<String, Object> serialize() {
-//        Map<String, Object> result = super.serialize();
-//        Map<String, Map<String, Object>> blocksMap = new LinkedHashMap<>();
-//        for (Map.Entry<String, Quest.Block> entry : blocks.entrySet()) {
-//            blocksMap.put(entry.getKey(), entry.getValue().serialize());
-//        }
-//        result.put("blocks", blocksMap);
-//        result.put("namespace", namespace);
-//        result.put("currentBlock", currentBlock);
-//        return result;
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    public static BlockReader deserialize(Map<String, Object> map) {
-//        Map<String, Quest.Block> blocks = new HashMap<>();
-//        for (Map.Entry<String, Map<String, Object>> entry : ((Map<String, Map<String, Object>>) map.get("blocks")).entrySet()) {
-//            blocks.put(entry.getKey(), SimpleQuest.SimpleBlock.deserialize(entry.getValue()));
-//        }
-//        List<String> namespace = (List<String>) map.get("namespace");
-//        String currentBlock = map.get("currentBlock").toString();
-//        char[] arr = (char[]) map.get("arr");
-//        int index = (int) map.get("index");
-//        int mark = (int) map.get("mark");
-//        return new BlockReader(arr, index, mark, blocks, ServiceHolder.getQuestServiceInstance(), namespace, currentBlock);
-//    }
 }

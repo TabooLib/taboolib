@@ -96,12 +96,4 @@ public abstract class AbstractStringReader {
     public int getMark() {
         return mark;
     }
-
-//    public Map<String, Object> serialize() {
-//        Map<String, Object> result = new LinkedHashMap<>();
-//        result.put("arr", arr);
-//        result.put("index", index);
-//        result.put("mark", mark);
-//        return result;
-//    }
 }

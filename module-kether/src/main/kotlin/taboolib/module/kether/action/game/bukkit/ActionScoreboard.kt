@@ -20,7 +20,7 @@ class ActionScoreboard(val content: ParsedAction<*>) : ScriptAction<Void>() {
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
         return frame.newFrame(content).run<Any>().thenAccept { content ->
-            val viewer = frame.script().sender?.origin as? Player ?: error("No player selected.")
+            val viewer = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
             if (content == null) {
                 viewer.sendScoreboard()
             } else {

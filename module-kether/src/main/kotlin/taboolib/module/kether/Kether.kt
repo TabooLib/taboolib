@@ -37,9 +37,8 @@ object Kether {
         }
     }
 
-    val registeredScriptProperty = HashMap<Class<*>, MutableList<ScriptProperty>>()
+    val registeredScriptProperty = HashMap<Class<*>, MutableMap<String, ScriptProperty>>()
     val registeredPlayerOperator = LinkedHashMap<String, PlayerOperator>()
-    val registeredEvent = HashMap<String, Class<*>>()
 
     internal fun addAction(name: Array<String>, parser: QuestActionParser) {
         name.forEach { addAction(it, parser) }
@@ -58,26 +57,10 @@ object Kether {
     }
 
     internal fun addScriptProperty(clazz: Class<*>, property: ScriptProperty) {
-        registeredScriptProperty.computeIfAbsent(clazz) { ArrayList() } += property
+        registeredScriptProperty.computeIfAbsent(clazz) { HashMap() }[property.id] = property
     }
 
-    internal fun removeScriptProperty(clazz: Class<*>, property: ScriptProperty) {
-        registeredScriptProperty[clazz]?.remove(property)
-    }
-
-    inline fun <reified T> addEvent(name: String) {
-        getOpenContainers().forEach {
-//            it.call("openapi.kether.Event", arrayOf(name, T::class.java.name))
-        }
-    }
-
-    inline fun <reified T> removeEvent() {
-        getOpenContainers().forEach {
-//            it.unregister("openapi.kether.Event", arrayOf(T::class.java.name))
-        }
-    }
-
-    fun getEvent(name: String): Class<*>? {
-        return registeredEvent[name]
+    internal fun removeScriptProperty(clazz: Class<*>, id: String) {
+        registeredScriptProperty[clazz]?.remove(id)
     }
 }

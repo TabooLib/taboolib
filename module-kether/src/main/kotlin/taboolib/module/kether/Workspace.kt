@@ -2,12 +2,10 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.MultimapBuilder
-import taboolib.common.platform.getProxyPlayer
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.Quest
-import taboolib.module.kether.action.ActionProperty
 import java.io.File
 
 /**
@@ -24,39 +22,13 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
     val scriptsSetting = HashMap<String, Map<String, Any?>>()
     val runningScripts = MultimapBuilder.hashKeys().arrayListValues().build<String, ScriptContext>()!!
 
-//    val listeners = ArrayList<AutoCloseable>()
-
     fun loadAll() {
-//        listeners.forEach { it.close() }
-//        listeners.clear()
-
         loadScripts()
         loadSettings()
-
         scripts.forEach {
             if (Coerce.toBoolean(scriptsSetting[it.value.id]?.get("autostart"))) {
                 ScriptService.startQuest(ScriptContext.create(it.value))
-                return@forEach
             }
-            val trigger = scriptsSetting[it.value.id]?.get("start") ?: return@forEach
-            val operator = Kether.getEvent(trigger.toString())
-            if (operator == null) {
-                warning("Unknown starting trigger $trigger")
-                return@forEach
-            }
-//            listeners.add(Closables.listening<Any>(operator) { e ->
-//                val context = ScriptContext.create(it.value) {
-//                    val player = ActionProperty.getScriptProperty(e, "bind")
-//                    if (player != null) {
-//                        sender = getProxyPlayer(player.toString())
-//                        id = "${it.value.id}:${sender?.name}"
-//                    } else {
-//                        id = "${it.value.id}:$trigger"
-//                    }
-//                    event = e
-//                }
-//                runScript(context.id, context)
-//            })
         }
     }
 

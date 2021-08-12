@@ -1,14 +1,10 @@
 package taboolib.module.kether
 
-import taboolib.common.OpenContainer
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.kether.*
-import taboolib.library.kether.actions.GetAction
 import taboolib.library.kether.actions.LiteralAction
+import taboolib.module.kether.action.ActionGet
 import taboolib.module.kether.action.ActionProperty
-import java.util.*
 
 /**
  * TabooLib
@@ -30,18 +26,6 @@ class KetherScriptLoader : SimpleQuestLoader() {
 
     class Reader(service: QuestService<*>, reader: BlockReader, namespace: MutableList<String>) : SimpleReader(service, reader, namespace) {
 
-//        companion object {
-//
-//            @Suppress("UNCHECKED_CAST")
-//            fun deserialize(map: Map<String, Any>): Reader {
-//                return Reader(
-//                    ServiceHolder.getQuestServiceInstance(),
-//                    BlockReader.deserialize(map["parser"] as MutableMap<String, Any>),
-//                    map["namespace"] as MutableList<String>
-//                )
-//            }
-//        }
-
         override fun nextToken(): String {
             return super.nextToken().replace("\\s", " ")
         }
@@ -61,9 +45,9 @@ class KetherScriptLoader : SimpleQuestLoader() {
                     val token = nextToken()
                     if (token.isNotEmpty() && token[token.length - 1] == ']' && token.indexOf('[') in 1 until token.length) {
                         val i = token.indexOf('[')
-                        wrap(ActionProperty.Get(wrap(GetAction<Any>(token.substring(0, i))), token.substring(i + 1, token.length - 1))) as ParsedAction<T>
+                        wrap(ActionProperty.Get(wrap(ActionGet<Any>(token.substring(0, i))), token.substring(i + 1, token.length - 1))) as ParsedAction<T>
                     } else {
-                        wrap(GetAction(token))
+                        wrap(ActionGet(token))
                     }
                 }
                 '*' -> {
@@ -90,50 +74,6 @@ class KetherScriptLoader : SimpleQuestLoader() {
                     }
                 }
             }
-        }
-    }
-
-    class RemoteReader(val remote: OpenContainer, val source: Any): QuestReader {
-
-        override fun peek(): Char {
-            return source.invokeMethod("peek")!!
-        }
-
-        override fun peek(n: Int): Char {
-            return source.invokeMethod("peek", n)!!
-        }
-
-        override fun getIndex(): Int {
-            return source.invokeMethod("getIndex")!!
-        }
-
-        override fun getMark(): Int {
-            return source.invokeMethod("getMark")!!
-        }
-
-        override fun hasNext(): Boolean {
-            return source.invokeMethod("hasNext")!!
-        }
-
-        override fun nextToken(): String {
-            return source.invokeMethod("nextToken")!!
-        }
-
-        override fun mark() {
-            source.invokeMethod<Void>("mark")
-        }
-
-        override fun reset() {
-            source.invokeMethod<Void>("reset")
-        }
-
-        override fun <T> nextAction(): ParsedAction<T> {
-            val action = source.invokeMethod<T>("nextAction")!!
-            return ParsedAction(RemoteQuestAction<T>(remote, action.getProperty<Any>("action")!!), action.getProperty<Map<String, Any>>("properties")!!)
-        }
-
-        override fun expect(value: String) {
-            source.invokeMethod<Void>("expect", value)
         }
     }
 }

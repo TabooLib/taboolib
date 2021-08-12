@@ -19,7 +19,6 @@ public class KetherTypes {
         registry.registerAction("all", AllAction.parser(service));
         registry.registerAction("any", AnyAction.parser(service));
         registry.registerAction("not", NotAction.parser(service));
-        registry.registerAction("get", GetAction.parser());
         registry.registerAction("literal", LiteralAction.parser());
     }
 }

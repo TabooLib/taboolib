@@ -1,10 +1,10 @@
 package taboolib.module.kether.action.game
 
-import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.ArgTypes
 import org.bukkit.entity.Player
 import taboolib.common.OpenResult
 import taboolib.common.platform.ProxyPlayer
+import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -34,37 +34,7 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
     internal object Parser {
 
         init {
-            PlayerOperators.values().forEach {
-                Kether.addPlayerOperator(it.name, it.build())
-            }
-            Kether.addScriptProperty(Player::class.java, object : ScriptProperty(ActionPlayer::class.java.name) {
-
-                override fun read(instance: Any, key: String): OpenResult {
-                    try {
-                        val operator = PlayerOperators.valueOf(key.uppercase())
-                        if (operator.reader != null) {
-                            OpenResult.successful(operator.reader.invoke(instance as ProxyPlayer))
-                        }
-                    } catch (ex: ClassCastException) {
-                        ex.printStackTrace()
-                    } catch (ex: Exception) {
-                    }
-                    return OpenResult.failed()
-                }
-
-                override fun write(instance: Any, key: String, value: Any?): OpenResult {
-                    try {
-                        val operator = PlayerOperators.valueOf(key.uppercase())
-                        if (operator.writer != null) {
-                            OpenResult.successful(operator.writer.invoke(instance as ProxyPlayer, PlayerOperator.Method.MODIFY, value))
-                        }
-                    } catch (ex: ClassCastException) {
-                        ex.printStackTrace()
-                    } catch (ex: Exception) {
-                    }
-                    return OpenResult.failed()
-                }
-            })
+            PlayerOperators.values().forEach { Kether.addPlayerOperator(it.name, it.build()) }
         }
 
         @KetherParser(["player"])

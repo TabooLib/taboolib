@@ -16,6 +16,12 @@ import java.util.function.Supplier
 import java.util.jar.JarFile
 import java.util.zip.*
 
+val groupId = "taboolib".substring(0, "taboolib".length - 9)
+
+val taboolibId = charArrayOf('t', 'a', 'b', 'o', 'o', 'l', 'i', 'b').concatToString()
+
+val taboolibPath = groupId + taboolibId
+
 val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
 
 fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {

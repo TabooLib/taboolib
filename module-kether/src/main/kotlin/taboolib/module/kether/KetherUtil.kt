@@ -103,9 +103,11 @@ fun QuestReader.switch(func: ExpectDSL.() -> Unit): ScriptAction<*> {
     val ed = ExpectDSL()
     func(ed)
     return try {
+        mark()
         val sel = expects(*ed.method.keys.toTypedArray())
         ed.method[sel]!!()
     } catch (ex: Exception) {
+        reset()
         if (ed.other == null) {
             throw ex
         }
@@ -113,7 +115,7 @@ fun QuestReader.switch(func: ExpectDSL.() -> Unit): ScriptAction<*> {
     }
 }
 
-fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() -> Any?): ScriptAction<*> {
+fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() -> Any?): ScriptAction<Any?> {
     return object : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
@@ -126,7 +128,7 @@ fun actionNow(name: String = "kether-action-del", func: QuestContext.Frame.() ->
     }
 }
 
-fun actionFuture(name: String = "kether-action-del", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): ScriptAction<*> {
+fun actionFuture(name: String = "kether-action-del", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): ScriptAction<Any?> {
     return object : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {

@@ -5,6 +5,7 @@ import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.releaseResourceFile
+import taboolib.common.platform.warning
 import taboolib.common.reflect.Ref
 import taboolib.common5.FileWatcher
 import java.io.File
@@ -20,36 +21,47 @@ object ConfigLoader : Injector.Fields {
 
     override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
         if (field.isAnnotationPresent(Config::class.java)) {
-            val file = releaseResourceFile(field.getAnnotation(Config::class.java).value)
-            if (field.getAnnotation(Config::class.java).migrate) {
-                val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
-                if (resourceAsStream != null) {
-                    val bytes = resourceAsStream.migrateTo(file.inputStream())
-                    if (bytes != null) {
-                        file.writeBytes(bytes)
+            val name = field.getAnnotation(Config::class.java).value
+            if (files.containsKey(name)) {
+                try {
+                    // ClassCastException
+                    Ref.put(instance.get(), field, files[name]!!.conf)
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                    return
+                }
+            } else {
+                val file = releaseResourceFile(name)
+                if (field.getAnnotation(Config::class.java).migrate) {
+                    val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
+                    if (resourceAsStream != null) {
+                        val bytes = resourceAsStream.migrateTo(file.inputStream())
+                        if (bytes != null) {
+                            file.writeBytes(bytes)
+                        }
                     }
                 }
-            }
-            val conf = SecuredFile.loadConfiguration(file)
-            val configFile = ConfigFile(conf, file)
-            try {
-                // ClassCastException
-                Ref.put(instance.get(), field, conf)
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
-                return
-            }
-            if (isFileWatcherHook) {
-                FileWatcher.INSTANCE.addSimpleListener(file) {
-                    if (file.exists()) {
-                        conf.load(file)
+                val conf = SecuredFile.loadConfiguration(file)
+                try {
+                    // ClassCastException
+                    Ref.put(instance.get(), field, conf)
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                    return
+                }
+                if (isFileWatcherHook) {
+                    FileWatcher.INSTANCE.addSimpleListener(file) {
+                        if (file.exists()) {
+                            conf.load(file)
+                        }
                     }
                 }
+                val configFile = ConfigFile(conf, file)
+                conf.onReload {
+                    configFile.nodes.forEach { NodeLoader.inject(it, clazz, instance) }
+                }
+                files[name] = configFile
             }
-            conf.onReload {
-                configFile.nodes.forEach { NodeLoader.inject(it, clazz, instance) }
-            }
-            files[file.name] = configFile
         }
     }
 
@@ -65,7 +77,11 @@ object ConfigLoader : Injector.Fields {
         override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
             if (field.isAnnotationPresent(ConfigNode::class.java)) {
                 val node = field.getAnnotation(ConfigNode::class.java)
-                val file = files[node.bind] ?: return
+                val file = files[node.bind]
+                if (file == null) {
+                    warning("${node.bind} not defined")
+                    return
+                }
                 file.nodes += field
                 Ref.put(instance.get(), field, file.conf.get(node.value.ifEmpty { field.name }))
             }

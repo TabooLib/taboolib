@@ -99,27 +99,5 @@ public class SimpleQuest implements Quest {
                 ", actions=" + actions +
                 '}';
         }
-
-//        @Override
-//        public Map<String, Object> serialize() {
-//            Map<String, Object> result = new LinkedHashMap<>();
-//            result.put("label", label);
-//            List<Map<String, Object>> actionsList = new ArrayList<>();
-//            for (ParsedAction<?> action : actions) {
-//                actionsList.add(action.serialize());
-//            }
-//            result.put("actions", actionsList);
-//            return result;
-//        }
-//
-//        @SuppressWarnings("unchecked")
-//        public static SimpleBlock deserialize(Map<String, Object> map) {
-//            String label = map.get("label").toString();
-//            List<ParsedAction<?>> actions = new ArrayList<>();
-//            for (Map<String, Object> data : ((List<Map<String, Object>>) map.get("actions"))) {
-//                actions.add(ParsedAction.deserialize(data));
-//            }
-//            return new SimpleBlock(label, actions);
-//        }
     }
 }
