@@ -1,14 +1,8 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.Quest
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestActionParser
-import io.izzel.kether.common.api.QuestContext
-import io.izzel.kether.common.loader.LoadError
-import io.izzel.kether.common.loader.QuestReader
-import io.izzel.kether.common.util.LocalizedException
 import taboolib.common.platform.warning
 import taboolib.common5.Coerce
+import taboolib.library.kether.*
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -17,8 +11,8 @@ typealias Script = Quest
 
 typealias ScriptFrame = QuestContext.Frame
 
-fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): QuestActionParser {
-    return ScriptActionParser { resolve.invoke(it) }
+fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionParser<T> {
+    return ScriptActionParser(resolve)
 }
 
 fun String.parseKetherScript(namespace: List<String> = emptyList()): Script {

@@ -1,8 +1,9 @@
 package taboolib.module.kether.action.game
 
-import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.ArgTypes
 import org.bukkit.entity.Player
+import taboolib.common.OpenResult
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.kether.*
 import java.util.*
@@ -38,30 +39,30 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
             }
             Kether.addScriptProperty(Player::class.java, object : ScriptProperty(ActionPlayer::class.java.name) {
 
-                override fun read(instance: Any, key: String): OperationResult {
+                override fun read(instance: Any, key: String): OpenResult {
                     try {
                         val operator = PlayerOperators.valueOf(key.uppercase())
                         if (operator.reader != null) {
-                            OperationResult.successful(operator.reader.invoke(instance as ProxyPlayer))
+                            OpenResult.successful(operator.reader.invoke(instance as ProxyPlayer))
                         }
                     } catch (ex: ClassCastException) {
                         ex.printStackTrace()
                     } catch (ex: Exception) {
                     }
-                    return OperationResult.failed()
+                    return OpenResult.failed()
                 }
 
-                override fun write(instance: Any, key: String, value: Any?): OperationResult {
+                override fun write(instance: Any, key: String, value: Any?): OpenResult {
                     try {
                         val operator = PlayerOperators.valueOf(key.uppercase())
                         if (operator.writer != null) {
-                            OperationResult.successful(operator.writer.invoke(instance as ProxyPlayer, PlayerOperator.Method.MODIFY, value))
+                            OpenResult.successful(operator.writer.invoke(instance as ProxyPlayer, PlayerOperator.Method.MODIFY, value))
                         }
                     } catch (ex: ClassCastException) {
                         ex.printStackTrace()
                     } catch (ex: Exception) {
                     }
-                    return OperationResult.failed()
+                    return OpenResult.failed()
                 }
             })
         }

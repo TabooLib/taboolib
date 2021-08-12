@@ -16,7 +16,7 @@ class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
     override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         val s = frame.script()
         val r = try {
-            val bindings = hashMapOf("event" to s.event, "sender" to s.sender, "server" to server())
+            val bindings: MutableMap<String, Any?> = hashMapOf("sender" to s.sender, "server" to server())
             bindings.putAll(frame.deepVars())
             script.eval(SimpleBindings(Event(bindings, s).bindings))
         } catch (e: Throwable) {

@@ -2,6 +2,8 @@ package taboolib.platform.type
 
 import net.md_5.bungee.api.plugin.Plugin
 import taboolib.common.OpenContainer
+import taboolib.common.OpenResult
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
 /**
@@ -11,20 +13,22 @@ import taboolib.common.reflect.Reflex.Companion.invokeMethod
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
-class BungeeOpenContainer(val plugin: Plugin): OpenContainer {
+class BungeeOpenContainer(plugin: Plugin) : OpenContainer {
 
-    val main = plugin.description.main!!
-    val clazz: Class<*> = Class.forName(main.substring(0, main.length - "platform.BungeePlugin".length) + "common.OpenAPI")
+    private val name = plugin.description.name
+    private val main = plugin.description.main!!
+    private val clazz = try {
+        Class.forName(main.substring(0, main.length - "platform.BungeePlugin".length) + "common.OpenAPI")
+    } catch (ignored: Throwable) {
+        null
+    }
 
     override fun getName(): String {
-        return plugin.description.name
+        return name
     }
 
-    override fun register(name: String, any: ByteArray, args: Array<String>) {
-        clazz.invokeMethod<Void>("register", name, any, args, fixed = true)
-    }
-
-    override fun unregister(name: String, any: ByteArray, args: Array<String>) {
-        clazz.invokeMethod<Void>("unregister", name, any, args, fixed = true)
+    override fun call(name: String, args: Array<Any>): OpenResult {
+        val result = clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed()
+        return OpenResult(result.getProperty("successful")!!, result.getProperty("value"))
     }
 }

@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  * @author lzzelAliz
  */
 @Isolated
-@RuntimeDependency(value = "!org.apache.commons:commons-lang3:3.5", test = "!org.apache.commons.lang3.Validate")
+@RuntimeDependency(value = "!org.apache.commons:commons-lang3:3.5", test = "!org.apache.commons.lang3.concurrent.BasicThreadFactory")
 public class FileWatcher implements Releasable {
 
     public final static FileWatcher INSTANCE = new FileWatcher();

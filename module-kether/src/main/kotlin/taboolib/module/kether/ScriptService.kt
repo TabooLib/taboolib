@@ -2,12 +2,12 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Multimap
-import io.izzel.kether.common.api.DefaultRegistry
-import io.izzel.kether.common.api.QuestRegistry
-import io.izzel.kether.common.api.QuestService
-import io.izzel.kether.common.api.ServiceHolder
 import taboolib.common.platform.getDataFolder
 import taboolib.common.util.replaceWithOrder
+import taboolib.library.kether.DefaultRegistry
+import taboolib.library.kether.QuestRegistry
+import taboolib.library.kether.QuestService
+import taboolib.library.kether.ServiceHolder
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.SecuredFile
 import java.io.File
@@ -30,7 +30,7 @@ object ScriptService : QuestService<ScriptContext> {
     private val asyncExecutor = Executors.newScheduledThreadPool(2)
 
     @Config("kether.yml")
-    private lateinit var locale: SecuredFile
+    lateinit var locale: SecuredFile
 
     val mainspace by lazy {
         Workspace(File(getDataFolder(), "kether"))

@@ -1,14 +1,14 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.actions.GetAction
-import io.izzel.kether.common.actions.LiteralAction
-import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestService
-import io.izzel.kether.common.loader.LoadError
-import io.izzel.kether.common.loader.SimpleQuestLoader
-import io.izzel.kether.common.loader.SimpleReader
+import taboolib.common.OpenContainer
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
+import taboolib.library.kether.*
+import taboolib.library.kether.actions.GetAction
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.action.ActionProperty
+import java.util.*
 
 /**
  * TabooLib
@@ -19,18 +19,28 @@ import taboolib.module.kether.action.ActionProperty
  */
 class KetherScriptLoader : SimpleQuestLoader() {
 
-    override fun newParser(content: CharArray, service: QuestService<*>, namespace: MutableList<String>): Parser {
-        return KetherScriptParser(content, service, namespace)
-    }
+    override fun newBlockReader(content: CharArray, service: QuestService<*>, namespace: MutableList<String>): BlockReader {
+        return object : BlockReader(content, service, namespace) {
 
-    class KetherScriptParser(content: CharArray, service: QuestService<*>, namespace: MutableList<String>) : Parser(content, service, namespace) {
-
-        override fun newReader(service: QuestService<*>, namespace: MutableList<String>): SimpleReader {
-            return KetherScriptReader(service, this, namespace)
+            override fun newActionReader(service: QuestService<*>, namespace: MutableList<String>): SimpleReader {
+                return Reader(service, this, namespace)
+            }
         }
     }
 
-    class KetherScriptReader(service: QuestService<*>, parser: Parser, namespace: MutableList<String>) : SimpleReader(service, parser, namespace) {
+    class Reader(service: QuestService<*>, reader: BlockReader, namespace: MutableList<String>) : SimpleReader(service, reader, namespace) {
+
+//        companion object {
+//
+//            @Suppress("UNCHECKED_CAST")
+//            fun deserialize(map: Map<String, Any>): Reader {
+//                return Reader(
+//                    ServiceHolder.getQuestServiceInstance(),
+//                    BlockReader.deserialize(map["parser"] as MutableMap<String, Any>),
+//                    map["namespace"] as MutableList<String>
+//                )
+//            }
+//        }
 
         override fun nextToken(): String {
             return super.nextToken().replace("\\s", " ")
@@ -41,9 +51,9 @@ class KetherScriptLoader : SimpleQuestLoader() {
             skipBlank()
             return when (peek()) {
                 '{' -> {
-                    parser.setProperty("index", index)
+                    blockParser.setProperty("index", index)
                     val action = nextAnonAction()
-                    index = parser.index
+                    index = blockParser.index
                     action as ParsedAction<T>
                 }
                 '&' -> {
@@ -80,6 +90,50 @@ class KetherScriptLoader : SimpleQuestLoader() {
                     }
                 }
             }
+        }
+    }
+
+    class RemoteReader(val remote: OpenContainer, val source: Any): QuestReader {
+
+        override fun peek(): Char {
+            return source.invokeMethod("peek")!!
+        }
+
+        override fun peek(n: Int): Char {
+            return source.invokeMethod("peek", n)!!
+        }
+
+        override fun getIndex(): Int {
+            return source.invokeMethod("getIndex")!!
+        }
+
+        override fun getMark(): Int {
+            return source.invokeMethod("getMark")!!
+        }
+
+        override fun hasNext(): Boolean {
+            return source.invokeMethod("hasNext")!!
+        }
+
+        override fun nextToken(): String {
+            return source.invokeMethod("nextToken")!!
+        }
+
+        override fun mark() {
+            source.invokeMethod<Void>("mark")
+        }
+
+        override fun reset() {
+            source.invokeMethod<Void>("reset")
+        }
+
+        override fun <T> nextAction(): ParsedAction<T> {
+            val action = source.invokeMethod<T>("nextAction")!!
+            return ParsedAction(RemoteQuestAction<T>(remote, action.getProperty<Any>("action")!!), action.getProperty<Map<String, Any>>("properties")!!)
+        }
+
+        override fun expect(value: String) {
+            source.invokeMethod<Void>("expect", value)
         }
     }
 }

@@ -1,8 +1,8 @@
 package taboolib.module.kether.action.game.compat
 
-import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestContext
-import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
+import taboolib.library.kether.ArgTypes
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
 import taboolib.module.kether.KetherParser

@@ -75,7 +75,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override val locale: String
-        get() = player.locale
+        get() = try {
+            player.locale
+        } catch (ignored: NoSuchMethodError) {
+            player.getProperty<String>("entity/locale")!!
+        }
 
     override val world: String
         get() = player.world.name

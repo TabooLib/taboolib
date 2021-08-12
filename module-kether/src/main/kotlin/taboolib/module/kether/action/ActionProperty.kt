@@ -1,6 +1,6 @@
 package taboolib.module.kether.action
 
-import io.izzel.kether.common.api.ParsedAction
+import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.Kether
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame

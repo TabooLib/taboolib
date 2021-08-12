@@ -1,9 +1,9 @@
 package taboolib.module.kether.action.game
 
-import io.izzel.kether.common.actions.LiteralAction
-import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestContext
-import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.library.kether.actions.LiteralAction
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
+import taboolib.library.kether.ArgTypes
 import taboolib.common.util.Location
 import taboolib.common5.Coerce
 import taboolib.module.kether.KetherParser

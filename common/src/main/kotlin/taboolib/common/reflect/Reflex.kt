@@ -86,8 +86,6 @@ class Reflex(val from: Class<*>) {
 
         val remapper = ArrayList<ReflexRemapper>()
 
-        var bukkit = true
-
         fun <T> Class<T>.unsafeInstance(): Any {
             return Ref.unsafe.allocateInstance(this)!!
         }
@@ -118,14 +116,6 @@ class Reflex(val from: Class<*>) {
                 Reflex(this).write(path, value)
             } else {
                 Reflex(javaClass).instance(this).write(path, value)
-            }
-        }
-
-        init {
-            try {
-                Class.forName("org.bukkit.Bukkit")
-            } catch (e: ClassNotFoundException) {
-                bukkit = false
             }
         }
     }

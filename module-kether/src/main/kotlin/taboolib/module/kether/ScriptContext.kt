@@ -1,7 +1,8 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.AbstractQuestContext
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.adaptCommandSender
+import taboolib.library.kether.AbstractQuestContext
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -11,27 +12,28 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/1/20 10:39 上午
  */
-open class ScriptContext(service: ScriptService, script: Script) :
-    AbstractQuestContext<ScriptContext>(service, script, null) {
+open class ScriptContext(service: ScriptService, script: Script) : AbstractQuestContext<ScriptContext>(service, script, null) {
 
     lateinit var id: String
 
-    var event: Any?
-        get() = this["@Event"]
-        set(value) {
-            this["@Event"] = value
-        }
-
-    var listener: CompletableFuture<Void>?
-        get() = this["@Listener"]
-        set(value) {
-            this["@Listener"] = value
-        }
+//    var event: Any?
+//        get() = this["@Event"]
+//        set(value) {
+//            this["@Event"] = value
+//        }
+//
+//    var listener: CompletableFuture<Void>?
+//        get() = this["@Listener"]
+//        set(value) {
+//            this["@Listener"] = value
+//        }
 
     var sender: ProxyCommandSender?
-        get() = this["@Sender"]
         set(value) {
-            this["@Sender"] = value
+            this["@Sender"] = value?.origin
+        }
+        get() {
+            return adaptCommandSender(this["@Sender"] ?: return null)
         }
 
     var breakLoop: Boolean
@@ -48,7 +50,9 @@ open class ScriptContext(service: ScriptService, script: Script) :
         return rootFrame.variables().get<T>(key).orElse(def)
     }
 
-    override fun createExecutor() = ScriptSchedulerExecutor
+    override fun createExecutor(): ScriptSchedulerExecutor {
+        return ScriptSchedulerExecutor
+    }
 
     companion object {
 

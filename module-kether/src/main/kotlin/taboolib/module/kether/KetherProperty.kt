@@ -2,7 +2,7 @@ package taboolib.module.kether
 
 import kotlin.reflect.KClass
 
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class KetherProperty(
     val bind: KClass<*>,

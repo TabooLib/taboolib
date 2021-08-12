@@ -48,10 +48,8 @@ class ReflexClass(val clazz: Class<*>) {
 
     fun findField(f: String): Field? {
         var field = f
-        if (Reflex.bukkit) {
-            Reflex.remapper.forEach {
-                field = it.field(clazz.name, field)
-            }
+        Reflex.remapper.forEach {
+            field = it.field(clazz.name, field)
         }
         savingFields.firstOrNull { it.name == field }?.run {
             return this
@@ -69,30 +67,17 @@ class ReflexClass(val clazz: Class<*>) {
 
     fun findMethod(m: String, vararg parameter: Any?): Method? {
         var method = m
-        if (Reflex.bukkit) {
-            Reflex.remapper.forEach {
-                method = it.method(clazz.name, method)
-            }
+        Reflex.remapper.forEach {
+            method = it.method(clazz.name, method)
         }
-        savingMethods.firstOrNull {
-            if (it.name == method && it.parameterCount == parameter.size) {
-                var checked = true
-                it.parameterTypes.forEachIndexed { index, p ->
-                    if (parameter[index] != null && !p.nonPrimitive().isInstance(parameter[index])) {
-                        checked = false
-                    }
-                }
-                return@firstOrNull checked
-            }
-            return@firstOrNull false
-        }?.run {
+        savingMethods.firstOrNull { it.name == method && compare(it.parameterTypes, parameter.map { p -> p?.javaClass }.toTypedArray()) }?.run {
             return this
         }
-        superclass?.findMethod(method)?.run {
+        superclass?.findMethod(method, *parameter)?.run {
             return this
         }
         interfaces.forEach {
-            it.findMethod(method)?.run {
+            it.findMethod(method, *parameter)?.run {
                 return this
             }
         }
@@ -115,6 +100,21 @@ class ReflexClass(val clazz: Class<*>) {
             return this
         }
         return null
+    }
+
+    fun compare(primary: Array<Class<*>>, secondary: Array<Class<*>?>): Boolean {
+        if (primary.size != secondary.size) {
+            return false
+        }
+        for (index in primary.indices) {
+            val primaryClass = primary[index].nonPrimitive()
+            val secondaryClass = secondary[index]?.nonPrimitive() ?: continue
+            if (primaryClass == secondaryClass || primaryClass.isAssignableFrom(secondaryClass)) {
+                continue
+            }
+            return false
+        }
+        return true
     }
 
     companion object {

@@ -1,6 +1,6 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.api.QuestAction
+import taboolib.library.kether.QuestAction
 import java.util.concurrent.CompletableFuture
 
 /**

@@ -1,11 +1,12 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.actions.KetherTypes
-import io.izzel.kether.common.api.QuestActionParser
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
+import taboolib.common.platform.getOpenContainers
+import taboolib.library.kether.QuestActionParser
+import taboolib.library.kether.actions.KetherTypes
 import taboolib.module.lang.Language
 
 @RuntimeDependencies(
@@ -65,14 +66,14 @@ object Kether {
     }
 
     inline fun <reified T> addEvent(name: String) {
-        KetherLoader.openContainers.forEach {
-            it.register("openapi.kether.Event", ByteArray(0), arrayOf(name, T::class.java.name))
+        getOpenContainers().forEach {
+//            it.call("openapi.kether.Event", arrayOf(name, T::class.java.name))
         }
     }
 
     inline fun <reified T> removeEvent() {
-        KetherLoader.openContainers.forEach {
-            it.unregister("openapi.kether.Event", ByteArray(0), arrayOf(T::class.java.name))
+        getOpenContainers().forEach {
+//            it.unregister("openapi.kether.Event", arrayOf(T::class.java.name))
         }
     }
 

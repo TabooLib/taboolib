@@ -30,6 +30,8 @@ class Sponge8IO : PlatformIO {
             LogManager.getLogger("Anonymous")
         }
 
+    val pluginContainer = HashMap<String, OpenContainer>()
+
     override val pluginId: String
         get() = Sponge8Plugin.getInstance().pluginContainer.metadata().id()
 
@@ -78,15 +80,8 @@ class Sponge8IO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return Sponge.pluginManager().plugins()
-            .filter { it.instance()?.javaClass?.name?.endsWith("taboolib.platform.Sponge8Plugin") == true }
-            .mapNotNull {
-                try {
-                    Sponge8OpenContainer(it)
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                    null
-                }
-            }
+        return Sponge.pluginManager().plugins().filter { it.instance()?.javaClass?.name?.endsWith("platform.Sponge8Plugin") == true }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.metadata().id()) { _ -> Sponge8OpenContainer(it) }
+        }
     }
 }

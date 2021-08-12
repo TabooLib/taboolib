@@ -1,6 +1,7 @@
 package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * TabooLib
@@ -22,17 +23,8 @@ public interface OpenContainer {
      * 注册开放接口
      *
      * @param name 名字
-     * @param any  序列化类
      * @param args 参数
      */
-    void register(String name, @NotNull byte[] any, @NotNull String[] args);
-
-    /**
-     * 注销开放接口
-     *
-     * @param name 名字
-     * @param any  序列化类
-     * @param args 参数
-     */
-    void unregister(String name, @NotNull byte[] any, @NotNull String[] args);
+    @NotNull
+    OpenResult call(String name, @NotNull Object[] args);
 }

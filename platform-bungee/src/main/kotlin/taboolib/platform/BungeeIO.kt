@@ -29,6 +29,8 @@ class BungeeIO : PlatformIO {
             Logger.getAnonymousLogger()
         }
 
+    val pluginContainer = HashMap<String, OpenContainer>()
+
     override val pluginId: String
         get() = BungeePlugin.getInstance().description.name
 
@@ -77,13 +79,8 @@ class BungeeIO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BungeePlugin") }.mapNotNull {
-            try {
-                BungeeOpenContainer(it)
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
-                null
-            }
+        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("platform.BungeePlugin") }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.description.name) { _ -> BungeeOpenContainer(it) }
         }
     }
 }

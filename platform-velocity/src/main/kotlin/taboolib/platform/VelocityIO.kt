@@ -30,6 +30,8 @@ class VelocityIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
+    val pluginContainer = HashMap<String, OpenContainer>()
+
     override val pluginId: String
         get() = VelocityPlugin::class.java.getAnnotation(Plugin::class.java).id
 
@@ -80,15 +82,9 @@ class VelocityIO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return VelocityPlugin.getInstance().server.pluginManager.plugins
-            .filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("taboolib.platform.VelocityPlugin") == true }
-            .mapNotNull {
-                try {
-                    VelocityOpenContainer(it)
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
-                    null
-                }
-            }
+        val plugins = VelocityPlugin.getInstance().server.pluginManager.plugins
+        return plugins.filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("platform.VelocityPlugin") == true }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.description.id) { _ -> VelocityOpenContainer(it) }
+        }
     }
 }

@@ -1,6 +1,6 @@
 package taboolib.module.kether
 
-import io.izzel.kether.common.util.LocalizedException
+import taboolib.library.kether.LocalizedException
 import java.util.*
 
 enum class KetherError {

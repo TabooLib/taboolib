@@ -30,6 +30,8 @@ class NukkitIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
+    val pluginContainer = HashMap<String, OpenContainer>()
+
     override val pluginId: String
         get() = NukkitPlugin.getInstance().name
 
@@ -77,13 +79,8 @@ class NukkitIO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return Server.getInstance().pluginManager.plugins.values.filter { it.javaClass.name.endsWith("taboolib.platform.NukkitPlugin") }.mapNotNull {
-            try {
-                NukkitOpenContainer(it)
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
-                null
-            }
+        return Server.getInstance().pluginManager.plugins.values.filter { it.javaClass.name.endsWith("platform.NukkitPlugin") }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.name) { _ -> NukkitOpenContainer(it) }
         }
     }
 }

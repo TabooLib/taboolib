@@ -1,10 +1,10 @@
 package taboolib.module.kether.action
 
-import io.izzel.kether.common.actions.LiteralAction
-import io.izzel.kether.common.api.ParsedAction
-import io.izzel.kether.common.api.QuestAction
-import io.izzel.kether.common.api.QuestContext
-import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.library.kether.actions.LiteralAction
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestAction
+import taboolib.library.kether.QuestContext
+import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.scriptParser
 import java.util.concurrent.CompletableFuture

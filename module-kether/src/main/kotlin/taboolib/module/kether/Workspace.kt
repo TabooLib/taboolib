@@ -2,11 +2,11 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.MultimapBuilder
-import io.izzel.kether.common.api.Quest
-import io.izzel.kether.common.api.data.ExitStatus
-import io.izzel.kether.common.util.Coerce
 import taboolib.common.platform.getProxyPlayer
 import taboolib.common.platform.warning
+import taboolib.common5.Coerce
+import taboolib.library.kether.ExitStatus
+import taboolib.library.kether.Quest
 import taboolib.module.kether.action.ActionProperty
 import java.io.File
 
@@ -24,11 +24,11 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
     val scriptsSetting = HashMap<String, Map<String, Any?>>()
     val runningScripts = MultimapBuilder.hashKeys().arrayListValues().build<String, ScriptContext>()!!
 
-    val listeners = ArrayList<AutoCloseable>()
+//    val listeners = ArrayList<AutoCloseable>()
 
     fun loadAll() {
-        listeners.forEach { it.close() }
-        listeners.clear()
+//        listeners.forEach { it.close() }
+//        listeners.clear()
 
         loadScripts()
         loadSettings()
@@ -44,19 +44,19 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                 warning("Unknown starting trigger $trigger")
                 return@forEach
             }
-            listeners.add(Closables.listening<Any>(operator) { e ->
-                val context = ScriptContext.create(it.value) {
-                    val player = ActionProperty.getScriptProperty(e, "bind")
-                    if (player != null) {
-                        sender = getProxyPlayer(player.toString())
-                        id = "${it.value.id}:${sender?.name}"
-                    } else {
-                        id = "${it.value.id}:$trigger"
-                    }
-                    event = e
-                }
-                runScript(context.id, context)
-            })
+//            listeners.add(Closables.listening<Any>(operator) { e ->
+//                val context = ScriptContext.create(it.value) {
+//                    val player = ActionProperty.getScriptProperty(e, "bind")
+//                    if (player != null) {
+//                        sender = getProxyPlayer(player.toString())
+//                        id = "${it.value.id}:${sender?.name}"
+//                    } else {
+//                        id = "${it.value.id}:$trigger"
+//                    }
+//                    event = e
+//                }
+//                runScript(context.id, context)
+//            })
         }
     }
 

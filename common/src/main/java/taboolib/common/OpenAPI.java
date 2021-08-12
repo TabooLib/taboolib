@@ -1,5 +1,6 @@
 package taboolib.common;
 
+import org.jetbrains.annotations.NotNull;
 import taboolib.common.platform.PlatformFactory;
 
 /**
@@ -11,19 +12,14 @@ import taboolib.common.platform.PlatformFactory;
  */
 public class OpenAPI {
 
-    public static void register(String name, byte[] any, String[] args) {
-        for (OpenReceiver receiver : PlatformFactory.INSTANCE.getOpenReceiver()) {
-            if (receiver.register(name, any, args)) {
-                return;
+    @NotNull
+    public static OpenResult call(String name, Object[] data) {
+        for (OpenListener receiver : PlatformFactory.INSTANCE.getOpenListener()) {
+            OpenResult result = receiver.call(name, data);
+            if (result.isSuccessful()) {
+                return result;
             }
         }
-    }
-
-    public static void unregister(String name, byte[] any, String[] args) {
-        for (OpenReceiver receiver : PlatformFactory.INSTANCE.getOpenReceiver()) {
-            if (receiver.unregister(name, any, args)) {
-                return;
-            }
-        }
+        return OpenResult.failed();
     }
 }

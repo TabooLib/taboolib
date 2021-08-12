@@ -24,6 +24,8 @@ class BukkitIO : PlatformIO {
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
 
+    val pluginContainer = HashMap<String, OpenContainer>()
+
     override val pluginId: String
         get() = plugin.description.name
 
@@ -71,13 +73,8 @@ class BukkitIO : PlatformIO {
     }
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("taboolib.platform.BukkitPlugin") }.mapNotNull {
-            try {
-                BukkitOpenContainer(it)
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
-                null
-            }
+        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitOpenContainer(it) }
         }
     }
 }

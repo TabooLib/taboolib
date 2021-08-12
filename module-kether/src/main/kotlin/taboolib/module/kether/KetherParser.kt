@@ -1,6 +1,6 @@
 package taboolib.module.kether
 
-@Target(AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class KetherParser(
     val value: Array<String>,

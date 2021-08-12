@@ -1,6 +1,6 @@
 package taboolib.module.kether.action.game.bukkit
 
-import io.izzel.kether.common.api.QuestContext
+import taboolib.library.kether.QuestContext
 import org.bukkit.entity.Player
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

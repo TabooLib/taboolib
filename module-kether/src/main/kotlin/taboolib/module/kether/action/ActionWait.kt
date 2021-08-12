@@ -1,6 +1,6 @@
 package taboolib.module.kether.action
 
-import io.izzel.kether.common.loader.types.ArgTypes
+import taboolib.library.kether.ArgTypes
 import taboolib.common.platform.submit
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction

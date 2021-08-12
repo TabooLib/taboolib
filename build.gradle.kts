@@ -15,7 +15,7 @@ subprojects {
         mavenCentral()
     }
     dependencies {
-        "compileOnly"(kotlin("stdlib"))
+        "implementation"(kotlin("stdlib"))
     }
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))

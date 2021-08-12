@@ -53,6 +53,10 @@ fun getOpenContainers(): List<OpenContainer> {
     return platformIO.getOpenContainers()
 }
 
+fun getOpenContainer(name: String): OpenContainer? {
+    return platformIO.getOpenContainers().firstOrNull { it.name == name }
+}
+
 fun submit(
     now: Boolean = false,
     async: Boolean = false,
