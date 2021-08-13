@@ -18,6 +18,35 @@ fun Player.nextChat(function: (message: String) -> Unit) {
     ChatListener.inputs[name] = function
 }
 
+
+fun Player.nextChat(function: (message: String) -> Unit, onReuse: (player: Player) -> Unit = {}) {
+    if (!ChatListener.inputs.containsKey(name)) {
+        ChatListener.inputs[name] = function
+    } else onReuse(this)
+}
+
+
+fun Player.nextChatInTick(
+    tick: Long,
+    function: (message: String) -> Unit,
+    onTimeOver: (player: Player) -> Unit = {},
+    onReuse: (player: Player) -> Unit = {},
+) {
+    if (!ChatListener.inputs.containsKey(name)) {
+        ChatListener.inputs[name] = function
+        Bukkit.getScheduler().runTaskLater(
+            BukkitAdapter().plugin,
+            Runnable {
+                if (ChatListener.inputs.containsKey(name)) {
+                    onTimeOver(this)
+                    ChatListener.inputs.remove(name)
+                }
+            }, tick
+        )
+    } else onReuse(this)
+}
+
+
 @Isolated
 @PlatformSide([Platform.BUKKIT])
 internal object ChatListener {
