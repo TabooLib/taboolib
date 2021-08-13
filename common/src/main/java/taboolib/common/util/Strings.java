@@ -63,7 +63,6 @@ public class Strings {
         char[] chars_strB = strB.toCharArray();
         int m = chars_strA.length;
         int n = chars_strB.length;
-
         int[][] matrix = new int[m + 1][n + 1];
         for (int i = 1; i <= m; i++) {
             for (int j = 1; j <= n; j++) {
@@ -74,7 +73,6 @@ public class Strings {
                 }
             }
         }
-
         char[] result = new char[matrix[m][n]];
         int currentIndex = result.length - 1;
         while (matrix[m][n] != 0) {

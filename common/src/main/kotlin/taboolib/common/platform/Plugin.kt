@@ -9,7 +9,6 @@ import taboolib.common.Isolated
  * @author sky
  * @since 2021/6/15 6:19 下午
  */
-@Isolated
 abstract class Plugin {
 
     open fun onLoad() {

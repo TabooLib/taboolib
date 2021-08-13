@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+@PlatformService
 interface PlatformExecutor {
 
     fun submit(runnable: PlatformRunnable): PlatformTask

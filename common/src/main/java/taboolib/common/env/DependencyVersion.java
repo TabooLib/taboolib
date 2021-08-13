@@ -10,7 +10,7 @@ import java.util.List;
  * @author Zach Deibert
  * @since 1.0.0
  */
-class Version implements Comparable<Version> {
+class DependencyVersion implements Comparable<DependencyVersion> {
 
     /**
      * A list of the components of the version
@@ -26,7 +26,7 @@ class Version implements Comparable<Version> {
      */
     private final String version;
 
-    public int compareTo(Version o) {
+    public int compareTo(DependencyVersion o) {
         Iterator<Integer> us = parts.iterator();
         Iterator<Integer> them = o.parts.iterator();
         while (us.hasNext() && them.hasNext()) {
@@ -49,7 +49,7 @@ class Version implements Comparable<Version> {
      * @param version The version string to parse
      * @since 1.0.0
      */
-    public Version(String version) {
+    public DependencyVersion(String version) {
         parts = new ArrayList<>();
         for (String part : version.split("[^0-9]")) {
             if (!part.isEmpty()) {

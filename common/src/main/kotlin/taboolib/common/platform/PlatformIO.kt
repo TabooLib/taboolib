@@ -3,6 +3,7 @@ package taboolib.common.platform
 import taboolib.common.OpenContainer
 import java.io.File
 
+@PlatformService
 interface PlatformIO {
 
     val pluginId: String

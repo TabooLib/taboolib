@@ -107,18 +107,18 @@ class Dependency extends AbstractXmlParser {
      * @return An array of the versions that are already downloaded
      * @since 1.0.0
      */
-    public Version[] getInstalledVersions(File dir) {
+    public DependencyVersion[] getInstalledVersions(File dir) {
         for (String part : getGroupId().split("\\.")) {
             dir = new File(dir, part);
         }
         dir = new File(dir, getArtifactId());
         String[] list = dir.list();
         if (list == null) {
-            return new Version[0];
+            return new DependencyVersion[0];
         }
-        Version[] versions = new Version[list.length];
+        DependencyVersion[] versions = new DependencyVersion[list.length];
         for (int i = 0; i < list.length; ++i) {
-            versions[i] = new Version(list[i]);
+            versions[i] = new DependencyVersion(list[i]);
         }
         return versions;
     }

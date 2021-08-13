@@ -156,8 +156,8 @@ public class DependencyDownloader extends AbstractXmlParser {
                 }
             }
             if (e != null) {
-                Version max = null;
-                for (Version ver : dependency.getInstalledVersions(baseDir)) {
+                DependencyVersion max = null;
+                for (DependencyVersion ver : dependency.getInstalledVersions(baseDir)) {
                     if (max == null || ver.compareTo(max) > 0) {
                         max = ver;
                     }

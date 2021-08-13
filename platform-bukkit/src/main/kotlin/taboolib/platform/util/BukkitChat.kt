@@ -14,7 +14,6 @@ import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.BukkitAdapter
-import java.util.concurrent.ConcurrentHashMap
 
 fun Player.nextChat(function: (message: String) -> Unit) {
     ChatListener.inputs[name] = function

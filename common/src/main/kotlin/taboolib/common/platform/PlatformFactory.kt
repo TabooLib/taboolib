@@ -2,6 +2,7 @@ package taboolib.common.platform
 
 import taboolib.common.OpenListener
 import taboolib.common.TabooLibCommon
+import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.io.getInstance
@@ -10,41 +11,25 @@ import taboolib.common.io.runningClasses
 @Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
 object PlatformFactory {
 
-    lateinit var platformIO: PlatformIO
-        private set
-    lateinit var platformAdapter: PlatformAdapter
-        private set
-    lateinit var platformExecutor: PlatformExecutor
-        private set
-    lateinit var platformCommand: PlatformCommand
-        private set
+    val awokenMap = HashMap<String, Any>()
 
-    private val awokenMap = HashMap<String, Any>()
-    private val releaseTask = ArrayList<Releasable>()
+    val serviceMap = HashMap<String, Any>()
+
+    val releaseTask = ArrayList<Releasable>()
 
     val openListener = ArrayList<OpenListener>()
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
             runningClasses.forEach {
-                TabooLibCommon.ENV.inject(it)
+                kotlin.runCatching {
+                    RuntimeEnv.ENV.inject(it)
+                }
             }
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
-                    if (interfaces.contains(PlatformIO::class.java)) {
-                        platformIO = instance as PlatformIO
-                    }
-                    if (interfaces.contains(PlatformAdapter::class.java)) {
-                        platformAdapter = instance as PlatformAdapter
-                    }
-                    if (interfaces.contains(PlatformExecutor::class.java)) {
-                        platformExecutor = instance as PlatformExecutor
-                    }
-                    if (interfaces.contains(PlatformCommand::class.java)) {
-                        platformCommand = instance as PlatformCommand
-                    }
                     if (interfaces.contains(Injector.Fields::class.java)) {
                         RuntimeInjector.register(instance as Injector.Fields)
                     }
@@ -59,6 +44,11 @@ object PlatformFactory {
                     }
                     if (interfaces.contains(OpenListener::class.java)) {
                         openListener += instance as OpenListener
+                    }
+                    interfaces.forEach { int ->
+                        if (int.isAnnotationPresent(PlatformService::class.java)) {
+                            serviceMap[int.simpleName] = instance
+                        }
                     }
                     awokenMap[it.simpleName] = instance
                 }
@@ -91,7 +81,14 @@ object PlatformFactory {
     /**
      * 获取已被唤醒的 API 实例
      */
-    fun <T> getAPI(name: String): T? {
-        return awokenMap[name] as? T
+    inline fun <reified T> getAPI(): T {
+        return awokenMap[T::class.java.simpleName] as T
+    }
+
+    /**
+     * 获取已注册的跨平台服务
+     */
+    inline fun <reified T> getService(): T {
+        return serviceMap[T::class.java.simpleName] as T
     }
 }

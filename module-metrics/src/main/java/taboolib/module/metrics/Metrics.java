@@ -1,7 +1,8 @@
 package taboolib.module.metrics;
 
 import kotlin.Unit;
-import taboolib.common.io.IOKt;
+import taboolib.common.io.File1Kt;
+import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.FunctionKt;
 import taboolib.common.platform.Platform;
 import taboolib.module.configuration.SecuredFile;
@@ -27,7 +28,7 @@ public class Metrics {
         }
         // Get the config file
         File bStatsFolder = new File(FunctionKt.getDataFolder().getParentFile(), "bStats");
-        File configFile = IOKt.newFile(bStatsFolder, "config.yml", true);
+        File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
         if (!config.isSet("serverUUID")) {
             config.addDefault("enabled", true);

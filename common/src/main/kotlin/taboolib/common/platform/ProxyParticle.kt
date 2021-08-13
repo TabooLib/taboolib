@@ -1,5 +1,6 @@
 package taboolib.common.platform
 
+import taboolib.common.Isolated
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.awt.Color

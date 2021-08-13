@@ -18,27 +18,20 @@ import java.util.zip.ZipFile;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
-@RuntimeDependency(
-        value = "!org.jetbrains.kotlin:kotlin-stdlib:@kotlin_version@",
-        test = "!taboolib.library.kotlin_@kotlin_version_escape@.KotlinVersion",
-        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
-)
-@RuntimeDependency(
-        value = "!org.jetbrains.kotlin:kotlin-stdlib-jdk7:@kotlin_version@",
-        test = "!taboolib.library.kotlin_@kotlin_version_escape@.jdk7.AutoCloseableKt",
-        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
-)
-@RuntimeDependency(
-        value = "!org.jetbrains.kotlin:kotlin-stdlib-jdk8:@kotlin_version@",
-        test = "!taboolib.library.kotlin_@kotlin_version_escape@.collections.jdk8.CollectionsJDK8Kt",
-        relocate = {"!kotlin", "!taboolib.library.kotlin_@kotlin_version_escape@"}
-)
 public class RuntimeEnv {
+
+    public static final RuntimeEnv ENV = new RuntimeEnv();
 
     private boolean notify = false;
 
+    RuntimeEnv() {
+    }
+
     public void setup() {
-        loadDependency(RuntimeEnv.class);
+        try {
+            loadDependency(KotlinEnv.class);
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     public void inject(@NotNull Class<?> clazz) {
@@ -101,9 +94,6 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull Class<?> clazz) {
-        if (TabooLibCommon.isKotlinSkipped() && clazz.equals(RuntimeEnv.class)) {
-            return;
-        }
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);

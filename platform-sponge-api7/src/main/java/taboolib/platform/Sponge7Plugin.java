@@ -12,7 +12,7 @@ import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
 import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.io.IOKt;
+import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.FunctionKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
@@ -49,7 +49,7 @@ public class Sponge7Plugin {
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
-        pluginInstance = IOKt.findImplementation(Plugin.class);
+        pluginInstance = Project1Kt.findImplementation(Plugin.class);
     }
 
     public Sponge7Plugin() {
