@@ -2,6 +2,7 @@
 
 package taboolib.platform.util
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -12,6 +13,7 @@ import taboolib.common.platform.SubscribeEvent
 import taboolib.common.platform.submit
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.library.xseries.XMaterial
+import taboolib.platform.BukkitAdapter
 import java.util.concurrent.ConcurrentHashMap
 
 fun Player.nextChat(function: (message: String) -> Unit) {
