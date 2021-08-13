@@ -1,6 +1,5 @@
 package taboolib.module.lang
 
-import io.izzel.kether.common.util.Coerce
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.replaceWithOrder
@@ -23,9 +22,9 @@ class TypeTitle : Type {
     override fun init(source: Map<String, Any>) {
         title = source["title"].toString()
         subtitle = source["subtitle"].toString()
-        fadein = Coerce.toInteger(source["fadein"])
-        stay = Coerce.toInteger(source["stay"])
-        fadeout = Coerce.toInteger(source["fadeout"])
+        fadein = source["fadein"].toString().toIntOrNull() ?: 0
+        stay = source["stay"].toString().toIntOrNull() ?: 20
+        fadeout = source["fadeout"].toString().toIntOrNull() ?: 0
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {

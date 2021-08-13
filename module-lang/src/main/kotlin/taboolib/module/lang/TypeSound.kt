@@ -1,6 +1,5 @@
 package taboolib.module.lang
 
-import io.izzel.kether.common.util.Coerce
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 
@@ -20,9 +19,9 @@ class TypeSound : Type {
 
     override fun init(source: Map<String, Any>) {
         sound = source["sound"].toString()
-        volume = Coerce.toFloat(source["volume"] ?: source["v"])
-        pitch = Coerce.toFloat(source["pitch"] ?: source["p"])
-        resource = Coerce.toBoolean(source["resource"])
+        volume = (source["volume"] ?: source["v"]).toString().toFloatOrNull() ?: 1f
+        pitch = (source["pitch"] ?: source["p"]).toString().toFloatOrNull() ?: 1f
+        resource = source["resource"].toString().trim().matches("^(1|true|yes)\$".toRegex())
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
