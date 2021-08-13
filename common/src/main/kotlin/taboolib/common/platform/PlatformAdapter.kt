@@ -7,6 +7,7 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/17 12:04 上午
  */
+@PlatformService
 interface PlatformAdapter {
 
     fun <T> server(): T

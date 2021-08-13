@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.*
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
@@ -365,21 +366,25 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     Particle.DustTransition(Color.fromRGB(data.color.rgb), Color.fromRGB(data.toColor.rgb), data.size)
                 }
                 is ProxyParticle.ItemData -> {
-                    buildItem(data.material.parseToXMaterial()) {
-                        name = data.name
-                        if (data.data != 0) {
-                            damage = data.data
-                        }
-                        name = data.name
-                        lore += data.lore
-                        customModelData = data.customModelData
+                    val item = ItemStack(Material.valueOf(data.material))
+                    val itemMeta = item.itemMeta!!
+                    itemMeta.setDisplayName(data.name)
+                    itemMeta.lore = data.lore
+                    try {
+                        itemMeta.setCustomModelData(data.customModelData)
+                    } catch (ex: NoSuchMethodError) {
                     }
+                    item.itemMeta = itemMeta
+                    if (data.data != 0) {
+                        item.durability = data.data.toShort()
+                    }
+                    item
                 }
                 is ProxyParticle.BlockData -> {
                     if (bukkitParticle.dataType == MaterialData::class.java) {
-                        MaterialData(data.material.parseToMaterial(), data.data.toByte())
+                        MaterialData(Material.valueOf(data.material), data.data.toByte())
                     } else {
-                        data.material.parseToMaterial().createBlockData()
+                        Material.valueOf(data.material).createBlockData()
                     }
                 }
                 is ProxyParticle.VibrationData -> {

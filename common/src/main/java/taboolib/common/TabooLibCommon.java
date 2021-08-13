@@ -19,8 +19,6 @@ import taboolib.common.platform.PlatformFactory;
 @RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLibCommon {
 
-    public static final RuntimeEnv ENV = new RuntimeEnv();
-
     /**
      * 保存最近一次初始化的运行环境
      */
@@ -32,10 +30,8 @@ public class TabooLibCommon {
     private static boolean stopped = false;
 
     /**
-     * 是否跳过 Kotlin 环境
+     * 是否被 Paper 核心拦截控制台打印
      */
-    private static boolean kotlinSkipped = false;
-
     private static boolean sysoutCatcherFound = false;
 
     static {
@@ -75,7 +71,7 @@ public class TabooLibCommon {
      * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle, @Nullable Platform platform) {
-        if (System.currentTimeMillis() > 1629123680000L) {
+        if (System.currentTimeMillis() > 1629986287000L) {
             throw new RuntimeException("The trial period of the plugin is over, please update!");
         }
         if (stopped) {
@@ -86,31 +82,38 @@ public class TabooLibCommon {
         }
         switch (lifeCycle) {
             case CONST:
-                ENV.setup();
+                try {
+                    RuntimeEnv.ENV.setup();
+                } catch (NoClassDefFoundError ignored) {
+                }
                 PlatformFactory.INSTANCE.init();
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.CONST);
+                RuntimeInjector.injectAll(LifeCycle.CONST);
                 break;
             case INIT:
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.INIT);
+                RuntimeInjector.injectAll(LifeCycle.INIT);
                 break;
             case LOAD:
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.LOAD);
+                RuntimeInjector.injectAll(LifeCycle.LOAD);
                 break;
             case ENABLE:
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.ENABLE);
+                RuntimeInjector.injectAll(LifeCycle.ENABLE);
                 break;
             case ACTIVE:
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.ACTIVE);
+                RuntimeInjector.injectAll(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
-                RuntimeInjector.INSTANCE.injectAll(LifeCycle.DISABLE);
+                RuntimeInjector.injectAll(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }
     }
 
     public static boolean isKotlinEnvironment() {
-        return ClassAppender.isExists("kotlin.KotlinVersion");
+        try {
+            return ClassAppender.isExists("kotlin.KotlinVersion");
+        } catch (NoClassDefFoundError ignored) {
+            return true;
+        }
     }
 
     @NotNull
@@ -124,14 +127,6 @@ public class TabooLibCommon {
 
     public static void setStopped(boolean value) {
         stopped = value;
-    }
-
-    public static boolean isKotlinSkipped() {
-        return kotlinSkipped;
-    }
-
-    public static void setKotlinSkipped(boolean value) {
-        kotlinSkipped = value;
     }
 
     public static boolean isSysoutCatcherFound() {

@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import taboolib.common.platform.isPrimaryThread
+import taboolib.common.platform.submit
 import java.util.concurrent.Executor
 
 object ScriptSchedulerExecutor : Executor {
@@ -9,7 +10,7 @@ object ScriptSchedulerExecutor : Executor {
         if (isPrimaryThread) {
             command.run()
         } else {
-            execute { command.run() }
+            submit { command.run() }
         }
     }
 }

@@ -1,6 +1,7 @@
 package taboolib.common.util;
 
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.Isolated;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import java.util.Objects;
  * @author sky
  * @since 2021/5/20 1:49 下午
  */
+@Isolated
 public class Version implements Comparable<Version> {
 
     private final String source;

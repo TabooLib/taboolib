@@ -7,6 +7,7 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/24 11:46 下午
  */
+@PlatformService
 interface PlatformCommand {
 
     fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit)

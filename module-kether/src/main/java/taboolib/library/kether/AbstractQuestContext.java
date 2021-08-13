@@ -82,12 +82,12 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
 
     public static class QuestExecutor implements Executor {
 
-        private final QuestContext questContext;
+        private final AbstractQuestContext<?> questContext;
         private final Executor actual;
 
-        public QuestExecutor(QuestContext questContext) {
+        public QuestExecutor(AbstractQuestContext<?> questContext) {
             this.questContext = questContext;
-            this.actual = questContext.getExecutor();
+            this.actual = questContext.createExecutor();
         }
 
         @Override

@@ -1,0 +1,29 @@
+{
+  "optimize": [
+    {
+      "class": "taboolib/common/util/Location",
+      "type": "METHOD"
+    },
+    {
+      "class": "taboolib/common/util/Vector",
+      "type": "METHOD"
+    }
+  ],
+  "group": [
+    {
+      "member": [
+        "taboolib/common/platform/EventBus",
+        "taboolib/common/platform/OptionalEvent"
+      ],
+      "bind": [
+        "taboolib/common/platform/SubscribeEvent",
+        "taboolib/platform/event/PlayerJumpEvent",
+        "taboolib/platform/util/BukkitChatKt"
+      ],
+      "mode": "REMOVE"
+    }
+  ],
+  "exclude": [
+    "META-INF/maven"
+  ]
+}

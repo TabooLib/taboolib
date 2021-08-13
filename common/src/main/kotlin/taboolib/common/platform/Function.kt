@@ -2,59 +2,55 @@ package taboolib.common.platform
 
 import taboolib.common.OpenContainer
 import taboolib.common.TabooLibCommon
-import taboolib.common.platform.PlatformFactory.platformAdapter
-import taboolib.common.platform.PlatformFactory.platformCommand
-import taboolib.common.platform.PlatformFactory.platformExecutor
-import taboolib.common.platform.PlatformFactory.platformIO
 import java.io.File
 import java.util.*
 
 val pluginId: String
-    get() = platformIO.pluginId
+    get() = PlatformFactory.getService<PlatformIO>().pluginId
 
 val pluginVersion: String
-    get() = platformIO.pluginVersion
+    get() = PlatformFactory.getService<PlatformIO>().pluginVersion
 
 val isPrimaryThread: Boolean
-    get() = platformIO.isPrimaryThread
+    get() = PlatformFactory.getService<PlatformIO>().isPrimaryThread
 
 val runningPlatform: Platform
     get() = TabooLibCommon.getRunningPlatform()
 
 fun info(vararg message: Any?) {
-    platformIO.info(*message)
+    PlatformFactory.getService<PlatformIO>().info(*message)
 }
 
 fun severe(vararg message: Any?) {
-    platformIO.severe(*message)
+    PlatformFactory.getService<PlatformIO>().severe(*message)
 }
 
 fun warning(vararg message: Any?) {
-    platformIO.warning(*message)
+    PlatformFactory.getService<PlatformIO>().warning(*message)
 }
 
 fun releaseResourceFile(path: String, replace: Boolean = false): File {
-    return platformIO.releaseResourceFile(path, replace)
+    return PlatformFactory.getService<PlatformIO>().releaseResourceFile(path, replace)
 }
 
 fun getJarFile(): File {
-    return platformIO.getJarFile()
+    return PlatformFactory.getService<PlatformIO>().getJarFile()
 }
 
 fun getDataFolder(): File {
-    return platformIO.getDataFolder()
+    return PlatformFactory.getService<PlatformIO>().getDataFolder()
 }
 
 fun getPlatformData(): Map<String, Any> {
-    return platformIO.getPlatformData()
+    return PlatformFactory.getService<PlatformIO>().getPlatformData()
 }
 
 fun getOpenContainers(): List<OpenContainer> {
-    return platformIO.getOpenContainers()
+    return PlatformFactory.getService<PlatformIO>().getOpenContainers()
 }
 
 fun getOpenContainer(name: String): OpenContainer? {
-    return platformIO.getOpenContainers().firstOrNull { it.name == name }
+    return PlatformFactory.getService<PlatformIO>().getOpenContainers().firstOrNull { it.name == name }
 }
 
 fun submit(
@@ -65,7 +61,7 @@ fun submit(
     commit: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return platformExecutor.submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, commit, executor))
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, commit, executor))
 }
 
 /**
@@ -73,27 +69,27 @@ fun submit(
  * 这个方法只能执行一次且必须执行
  */
 fun startExecutor() {
-    platformExecutor.start()
+    PlatformFactory.getService<PlatformExecutor>().start()
 }
 
 fun <T> server(): T {
-    return platformAdapter.server()
+    return PlatformFactory.getService<PlatformAdapter>().server()
 }
 
 fun console(): ProxyCommandSender {
-    return platformAdapter.console()
+    return PlatformFactory.getService<PlatformAdapter>().console()
 }
 
 fun onlinePlayers(): List<ProxyPlayer> {
-    return platformAdapter.onlinePlayers()
+    return PlatformFactory.getService<PlatformAdapter>().onlinePlayers()
 }
 
 fun adaptPlayer(any: Any): ProxyPlayer {
-    return platformAdapter.adaptPlayer(any)
+    return PlatformFactory.getService<PlatformAdapter>().adaptPlayer(any)
 }
 
 fun adaptCommandSender(any: Any): ProxyCommandSender {
-    return platformAdapter.adaptCommandSender(any)
+    return PlatformFactory.getService<PlatformAdapter>().adaptCommandSender(any)
 }
 
 fun getProxyPlayer(name: String): ProxyPlayer? {
@@ -105,31 +101,31 @@ fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
 }
 
 fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener {
-    return platformAdapter.registerListener(event, priority, ignoreCancelled, func)
+    return PlatformFactory.getService<PlatformAdapter>().registerListener(event, priority, ignoreCancelled, func)
 }
 
 fun <T> registerListener(event: Class<T>, level: Int = 0, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener {
-    return platformAdapter.registerListener(event, level, ignoreCancelled, func)
+    return PlatformFactory.getService<PlatformAdapter>().registerListener(event, level, ignoreCancelled, func)
 }
 
 fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener {
-    return platformAdapter.registerListener(event, postOrder, func)
+    return PlatformFactory.getService<PlatformAdapter>().registerListener(event, postOrder, func)
 }
 
 fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
-    return platformAdapter.registerListener(event, order, beforeModifications, func)
+    return PlatformFactory.getService<PlatformAdapter>().registerListener(event, order, beforeModifications, func)
 }
 
 fun unregisterListener(proxyListener: ProxyListener) {
-    platformAdapter.unregisterListener(proxyListener)
+    PlatformFactory.getService<PlatformAdapter>().unregisterListener(proxyListener)
 }
 
 fun callEvent(proxyEvent: ProxyEvent) {
-    platformAdapter.callEvent(proxyEvent)
+    PlatformFactory.getService<PlatformAdapter>().callEvent(proxyEvent)
 }
 
 fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit) {
-    platformCommand.registerCommand(command, executor, completer, commandBuilder)
+    PlatformFactory.getService<PlatformCommand>().registerCommand(command, executor, completer, commandBuilder)
 }
 
 fun unregisterCommand(command: CommandStructure) {
@@ -138,19 +134,15 @@ fun unregisterCommand(command: CommandStructure) {
 }
 
 fun unregisterCommand(command: String) {
-    platformCommand.unregisterCommand(command)
+    PlatformFactory.getService<PlatformCommand>().unregisterCommand(command)
 }
 
 fun unregisterCommands() {
-    platformCommand.unregisterCommands()
-}
-
-fun <T> implementations(clazz: Class<T>): T {
-    return PlatformFactory.getAPI<T>(clazz.simpleName) ?: error("no implementations")
+    PlatformFactory.getService<PlatformCommand>().unregisterCommands()
 }
 
 inline fun <reified T> implementations(): T {
-    return implementations(T::class.java)
+    return PlatformFactory.getAPI()
 }
 
 fun disablePlugin() {
