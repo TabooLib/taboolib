@@ -2,6 +2,7 @@
 
 package taboolib.platform.util
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -9,11 +10,43 @@ import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.SubscribeEvent
-import java.util.concurrent.ConcurrentHashMap
+import taboolib.common.platform.submit
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.library.xseries.XMaterial
+import taboolib.platform.BukkitAdapter
 
 fun Player.nextChat(function: (message: String) -> Unit) {
     ChatListener.inputs[name] = function
 }
+
+
+fun Player.nextChat(function: (message: String) -> Unit, onReuse: (player: Player) -> Unit = {}) {
+    if (!ChatListener.inputs.containsKey(name)) {
+        ChatListener.inputs[name] = function
+    } else onReuse(this)
+}
+
+
+fun Player.nextChatInTick(
+    tick: Long,
+    function: (message: String) -> Unit,
+    onTimeOver: (player: Player) -> Unit = {},
+    onReuse: (player: Player) -> Unit = {},
+) {
+    if (!ChatListener.inputs.containsKey(name)) {
+        ChatListener.inputs[name] = function
+        Bukkit.getScheduler().runTaskLater(
+            BukkitAdapter().plugin,
+            Runnable {
+                if (ChatListener.inputs.containsKey(name)) {
+                    onTimeOver(this)
+                    ChatListener.inputs.remove(name)
+                }
+            }, tick
+        )
+    } else onReuse(this)
+}
+
 
 @Isolated
 @PlatformSide([Platform.BUKKIT])
