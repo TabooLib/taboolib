@@ -4,8 +4,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
-import taboolib.common.platform.releaseResourceFile
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Ref
 import taboolib.common5.FileWatcher
 import java.io.File

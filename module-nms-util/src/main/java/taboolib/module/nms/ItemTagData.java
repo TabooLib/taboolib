@@ -2,7 +2,7 @@ package taboolib.module.nms;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.NumberConversions;
-import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.function.IOKt;
 
 import java.util.List;
 import java.util.Map;
@@ -183,7 +183,7 @@ public class ItemTagData {
         for (Object obj : list) {
             ItemTagData base = toNBT(obj);
             if (base == null) {
-                FunctionKt.warning("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
+                IOKt.warning("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
                 continue;
             }
             itemTagListBase.add(base);
@@ -198,7 +198,7 @@ public class ItemTagData {
             if (obj instanceof ConfigurationSection) {
                 base = translateSection(new ItemTag(), section.getConfigurationSection(key));
             } else if ((base = toNBT(obj)) == null) {
-                FunctionKt.warning("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
+                IOKt.warning("Invalid Type: " + obj + " [" + obj.getClass().getSimpleName() + "]");
                 continue;
             }
             nbt.put(key, base);

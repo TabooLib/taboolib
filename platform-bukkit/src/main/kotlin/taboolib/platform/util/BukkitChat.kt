@@ -2,51 +2,41 @@
 
 package taboolib.platform.util
 
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.SubscribeEvent
-import taboolib.common.platform.submit
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.library.xseries.XMaterial
-import taboolib.platform.BukkitAdapter
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
+import java.util.concurrent.ConcurrentHashMap
 
 fun Player.nextChat(function: (message: String) -> Unit) {
     ChatListener.inputs[name] = function
 }
 
-
-fun Player.nextChat(function: (message: String) -> Unit, onReuse: (player: Player) -> Unit = {}) {
-    if (!ChatListener.inputs.containsKey(name)) {
+fun Player.nextChat(function: (message: String) -> Unit, reuse: (player: Player) -> Unit = {}) {
+    if (ChatListener.inputs.containsKey(name)) {
+        reuse(this)
+    } else {
         ChatListener.inputs[name] = function
-    } else onReuse(this)
+    }
 }
 
-
-fun Player.nextChatInTick(
-    tick: Long,
-    function: (message: String) -> Unit,
-    onTimeOver: (player: Player) -> Unit = {},
-    onReuse: (player: Player) -> Unit = {},
-) {
-    if (!ChatListener.inputs.containsKey(name)) {
-        ChatListener.inputs[name] = function
-        Bukkit.getScheduler().runTaskLater(
-            BukkitAdapter().plugin,
-            Runnable {
-                if (ChatListener.inputs.containsKey(name)) {
-                    onTimeOver(this)
-                    ChatListener.inputs.remove(name)
-                }
-            }, tick
-        )
-    } else onReuse(this)
+fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: (player: Player) -> Unit = {}, reuse: (player: Player) -> Unit = {}) {
+    if (ChatListener.inputs.containsKey(name)) {
+        reuse(this)
+    } else {
+        ChatListener.inputs[name] = func
+        submit(delay = tick) {
+            if (ChatListener.inputs.containsKey(name)) {
+                timeout(this@nextChatInTick)
+                ChatListener.inputs.remove(name)
+            }
+        }
+    }
 }
-
 
 @Isolated
 @PlatformSide([Platform.BUKKIT])

@@ -1,9 +1,7 @@
 package taboolib.module.kether
 
 import taboolib.common.OpenContainer
-import taboolib.common.OpenResult
-import taboolib.common.platform.info
-import taboolib.common.platform.pluginId
+import taboolib.common.platform.function.pluginId
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext

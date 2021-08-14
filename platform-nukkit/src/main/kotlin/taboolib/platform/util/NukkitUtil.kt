@@ -5,7 +5,7 @@ import cn.nukkit.event.player.PlayerCommandPreprocessEvent
 import cn.nukkit.event.server.ServerCommandEvent
 import cn.nukkit.level.Location
 import cn.nukkit.player.Player
-import taboolib.common.platform.EventPriority
+import taboolib.common.platform.event.EventPriority
 import taboolib.platform.NukkitPlugin
 
 fun EventPriority.toNukkit() = when (this) {

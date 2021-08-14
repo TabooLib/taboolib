@@ -9,6 +9,8 @@ import net.md_5.bungee.api.chat.TranslatableComponent
 import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.TabExecutor
 import taboolib.common.platform.*
+import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.command.*
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
 /**
@@ -22,13 +24,16 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 @PlatformSide([Platform.BUNGEE])
 class BungeeCommand : PlatformCommand {
 
+    val plugin: BungeePlugin
+        get() = BungeePlugin.getInstance()
+
     override fun registerCommand(
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
         commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
-        val permission = command.permission.ifEmpty { "${pluginId}.command.use" }
+        val permission = command.permission.ifEmpty { "${plugin.description.name}.command.use" }
         BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name, permission), TabExecutor {
 
             override fun execute(sender: CommandSender, args: Array<String>) {

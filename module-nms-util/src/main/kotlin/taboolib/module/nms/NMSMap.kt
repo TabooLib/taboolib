@@ -7,7 +7,7 @@ import org.bukkit.map.MapCanvas
 import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import taboolib.common.Isolated
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty

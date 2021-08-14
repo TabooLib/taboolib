@@ -1,9 +1,8 @@
 package taboolib.module.kether
 
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.adaptCommandSender
+import taboolib.common.platform.function.adaptCommandSender
 import taboolib.library.kether.AbstractQuestContext
-import java.util.concurrent.CompletableFuture
 
 /**
  * Adyeshach

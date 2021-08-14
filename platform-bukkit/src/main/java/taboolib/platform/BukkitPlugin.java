@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
-import taboolib.common.platform.FunctionKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
+import taboolib.common.platform.function.CommonKt;
 
 import java.io.File;
 
@@ -61,7 +61,7 @@ public class BukkitPlugin extends JavaPlugin {
                 }
             });
         }
-        FunctionKt.startExecutor();
+        CommonKt.startExecutor();
     }
 
     @Override

@@ -2,7 +2,7 @@
 package taboolib.common.util
 
 import taboolib.common.Isolated
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.submit
 import java.util.concurrent.CompletableFuture
 
 fun <T> sync(func: () -> T): T {

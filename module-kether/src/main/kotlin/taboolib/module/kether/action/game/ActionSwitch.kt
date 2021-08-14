@@ -2,8 +2,8 @@ package taboolib.module.kether.action.game
 
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.ArgTypes
-import taboolib.common.platform.console
-import taboolib.common.platform.getProxyPlayer
+import taboolib.common.platform.function.console
+import taboolib.common.platform.function.getProxyPlayer
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 

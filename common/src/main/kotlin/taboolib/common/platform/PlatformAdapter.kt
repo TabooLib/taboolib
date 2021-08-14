@@ -1,5 +1,7 @@
 package taboolib.common.platform
 
+import taboolib.common.platform.event.*
+
 /**
  * TabooLib
  * taboolib.common.platform.PlatformAdaptor

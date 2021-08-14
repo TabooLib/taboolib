@@ -12,6 +12,10 @@ import org.spongepowered.api.event.cause.EventContext
 import org.spongepowered.api.event.cause.EventContextKeys
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventOrder
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.platform.type.Sponge7CommandSender
 import taboolib.platform.type.Sponge7Player
 

@@ -2,7 +2,7 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Multimap
-import taboolib.common.platform.getDataFolder
+import taboolib.common.platform.function.getDataFolder
 import taboolib.common.util.replaceWithOrder
 import taboolib.library.kether.DefaultRegistry
 import taboolib.library.kether.QuestRegistry

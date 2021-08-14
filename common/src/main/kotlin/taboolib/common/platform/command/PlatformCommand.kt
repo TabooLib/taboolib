@@ -1,8 +1,11 @@
-package taboolib.common.platform
+package taboolib.common.platform.command
+
+import taboolib.common.platform.PlatformService
+import taboolib.common.platform.ProxyCommandSender
 
 /**
  * TabooLib
- * taboolib.common.platform.PlatformCommand
+ * taboolib.common.platform.command.PlatformCommand
  *
  * @author sky
  * @since 2021/6/24 11:46 下午

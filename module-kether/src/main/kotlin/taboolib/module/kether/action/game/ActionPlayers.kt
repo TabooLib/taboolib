@@ -1,6 +1,6 @@
 package taboolib.module.kether.action.game
 
-import taboolib.common.platform.onlinePlayers
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame

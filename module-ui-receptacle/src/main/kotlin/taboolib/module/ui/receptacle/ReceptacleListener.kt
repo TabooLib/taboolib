@@ -2,8 +2,8 @@ package taboolib.module.ui.receptacle
 
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.SubscribeEvent
-import taboolib.common.platform.submit
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 

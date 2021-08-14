@@ -6,6 +6,9 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Isolated
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Baffle
 import java.util.concurrent.TimeUnit
 

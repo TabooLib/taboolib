@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.function.IOKt;
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.PorticusMission;
 import taboolib.module.porticus.common.MessageBuilder;
@@ -41,7 +41,7 @@ public class MissionBukkit extends PorticusMission {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 for (byte[] bytes : MessageBuilder.create(command)) {
-                    player.sendPluginMessage(plugin, "porticus_" + FunctionKt.getPluginId() + ":main", bytes);
+                    player.sendPluginMessage(plugin, "porticus_" + IOKt.getPluginId() + ":main", bytes);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

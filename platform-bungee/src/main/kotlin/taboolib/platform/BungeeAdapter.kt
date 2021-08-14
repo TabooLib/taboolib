@@ -8,6 +8,9 @@ import net.md_5.bungee.api.plugin.Event
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.platform.type.BungeeCommandSender
 import taboolib.platform.type.BungeePlayer

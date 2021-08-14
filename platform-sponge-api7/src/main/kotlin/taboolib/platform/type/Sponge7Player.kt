@@ -25,7 +25,7 @@ import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector

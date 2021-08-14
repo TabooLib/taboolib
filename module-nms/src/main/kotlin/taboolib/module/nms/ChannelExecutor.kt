@@ -6,7 +6,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.SubscribeEvent
+import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import java.util.concurrent.Executors
 

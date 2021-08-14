@@ -4,7 +4,6 @@ import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
-import taboolib.common.platform.getOpenContainers
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.actions.KetherTypes
 import taboolib.module.lang.Language

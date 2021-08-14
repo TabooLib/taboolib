@@ -2,7 +2,7 @@ package taboolib.module.ui.receptacle
 
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.submit
 import taboolib.module.nms.nmsProxy
 
 /**

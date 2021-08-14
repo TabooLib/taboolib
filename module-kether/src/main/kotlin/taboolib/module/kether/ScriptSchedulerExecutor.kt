@@ -1,7 +1,7 @@
 package taboolib.module.kether
 
-import taboolib.common.platform.isPrimaryThread
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.isPrimaryThread
+import taboolib.common.platform.function.submit
 import java.util.concurrent.Executor
 
 object ScriptSchedulerExecutor : Executor {

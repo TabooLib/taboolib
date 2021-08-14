@@ -1,6 +1,6 @@
 package taboolib.module.configuration
 
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.InvalidConfigurationException
 import taboolib.library.configuration.YamlConfiguration

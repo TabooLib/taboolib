@@ -2,7 +2,7 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.MultimapBuilder
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import taboolib.common5.Coerce
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.Quest

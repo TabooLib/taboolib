@@ -1,7 +1,7 @@
 package taboolib.module.lang
 
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.console
+import taboolib.common.platform.function.console
 import taboolib.common.util.asList
 
 /**

@@ -1,7 +1,7 @@
 package taboolib.module.kether.action.transform
 
-import taboolib.common.platform.ProxyEvent
-import taboolib.common.platform.server
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.function.server
 import taboolib.common5.compileJS
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture

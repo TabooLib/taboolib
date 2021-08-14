@@ -20,6 +20,9 @@
         "taboolib/platform/event/PlayerJumpEvent",
         "taboolib/platform/util/BukkitChatKt"
       ],
+      "exclude": [
+        "taboolib/platform/util/ChatListener"
+      ],
       "mode": "REMOVE"
     }
   ],

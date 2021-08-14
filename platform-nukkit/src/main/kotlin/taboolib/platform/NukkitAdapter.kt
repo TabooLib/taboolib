@@ -9,6 +9,9 @@ import cn.nukkit.event.Listener
 import cn.nukkit.player.Player
 import cn.nukkit.plugin.EventExecutor
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.platform.type.NukkitCommandSender
 import taboolib.platform.type.NukkitPlayer
 import taboolib.platform.util.toNukkit

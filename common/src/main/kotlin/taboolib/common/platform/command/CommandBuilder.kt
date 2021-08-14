@@ -1,6 +1,7 @@
-package taboolib.common.platform
+package taboolib.common.platform.command
 
 import taboolib.common.Isolated
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.join
 import taboolib.common.util.subList
 

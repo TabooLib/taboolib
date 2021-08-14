@@ -4,7 +4,7 @@ package taboolib.platform.util
 
 import org.bukkit.command.CommandSender
 import taboolib.common.Isolated
-import taboolib.common.platform.adaptCommandSender
+import taboolib.common.platform.function.adaptCommandSender
 import taboolib.module.lang.asLangText
 import taboolib.module.lang.asLangTextList
 import taboolib.module.lang.asLangTextOrNull

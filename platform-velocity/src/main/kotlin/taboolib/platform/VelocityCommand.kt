@@ -7,6 +7,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import taboolib.common.platform.*
+import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.command.*
 
 /**
  * TabooLib

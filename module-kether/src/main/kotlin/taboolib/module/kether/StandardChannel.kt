@@ -4,7 +4,7 @@ import taboolib.common.OpenListener
 import taboolib.common.OpenResult
 import taboolib.common.io.groupId
 import taboolib.common.platform.Awake
-import taboolib.common.platform.getOpenContainer
+import taboolib.common.platform.function.getOpenContainer
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.ParsedAction

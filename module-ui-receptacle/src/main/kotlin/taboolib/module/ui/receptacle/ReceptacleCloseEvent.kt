@@ -1,7 +1,7 @@
 package taboolib.module.ui.receptacle
 
 import org.bukkit.entity.Player
-import taboolib.common.platform.ProxyEvent
+import taboolib.common.platform.event.ProxyEvent
 
 /**
  * @author Arasple

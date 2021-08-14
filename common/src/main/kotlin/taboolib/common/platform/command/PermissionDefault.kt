@@ -1,8 +1,8 @@
-package taboolib.common.platform
+package taboolib.common.platform.command
 
 /**
  * TabooLib
- * taboolib.common.platform.PermissionDefault
+ * taboolib.common.platform.command.PermissionDefault
  *
  * @author sky
  * @since 2021/6/25 12:42 上午

@@ -12,6 +12,9 @@ import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
 import taboolib.common.platform.*
+import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.command.*
+import taboolib.common.platform.function.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import java.lang.reflect.Constructor
@@ -82,7 +85,7 @@ class BukkitCommand : PlatformCommand {
             }
             // 注册命令
             knownCommands.remove(command.name)
-            knownCommands["${pluginId.lowercase()}:${pluginCommand.name}"] = pluginCommand
+            knownCommands["${plugin.name.lowercase()}:${pluginCommand.name}"] = pluginCommand
             knownCommands[pluginCommand.name] = pluginCommand
             pluginCommand.aliases.forEach {
                 knownCommands[it] = pluginCommand

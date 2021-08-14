@@ -4,8 +4,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.io.taboolibPath
 import taboolib.common.platform.Awake
-import taboolib.common.platform.getOpenContainers
-import taboolib.common.platform.pluginId
+import taboolib.common.platform.function.getOpenContainers
+import taboolib.common.platform.function.pluginId
 import java.lang.reflect.Method
 import java.util.function.Supplier
 

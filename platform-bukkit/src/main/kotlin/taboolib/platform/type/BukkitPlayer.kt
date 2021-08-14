@@ -10,15 +10,12 @@ import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import taboolib.library.xseries.parseToMaterial
-import taboolib.library.xseries.parseToXMaterial
-import taboolib.platform.util.buildItem
 import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation

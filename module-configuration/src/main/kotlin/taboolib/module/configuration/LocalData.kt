@@ -6,8 +6,8 @@ import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
-import taboolib.common.platform.getDataFolder
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.getDataFolder
+import taboolib.common.platform.function.submit
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 

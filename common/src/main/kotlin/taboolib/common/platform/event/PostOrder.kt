@@ -1,8 +1,8 @@
-package taboolib.common.platform
+package taboolib.common.platform.event
 
 /**
  * TabooLib
- * taboolib.common.platform.PostOrder
+ * taboolib.common.platform.event.PostOrder
  *
  * @author sky
  * @since 2021/7/2 11:26 下午

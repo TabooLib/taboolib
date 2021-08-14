@@ -17,7 +17,7 @@ import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.submit
+import taboolib.common.platform.function.submit
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.FileConfiguration
 import java.util.concurrent.ConcurrentHashMap

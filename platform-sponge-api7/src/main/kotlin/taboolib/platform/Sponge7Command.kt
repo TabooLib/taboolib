@@ -11,6 +11,8 @@ import org.spongepowered.api.text.format.TextStyles
 import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
 import taboolib.common.platform.*
+import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.command.*
 import java.util.*
 
 /**
@@ -23,6 +25,9 @@ import java.util.*
 @Awake
 @PlatformSide([Platform.SPONGE_API_7])
 class Sponge7Command : PlatformCommand {
+
+    val plugin: Sponge7Plugin
+        get() = Sponge7Plugin.getInstance()
 
     override fun registerCommand(
         command: CommandStructure,
@@ -45,7 +50,7 @@ class Sponge7Command : PlatformCommand {
             }
 
             override fun testPermission(source: CommandSource): Boolean {
-                return source.hasPermission(command.permission.ifEmpty { "${pluginId}.command.use" })
+                return source.hasPermission(command.permission.ifEmpty { "${plugin.pluginContainer.id}.command.use" })
             }
 
             override fun getShortDescription(source: CommandSource): Optional<Text> {

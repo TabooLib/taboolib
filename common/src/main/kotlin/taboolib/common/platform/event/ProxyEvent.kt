@@ -1,8 +1,10 @@
-package taboolib.common.platform
+package taboolib.common.platform.event
+
+import taboolib.common.platform.function.callEvent
 
 /**
  * TabooLib
- * taboolib.common.platform.ProxyEvent
+ * taboolib.common.platform.event.ProxyEvent
  *
  * @author sky
  * @since 2021/6/17 1:00 上午

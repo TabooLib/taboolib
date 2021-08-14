@@ -2,6 +2,7 @@ package taboolib.module.lang
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.*
+import taboolib.common.platform.function.getJarFile
 import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored
 import taboolib.module.lang.event.PlayerSelectLocaleEvent

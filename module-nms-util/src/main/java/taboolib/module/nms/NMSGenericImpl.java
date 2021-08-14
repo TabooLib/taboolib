@@ -36,7 +36,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.platform.FunctionKt;
+import taboolib.common.platform.function.IOKt;
 import taboolib.common.reflect.Ref;
 import taboolib.common.reflect.Reflex;
 import taboolib.module.nms.type.LightType;
@@ -696,9 +696,9 @@ public class NMSGenericImpl extends NMSGeneric {
                 if ((flags & 1) != 0) {
                     if (wait == -1) {
                         wait = System.currentTimeMillis() + 3 * 1000;
-                        FunctionKt.info("ThreadedMailbox is closing. Will wait...");
+                        IOKt.info("ThreadedMailbox is closing. Will wait...");
                     } else if (System.currentTimeMillis() >= wait) {
-                        FunctionKt.warning("Failed to enter critical section while ThreadedMailbox is closing");
+                        IOKt.warning("Failed to enter critical section while ThreadedMailbox is closing");
                     }
                     try {
                         Thread.sleep(50);

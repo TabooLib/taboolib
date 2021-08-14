@@ -1,6 +1,6 @@
 package taboolib.module.database
 
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import java.sql.ResultSet
 import java.sql.SQLException
 import java.sql.Statement

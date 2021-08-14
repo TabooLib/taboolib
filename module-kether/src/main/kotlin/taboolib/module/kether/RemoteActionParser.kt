@@ -1,7 +1,7 @@
 package taboolib.module.kether
 
 import taboolib.common.OpenContainer
-import taboolib.common.platform.pluginId
+import taboolib.common.platform.function.pluginId
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.QuestReader

@@ -6,6 +6,10 @@ import com.velocitypowered.api.event.ResultedEvent
 import com.velocitypowered.api.event.ResultedEvent.GenericResult
 import com.velocitypowered.api.proxy.Player
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.PostOrder
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.platform.type.VelocityCommandSender
 import taboolib.platform.type.VelocityPlayer
 

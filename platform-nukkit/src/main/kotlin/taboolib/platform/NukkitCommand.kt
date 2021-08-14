@@ -5,6 +5,8 @@ import cn.nukkit.command.Command
 import cn.nukkit.command.CommandSender
 import cn.nukkit.command.data.CommandData
 import taboolib.common.platform.*
+import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.command.*
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
 /**
@@ -17,6 +19,9 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 @Awake
 @PlatformSide([Platform.NUKKIT])
 class NukkitCommand : PlatformCommand {
+
+    val plugin: NukkitPlugin
+        get() = NukkitPlugin.getInstance()
 
     val knownCommands = ArrayList<CommandStructure>()
 
@@ -34,7 +39,7 @@ class NukkitCommand : PlatformCommand {
         val registerCommand = object : Command(command.name, CommandData.builder(command.name)
             .setDescription(command.description.ifEmpty { command.name })
             .setUsageMessage(command.usage)
-            .addPermission(command.permission.ifEmpty { "$pluginId.command.use" })
+            .addPermission(command.permission.ifEmpty { "${plugin.name}.command.use" })
             .setPermissionMessage(command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
             .build()) {
 

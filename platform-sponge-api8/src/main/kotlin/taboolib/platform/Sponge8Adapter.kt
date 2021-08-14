@@ -6,6 +6,10 @@ import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import org.spongepowered.api.event.*
 import org.spongepowered.api.event.impl.AbstractEvent
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventOrder
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.platform.type.Sponge8CommandSender
 import taboolib.platform.type.Sponge8Player
 

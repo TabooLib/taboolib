@@ -9,7 +9,7 @@ import org.bukkit.entity.Projectile
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.server.ServerCommandEvent
-import taboolib.common.platform.EventPriority
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
 val inventoryCenterSlots = listOf(

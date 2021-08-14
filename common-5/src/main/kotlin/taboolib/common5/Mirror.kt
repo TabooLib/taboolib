@@ -4,7 +4,7 @@ package taboolib.common5
 
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.pluginId
+import taboolib.common.platform.function.pluginId
 import taboolib.common.util.replaceWithOrder
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -47,8 +47,8 @@ object Mirror {
 
     class MirrorSettings {
 
-        var childFormat = "§c[${pluginId}] §8{0}§f{1} §8count({2})§c avg({3}ms) §7{4}ms ~ {5}ms §8··· §7{6}%"
-        var parentFormat = "§c[${pluginId}] §8{0}§7{1} §8count({2})§c avg({3}ms) §7{4}ms ~ {5}ms §8··· §7{6}%"
+        var childFormat = "§c[$pluginId] §8{0}§f{1} §8count({2})§c avg({3}ms) §7{4}ms ~ {5}ms §8··· §7{6}%"
+        var parentFormat = "§c[$pluginId] §8{0}§7{1} §8count({2})§c avg({3}ms) §7{4}ms ~ {5}ms §8··· §7{6}%"
     }
 
     class MirrorFuture<T> {

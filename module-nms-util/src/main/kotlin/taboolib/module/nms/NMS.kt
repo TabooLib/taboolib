@@ -12,9 +12,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
-import taboolib.common.platform.EventPriority
-import taboolib.common.platform.registerListener
-import taboolib.common.platform.submit
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.function.registerListener
+import taboolib.common.platform.function.submit
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion.major

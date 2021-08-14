@@ -2,7 +2,7 @@ package taboolib.module.kether.action
 
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.ArgTypes
-import taboolib.common.platform.info
+import taboolib.common.platform.function.info
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame

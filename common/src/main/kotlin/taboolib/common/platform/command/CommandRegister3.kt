@@ -1,37 +1,10 @@
-package taboolib.common.platform
+package taboolib.common.platform.command
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
+import taboolib.common.platform.Awake
 import java.lang.reflect.Field
 import java.util.function.Supplier
-
-fun command(
-    name: String,
-    aliases: List<String> = emptyList(),
-    description: String = "",
-    usage: String = "",
-    permission: String = "",
-    permissionMessage: String = "",
-    permissionDefault: PermissionDefault = PermissionDefault.FALSE,
-    commandBuilder: CommandBuilder.CommandBase.() -> Unit,
-) {
-    registerCommand(
-        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault),
-        object : CommandExecutor {
-
-            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
-                return CommandBuilder.CommandBase().also(commandBuilder).execute(CommandContext(sender, command, name, args))
-            }
-        },
-        object : CommandCompleter {
-
-            override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
-                return CommandBuilder.CommandBase().also(commandBuilder).suggest(CommandContext(sender, command, name, args))
-            }
-        },
-        commandBuilder
-    )
-}
 
 fun mainCommand(func: CommandBuilder.CommandBase.() -> Unit): SimpleCommandMain {
     return SimpleCommandMain(func)
@@ -40,26 +13,6 @@ fun mainCommand(func: CommandBuilder.CommandBase.() -> Unit): SimpleCommandMain 
 fun subCommand(func: CommandBuilder.CommandComponent.() -> Unit): SimpleCommandBody {
     return SimpleCommandBody(func)
 }
-
-@Target(AnnotationTarget.CLASS)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class CommandHeader(
-    val name: String,
-    val aliases: Array<String> = [],
-    val description: String = "",
-    val usage: String = "",
-    val permission: String = "",
-    val permissionMessage: String = "",
-    val permissionDefault: PermissionDefault = PermissionDefault.FALSE,
-)
-
-@Target(AnnotationTarget.FIELD)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
-annotation class CommandBody(
-    val aliases: Array<String> = [],
-    val optional: Boolean = false,
-    val permission: String = "",
-)
 
 class SimpleCommandMain(val func: CommandBuilder.CommandBase.() -> Unit = {})
 
@@ -160,5 +113,4 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 
     override val priority: Byte
         get() = 0
-
 }

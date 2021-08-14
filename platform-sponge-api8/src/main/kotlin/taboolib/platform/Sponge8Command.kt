@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import taboolib.common.platform.*
+import taboolib.common.platform.command.*
 
 /**
  * TabooLib

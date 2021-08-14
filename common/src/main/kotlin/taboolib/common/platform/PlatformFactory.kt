@@ -7,6 +7,8 @@ import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
+import taboolib.common.platform.command.unregisterCommands
+import taboolib.common.platform.function.runningPlatform
 
 @Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
 object PlatformFactory {

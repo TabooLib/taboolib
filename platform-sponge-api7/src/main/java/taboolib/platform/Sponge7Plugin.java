@@ -13,10 +13,10 @@ import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
-import taboolib.common.platform.FunctionKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
+import taboolib.common.platform.function.CommonKt;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -71,7 +71,7 @@ public class Sponge7Plugin {
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
         }
-        FunctionKt.startExecutor();
+        CommonKt.startExecutor();
     }
 
     @Listener

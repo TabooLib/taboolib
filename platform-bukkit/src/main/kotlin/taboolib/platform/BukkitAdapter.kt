@@ -9,6 +9,9 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
 import taboolib.common.platform.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.platform.event.ProxyListener
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.type.BukkitPlayer
@@ -81,7 +84,7 @@ class BukkitAdapter : PlatformAdapter {
 
         init {
             if (proxyEvent.allowAsynchronous) {
-                setProperty("async", !isPrimaryThread)
+                setProperty("async", !Bukkit.isPrimaryThread())
             }
         }
 

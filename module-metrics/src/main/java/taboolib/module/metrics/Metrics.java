@@ -1,10 +1,12 @@
 package taboolib.module.metrics;
 
 import kotlin.Unit;
+import taboolib.common.TabooLibCommon;
 import taboolib.common.io.File1Kt;
-import taboolib.common.io.Project1Kt;
-import taboolib.common.platform.FunctionKt;
 import taboolib.common.platform.Platform;
+import taboolib.common.platform.function.AdapterPlayerKt;
+import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.IOKt;
 import taboolib.module.configuration.SecuredFile;
 
 import java.io.File;
@@ -23,11 +25,11 @@ public class Metrics {
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public Metrics(int serviceId, String pluginVersion, Platform runningPlatform) {
-        if (FunctionKt.getRunningPlatform() != runningPlatform) {
+        if (TabooLibCommon.getRunningPlatform() != runningPlatform) {
             return;
         }
         // Get the config file
-        File bStatsFolder = new File(FunctionKt.getDataFolder().getParentFile(), "bStats");
+        File bStatsFolder = new File(IOKt.getDataFolder().getParentFile(), "bStats");
         File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
         if (!config.isSet("serverUUID")) {
@@ -74,13 +76,13 @@ public class Metrics {
                 enabled,
                 json -> appendPlatformData(json, runningPlatform),
                 json -> appendServiceData(json, pluginVersion),
-                task -> FunctionKt.submit(false, false, 0, 0, "", r -> {
+                task -> CommonKt.submit(false, false, 0, 0, "", r -> {
                     task.run();
                     return Unit.INSTANCE;
                 }),
                 () -> true,
-                (message, error) -> FunctionKt.warning(message),
-                FunctionKt::info,
+                (message, error) -> IOKt.warning(message),
+                IOKt::info,
                 logErrors,
                 logSentData,
                 logResponseStatusText);
@@ -96,13 +98,13 @@ public class Metrics {
     }
 
     private void appendPlatformData(JsonBuilder builder, Platform platform) {
-        builder.appendField("playerAmount", FunctionKt.onlinePlayers().size());
+        builder.appendField("playerAmount", AdapterPlayerKt.onlinePlayers().size());
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
         builder.appendField("osArch", System.getProperty("os.arch"));
         builder.appendField("osVersion", System.getProperty("os.version"));
         builder.appendField("coreCount", Runtime.getRuntime().availableProcessors());
-        Map<String, Object> platformData = FunctionKt.getPlatformData();
+        Map<String, Object> platformData = IOKt.getPlatformData();
         for (Map.Entry<String, Object> entry : platformData.entrySet()) {
             if (entry.getValue() instanceof Integer) {
                 if (platform == Platform.NUKKIT) {

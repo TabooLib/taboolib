@@ -1,8 +1,8 @@
 package taboolib.module.lang
 
-import taboolib.common.platform.releaseResourceFile
-import taboolib.common.platform.submit
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile

@@ -1,4 +1,4 @@
-package taboolib.common.platform
+package taboolib.common.platform.event
 
 import taboolib.common.Isolated
 
@@ -6,7 +6,7 @@ import taboolib.common.Isolated
  * Sponge Only
  *
  * TabooLib
- * taboolib.common.platform.EventOrder
+ * taboolib.common.platform.event.EventOrder
  *
  * @author sky
  * @since 2021/6/21 6:24 下午

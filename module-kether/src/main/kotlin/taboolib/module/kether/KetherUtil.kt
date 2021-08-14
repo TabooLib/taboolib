@@ -1,6 +1,6 @@
 package taboolib.module.kether
 
-import taboolib.common.platform.warning
+import taboolib.common.platform.function.warning
 import taboolib.common5.Coerce
 import taboolib.library.kether.*
 import java.nio.charset.StandardCharsets

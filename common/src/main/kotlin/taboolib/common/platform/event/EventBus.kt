@@ -1,7 +1,11 @@
-package taboolib.common.platform
+package taboolib.common.platform.event
 
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
+import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.function.registerListener
+import taboolib.common.platform.function.runningPlatform
 import java.lang.reflect.Method
 import java.util.function.Supplier
 
