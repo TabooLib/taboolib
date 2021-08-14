@@ -1,10 +1,10 @@
 package taboolib.module.kether.action.game
 
-import taboolib.library.kether.actions.LiteralAction
+import taboolib.common.platform.ProxyPlayer
+import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
-import taboolib.library.kether.ArgTypes
-import taboolib.common.platform.ProxyPlayer
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 

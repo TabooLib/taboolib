@@ -11,10 +11,14 @@ import org.bukkit.command.PluginCommand
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
 import org.bukkit.plugin.Plugin
-import taboolib.common.platform.*
-import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
+import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import java.lang.reflect.Constructor
@@ -100,7 +104,7 @@ class BukkitCommand : PlatformCommand {
     }
 
     override fun unregisterCommands() {
-        registeredCommands.forEach { unregisterCommand(it) }
+        registeredCommands.forEach { taboolib.common.platform.function.unregisterCommand(it) }
     }
 
     override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {

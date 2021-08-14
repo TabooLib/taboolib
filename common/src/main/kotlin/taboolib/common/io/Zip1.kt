@@ -2,8 +2,12 @@
 package taboolib.common.io
 
 import taboolib.common.Isolated
-import java.io.*
-import java.util.zip.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
 
 fun File.zip(target: File) {
     FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { it.putFile(this, "") } }

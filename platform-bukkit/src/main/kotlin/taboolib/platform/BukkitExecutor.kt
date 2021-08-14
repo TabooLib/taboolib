@@ -3,8 +3,8 @@ package taboolib.platform
 import org.bukkit.scheduler.BukkitRunnable
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.service.PlatformExecutor
 
 /**
  * TabooLib

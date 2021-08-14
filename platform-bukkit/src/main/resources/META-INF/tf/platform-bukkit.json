@@ -1,0 +1,29 @@
+{
+  "group": [
+    {
+      "check": [
+        "taboolib/platform/BukkitWorldGenerator"
+      ],
+      "member": [
+        "taboolib/platform/BukkitWorldGenerator"
+      ],
+      "exclude": [
+        "taboolib/platform/BukkitPlugin"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "check": [
+        "taboolib/platform/util/BukkitLocation1Kt",
+        "taboolib/platform/type/BukkitPlayer"
+      ],
+      "member": [
+        "taboolib/platform/util/BukkitLocation1Kt"
+      ],
+      "exclude": [
+        "taboolib/platform/{platform}Adapter"
+      ],
+      "mode": "REMOVE"
+    }
+  ]
+}

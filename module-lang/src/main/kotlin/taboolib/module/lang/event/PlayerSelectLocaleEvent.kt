@@ -1,7 +1,7 @@
 package taboolib.module.lang.event
 
-import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.event.ProxyEvent
 
 /**
  * TabooLib

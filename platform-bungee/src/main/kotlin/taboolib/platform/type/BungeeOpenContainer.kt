@@ -27,6 +27,10 @@ class BungeeOpenContainer(plugin: Plugin) : OpenContainer {
     }
 
     override fun call(name: String, args: Array<Any>): OpenResult {
-        return OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed())
+        return try {
+            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed())
+        } catch (ignored: NoSuchMethodException) {
+            OpenResult.failed()
+        }
     }
 }

@@ -2,7 +2,6 @@ package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.function.Function;
 
 public interface QuestActionParser {

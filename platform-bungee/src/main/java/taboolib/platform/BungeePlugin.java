@@ -9,7 +9,7 @@ import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.ExecutorKt;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,12 +25,14 @@ import java.util.concurrent.TimeUnit;
 public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static BungeePlugin instance;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
-        pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
     }
 
     public BungeePlugin() {
@@ -41,6 +43,9 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onLoad() {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        if (pluginInstance == null) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
@@ -59,7 +64,10 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                 }
             }, 0, TimeUnit.SECONDS);
         }
-        CommonKt.startExecutor();
+        try {
+            ExecutorKt.startExecutor();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     @Override

@@ -1,13 +1,10 @@
 package taboolib.platform
 
-import net.md_5.bungee.BungeeCord
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.BungeeOpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 import java.util.logging.Logger
 
@@ -22,14 +19,14 @@ import java.util.logging.Logger
 @PlatformSide([Platform.BUNGEE])
 class BungeeIO : PlatformIO {
 
+    val plugin by lazy { BungeePlugin.getInstance() }
+
     private val logger: Logger
         get() = try {
             BungeePlugin.getInstance().logger
         } catch (ex: Exception) {
             Logger.getAnonymousLogger()
         }
-
-    val pluginContainer = HashMap<String, OpenContainer>()
 
     override val pluginId: String
         get() = BungeePlugin.getInstance().description.name
@@ -39,6 +36,11 @@ class BungeeIO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = true
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return plugin.proxy as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -76,11 +78,5 @@ class BungeeIO : PlatformIO {
             "onlineMode" to if (proxy.config.isOnlineMode) 1 else 0,
             "bungeecordVersion" to proxy.version,
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("platform.BungeePlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.name) { _ -> BungeeOpenContainer(it) }
-        }
     }
 }

@@ -7,23 +7,23 @@ package taboolib.common.platform
  * @author sky
  * @since 2021/6/16 1:41 上午
  */
-enum class Platform {
+enum class Platform(val key: String) {
 
-    BUKKIT,
+    BUKKIT("Bukkit"),
 
-    NUKKIT,
+    NUKKIT("Nukkit"),
 
-    BUNGEE,
+    BUNGEE("Bungee"),
 
-    VELOCITY,
+    VELOCITY("Velocity"),
 
-    SPONGE_API_7,
+    SPONGE_API_7("Sponge7"),
 
-    SPONGE_API_8,
+    SPONGE_API_8("Sponge8"),
 
-    MINESTOM,
+    MINESTOM("Minestom"),
 
-    APPLICATION,
+    APPLICATION("Application"),
 
-    UNKNOWN
+    UNKNOWN("Unknown")
 }

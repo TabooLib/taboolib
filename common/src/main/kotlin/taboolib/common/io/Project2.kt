@@ -3,8 +3,14 @@ package taboolib.common.io
 
 import taboolib.common.Isolated
 
-val groupId = "taboolib".substring(0, "taboolib".length - 9)
+inline val groupId: String
+    get() = "taboolib".substring(0, "taboolib".length - 9)
 
-val taboolibId = charArrayOf('t', 'a', 'b', 'o', 'o', 'l', 'i', 'b').concatToString()
+inline val taboolibId: String
+    get() = charArrayOf('t', 'a', 'b', 'o', 'o', 'l', 'i', 'b').concatToString()
 
-val taboolibPath = groupId + taboolibId
+inline val taboolibPath: String
+    get() = groupId + taboolibId
+
+inline val Class<*>.groupId: String
+    get() = name.substringBefore(taboolibId).dropLast(1)

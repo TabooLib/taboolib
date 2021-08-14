@@ -1,0 +1,14 @@
+{
+  "group": [
+    {
+      "check": [
+        "taboolib/platform/util/NukkitLocationKt",
+        "taboolib/platform/type/NukkitPlayer"
+      ],
+      "member": [
+        "taboolib/platform/util/NukkitLocationKt"
+      ],
+      "mode": "REMOVE"
+    }
+  ]
+}

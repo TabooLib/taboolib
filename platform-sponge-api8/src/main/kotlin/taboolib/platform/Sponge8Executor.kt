@@ -5,8 +5,8 @@ import org.spongepowered.api.scheduler.Task
 import org.spongepowered.api.util.Ticks
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.CompletableFuture
 
 /**

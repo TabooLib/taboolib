@@ -10,9 +10,16 @@ import org.spongepowered.api.text.format.TextColors
 import org.spongepowered.api.text.format.TextStyles
 import org.spongepowered.api.world.Location
 import org.spongepowered.api.world.World
-import taboolib.common.platform.*
+import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.command.CommandBuilder
+import taboolib.common.platform.command.CommandCompleter
+import taboolib.common.platform.command.CommandExecutor
+import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.function.adaptCommandSender
-import taboolib.common.platform.command.*
+import taboolib.common.platform.service.PlatformCommand
 import java.util.*
 
 /**

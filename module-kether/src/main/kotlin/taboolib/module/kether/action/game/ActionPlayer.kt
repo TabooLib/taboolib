@@ -1,7 +1,5 @@
 package taboolib.module.kether.action.game
 
-import org.bukkit.entity.Player
-import taboolib.common.OpenResult
 import taboolib.common.platform.ProxyPlayer
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction

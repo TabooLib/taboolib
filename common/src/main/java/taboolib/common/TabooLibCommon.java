@@ -34,6 +34,8 @@ public class TabooLibCommon {
      */
     private static boolean sysoutCatcherFound = false;
 
+    private static boolean init = false;
+
     static {
         try {
             // 无法理解 paper 的伞兵行为
@@ -86,13 +88,24 @@ public class TabooLibCommon {
                     RuntimeEnv.ENV.setup();
                 } catch (NoClassDefFoundError ignored) {
                 }
-                PlatformFactory.INSTANCE.init();
-                RuntimeInjector.injectAll(LifeCycle.CONST);
+                if (isKotlinEnvironment()) {
+                    init = true;
+                    PlatformFactory.INSTANCE.init();
+                    RuntimeInjector.injectAll(LifeCycle.CONST);
+                }
                 break;
             case INIT:
-                RuntimeInjector.injectAll(LifeCycle.INIT);
+                if (isKotlinEnvironment()) {
+                    RuntimeInjector.injectAll(LifeCycle.INIT);
+                }
                 break;
             case LOAD:
+                if (!init) {
+                    init = true;
+                    PlatformFactory.INSTANCE.init();
+                    RuntimeInjector.injectAll(LifeCycle.CONST);
+                    RuntimeInjector.injectAll(LifeCycle.INIT);
+                }
                 RuntimeInjector.injectAll(LifeCycle.LOAD);
                 break;
             case ENABLE:
@@ -112,7 +125,12 @@ public class TabooLibCommon {
         try {
             return ClassAppender.isExists("kotlin.KotlinVersion");
         } catch (NoClassDefFoundError ignored) {
-            return true;
+            try {
+                Class.forName("kotlin.KotlinVersion");
+                return true;
+            } catch (ClassNotFoundException ignored2) {
+                return false;
+            }
         }
     }
 

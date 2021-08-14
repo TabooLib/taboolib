@@ -1,6 +1,6 @@
-package taboolib.common.platform
+package taboolib.common.platform.service
 
-import taboolib.common.OpenContainer
+import taboolib.common.platform.PlatformService
 import java.io.File
 
 @PlatformService
@@ -11,6 +11,8 @@ interface PlatformIO {
     val pluginVersion: String
 
     val isPrimaryThread: Boolean
+
+    fun <T> server(): T
 
     fun info(vararg message: Any?)
 
@@ -25,6 +27,4 @@ interface PlatformIO {
     fun getDataFolder(): File
 
     fun getPlatformData(): Map<String, Any>
-
-    fun getOpenContainers(): List<OpenContainer>
 }

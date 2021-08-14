@@ -10,13 +10,11 @@ import org.bukkit.material.MaterialData
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
@@ -398,12 +396,12 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                 else -> null
             })
         } catch (ignored: IllegalArgumentException) {
-            warning("Unsupported particle ${particle.name}")
+            error("Unsupported particle ${particle.name}")
         }
     }
 
     override fun performCommand(command: String): Boolean {
-        return dispatchCommand(player, command)
+        return BukkitCommandSender(player).performCommand(command)
     }
 
     override fun hasPermission(permission: String): Boolean {

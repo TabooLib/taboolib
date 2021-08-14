@@ -3,13 +3,11 @@ package taboolib.platform
 import com.velocitypowered.api.plugin.Plugin
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.VelocityOpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -23,14 +21,14 @@ import java.io.File
 @PlatformSide([Platform.VELOCITY])
 class VelocityIO : PlatformIO {
 
+    val plugin by lazy { VelocityPlugin.getInstance() }
+
     private val logger: Logger
         get() = try {
             VelocityPlugin.getInstance().logger
         } catch (ex: Exception) {
             LoggerFactory.getLogger("Anonymous")
         }
-
-    val pluginContainer = HashMap<String, OpenContainer>()
 
     override val pluginId: String
         get() = VelocityPlugin::class.java.getAnnotation(Plugin::class.java).id
@@ -40,6 +38,11 @@ class VelocityIO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = true
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return plugin.server as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -79,12 +82,5 @@ class VelocityIO : PlatformIO {
             "velocityVersionName" to server.version.name,
             "velocityVersionVendor" to server.version.vendor,
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        val plugins = VelocityPlugin.getInstance().server.pluginManager.plugins
-        return plugins.filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("platform.VelocityPlugin") == true }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.id) { _ -> VelocityOpenContainer(it) }
-        }
     }
 }

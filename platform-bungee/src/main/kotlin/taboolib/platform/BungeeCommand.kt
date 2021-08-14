@@ -8,9 +8,16 @@ import net.md_5.bungee.api.chat.TextComponent
 import net.md_5.bungee.api.chat.TranslatableComponent
 import net.md_5.bungee.api.plugin.Command
 import net.md_5.bungee.api.plugin.TabExecutor
-import taboolib.common.platform.*
+import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.command.CommandBuilder
+import taboolib.common.platform.command.CommandCompleter
+import taboolib.common.platform.command.CommandExecutor
+import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.function.adaptCommandSender
-import taboolib.common.platform.command.*
+import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
 /**

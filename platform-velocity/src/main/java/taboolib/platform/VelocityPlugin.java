@@ -15,7 +15,7 @@ import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.ExecutorKt;
 
 import java.nio.file.Path;
 
@@ -36,12 +36,14 @@ import java.nio.file.Path;
 public class VelocityPlugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static VelocityPlugin instance;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-        pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
     }
 
     private final ProxyServer server;
@@ -60,6 +62,9 @@ public class VelocityPlugin {
     @Subscribe
     public void e(ProxyInitializeEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        if (pluginInstance == null) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
@@ -74,7 +79,10 @@ public class VelocityPlugin {
                 }
             }).schedule();
         }
-        CommonKt.startExecutor();
+        try {
+            ExecutorKt.startExecutor();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     @Subscribe

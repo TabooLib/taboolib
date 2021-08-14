@@ -2,6 +2,7 @@ package taboolib.module.effect.wing.impl
 
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.sendTo
 import taboolib.module.effect.wing.WingRender
 
 /**

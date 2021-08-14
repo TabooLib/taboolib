@@ -1,8 +1,5 @@
 package taboolib.common.reflect
 
-import taboolib.common.util.nonPrimitive
-import java.lang.reflect.Constructor
-
 /**
  * @author sky
  * @since 2020-10-02 01:40

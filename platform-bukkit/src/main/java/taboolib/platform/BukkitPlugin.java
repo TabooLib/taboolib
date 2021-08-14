@@ -11,7 +11,7 @@ import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.ExecutorKt;
 
 import java.io.File;
 
@@ -27,12 +27,14 @@ import java.io.File;
 public class BukkitPlugin extends JavaPlugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static BukkitPlugin instance;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
-        pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
     }
 
     public BukkitPlugin() {
@@ -43,6 +45,9 @@ public class BukkitPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        if (pluginInstance == null) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
@@ -61,7 +66,10 @@ public class BukkitPlugin extends JavaPlugin {
                 }
             });
         }
-        CommonKt.startExecutor();
+        try {
+            ExecutorKt.startExecutor();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     @Override
@@ -74,8 +82,11 @@ public class BukkitPlugin extends JavaPlugin {
 
     @Override
     public ChunkGenerator getDefaultWorldGenerator(@NotNull String worldName, String id) {
-        if (pluginInstance instanceof BukkitWorldGenerator) {
-            return ((BukkitWorldGenerator) pluginInstance).getDefaultWorldGenerator(worldName, id);
+        try {
+            if (pluginInstance instanceof BukkitWorldGenerator) {
+                return ((BukkitWorldGenerator) pluginInstance).getDefaultWorldGenerator(worldName, id);
+            }
+        } catch (NoClassDefFoundError ignored) {
         }
         return null;
     }

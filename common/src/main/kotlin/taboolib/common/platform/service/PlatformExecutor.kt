@@ -1,4 +1,6 @@
-package taboolib.common.platform
+package taboolib.common.platform.service
+
+import taboolib.common.platform.PlatformService
 
 @PlatformService
 interface PlatformExecutor {

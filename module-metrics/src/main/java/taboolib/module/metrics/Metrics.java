@@ -4,8 +4,8 @@ import kotlin.Unit;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.File1Kt;
 import taboolib.common.platform.Platform;
-import taboolib.common.platform.function.AdapterPlayerKt;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.AdapterKt;
+import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.platform.function.IOKt;
 import taboolib.module.configuration.SecuredFile;
 
@@ -76,7 +76,7 @@ public class Metrics {
                 enabled,
                 json -> appendPlatformData(json, runningPlatform),
                 json -> appendServiceData(json, pluginVersion),
-                task -> CommonKt.submit(false, false, 0, 0, "", r -> {
+                task -> ExecutorKt.submit(false, false, 0, 0, "", r -> {
                     task.run();
                     return Unit.INSTANCE;
                 }),
@@ -98,7 +98,7 @@ public class Metrics {
     }
 
     private void appendPlatformData(JsonBuilder builder, Platform platform) {
-        builder.appendField("playerAmount", AdapterPlayerKt.onlinePlayers().size());
+        builder.appendField("playerAmount", AdapterKt.onlinePlayers().size());
         builder.appendField("javaVersion", System.getProperty("java.version"));
         builder.appendField("osName", System.getProperty("os.name"));
         builder.appendField("osArch", System.getProperty("os.arch"));

@@ -1,9 +1,5 @@
 package taboolib.common.platform.event
 
-import taboolib.common.platform.event.EventOrder
-import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.event.PostOrder
-
 @Target(AnnotationTarget.FUNCTION)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 annotation class SubscribeEvent(

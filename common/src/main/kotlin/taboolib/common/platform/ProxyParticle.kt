@@ -1,6 +1,5 @@
 package taboolib.common.platform
 
-import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.awt.Color
@@ -107,12 +106,6 @@ enum class ProxyParticle(vararg val aliases: String) {
 
     fun sendTo(player: ProxyPlayer, location: Location, offset: Vector = Vector(0, 0, 0), count: Int = 1, speed: Double = 0.0, data: Data? = null) {
         player.sendParticle(this, location, offset, count, speed, data)
-    }
-
-    fun sendTo(location: Location, range: Double = 128.0, offset: Vector = Vector(0, 0, 0), count: Int = 1, speed: Double = 0.0, data: Data? = null) {
-        onlinePlayers().filter { it.world == location.world && it.location.distance(location) <= range }.forEach {
-            sendTo(it, location, offset, count, speed, data)
-        }
     }
 
     interface Data

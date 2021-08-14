@@ -5,7 +5,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Isolated
-import taboolib.common.platform.*
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.event.SubscribeEvent

@@ -1,8 +1,11 @@
 package taboolib.platform.type
 
 import cn.nukkit.command.CommandSender
+import cn.nukkit.event.player.PlayerCommandPreprocessEvent
+import cn.nukkit.event.server.ServerCommandEvent
+import cn.nukkit.player.Player
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.platform.util.dispatchCommand
+import taboolib.platform.NukkitPlugin
 
 /**
  * TabooLib
@@ -35,5 +38,22 @@ class NukkitCommandSender(val sender: CommandSender) : ProxyCommandSender {
 
     override fun hasPermission(permission: String): Boolean {
         return sender.hasPermission(permission)
+    }
+
+    fun dispatchCommand(sender: CommandSender, command: String): Boolean {
+        if (sender is Player) {
+            val event = PlayerCommandPreprocessEvent((sender as Player?)!!, "/$command")
+            NukkitPlugin.getInstance().server.pluginManager.callEvent(event)
+            if (!event.isCancelled && event.message.isNotBlank() && event.message.startsWith("/")) {
+                return NukkitPlugin.getInstance().server.dispatchCommand(event.player, event.message.substring(1))
+            }
+        } else {
+            val e = ServerCommandEvent(sender, command)
+            NukkitPlugin.getInstance().server.pluginManager.callEvent(e)
+            if (!e.isCancelled && e.command.isNotBlank()) {
+                return NukkitPlugin.getInstance().server.dispatchCommand(e.sender, e.command)
+            }
+        }
+        return false
     }
 }

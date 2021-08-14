@@ -1,7 +1,10 @@
 package taboolib.module.lang
 
 import taboolib.common.LifeCycle
-import taboolib.common.platform.*
+import taboolib.common.platform.Awake
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.SkipTo
 import taboolib.common.platform.function.getJarFile
 import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored

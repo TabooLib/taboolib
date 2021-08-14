@@ -1,26 +1,20 @@
-package taboolib.common.platform
+package taboolib.common.platform.service
 
-import taboolib.common.platform.event.*
+import taboolib.common.platform.PlatformService
+import taboolib.common.platform.event.EventOrder
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.PostOrder
+import taboolib.common.platform.event.ProxyListener
 
 /**
  * TabooLib
- * taboolib.common.platform.PlatformAdaptor
+ * taboolib.common.platform.service.PlatformListener
  *
  * @author sky
  * @since 2021/6/17 12:04 上午
  */
 @PlatformService
-interface PlatformAdapter {
-
-    fun <T> server(): T
-
-    fun console(): ProxyCommandSender
-
-    fun onlinePlayers(): List<ProxyPlayer>
-
-    fun adaptPlayer(any: Any): ProxyPlayer
-
-    fun adaptCommandSender(any: Any): ProxyCommandSender
+interface PlatformListener {
 
     /**
      * bukkit & nukkit
@@ -49,6 +43,4 @@ interface PlatformAdapter {
     }
 
     fun unregisterListener(proxyListener: ProxyListener)
-
-    fun callEvent(proxyEvent: ProxyEvent)
 }

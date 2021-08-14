@@ -1,11 +1,10 @@
 package taboolib.platform
 
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -27,6 +26,10 @@ class AppIO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = true
+
+    override fun <T> server(): T {
+        TODO("Not yet implemented")
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { println("[info] $it") }
@@ -59,9 +62,5 @@ class AppIO : PlatformIO {
 
     override fun getPlatformData(): Map<String, Any> {
         return emptyMap()
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return emptyList()
     }
 }

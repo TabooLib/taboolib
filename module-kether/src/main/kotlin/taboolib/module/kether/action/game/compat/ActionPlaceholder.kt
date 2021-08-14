@@ -1,10 +1,10 @@
 package taboolib.module.kether.action.game.compat
 
-import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestContext
-import taboolib.library.kether.ArgTypes
 import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.entity.Player
+import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.script

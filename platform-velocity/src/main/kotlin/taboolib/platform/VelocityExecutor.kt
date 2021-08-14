@@ -2,8 +2,8 @@ package taboolib.platform
 
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

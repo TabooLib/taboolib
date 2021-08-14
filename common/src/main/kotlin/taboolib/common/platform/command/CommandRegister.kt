@@ -1,6 +1,7 @@
 package taboolib.common.platform.command
 
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.registerCommand
 
 fun command(
     name: String,

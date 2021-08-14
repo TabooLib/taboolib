@@ -6,29 +6,6 @@ import taboolib.common.platform.Awake
 import java.lang.reflect.Field
 import java.util.function.Supplier
 
-fun mainCommand(func: CommandBuilder.CommandBase.() -> Unit): SimpleCommandMain {
-    return SimpleCommandMain(func)
-}
-
-fun subCommand(func: CommandBuilder.CommandComponent.() -> Unit): SimpleCommandBody {
-    return SimpleCommandBody(func)
-}
-
-class SimpleCommandMain(val func: CommandBuilder.CommandBase.() -> Unit = {})
-
-class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {}) {
-
-    var name = ""
-    var aliases = emptyArray<String>()
-    var optional = false
-    var permission = ""
-    val children = ArrayList<SimpleCommandBody>()
-
-    override fun toString(): String {
-        return "SimpleCommandBody(name='$name', children=$children)"
-    }
-}
-
 @Awake
 object SimpleCommandRegister : Injector.Classes, Injector.Fields {
 

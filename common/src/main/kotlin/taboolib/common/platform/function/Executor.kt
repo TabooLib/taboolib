@@ -1,7 +1,7 @@
 package taboolib.common.platform.function
 
-import taboolib.common.platform.PlatformExecutor
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.platform.service.PlatformExecutor
 
 /**
  * 释放在预备阶段的调度器计划

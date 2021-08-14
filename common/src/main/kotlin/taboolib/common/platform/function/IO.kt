@@ -1,8 +1,7 @@
 package taboolib.common.platform.function
 
-import taboolib.common.OpenContainer
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.PlatformIO
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 val pluginId: String
@@ -13,6 +12,10 @@ val pluginVersion: String
 
 val isPrimaryThread: Boolean
     get() = PlatformFactory.getService<PlatformIO>().isPrimaryThread
+
+fun <T> server(): T {
+    return PlatformFactory.getService<PlatformIO>().server()
+}
 
 fun info(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().info(*message)
@@ -40,12 +43,4 @@ fun getDataFolder(): File {
 
 fun getPlatformData(): Map<String, Any> {
     return PlatformFactory.getService<PlatformIO>().getPlatformData()
-}
-
-fun getOpenContainers(): List<OpenContainer> {
-    return PlatformFactory.getService<PlatformIO>().getOpenContainers()
-}
-
-fun getOpenContainer(name: String): OpenContainer? {
-    return PlatformFactory.getService<PlatformIO>().getOpenContainers().firstOrNull { it.name == name }
 }

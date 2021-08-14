@@ -1,18 +1,19 @@
 package taboolib.common.inject;
 
-import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.inject.Injector;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.PlatformFactory;
 import taboolib.common.platform.SkipTo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 /**

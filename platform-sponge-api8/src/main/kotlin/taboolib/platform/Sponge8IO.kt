@@ -3,13 +3,11 @@ package taboolib.platform
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.spongepowered.api.Sponge
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.Sponge8OpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -30,8 +28,6 @@ class Sponge8IO : PlatformIO {
             LogManager.getLogger("Anonymous")
         }
 
-    val pluginContainer = HashMap<String, OpenContainer>()
-
     override val pluginId: String
         get() = Sponge8Plugin.getInstance().pluginContainer.metadata().id()
 
@@ -40,6 +36,11 @@ class Sponge8IO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = Sponge.server().onMainThread()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return Sponge.server() as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -77,11 +78,5 @@ class Sponge8IO : PlatformIO {
             "onlineMode" to if (Sponge.server().isOnlineModeEnabled) 1 else 0,
             "spongeImplementation" to platform.container(org.spongepowered.api.Platform.Component.IMPLEMENTATION).metadata().id(),
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return Sponge.pluginManager().plugins().filter { it.instance()?.javaClass?.name?.endsWith("platform.Sponge8Plugin") == true }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.metadata().id()) { _ -> Sponge8OpenContainer(it) }
-        }
     }
 }

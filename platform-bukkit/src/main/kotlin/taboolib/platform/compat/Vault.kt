@@ -8,7 +8,6 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.common.Isolated
-import taboolib.common.platform.Awake
 
 val isEconomySupported: Boolean
     get() = VaultService.economy != null
@@ -55,7 +54,6 @@ fun Player.getPrimaryGroup(): String {
 }
 
 @Isolated
-@Awake
 object VaultService {
 
     var economy: Economy? = null

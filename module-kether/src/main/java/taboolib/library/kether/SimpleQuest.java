@@ -3,7 +3,10 @@ package taboolib.library.kether;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class SimpleQuest implements Quest {
 

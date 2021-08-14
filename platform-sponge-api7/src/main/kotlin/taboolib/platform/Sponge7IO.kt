@@ -3,13 +3,11 @@ package taboolib.platform
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.spongepowered.api.Sponge
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.Sponge7OpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -30,8 +28,6 @@ class Sponge7IO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
-    val pluginContainer = HashMap<String, OpenContainer>()
-
     override val pluginId: String
         get() = Sponge7Plugin.getInstance().pluginContainer.id
 
@@ -40,6 +36,11 @@ class Sponge7IO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = Sponge.getServer().isMainThread
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return Sponge.getServer() as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -77,11 +78,5 @@ class Sponge7IO : PlatformIO {
             "onlineMode" to if (Sponge.getServer().onlineMode) 1 else 0,
             "spongeImplementation" to platform.getContainer(org.spongepowered.api.Platform.Component.IMPLEMENTATION).name,
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return Sponge.getPluginManager().plugins.filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("platform.Sponge7Plugin") == true }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.id) { _ -> Sponge7OpenContainer(it) }
-        }
     }
 }

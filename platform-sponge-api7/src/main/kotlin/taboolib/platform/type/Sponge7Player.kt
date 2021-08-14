@@ -6,7 +6,10 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.block.BlockState
 import org.spongepowered.api.block.BlockTypes
 import org.spongepowered.api.data.key.Keys
-import org.spongepowered.api.effect.particle.*
+import org.spongepowered.api.effect.particle.ParticleEffect
+import org.spongepowered.api.effect.particle.ParticleOptions
+import org.spongepowered.api.effect.particle.ParticleType
+import org.spongepowered.api.effect.particle.ParticleTypes
 import org.spongepowered.api.effect.sound.SoundType
 import org.spongepowered.api.entity.living.player.Player
 import org.spongepowered.api.entity.living.player.gamemode.GameModes
@@ -25,7 +28,6 @@ import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
@@ -326,7 +328,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
         if (particle.aliases[0] == "~") {
-            warning("Unsupported particle ${particle.name}")
+            error("Unsupported particle ${particle.name}")
             return
         }
         var type: ParticleType? = null
@@ -341,7 +343,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
             }
         }
         if (type == null) {
-            warning("Unsupported particle ${particle.name}")
+            error("Unsupported particle ${particle.name}")
             return
         }
         val builder = ParticleEffect.builder().type(type)

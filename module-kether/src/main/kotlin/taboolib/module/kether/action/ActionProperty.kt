@@ -1,8 +1,10 @@
 package taboolib.module.kether.action
 
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.*
+import taboolib.module.kether.Kether
+import taboolib.module.kether.ScriptAction
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.ScriptProperty
 import java.util.concurrent.CompletableFuture
 
 /**

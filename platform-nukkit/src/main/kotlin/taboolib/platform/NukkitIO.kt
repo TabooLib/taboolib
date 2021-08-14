@@ -3,13 +3,11 @@ package taboolib.platform
 import cn.nukkit.Server
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.NukkitOpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -30,8 +28,6 @@ class NukkitIO : PlatformIO {
             LoggerFactory.getLogger("Anonymous")
         }
 
-    val pluginContainer = HashMap<String, OpenContainer>()
-
     override val pluginId: String
         get() = NukkitPlugin.getInstance().name
 
@@ -40,6 +36,11 @@ class NukkitIO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = NukkitPlugin.getInstance().server.isPrimaryThread
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return Server.getInstance() as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { logger.info(it.toString()) }
@@ -76,11 +77,5 @@ class NukkitIO : PlatformIO {
             "nukkitName" to Server.getInstance().name,
             "onlineMode" to 0
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return Server.getInstance().pluginManager.plugins.values.filter { it.javaClass.name.endsWith("platform.NukkitPlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> NukkitOpenContainer(it) }
-        }
     }
 }

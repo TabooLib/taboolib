@@ -1,13 +1,11 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
-import taboolib.common.OpenContainer
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformIO
 import taboolib.common.platform.PlatformSide
-import taboolib.platform.type.BukkitOpenContainer
+import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
@@ -24,8 +22,6 @@ class BukkitIO : PlatformIO {
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
 
-    val pluginContainer = HashMap<String, OpenContainer>()
-
     override val pluginId: String
         get() = plugin.description.name
 
@@ -34,6 +30,11 @@ class BukkitIO : PlatformIO {
 
     override val isPrimaryThread: Boolean
         get() = Bukkit.isPrimaryThread()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> server(): T {
+        return Bukkit.getServer() as T
+    }
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach { plugin.logger.info(it.toString()) }
@@ -70,11 +71,5 @@ class BukkitIO : PlatformIO {
             "bukkitName" to Bukkit.getName(),
             "onlineMode" to if (Bukkit.getOnlineMode()) 1 else 0
         )
-    }
-
-    override fun getOpenContainers(): List<OpenContainer> {
-        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitOpenContainer(it) }
-        }
     }
 }

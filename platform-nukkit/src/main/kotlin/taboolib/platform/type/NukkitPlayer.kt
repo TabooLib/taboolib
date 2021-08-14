@@ -1,19 +1,17 @@
 package taboolib.platform.type
 
 import cn.nukkit.AdventureSettings
-import cn.nukkit.command.defaults.ParticleCommand
 import cn.nukkit.player.GameMode
 import cn.nukkit.player.Player
 import com.nukkitx.math.vector.Vector3f
 import com.nukkitx.network.util.Preconditions
 import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket
 import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
-import taboolib.common.platform.ProxyParticle
 import taboolib.common.util.Vector
 import taboolib.platform.NukkitPlugin
-import taboolib.platform.util.dispatchCommand
 import taboolib.platform.util.toCommonLocation
 import java.net.InetSocketAddress
 import java.util.*
@@ -306,7 +304,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        return dispatchCommand(player, command)
+        return NukkitCommandSender(player).performCommand(command)
     }
 
     override fun teleport(loc: Location) {

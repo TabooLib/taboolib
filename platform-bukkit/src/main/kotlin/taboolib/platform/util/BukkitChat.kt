@@ -2,6 +2,7 @@
 
 package taboolib.platform.util
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -9,7 +10,7 @@ import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.submit
+import taboolib.platform.BukkitPlugin
 import java.util.concurrent.ConcurrentHashMap
 
 fun Player.nextChat(function: (message: String) -> Unit) {
@@ -29,12 +30,12 @@ fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: 
         reuse(this)
     } else {
         ChatListener.inputs[name] = func
-        submit(delay = tick) {
+        Bukkit.getScheduler().runTaskLater(BukkitPlugin.getInstance(), Runnable {
             if (ChatListener.inputs.containsKey(name)) {
                 timeout(this@nextChatInTick)
                 ChatListener.inputs.remove(name)
             }
-        }
+        }, tick)
     }
 }
 

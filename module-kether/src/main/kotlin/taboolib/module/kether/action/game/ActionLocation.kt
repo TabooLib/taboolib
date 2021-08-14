@@ -1,11 +1,11 @@
 package taboolib.module.kether.action.game
 
-import taboolib.library.kether.actions.LiteralAction
-import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestContext
-import taboolib.library.kether.ArgTypes
 import taboolib.common.util.Location
 import taboolib.common5.Coerce
+import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.QuestContext
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.scriptParser

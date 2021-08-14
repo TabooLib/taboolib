@@ -16,7 +16,7 @@ import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.ExecutorKt;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -37,7 +37,7 @@ import java.nio.file.Path;
 public class Sponge7Plugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static Sponge7Plugin instance;
 
     @Inject
@@ -49,7 +49,9 @@ public class Sponge7Plugin {
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
-        pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
     }
 
     public Sponge7Plugin() {
@@ -60,6 +62,9 @@ public class Sponge7Plugin {
     @Listener
     private void e(GamePreInitializationEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        if (pluginInstance == null) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
@@ -71,7 +76,10 @@ public class Sponge7Plugin {
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onEnable();
         }
-        CommonKt.startExecutor();
+        try {
+            ExecutorKt.startExecutor();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     @Listener

@@ -10,7 +10,7 @@ import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.CommonKt;
+import taboolib.common.platform.function.ExecutorKt;
 
 import java.io.File;
 
@@ -26,12 +26,14 @@ import java.io.File;
 public class NukkitPlugin extends PluginBase {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static NukkitPlugin instance;
 
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.NUKKIT);
-        pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
     }
 
     public NukkitPlugin() {
@@ -42,6 +44,9 @@ public class NukkitPlugin extends PluginBase {
     @Override
     public void onLoad() {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        if (pluginInstance == null) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();
         }
@@ -60,7 +65,10 @@ public class NukkitPlugin extends PluginBase {
                 }
             });
         }
-        CommonKt.startExecutor();
+        try {
+            ExecutorKt.startExecutor();
+        } catch (NoClassDefFoundError ignored) {
+        }
     }
 
     @Override
