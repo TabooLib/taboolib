@@ -204,6 +204,21 @@
         "taboolib/platform/{platform}Plugin",
         "taboolib/platform/{platform}Command"
       ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/command/CommandBuilder"
+        ],
+        "exclude": [
+          "taboolib/common/platform/command/CommandRegisterKt",
+          "taboolib/common/platform/command/SimpleCommandKt",
+          "taboolib/common/platform/command/SimpleCommandBody",
+          "taboolib/common/platform/command/SimpleCommandMain",
+          "taboolib/common/platform/command/SimpleCommandRegister",
+          "taboolib/common/platform/function/CommandKt",
+          "taboolib/common/platform/service/PlatformCommand",
+          "taboolib/platform/{platform}Command"
+        ]
+      },
       "mode": "REMOVE"
     },
     {
