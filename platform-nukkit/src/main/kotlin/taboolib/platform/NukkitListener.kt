@@ -11,6 +11,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
@@ -51,7 +52,7 @@ class NukkitListener : PlatformListener {
     class NukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            val origin = if (event::class.java.name.endsWith("NukkitProxyEvent")) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

@@ -1,8 +1,8 @@
 package taboolib.common;
 
+import kotlin.KotlinVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
@@ -35,6 +35,8 @@ public class TabooLibCommon {
     private static boolean sysoutCatcherFound = false;
 
     private static boolean init = false;
+
+    private static int kotlinVersion = 0;
 
     static {
         try {
@@ -95,7 +97,7 @@ public class TabooLibCommon {
                 }
                 break;
             case INIT:
-                if (isKotlinEnvironment()) {
+                if (init) {
                     RuntimeInjector.injectAll(LifeCycle.INIT);
                 }
                 break;
@@ -123,14 +125,10 @@ public class TabooLibCommon {
 
     public static boolean isKotlinEnvironment() {
         try {
-            return ClassAppender.isExists("kotlin.KotlinVersion");
+            kotlinVersion = KotlinVersion.CURRENT.getMajor();
+            return true;
         } catch (NoClassDefFoundError ignored) {
-            try {
-                Class.forName("kotlin.KotlinVersion");
-                return true;
-            } catch (ClassNotFoundException ignored2) {
-                return false;
-            }
+            return false;
         }
     }
 

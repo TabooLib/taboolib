@@ -6,6 +6,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.SkipTo
 import taboolib.common.platform.function.getJarFile
+import taboolib.common.platform.function.info
 import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored
 import taboolib.module.lang.event.PlayerSelectLocaleEvent

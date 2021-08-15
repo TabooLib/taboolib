@@ -11,6 +11,7 @@ import taboolib.common.platform.event.EventOrder
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
@@ -44,7 +45,7 @@ class Sponge7Listener : PlatformListener {
     class Sponge7Listener<T : Event>(val clazz: Class<*>, val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            val origin = if (event::class.java.name.endsWith("Sponge7ProxyEvent")) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

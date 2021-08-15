@@ -158,27 +158,27 @@ public class DefaultAttribute {
         return KNOCKBACK_RESISTANCE.getOrDefault(type.name(), 0.0);
     }
 
-    public static Map<Attribute, Double> getDefault(Material type) {
-        Map<Attribute, Double> map = new HashMap<>();
+    public static Map<String, Double> getDefault(Material type) {
+        Map<String, Double> map = new HashMap<>();
         double attackDamage = getAttackDamage(type);
         if (attackDamage > 0) {
-            map.put(Attribute.GENERIC_ATTACK_DAMAGE, attackDamage);
+            map.put("GENERIC_ATTACK_DAMAGE", attackDamage);
         }
         double attackSpeed = getAttackSpeed(type);
         if (attackSpeed > 0) {
-            map.put(Attribute.GENERIC_ATTACK_SPEED, attackSpeed);
+            map.put("GENERIC_ATTACK_SPEED", attackSpeed);
         }
         double armor = getArmor(type);
         if (armor > 0) {
-            map.put(Attribute.GENERIC_ARMOR, armor);
+            map.put("GENERIC_ARMOR", armor);
         }
         double armorToughness = getArmorToughness(type);
         if (armorToughness > 0) {
-            map.put(Attribute.GENERIC_ARMOR_TOUGHNESS, armorToughness);
+            map.put("GENERIC_ARMOR_TOUGHNESS", armorToughness);
         }
         double knockbackResistance = getKnockbackResistance(type);
         if (knockbackResistance > 0) {
-            map.put(Attribute.GENERIC_KNOCKBACK_RESISTANCE, knockbackResistance);
+            map.put("GENERIC_KNOCKBACK_RESISTANCE", knockbackResistance);
         }
         return map;
     }
