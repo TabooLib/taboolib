@@ -9,6 +9,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11701:11701:universal")
     compileOnly("ink.ptms.core:v11600:11600:all")
     compileOnly("ink.ptms.core:v11200:11200:all")
+    compileOnly("ink.ptms.core:v11400:11400:all")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module-chat"))

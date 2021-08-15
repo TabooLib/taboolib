@@ -1,5 +1,7 @@
 package taboolib.platform
 
+import co.aikar.timings.Timings
+import co.aikar.timings.TimingsManager
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -21,6 +23,7 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.setProperty
+import java.lang.ClassCastException
 import java.lang.reflect.Constructor
 
 /**
@@ -95,6 +98,13 @@ class BukkitCommand : PlatformCommand {
                 knownCommands[it] = pluginCommand
             }
             pluginCommand.register(commandMap)
+            // 1.8 patch
+            if (pluginCommand.timings == null) {
+                try {
+                    pluginCommand.setProperty("timings", TimingsManager.getCommandTiming(plugin.name, pluginCommand))
+                } catch (ignored: ClassCastException) {
+                }
+            }
             registeredCommands.add(command)
         }
     }

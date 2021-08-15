@@ -26,6 +26,8 @@ object Language {
 
     private var firstLoaded = false
 
+    var default = "zh_CN"
+
     val textTransfer = ArrayList<TextTransfer>()
 
     val languageFile = HashMap<String, LanguageFile>()
