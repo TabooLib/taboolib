@@ -14,7 +14,14 @@ val Class<*>.isProxyEvent: Boolean
     get() = if (superclass != null && superclass.name == "$groupId.$taboolibId.common.platform.event.ProxyEvent") {
         true
     } else {
-        superclass.isProxyEvent
+        superclass?.isProxyEvent ?: false
+    }
+
+val Class<*>.isPlatformEvent: Boolean
+    get() = if (superclass != null && superclass.name == "$groupId.$taboolibId.platform.type.${runningPlatform.key}ProxyEvent") {
+        true
+    } else {
+        superclass?.isProxyEvent ?: false
     }
 
 fun Class<*>.getPlatformEvent(): Class<*> {

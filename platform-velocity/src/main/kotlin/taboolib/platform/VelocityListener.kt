@@ -8,6 +8,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
@@ -43,7 +44,7 @@ class VelocityListener : PlatformListener {
     class VelocityListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
 
         override fun execute(event: Any) {
-            val origin = if (event::class.java.name.endsWith("VelocityProxyEvent")) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

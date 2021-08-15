@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
+import taboolib.common.platform.AwakeFunction;
 import taboolib.common.platform.PlatformFactory;
 import taboolib.common.platform.SkipTo;
 
@@ -26,6 +27,12 @@ import java.util.function.Supplier;
 public class RuntimeInjector {
 
     private static final TreeMap<Byte, Injectors> propertyMap = new TreeMap<>();
+
+    static {
+        for (LifeCycle value : LifeCycle.values()) {
+            register(new AwakeFunction(value));
+        }
+    }
 
     public static void register(@NotNull Injector.Fields injector) {
         Injectors injectors = propertyMap.computeIfAbsent(injector.getPriority(), i -> new Injectors());
