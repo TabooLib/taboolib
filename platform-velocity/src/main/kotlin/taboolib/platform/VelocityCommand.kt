@@ -1,7 +1,6 @@
 package taboolib.platform
 
-import com.velocitypowered.api.command.Command
-import com.velocitypowered.api.command.CommandSource
+import com.velocitypowered.api.command.SimpleCommand
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -37,14 +36,14 @@ class VelocityCommand : PlatformCommand {
         commandBuilder: CommandBuilder.CommandBase.() -> Unit,
     ) {
         registeredCommands.add(command.name)
-        VelocityPlugin.getInstance().server.commandManager.register(command.name, object : Command {
+        VelocityPlugin.getInstance().server.commandManager.register(command.name, object : SimpleCommand {
 
-            override fun execute(source: CommandSource, args: Array<String>) {
-                executor.execute(adaptCommandSender(source), command, command.name, args)
+            override fun execute(invocation: SimpleCommand.Invocation) {
+                executor.execute(adaptCommandSender(invocation.source()), command, command.name, invocation.arguments())
             }
 
-            override fun suggest(source: CommandSource, currentArgs: Array<String>): MutableList<String> {
-                return completer.execute(adaptCommandSender(source), command, command.name, currentArgs)?.toMutableList() ?: ArrayList()
+            override fun suggest(invocation: SimpleCommand.Invocation): MutableList<String> {
+                return completer.execute(adaptCommandSender(invocation.source()), command, command.name, invocation.arguments())?.toMutableList() ?: ArrayList()
             }
         }, *command.aliases.toTypedArray())
     }
