@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
+import org.bukkit.event.Event
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

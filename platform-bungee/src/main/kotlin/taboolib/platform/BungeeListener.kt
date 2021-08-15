@@ -8,7 +8,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
-import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
@@ -47,7 +47,7 @@ class BungeeListener : PlatformListener {
     override fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = BungeeListener(event, level) { func(it as T) }
         var array = emptyArray<EventHandlerMethod>()
-        val eventClass = event.getPlatformEvent()
+        val eventClass = event.getUsableEvent()
         byListenerAndPriority.computeIfAbsent(eventClass) { HashMap() }.run {
             computeIfAbsent(level.toByte()) { HashMap() }.run {
                 put(listener, arrayOf(BungeeListener.method))
@@ -61,7 +61,7 @@ class BungeeListener : PlatformListener {
     override fun unregisterListener(proxyListener: ProxyListener) {
         val listener = proxyListener as BungeeListener
         var array = emptyArray<EventHandlerMethod>()
-        val eventClass = listener.clazz.getPlatformEvent()
+        val eventClass = listener.clazz.getUsableEvent()
         byListenerAndPriority[eventClass]?.run {
             get(listener.level.toByte())?.run {
                 remove(listener)
@@ -74,7 +74,7 @@ class BungeeListener : PlatformListener {
     class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
 
         fun handle(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

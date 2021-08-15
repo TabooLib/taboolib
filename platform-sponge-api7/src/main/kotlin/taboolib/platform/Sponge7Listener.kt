@@ -10,7 +10,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventOrder
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
-import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
@@ -33,7 +33,7 @@ class Sponge7Listener : PlatformListener {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = Sponge7Listener<Event>(event) { func(it as T) }
-        val eventClass = event.getPlatformEvent()
+        val eventClass = event.getUsableEvent()
         Sponge.getEventManager().registerListener(this, eventClass as Class<Event>, Order.values()[order.ordinal], beforeModifications, listener)
         return listener
     }
@@ -45,7 +45,7 @@ class Sponge7Listener : PlatformListener {
     class Sponge7Listener<T : Event>(val clazz: Class<*>, val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

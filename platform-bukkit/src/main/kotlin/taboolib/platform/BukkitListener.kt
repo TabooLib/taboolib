@@ -10,9 +10,8 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
-import taboolib.common.platform.function.getPlatformEvent
+import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
-import taboolib.common.platform.function.isProxyEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
 
@@ -33,8 +32,7 @@ class BukkitListener : PlatformListener {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = BukkitListener(event as Class<Event>) { func(it as T) }
-        val eventClass = event.getPlatformEvent()
-        Bukkit.getPluginManager().registerEvent(eventClass as Class<Event>, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
+        Bukkit.getPluginManager().registerEvent(event.getUsableEvent() as Class<Event>, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
         return listener
     }
 
@@ -54,7 +52,7 @@ class BukkitListener : PlatformListener {
     class BukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

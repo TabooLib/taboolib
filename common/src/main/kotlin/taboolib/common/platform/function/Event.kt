@@ -10,24 +10,34 @@ fun callEvent(proxyEvent: ProxyEvent) {
     PlatformFactory.getService<PlatformEvent>().callEvent(proxyEvent)
 }
 
-val Class<*>.isProxyEvent: Boolean
-    get() = if (superclass != null && superclass.name == "$groupId.$taboolibId.common.platform.event.ProxyEvent") {
-        true
-    } else {
-        superclass?.isProxyEvent ?: false
+private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"
+
+private val platformEventName = "${taboolibId}.platform.type.${runningPlatform.key}ProxyEvent"
+
+private val Class<*>.isProxyEvent: Boolean
+    get() = proxyEvent != null
+
+private val Class<*>.proxyEvent: Class<*>?
+    get() {
+        val superclass = superclass
+        return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.proxyEvent
     }
 
 val Class<*>.isPlatformEvent: Boolean
-    get() = if (superclass != null && superclass.name == "$groupId.$taboolibId.platform.type.${runningPlatform.key}ProxyEvent") {
-        true
-    } else {
-        superclass?.isProxyEvent ?: false
+    get() {
+        val superclass = superclass
+        return when {
+            name.endsWith(proxyEventName) -> true
+            superclass != null && superclass.name.endsWith(proxyEventName) -> true
+            else -> superclass?.isPlatformEvent ?: false
+        }
     }
 
-fun Class<*>.getPlatformEvent(): Class<*> {
-    return if (isProxyEvent) {
+fun Class<*>.getUsableEvent(): Class<*> {
+    val event = proxyEvent
+    return if (event != null) {
         try {
-            Class.forName("${groupId}.$taboolibId.platform.type.${runningPlatform.key}ProxyEvent")
+            Class.forName("${event.groupId}.$platformEventName")
         } catch (ignored: ClassNotFoundException) {
             error("Unable to register listener $name")
         }
