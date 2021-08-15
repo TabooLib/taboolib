@@ -99,10 +99,9 @@ class BukkitCommand : PlatformCommand {
             }
             pluginCommand.register(commandMap)
             // 1.8 patch
-            if (pluginCommand.timings == null) {
-                try {
+            kotlin.runCatching {
+                if (pluginCommand.getProperty<Any>("timings") == null) {
                     pluginCommand.setProperty("timings", TimingsManager.getCommandTiming(plugin.name, pluginCommand))
-                } catch (ignored: ClassCastException) {
                 }
             }
             registeredCommands.add(command)
