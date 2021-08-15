@@ -55,7 +55,7 @@ class Sponge8Listener : PlatformListener {
     class Sponge8Listener<T : Event>(val clazz: Class<*>, val consumer: (Any) -> Unit) : EventListener<T>, ProxyListener {
 
         override fun handle(event: T) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

@@ -1,7 +1,6 @@
 @file:Isolated
 package taboolib.platform.util
 
-import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -39,6 +38,13 @@ fun Player.sendBook(itemStack: ItemStack) {
         }
         setItemInHand(itemInHand)
     }
+}
+
+private val isUniversal = try {
+    nmsClassLegacy("IChatBaseComponent\$ChatSerializer")
+    false
+} catch (ignored: ClassNotFoundException) {
+    true
 }
 
 private val classCraftItemStack by lazy {
@@ -88,13 +94,9 @@ open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
             title = "untitled"
             author = "untitled"
             bookPages.forEach {
-                println("text ${it.text} row ${it.raw}")
                 if (it.raw) {
-                    try {
-                        spigot().addPage(ComponentSerializer.parse(it.text))
-                    } catch (ex: NoSuchMethodError) {
-                        getProperty<MutableList<Any>>("pages")!! += classChatSerializer.invokeMethod<Any>("a", it.text, fixed = true)!!
-                    }
+                    val pages = getProperty<MutableList<Any>>("pages")!!
+                    pages += if (isUniversal) it.text else classChatSerializer.invokeMethod<Any>("a", it.text, fixed = true)!!
                 } else {
                     addPage(it.text)
                 }

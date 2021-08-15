@@ -44,7 +44,7 @@ class VelocityListener : PlatformListener {
     class VelocityListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
 
         override fun execute(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

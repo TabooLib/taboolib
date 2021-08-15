@@ -74,7 +74,7 @@ class BungeeListener : PlatformListener {
     class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
 
         fun handle(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent")!! else event
+            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
             if (origin.javaClass == clazz) {
                 consumer(origin)
             }

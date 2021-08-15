@@ -105,7 +105,9 @@ public class DependencyDownloader extends AbstractXmlParser {
                 if (isDebugMode && !notify) {
                     notify = true;
                     if (TabooLibCommon.isSysoutCatcherFound()) {
-                        System.console().printf("Loading libraries, please wait...\n");
+                        if (System.console() != null) {
+                            System.console().printf("Loading libraries, please wait...\n");
+                        }
                     } else {
                         System.out.println("Loading libraries, please wait...");
                     }
