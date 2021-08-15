@@ -148,4 +148,8 @@ public class TabooLibCommon {
     public static boolean isSysoutCatcherFound() {
         return sysoutCatcherFound;
     }
+
+    public static int getKotlinVersion() {
+        return kotlinVersion;
+    }
 }
