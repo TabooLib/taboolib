@@ -64,7 +64,7 @@ public class Sponge8Plugin {
     // 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
     // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
-    private void e(final ConstructPluginEvent e) {
+    public void e(final ConstructPluginEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = Project1Kt.findImplementation(Plugin.class);
@@ -75,19 +75,21 @@ public class Sponge8Plugin {
     }
 
     @Listener
-    private void e(final StartingEngineEvent<Server> e) {
+    public void e(final StartingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onEnable();
-        }
-        try {
-            ExecutorKt.startExecutor();
-        } catch (NoClassDefFoundError ignored) {
+        if (!TabooLibCommon.isStopped()) {
+            if (pluginInstance != null) {
+                pluginInstance.onEnable();
+            }
+            try {
+                ExecutorKt.startExecutor();
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 
     @Listener
-    private void e(final StartedEngineEvent<Server> e) {
+    public void e(final StartedEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onActive();
@@ -95,7 +97,7 @@ public class Sponge8Plugin {
     }
 
     @Listener
-    private void e(final StoppingEngineEvent<Server> e) {
+    public void e(final StoppingEngineEvent<Server> e) {
         TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();

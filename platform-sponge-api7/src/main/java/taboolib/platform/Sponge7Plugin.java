@@ -3,12 +3,10 @@ package taboolib.platform;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
@@ -56,6 +54,10 @@ public class Sponge7Plugin {
 
     public Sponge7Plugin() {
         instance = this;
+    }
+
+    @Listener
+    public void e(GameConstructionEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.INIT);
     }
 
@@ -73,12 +75,14 @@ public class Sponge7Plugin {
     @Listener
     public void e(GameInitializationEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onEnable();
-        }
-        try {
-            ExecutorKt.startExecutor();
-        } catch (NoClassDefFoundError ignored) {
+        if (!TabooLibCommon.isStopped()) {
+            if (pluginInstance != null) {
+                pluginInstance.onEnable();
+            }
+            try {
+                ExecutorKt.startExecutor();
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 

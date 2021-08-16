@@ -55,19 +55,21 @@ public class NukkitPlugin extends PluginBase {
     @Override
     public void onEnable() {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onEnable();
-            Server.getInstance().getScheduler().scheduleTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                    pluginInstance.onActive();
-                }
-            });
-        }
-        try {
-            ExecutorKt.startExecutor();
-        } catch (NoClassDefFoundError ignored) {
+        if (!TabooLibCommon.isStopped()) {
+            if (pluginInstance != null) {
+                pluginInstance.onEnable();
+                Server.getInstance().getScheduler().scheduleTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        pluginInstance.onActive();
+                    }
+                });
+            }
+            try {
+                ExecutorKt.startExecutor();
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 

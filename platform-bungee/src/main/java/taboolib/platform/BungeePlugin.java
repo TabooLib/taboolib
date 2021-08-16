@@ -54,19 +54,21 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onEnable() {
         TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onEnable();
-            BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                    pluginInstance.onActive();
-                }
-            }, 0, TimeUnit.SECONDS);
-        }
-        try {
-            ExecutorKt.startExecutor();
-        } catch (NoClassDefFoundError ignored) {
+        if (!TabooLibCommon.isStopped()) {
+            if (pluginInstance != null) {
+                pluginInstance.onEnable();
+                BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        pluginInstance.onActive();
+                    }
+                }, 0, TimeUnit.SECONDS);
+            }
+            try {
+                ExecutorKt.startExecutor();
+            } catch (NoClassDefFoundError ignored) {
+            }
         }
     }
 

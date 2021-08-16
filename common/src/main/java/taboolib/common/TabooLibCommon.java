@@ -1,8 +1,12 @@
 package taboolib.common;
 
 import kotlin.KotlinVersion;
+import kotlin.Lazy;
+import kotlin.LazyKt;
+import kotlin.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
@@ -35,8 +39,6 @@ public class TabooLibCommon {
     private static boolean sysoutCatcherFound = false;
 
     private static boolean init = false;
-
-    private static int kotlinVersion = 0;
 
     static {
         try {
@@ -103,10 +105,15 @@ public class TabooLibCommon {
                 break;
             case LOAD:
                 if (!init) {
-                    init = true;
-                    PlatformFactory.INSTANCE.init();
-                    RuntimeInjector.injectAll(LifeCycle.CONST);
-                    RuntimeInjector.injectAll(LifeCycle.INIT);
+                    if (isKotlinEnvironment()) {
+                        init = true;
+                        PlatformFactory.INSTANCE.init();
+                        RuntimeInjector.injectAll(LifeCycle.CONST);
+                        RuntimeInjector.injectAll(LifeCycle.INIT);
+                    } else {
+                        stopped = true;
+                        throw new RuntimeException("Runtime environment setup failed, please feedback!");
+                    }
                 }
                 RuntimeInjector.injectAll(LifeCycle.LOAD);
                 break;
@@ -125,9 +132,9 @@ public class TabooLibCommon {
 
     public static boolean isKotlinEnvironment() {
         try {
-            kotlinVersion = KotlinVersion.CURRENT.getMajor();
+            Class.forName("kotlin.Lazy", false, TabooLibCommon.class.getClassLoader());
             return true;
-        } catch (NoClassDefFoundError ignored) {
+        } catch (ClassNotFoundException ignored) {
             return false;
         }
     }
@@ -147,9 +154,5 @@ public class TabooLibCommon {
 
     public static boolean isSysoutCatcherFound() {
         return sysoutCatcherFound;
-    }
-
-    public static int getKotlinVersion() {
-        return kotlinVersion;
     }
 }

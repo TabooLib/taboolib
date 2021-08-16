@@ -5,6 +5,8 @@ import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.lazySupplier
 import java.io.File
+import java.lang.IllegalArgumentException
+import java.net.JarURLConnection
 import java.net.URISyntaxException
 import java.net.URL
 import java.util.function.Supplier
@@ -60,6 +62,8 @@ fun <T> Class<T>.findImplementation(): T? {
 fun URL.getClasses(): List<Class<*>> {
     val src = try {
         File(toURI())
+    } catch (ex: IllegalArgumentException) {
+        File((openConnection() as JarURLConnection).jarFileURL.toURI())
     } catch (ex: URISyntaxException) {
         File(path)
     }

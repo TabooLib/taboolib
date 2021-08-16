@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 /**
@@ -40,16 +41,21 @@ public class ClassAppender {
         try {
             File file = new File(path.toUri().getPath());
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
-            Field ucpField;
-            try {
-                ucpField = loader.getClass().getDeclaredField("ucp");
-            } catch (NoSuchFieldError | NoSuchFieldException e) {
-                ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
+            if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
+                MethodHandle methodHandle = lookup.findVirtual(URLClassLoader.class, "addURL", MethodType.methodType(void.class, java.net.URL.class));
+                methodHandle.invoke(loader, file.toURI().toURL());
+            } else {
+                Field ucpField;
+                try {
+                    ucpField = loader.getClass().getDeclaredField("ucp");
+                } catch (NoSuchFieldError | NoSuchFieldException e) {
+                    ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
+                }
+                long ucpOffset = unsafe.objectFieldOffset(ucpField);
+                Object ucp = unsafe.getObject(loader, ucpOffset);
+                MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
+                methodHandle.invoke(ucp, file.toURI().toURL());
             }
-            long ucpOffset = unsafe.objectFieldOffset(ucpField);
-            Object ucp = unsafe.getObject(loader, ucpOffset);
-            MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
-            methodHandle.invoke(ucp, file.toURI().toURL());
         } catch (Throwable t) {
             t.printStackTrace();
         }

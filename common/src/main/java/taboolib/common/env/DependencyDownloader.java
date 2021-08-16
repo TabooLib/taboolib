@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.jar.JarFile;
 
 /**
  * The class that contains all of the methods needed for downloading and
@@ -115,7 +116,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());
                 } else {
-                    File rel = new File(file.getPath() + ".rel.jar");
+                    File rel = new File(file.getPath() + ".rel");
                     if (!rel.exists() || rel.length() == 0) {
                         try {
                             new JarRelocator(copyFile(file, File.createTempFile(file.getName(), ".jar")), rel, relocation).run();
