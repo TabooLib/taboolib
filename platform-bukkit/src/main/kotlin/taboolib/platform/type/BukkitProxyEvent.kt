@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.reflect.Reflex.Companion.setProperty
 
-open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(), Cancellable {
+open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null, val async: Boolean = false) : Event(async), Cancellable {
 
     private var isCancelled = false
 
@@ -16,7 +16,10 @@ open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(), Cance
 
     init {
         if (proxyEvent == null || proxyEvent.allowAsynchronous) {
-            setProperty("async", !Bukkit.isPrimaryThread())
+            try {
+                setProperty("async", !Bukkit.isPrimaryThread())
+            } catch (ignored: NoSuchFieldException) {
+            }
         }
     }
 
