@@ -54,17 +54,16 @@ public class Sponge8Plugin {
 
     @Inject
     public Sponge8Plugin(final PluginContainer pluginContainer, final Logger logger) {
-        instance = this;
         this.pluginContainer = pluginContainer;
         this.logger = logger;
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
-
+        instance = this;
     }
 
     // 2021/7/7 可能存在争议，不确定其他插件是否会触发该事件
     // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
     public void e(final ConstructPluginEvent e) {
+        TabooLibCommon.lifeCycle(LifeCycle.INIT);
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = Project1Kt.findImplementation(Plugin.class);
