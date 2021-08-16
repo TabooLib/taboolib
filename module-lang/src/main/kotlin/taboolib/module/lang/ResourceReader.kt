@@ -5,10 +5,12 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.library.configuration.YamlConfiguration
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 /**
  * TabooLib
@@ -80,7 +82,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     })
                 }
                 is ConfigurationSection -> {
-                    val type = loadNode(obj.getValues(false).map { it.key.toString() to it.value!! }.toMap(), code, node)
+                    val type =
+                        loadNode(obj.getValues(false).map { it.key.toString() to it.value!! }.toMap(), code, node)
                     if (type != null) {
                         nodesMap[node] = type
                     }
@@ -108,16 +111,148 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    private fun migrateOldJson(section: ConfigurationSection): ConfigurationSection {
+        section.getValues(false).forEach { (key, value) ->
+            println("key $key -> $value (${value::class.java.simpleName})")
+        }
+
+        val type = section.getString("==", section.getString("type"))
+        if (type == null) {
+            println("cannot get type")
+            return section
+        }
+        if (type.lowercase() != "json") {
+            println("type not json")
+            return section
+        }
+
+        var text = section.getString("text")
+        if (text == null) {
+            println("null text")
+            return section
+        }
+        val argSection = section.getConfigurationSection("args")
+        if (argSection == null) {
+            println("cannot get args section")
+            return section
+        }
+
+        text = text.replace("[", "\\[").replace("]", "\\]")
+        val args = argSection.getKeys(false)
+            .mapNotNull { argSection.getConfigurationSection(it) }
+            .associate { it.name to it.getValues(false) }
+        val newArgs = mutableListOf<Map<String, Any>>()
+
+        // 反正你也要改代码的我就写注释给你看
+        // 这里现场 compile Pattern 你可能看了高血压
+        // 但是我也知道不应该这样, 但是我不知道放哪里
+        val pattern = Pattern.compile("<(.+)@(.+)>")
+        val matcher = pattern.matcher(text)
+        while (matcher.find()) {
+            val full = matcher.group(0)
+            println("find $full")
+
+            val display = matcher.group(1)
+            val arg = matcher.group(2)
+
+            val argContext = args[arg]
+            if (argContext == null) {
+                text = text.replace(full, display)
+                continue
+            }
+
+            text = text.replace(full, "[$display]")
+            newArgs.add(argContext)
+        }
+
+        section.set("text", text)
+        section.set("args", newArgs)
+        println("success migrate")
+        return section
+    }
+
+    private fun chainValue(
+        lastKey: String,
+        section: ConfigurationSection,
+        collect: HashMap<String, Any>
+    ): HashMap<String, Any> {
+        var key = lastKey
+        if (lastKey.isNotEmpty()) {
+            key += "."
+        }
+        key += section.name
+
+        if (section.contains("==") || section.contains("type")) {
+            collect[key] = section
+        } else {
+            section.getKeys(false).forEach {
+                when (val obj = section.get(it)) {
+                    is ConfigurationSection -> {
+                        chainValue(key, obj, collect)
+                    }
+                    else -> {
+                        var nextKey = key
+                        if (key.isNotEmpty()) {
+                            nextKey += "."
+                        }
+                        nextKey += it
+                        collect[nextKey] = obj
+                    }
+                }
+            }
+        }
+        return collect
+    }
+
+    private fun createConfigurationSection(map: Map<*, *>, root: ConfigurationSection): ConfigurationSection {
+        map.forEach { (key, value) ->
+            when (value) {
+                is Map<*, *> -> {
+                    root[key.toString()] = createConfigurationSection(value, root.createSection(key.toString()))
+                }
+                else -> root[key.toString()] = value
+            }
+        }
+        return root
+    }
+
     private fun migrateLegacyVersion(file: SecuredFile) {
         if (file.file == null) {
             return
         }
         var fixed = false
-        file.getValues(true).forEach {
+
+        val values = chainValue("", file, hashMapOf()).toSortedMap()
+        values.forEach {
             if (it.key.contains('.')) {
                 fixed = true
-                file.set(it.key, null)
-                file.set(it.key.replace('.', '-'), it.value)
+                file.set(it.key.substringBefore('.'), null)
+                file.set(it.key.replace('.', '-'), when (val obj = it.value) {
+                    is ConfigurationSection -> migrateOldJson(obj)
+                    is List<*> -> {
+                        obj.map { element ->
+                            when (element) {
+                                is Map<*, *> -> {
+                                    val result = migrateOldJson(
+                                        createConfigurationSection(
+                                            element.mapKeys { entry -> entry.key.toString() },
+                                            YamlConfiguration()
+                                        )
+                                    )
+                                    println((result as YamlConfiguration).saveToString())
+                                    result
+                                }
+                                is String -> {
+                                    element.ifEmpty {
+                                        "&r"
+                                    }
+                                }
+                                else -> element
+                            }
+                        }
+                    }
+                    else -> obj
+                })
             }
         }
         if (fixed) {
