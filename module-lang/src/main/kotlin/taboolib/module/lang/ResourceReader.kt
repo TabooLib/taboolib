@@ -112,30 +112,13 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     }
 
     private fun migrateOldJson(section: ConfigurationSection): ConfigurationSection {
-        section.getValues(false).forEach { (key, value) ->
-            println("key $key -> $value (${value::class.java.simpleName})")
-        }
-
-        val type = section.getString("==", section.getString("type"))
-        if (type == null) {
-            println("cannot get type")
-            return section
-        }
+        val type = section.getString("==", section.getString("type")) ?: return section
         if (type.lowercase() != "json") {
-            println("type not json")
             return section
         }
 
-        var text = section.getString("text")
-        if (text == null) {
-            println("null text")
-            return section
-        }
-        val argSection = section.getConfigurationSection("args")
-        if (argSection == null) {
-            println("cannot get args section")
-            return section
-        }
+        var text = section.getString("text") ?: return section
+        val argSection = section.getConfigurationSection("args") ?: return section
 
         text = text.replace("[", "\\[").replace("]", "\\]")
         val args = argSection.getKeys(false)
@@ -150,8 +133,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         val matcher = pattern.matcher(text)
         while (matcher.find()) {
             val full = matcher.group(0)
-            println("find $full")
-
             val display = matcher.group(1)
             val arg = matcher.group(2)
 
@@ -167,7 +148,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
         section.set("text", text)
         section.set("args", newArgs)
-        println("success migrate")
         return section
     }
 
@@ -233,14 +213,12 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                         obj.map { element ->
                             when (element) {
                                 is Map<*, *> -> {
-                                    val result = migrateOldJson(
+                                    migrateOldJson(
                                         createConfigurationSection(
                                             element.mapKeys { entry -> entry.key.toString() },
                                             YamlConfiguration()
                                         )
                                     )
-                                    println((result as YamlConfiguration).saveToString())
-                                    result
                                 }
                                 is String -> {
                                     element.ifEmpty {
