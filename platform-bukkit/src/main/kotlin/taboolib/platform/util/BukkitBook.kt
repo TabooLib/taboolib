@@ -9,6 +9,7 @@ import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 
@@ -28,6 +29,7 @@ fun Player.inputBook(display: String, disposable: Boolean = true, content: List<
     giveItem(
         buildBook {
             write(content.joinToString("\n"))
+            material = XMaterial.WRITABLE_BOOK
             name = "§f$display"
             lore += BookListener.regex[0]
             lore += if (disposable) {

@@ -17,7 +17,7 @@ val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSou
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     try {
-        val awoken = PlatformFactory.awokenMap[simpleName] as? T
+        val awoken = PlatformFactory.awokenMap[name] as? T
         if (awoken != null) {
             return Supplier { awoken }
         }

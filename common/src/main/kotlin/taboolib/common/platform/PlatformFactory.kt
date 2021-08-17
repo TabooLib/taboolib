@@ -38,15 +38,15 @@ object PlatformFactory {
                     }
                     interfaces.forEach { int ->
                         if (int.isAnnotationPresent(PlatformService::class.java)) {
-                            serviceMap[int.simpleName] = instance
+                            serviceMap[int.name] = instance
                         }
                     }
-                    awokenMap[it.simpleName] = instance
+                    awokenMap[it.name] = instance
                 }
                 if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == runningPlatform) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
-                        awokenMap[interfaces[0].simpleName] = it.getInstance(true)?.get() ?: return@forEach
+                        awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
                     }
                 }
             }
@@ -79,13 +79,13 @@ object PlatformFactory {
      * 获取已被唤醒的 API 实例
      */
     inline fun <reified T> getAPI(): T {
-        return awokenMap[T::class.java.simpleName] as T
+        return awokenMap[T::class.java.name] as T
     }
 
     /**
      * 获取已注册的跨平台服务
      */
     inline fun <reified T> getService(): T {
-        return serviceMap[T::class.java.simpleName] as T
+        return serviceMap[T::class.java.name] as T
     }
 }
