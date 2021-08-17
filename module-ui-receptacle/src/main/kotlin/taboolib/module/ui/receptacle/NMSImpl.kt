@@ -18,7 +18,7 @@ import taboolib.platform.util.isAir
  */
 class NMSImpl : NMS() {
 
-    private val emptyItemStack = CraftItemStack.asNMSCopy((ItemStack(Material.AIR)))
+    private val emptyItemStack: net.minecraft.server.v1_16_R3.ItemStack? = CraftItemStack.asNMSCopy((ItemStack(Material.AIR)))
 
     override fun sendInventoryPacket(player: Player, vararg packets: PacketInventory) {
         packets.forEach {
@@ -121,11 +121,11 @@ class NMSImpl : NMS() {
         }
     }
 
-    fun toNMSCopy(itemStack: ItemStack?): net.minecraft.server.v1_16_R3.ItemStack {
+    fun toNMSCopy(itemStack: ItemStack?): net.minecraft.server.v1_16_R3.ItemStack? {
         return if (itemStack.isAir()) emptyItemStack else CraftItemStack.asNMSCopy(itemStack)
     }
 
-    fun sendPacket(player: Player, packet: Any, vararg fields: Pair<String, Any>) {
+    fun sendPacket(player: Player, packet: Any, vararg fields: Pair<String, Any?>) {
         fields.forEach { packet.setProperty(it.first, it.second) }
         player.sendPacket(packet)
     }
