@@ -27,7 +27,7 @@ object ReceptacleListener {
                     slot = e.packet.read<Int>("slotNum")!!
                     button = e.packet.read<Int>("buttonNum")!!
                     clickType = ReceptacleClickType.from(e.packet.read<Any>("clickType").toString(), button, slot) ?: return
-                } else if (MinecraftVersion.majorLegacy > 10800) {
+                } else if (MinecraftVersion.majorLegacy >= 10900) {
                     slot = e.packet.read<Int>("slot")!!
                     button = e.packet.read<Int>("button")!!
                     clickType = ReceptacleClickType.from(e.packet.read<Any>("shift").toString(), button, slot) ?: return
