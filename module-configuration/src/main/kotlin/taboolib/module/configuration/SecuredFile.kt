@@ -69,13 +69,14 @@ class SecuredFile : YamlConfiguration() {
 
         fun dumpAll(key: String, value: Any?, space: Int = 2): String {
             return if (key.contains('.')) {
-                "${key.substring(0, key.indexOf('.'))}:\n${" ".repeat(space)}${dumpAll(key.substring(key.indexOf('.') + 1), value, space + 2)}"
+                "${key.substringBefore('.')}:\n${" ".repeat(space)}${dumpAll(key.substringAfter('.'), value, space + 2)}"
             } else {
                 val dump = dump(value)
                 when {
                     dump.startsWith("-") -> "$key:\n$dump"
                     value is List<*> && value.isEmpty() -> "$key: []"
                     value is Map<*, *> -> if (value.isEmpty()) "$key: {}" else "$key:\n$dump"
+                    value is ConfigurationSection -> "$key: \n  ${dump.replace("\n", "\n  ")}"
                     else -> "$key: $dump"
                 }
             }
