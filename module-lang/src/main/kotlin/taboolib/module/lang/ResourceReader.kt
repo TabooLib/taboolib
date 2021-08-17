@@ -5,7 +5,6 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.library.configuration.YamlConfiguration
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -111,133 +110,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
-    private fun migrateOldJson(section: ConfigurationSection): ConfigurationSection {
-        val type = section.getString("==", section.getString("type")) ?: return section
-        if (type.lowercase() != "json") {
-            return section
-        }
-
-        var text = section.getString("text") ?: return section
-        val argSection = section.getConfigurationSection("args") ?: return section
-
-        text = text.replace("[", "\\[").replace("]", "\\]")
-        val args = argSection.getKeys(false)
-            .mapNotNull { argSection.getConfigurationSection(it) }
-            .associate { it.name to it.getValues(false) }
-        val newArgs = mutableListOf<Map<String, Any>>()
-
-        // 反正你也要改代码的我就写注释给你看
-        // 这里现场 compile Pattern 你可能看了高血压
-        // 但是我也知道不应该这样, 但是我不知道放哪里
-        val pattern = Pattern.compile("<(.+)@(.+)>")
-        val matcher = pattern.matcher(text)
-        while (matcher.find()) {
-            val full = matcher.group(0)
-            val display = matcher.group(1)
-            val arg = matcher.group(2)
-
-            val argContext = args[arg]
-            if (argContext == null) {
-                text = text.replace(full, display)
-                continue
-            }
-
-            text = text.replace(full, "[$display]")
-            newArgs.add(argContext)
-        }
-
-        section.set("text", text)
-        section.set("args", newArgs)
-        return section
-    }
-
-    private fun chainValue(
-        lastKey: String,
-        section: ConfigurationSection,
-        collect: HashMap<String, Any>
-    ): HashMap<String, Any> {
-        var key = lastKey
-        if (lastKey.isNotEmpty()) {
-            key += "."
-        }
-        key += section.name
-
-        if (section.contains("==") || section.contains("type")) {
-            collect[key] = section
-        } else {
-            section.getKeys(false).forEach {
-                when (val obj = section.get(it)) {
-                    is ConfigurationSection -> {
-                        chainValue(key, obj, collect)
-                    }
-                    else -> {
-                        var nextKey = key
-                        if (key.isNotEmpty()) {
-                            nextKey += "."
-                        }
-                        nextKey += it
-                        collect[nextKey] = obj
-                    }
-                }
-            }
-        }
-        return collect
-    }
-
-    private fun createConfigurationSection(map: Map<*, *>, root: ConfigurationSection): ConfigurationSection {
-        map.forEach { (key, value) ->
-            when (value) {
-                is Map<*, *> -> {
-                    root[key.toString()] = createConfigurationSection(value, root.createSection(key.toString()))
-                }
-                else -> root[key.toString()] = value
-            }
-        }
-        return root
-    }
-
-    private fun migrateLegacyVersion(file: SecuredFile) {
-        if (file.file == null) {
-            return
-        }
-        var fixed = false
-
-        val values = chainValue("", file, hashMapOf()).toSortedMap()
-        values.forEach {
-            if (it.key.contains('.')) {
-                fixed = true
-                file.set(it.key.substringBefore('.'), null)
-                file.set(it.key.replace('.', '-'), when (val obj = it.value) {
-                    is ConfigurationSection -> migrateOldJson(obj)
-                    is List<*> -> {
-                        obj.map { element ->
-                            when (element) {
-                                is Map<*, *> -> {
-                                    migrateOldJson(
-                                        createConfigurationSection(
-                                            element.mapKeys { entry -> entry.key.toString() },
-                                            YamlConfiguration()
-                                        )
-                                    )
-                                }
-                                is String -> {
-                                    element.ifEmpty {
-                                        "&r"
-                                    }
-                                }
-                                else -> element
-                            }
-                        }
-                    }
-                    else -> obj
-                })
-            }
-        }
-        if (fixed) {
-            file.saveToFile()
-        }
-    }
-
     private fun migrateFile(missing: List<String>, source: SecuredFile, file: File) {
         submit(async = true) {
             val append = ArrayList<String>()
@@ -255,9 +127,117 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    private fun migrateLegacyVersion(file: SecuredFile) {
+        if (file.file == null) {
+            return
+        }
+        var fixed = false
+        val values = file.getValues(HashMap(), "").toSortedMap()
+        values.forEach {
+            if (it.key.contains('.')) {
+                fixed = true
+                file.set(it.key.substringBefore('.'), null)
+                file.set(it.key.replace('.', '-'), when (val obj = it.value) {
+                    is ConfigurationSection -> migrateLegacyJsonType(obj)
+                    is List<*> -> {
+                        obj.map { element ->
+                            when (element) {
+                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }.toSection(SecuredFile()))
+                                is String -> element.ifEmpty { "&r" }
+                                else -> element
+                            }
+                        }
+                    }
+                    else -> obj
+                })
+            }
+        }
+        if (fixed) {
+            file.saveToFile()
+        }
+    }
+
+    /**
+     * 对老版本的 Json 写法进行迁移更新
+     */
+    private fun migrateLegacyJsonType(section: ConfigurationSection): ConfigurationSection {
+        val type = section.getString("==", section.getString("type")) ?: return section
+        if (type.lowercase() != "json") {
+            return section
+        }
+        var text = section.getString("text") ?: return section
+        val argSection = section.getConfigurationSection("args") ?: return section
+        // 对已有的变量进行转义
+        text = text.replace("[", "\\[").replace("]", "\\]")
+        val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }.associate { it.name to it.getValues(false) }
+        val newArgs = ArrayList<Map<String, Any>>()
+        val matcher = legacyArgsRegex.matcher(text)
+        while (matcher.find()) {
+            val full = matcher.group(0)
+            val display = matcher.group(1)
+            val node = matcher.group(2)
+            val body = args[node]
+            if (body == null) {
+                text = text.replace(full, display)
+                continue
+            }
+            text = text.replace(full, "[$display]")
+            newArgs += body
+        }
+        section.set("text", text)
+        section.set("args", newArgs)
+        return section
+    }
+
+    /**
+     * 获取所有键值对，同 getValues 方法。
+     * 在经过 == 或是 type 时停止
+     */
+    private fun ConfigurationSection.getValues(collect: HashMap<String, Any>, node: String): HashMap<String, Any> {
+        var key = node
+        if (node.isNotEmpty()) {
+            key += "."
+        }
+        key += name
+        if (contains("==") || contains("type")) {
+            collect[key] = this
+        } else {
+            getKeys(false).forEach {
+                when (val obj = get(it)) {
+                    is ConfigurationSection -> obj.getValues(collect, key)
+                    else -> {
+                        var nextKey = key
+                        if (key.isNotEmpty()) {
+                            nextKey += "."
+                        }
+                        nextKey += it
+                        collect[nextKey] = obj
+                    }
+                }
+            }
+        }
+        return collect
+    }
+
+    private fun Map<*, *>.toSection(root: ConfigurationSection): ConfigurationSection {
+        forEach { (key, value) ->
+            when (value) {
+                is Map<*, *> -> {
+                    root[key.toString()] = value.toSection(root.createSection(key.toString()))
+                }
+                else -> {
+                    root[key.toString()] = value
+                }
+            }
+        }
+        return root
+    }
+
     companion object {
 
-        val isFileWatcherHook by lazy {
+        private val legacyArgsRegex = Pattern.compile("<(.+)@(.+)>")
+
+        private val isFileWatcherHook by lazy {
             try {
                 FileWatcher.INSTANCE
                 true

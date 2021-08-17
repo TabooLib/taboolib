@@ -76,7 +76,7 @@ class SecuredFile : YamlConfiguration() {
                     dump.startsWith("-") -> "$key:\n$dump"
                     value is List<*> && value.isEmpty() -> "$key: []"
                     value is Map<*, *> -> if (value.isEmpty()) "$key: {}" else "$key:\n$dump"
-                    value is ConfigurationSection -> "$key: \n  ${dump.replace("\n", "\n  ")}"
+                    value is ConfigurationSection -> "$key:\n  ${dump.replace("\n", "\n  ")}"
                     else -> "$key: $dump"
                 }
             }
