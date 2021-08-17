@@ -6,6 +6,7 @@ import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.pluginId
 import taboolib.common.util.replaceWithOrder
+import taboolib.module.chat.colored
 
 fun ProxyCommandSender.sendInfo(node: String, vararg args: Any) {
     sendLang(Level.INFO, node, *args)
@@ -49,7 +50,7 @@ fun ProxyCommandSender.asLangTextList(level: Level, node: String, vararg args: A
 
 fun ProxyCommandSender.asQualifyText(level: Level, message: String, vararg args: Any): String {
     val prefix = asLangTextOrNull("prefix-${level.name.lowercase()}") ?: asLangTextOrNull("prefix") ?: "§c[$pluginId]"
-    return "$prefix§r $message".replaceWithOrder(*args)
+    return "$prefix§r $message".replaceWithOrder(*args).colored()
 }
 
 @Isolated
