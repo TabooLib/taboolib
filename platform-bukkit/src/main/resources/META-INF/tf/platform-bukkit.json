@@ -15,7 +15,7 @@
     {
       "check": [
         "taboolib/platform/util/BukkitLocation1Kt",
-        "taboolib/platform/type/BukkitPlayer"
+        "taboolib/common/platform/ProxyPlayer"
       ],
       "member": [
         "taboolib/platform/util/BukkitLocation1Kt"
