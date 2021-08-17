@@ -9,9 +9,10 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
     repositories {
-        maven { url = uri("https://repo1.maven.org/maven2") }
-        maven { url = uri("https://maven.aliyun.com/repository/central") }
-        maven { url = uri("https://repo2s.ptms.ink/repository/maven-releases/") }
+        maven("https://libraries.minecraft.net")
+        maven("https://repo1.maven.org/maven2")
+        maven("https://maven.aliyun.com/repository/central")
+        maven("https://repo2s.ptms.ink/repository/maven-releases/")
         mavenCentral()
     }
     dependencies {

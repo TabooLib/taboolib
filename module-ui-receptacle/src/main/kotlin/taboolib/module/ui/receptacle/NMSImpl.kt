@@ -66,12 +66,20 @@ class NMSImpl : NMS() {
                                 "items" to it.items.map { i -> toNMSCopy(i) }.toList()
                             )
                         }
-                        else -> {
+                        MinecraftVersion.majorLegacy >= 11000 -> {
                             sendPacket(
                                 player,
                                 PacketPlayOutWindowItems::class.java.unsafeInstance(),
                                 "a" to it.windowId,
                                 "b" to it.items.map { i -> toNMSCopy(i) }.toList()
+                            )
+                        }
+                        else -> {
+                            sendPacket(
+                                player,
+                                PacketPlayOutWindowItems::class.java.unsafeInstance(),
+                                "a" to it.windowId,
+                                "b" to it.items.map { i -> toNMSCopy(i) }.toTypedArray()
                             )
                         }
                     }
