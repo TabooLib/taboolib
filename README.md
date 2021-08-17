@@ -1,4 +1,4 @@
-![](https://wiki.ptms.ink/images/7/79/禁忌书库LOGO_SMAIL.png)
+![](https://wiki.ptms.ink/images/6/69/Taboolib-png-blue-v2.png)
 
 ## TabooLib framework
 
