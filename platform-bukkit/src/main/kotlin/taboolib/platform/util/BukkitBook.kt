@@ -27,6 +27,7 @@ fun Player.inputBook(display: String, disposable: Boolean = true, content: List<
     // 发送书本
     giveItem(
         buildBook {
+            material = XMaterial.WRITABLE_BOOK
             write(content.joinToString("\n"))
             name = "§f$display"
             lore += BookListener.regex[0]
