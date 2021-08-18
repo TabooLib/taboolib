@@ -13,17 +13,19 @@ jobs:
         uses: actions/checkout@v2
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ matrix.java }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: adopt
-          java-version: ${{ matrix.java }}
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: '[build, ${{ GITHUB_SHA }}]'
-        run: ./gradlew build
-      - name: capture build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts
-          path: build/libs/
+      - name: test env
+        run: 'echo ${{ env.GITHUB_SHA }}, ${{ env.GITHUB_RUN_ID }}, ${{ env.GITHUB_RUN_NUMBER }}'
+#       - name: setup jdk ${{ matrix.java }}
+#         uses: actions/setup-java@v2
+#         with:
+#           distribution: adopt
+#           java-version: ${{ matrix.java }}
+#       - name: make gradle wrapper executable
+#         run: chmod +x ./gradlew
+#       - name: build
+#         run: ./gradlew build
+#       - name: capture build artifacts
+#         uses: actions/upload-artifact@v2
+#         with:
+#           name: Artifacts
+#           path: build/libs/
