@@ -151,11 +151,14 @@ open class ItemBuilder {
 
     open fun build(): ItemStack {
         val itemStack = material.parseItem() ?: ItemStack(Material.STONE)
-        val itemMeta = itemStack.itemMeta!!
+        itemStack.amount = amount
+        if (damage != 0) {
+            itemStack.durability = damage.toShort()
+        }
+        val itemMeta = itemStack.itemMeta ?: return itemStack
         itemMeta.setDisplayName(name)
         itemMeta.lore = lore
         itemMeta.addItemFlags(*flags.toTypedArray())
-        itemStack.amount = amount
         if (itemMeta is EnchantmentStorageMeta) {
             enchants.forEach { (e, lvl) -> itemMeta.addStoredEnchant(e, lvl, true) }
         } else {
@@ -210,9 +213,6 @@ open class ItemBuilder {
         } catch (ignored: NoSuchMethodException) {
         }
         itemStack.itemMeta = itemMeta
-        if (damage != 0) {
-            itemStack.durability = damage.toShort()
-        }
         return itemStack
     }
 }
