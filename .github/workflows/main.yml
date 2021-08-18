@@ -20,7 +20,7 @@ jobs:
           java-version: ${{ matrix.java }}
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
-      - name: build ${{ env.GITHUB_SHA }}
+      - name: '[build, ${{ GITHUB_SHA }}]'
         run: ./gradlew build
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
