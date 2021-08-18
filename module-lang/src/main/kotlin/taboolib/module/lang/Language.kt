@@ -46,7 +46,7 @@ object Language {
     val languageType = hashMapOf(
         "text" to TypeText::class.java,
         "json" to TypeJson::class.java,
-        "title" to TypeText::class.java,
+        "title" to TypeTitle::class.java,
         "sound" to TypeSound::class.java,
         "command" to TypeCommand::class.java,
         "actionbar" to TypeActionBar::class.java
