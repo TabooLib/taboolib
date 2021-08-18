@@ -9,6 +9,8 @@ import taboolib.module.nms.nmsProxy
  */
 interface PacketInventory {
 
-    fun send(player: Player) = nmsProxy<NMS>().sendInventoryPacket(player, this)
+    fun send(player: Player) = instance.sendInventoryPacket(player, this)
 
 }
+
+val instance = nmsProxy<NMS>()
