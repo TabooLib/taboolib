@@ -112,6 +112,8 @@ open class ItemBuilder {
                 spawnType = itemMeta.spawnedType
             }
         } catch (ex: NoClassDefFoundError) {
+        } catch (ex: UnsupportedOperationException) {
+
         }
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
