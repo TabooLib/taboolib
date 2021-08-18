@@ -1556,7 +1556,9 @@ public enum XMaterial {
      * @see #getVersion()
      * @see #supports(int)
      * @since 1.0.0
+     * @deprecated Use {@code XMaterial.supports(13)} instead. This method name can be confusing.
      */
+    @Deprecated
     public static boolean isNewVersion() {
         return Data.ISFLAT;
     }
@@ -1597,7 +1599,7 @@ public enum XMaterial {
      * The current version of the server.
      *
      * @return the current server version minor number.
-     * @see #isNewVersion()
+     * @see #supports(int)
      * @since 2.0.0
      */
     public static int getVersion() {
@@ -1605,8 +1607,8 @@ public enum XMaterial {
     }
 
     /**
-     * When using newer versions of Minecraft ({@link #isNewVersion()}), helps
-     * to find the old material name with its data value using a cached search for optimization.
+     * When using 1.13+, this helps to find the old material name
+     * with its data value using a cached search for optimization.
      *
      * @see #matchDefinedXMaterial(String, byte)
      * @since 1.0.0
@@ -2097,7 +2099,7 @@ public enum XMaterial {
     public boolean isSimilar(@Nonnull ItemStack item) {
         Objects.requireNonNull(item, "Cannot compare with null ItemStack");
         if (item.getType() != this.parseMaterial()) return false;
-        return Data.ISFLAT || item.getDurability() == this.data || item.getType().getMaxDurability() <= 0;
+        return Data.ISFLAT || item.getDurability() == this.data || item.getType().getMaxDurability() > 0;
     }
 
     /**
