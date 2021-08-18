@@ -27,9 +27,6 @@ class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
 
     class Event(val bindings: MutableMap<String, Any?>, val context: ScriptContext) : ProxyEvent() {
 
-        override val allowAsynchronous: Boolean
-            get() = true
-
         override val allowCancelled: Boolean
             get() = false
     }

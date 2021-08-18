@@ -5,23 +5,13 @@ import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import taboolib.common.platform.event.ProxyEvent
-import taboolib.common.reflect.Reflex.Companion.setProperty
 
-open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null, val async: Boolean = false) : Event(async), Cancellable {
+open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null, val async: Boolean = false) : Event(!Bukkit.isPrimaryThread()), Cancellable {
 
     private var isCancelled = false
 
     open val allowCancelled: Boolean
         get() = true
-
-    init {
-        if (proxyEvent == null || proxyEvent.allowAsynchronous) {
-            try {
-                setProperty("async", !Bukkit.isPrimaryThread())
-            } catch (ignored: NoSuchFieldException) {
-            }
-        }
-    }
 
     override fun getHandlers(): HandlerList {
         return getHandlerList()
