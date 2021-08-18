@@ -11,7 +11,7 @@ import taboolib.module.nms.PacketReceiveEvent
 object ReceptacleListener {
 
     @SubscribeEvent
-    fun e(e: PacketReceiveEvent) {
+    fun onPacket(e: PacketReceiveEvent) {
         val receptacle = e.player.getViewingReceptacle() ?: return
         if (e.packet.name == "PacketPlayInWindowClick") {
             val id = if (MinecraftVersion.isUniversal) {
@@ -21,18 +21,21 @@ object ReceptacleListener {
             }
             if (id == 119) {
                 val slot: Int
-                val mode: String
+                val clickType: ReceptacleClickType
                 val button: Int
                 if (MinecraftVersion.isUniversal) {
                     slot = e.packet.read<Int>("slotNum")!!
-                    mode = e.packet.read<Any>("clickType").toString()
                     button = e.packet.read<Int>("buttonNum")!!
+                    clickType = ReceptacleClickType.from(e.packet.read<Any>("clickType").toString(), button, slot) ?: return
+                } else if (MinecraftVersion.majorLegacy >= 10900) {
+                    slot = e.packet.read<Int>("slot")!!
+                    button = e.packet.read<Int>("button")!!
+                    clickType = ReceptacleClickType.from(e.packet.read<Any>("shift").toString(), button, slot) ?: return
                 } else {
                     slot = e.packet.read<Int>("slot")!!
-                    mode = e.packet.read<Any>("shift").toString()
                     button = e.packet.read<Int>("button")!!
+                    clickType = ReceptacleClickType.from(e.packet.read<Int>("shift")!!, button, slot) ?: return
                 }
-                val clickType = ReceptacleClickType.from(mode, button, slot) ?: return
                 val evt = ReceptacleInteractEvent(e.player, receptacle, clickType, slot)
                 evt.call()
                 receptacle.callEventClick(evt)

@@ -18,7 +18,7 @@ import taboolib.platform.util.isAir
  */
 class NMSImpl : NMS() {
 
-    private val emptyItemStack = CraftItemStack.asNMSCopy((ItemStack(Material.AIR)))
+    private val emptyItemStack: net.minecraft.server.v1_16_R3.ItemStack? = CraftItemStack.asNMSCopy((ItemStack(Material.AIR)))
 
     override fun sendInventoryPacket(player: Player, vararg packets: PacketInventory) {
         packets.forEach {
@@ -66,12 +66,20 @@ class NMSImpl : NMS() {
                                 "items" to it.items.map { i -> toNMSCopy(i) }.toList()
                             )
                         }
-                        else -> {
+                        MinecraftVersion.majorLegacy >= 11000 -> {
                             sendPacket(
                                 player,
                                 PacketPlayOutWindowItems::class.java.unsafeInstance(),
                                 "a" to it.windowId,
                                 "b" to it.items.map { i -> toNMSCopy(i) }.toList()
+                            )
+                        }
+                        else -> {
+                            sendPacket(
+                                player,
+                                PacketPlayOutWindowItems::class.java.unsafeInstance(),
+                                "a" to it.windowId,
+                                "b" to it.items.map { i -> toNMSCopy(i) }.toTypedArray()
                             )
                         }
                     }
