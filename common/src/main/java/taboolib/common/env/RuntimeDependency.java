@@ -16,6 +16,8 @@ public @interface RuntimeDependency {
 
     String repository() default "https://maven.aliyun.com/repository/central";
 
+    boolean transitive() default true;
+
     boolean ignoreOptional() default true;
 
     DependencyScope[] scopes() default {DependencyScope.RUNTIME};
