@@ -49,7 +49,7 @@ object ConfigLoader : Injector.Fields {
                     ex.printStackTrace()
                     return
                 }
-                if (isFileWatcherHook) {
+                if (field.getAnnotation(Config::class.java).autoReload && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         if (file.exists()) {
                             conf.load(file)
