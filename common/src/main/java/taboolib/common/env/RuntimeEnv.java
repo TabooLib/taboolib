@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.zip.ZipFile;
 
 /**
@@ -131,7 +132,9 @@ public class RuntimeEnv {
                         downloader.download(new URL(pom).openStream());
                     }
                     // 加载自身
-                    downloader.injectClasspath(downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME)));
+                    Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+                    downloader.download(downloader.getRepositories(), current);
+                    downloader.injectClasspath(Collections.singleton(current));
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
