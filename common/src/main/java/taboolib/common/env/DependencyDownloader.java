@@ -102,6 +102,9 @@ public class DependencyDownloader extends AbstractXmlParser {
      */
     public void injectClasspath(Set<Dependency> dependencies) {
         for (Dependency dep : dependencies) {
+            if (injectedDependencies.contains(dep)) {
+                continue;
+            }
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
                 if (isDebugMode && !notify) {
@@ -145,11 +148,6 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     public Set<Dependency> download(Collection<Repository> repositories, Dependency dependency) throws IOException {
-        if (downloadedDependencies.contains(dependency)) {
-            Set<Dependency> singleton = new HashSet<>();
-            singleton.add(dependency);
-            return singleton;
-        }
         if (dependency.getVersion() == null) {
             IOException e = null;
             for (Repository repo : repositories) {
@@ -177,6 +175,11 @@ public class DependencyDownloader extends AbstractXmlParser {
                     dependency.setVersion(max.toString());
                 }
             }
+        }
+        if (downloadedDependencies.contains(dependency)) {
+            Set<Dependency> singleton = new HashSet<>();
+            singleton.add(dependency);
+            return singleton;
         }
         File pom = dependency.getFile(baseDir, "pom");
         File pom1 = new File(pom.getPath() + ".sha1");
