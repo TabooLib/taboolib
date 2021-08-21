@@ -33,7 +33,7 @@ class VelocityListener : PlatformListener {
     override fun <T> registerListener(event: Class<T>, postOrder: PostOrder, func: (T) -> Unit): ProxyListener {
         val listener = VelocityListener(event) { func(it as T) }
         val eventClass = event.getUsableEvent()
-        plugin.server.eventManager.register(this, eventClass as Class<Any>, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
+        plugin.server.eventManager.register(plugin, eventClass as Class<Any>, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
         return listener
     }
 
