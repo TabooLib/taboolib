@@ -21,7 +21,7 @@ object PlatformFactory {
             runningClasses.forEach {
                 kotlin.runCatching {
                     RuntimeEnv.ENV.inject(it)
-                }
+                }.exceptionOrNull()?.printStackTrace()
             }
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {

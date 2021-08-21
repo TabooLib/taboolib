@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Set;
 import java.util.zip.ZipFile;
 
 /**
@@ -122,16 +124,22 @@ public class RuntimeEnv {
                     DependencyDownloader downloader = new DependencyDownloader(relocation);
                     downloader.addRepository(new Repository(dependency.repository()));
                     // 解析依赖
-                    File file1 = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
-                    File file2 = new File(file1.getPath() + ".sha1");
-                    if (file1.exists() && file2.exists() && DependencyDownloader.readFileHash(file1).equals(DependencyDownloader.readFile(file2))) {
-                        downloader.download(file1.toPath().toUri().toURL().openStream());
+                    File pomFile = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
+                    File pomShaFile = new File(pomFile.getPath() + ".sha1");
+                    if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFileHash(pomFile).equals(DependencyDownloader.readFile(pomShaFile))) {
+                        downloader.download(pomFile.toPath().toUri().toURL().openStream());
                     } else {
                         String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
                         downloader.download(new URL(pom).openStream());
                     }
                     // 加载自身
-                    downloader.injectClasspath(downloader.download(downloader.getRepositories(), new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME)));
+                    Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+                    Set<Dependency> dependenciesWithTransitive = downloader.download(downloader.getRepositories(), current);
+                    if (dependency.transitive()) {
+                        downloader.injectClasspath(dependenciesWithTransitive);
+                    } else {
+                        downloader.injectClasspath(Collections.singleton(current));
+                    }
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
