@@ -538,9 +538,10 @@ public class Location implements Cloneable {
      * @param multiply 乘 越大越远之类
      * @param height 高度
      */
-    public Location referTo(float offset, double multiply, double height) {
+    public Location referTo(float yaw, float offset, double multiply, double height) {
+        this.yaw = yaw;
         Location referLoc = clone();
-        referLoc.yaw = yaw + offset;
+        referLoc.yaw = this.yaw + offset;
         Vector vectorAdd = referLoc.getDirection().normalize().multiply(multiply);
         referLoc.add(vectorAdd);
         referLoc.add(0.0, height, 0.0);
