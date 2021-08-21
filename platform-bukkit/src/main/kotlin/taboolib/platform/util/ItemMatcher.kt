@@ -82,3 +82,18 @@ fun Inventory.takeItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boole
     }
     return false
 }
+
+/**
+ * 获取背包中符合特定规则的物品的数量
+ *
+ * @return amount
+ */
+fun Inventory.countItem(matcher: (itemStack: ItemStack) -> Boolean): Int {
+    var amount = 0
+    contents.forEach { itemStack ->
+        if (itemStack.isNotAir() && matcher(itemStack)) {
+            amount += itemStack.amount
+        }
+    }
+    return amount
+}
