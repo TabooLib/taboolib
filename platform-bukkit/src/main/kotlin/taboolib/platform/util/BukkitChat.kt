@@ -39,6 +39,13 @@ fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: 
     }
 }
 
+fun Player.cancelNextChat(execute: Boolean = true) {
+    val listener = ChatListener.inputs.remove(name)
+    if (listener != null && execute) {
+        listener("")
+    }
+}
+
 @Isolated
 @PlatformSide([Platform.BUKKIT])
 internal object ChatListener {
