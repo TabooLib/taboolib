@@ -25,9 +25,7 @@ fun Player.nextChat(function: (message: String) -> Unit, reuse: (player: Player)
     }
 }
 
-fun Player.cancelNextChat() {
-    ChatListener.inputs.remove(name)
-}
+fun Player.cancelNextChat() = ChatListener.inputs.remove(name)
 
 fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: (player: Player) -> Unit = {}, reuse: (player: Player) -> Unit = {}) {
     if (ChatListener.inputs.containsKey(name)) {
