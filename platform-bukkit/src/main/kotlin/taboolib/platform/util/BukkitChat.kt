@@ -25,11 +25,6 @@ fun Player.nextChat(function: (message: String) -> Unit, reuse: (player: Player)
     }
 }
 
-fun Player.cancelNextChat(finish: Boolean = true) {
-    if (finish) ChatListener.inputs[name]?.invoke("")
-    ChatListener.inputs.remove(name)
-}
-
 fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: (player: Player) -> Unit = {}, reuse: (player: Player) -> Unit = {}) {
     if (ChatListener.inputs.containsKey(name)) {
         reuse(this)
@@ -41,6 +36,13 @@ fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: 
                 ChatListener.inputs.remove(name)
             }
         }, tick)
+    }
+}
+
+fun Player.cancelNextChat(execute: Boolean = true) {
+    val listener = ChatListener.inputs.remove(name)
+    if (listener != null && execute) {
+        listener("")
     }
 }
 
