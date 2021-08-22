@@ -33,6 +33,10 @@ open class Linked<T>(title: String) : Menu(title) {
 
     private lateinit var player: Player
 
+    fun page(page: Int) {
+        this.page = page
+    }
+
     fun rows(rows: Int) {
         this.rows = rows
     }
