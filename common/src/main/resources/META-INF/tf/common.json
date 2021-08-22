@@ -222,6 +222,18 @@
       "mode": "REMOVE"
     },
     {
+      "commit": "调度器（注解）",
+      "check": [
+        "taboolib/common/platform/Schedule",
+        "taboolib/common/platform/ScheduleLoader"
+      ],
+      "member": [
+        "taboolib/common/platform/Schedule",
+        "taboolib/common/platform/ScheduleLoader"
+      ],
+      "mode": "REMOVE"
+    },
+    {
       "commit": "释放器",
       "check": [
         "taboolib/common/platform/Releasable"

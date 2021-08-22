@@ -30,7 +30,7 @@ public class Metrics {
         }
         // Get the config file
         File bStatsFolder = new File(IOKt.getDataFolder().getParentFile(), "bStats");
-        File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true);
+        File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true, false);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
         if (!config.isSet("serverUUID")) {
             config.addDefault("enabled", true);

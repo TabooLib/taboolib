@@ -33,6 +33,6 @@ class BungeeAdapter : PlatformAdapter {
     }
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
-        return if (any is ProxyPlayer) adaptPlayer(any) else BungeeCommandSender(any as CommandSender)
+        return if (any is ProxiedPlayer) adaptPlayer(any) else BungeeCommandSender(any as CommandSender)
     }
 }

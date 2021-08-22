@@ -35,7 +35,7 @@ class TypeJson : Type {
                 line.forEach { part ->
                     append(part.text.translate(sender).replaceWithOrder(*args))
                     if (part.isVariable) {
-                        val arg = jsonArgs.getOrNull(++i)
+                        val arg = jsonArgs.getOrNull(i++)
                         if (arg != null) {
                             if (arg.containsKey("hover")) {
                                 hoverText(arg["hover"].toString().translate(sender).replaceWithOrder(*args))

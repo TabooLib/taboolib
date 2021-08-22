@@ -162,9 +162,10 @@ object CommandBuilder {
     abstract class CommandBinder<T>(val bind: Class<T>) {
 
         fun cast(context: CommandContext<*>): T? {
+            val sender = context.sender as ProxyCommandSender
             return when {
-                bind.isInstance(context.sender) -> context.sender as T
-                bind.isInstance((context.sender as ProxyCommandSender).origin) -> context.sender.origin as T
+                bind.isInstance(sender) -> context.sender as? T
+                bind.isInstance(sender.origin) -> context.sender.origin as T
                 else -> null
             }
         }

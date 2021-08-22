@@ -43,6 +43,7 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     private static final Set<Dependency> injectedDependencies = new HashSet<>();
+    private static final Set<Dependency> downloadedDependencies = new HashSet<>();
 
     private final Set<Repository> repositories = new HashSet<>();
 
@@ -101,6 +102,9 @@ public class DependencyDownloader extends AbstractXmlParser {
      */
     public void injectClasspath(Set<Dependency> dependencies) {
         for (Dependency dep : dependencies) {
+            if (injectedDependencies.contains(dep)) {
+                continue;
+            }
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
                 if (isDebugMode && !notify) {
@@ -126,6 +130,9 @@ public class DependencyDownloader extends AbstractXmlParser {
                     }
                     ClassAppender.addPath(rel.toPath());
                 }
+                injectedDependencies.add(dep);
+            } else {
+                throw new RuntimeException("Runtime not exist: " + file);
             }
         }
     }
@@ -141,9 +148,6 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     public Set<Dependency> download(Collection<Repository> repositories, Dependency dependency) throws IOException {
-        if (injectedDependencies.contains(dependency)) {
-            return new HashSet<>();
-        }
         if (dependency.getVersion() == null) {
             IOException e = null;
             for (Repository repo : repositories) {
@@ -172,6 +176,11 @@ public class DependencyDownloader extends AbstractXmlParser {
                 }
             }
         }
+        if (downloadedDependencies.contains(dependency)) {
+            Set<Dependency> singleton = new HashSet<>();
+            singleton.add(dependency);
+            return singleton;
+        }
         File pom = dependency.getFile(baseDir, "pom");
         File pom1 = new File(pom.getPath() + ".sha1");
         File jar = dependency.getFile(baseDir, "jar");
@@ -179,7 +188,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         Set<Dependency> downloaded = new HashSet<>();
         downloaded.add(dependency);
         if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists() && readFileHash(pom).equals(readFile(pom1)) && readFileHash(jar).equals(readFile(jar1))) {
-            injectedDependencies.add(dependency);
+            downloadedDependencies.add(dependency);
             if (pom.exists()) {
                 downloaded.addAll(download(pom.toURI().toURL().openStream()));
             }
@@ -254,7 +263,6 @@ public class DependencyDownloader extends AbstractXmlParser {
         for (Dependency dep : dependencies) {
             downloaded.addAll(download(repositories, dep));
         }
-        injectClasspath(downloaded);
         return downloaded;
     }
 
