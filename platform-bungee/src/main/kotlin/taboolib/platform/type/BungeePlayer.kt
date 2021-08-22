@@ -285,11 +285,11 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
     }
 
     override fun sendMessage(message: String) {
-        player.sendMessage(TextComponent(*ComponentSerializer.parse(message)))
+        player.sendMessage(TextComponent(message))
     }
 
     override fun sendRawMessage(message: String) {
-        sendMessage(message)
+        player.sendMessage(TextComponent(*ComponentSerializer.parse(message)))
     }
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
