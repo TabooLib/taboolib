@@ -127,6 +127,7 @@ open class Stored(title: String) : Menu(title) {
         return buildMenu<Basic>(title) {
             handLocked(this@Stored.handLocked)
             rows(this@Stored.rows)
+            map(*this@Stored.slots.map { it.joinToString("") }.toTypedArray())
             onClick {
                 if (it.clickType === ClickType.DRAG) {
                     it.dragEvent().rawSlots.forEach { slot ->
