@@ -43,7 +43,7 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
         // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
         submit(delay = 2) {
             running = true
-            submit(period = period) {
+            task = submit(period = period) {
                 if (running) {
                     show()
                 }
@@ -57,7 +57,7 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
         // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
         submit(delay = 2) {
             running = true
-            submit(period = period, async = true) {
+            task = submit(period = period, async = true) {
                 if (running) {
                     show()
                 }

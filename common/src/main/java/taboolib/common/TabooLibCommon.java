@@ -1,12 +1,7 @@
 package taboolib.common;
 
-import kotlin.KotlinVersion;
-import kotlin.Lazy;
-import kotlin.LazyKt;
-import kotlin.Result;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.env.ClassAppender;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.RuntimeInjector;
