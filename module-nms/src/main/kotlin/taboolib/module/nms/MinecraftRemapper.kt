@@ -45,10 +45,6 @@ open class MinecraftRemapper : Remapper() {
         return translate(internalName)
     }
 
-    override fun mapTypes(internalNames: Array<out String>?): Array<String> {
-        return super.mapTypes(internalNames)
-    }
-
     /**
      * 包名转换方法
      */
