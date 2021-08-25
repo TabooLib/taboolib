@@ -11,7 +11,6 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
-import java.util.function.Consumer
 
 /**
  * 向玩家发送一本书

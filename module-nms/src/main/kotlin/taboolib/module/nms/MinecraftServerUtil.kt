@@ -26,7 +26,7 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
         val bindClass = bind.replace("{name}", clazz.name)
         val instance = AsmClassTransfer(bindClass.replace('.', '/')).run().getDeclaredConstructor().newInstance()
         runningClasses.forEach {
-            if (it.name.startsWith("$bindClass\$")) {
+            if (it.name.replace('.', '/').startsWith("$bindClass\$")) {
                 AsmClassTransfer(it.name).run()
             }
         }

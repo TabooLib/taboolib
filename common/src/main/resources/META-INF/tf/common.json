@@ -14,15 +14,17 @@
       "commit": "监听器部分",
       "check": [
         "taboolib/common/platform/event/SubscribeEvent",
+        "taboolib/common/platform/event/EventBus",
         "taboolib/common/platform/function/ListenerKt",
         "taboolib/platform/event/PlayerJumpEvent",
+        "taboolib/platform/util/BukkitBookKt",
         "taboolib/platform/util/BukkitChatKt",
         "taboolib/platform/util/ChatListener",
+        "taboolib/platform/util/BookListener",
         "taboolib/common/platform/service/PlatformListener"
       ],
       "member": [
         "taboolib/common/platform/event/SubscribeEvent",
-        "taboolib/common/platform/function/ListenerKt",
         "taboolib/common/platform/event/EventBus",
         "taboolib/common/platform/event/OptionalEvent",
         "taboolib/common/platform/event/EventOrder",
@@ -30,6 +32,7 @@
         "taboolib/common/platform/event/PostOrder",
         "taboolib/common/platform/event/ProxyListener",
         "taboolib/common/platform/service/PlatformListener",
+        "taboolib/common/platform/function/ListenerKt",
         "taboolib/platform/{platform}Listener"
       ],
       "mode": "REMOVE"
@@ -113,6 +116,13 @@
           "taboolib/platform/type/{platform}OpenContainer"
         ]
       },
+      "exclude": [
+        "taboolib/common/OpenAPI",
+        "taboolib/common/OpenListener",
+        "taboolib/common/OpenContainer",
+        "taboolib/platform/{platform}OpenContainer",
+        "taboolib/platform/type/{platform}OpenContainer"
+      ],
       "mode": "REMOVE"
     },
     {
@@ -206,7 +216,9 @@
       ],
       "depend": {
         "name": [
-          "taboolib/common/platform/command/CommandBuilder"
+          "taboolib/common/platform/command/CommandBuilder",
+          "taboolib/common/platform/ScheduleLoader",
+          "taboolib/common/platform/AwakeFunction"
         ],
         "exclude": [
           "taboolib/common/platform/command/CommandRegisterKt",
@@ -234,6 +246,32 @@
       "mode": "REMOVE"
     },
     {
+      "commit": "调度器（注解）",
+      "check": [
+        "taboolib/common/platform/Awake"
+      ],
+      "member": [
+        "taboolib/common/platform/AwakeFunction"
+      ],
+      "exclude": [
+        "taboolib/common/platform/PlatformFactory",
+        "taboolib/common/platform/ScheduleLoader",
+        "taboolib.common/platform/command/SimpleCommandRegister",
+        "taboolib/common/platform/event/EventBus",
+        "taboolib/module/configuration/ConfigLoader",
+        "taboolib/module/kether/StandardChannel",
+        "taboolib/module/nms/i18n/I18n",
+        "taboolib/platform/{platform}Adapter",
+        "taboolib/platform/{platform}Command",
+        "taboolib/platform/{platform}Event",
+        "taboolib/platform/{platform}Executor",
+        "taboolib/platform/{platform}IO",
+        "taboolib/platform/{platform}Listener",
+        "taboolib/platform/{platform}OpenContainer"
+      ],
+      "mode": "REMOVE"
+    },
+    {
       "commit": "释放器",
       "check": [
         "taboolib/common/platform/Releasable"
@@ -251,7 +289,8 @@
       "check": [
         "taboolib/common/platform/function/AdapterKt",
         "taboolib/common/platform/service/PlatformAdapter",
-        "taboolib/platform/util/BukkitLangKt"
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
       ],
       "member": [
         "taboolib/platform/{platform}Adapter",
@@ -332,7 +371,8 @@
         "taboolib/common/platform/ProxyParticle",
         "taboolib/common/platform/function/AdapterKt",
         "taboolib/common/platform/service/PlatformAdapter",
-        "taboolib/platform/util/BukkitLangKt"
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
       ],
       "member": [
         "taboolib/common/platform/ProxyPlayer",
@@ -357,7 +397,8 @@
         "taboolib/common/platform/service/PlatformAdapter",
         "taboolib/common/platform/service/PlatformCommand",
         "taboolib/common/platform/command/CommandBuilder",
-        "taboolib/platform/util/BukkitLangKt"
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
       ],
       "member": [
         "taboolib/common/platform/ProxyPlayer",

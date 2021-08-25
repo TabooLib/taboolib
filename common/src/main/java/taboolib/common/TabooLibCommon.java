@@ -46,6 +46,7 @@ public class TabooLibCommon {
 
     /**
      * 用于测试的快速启动方法
+     * 会按顺序触发 CONST、INIT、LOAD、ENABLE 生命周期
      */
     public static void testSetup() {
         lifeCycle(LifeCycle.CONST);
@@ -56,25 +57,26 @@ public class TabooLibCommon {
 
     /**
      * 用于测试的快速注销方法
+     * 会触发 DISABLE 生命周期
      */
     public static void testCancel() {
         lifeCycle(LifeCycle.DISABLE);
     }
 
+    /**
+     * 触发生命周期
+     */
     public static void lifeCycle(LifeCycle lifeCycle) {
         lifeCycle(lifeCycle, null);
     }
 
     /**
      * 生命周期
-     * 依赖于 Minecraft 服务端生命周期的启动或卸载方法
+     * 依赖于任意平台的生命周期的启动或卸载方法
      *
      * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle, @Nullable Platform platform) {
-        if (System.currentTimeMillis() > 1629986287000L) {
-            throw new RuntimeException("The trial period of the plugin is over, please update!");
-        }
         if (stopped) {
             return;
         }
@@ -125,6 +127,9 @@ public class TabooLibCommon {
         }
     }
 
+    /**
+     * 当前是否存在 Kotlin 运行环境
+     */
     public static boolean isKotlinEnvironment() {
         try {
             Class.forName("kotlin.Lazy", false, TabooLibCommon.class.getClassLoader());
@@ -134,15 +139,24 @@ public class TabooLibCommon {
         }
     }
 
+    /**
+     * 当前运行平台
+     */
     @NotNull
     public static Platform getRunningPlatform() {
         return platform;
     }
 
+    /**
+     * 是否停止 TabooLib 及插件加载流程
+     */
     public static boolean isStopped() {
         return stopped;
     }
 
+    /**
+     * 停止 TabooLib 及插件加载流程
+     */
     public static void setStopped(boolean value) {
         stopped = value;
     }

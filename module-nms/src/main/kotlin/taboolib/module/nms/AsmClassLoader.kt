@@ -15,6 +15,6 @@ object AsmClassLoader : ClassLoader(TabooLibCommon::class.java.classLoader) {
 
     @JvmStatic
     fun createNewClass(name: String, arr: ByteArray): Class<*> {
-        return AsmClassLoader.defineClass(name.replace('/', '.'), arr, 0, arr.size, AsmClassLoader::class.java.protectionDomain)
+        return defineClass(name.replace('/', '.'), arr, 0, arr.size, AsmClassLoader::class.java.protectionDomain)
     }
 }

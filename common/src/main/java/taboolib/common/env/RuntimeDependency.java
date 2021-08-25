@@ -20,7 +20,7 @@ public @interface RuntimeDependency {
 
     boolean ignoreOptional() default true;
 
-    DependencyScope[] scopes() default {DependencyScope.RUNTIME};
+    DependencyScope[] scopes() default {DependencyScope.RUNTIME, DependencyScope.COMPILE};
 
     String[] relocate() default {};
 }
