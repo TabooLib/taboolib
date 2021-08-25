@@ -23,8 +23,8 @@ fun nmsClass(name: String): Class<*> {
 @Suppress("UNCHECKED_CAST")
 fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
     return nmsProxyMap.computeIfAbsent("${clazz.name}:$bind") {
-        val bindClass = bind.replace("{name}", clazz.name).replace('.', '/')
-        val instance = AsmClassTransfer(bindClass).run().getDeclaredConstructor().newInstance()
+        val bindClass = bind.replace("{name}", clazz.name)
+        val instance = AsmClassTransfer(bindClass.replace('.', '/')).run().getDeclaredConstructor().newInstance()
         runningClasses.forEach {
             if (it.name.startsWith("$bindClass\$")) {
                 AsmClassTransfer(it.name).run()
