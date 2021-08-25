@@ -97,8 +97,9 @@ open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
                 if (it.raw) {
                     val pages = getProperty<MutableList<Any>>("pages")!!
                     try {
+                        getProperty<Boolean>("resolved")
                         pages += it.text
-                    } catch (ex: ClassCastException) {
+                    } catch (ex: NoSuchFieldException) {
                         pages += classChatSerializer.invokeMethod<Any>("a", it.text, fixed = true)!!
                     }
                 } else {
