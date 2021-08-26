@@ -19,4 +19,12 @@ jobs:
       - name: build
         run: ./gradlew build
       - name: publish
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -Puser=$NEXUS_USERNAME -Ppassword=$NEXUS_PASSWORD
+      - name: capture build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts
+          path: build/libs/

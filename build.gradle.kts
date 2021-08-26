@@ -44,13 +44,14 @@ publishing {
         }
     }
     publications {
+        println("build ${project.findProperty("build")}")
         create<MavenPublication>("maven") {
             artifactId = "taboolib"
             groupId = "io.izzel"
-            if (project.hasProperty("build")) {
-                version = "${project.version}-${project.findProperty("build")}"
+            version = if (project.hasProperty("build")) {
+                "${project.version}-${project.findProperty("build")}"
             } else {
-                version = "${project.version}"
+                "${project.version}"
             }
             file("$buildDir/libs").listFiles()?.forEach { file ->
                 if (file.name.endsWith(".jar")) {
