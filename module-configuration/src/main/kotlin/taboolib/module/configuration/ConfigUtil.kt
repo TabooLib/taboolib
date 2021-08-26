@@ -1,5 +1,8 @@
+@file:Isolated
+
 package taboolib.module.configuration
 
+import taboolib.common.Isolated
 import taboolib.common.util.Location
 import taboolib.library.configuration.ConfigurationSection
 
@@ -28,17 +31,16 @@ fun ConfigurationSection.getLocation(path: String): Location? {
             section.getDouble("pitch").toFloat(),
             section.getDouble("yaw").toFloat()
         )
-
     } ?: return null
 }
 
 fun ConfigurationSection.setLocation(path: String, location: Location) {
     createSection(path).apply {
-        set("world",location.world)
-        set("x",location.x)
-        set("y",location.y)
-        set("z",location.z)
-        set("pitch",location.pitch)
-        set("yaw",location.yaw)
+        set("world", location.world)
+        set("x", location.x)
+        set("y", location.y)
+        set("z", location.z)
+        set("pitch", location.pitch)
+        set("yaw", location.yaw)
     }
 }
