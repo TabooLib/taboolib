@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.pluginId
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import java.util.concurrent.Executors
 
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors
 @PlatformSide([Platform.BUKKIT])
 object ChannelExecutor {
 
+    private val id = "taboolib_${pluginId}_packet_handler"
     private val addChannelService = Executors.newSingleThreadExecutor()
     private val removeChannelService = Executors.newSingleThreadExecutor()
 
@@ -31,7 +33,7 @@ object ChannelExecutor {
     fun addPlayerChannel(player: Player) {
         addChannelService.submit {
             try {
-                getPlayerChannel(player).pipeline().addBefore("packet_handler", "taboolib6_packet_handler", ChannelHandler(player))
+                getPlayerChannel(player).pipeline().addBefore("packet_handler", id, ChannelHandler(player))
             } catch (ex: Throwable) {
                 ex.printStackTrace()
             }
@@ -42,8 +44,8 @@ object ChannelExecutor {
         removeChannelService.submit {
             try {
                 val playerChannel = getPlayerChannel(player)
-                if (playerChannel.pipeline()["taboolib6_packet_handler"] != null) {
-                    playerChannel.pipeline().remove("taboolib6_packet_handler")
+                if (playerChannel.pipeline()[id] != null) {
+                    playerChannel.pipeline().remove(id)
                 }
             } catch (ex: Throwable) {
                 ex.printStackTrace()

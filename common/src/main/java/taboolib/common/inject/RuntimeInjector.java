@@ -29,8 +29,11 @@ public class RuntimeInjector {
     private static final TreeMap<Byte, Injectors> propertyMap = new TreeMap<>();
 
     static {
-        for (LifeCycle value : LifeCycle.values()) {
-            register(new AwakeFunction(value));
+        try {
+            for (LifeCycle value : LifeCycle.values()) {
+                register(new AwakeFunction(value));
+            }
+        } catch (NoClassDefFoundError ignored) {
         }
     }
 

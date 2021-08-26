@@ -74,18 +74,22 @@ public class VelocityPlugin {
             TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
-                server.getScheduler().buildTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                        pluginInstance.onActive();
-                    }
-                }).schedule();
             }
             try {
                 ExecutorKt.startExecutor();
             } catch (NoClassDefFoundError ignored) {
             }
+        }
+        if (!TabooLibCommon.isStopped()) {
+            server.getScheduler().buildTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                    if (pluginInstance != null) {
+                        pluginInstance.onActive();
+                    }
+                }
+            }).schedule();
         }
     }
 

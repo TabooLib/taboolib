@@ -123,6 +123,8 @@ public class RuntimeEnv {
                     String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
                     DependencyDownloader downloader = new DependencyDownloader(relocation);
                     downloader.addRepository(new Repository(dependency.repository()));
+                    downloader.setIgnoreOptional(dependency.ignoreOptional());
+                    downloader.setDependencyScopes(dependency.scopes());
                     // 解析依赖
                     File pomFile = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
                     File pomShaFile = new File(pomFile.getPath() + ".sha1");

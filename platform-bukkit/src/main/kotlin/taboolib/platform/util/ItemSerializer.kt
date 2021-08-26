@@ -39,7 +39,7 @@ fun ByteArray.deserializeToInventory(inventory: Inventory? = null, zipped: Boole
             val size = bukkitObjectInputStream.readInt()
             val inv = inventory ?: Bukkit.createInventory(null, size)
             items.forEach {
-                inv.setItem(items[it], bukkitObjectInputStream.readObject() as ItemStack)
+                inv.setItem(it, bukkitObjectInputStream.readObject() as ItemStack)
             }
             return inv
         }
