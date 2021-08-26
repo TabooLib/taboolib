@@ -47,7 +47,11 @@ publishing {
         create<MavenPublication>("maven") {
             artifactId = "taboolib"
             groupId = "io.izzel"
-            version = project.version.toString()
+            if (project.hasProperty("build")) {
+                version = "${project.version}-${project.findProperty("build")}"
+            } else {
+                version = "${project.version}"
+            }
             file("$buildDir/libs").listFiles()?.forEach { file ->
                 if (file.name.endsWith(".jar")) {
                     artifact(file) {
