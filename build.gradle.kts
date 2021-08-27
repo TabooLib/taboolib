@@ -58,7 +58,7 @@ publishing {
                 if (file.name.endsWith(".jar")) {
                     artifact(file) {
                         classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
-                        println("> module $classifier (${file.name}")
+                        println("> module $classifier (${file.name})")
                     }
                 }
             }

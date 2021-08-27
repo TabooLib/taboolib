@@ -23,6 +23,10 @@ jobs:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -Puser=$NEXUS_USERNAME -Ppassword=$NEXUS_PASSWORD
+      - name: release
+        uses: release-drafter/release-drafter@v5
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
         with:

@@ -6,7 +6,11 @@
 [![](https://www.codefactor.io/repository/github/taboolib/taboolib/badge)](https://www.codefactor.io/repository/github/taboolib/taboolib)
 ![](https://img.shields.io/github/contributors/taboolib/taboolib)
 ![](https://img.shields.io/github/languages/code-size/taboolib/taboolib)
-![](https://img.shields.io/github/release/taboolib/taboolib)
+
+| 项目 | 版本 |
+| --- | --- |
+| TabooLib | ![](https://img.shields.io/github/release/taboolib/taboolib) |
+| TabooLib Gradle Plugin | ![](https://img.shields.io/github/release/taboolib/taboolib-gradle-plugin) |
 
 TabooLib 是为 Minecraft（Java 版）提供一个跨平台的插件开发框架。但是 TabooLib 不是一个平台，也不提供插件的运行环境，而是帮助开发者在各个平台上快速开发，代替一些频繁使用或是相对复杂的操作，以及解决一些令人头疼的问题。
 
