@@ -1,7 +1,7 @@
-name-template: '6.0.0-$GITHUB_RUN_NUMBER'
-tag-template: '6.0.0-$GITHUB_RUN_NUMBER'
 change-template: '- $TITLE #$NUMBER (@$AUTHOR)'
 template: |
   ## 版本改动
-
   $CHANGES
+
+  ## 此版本贡献者
+  $CONTRIBUTORS
