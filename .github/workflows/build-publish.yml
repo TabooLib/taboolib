@@ -26,11 +26,11 @@ jobs:
       - name: create release
         uses: actions/create-release@v1
         env:
-          GITHUB_RUN_NUMBER: ${{ GITHUB_RUN_NUMBER }}
+          GITHUB_RUN_NUMBER: $GITHUB_RUN_NUMBER
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 6.0.0-$GITHUB_RUN_NUMBER
-          release_name: Release ${{ github.ref }} / $GITHUB_RUN_NUMBER
+          release_name: Release ${{ github.ref }} / $GITHUB_RUN_NUMBER / ${{ env.GITHUB_RUN_NUMBER }}
           draft: true
 #      - name: release
 #        uses: release-drafter/release-drafter@v5
