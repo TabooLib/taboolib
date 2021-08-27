@@ -12,11 +12,12 @@ import taboolib.common.env.RuntimeDependency
 import javax.script.Compilable
 import javax.script.CompiledScript
 import javax.script.ScriptEngine
+import javax.script.ScriptEngineFactory
 
 val scriptEngineFactory by lazy {
     try {
-        jdk.nashorn.api.scripting.NashornScriptEngineFactory()
-    } catch (ex: NoClassDefFoundError) {
+        Class.forName("jdk.nashorn.api.scripting.NashornScriptEngineFactory").getDeclaredConstructor().newInstance() as ScriptEngineFactory
+    } catch (ex: ClassNotFoundException) {
         NashornScriptEngineFactory()
     }
 }

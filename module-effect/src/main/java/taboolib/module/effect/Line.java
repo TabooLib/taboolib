@@ -1,6 +1,8 @@
 package taboolib.module.effect;
 
+import kotlin.Unit;
 import taboolib.common.Isolated;
+import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
@@ -10,7 +12,7 @@ import taboolib.common.util.Vector;
  * @author Zoyn
  */
 @Isolated
-public class Line extends ParticleObj {
+public class Line extends ParticleObj implements Playable {
 
     private Vector vector;
     private Location start;
@@ -25,6 +27,7 @@ public class Line extends ParticleObj {
      * 向量长度
      */
     private double length;
+    private double currentStep = 0D;
 
     /**
      * 构造一条线
@@ -64,11 +67,46 @@ public class Line extends ParticleObj {
         resetVector();
     }
 
+    public static void buildLine(Location locA, Location locB, double step, ParticleSpawner spawner) {
+        Vector vectorAB = locB.clone().subtract(locA).toVector();
+        double vectorLength = vectorAB.length();
+        vectorAB.normalize();
+        for (double i = 0; i < vectorLength; i += step) {
+            spawner.spawn(locA.clone().add(vectorAB.clone().multiply(i)));
+        }
+    }
+
     @Override
     public void show() {
         for (double i = 0; i < length; i += step) {
             Vector vectorTemp = vector.clone().multiply(i);
             spawnParticle(start.clone().add(vectorTemp));
+        }
+    }
+
+    @Override
+    public void play() {
+        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+            // 进行关闭
+            if (currentStep > length) {
+                task.cancel();
+                return Unit.INSTANCE;
+            }
+            currentStep += step;
+            Vector vectorTemp = vector.clone().multiply(currentStep);
+            spawnParticle(start.clone().add(vectorTemp));
+            return Unit.INSTANCE;
+        });
+    }
+
+    @Override
+    public void playNextPoint() {
+        currentStep += step;
+        Vector vectorTemp = vector.clone().multiply(currentStep);
+        spawnParticle(start.clone().add(vectorTemp));
+
+        if (currentStep > length) {
+            currentStep = 0D;
         }
     }
 
@@ -142,14 +180,5 @@ public class Line extends ParticleObj {
         vector = end.clone().subtract(start).toVector();
         length = vector.length();
         vector.normalize();
-    }
-
-    public static void buildLine(Location locA, Location locB, double step, ParticleSpawner spawner) {
-        Vector vectorAB = locB.clone().subtract(locA).toVector();
-        double vectorLength = vectorAB.length();
-        vectorAB.normalize();
-        for (double i = 0; i < vectorLength; i += step) {
-            spawner.spawn(locA.clone().add(vectorAB.clone().multiply(i)));
-        }
     }
 }

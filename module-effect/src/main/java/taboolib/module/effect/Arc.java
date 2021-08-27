@@ -1,6 +1,11 @@
 package taboolib.module.effect;
 
+import kotlin.Unit;
+import kotlin.jvm.JvmOverloads;
+import org.jetbrains.annotations.NotNull;
 import taboolib.common.Isolated;
+import taboolib.common.platform.function.ExecutorKt;
+import taboolib.common.platform.service.PlatformExecutor;
 import taboolib.common.util.Location;
 
 /**
@@ -9,11 +14,12 @@ import taboolib.common.util.Location;
  * @author Zoyn
  */
 @Isolated
-public class Arc extends ParticleObj {
+public class Arc extends ParticleObj implements Playable {
 
     private double angle;
     private double radius;
     private double step;
+    private double currentAngle = 0D;
 
     public Arc(Location origin, ParticleSpawner spawner) {
         this(origin, 30D, spawner);
@@ -64,6 +70,39 @@ public class Arc extends ParticleObj {
             double x = radius * Math.cos(radians);
             double z = radius * Math.sin(radians);
             spawnParticle(getOrigin().clone().add(x, 0, z));
+        }
+    }
+
+    @Override
+    public void play() {
+        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+            // 进行关闭
+            if (currentAngle > angle) {
+                task.cancel();
+                return Unit.INSTANCE;
+            }
+            currentAngle += step;
+            double radians = Math.toRadians(currentAngle);
+            double x = radius * Math.cos(radians);
+            double z = radius * Math.sin(radians);
+
+            spawnParticle(getOrigin().clone().add(x, 0, z));
+            return Unit.INSTANCE;
+        });
+    }
+
+    @Override
+    public void playNextPoint() {
+        currentAngle += step;
+        double radians = Math.toRadians(currentAngle);
+        double x = radius * Math.cos(radians);
+        double z = radius * Math.sin(radians);
+
+        spawnParticle(getOrigin().clone().add(x, 0, z));
+
+        // 进行重置
+        if (currentAngle > angle) {
+            currentAngle = 0D;
         }
     }
 

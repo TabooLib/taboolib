@@ -21,6 +21,9 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     private var task: PlatformTask? = null
 
     fun addMatrix(matrix: Matrix) {
+        if (this.matrix == null) {
+            setMatrix(matrix)
+        }
         this.matrix = matrix.multiply(this.matrix)
     }
 
@@ -63,6 +66,52 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
                 }
             }
             showType = ShowType.ALWAYS_SHOW_ASYNC
+        }
+    }
+
+    open fun alwaysPlay() {
+        if (this !is Playable) {
+            try {
+                throw NoSuchMethodException("The effect object is unplayable")
+            } catch (e: NoSuchMethodException) {
+                e.printStackTrace()
+            }
+        }
+        val playable = this as Playable
+        turnOffTask()
+
+        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+        submit(delay = 2) {
+            running = true
+            task = submit(period = period) {
+                if (running) {
+                    playable.playNextPoint()
+                }
+            }
+            showType = ShowType.ALWAYS_PLAY
+        }
+    }
+
+    open fun alwaysPlayAsync() {
+        if (this !is Playable) {
+            try {
+                throw NoSuchMethodException("The effect object is unplayable")
+            } catch (e: NoSuchMethodException) {
+                e.printStackTrace()
+            }
+        }
+        val playable = this as Playable
+        turnOffTask()
+
+        // 此处的延迟 2tick 是为了防止turnOffTask还没把特效给关闭时的缓冲
+        submit(delay = 2) {
+            running = true
+            task = submit(period = period, async = true) {
+                if (running) {
+                    playable.playNextPoint()
+                }
+            }
+            showType = ShowType.ALWAYS_PLAY_ASYNC
         }
     }
 
