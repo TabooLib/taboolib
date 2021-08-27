@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 6.0.0
-          release_name: Release ${{ github.ref }} / ${{ github.run.number }}
+          release_name: Release ${{ github.ref }} / ${{ github.run_number }} /
           draft: true
 #      - name: release
 #        uses: release-drafter/release-drafter@v5
