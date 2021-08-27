@@ -41,11 +41,11 @@ class VelocityListener : PlatformListener {
         plugin.server.eventManager.unregister(this, proxyListener as EventHandler<*>)
     }
 
-    class VelocityListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
+    class VelocityListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
 
         override fun execute(event: Any) {
             val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
-            if (origin.javaClass == clazz) {
+            if (clazz.isAssignableFrom(origin.javaClass)) {
                 consumer(origin)
             }
         }
