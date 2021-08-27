@@ -26,7 +26,6 @@ public class LegacyLoader {
     private static final List<String> legacyPlugins = new ArrayList<>();
     private static final List<String> updatePlugins = new ArrayList<>();
 
-    @TFunction.Init
     private static void load() {
         Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "legacy"));
         Files.deepDelete(Files.folder(TabooLib.getPlugin().getDataFolder(), "legacy-output"));
