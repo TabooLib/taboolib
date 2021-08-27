@@ -7,11 +7,6 @@
 ![](https://img.shields.io/github/contributors/taboolib/taboolib)
 ![](https://img.shields.io/github/languages/code-size/taboolib/taboolib)
 
-| 项目 | 版本 |
-| --- | --- |
-| TabooLib | ![](https://img.shields.io/github/release/taboolib/taboolib) |
-| TabooLib Gradle Plugin | ![](https://img.shields.io/github/release/taboolib/taboolib-gradle-plugin) |
-
 TabooLib 是为 Minecraft（Java 版）提供一个跨平台的插件开发框架。但是 TabooLib 不是一个平台，也不提供插件的运行环境，而是帮助开发者在各个平台上快速开发，代替一些频繁使用或是相对复杂的操作，以及解决一些令人头疼的问题。
 
 + TabooLib 起初是针对 Bukkit 的解决方案，不过现在正在横向发展。
@@ -95,6 +90,12 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 ```
 
 如果你的插件仅在 Bukkit 平台上工作，那么大可不必这么做。因为 TabooLib 的职责是帮助开发者们尽可能快速的完成开发工作，而不是制造一些无意义的方法来增加仓库体积。
+
+## 版本
+
+| 构建版本 | 发行时间 | 发行者 | 插件版本 |
+| --- | --- | --- | --- |
+| ![](https://img.shields.io/badge/dynamic/json?label=Version&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Date&query=%24.created_at&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Author&query=%24.author.login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Plugin&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2Ftaboolib-gradle-plugin%2Freleases%2Flatest) |
 
 ## 模块
 
