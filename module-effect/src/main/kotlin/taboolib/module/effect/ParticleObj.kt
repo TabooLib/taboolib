@@ -21,6 +21,9 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     private var task: PlatformTask? = null
 
     fun addMatrix(matrix: Matrix) {
+        if (this.matrix == null) {
+            setMatrix(matrix);
+        }
         this.matrix = matrix.multiply(this.matrix)
     }
 
