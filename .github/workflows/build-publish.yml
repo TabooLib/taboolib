@@ -9,35 +9,27 @@ jobs:
         uses: actions/checkout@v2
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      #      - name: setup jdk 8.0
-      #        uses: actions/setup-java@v2
-      #        with:
-      #          distribution: adopt
-      #          java-version: 8.0
-      #      - name: make gradle wrapper executable
-      #        run: chmod +x ./gradlew
-      #      - name: build
-      #        run: ./gradlew build
-      #      - name: publish
-      #        env:
-      #          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
-      #          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-      #        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -Puser=$NEXUS_USERNAME -Ppassword=$NEXUS_PASSWORD
+      - name: setup jdk 8.0
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: 8.0
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: build
+        run: ./gradlew build
+      - name: publish
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -Puser=$NEXUS_USERNAME -Ppassword=$NEXUS_PASSWORD
       - name: create release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 6.0.0
-          release_name: Release ${{ github.ref }} / ${{ github.run_number }} /
-          draft: true
-#      - name: release
-#        uses: release-drafter/release-drafter@v5
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: 6.0.0-$GITHUB_RUN_NUMBER
-#          release_name: Release 6.0.0-$GITHUB_RUN_NUMBER
+          tag_name: 6.0.0-${{ github.run_number }}
+          release_name: Release 6.0.0-${{ github.run_number }}
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
         with:
