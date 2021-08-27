@@ -21,7 +21,7 @@ public class TabooLibCommon {
     /**
      * 保存最近一次初始化的运行环境
      */
-    private static Platform platform = Platform.UNKNOWN;
+    private static Platform platform = Platform.APPLICATION;
 
     /**
      * 是否停止加载
