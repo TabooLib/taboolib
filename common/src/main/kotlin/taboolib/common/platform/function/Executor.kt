@@ -11,6 +11,7 @@ fun startExecutor() {
     PlatformFactory.getService<PlatformExecutor>().start()
 }
 
+@JvmOverloads
 fun submit(
     now: Boolean = false,
     async: Boolean = false,
