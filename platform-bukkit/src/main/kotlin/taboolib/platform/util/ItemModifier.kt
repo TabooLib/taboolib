@@ -57,7 +57,7 @@ fun ItemStack.modifyLore(func: MutableList<String>.() -> Unit): ItemStack {
  * @param name 特定名称（留空判断是否存在任意名称）
  */
 fun ItemStack.hasName(name: String? = null): Boolean {
-    return if (name == null) itemMeta?.hasDisplayName() == true else itemMeta!!.displayName.contains(name)
+    return if (name == null) itemMeta?.hasDisplayName() == true else itemMeta?.displayName?.contains(name) == true
 }
 
 /**
@@ -65,7 +65,7 @@ fun ItemStack.hasName(name: String? = null): Boolean {
  * @param lore 特定描述（留空判断是否存在任意描述）
  */
 fun ItemStack.hasLore(lore: String? = null): Boolean {
-    return if (lore == null) itemMeta?.hasLore() == true else itemMeta!!.lore.toString().contains(lore)
+    return if (lore == null) itemMeta?.hasLore() == true else itemMeta?.lore?.toString()?.contains(lore) == true
 }
 
 /**

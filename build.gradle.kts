@@ -13,6 +13,7 @@ subprojects {
         maven("https://repo1.maven.org/maven2")
         maven("https://maven.aliyun.com/repository/central")
         maven("https://repo2s.ptms.ink/repository/maven-releases/")
+        maven("https://repo.codemc.io/repository/nms/")
         mavenCentral()
     }
     dependencies {
@@ -47,11 +48,17 @@ publishing {
         create<MavenPublication>("maven") {
             artifactId = "taboolib"
             groupId = "io.izzel"
-            version = project.version.toString()
+            version = if (project.hasProperty("build")) {
+                "${project.version}-${project.findProperty("build")}"
+            } else {
+                "${project.version}"
+            }
+            println("> version $version")
             file("$buildDir/libs").listFiles()?.forEach { file ->
                 if (file.name.endsWith(".jar")) {
                     artifact(file) {
-                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - version.length - 1)
+                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
+                        println("> module $classifier (${file.name}")
                     }
                 }
             }
