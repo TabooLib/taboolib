@@ -1,4 +1,4 @@
-name-template: '6.0.0-$GITHUB_RUN_NUMBER 🌈'
+name-template: '6.0.0-$GITHUB_RUN_NUMBER'
 tag-template: '6.0.0-$GITHUB_RUN_NUMBER'
 change-template: '- $TITLE #$NUMBER (@$AUTHOR)'
 template: |
