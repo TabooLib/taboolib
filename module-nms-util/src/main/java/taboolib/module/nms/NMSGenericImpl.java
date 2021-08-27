@@ -144,8 +144,11 @@ public class NMSGenericImpl extends NMSGeneric {
         } else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             try {
                 String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(Ref.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
-                if (entity instanceof Villager && ((CraftVillager) entity).getCareer() != null) {
-                    name += "." + String.valueOf(((CraftVillager) entity).getCareer()).toLowerCase(Locale.getDefault());
+                if (entity instanceof Villager) {
+                    Object career = Reflex.Companion.invokeMethod(entity, "getCareer", new Object[0], false);
+                    if (career != null) {
+                        name += "." + String.valueOf(career).toLowerCase(Locale.getDefault());
+                    }
                 }
                 return name;
             } catch (Throwable t) {
