@@ -30,7 +30,7 @@ jobs:
           B: ${{ env.GITHUB_RUN_NUMBER }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-#          tag_name: 6.0.0-$GITHUB_RUN_NUMBER
+          tag_name: 6.0.0-$GITHUB_RUN_NUMBER
           release_name: Release $A / $B
           draft: true
 #      - name: release
