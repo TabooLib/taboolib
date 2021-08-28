@@ -8,9 +8,8 @@ fun File.deepDelete() {
     if (exists()) {
         if (isDirectory) {
             listFiles()?.forEach { it.deepDelete() }
-        } else {
-            delete()
         }
+        delete()
     }
 }
 
