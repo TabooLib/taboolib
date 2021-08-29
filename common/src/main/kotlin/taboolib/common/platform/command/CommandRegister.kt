@@ -10,7 +10,7 @@ fun command(
     usage: String = "",
     permission: String = "",
     permissionMessage: String = "",
-    permissionDefault: PermissionDefault = PermissionDefault.FALSE,
+    permissionDefault: PermissionDefault = PermissionDefault.OP,
     permissionChildren: Map<String, PermissionDefault> = emptyMap(),
     commandBuilder: CommandBuilder.CommandBase.() -> Unit,
 ) {
