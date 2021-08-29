@@ -132,7 +132,7 @@ fun <T : Entity> Location.spawnEntity(entity: Class<T>, func: Consumer<T>) {
  * @param lightType 光源类型
  * @param update 是否更新区块光照
  */
-fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
+fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, update: Boolean = true, viewers: Collection<Player> = Bukkit.getOnlinePlayers()): Boolean {
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
@@ -142,12 +142,12 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
     val result = nmsGeneric.createLight(this, lightType, lightLevel)
     if (update) {
         if (MinecraftVersion.isUniversal) {
-            nmsGeneric.updateLightUniversal(this, lightType)
+            nmsGeneric.updateLightUniversal(this, lightType, viewers)
         } else {
             // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
             (-1..1).forEach { x ->
                 (-1..1).forEach { z ->
-                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
+                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
                 }
             }
         }
@@ -160,19 +160,19 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
  * @param lightType 光源类型
  * @param update 是否更新区块光照
  */
-fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true): Boolean {
+fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true, viewers: Collection<Player> = Bukkit.getOnlinePlayers()): Boolean {
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
     val result = nmsGeneric.deleteLight(this, lightType)
     if (update) {
         if (MinecraftVersion.isUniversal) {
-            nmsGeneric.updateLightUniversal(this, lightType)
+            nmsGeneric.updateLightUniversal(this, lightType, viewers)
         } else {
             // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
             (-1..1).forEach { x ->
                 (-1..1).forEach { z ->
-                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z))
+                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
                 }
             }
         }

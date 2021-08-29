@@ -24,7 +24,6 @@ import org.bukkit.Chunk;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -43,10 +42,7 @@ import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -548,8 +544,8 @@ public class NMSGenericImpl extends NMSGeneric {
     }
 
     @Override
-    public void updateLight(Chunk chunk) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
+    public void updateLight(Chunk chunk, Collection<Player> viewers) {
+        for (Player player : viewers) {
             Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
             Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
             Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).getWorld().getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
@@ -566,9 +562,9 @@ public class NMSGenericImpl extends NMSGeneric {
     }
 
     @Override
-    public void updateLightUniversal(Block block, LightType lightType) {
+    public void updateLightUniversal(Block block, LightType lightType, Collection<Player> viewers) {
         Chunk chunk = block.getChunk();
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : viewers) {
             Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
             Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
             Object chunk2 = ((net.minecraft.server.v1_8_R3.EntityPlayer) human).getWorld().getChunkAtWorldCoords(((net.minecraft.server.v1_8_R3.EntityPlayer) human).getChunkCoordinates());
