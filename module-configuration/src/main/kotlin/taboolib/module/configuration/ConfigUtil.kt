@@ -39,8 +39,8 @@ fun ConfigurationSection.getLocation(path: String): Location? {
             section.getDouble("x"),
             section.getDouble("y"),
             section.getDouble("z"),
-            section.getDouble("pitch").toFloat(),
-            section.getDouble("yaw").toFloat()
+            section.getDouble("yaw").toFloat(),
+            section.getDouble("pitch").toFloat()
         )
     } ?: return null
 }
