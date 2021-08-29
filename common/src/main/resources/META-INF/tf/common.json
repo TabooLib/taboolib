@@ -373,7 +373,7 @@
         "taboolib/common/platform/service/PlatformAdapter",
         "taboolib/common/platform/service/PlatformCommand",
         "taboolib/common/platform/command/CommandBuilder",
-        "taboolib/platform/util/BukkitLangKt",
+        "tgaboolib/platform/util/BukkitLangKt",
         "taboolib/platform/util/BukkitLangQualifyKt"
       ],
       "member": [

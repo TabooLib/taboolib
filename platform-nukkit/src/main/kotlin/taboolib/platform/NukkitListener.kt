@@ -49,11 +49,11 @@ class NukkitListener : PlatformListener {
         EventPriority.MONITOR -> cn.nukkit.event.EventPriority.MONITOR
     }
 
-    class NukkitListener(val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
+    class NukkitListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
         override fun execute(listener: Listener, event: Event) {
             val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
-            if (origin.javaClass == clazz) {
+            if (clazz.isAssignableFrom(origin.javaClass)) {
                 consumer(origin)
             }
         }

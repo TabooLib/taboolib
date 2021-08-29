@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.BookMeta
 import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.TellrawJson
 
@@ -95,7 +96,11 @@ open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
             author = "untitled"
             bookPages.forEach {
                 if (it.raw) {
-                    val pages = getProperty<MutableList<Any>>("pages")!!
+                    var pages = getProperty<MutableList<Any>>("pages")
+                    if (pages == null) {
+                        pages = ArrayList()
+                        setProperty("pages", pages)
+                    }
                     try {
                         getProperty<Boolean>("resolved")
                         pages += it.text
