@@ -11,6 +11,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import taboolib.module.nms.type.LightType;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
@@ -56,9 +57,9 @@ public abstract class NMSGeneric {
 
     abstract public void recalculateLightAround(Block block, LightType lightType, int lightLevel);
 
-    abstract public void updateLight(Chunk chunk);
+    abstract public void updateLight(Chunk chunk, Collection<Player> viewers);
 
-    abstract public void updateLightUniversal(Block block, LightType lightType);
+    abstract public void updateLightUniversal(Block block, LightType lightType, Collection<Player> viewers);
 
     abstract public String getEnchantmentKey(Enchantment enchantment);
 
