@@ -67,7 +67,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.usage,
                 annotation.permission,
                 body[clazz.name]?.filter { it.permission.isNotEmpty() }
-                    ?.run { map { it.permission to it.permissionDefault } }?.toMap() ?: emptyMap(),
+                    ?.associate { it.permission to it.permissionDefault } ?: emptyMap(),
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
                 main[clazz.name]?.func?.invoke(this)
