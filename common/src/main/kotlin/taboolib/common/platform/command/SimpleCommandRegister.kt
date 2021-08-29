@@ -26,6 +26,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                         aliases = annotation.aliases
                         optional = annotation.optional
                         permission = annotation.permission
+                        permissionDefault = annotation.permissionDefault
                     }
                 }
                 else -> {
@@ -34,6 +35,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                         aliases = annotation.aliases
                         optional = annotation.optional
                         permission = annotation.permission
+                        permissionDefault = annotation.permissionDefault
                         field.type.declaredFields.forEach {
                             it.isAccessible = true
                             children += loadBody(it, instance) ?: return@forEach
@@ -64,6 +66,8 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.description,
                 annotation.usage,
                 annotation.permission,
+                body[clazz.name]?.filter { it.permission.isNotEmpty() }
+                    ?.associate { it.permission to it.permissionDefault } ?: emptyMap(),
                 annotation.permissionMessage,
                 annotation.permissionDefault) {
                 main[clazz.name]?.func?.invoke(this)

@@ -78,17 +78,24 @@ class BukkitCommand : PlatformCommand {
             pluginCommand.setProperty("permission", permission)
             pluginCommand.setProperty("permissionMessage", command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
             // 注册权限
-            if (command.permissionDefault == PermissionDefault.TRUE || command.permissionDefault == PermissionDefault.NOT_OP) {
-                if (Bukkit.getPluginManager().getPermission(permission) != null) {
+            fun registerPermission(permission: String, default: PermissionDefault) {
+                if (Bukkit.getPluginManager().getPermission(permission) == null) {
                     try {
-                        val p = Permission(permission, org.bukkit.permissions.PermissionDefault.values()[command.permissionDefault.ordinal])
+                        val p = Permission(permission, org.bukkit.permissions.PermissionDefault.values()[default.ordinal])
                         Bukkit.getPluginManager().addPermission(p)
                         Bukkit.getPluginManager().recalculatePermissionDefaults(p)
+                        p.recalculatePermissibles()
                     } catch (t: Throwable) {
                         t.printStackTrace()
                     }
                 }
             }
+
+            registerPermission(permission, command.permissionDefault)
+            command.bodyPermissions.forEach {
+                registerPermission(it.key, it.value)
+            }
+
             // 注册命令
             knownCommands.remove(command.name)
             knownCommands["${plugin.name.lowercase()}:${pluginCommand.name}"] = pluginCommand
