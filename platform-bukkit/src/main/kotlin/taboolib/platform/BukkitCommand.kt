@@ -22,7 +22,6 @@ import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
-import java.lang.ClassCastException
 import java.lang.reflect.Constructor
 
 /**
@@ -90,12 +89,10 @@ class BukkitCommand : PlatformCommand {
                     }
                 }
             }
-
             registerPermission(permission, command.permissionDefault)
-            command.bodyPermissions.forEach {
+            command.permissionChildren.forEach {
                 registerPermission(it.key, it.value)
             }
-
             // 注册命令
             knownCommands.remove(command.name)
             knownCommands["${plugin.name.lowercase()}:${pluginCommand.name}"] = pluginCommand

@@ -9,13 +9,13 @@ fun command(
     description: String = "",
     usage: String = "",
     permission: String = "",
-    bodyPermissions: Map<String, PermissionDefault> = emptyMap(),
     permissionMessage: String = "",
     permissionDefault: PermissionDefault = PermissionDefault.FALSE,
+    permissionChildren: Map<String, PermissionDefault> = emptyMap(),
     commandBuilder: CommandBuilder.CommandBase.() -> Unit,
 ) {
     registerCommand(
-        CommandStructure(name, aliases, description, usage, permission, bodyPermissions, permissionMessage, permissionDefault),
+        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
         object : CommandExecutor {
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {

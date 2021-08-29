@@ -66,10 +66,10 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
                 annotation.description,
                 annotation.usage,
                 annotation.permission,
-                body[clazz.name]?.filter { it.permission.isNotEmpty() }
-                    ?.associate { it.permission to it.permissionDefault } ?: emptyMap(),
                 annotation.permissionMessage,
-                annotation.permissionDefault) {
+                annotation.permissionDefault,
+                body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap()
+            ) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandBuilder.CommandComponent) {

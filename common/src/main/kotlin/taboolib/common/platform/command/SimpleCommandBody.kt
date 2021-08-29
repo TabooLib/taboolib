@@ -6,7 +6,7 @@ class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {
     var aliases = emptyArray<String>()
     var optional = false
     var permission = ""
-    var permissionDefault: PermissionDefault = PermissionDefault.OP
+    var permissionDefault: PermissionDefault = PermissionDefault.FALSE
     val children = ArrayList<SimpleCommandBody>()
 
     override fun toString(): String {

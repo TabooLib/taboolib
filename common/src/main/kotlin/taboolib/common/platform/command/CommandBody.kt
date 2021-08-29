@@ -6,5 +6,5 @@ annotation class CommandBody(
     val aliases: Array<String> = [],
     val optional: Boolean = false,
     val permission: String = "",
-    val permissionDefault: PermissionDefault = PermissionDefault.OP
+    val permissionDefault: PermissionDefault = PermissionDefault.FALSE
 )

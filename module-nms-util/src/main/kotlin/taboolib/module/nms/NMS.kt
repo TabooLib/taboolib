@@ -129,10 +129,18 @@ fun <T : Entity> Location.spawnEntity(entity: Class<T>, func: Consumer<T>) {
 
 /**
  * 创建光源
+ *
+ * @param lightLevel 光照等级
  * @param lightType 光源类型
  * @param update 是否更新区块光照
+ * @param viewers 可见玩家
  */
-fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, update: Boolean = true, viewers: Collection<Player> = Bukkit.getOnlinePlayers()): Boolean {
+fun Block.createLight(
+    lightLevel: Int,
+    lightType: LightType = LightType.ALL,
+    update: Boolean = true,
+    viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
+): Boolean {
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
@@ -157,10 +165,16 @@ fun Block.createLight(lightLevel: Int, lightType: LightType = LightType.ALL, upd
 
 /**
  * 删除光源
+ *
  * @param lightType 光源类型
  * @param update 是否更新区块光照
+ * @param viewers 可见玩家
  */
-fun Block.deleteLight(lightType: LightType = LightType.ALL, update: Boolean = true, viewers: Collection<Player> = Bukkit.getOnlinePlayers()): Boolean {
+fun Block.deleteLight(
+    lightType: LightType = LightType.ALL,
+    update: Boolean = true,
+    viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
+): Boolean {
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
