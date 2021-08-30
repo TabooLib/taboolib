@@ -14,13 +14,13 @@ import java.util.concurrent.ConcurrentHashMap
 private var init = true
 private val files = ConcurrentHashMap<String, SecuredFile>()
 
-fun createLocal(path: String): SecuredFile {
+fun createLocal(path: String, saveTime: Long = 1200): SecuredFile {
     if (files.containsKey(path)) {
         return files[path]!!
     }
     if (init) {
         init = false
-        submit(period = 1200, async = true) {
+        submit(period = saveTime, async = true) {
             Local.saveAll()
         }
     }
