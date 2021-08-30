@@ -44,7 +44,6 @@ public class PorticusListener implements Listener {
 
     @EventHandler
     public void e(PorticusBungeeEvent e) {
-        System.out.println("[Porticus] " + Arrays.toString(e.getArgs()));
         if (e.isCancelled()) {
             return;
         }
