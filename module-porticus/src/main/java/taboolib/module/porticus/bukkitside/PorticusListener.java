@@ -26,8 +26,8 @@ public class PorticusListener implements Listener, PluginMessageListener {
     public PorticusListener() {
         Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "porticus_" + IOKt.getPluginId() + ":main", this);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "porticus_" + IOKt.getPluginId() + ":main");
+        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "porticus_" + IOKt.getPluginId().toLowerCase() + ":main", this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "porticus_" + IOKt.getPluginId().toLowerCase() + ":main");
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
                 if (mission.isTimeout()) {
@@ -61,8 +61,8 @@ public class PorticusListener implements Listener, PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] bytes) {
-        if (channel.equalsIgnoreCase("porticus_" + IOKt.getPluginId() + ":main")) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] bytes) {
+        if (channel.equalsIgnoreCase("porticus_" + IOKt.getPluginId().toLowerCase() + ":main")) {
             try {
                 Message message = MessageReader.read(bytes);
                 if (message.isCompleted()) {

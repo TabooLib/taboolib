@@ -5,6 +5,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import taboolib.common.platform.function.IOKt;
 import taboolib.module.porticus.PorticusMission;
 import taboolib.module.porticus.common.MessageBuilder;
 
@@ -48,7 +49,7 @@ public class MissionBungee extends PorticusMission {
         BungeeCord.getInstance().getScheduler().runAsync(plugin, () -> {
             try {
                 for (byte[] bytes : MessageBuilder.create(args)) {
-                    server.sendData("porticus", bytes);
+                    server.sendData("porticus_" + IOKt.getPluginId().toLowerCase() + ":main", bytes);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
