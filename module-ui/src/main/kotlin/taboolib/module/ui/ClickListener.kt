@@ -110,7 +110,7 @@ object ClickListener {
 
     @SubscribeEvent(bind = "org.bukkit.event.player.PlayerSwapHandItemsEvent")
     fun onSwap(ope: OptionalEvent) {
-        val e = ope.cast(PlayerSwapHandItemsEvent::class.java)
+        val e = ope.get<PlayerSwapHandItemsEvent>()
         val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked) {
             e.isCancelled = true

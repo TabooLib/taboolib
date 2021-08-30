@@ -12,8 +12,8 @@ import taboolib.common.reflect.Reflex.Companion.setProperty
  */
 class OptionalEvent(val source: Any) {
 
-    fun <T> cast(cast: Class<T>): T {
-        return cast.cast(source)!!
+    inline fun <reified T> get(): T {
+        return source as T
     }
 
     fun <T> read(name: String): T? {

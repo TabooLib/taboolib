@@ -24,6 +24,8 @@ package taboolib.library.xseries;
 import com.google.common.base.Enums;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.*;
@@ -56,6 +58,7 @@ import taboolib.library.configuration.ConfigurationSection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static taboolib.library.xseries.XMaterial.supports;
 
@@ -115,10 +118,10 @@ public final class XItemStack {
         }
         // Display Name & Lore
         if (meta.hasDisplayName()) {
-            config.set("name", meta.getDisplayName());
+            config.set("name", untranslate(meta.getDisplayName()));
         }
         if (meta.hasLore()) {
-            config.set("lore", meta.getLore()); // TODO Add a method to "untranslate" color codes.
+            config.set("lore", untranslate(meta.getLore()));
         }
         if (supports(14)) {
             if (meta.hasCustomModelData()) {
@@ -154,7 +157,7 @@ public final class XItemStack {
                     config.set(path + "name", modifier.getName());
                     config.set(path + "amount", modifier.getAmount());
                     config.set(path + "operation", modifier.getOperation().name());
-                    config.set(path + "slot", modifier.getSlot().name());
+                    config.set(path + "slot", modifier.getSlot());
                 }
             }
         }
@@ -736,5 +739,20 @@ public final class XItemStack {
             return Color.WHITE;
         }
         return Color.fromRGB(NumberUtils.toInt(rgb[0], 0), NumberUtils.toInt(rgb[1], 0), NumberUtils.toInt(rgb[2], 0));
+    }
+
+    public static String untranslate(String str) {
+        if (str.indexOf('{') == 0 && str.lastIndexOf('}') == str.length() - 1) {
+            try {
+                return TextComponent.toPlainText(ComponentSerializer.parse(str));
+            } catch (Exception ex) {
+                return str;
+            }
+        }
+        return str;
+    }
+
+    public static List<String> untranslate(List<String> str) {
+        return str.stream().map(XItemStack::untranslate).collect(Collectors.toList());
     }
 }
