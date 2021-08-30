@@ -85,15 +85,20 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit = {}) {
+        val e = this.onClick
         if (lock) {
             this.onClick = {
                 it.isCancelled = true
                 if (it.clickType == ClickType.CLICK) {
                     onClick(it)
                 }
+                e(it)
             }
         } else {
-            this.onClick = onClick
+            this.onClick = {
+                onClick(it)
+                e(it)
+            }
         }
     }
 
