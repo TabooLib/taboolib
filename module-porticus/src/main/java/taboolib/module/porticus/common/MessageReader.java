@@ -37,7 +37,6 @@ public class MessageReader {
      * @param packet 通讯数据（未经过处理的原始内容）
      */
     public static Message read(String packet) {
-        System.out.println("[Porticus] " + packet);
         JsonObject json = new JsonParser().parse(packet).getAsJsonObject();
         Message message = queueMessages.getIfPresent(json.get("uid").getAsString());
         if (message == null) {

@@ -28,7 +28,7 @@ public class PorticusListener implements Listener {
     private static final Plugin plugin = BungeeCord.getInstance().pluginManager.getPlugins().iterator().next();
 
     public PorticusListener() {
-        ProxyServer.getInstance().registerChannel("porticus_" + IOKt.getPluginId() + ":main");
+        ProxyServer.getInstance().registerChannel("porticus_" + IOKt.getPluginId().toLowerCase() + ":main");
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         BungeeCord.getInstance().getScheduler().schedule(plugin, () -> {
             for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
@@ -44,7 +44,6 @@ public class PorticusListener implements Listener {
 
     @EventHandler
     public void e(PorticusBungeeEvent e) {
-        System.out.println("[Porticus] " + Arrays.toString(e.getArgs()));
         if (e.isCancelled()) {
             return;
         }
@@ -89,7 +88,7 @@ public class PorticusListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase("porticus_" + IOKt.getPluginId() + ":main")) {
+        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase("porticus_" + IOKt.getPluginId().toLowerCase() + ":main")) {
             try {
                 Message message = MessageReader.read(e.getData());
                 if (message.isCompleted()) {
