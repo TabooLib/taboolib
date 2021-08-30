@@ -41,7 +41,7 @@ public class MissionBukkit extends PorticusMission {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 for (byte[] bytes : MessageBuilder.create(command)) {
-                    player.sendPluginMessage(plugin, "porticus_" + IOKt.getPluginId() + ":main", bytes);
+                    player.sendPluginMessage(plugin, "porticus_" + IOKt.getPluginId().toLowerCase() + ":main", bytes);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
