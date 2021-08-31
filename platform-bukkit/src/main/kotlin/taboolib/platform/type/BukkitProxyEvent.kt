@@ -6,7 +6,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import taboolib.common.platform.event.ProxyEvent
 
-open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null, val async: Boolean = false) : Event(!Bukkit.isPrimaryThread()), Cancellable {
+open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(!Bukkit.isPrimaryThread()), Cancellable {
 
     private var isCancelled = false
 
