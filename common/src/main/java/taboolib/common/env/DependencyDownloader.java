@@ -75,7 +75,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     public DependencyDownloader() {
     }
 
-    public DependencyDownloader(@Nullable Relocation... relocation) {
+    public DependencyDownloader(@Nullable List<Relocation> relocation) {
         if (relocation != null) {
             for (Relocation rel : relocation) {
                 if (rel != null) {

@@ -9,7 +9,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipFile;
 
@@ -113,11 +115,15 @@ public class RuntimeEnv {
                 if (test.length() > 0 && ClassAppender.isExists(test)) {
                     continue;
                 }
-                Relocation relocation = null;
-                if (dependency.relocate().length == 2) {
-                    String pattern = dependency.relocate()[0].startsWith("!") ? dependency.relocate()[0].substring(1) : dependency.relocate()[0];
-                    String relocatePattern = dependency.relocate()[1].startsWith("!") ? dependency.relocate()[1].substring(1) : dependency.relocate()[1];
-                    relocation = new Relocation(pattern, relocatePattern);
+                List<Relocation> relocation = new ArrayList<>();
+                String[] relocate = dependency.relocate();
+                if (relocate.length % 2 != 0) {
+                    throw new IllegalArgumentException("unformatted relocate");
+                }
+                for (int i = 0; i + 1 < relocate.length; i += 2) {
+                    String pattern = relocate[i].startsWith("!") ? relocate[i].substring(1) : relocate[i];
+                    String relocatePattern = relocate[i + 1].startsWith("!") ? relocate[i + 1].substring(1) : relocate[i + 1];
+                    relocation.add(new Relocation(pattern, relocatePattern));
                 }
                 try {
                     String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
