@@ -81,25 +81,46 @@ class Reflex(val from: Class<*>) {
 
     companion object {
 
+        /**
+         * 已注册的 ReflexRemapper
+         * 直接添加到改容器即可完成注册，起初用于转换 1.17 版本的混淆字段名称
+         */
         val remapper = ArrayList<ReflexRemapper>()
 
+        /**
+         * 不通过构造函数实例化对象
+         */
         fun <T> Class<T>.unsafeInstance(): Any {
             return Ref.unsafe.allocateInstance(this)!!
         }
 
+        /**
+         * 通过构造方法实例化对象
+         */
         fun <T> Class<T>.invokeConstructor(vararg parameter: Any?): T {
             val map = ReflexClass.find(this).findConstructor(*parameter) ?: throw NoSuchMethodException("<init>(${parameter.joinToString(", ") { it?.javaClass?.name.toString() }}) at $this")
             return map.newInstance(*parameter) as T
         }
 
-        fun <T> Any.invokeMethod(path: String, vararg parameter: Any?, fixed: Boolean = false): T? {
+        /**
+         * 执行方法
+         * @param name 方法名称
+         * @param parameter 方法参数
+         * @param fixed 是否为静态方法
+         */
+        fun <T> Any.invokeMethod(name: String, vararg parameter: Any?, fixed: Boolean = false): T? {
             return if (fixed && this is Class<*>) {
-                Reflex(this).invoke(path, *parameter)
+                Reflex(this).invoke(name, *parameter)
             } else {
-                Reflex(javaClass).instance(this).invoke(path, *parameter)
+                Reflex(javaClass).instance(this).invoke(name, *parameter)
             }
         }
 
+        /**
+         * 获取字段
+         * @param path 字段名称，使用 "/" 符号进行递归获取
+         * @param fixed 是否为静态字段
+         */
         fun <T> Any.getProperty(path: String, fixed: Boolean = false): T? {
             return if (fixed && this is Class<*>) {
                 Reflex(this).read(path)
@@ -108,6 +129,12 @@ class Reflex(val from: Class<*>) {
             }
         }
 
+        /**
+         * 修改字段
+         * @param path 字段名称，使用 "/" 符号进行递归获取
+         * @param value 值
+         * @param fixed 是否为静态字段
+         */
         fun Any.setProperty(path: String, value: Any?, fixed: Boolean = false) {
             return if (fixed && this is Class<*>) {
                 Reflex(this).write(path, value)
