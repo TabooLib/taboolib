@@ -13,6 +13,7 @@ import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
+import java.util.function.Consumer
 
 open class Basic(title: String = "chest") : Menu(title) {
 
@@ -22,7 +23,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     var items = HashMap<Char, ItemStack>()
     var slots = ArrayList<List<Char>>()
 
-    internal var onClick: ((event: ClickEvent) -> Unit) = {}
+    internal val onClick = ArrayList<Consumer<ClickEvent>>()
     internal var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     internal var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     internal var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
@@ -63,41 +64,32 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit = {}) {
-        val e = this.onClick
         onClick(lock = true) {
             if (it.rawSlot == bind) {
                 onClick(it)
-            } else {
-                e(it)
             }
         }
     }
 
     fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit = {}) {
-        val e = this.onClick
         onClick(lock = true) {
             if (it.slot == bind) {
                 onClick(it)
-            } else {
-                e(it)
             }
         }
     }
 
     fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit = {}) {
-        val e = this.onClick
         if (lock) {
-            this.onClick = {
+            this.onClick += Consumer {
                 it.isCancelled = true
                 if (it.clickType == ClickType.CLICK) {
                     onClick(it)
                 }
-                e(it)
             }
         } else {
-            this.onClick = {
+            this.onClick += Consumer {
                 onClick(it)
-                e(it)
             }
         }
     }

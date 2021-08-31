@@ -51,7 +51,8 @@ object ClickListener {
             e.isCancelled = true
         }
         try {
-            builder.onClick(ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot)))
+            val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot))
+            builder.onClick.forEach { it.accept(event) }
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -84,7 +85,10 @@ object ClickListener {
 
     @SubscribeEvent
     fun e(e: InventoryDragEvent) {
-        MenuHolder.fromInventory(e.inventory)?.onClick?.invoke(ClickEvent(e, ClickType.DRAG, ' '))
+        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ')
+        MenuHolder.fromInventory(e.inventory)?.onClick?.forEach {
+            it.accept(clickEvent)
+        }
     }
 
     @SubscribeEvent
