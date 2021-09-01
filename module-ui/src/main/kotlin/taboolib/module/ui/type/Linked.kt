@@ -25,6 +25,7 @@ open class Linked<T>(title: String) : Menu(title) {
     private var menuElements: (() -> List<T>) = { emptyList() }
     private var menuElementsCache = emptyList<T>()
     private var onClick: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
+    private var onClickGeneral: ((event: ClickEvent) -> Unit) = {}
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     private var onBuild: ((inventory: Inventory) -> Unit) = {}
     private var onBuildAsync: ((inventory: Inventory) -> Unit) = {}
@@ -84,6 +85,10 @@ open class Linked<T>(title: String) : Menu(title) {
 
     fun onClick(onClick: (event: ClickEvent, element: T) -> Unit) {
         this.onClick = onClick
+    }
+
+    fun onClick(onClick: (event: ClickEvent) -> Unit) {
+        this.onClickGeneral = onClick
     }
 
     fun set(slot: Int, itemStack: ItemStack, onClick: ClickEvent.() -> Unit = {}) {
@@ -161,6 +166,8 @@ open class Linked<T>(title: String) : Menu(title) {
                     this@Linked.onClick(it, objectsMap[it.rawSlot]!!)
                 } else if (button.containsKey(it.rawSlot)) {
                     button[it.rawSlot]!!(it)
+                } else {
+                    onClickGeneral(it)
                 }
             }
             onClose {
