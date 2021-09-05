@@ -91,11 +91,19 @@ abstract class WhereExecutor {
         append(it)
     }
 
-    infix fun not(func: WhereData): WhereData {
+    infix fun WhereData.or(other: WhereData): WhereData {
+        return WhereData("(${query} OR ${other.query})", children = listOf(this, other))
+    }
+
+    infix fun WhereData.and(other: WhereData): WhereData {
+        return WhereData("(${query} AND ${other.query})", children = listOf(this, other))
+    }
+
+    fun not(func: WhereData): WhereData {
         return func.copy(query = "NOT (${func.query})")
     }
 
-    infix fun or(func: Where.() -> Unit): WhereData {
+    fun or(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")
@@ -105,7 +113,7 @@ abstract class WhereExecutor {
         }
     }
 
-    infix fun and(func: Where.() -> Unit): WhereData {
+    fun and(func: Where.() -> Unit): WhereData {
         val where = Where().also(func)
         if (where.data.isEmpty()) {
             error("empty function")

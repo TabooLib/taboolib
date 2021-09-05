@@ -39,7 +39,7 @@ fun QuestContext.Frame.deepVars(): HashMap<String, Any?> {
 }
 
 fun Throwable.printKetherErrorMessage() {
-    if (this is LocalizedException) {
+    if (javaClass.name.endsWith("kether.LocalizedException")) {
         warning("Unexpected exception while parsing kether script:")
         localizedMessage.split('\n').forEach { warning(it) }
     } else {

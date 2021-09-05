@@ -8,7 +8,6 @@ import taboolib.common.util.orNull
 import taboolib.library.kether.*
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
 
 /**
  * TabooLib
@@ -17,14 +16,10 @@ import java.util.concurrent.Executor
  * @author sky
  * @since 2021/8/11 12:04 上午
  */
-class RemoteQuestContext(val remote: OpenContainer, val source: Any) : QuestContext {
+class RemoteQuestContext(val remote: OpenContainer, val source: Any) : ScriptContext(ScriptService, RemoteQuest(remote, source.invokeMethod("getQuest")!!)) {
 
-    override fun getService(): QuestService<out QuestContext> {
+    override fun getService(): QuestService<ScriptContext> {
         error("remote context")
-    }
-
-    override fun getQuest(): Quest {
-        return RemoteQuest(remote, source.invokeMethod<Any>("getQuest")!!)
     }
 
     override fun setExitStatus(exitStatus: ExitStatus) {
@@ -41,7 +36,7 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : QuestCont
         return source.invokeMethod("runActions")!!
     }
 
-    override fun getExecutor(): Executor {
+    override fun getExecutor(): QuestExecutor? {
         return source.invokeMethod("getExecutor")!!
     }
 
@@ -94,7 +89,8 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : QuestCont
         }
 
         override fun setNext(action: ParsedAction<*>) {
-            source.invokeMethod<Void>("setNext", remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties)))
+            val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
+            source.invokeMethod<Void>("setNext", remoteAction.value)
         }
 
         override fun setNext(block: Quest.Block) {
@@ -107,7 +103,7 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : QuestCont
 
         override fun newFrame(action: ParsedAction<*>): QuestContext.Frame {
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
-            return RemoteFrame(remote, source.invokeMethod("newFrame", remoteAction)!!)
+            return RemoteFrame(remote, source.invokeMethod("newFrame", remoteAction.value)!!)
         }
 
         override fun variables(): QuestContext.VarTable {
@@ -143,7 +139,7 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : QuestCont
 
         override fun <T> set(name: String, owner: ParsedAction<T>, future: CompletableFuture<T>) {
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, owner.action, owner.properties))
-            source.invokeMethod<Void>("set", name, remoteAction, future)
+            source.invokeMethod<Void>("set", name, remoteAction.value, future)
         }
 
         override fun remove(name: String) {

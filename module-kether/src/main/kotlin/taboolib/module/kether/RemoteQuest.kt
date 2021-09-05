@@ -22,7 +22,7 @@ class RemoteQuest(val remote: OpenContainer, val source: Any) : Quest {
     }
 
     override fun getBlock(label: String): Optional<Quest.Block> {
-        val getBlock = source.invokeMethod<Optional<Any>>("label")!!
+        val getBlock = source.invokeMethod<Optional<Any>>("getBlock", label)!!
         return if (getBlock.isPresent) {
             Optional.of(RemoteBlock(remote, getBlock.get()))
         } else {
@@ -35,8 +35,10 @@ class RemoteQuest(val remote: OpenContainer, val source: Any) : Quest {
     }
 
     override fun blockOf(action: ParsedAction<*>): Optional<Quest.Block> {
+        // 远程创建 ParsedAction
         val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
-        val blockOf = source.invokeMethod<Optional<Any>>("blockOf", remoteAction)!!
+        // 远程执行方法
+        val blockOf = source.invokeMethod<Optional<Any>>("blockOf", remoteAction.value)!!
         return if (blockOf.isPresent) {
             Optional.of(RemoteBlock(remote, blockOf.get()))
         } else {
@@ -51,14 +53,16 @@ class RemoteQuest(val remote: OpenContainer, val source: Any) : Quest {
         }
 
         override fun getActions(): MutableList<ParsedAction<*>> {
-            return source.invokeMethod<List<Any>>("getActions")!!.map {
-                ParsedAction(RemoteQuestAction<Any>(remote, it.getProperty<Any>("action")!!), it.getProperty<Map<String, Any>>("properties")!!)
-            }.toMutableList()
+            return source.invokeMethod<List<Any>>("getActions")!!
+                .map { ParsedAction(RemoteQuestAction<Any>(remote, it.getProperty<Any>("action")!!), it.getProperty<Map<String, Any>>("properties")!!) }
+                .toMutableList()
         }
 
         override fun indexOf(action: ParsedAction<*>): Int {
+            // 远程创建 ParsedAction
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
-            return source.invokeMethod("indexOf", remoteAction)!!
+            // 远程执行方法
+            return source.invokeMethod("indexOf", remoteAction.value)!!
         }
 
         override fun get(i: Int): Optional<ParsedAction<*>> {

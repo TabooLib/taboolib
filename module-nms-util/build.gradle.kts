@@ -11,7 +11,7 @@ dependencies {
 //    compileOnly("org.spigotmc:spigot:1.8.8-R0.1-20190527.160303-7")
 //    compileOnly("ink.ptms.core:v11300:11300:all")
 //    compileOnly("ink.ptms.core:v11200:11200:all")
-    compileOnly("ink.ptms.core:v11700:11700-mapped")
+    compileOnly("ink.ptms.core:v11701:11701:universal")
 //    compileOnly("ink.ptms.core:v11605:11605")
 //    compileOnly("ink.ptms.core:v11600:11600:all")
 //    compileOnly("ink.ptms.core:v11500:11500:all")

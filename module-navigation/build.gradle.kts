@@ -9,7 +9,7 @@ dependencies {
 //    compileOnly("ink.ptms.core:v11200:11200:all")
 //    compileOnly("ink.ptms.core:v11100:11100:all")
 //    compileOnly("ink.ptms.core:v10900:10900:all")
-    compileOnly("ink.ptms.core:v11700:11700-mapped")
+    compileOnly("ink.ptms.core:v11701:11701:universal")
     compileOnly(project(":common"))
     compileOnly(project(":module-nms"))
 }

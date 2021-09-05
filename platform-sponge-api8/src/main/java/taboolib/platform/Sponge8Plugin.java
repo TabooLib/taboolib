@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * @author sky
  * @since 2021/6/26 8:39 下午
  */
-@org.spongepowered.plugin.jvm.Plugin("@plugin_id@")
+@org.spongepowered.plugin.builtin.jvm.Plugin("@plugin_id@")
 @PlatformSide(Platform.SPONGE_API_8)
 public class Sponge8Plugin {
 

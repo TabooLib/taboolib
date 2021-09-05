@@ -32,7 +32,7 @@ class Sponge8IO : PlatformIO {
         get() = Sponge8Plugin.getInstance().pluginContainer.metadata().id()
 
     override val pluginVersion: String
-        get() = Sponge8Plugin.getInstance().pluginContainer.metadata().version()
+        get() = Sponge8Plugin.getInstance().pluginContainer.metadata().version().qualifier
 
     override val isPrimaryThread: Boolean
         get() = Sponge.server().onMainThread()
