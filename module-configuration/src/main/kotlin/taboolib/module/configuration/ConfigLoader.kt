@@ -83,7 +83,12 @@ object ConfigLoader : Injector.Fields {
                     return
                 }
                 file.nodes += field
-                Ref.put(instance.get(), field, file.conf.get(node.value.ifEmpty { field.name }))
+                val data = file.conf.get(node.value.ifEmpty { field.name })
+                if (field.type == ConfigNodeTransfer::class.java) {
+                    Ref.get<ConfigNodeTransfer<*, *>>(instance.get(), field)!!.update(data)
+                } else {
+                    Ref.put(instance.get(), field, data)
+                }
             }
         }
 
