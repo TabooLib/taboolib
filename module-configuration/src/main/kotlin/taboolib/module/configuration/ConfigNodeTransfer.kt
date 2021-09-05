@@ -14,7 +14,7 @@ class ConfigNodeTransfer<T, R>(internal val transfer: T.() -> R) {
         private set
 
     internal fun update(value: Any) {
-        this.value = value
+        this.value = transfer(value as T)
     }
 
     fun get(): R {
