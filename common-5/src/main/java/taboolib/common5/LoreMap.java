@@ -176,7 +176,7 @@ public class LoreMap<T> {
                 return null;
             }
             if (node.obj != null) {
-                return new MatchResult<>(depth < lore.length() - 1 ? lore.substring(depth) : null, node.obj);
+                return new MatchResult<>(depth < lore.length() - 1 ? lore.substring(depth+1) : null, node.obj);
             }
             current = node;
             depth++;
