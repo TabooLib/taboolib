@@ -37,10 +37,16 @@ class ActionUpdate(val table: String) : WhereExecutor(), Action {
         }
 
     fun set(key: String, value: Any?) {
-        set += if (value is PreValue) {
-            QuerySet("${key.formatColumn()} = ${value.formatColumn()}")
-        } else {
-            QuerySet("${key.formatColumn()} = ?", value)
+        set += when (value) {
+            null -> {
+                QuerySet("${key.formatColumn()} = null")
+            }
+            is PreValue -> {
+                QuerySet("${key.formatColumn()} = ${value.formatColumn()}")
+            }
+            else -> {
+                QuerySet("${key.formatColumn()} = ?", value)
+            }
         }
     }
 

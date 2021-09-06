@@ -54,6 +54,7 @@ open class Query(val table: Table<*, *>, var dataSource: DataSource) {
                         prepareStatement.executeQuery().use { func(this) }.also { action?.runFinally(prepareStatement, this@use) }
                     } catch (ex: SQLException) {
                         warning(query)
+                        warning("Statement parameter (${action?.elements?.size ?: 0}): ${action?.elements}")
                         throw ex
                     }
                 }
@@ -73,6 +74,7 @@ open class Query(val table: Table<*, *>, var dataSource: DataSource) {
                         (prepareStatement.executeUpdate() as C).also { action?.runFinally(prepareStatement, this@use) }
                     } catch (ex: SQLException) {
                         warning(query)
+                        warning("Statement parameter (${action?.elements?.size ?: 0}): ${action?.elements}")
                         throw ex
                     }
                 }
