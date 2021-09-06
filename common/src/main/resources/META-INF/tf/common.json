@@ -261,6 +261,7 @@
         "taboolib/module/configuration/ConfigLoader",
         "taboolib/module/kether/StandardChannel",
         "taboolib/module/nms/i18n/I18n",
+        "taboolib/platform/compat/PlaceholderExpansion",
         "taboolib/platform/{platform}Adapter",
         "taboolib/platform/{platform}Command",
         "taboolib/platform/{platform}Event",
@@ -373,7 +374,7 @@
         "taboolib/common/platform/service/PlatformAdapter",
         "taboolib/common/platform/service/PlatformCommand",
         "taboolib/common/platform/command/CommandBuilder",
-        "tgaboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangKt",
         "taboolib/platform/util/BukkitLangQualifyKt"
       ],
       "member": [

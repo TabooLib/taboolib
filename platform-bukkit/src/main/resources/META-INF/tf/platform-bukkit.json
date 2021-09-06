@@ -21,6 +21,7 @@
         "taboolib/platform/util/BukkitLocation1Kt"
       ],
       "exclude": [
+        "taboolib/platform/type/{platform}Player",
         "taboolib/platform/{platform}Adapter"
       ],
       "mode": "REMOVE"
