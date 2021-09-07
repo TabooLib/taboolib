@@ -60,6 +60,8 @@ open class ItemBuilder {
     var isUnbreakable = false
     var customModelData = -1
 
+    val finishing: (ItemStack) -> Unit = {}
+
     constructor(material: Material) {
         this.material = material
     }
@@ -222,6 +224,7 @@ open class ItemBuilder {
         } catch (ignored: NoSuchMethodException) {
         }
         itemStack.itemMeta = itemMeta
+        finishing(itemStack)
         return itemStack
     }
 }
