@@ -43,7 +43,7 @@ open class ItemBuilder {
 
     class SkullTexture(val textures: String, val uuid: UUID? = UUID.randomUUID())
 
-    var material: XMaterial
+    var material: Material
     var amount = 1
     var damage = 0
     var name: String? = null
@@ -60,15 +60,18 @@ open class ItemBuilder {
     var isUnbreakable = false
     var customModelData = -1
 
-    constructor(material: XMaterial) {
+    constructor(material: Material) {
         this.material = material
-        if (!XMaterial.isNewVersion()) {
+    }
+
+    constructor(material: XMaterial): this(material.parseMaterial() ?: Material.STONE) {
+        if (!XMaterial.supports(13)) {
             this.damage = material.data.toInt()
         }
     }
 
     constructor(item: ItemStack) {
-        material = XMaterial.matchXMaterial(item.type)
+        material = item.type
         damage = item.durability.toInt()
         val itemMeta = item.itemMeta ?: return
         name = itemMeta.displayName
@@ -123,6 +126,10 @@ open class ItemBuilder {
         }
     }
 
+    fun setMaterial(material: XMaterial) {
+        this.material = material.parseMaterial() ?: Material.STONE
+    }
+
     fun shiny() {
         flags += ItemFlag.HIDE_ENCHANTS
         enchants[Enchantment.LURE] = 1
@@ -152,7 +159,7 @@ open class ItemBuilder {
     }
 
     open fun build(): ItemStack {
-        val itemStack = material.parseItem() ?: ItemStack(Material.STONE)
+        val itemStack = ItemStack(material)
         itemStack.amount = amount
         if (damage != 0) {
             itemStack.durability = damage.toShort()

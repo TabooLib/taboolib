@@ -28,7 +28,7 @@ fun Player.inputBook(display: String, disposable: Boolean = true, content: List<
     giveItem(
         buildBook {
             write(content.joinToString("\n"))
-            material = XMaterial.WRITABLE_BOOK
+            setMaterial(XMaterial.WRITABLE_BOOK)
             name = "§f$display"
             lore += BookListener.regex[0]
             lore += if (disposable) {
