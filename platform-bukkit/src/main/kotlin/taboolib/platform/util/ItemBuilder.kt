@@ -60,7 +60,7 @@ open class ItemBuilder {
     var isUnbreakable = false
     var customModelData = -1
 
-    val finishing: (ItemStack) -> Unit = {}
+    var finishing: (ItemStack) -> Unit = {}
 
     constructor(material: Material) {
         this.material = material
