@@ -13,6 +13,7 @@ class CommandContext<T>(
     val sender: T,
     val command: CommandStructure,
     val name: String,
+    val commandCompound: CommandBuilder.CommandBase,
     internal val args: Array<String>,
     internal var index: Int = 0,
 ) {

@@ -12,23 +12,17 @@ internal object Actions {
 
     @KetherParser(["null"])
     fun parser1() = scriptParser {
-        actionNow {
-            CompletableFuture.completedFuture(null)
-        }
+        actionNow { null }
     }
 
     @KetherParser(["pass"])
     fun parser2() = scriptParser {
-        actionNow {
-            CompletableFuture.completedFuture("")
-        }
+        actionNow { "" }
     }
 
     @KetherParser(["vars", "variables"])
     fun parser3() = scriptParser {
-        actionNow {
-            CompletableFuture.completedFuture(deepVars().keys.toList())
-        }
+        actionNow { deepVars().keys.toList() }
     }
 
     @KetherProperty(bind = String::class)

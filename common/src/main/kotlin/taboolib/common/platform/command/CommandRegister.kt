@@ -19,13 +19,15 @@ fun command(
         object : CommandExecutor {
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
-                return CommandBuilder.CommandBase().also(commandBuilder).execute(CommandContext(sender, command, name, args))
+                val commandBase = CommandBuilder.CommandBase().also(commandBuilder)
+                return commandBase.execute(CommandContext(sender, command, name, commandBase, args))
             }
         },
         object : CommandCompleter {
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
-                return CommandBuilder.CommandBase().also(commandBuilder).suggest(CommandContext(sender, command, name, args))
+                val commandBase = CommandBuilder.CommandBase().also(commandBuilder)
+                return commandBase.suggest(CommandContext(sender, command, name, commandBase, args))
             }
         },
         commandBuilder

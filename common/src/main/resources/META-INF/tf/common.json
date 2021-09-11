@@ -212,7 +212,8 @@
       ],
       "exclude": [
         "taboolib/platform/{platform}Plugin",
-        "taboolib/platform/{platform}Command"
+        "taboolib/platform/{platform}Command",
+        "taboolib/common/platform/ScheduleLoader"
       ],
       "depend": {
         "name": [

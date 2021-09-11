@@ -30,11 +30,11 @@ open class ScriptContext(service: ScriptService, script: Script) : AbstractQuest
         }
 
     operator fun set(key: String, value: Any?) {
-        rootFrame.variables().set(key, value)
+        rootFrame().variables().set(key, value)
     }
 
     operator fun <T> get(key: String, def: T? = null): T? {
-        return rootFrame.variables().get<T>(key).orElse(def)
+        return rootFrame().variables().get<T>(key).orElse(def)
     }
 
     override fun createExecutor(): ScriptSchedulerExecutor {

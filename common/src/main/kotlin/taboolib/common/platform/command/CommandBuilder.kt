@@ -50,9 +50,14 @@ object CommandBuilder {
             // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
             if (context.args.isEmpty()) {
                 val children = children(context)
-                return if (children.isEmpty() || children.any { it.optional }) {
+                return if (children.isEmpty() || children.any { it.optional } || commandExecutor != null) {
                     context.index = 0
-                    commandExecutor?.exec(this, context, "")
+                    // 缺少 execute 代码块
+                    if (commandExecutor == null) {
+                        (context.sender as ProxyCommandSender).sendMessage("§cEmpty command.")
+                    } else {
+                        commandExecutor!!.exec(this, context, "")
+                    }
                     result
                 } else {
                     commandIncorrectCommand.exec(context, -1, 1)
@@ -81,9 +86,14 @@ object CommandBuilder {
                     if (cur + 1 < context.args.size && children.children(context).isNotEmpty()) {
                         process(cur + 1, children)
                     } else {
-                        if (children.children(context).isEmpty() || children.children(context).any { it.optional }) {
+                        if (children.children(context).isEmpty() || children.children(context).any { it.optional } || children.commandExecutor != null) {
                             context.index = cur
-                            children.commandExecutor?.exec(this, context, join(context.args, cur))
+                            // 缺少 execute 代码块
+                            if (children.commandExecutor == null) {
+                                (context.sender as ProxyCommandSender).sendMessage("§cEmpty command.")
+                            } else {
+                                children.commandExecutor!!.exec(this, context, join(context.args, cur))
+                            }
                             result
                         } else {
                             commandIncorrectCommand.exec(context, cur + 1, 1)
@@ -153,10 +163,6 @@ object CommandBuilder {
         fun setResult(value: Boolean) {
             result = value
         }
-
-        override fun toString(): String {
-            return "CommandBase(commandIncorrectSender=$commandIncorrectSender, commandIncorrectCommand=$commandIncorrectCommand)"
-        }
     }
 
     abstract class CommandBinder<T>(val bind: Class<T>) {
@@ -176,7 +182,7 @@ object CommandBuilder {
         fun exec(commandBase: CommandBase, context: CommandContext<*>, argument: String) {
             val sender = cast(context)
             if (sender != null) {
-                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), argument)
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index), argument)
             } else {
                 commandBase.commandIncorrectSender.exec(context, 0, 0)
             }
@@ -188,7 +194,7 @@ object CommandBuilder {
         fun exec(context: CommandContext<*>, argument: String): Boolean? {
             val sender = cast(context)
             return if (sender != null) {
-                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), argument)
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index), argument)
             } else {
                 null
             }
@@ -200,7 +206,7 @@ object CommandBuilder {
         fun exec(context: CommandContext<*>): List<String>? {
             val sender = cast(context)
             return if (sender != null) {
-                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index))
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index))
             } else {
                 null
             }
@@ -212,19 +218,14 @@ object CommandBuilder {
         fun exec(context: CommandContext<*>, index: Int, state: Int) {
             val sender = cast(context)
             if (sender != null) {
-                function.invoke(sender, CommandContext(sender, context.command, context.name, context.args, context.index), index, state)
+                function.invoke(sender, CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index), index, state)
             }
         }
     }
 
-    class CommandComponentLiteral(vararg val aliases: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
+    class CommandComponentLiteral(vararg val aliases: String, optional: Boolean, permission: String) : CommandComponent(optional, permission)
 
-        override fun toString(): String {
-            return "CommandComponentLiteral(aliases=${aliases.contentToString()}) ${super.toString()}"
-        }
-    }
-
-    class CommandComponentDynamic(optional: Boolean, permission: String) : CommandComponent(optional, permission) {
+    class CommandComponentDynamic(val commit: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
 
         var commandSuggestion: CommandSuggestion<*>? = null
         var commandRestrict: CommandRestrict<*>? = null
@@ -235,10 +236,6 @@ object CommandBuilder {
 
         inline fun <reified T> restrict(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) {
             this.commandRestrict = CommandRestrict(T::class.java, function)
-        }
-
-        override fun toString(): String {
-            return "CommandComponentDynamic(suggestion=$commandSuggestion, restrict=$commandRestrict) ${super.toString()}"
         }
     }
 
@@ -255,16 +252,12 @@ object CommandBuilder {
             children += CommandComponentLiteral(*aliases, optional = optional, permission = permission).also(literal)
         }
 
-        fun dynamic(optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
-            children += CommandComponentDynamic(optional, permission).also(dynamic)
+        fun dynamic(commit: String = "...", optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
+            children += CommandComponentDynamic(commit, optional, permission).also(dynamic)
         }
 
         inline fun <reified T> execute(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {
             this.commandExecutor = CommandExecutor(T::class.java, function)
-        }
-
-        override fun toString(): String {
-            return "CommandComponent(optional=$optional, executor=$commandExecutor, children=$children)"
         }
     }
 }

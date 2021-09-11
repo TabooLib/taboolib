@@ -112,10 +112,8 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     fun set(slot: Int, itemStack: ItemStack) {
-        val e = this.onBuild
-        onBuild { player, it ->
+        onBuild { _, it ->
             it.setItem(slot, itemStack)
-            e(player, it)
         }
     }
 
