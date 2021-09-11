@@ -69,12 +69,12 @@ public class DefaultAttribute {
         ATTACK_DAMAGE.put("DIAMOND_PICKAXE", 5.0);
         ATTACK_DAMAGE.put("NETHERITE_PICKAXE", 6.0);
         // 斧子
-        ATTACK_DAMAGE.put("WOODEN_AXE", 2.0);
-        ATTACK_DAMAGE.put("GOLDEN_AXE", 2.0);
-        ATTACK_DAMAGE.put("STONE_AXE", 3.0);
-        ATTACK_DAMAGE.put("IRON_AXE", 4.0);
-        ATTACK_DAMAGE.put("DIAMOND_AXE", 5.0);
-        ATTACK_DAMAGE.put("NETHERITE_AXE", 6.0);
+        ATTACK_DAMAGE.put("WOODEN_AXE", 7.0);
+        ATTACK_DAMAGE.put("GOLDEN_AXE", 7.0);
+        ATTACK_DAMAGE.put("STONE_AXE", 9.0);
+        ATTACK_DAMAGE.put("IRON_AXE", 9.0);
+        ATTACK_DAMAGE.put("DIAMOND_AXE", 9.0);
+        ATTACK_DAMAGE.put("NETHERITE_AXE", 10.0);
         // 盔甲值
         ARMOR.put("TURTLE_HELMET", 2.0);
         // 皮
