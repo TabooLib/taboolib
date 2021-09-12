@@ -1,6 +1,7 @@
-package taboolib.module.kether.action.game
+package taboolib.module.kether.action.game.bukkit
 
-import taboolib.common.util.Location
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -33,7 +34,7 @@ class ActionLocation(
                             frame.newFrame(pitch).run<Any>().thenApply { pitch ->
                                 location.complete(
                                     Location(
-                                        world.toString(),
+                                        Bukkit.getWorld(world.toString()),
                                         Coerce.toDouble(x),
                                         Coerce.toDouble(y),
                                         Coerce.toDouble(z),
