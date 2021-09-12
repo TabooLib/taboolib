@@ -14,6 +14,7 @@ import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
@@ -51,10 +52,26 @@ class NukkitListener : PlatformListener {
 
     class NukkitListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
+        val isVanillaEvent = Event::class.java.isAssignableFrom(clazz)
+        val ignored = CopyOnWriteArraySet<Class<*>>()
+
         override fun execute(listener: Listener, event: Event) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
+            if (ignored.contains(event.javaClass)) {
+                return
+            }
+            var origin: Any = event
+            if (!isVanillaEvent) {
+                if (event.javaClass.isPlatformEvent) {
+                    origin = event.getProperty("proxyEvent")!!
+                } else {
+                    ignored += event.javaClass
+                    return
+                }
+            }
             if (clazz.isAssignableFrom(origin.javaClass)) {
                 consumer(origin)
+            } else {
+                ignored += event.javaClass
             }
         }
     }

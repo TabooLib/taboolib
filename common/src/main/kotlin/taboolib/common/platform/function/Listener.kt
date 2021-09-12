@@ -8,6 +8,7 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.service.PlatformListener
+import java.util.concurrent.ConcurrentHashMap
 
 fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener {
     return PlatformFactory.getService<PlatformListener>().registerListener(event, priority, ignoreCancelled, func)
@@ -33,6 +34,8 @@ private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"
 
 private val platformEventName = "$taboolibId.platform.type.${runningPlatform.key}ProxyEvent"
 
+private val platformClassCache = ConcurrentHashMap<Class<*>, Boolean>()
+
 private val Class<*>.isProxyEvent: Boolean
     get() = proxyEvent != null
 
@@ -42,10 +45,14 @@ private val Class<*>.proxyEvent: Class<*>?
         return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.proxyEvent
     }
 
+/**
+ * 是否为跨平台事件的子平台实现
+ * 而非跨平台事件的总接口（ProxyEvent）
+ */
 val Class<*>.isPlatformEvent: Boolean
-    get() {
+    get() = platformClassCache.computeIfAbsent(this) {
         val superclass = superclass
-        return when {
+        when {
             name.endsWith(proxyEventName) -> true
             superclass != null && superclass.name.endsWith(proxyEventName) -> true
             else -> superclass?.isPlatformEvent ?: false

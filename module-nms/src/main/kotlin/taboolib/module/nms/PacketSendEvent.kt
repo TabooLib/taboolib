@@ -2,6 +2,7 @@ package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import taboolib.common.platform.event.ProxyEvent
+import taboolib.platform.type.BukkitProxyEvent
 
 /**
  * TabooLib
@@ -10,4 +11,4 @@ import taboolib.common.platform.event.ProxyEvent
  * @author sky
  * @since 2021/6/24 5:38 下午
  */
-class PacketSendEvent(val player: Player, val packet: Packet) : ProxyEvent()
+class PacketSendEvent(val player: Player, val packet: Packet) : BukkitProxyEvent()

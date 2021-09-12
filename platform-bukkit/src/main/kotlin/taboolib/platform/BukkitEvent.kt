@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -25,7 +24,19 @@ class BukkitEvent : PlatformEvent {
 
     override fun callEvent(proxyEvent: ProxyEvent) {
         val bukkitEvent = BukkitProxyEvent(proxyEvent)
-        Bukkit.getPluginManager().callEvent(bukkitEvent)
+        fireEvent(bukkitEvent)
         bukkitEvent.proxyEvent?.postCall()
+    }
+
+    fun fireEvent(event: Event) {
+        event.handlers.registeredListeners.forEach {
+            if (it.plugin.isEnabled) {
+                try {
+                    it.callEvent(event)
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 }
