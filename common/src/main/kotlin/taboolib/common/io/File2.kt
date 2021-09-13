@@ -14,13 +14,6 @@ fun File.deepDelete() {
 }
 
 fun File.deepCopyTo(target: File) {
-    if (!target.exists()) {
-        if (isDirectory) {
-            target.mkdirs()
-        } else {
-            target.createNewFile()
-        }
-    }
     if (isDirectory) {
         listFiles()?.forEach { it.deepCopyTo(File(target, it.name)) }
     } else {
