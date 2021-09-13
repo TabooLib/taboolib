@@ -9,8 +9,18 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
-fun File.zip(target: File) {
-    FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { it.putFile(this, "") } }
+fun File.zip(target: File, skipParent: Boolean = false) {
+    if (skipParent) {
+        if (isDirectory) {
+            FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { listFiles()?.forEach { file -> it.putFile(file, "") } } }
+        } else {
+            error("is not directory")
+        }
+    } else {
+        FileOutputStream(target).use { fileOutputStream ->
+            ZipOutputStream(fileOutputStream).use { it.putFile(this, "") }
+        }
+    }
 }
 
 fun File.unzip(target: File) {
