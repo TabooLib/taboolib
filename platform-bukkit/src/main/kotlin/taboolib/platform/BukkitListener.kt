@@ -62,7 +62,7 @@ class BukkitListener : PlatformListener {
             var origin: Any = event
             if (!isVanillaEvent) {
                 if (event.javaClass.isPlatformEvent) {
-                    origin = event.getProperty("proxyEvent")!!
+                    origin = event.getProperty("proxyEvent") ?: origin
                 } else {
                     ignored += event.javaClass
                     return

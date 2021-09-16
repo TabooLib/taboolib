@@ -26,7 +26,8 @@ object MinecraftVersion {
         arrayOf("1.15", "1.15.1", "1.15.2"), // 7
         arrayOf("1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.16.5"), // 8
         // universal >= 9
-        arrayOf("1.17", "1.17.1")
+        arrayOf("1.17", "1.17.1"),
+        arrayOf("1.18"), // 10
     )
 
     val majorLegacy by lazy {
@@ -41,6 +42,7 @@ object MinecraftVersion {
             7 -> 11500
             8 -> 11600
             9 -> 11700
+            10 -> 11800
             else -> 0
         } + minor
     }
