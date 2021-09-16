@@ -16,7 +16,7 @@ include("module-database-mongodb")
 include("module-porticus")
 include("module-navigation")
 include("module-configuration")
-include("platform-bukkit", "platform-nukkit", "platform-bungee", "platform-velocity")
+include("platform-bukkit", "platform-nukkit", "platform-bungee", /*"platform-velocity"*/)
 include("platform-sponge-api7", "platform-sponge-api8")
 include("platform-application")
 
