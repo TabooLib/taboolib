@@ -61,7 +61,7 @@ public class PorticusListener implements Listener, PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] bytes) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte [] bytes) {
         if (channel.equalsIgnoreCase("porticus_" + IOKt.getPluginId().toLowerCase() + ":main")) {
             try {
                 Message message = MessageReader.read(bytes);
