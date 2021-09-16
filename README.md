@@ -126,5 +126,6 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 
 ## 相关链接
 
++ [TabooLib 项目生成器](https://get.tabooproject.org)
 + [TabooLib 文档](https://docs.tabooproject.org)
 + [TabooLib SDK](https://github.com/taboolib/taboolib-sdk)

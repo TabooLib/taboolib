@@ -37,24 +37,24 @@ fun Player.setViewingReceptacle(receptacle: Receptacle?) {
 
 fun InventoryType.createReceptacle(title: String = defaultTitle): Receptacle {
     if (this != CHEST) {
-        val receptacleType = when (this) {
-            ENDER_CHEST, BARREL -> ReceptacleType.GENERIC_9X3
-            DISPENSER, DROPPER -> ReceptacleType.GENERIC_3X3
-            ANVIL -> ReceptacleType.ANVIL
-            FURNACE -> ReceptacleType.FURNACE
-            WORKBENCH, CRAFTING -> ReceptacleType.CRAFTING
-            ENCHANTING -> ReceptacleType.ENCHANTMENT_TABLE
-            BREWING -> ReceptacleType.BREWING_STAND
-            MERCHANT -> ReceptacleType.MERCHANT
-            BEACON -> ReceptacleType.BEACON
-            HOPPER -> ReceptacleType.HOPPER
-            SHULKER_BOX -> ReceptacleType.SHULKER_BOX
-            BLAST_FURNACE -> ReceptacleType.BLAST_FURNACE
-            SMOKER -> ReceptacleType.SMOKER
-            LOOM -> ReceptacleType.LOOM
-            CARTOGRAPHY -> ReceptacleType.CARTOGRAPHY
-            GRINDSTONE -> ReceptacleType.GRINDSTONE
-            STONECUTTER -> ReceptacleType.STONE_CUTTER
+        val receptacleType = when (this.name) {
+            "ENDER_CHEST", "BARREL" -> ReceptacleType.GENERIC_9X3
+            "DISPENSER", "DROPPER" -> ReceptacleType.GENERIC_3X3
+            "ANVIL" -> ReceptacleType.ANVIL
+            "FURNACE" -> ReceptacleType.FURNACE
+            "WORKBENCH", "CRAFTING" -> ReceptacleType.CRAFTING
+            "ENCHANTING" -> ReceptacleType.ENCHANTMENT_TABLE
+            "BREWING" -> ReceptacleType.BREWING_STAND
+            "MERCHANT" -> ReceptacleType.MERCHANT
+            "BEACON" -> ReceptacleType.BEACON
+            "HOPPER" -> ReceptacleType.HOPPER
+            "SHULKER_BOX" -> ReceptacleType.SHULKER_BOX
+            "BLAST_FURNACE" -> ReceptacleType.BLAST_FURNACE
+            "SMOKER" -> ReceptacleType.SMOKER
+            "LOOM" -> ReceptacleType.LOOM
+            "CARTOGRAPHY" -> ReceptacleType.CARTOGRAPHY
+            "GRINDSTONE" -> ReceptacleType.GRINDSTONE
+            "STONECUTTER" -> ReceptacleType.STONE_CUTTER
             else -> throw IllegalArgumentException("Unsupported $this")
         }
         return Receptacle(receptacleType, title)
