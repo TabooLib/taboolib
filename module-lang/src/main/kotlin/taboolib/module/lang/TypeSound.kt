@@ -29,7 +29,10 @@ class TypeSound : Type {
             if (resource) {
                 sender.playSoundResource(sender.location, sound, volume, pitch)
             } else {
-                sender.playSound(sender.location, sound, volume, pitch)
+                try {
+                    sender.playSound(sender.location, sound, volume, pitch)
+                } catch (ignored: IllegalArgumentException) {
+                }
             }
         } else {
             sender.sendMessage(toString())

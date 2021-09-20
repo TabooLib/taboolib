@@ -45,6 +45,10 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         nmsClass("PacketPlayOutTitle\$EnumTitleAction").enumConstants
     }
 
+    val rPacketPlayOutChat by lazy {
+        nmsClass("PacketPlayOutChat").getDeclaredConstructor()
+    }
+
     fun nmsClass(name: String): Class<*> {
         return Class.forName("net.minecraft.server.$legacyVersion.$name")
     }
@@ -339,7 +343,16 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendActionBar(message: String) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
+        try {
+            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
+        } catch (ex: NoSuchMethodError) {
+            player.getProperty<Any>("entity/playerConnection")!!
+                .invokeMethod<Void>("sendPacket", rPacketPlayOutChat.newInstance().also {
+                    it.setProperty("b", 2.toByte())
+                    it.setProperty("components", TextComponent.fromLegacyText(message))
+                })
+        }
+
     }
 
     override fun sendRawMessage(message: String) {
