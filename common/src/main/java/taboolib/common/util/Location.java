@@ -58,7 +58,7 @@ public class Location implements Cloneable {
         return this.world;
     }
 
-    public void setWorld(@NotNull World world) {
+    public void setWorld(@NotNull String world) {
         this.world = world;
     }
 
