@@ -15,7 +15,7 @@ import java.util.Objects;
  */
 public class Location implements Cloneable {
 
-    private final String world;
+    private String world;
     private double x;
     private double y;
     private double z;
@@ -56,6 +56,10 @@ public class Location implements Cloneable {
     @Nullable
     public String getWorld() {
         return this.world;
+    }
+
+    public void setWorld(@NotNull World world) {
+        this.world = world;
     }
 
     /**
