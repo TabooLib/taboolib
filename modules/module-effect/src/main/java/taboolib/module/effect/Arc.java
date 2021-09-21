@@ -1,11 +1,8 @@
 package taboolib.module.effect;
 
 import kotlin.Unit;
-import kotlin.jvm.JvmOverloads;
-import org.jetbrains.annotations.NotNull;
 import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
-import taboolib.common.platform.service.PlatformExecutor;
 import taboolib.common.util.Location;
 
 /**
@@ -16,6 +13,7 @@ import taboolib.common.util.Location;
 @Isolated
 public class Arc extends ParticleObj implements Playable {
 
+    private double startAngle = 0D;
     private double angle;
     private double radius;
     private double step;
@@ -46,7 +44,7 @@ public class Arc extends ParticleObj implements Playable {
     }
 
     /**
-     * 构造一个弧
+     * 从零度角开始构造一个弧
      *
      * @param origin 弧所在的圆的圆点
      * @param angle  弧所占的角度
@@ -63,9 +61,30 @@ public class Arc extends ParticleObj implements Playable {
         setPeriod(period);
     }
 
+    /**
+     * 从给定的开始角构造一个弧
+     *
+     * @param origin     弧所在的圆的圆点
+     * @param startAngle 开始角
+     * @param angle      弧总共的角
+     * @param radius     弧所占半径
+     * @param step       每个粒子的间隔
+     * @param period     特效周期(如果需要可以使用)
+     * @param spawner    粒子生成器
+     */
+    public Arc(Location origin, double startAngle, double angle, double radius, double step, long period, ParticleSpawner spawner) {
+        super(spawner);
+        setOrigin(origin);
+        this.startAngle = startAngle;
+        this.angle = angle;
+        this.radius = radius;
+        this.step = step;
+        setPeriod(period);
+    }
+
     @Override
     public void show() {
-        for (int i = 0; i < angle; i += step) {
+        for (double i = startAngle; i < angle; i += step) {
             double radians = Math.toRadians(i);
             double x = radius * Math.cos(radians);
             double z = radius * Math.sin(radians);
@@ -75,6 +94,8 @@ public class Arc extends ParticleObj implements Playable {
 
     @Override
     public void play() {
+        currentAngle = startAngle;
+
         ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
             // 进行关闭
             if (currentAngle > angle) {
@@ -102,8 +123,17 @@ public class Arc extends ParticleObj implements Playable {
 
         // 进行重置
         if (currentAngle > angle) {
-            currentAngle = 0D;
+            currentAngle = startAngle;
         }
+    }
+
+    public double getStartAngle() {
+        return startAngle;
+    }
+
+    public Arc setStartAngle(double startAngle) {
+        this.startAngle = startAngle;
+        return this;
     }
 
     public double getAngle() {
