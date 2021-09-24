@@ -6,7 +6,7 @@
     RuntimeDependency(
         value = "!com.mongodb:MongoDB:3.12.7",
         test = "!com.mongodb.client.MongoClient",
-        repository = "https://repo2s.ptms.ink/repository/maven-releases/"
+        repository = "http://repo.ptms.ink/repository/maven-releases/"
     )
 )
 
