@@ -11,5 +11,5 @@ dependencies {
 //    compileOnly("ink.ptms.core:v10900:10900:all")
     compileOnly("ink.ptms.core:v11701:11701:universal")
     compileOnly(project(":common"))
-    compileOnly(project(":modules:module-nms"))
+    compileOnly(project(":module:module-nms"))
 }

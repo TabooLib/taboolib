@@ -6,8 +6,8 @@ dependencies {
     compileOnly("org.apache.commons:commons-lang3:3.5")
     implementation(project(":common"))
     compileOnly(project(":common-5"))
-    compileOnly(project(":modules:module-chat"))
-    compileOnly(project(":modules:module-lang"))
-    compileOnly(project(":modules:module-nms-util"))
-    compileOnly(project(":modules:module-configuration"))
+    compileOnly(project(":module:module-chat"))
+    compileOnly(project(":module:module-lang"))
+    compileOnly(project(":module:module-nms-util"))
+    compileOnly(project(":module:module-configuration"))
 }

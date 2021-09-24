@@ -1,22 +1,22 @@
 rootProject.name = "TabooLib"
 
 fun importModules() {
-    include("modules:module-empty")
-    include("modules:module-ai")
-    include("modules:module-ui")
-    include("modules:module-ui-receptacle")
-    include("modules:module-nms")
-    include("modules:module-nms-util")
-    include("modules:module-chat")
-    include("modules:module-lang")
-    include("modules:module-effect")
-    include("modules:module-kether")
-    include("modules:module-metrics")
-    include("modules:module-database")
-    include("modules:module-database-mongodb")
-    include("modules:module-porticus")
-    include("modules:module-navigation")
-    include("modules:module-configuration")
+    include("module:module-empty")
+    include("module:module-ai")
+    include("module:module-ui")
+    include("module:module-ui-receptacle")
+    include("module:module-nms")
+    include("module:module-nms-util")
+    include("module:module-chat")
+    include("module:module-lang")
+    include("module:module-effect")
+    include("module:module-kether")
+    include("module:module-metrics")
+    include("module:module-database")
+    include("module:module-database-mongodb")
+    include("module:module-porticus")
+    include("module:module-navigation")
+    include("module:module-configuration")
 }
 
 fun importPlatforms() {
@@ -27,7 +27,8 @@ fun importPlatforms() {
 
 fun importExtensions() {
     // 临时位置，未来会被移出标准模块
-    include("expansion-command-helper")
+    include("expansion:expansion-command-helper")
+    include("expansion:expansion-player-database")
 }
 
 include("common", "common-5")

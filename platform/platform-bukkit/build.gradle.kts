@@ -16,7 +16,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11400:11400:all")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
-    compileOnly(project(":modules:module-chat"))
-    compileOnly(project(":modules:module-lang"))
-    compileOnly(project(":modules:module-configuration"))
+    compileOnly(project(":module:module-chat"))
+    compileOnly(project(":module:module-lang"))
+    compileOnly(project(":module:module-configuration"))
 }
