@@ -78,6 +78,69 @@ public class Matrixs {
     }
 
     /**
+     * 通过给定的角度返回一个关于X轴的旋转矩阵
+     * <p>注意：该方法会返回3阶方阵</p>
+     *
+     * @param theta 旋转角度
+     * @return {@link Matrix}
+     */
+    public static Matrix rotateAroundXAxis(double theta) {
+        Matrix matrix = eyes(3, 3);
+
+        double radians = Math.toRadians(-theta);
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+
+        matrix.set(2, 2, cos)
+                .set(2, 3, sin)
+                .set(3, 2, -sin)
+                .set(3, 3, cos);
+        return matrix;
+    }
+
+    /**
+     * 通过给定的角度返回一个关于Z轴的旋转矩阵
+     * <p>注意：该方法会返回3阶方阵</p>
+     *
+     * @param theta 旋转角度
+     * @return {@link Matrix}
+     */
+    public static Matrix rotateAroundYAxis(double theta) {
+        Matrix matrix = eyes(3, 3);
+
+        double radians = Math.toRadians(-theta);
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+
+        matrix.set(1, 1, cos)
+                .set(1, 3, -sin)
+                .set(3, 1, sin)
+                .set(3, 3, cos);
+        return matrix;
+    }
+
+    /**
+     * 通过给定的角度返回一个关于Z轴的旋转矩阵
+     * <p>注意：该方法会返回3阶方阵</p>
+     *
+     * @param theta 旋转角度
+     * @return {@link Matrix}
+     */
+    public static Matrix rotateAroundZAxis(double theta) {
+        Matrix matrix = eyes(3, 3);
+
+        double radians = Math.toRadians(-theta);
+        double cos = Math.cos(radians);
+        double sin = Math.sin(radians);
+
+        matrix.set(1, 1, cos)
+                .set(1, 2, sin)
+                .set(2, 1, -sin)
+                .set(2, 2, cos);
+        return matrix;
+    }
+
+    /**
      * 建立一个放大或缩小的矩阵
      *
      * @param row    行数
