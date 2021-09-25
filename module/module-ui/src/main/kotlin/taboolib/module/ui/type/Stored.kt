@@ -23,7 +23,7 @@ open class Stored(title: String) : Menu(title) {
     private var handLocked = true
     private var items = HashMap<Char, ItemStack>()
     private var slots = ArrayList<List<Char>>()
-    private var onClick: ((event: ClickEvent) -> Unit) = {}
+    private val onClick = ArrayList<(ClickEvent) -> Unit>()
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     private var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     private var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
@@ -38,7 +38,7 @@ open class Stored(title: String) : Menu(title) {
     }
 
     fun onClick(onClick: (event: ClickEvent) -> Unit) {
-        this.onClick = onClick
+        this.onClick += onClick
     }
 
     fun onClose(onClose: (event: InventoryCloseEvent) -> Unit) {
@@ -62,37 +62,29 @@ open class Stored(title: String) : Menu(title) {
     }
 
     fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit) {
-        val e = this.onClick
         onClick {
             if (it.rawSlot == bind) {
                 onClick(it)
-            } else {
-                e(it)
             }
         }
     }
 
     fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit) {
-        val e = this.onClick
         onClick {
             if (it.slot == bind) {
                 onClick(it)
-            } else {
-                e(it)
             }
         }
     }
 
     fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit) {
         if (lock) {
-            this.onClick = {
+            this.onClick += {
                 it.isCancelled = true
-                if (it.clickType == ClickType.CLICK) {
-                    onClick(it)
-                }
+                onClick(it)
             }
         } else {
-            this.onClick = onClick
+            this.onClick += onClick
         }
     }
 
@@ -137,7 +129,7 @@ open class Stored(title: String) : Menu(title) {
                     }
                 }
                 if (it.clickType === ClickType.CLICK) {
-                    this@Stored.onClick(it)
+                    this@Stored.onClick.forEach { click -> click(it) }
                     if (it.isCancelled) {
                         return@onClick
                     }

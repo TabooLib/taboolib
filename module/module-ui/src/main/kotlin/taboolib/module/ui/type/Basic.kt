@@ -64,17 +64,23 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit = {}) {
-        onClick(lock = true) {
+        onClick {
             if (it.rawSlot == bind) {
-                onClick(it)
+                it.isCancelled = true
+                if (it.clickType == ClickType.CLICK) {
+                    onClick(it)
+                }
             }
         }
     }
 
     fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit = {}) {
-        onClick(lock = true) {
+        onClick {
             if (it.slot == bind) {
-                onClick(it)
+                it.isCancelled = true
+                if (it.clickType == ClickType.CLICK) {
+                    onClick(it)
+                }
             }
         }
     }
