@@ -11,6 +11,7 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.net.InetSocketAddress
@@ -312,10 +313,21 @@ class CloudNetV3Player(val sender: ICommandSender) : ProxyPlayer {
     override fun teleport(loc: Location) {
         error("unsupported")
     }
+
+    override fun <T> cast(): T {
+        return sender.getProperty<T>("player") ?: super.cast()
+    }
+
+    override fun <T> castSafely(): T? {
+        return sender.getProperty<T>("player") ?: super.castSafely()
+    }
 }
 
 val CloudPlayer.sender: ICommandSender get() = this.let { player ->
-    object : ICommandSender {
+    object : CloudPlayer(), ICommandSender {
+        @JvmField
+        val player = player
+
         override fun getName() = player.name
 
         override fun sendMessage(message: String) =
