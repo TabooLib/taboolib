@@ -326,19 +326,9 @@ class CloudNetV3Player : ProxyPlayer {
     override fun teleport(loc: Location) {
         error("unsupported")
     }
-
-    // cast ICommandSender
-    // cast CloudPlayer
-    override fun <T> cast(): T {
-        return origin.getProperty<T>("player") ?: super.cast()
-    }
-
-    override fun <T> castSafely(): T? {
-        return origin.getProperty<T>("player") ?: super.castSafely()
-    }
 }
 
-private class FilteredPlayer(@JvmField val player: CloudPlayer) : ICommandSender {
+class FilteredPlayer(@JvmField val player: CloudPlayer) : ICommandSender {
 
     override fun getName(): String = player.name
 
@@ -353,3 +343,5 @@ private class FilteredPlayer(@JvmField val player: CloudPlayer) : ICommandSender
 }
 
 val CloudPlayer.sender: ICommandSender get() = FilteredPlayer(this)
+
+val FilteredPlayer.asPlayer get() = this.getProperty<CloudPlayer>("player")
