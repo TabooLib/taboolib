@@ -24,18 +24,31 @@ import java.util.*
  * @author CziSKY
  * @since 2021/6/21 13:41
  */
-class CloudNetV3Player(val sender: ICommandSender) : ProxyPlayer {
+class CloudNetV3Player : ProxyPlayer {
 
-    private val player: CloudPlayer = sender as CloudPlayer
+    val sender: ICommandSender
 
-    // 用于以后支持更多操作
-    val rawData = CloudNet.getInstance().cloudServiceProvider.getCloudService(player.connectedService.uniqueId).let {
-        it ?: return@let JsonDocument()
-        it.getProperty(BridgeServiceProperty.PLAYERS).orElse(null).find { it.name == this.name }?.rawData ?: JsonDocument()
+    constructor(cloudPlayer: CloudPlayer): this(cloudPlayer.sender)
+
+    constructor(sender: ICommandSender) {
+        this.sender = sender
+        this.player = sender.getProperty<CloudPlayer>("player")!!
+        this.rawData =
+            CloudNet.getInstance().cloudServiceProvider.getCloudService(player.connectedService.uniqueId).let {
+                it ?: return@let JsonDocument()
+                it.getProperty(BridgeServiceProperty.PLAYERS).orElse(null).find { it.name == this.name }?.rawData
+                    ?: JsonDocument()
+            }
     }
 
+
+    private val player: CloudPlayer
+
+    // 用于以后支持更多操作
+    val rawData: JsonDocument
+
     override val origin: Any
-        get() = player
+        get() = sender
 
     override val name: String
         get() = player.name
@@ -314,30 +327,29 @@ class CloudNetV3Player(val sender: ICommandSender) : ProxyPlayer {
         error("unsupported")
     }
 
+    // cast ICommandSender
+    // cast CloudPlayer
     override fun <T> cast(): T {
-        return sender.getProperty<T>("player") ?: super.cast()
+        return origin.getProperty<T>("player") ?: super.cast()
     }
 
     override fun <T> castSafely(): T? {
-        return sender.getProperty<T>("player") ?: super.castSafely()
+        return origin.getProperty<T>("player") ?: super.castSafely()
     }
 }
 
-val CloudPlayer.sender: ICommandSender get() = this.let { player ->
-    object : CloudPlayer(), ICommandSender {
-        @JvmField
-        val player = player
+private class FilteredPlayer(@JvmField val player: CloudPlayer) : ICommandSender {
 
-        override fun getName() = player.name
+    override fun getName(): String = player.name
 
-        override fun sendMessage(message: String) =
-            AdventureComponentMessenger.sendMessage(player, Component.text(message))
+    override fun sendMessage(message: String) =
+        AdventureComponentMessenger.sendMessage(player, Component.text(message))
 
-        override fun sendMessage(vararg messages: String) =
-            messages.forEach { sendMessage(it) }
+    override fun sendMessage(vararg messages: String) =
+        messages.forEach { sendMessage(it) }
 
-        override fun hasPermission(permission: String) =
-            CloudNet.getInstance().permissionManagement.getUser(uniqueId)?.hasPermission(permission)?.asBoolean() ?: false
-
-    }
+    override fun hasPermission(permission: String) =
+        CloudNet.getInstance().permissionManagement.getUser(player.uniqueId)?.hasPermission(permission)?.asBoolean() ?: false
 }
+
+val CloudPlayer.sender: ICommandSender get() = FilteredPlayer(this)
