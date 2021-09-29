@@ -60,6 +60,9 @@ open class ItemBuilder {
     var isUnbreakable = false
     var customModelData = -1
 
+    // 尝试修复自定义 nbt 失效
+    var originMeta: ItemMeta? = null
+
     var finishing: (ItemStack) -> Unit = {}
 
     constructor(material: Material) {
@@ -76,6 +79,7 @@ open class ItemBuilder {
         material = item.type
         damage = item.durability.toInt()
         val itemMeta = item.itemMeta ?: return
+        originMeta = itemMeta
         name = itemMeta.displayName
         lore += itemMeta.lore ?: emptyList()
         flags += itemMeta.itemFlags
@@ -166,7 +170,7 @@ open class ItemBuilder {
         if (damage != 0) {
             itemStack.durability = damage.toShort()
         }
-        val itemMeta = itemStack.itemMeta ?: return itemStack
+        val itemMeta = originMeta ?: itemStack.itemMeta ?: return itemStack
         itemMeta.setDisplayName(name)
         itemMeta.lore = lore
         itemMeta.addItemFlags(*flags.toTypedArray())
