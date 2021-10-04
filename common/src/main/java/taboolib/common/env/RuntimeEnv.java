@@ -34,8 +34,10 @@ public class RuntimeEnv {
     public void setup() {
         try {
             loadDependency(KotlinEnv.class);
-        } catch (NoClassDefFoundError ignored) {
-        }
+        } catch (NoClassDefFoundError ignored) { }
+        try {
+            loadDependency(KotlinEnvNoRelocate.class);
+        } catch (NoClassDefFoundError ignored) { }
     }
 
     public void inject(@NotNull Class<?> clazz) {
