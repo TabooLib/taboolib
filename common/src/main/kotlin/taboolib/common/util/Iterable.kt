@@ -1,9 +1,20 @@
 @file:Isolated
+
 package taboolib.common.util
 
 import taboolib.common.Isolated
 import java.io.Closeable
 
+/**
+ * 遍历一个集合
+ * 可以在遍历的过程中使用 close() 方法结束遍历，以弥补 Kotlin 无法使用 break 的设计
+ *
+ * @param start 开始位置（可省略）
+ * @param end 结束位置（可省略）
+ * @param reversed 是否逆向
+ * @param action 方法体
+ * @return 最后一次方法体执行结果
+ */
 fun <T, C : Iterable<T>, R> C.each(start: Int = -1, end: Int = -1, reversed: Boolean = false, action: Closeable.(index: Int, T) -> R?): R? {
     val trigger = object : Closeable {
         var closed = false

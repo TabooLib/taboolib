@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package taboolib.common.io
 
 import taboolib.common.TabooLibCommon
@@ -5,16 +7,22 @@ import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.lazySupplier
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.net.JarURLConnection
 import java.net.URISyntaxException
 import java.net.URL
 import java.util.function.Supplier
 import java.util.jar.JarFile
 
+/**
+ * 当前插件的所有类
+ */
 val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
 
-@Suppress("UNCHECKED_CAST")
+/**
+ * 取该类在当前项目中被加载的任何实例
+ * 例如：@Awake 自唤醒类，或是 Kotlin Companion Object、Kotlin Object 对象
+ * @param newInstance 若无任何已加载的实例，是否实例化
+ */
 fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     try {
         val awoken = PlatformFactory.awokenMap[name] as? T

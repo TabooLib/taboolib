@@ -6,6 +6,13 @@ fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)
 }
 
+/**
+ * 获取列表中特定范围内的元素
+ *
+ * @param list 列表
+ * @param start 开始位置
+ * @param end 结束位置（默认为元素数量）
+ */
 fun <T> subList(list: List<T>, start: Int = 0, end: Int = list.size): List<T> {
     return list.filterIndexed { index, _ -> index in start until end }
 }
