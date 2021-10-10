@@ -22,6 +22,7 @@ fun importModules() {
 fun importPlatforms() {
     include("platform:platform-bukkit", "platform:platform-nukkit", "platform:platform-bungee", "platform:platform-velocity")
     include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
+    include("platform:platform-cloudnet-v3")
     include("platform:platform-application")
 }
 

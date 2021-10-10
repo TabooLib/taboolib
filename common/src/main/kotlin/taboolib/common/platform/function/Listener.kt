@@ -50,13 +50,16 @@ private val Class<*>.proxyEvent: Class<*>?
  * 而非跨平台事件的总接口（ProxyEvent）
  */
 val Class<*>.isPlatformEvent: Boolean
-    get() = platformClassCache.computeIfAbsent(this) {
-        val superclass = superclass
-        when {
-            name.endsWith(proxyEventName) -> true
-            superclass != null && superclass.name.endsWith(proxyEventName) -> true
-            else -> superclass?.isPlatformEvent ?: false
+    get() {
+        if (!platformClassCache.containsKey(this)) {
+            val superclass = superclass
+            platformClassCache[this] = when {
+                name.endsWith(proxyEventName) -> true
+                superclass != null && superclass.name.endsWith(proxyEventName) -> true
+                else -> superclass?.isPlatformEvent ?: false
+            }
         }
+        return platformClassCache[this]!!
     }
 
 fun Class<*>.getUsableEvent(): Class<*> {

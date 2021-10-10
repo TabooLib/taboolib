@@ -15,5 +15,4 @@ package taboolib.common.env;
         test = "!kotlin@kotlin_version_escape@.collections.jdk8.CollectionsJDK8Kt",
         relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@."}
 )
-public class KotlinEnv {
-}
+public class KotlinEnv { }
