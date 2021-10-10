@@ -1,8 +1,8 @@
 repositories {
-    maven { url = uri("https://repo.codemc.io/repository/maven-public/") }
 }
 
 dependencies {
-    compileOnly("net.md-5:bungeecord-chat:1.17-R0.1-SNAPSHOT")
+    compileOnly("com.google.code.gson:gson:2.8.7")
+    compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly(project(":common"))
 }

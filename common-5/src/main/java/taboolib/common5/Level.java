@@ -15,6 +15,12 @@ import taboolib.common.platform.ProxyPlayer;
 @Isolated
 public class Level {
 
+    /**
+     * 设置玩家的当前经验总值
+     *
+     * @param player 玩家
+     * @param exp 经验
+     */
     public static void setTotalExperience(ProxyPlayer player, int exp) {
         player.setExp(0);
         player.setLevel(0);
@@ -36,6 +42,12 @@ public class Level {
         return getExpAtLevel(player.getLevel());
     }
 
+    /**
+     * 获取当前等级下的最大经验
+     * 根据运行平台分为 Bukkit 和 Nukkit 两种不同的算法
+     *
+     * @param level 等级
+     */
     public static int getExpAtLevel(int level) {
         if (TabooLibCommon.getRunningPlatform() == Platform.NUKKIT) {
             if (level >= 30) {
@@ -56,6 +68,11 @@ public class Level {
         }
     }
 
+    /**
+     * 获取当前等级下的最大经验总值（从 1 级到该等级的所有最大经验总和）
+     *
+     * @param level 等级
+     */
     public static int getExpToLevel(int level) {
         int currentLevel = 0;
         int exp = 0;
@@ -69,6 +86,11 @@ public class Level {
         return exp;
     }
 
+    /**
+     * 获取玩家当前经验总值
+     *
+     * @param player 玩家
+     */
     public static int getTotalExperience(ProxyPlayer player) {
         int exp = Math.round(getExpAtLevel(player) * player.getExp());
         int currentLevel = player.getLevel();
@@ -82,6 +104,11 @@ public class Level {
         return exp;
     }
 
+    /**
+     * 获取玩家距离升级还差多少经验
+     *
+     * @param player 玩家
+     */
     public static int getExpUntilNextLevel(ProxyPlayer player) {
         int exp = Math.round(getExpAtLevel(player) * player.getExp());
         int nextLevel = player.getLevel();

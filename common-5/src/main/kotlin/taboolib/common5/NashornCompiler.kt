@@ -9,10 +9,7 @@ import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
 import taboolib.common.Isolated
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
-import javax.script.Compilable
-import javax.script.CompiledScript
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineFactory
+import javax.script.*
 
 val scriptEngineFactory by lazy {
     try {
