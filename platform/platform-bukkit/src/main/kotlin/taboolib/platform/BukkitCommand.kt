@@ -1,5 +1,7 @@
 package taboolib.platform
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentBuilder
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -22,6 +24,7 @@ import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
+import java.lang.ClassCastException
 import java.lang.reflect.Constructor
 
 /**
@@ -75,7 +78,13 @@ class BukkitCommand : PlatformCommand {
             pluginCommand.setProperty("aliases", command.aliases)
             pluginCommand.setProperty("activeAliases", command.aliases)
             pluginCommand.setProperty("permission", permission)
-            pluginCommand.setProperty("permissionMessage", command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
+            val permissionMessage = command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage }
+            try {
+                // ClassCastException: Cannot cast java.lang.String to net.kyori.adventure.text.Component
+                pluginCommand.setProperty("permissionMessage", permissionMessage)
+            } catch (ex: ClassCastException) {
+                pluginCommand.setProperty("permissionMessage", Component.text(permission))
+            }
             // 注册权限
             fun registerPermission(permission: String, default: PermissionDefault) {
                 if (Bukkit.getPluginManager().getPermission(permission) == null) {

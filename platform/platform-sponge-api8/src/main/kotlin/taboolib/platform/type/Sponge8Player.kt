@@ -183,10 +183,10 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override val firstPlayed: Long
-        get() = player.firstJoined().get().toEpochMilli()
+        get() = player.firstJoined().get().get().toEpochMilli()
 
     override val lastPlayed: Long
-        get() = player.lastPlayed().get().toEpochMilli()
+        get() = player.lastPlayed().get().get().toEpochMilli()
 
     override var absorptionAmount: Double
         get() = player.get(Keys.ABSORPTION).orElse(0.0)

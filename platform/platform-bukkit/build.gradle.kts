@@ -4,6 +4,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly("net.kyori:adventure-api:4.9.2")
     compileOnly("net.milkbowl.vault:Vault:1:all")
     compileOnly("me.clip:placeholderapi:2.10.10")
 //    compileOnly("org.spigotmc:spigot:1.17.1-R0.1-20210822.084823-7")
