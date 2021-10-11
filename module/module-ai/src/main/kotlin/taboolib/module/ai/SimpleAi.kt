@@ -16,7 +16,7 @@ abstract class SimpleAi {
     /**
      * @return 是否继续执行
      */
-    fun continueExecute(): Boolean {
+    open fun continueExecute(): Boolean {
         return shouldExecute()
     }
 
