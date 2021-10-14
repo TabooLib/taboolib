@@ -11,9 +11,7 @@ class TypeSQLite(file: File) : Type() {
 
     val tableVar = Table(pluginId, host) {
         add("user") {
-            type(ColumnTypeSQLite.TEXT, 36) {
-                options(ColumnOptionSQLite.PRIMARY_KEY)
-            }
+            type(ColumnTypeSQLite.TEXT, 36)
         }
         add("key") {
             type(ColumnTypeSQLite.TEXT, 64)
