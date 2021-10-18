@@ -201,7 +201,8 @@ object CommandBuilder {
         }
     }
 
-    class CommandSuggestion<T>(bind: Class<T>, val uncheck: Boolean, val function: (sender: T, context: CommandContext<T>) -> List<String>?) : CommandBinder<T>(bind) {
+    class CommandSuggestion<T>(bind: Class<T>, val uncheck: Boolean, val function: (sender: T, context: CommandContext<T>) -> List<String>?) :
+        CommandBinder<T>(bind) {
 
         fun exec(context: CommandContext<*>): List<String>? {
             val sender = cast(context)
@@ -213,12 +214,16 @@ object CommandBuilder {
         }
     }
 
-    class CommandUnknownNotify<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>, index: Int, state: Int) -> Unit) : CommandBinder<T>(bind) {
+    class CommandUnknownNotify<T>(bind: Class<T>, val function: (sender: T, context: CommandContext<T>, index: Int, state: Int) -> Unit) :
+        CommandBinder<T>(bind) {
 
         fun exec(context: CommandContext<*>, index: Int, state: Int) {
             val sender = cast(context)
             if (sender != null) {
-                function.invoke(sender, CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index), index, state)
+                function.invoke(sender,
+                    CommandContext(sender, context.command, context.name, context.commandCompound, context.args, context.index),
+                    index,
+                    state)
             }
         }
     }
@@ -252,8 +257,18 @@ object CommandBuilder {
             children += CommandComponentLiteral(*aliases, optional = optional, permission = permission).also(literal)
         }
 
-        fun dynamic(commit: String = "...", optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
-            children += CommandComponentDynamic(commit, optional, permission).also(dynamic)
+        fun dynamic(commit: String = "...", repeat: Int = 1, optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
+            when {
+                repeat < 1 -> {
+                    error("repeat must > 0")
+                }
+                repeat == 1 -> {
+                    children += CommandComponentDynamic(commit, optional, permission).also(dynamic)
+                }
+                else -> {
+                    TODO("unsupported")
+                }
+            }
         }
 
         inline fun <reified T> execute(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {

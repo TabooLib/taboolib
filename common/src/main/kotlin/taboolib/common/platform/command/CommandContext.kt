@@ -22,10 +22,34 @@ class CommandContext<T>(
         return (sender as ProxyCommandSender).hasPermission(permission)
     }
 
-    fun argument(offset: Int): String? {
-        val args = args.filterIndexed { i, _ -> i <= index }.toTypedArray().also {
+    /**
+     * 取全部参数
+     */
+    fun args(): Array<String> {
+        return args.filterIndexed { i, _ -> i <= index }.toTypedArray().also {
             it[index] = "${it[index]} ${args.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim()
         }
-        return args.getOrNull(index + offset)
+    }
+
+    /**
+     * 取绝对位置参数
+     */
+    fun get(index: Int): String {
+        return args()[index]
+    }
+
+    fun getOrNull(index: Int): String? {
+        return kotlin.runCatching { get(index) }.getOrNull()
+    }
+
+    /**
+     * 取相对位置参数
+     */
+    fun argument(offset: Int): String {
+        return args()[index + offset]
+    }
+
+    fun argumentOrNull(offset: Int): String? {
+        return kotlin.runCatching { argument(offset) }.getOrNull()
     }
 }

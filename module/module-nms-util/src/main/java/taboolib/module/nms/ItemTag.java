@@ -31,11 +31,11 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
     }
 
     public String toJson() {
-        return new Gson().toJson(this);
+        return ItemTagSerializer.INSTANCE.serializeData(this).toString();
     }
 
     public String toJsonFormatted() {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(new Gson().toJsonTree(this));
+        return new GsonBuilder().setPrettyPrinting().create().toJson(ItemTagSerializer.INSTANCE.serializeTag(this));
     }
 
     @Override
@@ -65,63 +65,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
     }
 
     public static ItemTagData fromJson(JsonElement element) {
-        if (element instanceof JsonObject) {
-            JsonObject json = (JsonObject) element;
-            // base
-            if (json.has("type") && json.has("data") && json.entrySet().size() == 2) {
-                switch (ItemTagType.parse(json.get("type").getAsString())) {
-                    case BYTE:
-                        return new ItemTagData(json.get("data").getAsByte());
-                    case SHORT:
-                        return new ItemTagData(json.get("data").getAsShort());
-                    case INT:
-                        return new ItemTagData(json.get("data").getAsInt());
-                    case LONG:
-                        return new ItemTagData(json.get("data").getAsLong());
-                    case FLOAT:
-                        return new ItemTagData(json.get("data").getAsFloat());
-                    case DOUBLE:
-                        return new ItemTagData(json.get("data").getAsDouble());
-                    case STRING:
-                        return new ItemTagData(json.get("data").getAsString());
-                    case BYTE_ARRAY: {
-                        JsonArray array = json.get("data").getAsJsonArray();
-                        byte[] bytes = new byte[array.size()];
-                        for (int i = 0; i < array.size(); i++) {
-                            bytes[i] = array.get(i).getAsByte();
-                        }
-                        return new ItemTagData(bytes);
-                    }
-                    case INT_ARRAY: {
-                        JsonArray array = json.get("data").getAsJsonArray();
-                        int[] ints = new int[array.size()];
-                        for (int i = 0; i < array.size(); i++) {
-                            ints[i] = array.get(i).getAsInt();
-                        }
-                        return new ItemTagData(ints);
-                    }
-                    default:
-                        return new ItemTagData("error: " + element);
-                }
-            }
-            // compound
-            else {
-                ItemTag compound = new ItemTag();
-                for (Entry<String, JsonElement> elementEntry : json.entrySet()) {
-                    compound.put(elementEntry.getKey(), fromJson(elementEntry.getValue()));
-                }
-                return compound;
-            }
-        }
-        // list
-        else if (element instanceof JsonArray) {
-            ItemTagList list = new ItemTagList();
-            for (JsonElement jsonElement : (JsonArray) element) {
-                list.add(fromJson(jsonElement));
-            }
-            return list;
-        }
-        return new ItemTagData("error: " + element);
+        return ItemTagSerializer.INSTANCE.deserializeData(element);
     }
 
     @Override
