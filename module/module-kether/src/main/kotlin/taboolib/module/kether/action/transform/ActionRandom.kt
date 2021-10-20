@@ -1,11 +1,10 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.util.random
+import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
 
@@ -71,6 +70,23 @@ class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>
             } catch (ignored: Exception) {
                 it.reset()
                 ActionRandom(0.0, 0.0, it.next(ArgTypes.ACTION))
+            }
+        }
+
+        @KetherParser(["random2"])
+        fun random2() = scriptParser {
+            val from = it.next(ArgTypes.ACTION)
+            val to = it.next(ArgTypes.ACTION)
+            actionFuture {
+                newFrame(from).run<Any>().thenAccept { from ->
+                    newFrame(to).run<Any>().thenAccept { to ->
+                        if (from.isInt() && to.isInt()) {
+                            it.complete(random(Coerce.toInteger(from), Coerce.toInteger(to)))
+                        } else {
+                            it.complete(random(Coerce.toDouble(from), Coerce.toDouble(to)))
+                        }
+                    }
+                }
             }
         }
     }
