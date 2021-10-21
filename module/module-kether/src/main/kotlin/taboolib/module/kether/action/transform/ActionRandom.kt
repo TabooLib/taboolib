@@ -76,6 +76,7 @@ class ActionRandom(val from: Double, val to: Double, val action: ParsedAction<*>
         @KetherParser(["random2"])
         fun random2() = scriptParser {
             val from = it.next(ArgTypes.ACTION)
+            it.expect("to")
             val to = it.next(ArgTypes.ACTION)
             actionFuture {
                 newFrame(from).run<Any>().thenAccept { from ->
