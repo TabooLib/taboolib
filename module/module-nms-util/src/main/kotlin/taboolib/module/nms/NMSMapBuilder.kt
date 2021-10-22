@@ -10,28 +10,64 @@ import java.io.File
 import java.net.URL
 import javax.imageio.ImageIO
 
-fun buildMap(url: String, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}): NMSMap {
-    return NMSMap(URL(url).openStream().use { ImageIO.read(it) }.zoomed(width, height), builder)
+fun buildMap(
+    url: String,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+): NMSMap {
+    return NMSMap(URL(url).openStream().use { ImageIO.read(it) }.zoomed(width, height), hand, builder)
 }
 
-fun buildMap(file: File, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}): NMSMap {
-    return NMSMap(ImageIO.read(file).zoomed(width, height), builder)
+fun buildMap(
+    file: File,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+): NMSMap {
+    return NMSMap(ImageIO.read(file).zoomed(width, height), hand, builder)
 }
 
-fun buildMap(image: BufferedImage, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}): NMSMap {
-    return NMSMap(image.zoomed(width, height), builder)
+fun buildMap(
+    image: BufferedImage,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+): NMSMap {
+    return NMSMap(image.zoomed(width, height), hand, builder)
 }
 
-fun Player.sendMap(url: String, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}) {
-    buildMap(url, width, height, builder).sendTo(this)
+fun Player.sendMap(
+    url: String,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+) {
+    buildMap(url, hand, width, height, builder).sendTo(this)
 }
 
-fun Player.sendMap(file: File, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}) {
-    buildMap(file, width, height, builder).sendTo(this)
+fun Player.sendMap(
+    file: File,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+) {
+    buildMap(file, hand, width, height, builder).sendTo(this)
 }
 
-fun Player.sendMap(image: BufferedImage, width: Int = 128, height: Int = 128, builder: ItemBuilder.() -> Unit = {}) {
-    buildMap(image, width, height, builder).sendTo(this)
+fun Player.sendMap(
+    image: BufferedImage,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+) {
+    buildMap(image, hand, width, height, builder).sendTo(this)
 }
 
 /**

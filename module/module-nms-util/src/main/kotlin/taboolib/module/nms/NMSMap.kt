@@ -25,7 +25,11 @@ import java.lang.reflect.Array
  * @author xbaimiao, sky
  */
 @Isolated
-class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {}) {
+class NMSMap(val image: BufferedImage, val hand: Hand = Hand.MAIN, val builder: ItemBuilder.() -> Unit = {}) {
+
+    enum class Hand {
+        MAIN, OFF
+    }
 
     companion object {
 
@@ -155,6 +159,9 @@ class NMSMap(val image: BufferedImage, val builder: ItemBuilder.() -> Unit = {})
     }
 
     private fun getMainHandSlot(player: Player): Int {
+        if (hand == Hand.OFF) {
+            return 45
+        }
         return player.inventory.heldItemSlot + 36
     }
 }
