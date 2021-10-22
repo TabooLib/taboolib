@@ -65,6 +65,8 @@ class TellrawJson {
                 it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text))
             } catch (ex: NoClassDefFoundError) {
                 it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(text))
+            } catch (ex: NoSuchMethodError) {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(text))
             }
         }
         return this
@@ -75,6 +77,8 @@ class TellrawJson {
             try {
                 it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(tag)))
             } catch (ex: NoClassDefFoundError) {
+                it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$tag}").create())
+            } catch (ex: NoSuchMethodError) {
                 it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$tag}").create())
             }
         }
