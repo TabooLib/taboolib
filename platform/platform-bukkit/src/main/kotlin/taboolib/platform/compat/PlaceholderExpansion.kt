@@ -43,11 +43,8 @@ interface PlaceholderExpansion {
     @Awake
     object PlaceholderRegister : Injector.Classes {
 
-        val hooked = try {
-            Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion")
-            true
-        } catch (ignored: ClassNotFoundException) {
-            false
+        val hooked by lazy {
+            kotlin.runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
         }
 
         override fun inject(clazz: Class<*>, instance: Supplier<*>) {
