@@ -28,7 +28,7 @@ object ItemTagSerializer {
             ItemTagType.DOUBLE -> JsonPrimitive("${tagData.asDouble()}d")
             ItemTagType.STRING, ItemTagType.END -> JsonPrimitive("${tagData.asString()}t")
             ItemTagType.INT_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}i]")
-            ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}b]")
+            ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asByteArray().joinToString(",") { it.toString() }}b]")
         }
     }
 
