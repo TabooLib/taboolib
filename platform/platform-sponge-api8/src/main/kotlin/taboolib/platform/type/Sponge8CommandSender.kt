@@ -25,6 +25,10 @@ class Sponge8CommandSender(val sender: Audience) : ProxyCommandSender {
         set(_) {
         }
 
+    override fun isOnline(): Boolean {
+        return true
+    }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(Component.text(message))
     }

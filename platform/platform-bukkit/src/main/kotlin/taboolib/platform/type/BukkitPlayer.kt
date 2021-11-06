@@ -294,6 +294,10 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
             player.isOp = value
         }
 
+    override fun isOnline(): Boolean {
+        return player.isOnline
+    }
+
     override fun kick(message: String?) {
         player.kickPlayer(message)
     }

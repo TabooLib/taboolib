@@ -31,7 +31,7 @@ public class BlockReader extends AbstractStringReader {
         while (hasNext()) {
             readBlock();
         }
-        return new SimpleQuest(blocks, id);
+        return new SimpleQuest(content, blocks, id);
     }
 
     public void readBlock() {

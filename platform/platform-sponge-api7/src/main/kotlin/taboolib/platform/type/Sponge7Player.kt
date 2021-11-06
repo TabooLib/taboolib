@@ -28,6 +28,7 @@ import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
@@ -293,6 +294,10 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override val facing: String
         get() = Direction.getClosest(player.transform.rotation).name
 
+    override fun isOnline(): Boolean {
+        return player.isOnline
+    }
+
     override fun kick(message: String?) {
         player.kick(Text.of(message ?: ""))
     }
@@ -329,7 +334,6 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
         if (particle.aliases[0] == "~") {
             error("Unsupported particle ${particle.name}")
-            return
         }
         var type: ParticleType? = null
         for (alias in particle.aliases) {
@@ -344,7 +348,6 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
         if (type == null) {
             error("Unsupported particle ${particle.name}")
-            return
         }
         val builder = ParticleEffect.builder().type(type)
             .offset(Vector3d.from(offset.x, offset.y, offset.z))

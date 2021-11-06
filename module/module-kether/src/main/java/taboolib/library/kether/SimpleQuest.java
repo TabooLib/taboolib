@@ -10,12 +10,18 @@ import java.util.Optional;
 
 public class SimpleQuest implements Quest {
 
+    private final char[] content;
     private final String id;
     private final Map<String, Block> map = Maps.newHashMap();
 
-    public SimpleQuest(Map<String, Block> map, String id) {
+    public SimpleQuest(char[] content, Map<String, Block> map, String id) {
+        this.content = content;
         this.id = id;
         this.map.putAll(map);
+    }
+
+    public char[] getContent() {
+        return content;
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.kyori.adventure.title.Title
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.VelocityPlugin
@@ -255,6 +256,10 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
 
     override val facing: String
         get() = error("unsupported")
+
+    override fun isOnline(): Boolean {
+        return onlinePlayers().any { it.name == name }
+    }
 
     override fun kick(message: String?) {
         player.disconnect(Component.text(message ?: ""))

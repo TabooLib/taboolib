@@ -16,6 +16,8 @@ interface ProxyCommandSender {
 
     var isOp: Boolean
 
+    fun isOnline(): Boolean
+
     fun sendMessage(message: String)
 
     fun performCommand(command: String): Boolean
