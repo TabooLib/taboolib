@@ -28,6 +28,10 @@ class BukkitCommandSender(val sender: CommandSender) : ProxyCommandSender {
             sender.isOp = value
         }
 
+    override fun isOnline(): Boolean {
+        return true
+    }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(message)
     }

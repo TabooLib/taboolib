@@ -9,6 +9,7 @@ import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.NukkitPlugin
@@ -257,6 +258,10 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
 
     override val facing: String
         get() = player.horizontalFacing.name
+
+    override fun isOnline(): Boolean {
+        return player.isOnline
+    }
 
     override fun kick(message: String?) {
         player.kick(message)

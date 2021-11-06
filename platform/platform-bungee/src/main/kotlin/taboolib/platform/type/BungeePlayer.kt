@@ -7,6 +7,7 @@ import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.BungeePlugin
@@ -252,6 +253,10 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
 
     override val facing: String
         get() = error("unsupported")
+
+    override fun isOnline(): Boolean {
+        return onlinePlayers().any { it.name == name }
+    }
 
     override fun kick(message: String?) {
         player.disconnect(TextComponent(message))

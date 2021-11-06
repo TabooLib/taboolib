@@ -28,6 +28,10 @@ class Sponge7CommandSender(val sender: CommandSource) : ProxyCommandSender {
             sender.subjectData.setPermission(SubjectData.GLOBAL_CONTEXT, "*", if (value) Tristate.TRUE else Tristate.UNDEFINED)
         }
 
+    override fun isOnline(): Boolean {
+        return true
+    }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(Text.of(message))
     }

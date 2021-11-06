@@ -26,6 +26,10 @@ class VelocityCommandSender(val sender: CommandSource) : ProxyCommandSender {
             error("unsupported")
         }
 
+    override fun isOnline(): Boolean {
+        return true
+    }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(Component.text(message))
     }

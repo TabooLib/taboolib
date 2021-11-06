@@ -2,7 +2,9 @@ package taboolib.platform.type
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.chat.TextComponent
+import net.md_5.bungee.api.connection.ProxiedPlayer
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.onlinePlayers
 import taboolib.platform.BungeePlugin
 
 /**
@@ -25,6 +27,10 @@ class BungeeCommandSender(val sender: CommandSender) : ProxyCommandSender {
         set(_) {
             error("unsupported")
         }
+
+    override fun isOnline(): Boolean {
+        return true
+    }
 
     override fun sendMessage(message: String) {
         sender.sendMessage(TextComponent(message))

@@ -13,8 +13,7 @@ public class ParsedAction<A> {
     private final Map<String, Object> properties;
 
     public ParsedAction(QuestAction<A> action) {
-        this.action = action;
-        this.properties = new HashMap<>();
+        this(action, new HashMap<>());
     }
 
     public ParsedAction(QuestAction<A> action, Map<String, Object> properties) {
@@ -105,8 +104,8 @@ public class ParsedAction<A> {
         @Override
         public String toString() {
             return "ActionProperty{" +
-                "id='" + id + '\'' +
-                '}';
+                    "id='" + id + '\'' +
+                    '}';
         }
 
         public static <T> ActionProperty<T> of(String id) {

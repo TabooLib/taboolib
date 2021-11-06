@@ -113,6 +113,8 @@ enum class PlayerOperators(
         PlayerOperator.Method.MODIFY
     ),
 
+    UUID({ it.uniqueId.toString() }),
+
     GAMEMODE(
         { it.gameMode.name },
         { p, _, v ->
@@ -172,6 +174,8 @@ enum class PlayerOperators(
     LEASHED({ it.isLeashed }),
 
     ON_GROUND({ it.isOnGround }),
+
+    IS_ONLINE({ it.isOnline() }),
 
     INSIDE_VEHICLE({ it.isInsideVehicle }),
 

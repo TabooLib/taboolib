@@ -25,6 +25,10 @@ class CloudNetV3CommandSender(val sender: ICommandSender) : ProxyCommandSender {
             error("unsupported")
         }
 
+    override fun isOnline(): Boolean {
+        return true
+    }
+
     override fun sendMessage(message: String) {
         sender.sendMessage(message)
     }
