@@ -53,7 +53,7 @@ class ActionType {
         }),
 
         BOOLEAN({
-            Coerce.toInteger(it)
+            Coerce.toBoolean(it)
         })
     }
 
