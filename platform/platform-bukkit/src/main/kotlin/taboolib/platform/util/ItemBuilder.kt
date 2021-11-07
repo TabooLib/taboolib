@@ -24,15 +24,26 @@ import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
 import java.util.*
 
+val ItemStack.isAir get() = type == Material.AIR || type.name.endsWith("_AIR")
+
 inline fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    if (itemStack.type == Material.AIR || itemStack.type.name.endsWith("_AIR")) {
+    if (itemStack.isAir) {
         error("air")
     }
     return ItemBuilder(itemStack).also(builder).build()
 }
 
+val XMaterial.isAir get() = this == XMaterial.AIR || this == XMaterial.CAVE_AIR || this == XMaterial.VOID_AIR
+
 inline fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    if (material == XMaterial.AIR || material == XMaterial.CAVE_AIR || material == XMaterial.VOID_AIR) {
+    if (material.isAir) {
+        error("air")
+    }
+    return ItemBuilder(material).also(builder).build()
+}
+
+inline fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+    if (material.isAir) {
         error("air")
     }
     return ItemBuilder(material).also(builder).build()
@@ -77,6 +88,7 @@ open class ItemBuilder {
 
     constructor(item: ItemStack) {
         material = item.type
+        amount = item.amount
         damage = item.durability.toInt()
         val itemMeta = item.itemMeta ?: return
         originMeta = itemMeta
