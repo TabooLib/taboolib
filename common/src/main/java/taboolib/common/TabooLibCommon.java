@@ -8,6 +8,11 @@ import taboolib.common.inject.RuntimeInjector;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * TabooLib
  * taboolib.common.TabooLibCommon
@@ -34,6 +39,8 @@ public class TabooLibCommon {
     private static boolean sysoutCatcherFound = false;
 
     private static boolean init = false;
+
+    private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new HashMap<>();
 
     static {
         try {
@@ -63,6 +70,15 @@ public class TabooLibCommon {
         lifeCycle(LifeCycle.DISABLE);
     }
 
+
+    /**
+     * 推迟任务到指定 LifeStyle 执行
+     */
+    public static void postpone(LifeCycle lifeCycle, Runnable runnable) {
+        postponeExecutor.computeIfAbsent(lifeCycle, list -> new ArrayList<>());
+        postponeExecutor.get(lifeCycle).add(runnable);
+    }
+
     /**
      * 触发生命周期
      */
@@ -83,6 +99,12 @@ public class TabooLibCommon {
         if (platform != null) {
             TabooLibCommon.platform = platform;
         }
+        postponeExecutor.forEach((cycle, list) -> {
+            if (cycle == lifeCycle) {
+                list.forEach(Runnable::run);
+                postponeExecutor.remove(cycle);
+            }
+        });
         switch (lifeCycle) {
             case CONST:
                 try {
