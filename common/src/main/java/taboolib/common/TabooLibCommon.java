@@ -101,7 +101,13 @@ public class TabooLibCommon {
         }
         postponeExecutor.forEach((cycle, list) -> {
             if (cycle == lifeCycle) {
-                list.forEach(Runnable::run);
+                list.forEach((runnable) -> {
+                    try {
+                        runnable.run();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
                 postponeExecutor.remove(cycle);
             }
         });
