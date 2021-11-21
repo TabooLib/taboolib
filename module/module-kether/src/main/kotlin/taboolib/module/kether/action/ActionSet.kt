@@ -26,10 +26,9 @@ class ActionSet {
     class ForAction(val key: String, val action: ParsedAction<*>) : QuestAction<Void>() {
 
         override fun process(frame: QuestContext.Frame): CompletableFuture<Void> {
-            frame.newFrame(action).run<Any?>().thenAccept {
+            return frame.newFrame(action).run<Any?>().thenAccept {
                 frame.variables().set(key, it)
             }
-            return CompletableFuture.completedFuture(null)
         }
     }
 

@@ -121,7 +121,9 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 + __platform-nukkit__: Nukkit 实现
 + __platform-sponge-api7__: Sponge (api7) 实现
 + __platform-sponge-api8__: Sponge (api8) 实现
++ __platform-sponge-api9__: Sponge (api9) 实现
 + __platform-velocity__: Velocity 实现
++ __platform-cloudnet-v3__: CloudNet (v3) 实现
 + __platform-application__: 独立程序实现
 
 ## 相关链接
