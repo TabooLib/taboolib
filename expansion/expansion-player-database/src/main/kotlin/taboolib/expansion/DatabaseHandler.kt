@@ -12,7 +12,7 @@ private var playerDatabase: Database? = null
 
 private val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
 
-fun setupPlayerDatabase(conf: ConfigurationSection, table: String = conf.getString("table")) {
+fun setupPlayerDatabase(conf: ConfigurationSection, table: String = conf.getString("table").toString()) {
     playerDatabase = Database(TypeSQL(HostSQL(conf), table))
 }
 

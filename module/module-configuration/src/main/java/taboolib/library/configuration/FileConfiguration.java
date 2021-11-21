@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * This is a base class for all File based implementations of {@link
- * Configuration}
+ * ConfigurationDefault}
  */
 public abstract class FileConfiguration extends MemoryConfiguration {
 
@@ -18,11 +18,11 @@ public abstract class FileConfiguration extends MemoryConfiguration {
 
     /**
      * Creates an empty {@link FileConfiguration} using the specified {@link
-     * Configuration} as a source for all default values.
+     * ConfigurationDefault} as a source for all default values.
      *
      * @param defaults Default value provider
      */
-    public FileConfiguration(Configuration defaults) {
+    public FileConfiguration(ConfigurationDefault defaults) {
         super(defaults);
     }
 
@@ -42,7 +42,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
      * @throws IllegalArgumentException Thrown when file is null.
      */
     public void save(File file) throws IOException {
-        Utils.createParentDirs(file);
+        FileUtils.createParentDirs(file);
         String data = saveToString();
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
             writer.write(data);

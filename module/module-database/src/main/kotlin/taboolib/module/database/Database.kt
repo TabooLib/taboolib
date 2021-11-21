@@ -45,7 +45,7 @@ object Database {
             config.connectionTestQuery = settingsFile.getString("DefaultSettings.ConnectionTestQuery")
         }
         if (settingsFile.contains("DefaultSettings.DataSourceProperty")) {
-            settingsFile.getConfigurationSection("DefaultSettings.DataSourceProperty").getKeys(false).forEach { key ->
+            settingsFile.getConfigurationSection("DefaultSettings.DataSourceProperty")?.getKeys(false)?.forEach { key ->
                 config.addDataSourceProperty(key, settingsFile.getString("DefaultSettings.DataSourceProperty.$key"))
             }
         }

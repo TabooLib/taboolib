@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An implementation of {@link Configuration} which saves all files in Yaml.
+ * An implementation of {@link ConfigurationDefault} which saves all files in Yaml.
  * Note that this implementation is not synchronized.
  */
 public class YamlConfiguration extends FileConfiguration {
@@ -32,7 +32,7 @@ public class YamlConfiguration extends FileConfiguration {
     }
 
     @Override
-    public void set(String path, Object value) {
+    public void set(@NotNull String path, Object value) {
         super.set(path, value);
     }
 
@@ -110,7 +110,7 @@ public class YamlConfiguration extends FileConfiguration {
     public String buildHeader() {
         String header = options().header();
         if (options().copyHeader()) {
-            Configuration def = getDefaults();
+            ConfigurationDefault def = getDefaults();
             if ((def instanceof FileConfiguration)) {
                 FileConfiguration filedefaults = (FileConfiguration) def;
                 String defaultsHeader = filedefaults.buildHeader();

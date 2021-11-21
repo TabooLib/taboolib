@@ -12,9 +12,9 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 private var init = true
-private val files = ConcurrentHashMap<String, SecuredFile>()
+private val files = ConcurrentHashMap<String, Configuration>()
 
-fun createLocal(path: String, saveTime: Long = 1200): SecuredFile {
+fun createLocal(path: String, saveTime: Long = 1200): Configuration {
     if (files.containsKey(path)) {
         return files[path]!!
     }
@@ -24,7 +24,7 @@ fun createLocal(path: String, saveTime: Long = 1200): SecuredFile {
             Local.saveAll()
         }
     }
-    return files.computeIfAbsent(path) { SecuredFile.loadConfiguration(newFile(getDataFolder(), path, create = true)) }
+    return files.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true)) }
 }
 
 @Isolated
@@ -32,6 +32,6 @@ object Local {
 
     @Awake(LifeCycle.DISABLE)
     fun saveAll() {
-        files.forEach { it.value.save(File(getDataFolder(), it.key)) }
+        files.forEach { it.value.saveToFile(File(getDataFolder(), it.key)) }
     }
 }

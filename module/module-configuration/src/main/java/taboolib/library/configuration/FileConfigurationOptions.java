@@ -4,7 +4,9 @@ package taboolib.library.configuration;
  * Various settings for controlling the input and output of a {@link
  * FileConfiguration}
  */
+@SuppressWarnings("UnusedReturnValue")
 public class FileConfigurationOptions extends MemoryConfigurationOptions {
+
     private String header = null;
     private boolean copyHeader = true;
 
@@ -72,7 +74,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * <p>
      * If this is true, if a default {@link FileConfiguration} is passed to
      * {@link
-     * FileConfiguration#setDefaults(Configuration)}
+     * FileConfiguration#setDefaults(ConfigurationDefault)}
      * then upon saving it will use the header from that config, instead of
      * the one provided here.
      * <p>
@@ -94,7 +96,7 @@ public class FileConfigurationOptions extends MemoryConfigurationOptions {
      * <p>
      * If this is true, if a default {@link FileConfiguration} is passed to
      * {@link
-     * FileConfiguration#setDefaults(Configuration)}
+     * FileConfiguration#setDefaults(ConfigurationDefault)}
      * then upon saving it will use the header from that config, instead of
      * the one provided here.
      * <p>

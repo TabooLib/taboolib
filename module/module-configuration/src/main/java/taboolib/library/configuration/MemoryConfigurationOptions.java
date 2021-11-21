@@ -5,6 +5,7 @@ package taboolib.library.configuration;
  * MemoryConfiguration}
  */
 public class MemoryConfigurationOptions extends ConfigurationOptions {
+
     protected MemoryConfigurationOptions(MemoryConfiguration configuration) {
         super(configuration);
     }

@@ -1,7 +1,7 @@
 package taboolib.library.configuration;
 
 /**
- * Exception thrown when attempting to load an invalid {@link Configuration}
+ * Exception thrown when attempting to load an invalid {@link ConfigurationDefault}
  */
 public class InvalidConfigurationException extends Exception {
 

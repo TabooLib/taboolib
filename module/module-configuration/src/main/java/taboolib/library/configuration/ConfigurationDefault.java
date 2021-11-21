@@ -1,15 +1,18 @@
 package taboolib.library.configuration;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 
 /**
  * Represents a source of configurable options and settings
  */
-public interface Configuration extends ConfigurationSection {
+public interface ConfigurationDefault extends ConfigurationSection {
+
     /**
      * Sets the default value of the given path as provided.
      * <p>
-     * If no source {@link Configuration} was provided as a default
+     * If no source {@link ConfigurationDefault} was provided as a default
      * collection, then a new {@link MemoryConfiguration} will be created to
      * hold the new default value.
      * <p>
@@ -20,12 +23,12 @@ public interface Configuration extends ConfigurationSection {
      * @param value Value to set the default to.
      * @throws IllegalArgumentException Thrown if path is null.
      */
-    void addDefault(String path, Object value);
+    void addDefault(@NotNull String path, Object value);
 
     /**
      * Sets the default values of the given paths as provided.
      * <p>
-     * If no source {@link Configuration} was provided as a default
+     * If no source {@link ConfigurationDefault} was provided as a default
      * collection, then a new {@link MemoryConfiguration} will be created to
      * hold the new default values.
      *
@@ -37,7 +40,7 @@ public interface Configuration extends ConfigurationSection {
     /**
      * Sets the default values of the given paths as provided.
      * <p>
-     * If no source {@link Configuration} was provided as a default
+     * If no source {@link ConfigurationDefault} was provided as a default
      * collection, then a new {@link MemoryConfiguration} will be created to
      * hold the new default value.
      * <p>
@@ -48,10 +51,10 @@ public interface Configuration extends ConfigurationSection {
      * @param defaults A configuration holding a list of defaults to copy.
      * @throws IllegalArgumentException Thrown if defaults is null or this.
      */
-    void addDefaults(Configuration defaults);
+    void addDefaults(ConfigurationDefault defaults);
 
     /**
-     * Sets the source of all default values for this {@link Configuration}.
+     * Sets the source of all default values for this {@link ConfigurationDefault}.
      * <p>
      * If a previous source was set, or previous default values were defined,
      * then they will not be copied to the new source.
@@ -59,10 +62,10 @@ public interface Configuration extends ConfigurationSection {
      * @param defaults New source of default values for this configuration.
      * @throws IllegalArgumentException Thrown if defaults is null or this.
      */
-    void setDefaults(Configuration defaults);
+    void setDefaults(ConfigurationDefault defaults);
 
     /**
-     * Gets the source {@link Configuration} for this configuration.
+     * Gets the source {@link ConfigurationDefault} for this configuration.
      * <p>
      * If no configuration source was set, but default values were added, then
      * a {@link MemoryConfiguration} will be returned. If no source was set
@@ -70,10 +73,10 @@ public interface Configuration extends ConfigurationSection {
      *
      * @return Configuration source for default values, or null if none exist.
      */
-    Configuration getDefaults();
+    ConfigurationDefault getDefaults();
 
     /**
-     * Gets the {@link ConfigurationOptions} for this {@link Configuration}.
+     * Gets the {@link ConfigurationOptions} for this {@link ConfigurationDefault}.
      * <p>
      * All setters through this method are chainable.
      *

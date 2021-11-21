@@ -3,7 +3,7 @@ package taboolib.library.configuration;
 import java.io.File;
 import java.io.IOException;
 
-public class Utils {
+public class FileUtils {
 
     public static void createParentDirs(File file) throws IOException {
         File parent = file.getCanonicalFile().getParentFile();

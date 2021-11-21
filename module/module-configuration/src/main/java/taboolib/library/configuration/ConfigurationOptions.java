@@ -2,23 +2,25 @@ package taboolib.library.configuration;
 
 /**
  * Various settings for controlling the input and output of a {@link
- * Configuration}
+ * ConfigurationDefault}
  */
+@SuppressWarnings("UnusedReturnValue")
 public class ConfigurationOptions {
+
     private char pathSeparator = '.';
     private boolean copyDefaults = false;
-    private final Configuration configuration;
+    private final ConfigurationDefault configuration;
 
-    protected ConfigurationOptions(Configuration configuration) {
+    protected ConfigurationOptions(ConfigurationDefault configuration) {
         this.configuration = configuration;
     }
 
     /**
-     * Returns the {@link Configuration} that this object is responsible for.
+     * Returns the {@link ConfigurationDefault} that this object is responsible for.
      *
      * @return Parent configuration
      */
-    public Configuration configuration() {
+    public ConfigurationDefault configuration() {
         return configuration;
     }
 
@@ -26,7 +28,7 @@ public class ConfigurationOptions {
      * Gets the char that will be used to separate {@link
      * ConfigurationSection}s
      * <p>
-     * This value does not affect how the {@link Configuration} is stored,
+     * This value does not affect how the {@link ConfigurationDefault} is stored,
      * only in how you access the data. The default value is '.'.
      *
      * @return Path separator
@@ -39,7 +41,7 @@ public class ConfigurationOptions {
      * Sets the char that will be used to separate {@link
      * ConfigurationSection}s
      * <p>
-     * This value does not affect how the {@link Configuration} is stored,
+     * This value does not affect how the {@link ConfigurationDefault} is stored,
      * only in how you access the data. The default value is '.'.
      *
      * @param value Path separator
@@ -51,8 +53,8 @@ public class ConfigurationOptions {
     }
 
     /**
-     * Checks if the {@link Configuration} should copy values from its default
-     * {@link Configuration} directly.
+     * Checks if the {@link ConfigurationDefault} should copy values from its default
+     * {@link ConfigurationDefault} directly.
      * <p>
      * If this is true, all values in the default Configuration will be
      * directly copied, making it impossible to distinguish between values
@@ -69,8 +71,8 @@ public class ConfigurationOptions {
     }
 
     /**
-     * Sets if the {@link Configuration} should copy values from its default
-     * {@link Configuration} directly.
+     * Sets if the {@link ConfigurationDefault} should copy values from its default
+     * {@link ConfigurationDefault} directly.
      * <p>
      * If this is true, all values in the default Configuration will be
      * directly copied, making it impossible to distinguish between values

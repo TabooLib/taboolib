@@ -193,7 +193,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
      * 获取所有键值对，同 getValues 方法。
      * 在经过 == 或是 type 时停止
      */
-    private fun ConfigurationSection.getValues(collect: HashMap<String, Any>, node: String): HashMap<String, Any> {
+    private fun ConfigurationSection.getValues(collect: HashMap<String, Any?>, node: String): HashMap<String, Any?> {
         var key = node
         if (node.isNotEmpty()) {
             key += "."

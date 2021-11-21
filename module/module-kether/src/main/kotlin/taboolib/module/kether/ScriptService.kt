@@ -69,7 +69,7 @@ object ScriptService : QuestService<ScriptContext> {
     }
 
     override fun getLocalizedText(node: String, vararg params: Any): String {
-        return locale.getString(node, "{$node}").replaceWithOrder(*params)
+        return locale.getString(node, "{$node}")!!.replaceWithOrder(*params)
     }
 
     override fun startQuest(context: ScriptContext) {

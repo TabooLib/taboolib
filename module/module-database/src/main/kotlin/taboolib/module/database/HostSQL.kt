@@ -25,11 +25,11 @@ class HostSQL(val host: String, val port: String, val user: String, val password
         get() = "jdbc:mysql://$host:$port/$database"
 
     constructor(section: ConfigurationSection) : this(
-        section.getString("host", "localhost"),
-        section.getString("port", "3306"),
-        section.getString("user", "root"),
-        section.getString("password", "root"),
-        section.getString("database", "test"),
+        section.getString("host", "localhost")!!,
+        section.getString("port", "3306")!!,
+        section.getString("user", "root")!!,
+        section.getString("password", "root")!!,
+        section.getString("database", "test")!!,
     )
 
     override fun toString(): String {

@@ -1,6 +1,7 @@
 package taboolib.module.configuration
 
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
@@ -13,9 +14,12 @@ import java.lang.reflect.Field
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Supplier
 
-@RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml")
+@RuntimeDependencies(
+    RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
+    RuntimeDependency("!com.moandjiezana.toml:toml4j:0.7.2", test = "!com.moandjiezana.toml.Toml")
+)
 @Awake
-object ConfigLoader : Injector.Fields {
+object ConfigInjector : Injector.Fields {
 
     val files = HashMap<String, ConfigFile>()
 
@@ -32,16 +36,17 @@ object ConfigLoader : Injector.Fields {
                 }
             } else {
                 val file = releaseResourceFile(name)
-                if (field.getAnnotation(Config::class.java).migrate) {
-                    val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
-                    if (resourceAsStream != null) {
-                        val bytes = resourceAsStream.migrateTo(file.inputStream())
-                        if (bytes != null) {
-                            file.writeBytes(bytes)
-                        }
-                    }
-                }
-                val conf = SecuredFile.loadConfiguration(file)
+                // TODO: 2021/11/22 停止支持
+//                if (field.getAnnotation(Config::class.java).migrate) {
+//                    val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
+//                    if (resourceAsStream != null) {
+//                        val bytes = resourceAsStream.migrateTo(file.inputStream())
+//                        if (bytes != null) {
+//                            file.writeBytes(bytes)
+//                        }
+//                    }
+//                }
+                val conf = Configuration.loadFromFile(file)
                 try {
                     // ClassCastException
                     Ref.put(instance.get(), field, conf)
@@ -52,14 +57,12 @@ object ConfigLoader : Injector.Fields {
                 if (field.getAnnotation(Config::class.java).autoReload && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         if (file.exists()) {
-                            conf.load(file)
+                            conf.loadFromFile(file)
                         }
                     }
                 }
                 val configFile = ConfigFile(conf, file)
-                conf.onReload {
-                    configFile.nodes.forEach { NodeLoader.inject(it, clazz, instance) }
-                }
+                conf.onReload { configFile.nodes.forEach { NodeLoader.inject(it, clazz, instance) } }
                 files[name] = configFile
             }
         }
@@ -99,7 +102,7 @@ object ConfigLoader : Injector.Fields {
             get() = LifeCycle.INIT
     }
 
-    class ConfigFile(val conf: SecuredFile, val file: File) {
+    class ConfigFile(val conf: Configuration, val file: File) {
 
         val nodes = CopyOnWriteArraySet<Field>()
     }

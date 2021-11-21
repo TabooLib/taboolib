@@ -5,31 +5,42 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.InvalidConfigurationException
 import taboolib.library.configuration.YamlConfiguration
 import java.io.File
-import java.io.IOException
+import java.io.InputStream
+import java.io.Reader
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 
-class SecuredFile : YamlConfiguration() {
+class SecuredFile : YamlConfiguration(), Configuration {
 
     private val lock = Any()
 
-    var file: File? = null
-        private set
+    override var file: File? = null
 
     override fun set(path: String, value: Any?) {
         synchronized(lock) { super.set(path, value) }
+    }
+
+    override fun saveToFile(file: File?) {
+        synchronized(lock) { super.save(file ?: return) }
     }
 
     override fun saveToString(): String {
         synchronized(lock) { return super.saveToString() }
     }
 
-    @Throws(IOException::class)
-    fun saveToFile() {
-        save(file ?: return)
+    override fun loadFromFile(file: File) {
+        load(file)
     }
 
-    fun reload() {
+    override fun loadFromReader(reader: Reader) {
+        loadFromString(reader.readText())
+    }
+
+    override fun loadFromInputStream(inputStream: InputStream) {
+        loadFromString(inputStream.readBytes().decodeToString())
+    }
+
+    override fun reload() {
         load(file ?: return)
     }
 

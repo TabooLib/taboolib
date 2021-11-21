@@ -38,7 +38,7 @@ interface PlaceholderExpansion {
 
     val identifier: String
 
-    fun onPlaceholderRequest(player: Player, args: String): String
+    fun onPlaceholderRequest(player: Player?, args: String): String
 
     @Awake
     object PlaceholderRegister : Injector.Classes {
