@@ -4,8 +4,10 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
+import taboolib.common.platform.function.postpone
 import taboolib.common.platform.function.registerListener
 import taboolib.common.platform.function.runningPlatform
+import taboolib.common.platform.function.submit
 import java.lang.reflect.Method
 import java.util.function.Supplier
 
@@ -55,12 +57,14 @@ object EventBus : Injector.Methods {
                     }
                 }
                 Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
-                    if (method.parameterTypes[0] == OptionalEvent::class.java) {
-                        if (eventBind != null) {
-                            registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(obj, OptionalEvent(it)) }
+                    postpone {
+                        if (method.parameterTypes[0] == OptionalEvent::class.java) {
+                            if (eventBind != null) {
+                                registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(obj, OptionalEvent(it)) }
+                            }
+                        } else {
+                            registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(obj, it) }
                         }
-                    } else {
-                        registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(obj, it) }
                     }
                 }
                 else -> {
