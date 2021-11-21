@@ -103,7 +103,7 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 + __common-5__: TabooLib 5.0 版本保留下来的一些工具
 + __module-ai__: 管理与注册自定义实体 AI（Pathfinder）
 + __module-chat__: Component（Json）信息构建工具与 1.16 RGB 颜色转换
-+ __module-configuration__: Yaml 封装接口与配置文件管理工具
++ __module-configuration__: Yaml * Toml 封装接口与配置文件管理工具
 + __module-database__: 数据库管理工具
 + __module-database-mongodb__: 数据库管理工具（MongoDB）
 + __module-effect__: 粒子生成工具
