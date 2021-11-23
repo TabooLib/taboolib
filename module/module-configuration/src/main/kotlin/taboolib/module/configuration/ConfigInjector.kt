@@ -8,6 +8,8 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Ref
+import taboolib.common.util.nonPrimitive
+import taboolib.common5.Coerce
 import taboolib.common5.FileWatcher
 import java.io.File
 import java.lang.reflect.Field
@@ -15,8 +17,12 @@ import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Supplier
 
 @RuntimeDependencies(
-    RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
-    RuntimeDependency("!com.moandjiezana.toml:toml4j:0.7.2", test = "!com.moandjiezana.toml.Toml")
+    RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
+    RuntimeDependency("!com.amihaiemil.web:eo-yaml:6.0.0", test = "!com.amihaiemil.eoyaml.Yaml"),
+    RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config"),
+    RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.toml.JsonFormat"),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.toml.HoconFormat")
 )
 @Awake
 object ConfigInjector : Injector.Fields {
@@ -36,7 +42,7 @@ object ConfigInjector : Injector.Fields {
                 }
             } else {
                 val file = releaseResourceFile(name)
-                // TODO: 2021/11/22 停止支持
+                // 2021/11/22 停止支持
 //                if (field.getAnnotation(Config::class.java).migrate) {
 //                    val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
 //                    if (resourceAsStream != null) {
@@ -46,7 +52,7 @@ object ConfigInjector : Injector.Fields {
 //                        }
 //                    }
 //                }
-                val conf = Configuration.loadFromFile(file)
+                val conf = if (field.type == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
                 try {
                     // ClassCastException
                     Ref.put(instance.get(), field, conf)
@@ -86,10 +92,20 @@ object ConfigInjector : Injector.Fields {
                     return
                 }
                 file.nodes += field
-                val data = file.conf.get(node.value.ifEmpty { field.name })
+                var data = file.conf[node.value.ifEmpty { field.name }]
                 if (field.type == ConfigNodeTransfer::class.java) {
                     Ref.get<ConfigNodeTransfer<*, *>>(instance.get(), field)!!.update(data)
                 } else {
+                    when (field.type.nonPrimitive()) {
+                        Integer::class.java -> data = Coerce.toInteger(data)
+                        Character::class.java -> data = Coerce.toChar(data)
+                        java.lang.Byte::class.java -> data = Coerce.toByte(data)
+                        java.lang.Long::class.java -> data = Coerce.toLong(data)
+                        java.lang.Double::class.java -> data = Coerce.toDouble(data)
+                        java.lang.Float::class.java -> data = Coerce.toFloat(data)
+                        java.lang.Short::class.java -> data = Coerce.toShort(data)
+                        java.lang.Boolean::class.java -> data = Coerce.toBoolean(data)
+                    }
                     Ref.put(instance.get(), field, data)
                 }
             }

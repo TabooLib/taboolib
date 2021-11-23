@@ -2,7 +2,7 @@ package taboolib.expansion
 
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.pluginId
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 import taboolib.module.database.HostSQL
 import java.io.File
 import java.util.*

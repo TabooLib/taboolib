@@ -1,8 +1,5 @@
 @file:RuntimeDependencies(
-    RuntimeDependency(
-        value = "!com.google.code.gson:gson:2.8.7",
-        test = "!com.google.gson.JsonElement"
-    ),
+    RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement"),
     RuntimeDependency(
         value = "!public:mongo-java-driver:3.12.7",
         test = "!com.mongodb.client.MongoClient",
@@ -18,8 +15,7 @@ import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.submit
-import taboolib.library.configuration.ConfigurationSection
-import taboolib.library.configuration.FileConfiguration
+import taboolib.module.configuration.ConfigurationSection
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -45,8 +41,8 @@ fun ProxyPlayer.releaseBridge() {
     }
 }
 
-fun FileConfiguration.toMap(): Map<String, Any> {
-    val map = getValues(true)
+fun ConfigurationSection.getValues(): Map<String, Any?> {
+    val map = getValues(true).toMutableMap()
     map.entries.removeIf { (_, value) -> value is ConfigurationSection }
     return map
 }
@@ -54,7 +50,7 @@ fun FileConfiguration.toMap(): Map<String, Any> {
 internal object Releaser {
 
     @Awake(LifeCycle.ACTIVE)
-    fun e() {
+    fun release() {
         submit(period = 1200, async = true) {
             databaseMap.values.forEach { database ->
                 database.collectionMap.forEach {

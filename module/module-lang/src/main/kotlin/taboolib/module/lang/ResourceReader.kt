@@ -4,7 +4,7 @@ import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -81,8 +81,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     })
                 }
                 is ConfigurationSection -> {
-                    val type =
-                        loadNode(obj.getValues(false).map { it.key.toString() to it.value!! }.toMap(), code, node)
+                    val type = loadNode(obj.getValues(false).map { it.key to it.value!! }.toMap(), code, node)
                     if (type != null) {
                         nodesMap[node] = type
                     }
@@ -170,7 +169,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         // 对已有的变量进行转义
         text = text.replace("[", "\\[").replace("]", "\\]")
         val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }.associate { it.name to it.getValues(false) }
-        val newArgs = ArrayList<Map<String, Any>>()
+        val newArgs = ArrayList<Map<String, Any?>>()
         val matcher = legacyArgsRegex.matcher(text)
         while (matcher.find()) {
             val full = matcher.group(0)
@@ -184,8 +183,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
             text = text.replace(full, "[$display]")
             newArgs += body
         }
-        section.set("text", text)
-        section.set("args", newArgs)
+        section["text"] = text
+        section["args"] = newArgs
         return section
     }
 

@@ -3,7 +3,7 @@
 package taboolib.module.configuration.util
 
 import taboolib.common.Isolated
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 import taboolib.module.chat.colored
 
 fun ConfigurationSection.getStringColored(node: String): String? {

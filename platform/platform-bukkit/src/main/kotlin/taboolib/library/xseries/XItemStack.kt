@@ -5,7 +5,7 @@ package taboolib.library.xseries
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 
 fun ConfigurationSection.setItemStack(node: String, itemStack: ItemStack) {
     XItemStack.serialize(itemStack, createSection(node))

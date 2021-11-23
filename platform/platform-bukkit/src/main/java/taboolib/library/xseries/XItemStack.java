@@ -53,7 +53,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import taboolib.common.Isolated;
-import taboolib.library.configuration.ConfigurationSection;
+import taboolib.module.configuration.ConfigurationSection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -527,10 +527,10 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
-                    if (mapSection.isSet("location")) {
+                    if (mapSection.contains("location")) {
                         map.setLocationName(mapSection.getString("location"));
                     }
-                    if (mapSection.isSet("color")) {
+                    if (mapSection.contains("color")) {
                         Color color = parseColor(mapSection.getString("color"));
                         map.setColor(color);
                     }

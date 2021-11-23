@@ -10,7 +10,6 @@ import taboolib.common.platform.function.IOKt;
 import taboolib.module.configuration.SecuredFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,16 +31,13 @@ public class Metrics {
         File bStatsFolder = new File(IOKt.getDataFolder().getParentFile(), "bStats");
         File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true, false);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
-        if (!config.isSet("serverUUID")) {
-            config.addDefault("enabled", true);
-            config.addDefault("serverUUID", UUID.randomUUID().toString());
-            config.addDefault("logFailedRequests", false);
-            config.addDefault("logSentData", false);
-            config.addDefault("logResponseStatusText", false);
-            try {
-                config.save(configFile);
-            } catch (IOException ignored) {
-            }
+        if (!config.contains("serverUUID")) {
+            config.set("enabled", true);
+            config.set("serverUUID", UUID.randomUUID().toString());
+            config.set("logFailedRequests", false);
+            config.set("logSentData", false);
+            config.set("logResponseStatusText", false);
+            config.saveToFile(configFile);
         }
         // Load the data
         boolean enabled = config.getBoolean("enabled", true);

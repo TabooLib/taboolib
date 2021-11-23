@@ -3,7 +3,7 @@
 package taboolib.module.configuration.util
 
 import taboolib.common.Isolated
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 
 @Suppress("UNCHECKED_CAST")
 fun <K, V> ConfigurationSection.getMap(path: String): Map<K, V> {

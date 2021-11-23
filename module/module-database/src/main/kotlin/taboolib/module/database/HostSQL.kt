@@ -1,6 +1,6 @@
 package taboolib.module.database
 
-import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigurationSection
 
 /**
  * SQL 数据库地址

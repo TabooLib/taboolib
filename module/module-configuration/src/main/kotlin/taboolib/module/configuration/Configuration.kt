@@ -1,7 +1,5 @@
 package taboolib.module.configuration
 
-import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.configuration.toml.TomlFile
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
@@ -33,45 +31,49 @@ interface Configuration : ConfigurationSection {
 
     fun onReload(runnable: Runnable)
 
+    fun changeType(type: Type)
+
     companion object {
 
-        fun getFileType(file: File): Type? {
-            return when (file.extension) {
+        fun empty(type: Type = Type.YAML): ConfigFile {
+            return ConfigFile(type.newFormat().createConfig())
+        }
+
+        fun loadFromFile(file: File, type: Type? = null): ConfigFile {
+            val configFile = ConfigFile((type ?: getTypeFromFile(file)).newFormat().createConfig())
+            configFile.loadFromFile(file)
+            return configFile
+        }
+
+        fun loadFromReader(reader: Reader, type: Type = Type.YAML): ConfigFile {
+            val configFile = ConfigFile(type.newFormat().createConfig())
+            configFile.loadFromReader(reader)
+            return configFile
+        }
+
+        fun loadFromString(contents: String, type: Type = Type.YAML): ConfigFile {
+            val configFile = ConfigFile(type.newFormat().createConfig())
+            configFile.loadFromString(contents)
+            return configFile
+        }
+
+        fun loadFromInputStream(inputStream: InputStream, type: Type = Type.YAML): ConfigFile {
+            val configFile = ConfigFile(type.newFormat().createConfig())
+            configFile.loadFromInputStream(inputStream)
+            return configFile
+        }
+
+        fun getTypeFromFile(file: File, def: Type = Type.YAML): Type {
+            return getTypeFromExtension(file.extension, def)
+        }
+
+        fun getTypeFromExtension(extension: String, def: Type = Type.YAML): Type {
+            return when (extension) {
                 "yaml", "yml" -> Type.YAML
                 "toml", "tml" -> Type.TOML
-                else -> null
-            }
-        }
-
-        fun loadFromFile(file: File, frame: Type = Type.YAML): Configuration {
-            when (getFileType(file)) {
-                Type.YAML -> return SecuredFile.loadConfiguration(file)
-                Type.TOML -> return TomlFile().also { it.loadFromFile(file) }
-            }
-            return when (frame) {
-                Type.YAML -> SecuredFile.loadConfiguration(file)
-                Type.TOML -> TomlFile().also { it.loadFromFile(file) }
-            }
-        }
-
-        fun loadFromString(contents: String, frame: Type = Type.YAML): Configuration {
-            return when (frame) {
-                Type.YAML -> SecuredFile.loadConfiguration(contents)
-                Type.TOML -> TomlFile().also { it.loadFromString(contents) }
-            }
-        }
-
-        fun loadFromReader(reader: Reader, frame: Type = Type.YAML): Configuration {
-            return when (frame) {
-                Type.YAML -> SecuredFile().also { it.loadFromReader(reader) }
-                Type.TOML -> TomlFile().also { it.loadFromReader(reader) }
-            }
-        }
-
-        fun loadFromInputStream(inputStream: InputStream, frame: Type = Type.YAML): Configuration {
-            return when (frame) {
-                Type.YAML -> SecuredFile().also { it.loadFromInputStream(inputStream) }
-                Type.TOML -> TomlFile().also { it.loadFromInputStream(inputStream) }
+                "json" -> Type.JSON
+                "conf" -> Type.HOCON
+                else -> def
             }
         }
     }

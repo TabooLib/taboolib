@@ -136,15 +136,15 @@ public class RuntimeEnv {
                     // 解析依赖
                     File pomFile = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
                     File pomShaFile = new File(pomFile.getPath() + ".sha1");
-                    if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFileHash(pomFile).equals(DependencyDownloader.readFile(pomShaFile))) {
-                        downloader.download(pomFile.toPath().toUri().toURL().openStream());
+                    if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
+                        downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
                     } else {
                         String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-                        downloader.download(new URL(pom).openStream());
+                        downloader.loadDependencyFromInputStream(new URL(pom).openStream());
                     }
                     // 加载自身
                     Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
-                    Set<Dependency> dependenciesWithTransitive = downloader.download(downloader.getRepositories(), current);
+                    Set<Dependency> dependenciesWithTransitive = downloader.loadDependency(downloader.getRepositories(), current);
                     if (dependency.transitive()) {
                         downloader.injectClasspath(dependenciesWithTransitive);
                     } else {

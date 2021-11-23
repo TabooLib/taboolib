@@ -20,9 +20,7 @@ fun createLocal(path: String, saveTime: Long = 1200): Configuration {
     }
     if (init) {
         init = false
-        submit(period = saveTime, async = true) {
-            Local.saveAll()
-        }
+        submit(period = saveTime, async = true) { Local.saveAll() }
     }
     return files.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true)) }
 }

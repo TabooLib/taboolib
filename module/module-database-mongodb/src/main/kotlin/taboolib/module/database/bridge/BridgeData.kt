@@ -16,7 +16,7 @@ class BridgeData {
     var lastVisit = System.currentTimeMillis()
         private set
 
-    val lastUpdate = HashMap<String, Any>()
+    val lastUpdate = HashMap<String, Any?>()
 
     private var data = SecuredFile()
 
@@ -46,16 +46,10 @@ class BridgeData {
     fun update() {
         lastVisit = System.currentTimeMillis()
         lastUpdate.clear()
-        lastUpdate.putAll(data.toMap())
+        lastUpdate.putAll(data.getValues())
     }
 
     private fun parse(input: Set<Map.Entry<String, Any>>, node: String) {
-        input.forEach { (key, value) ->
-            if (value is Document) {
-                parse(value.entries, "$node.$key.")
-            } else {
-                data.set(node + key, value)
-            }
-        }
+        input.forEach { (k, v) -> if (v is Document) parse(v.entries, "$node.$k.") else data[node + k] = v }
     }
 }

@@ -22,7 +22,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.*;
-import java.util.jar.JarFile;
 
 /**
  * The class that contains all of the methods needed for downloading and
@@ -31,6 +30,7 @@ import java.util.jar.JarFile;
  * @author Zach Deibert, sky
  * @since 1.0.0
  */
+@SuppressWarnings("UnusedReturnValue")
 public class DependencyDownloader extends AbstractXmlParser {
 
     private static boolean notify = false;
@@ -147,7 +147,7 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @throws IOException If an I/O error has occurred
      * @since 1.0.0
      */
-    public Set<Dependency> download(Collection<Repository> repositories, Dependency dependency) throws IOException {
+    public Set<Dependency> loadDependency(Collection<Repository> repositories, Dependency dependency) throws IOException {
         if (dependency.getVersion() == null) {
             IOException e = null;
             for (Repository repo : repositories) {
@@ -187,10 +187,10 @@ public class DependencyDownloader extends AbstractXmlParser {
         File jar1 = new File(jar.getPath() + ".sha1");
         Set<Dependency> downloaded = new HashSet<>();
         downloaded.add(dependency);
-        if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists() && readFileHash(pom).equals(readFile(pom1)) && readFileHash(jar).equals(readFile(jar1))) {
+        if (pom.exists() && pom1.exists() && jar.exists() && jar1.exists() && readFile(pom1).startsWith(readFileHash(pom)) && readFile(jar1).startsWith(readFileHash(jar))) {
             downloadedDependencies.add(dependency);
             if (pom.exists()) {
-                downloaded.addAll(download(pom.toURI().toURL().openStream()));
+                downloaded.addAll(loadDependencyFromInputStream(pom.toURI().toURL().openStream()));
             }
             return downloaded;
         }
@@ -230,7 +230,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                     }
                 }
                 if (pom.exists()) {
-                    downloaded.addAll(download(pom.toURI().toURL().openStream()));
+                    downloaded.addAll(loadDependencyFromInputStream(pom.toURI().toURL().openStream()));
                 }
                 e = null;
                 break;
@@ -257,11 +257,11 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @throws IOException If an I/O error has occurred
      * @since 1.0.0
      */
-    public Set<Dependency> download(List<Repository> repositories, List<Dependency> dependencies) throws IOException {
+    public Set<Dependency> loadDependency(List<Repository> repositories, List<Dependency> dependencies) throws IOException {
         createBaseDir();
         Set<Dependency> downloaded = new HashSet<>();
         for (Dependency dep : dependencies) {
-            downloaded.addAll(download(repositories, dep));
+            downloaded.addAll(loadDependency(repositories, dep));
         }
         return downloaded;
     }
@@ -275,7 +275,7 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @throws IOException If an I/O error has occurred
      * @since 1.0.0
      */
-    public Set<Dependency> download(Document pom, DependencyScope... scopes) throws IOException {
+    public Set<Dependency> loadDependencyFromPom(Document pom, DependencyScope... scopes) throws IOException {
         List<Dependency> dependencies = new ArrayList<>();
         Set<DependencyScope> scopeSet = new HashSet<>(Arrays.asList(scopes));
         NodeList nodes = pom.getDocumentElement().getChildNodes();
@@ -313,7 +313,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         } catch (ParseException ex) {
             throw new IOException("Unable to parse dependencies", ex);
         }
-        return download(repos, dependencies);
+        return loadDependency(repos, dependencies);
     }
 
     /**
@@ -326,8 +326,8 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @see DependencyDownloader#dependencyScopes
      * @since 1.0.0
      */
-    public Set<Dependency> download(Document pom) throws IOException {
-        return download(pom, dependencyScopes);
+    public Set<Dependency> loadDependencyFromPom(Document pom) throws IOException {
+        return loadDependencyFromPom(pom, dependencyScopes);
     }
 
     /**
@@ -340,8 +340,8 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @see DependencyDownloader#dependencyScopes
      * @since 1.0.0
      */
-    public Set<Dependency> download(InputStream pom) throws IOException {
-        return download(pom, dependencyScopes);
+    public Set<Dependency> loadDependencyFromInputStream(InputStream pom) throws IOException {
+        return loadDependencyFromInputStream(pom, dependencyScopes);
     }
 
     /**
@@ -353,12 +353,12 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @throws IOException If an I/O error has occurred
      * @since 1.0.0
      */
-    public Set<Dependency> download(InputStream pom, DependencyScope... scopes) throws IOException {
+    public Set<Dependency> loadDependencyFromInputStream(InputStream pom, DependencyScope... scopes) throws IOException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document xml = builder.parse(pom);
-            return download(xml, scopes);
+            return loadDependencyFromPom(xml, scopes);
         } catch (ParserConfigurationException ex) {
             throw new IOException("Unable to load pom.xml parser", ex);
         } catch (SAXException ex) {

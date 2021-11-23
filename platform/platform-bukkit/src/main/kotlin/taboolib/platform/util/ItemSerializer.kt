@@ -38,9 +38,7 @@ fun ByteArray.deserializeToInventory(inventory: Inventory? = null, zipped: Boole
             val items = bukkitObjectInputStream.readObject() as List<Int>
             val size = bukkitObjectInputStream.readInt()
             val inv = inventory ?: Bukkit.createInventory(null, size)
-            items.forEach {
-                inv.setItem(it, bukkitObjectInputStream.readObject() as ItemStack)
-            }
+            items.forEach { inv.setItem(it, bukkitObjectInputStream.readObject() as ItemStack) }
             return inv
         }
     }
@@ -52,9 +50,7 @@ fun Inventory.serializeToByteArray(size: Int = this.size, zipped: Boolean = true
             val items = (0 until size).map { it to getItem(it) }.filter { it.second.isNotAir() }.toMap()
             bukkitObjectOutputStream.writeObject(items.keys.toList())
             bukkitObjectOutputStream.writeInt(size)
-            items.forEach { (_, v) ->
-                bukkitObjectOutputStream.writeObject(v)
-            }
+            items.forEach { (_, v) -> bukkitObjectOutputStream.writeObject(v) }
             val bytes = byteArrayOutputStream.toByteArray()
             return if (zipped) bytes.zip() else bytes
         }
