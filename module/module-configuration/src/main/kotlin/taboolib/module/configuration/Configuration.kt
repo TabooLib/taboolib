@@ -1,5 +1,8 @@
 package taboolib.module.configuration
 
+import com.electronwill.nightconfig.core.conversion.ObjectConverter
+import taboolib.common.reflect.Reflex.Companion.invokeConstructor
+import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
@@ -76,6 +79,35 @@ interface Configuration : ConfigurationSection {
                 "conf" -> Type.HOCON
                 else -> def
             }
+        }
+
+        inline fun <reified T> ConfigurationSection.getObject(key: String, ignoreConstructor: Boolean = false): T {
+            return deserialize(getConfigurationSection(key) ?: error("Not a section"), ignoreConstructor)
+        }
+
+        fun <T> ConfigurationSection.getObject(key: String, obj: T, ignoreConstructor: Boolean = false): T {
+            return deserialize(getConfigurationSection(key) ?: error("Not a section"), obj, ignoreConstructor)
+        }
+
+        fun ConfigurationSection.setObject(key: String, obj: Any) {
+            set(key, serialize(obj, type))
+        }
+
+        fun serialize(obj: Any, type: Type = Type.YAML): ConfigurationSection {
+            val config = type.newFormat().createConfig()
+            ObjectConverter().toConfig(obj, config)
+            return ConfigSection(config)
+        }
+
+        inline fun <reified T> deserialize(section: ConfigurationSection, ignoreConstructor: Boolean = false): T {
+            val instance = if (ignoreConstructor) T::class.java.unsafeInstance() as T else T::class.java.invokeConstructor()
+            ObjectConverter(ignoreConstructor).toObject((section as ConfigSection).root, instance)
+            return instance
+        }
+
+        fun <T> deserialize(section: ConfigurationSection, obj: T, ignoreConstructor: Boolean = false): T {
+            ObjectConverter(ignoreConstructor).toObject((section as ConfigSection).root, obj)
+            return obj
         }
     }
 }

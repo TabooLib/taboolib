@@ -13,7 +13,7 @@ import taboolib.library.configuration.ConfigurationSection
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(internal var root: Config, private val id: String = "") : ConfigurationSection {
+open class ConfigSection(var root: Config, private val id: String = "") : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
 
@@ -65,8 +65,8 @@ open class ConfigSection(internal var root: Config, private val id: String = "")
         when {
             value is List<*> -> root.set<Any>(path, unwrap(value, this))
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
-            value is ConfigurationSection -> root.set<Any>(path, value.getConfig())
-            value is Map<*, *> -> root.set<Any>(path, value.toConfig(this))
+            value is ConfigurationSection -> set(path, value.getConfig())
+            value is Map<*, *> -> set(path, value.toConfig(this))
             value is CommentValue -> {
                 set(path, value.value)
                 (root as? CommentedConfig)?.setComment(path, value.comment)
@@ -253,15 +253,19 @@ open class ConfigSection(internal var root: Config, private val id: String = "")
         }
 
         private fun unwrap(list: List<*>, parent: ConfigSection): List<*> {
-            return list.map {
-                when {
-                    it is List<*> -> unwrap(it, parent)
-                    it is Collection<*> && it !is List<*> -> it.toList()
-                    it is ConfigurationSection -> it.getConfig()
-                    it is Map<*, *> -> it.toConfig(parent)
-                    else -> it
+            fun process(value: Any?): Any? {
+                return when {
+                    value is List<*> -> unwrap(value, parent)
+                    value is Collection<*> && value !is List<*> -> value.toList()
+                    value is ConfigurationSection -> value.getConfig()
+                    value is Map<*, *> -> {
+                        value.toConfig(parent)
+                    }
+                    value is CommentValue -> process(value.value)
+                    else -> value
                 }
             }
+            return list.map { process(it) }
         }
     }
 }

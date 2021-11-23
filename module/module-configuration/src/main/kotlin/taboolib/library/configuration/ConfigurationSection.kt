@@ -1,5 +1,7 @@
 package taboolib.library.configuration
 
+import com.electronwill.nightconfig.core.conversion.ObjectConverter
+import taboolib.module.configuration.ConfigSection
 import taboolib.module.configuration.Type
 
 /**
