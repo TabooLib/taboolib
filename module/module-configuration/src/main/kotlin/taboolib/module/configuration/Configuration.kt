@@ -1,5 +1,6 @@
 package taboolib.module.configuration
 
+import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
 import java.io.Reader

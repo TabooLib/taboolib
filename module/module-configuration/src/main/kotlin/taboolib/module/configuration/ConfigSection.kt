@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.EnumGetMethod
 import taboolib.common5.Coerce
+import taboolib.library.configuration.ConfigurationSection
 
 /**
  * TabooLib

@@ -7,14 +7,14 @@ import taboolib.common.util.Location
 import taboolib.library.configuration.ConfigurationSection
 
 fun ConfigurationSection.setLocation(path: String, location: Location) {
-    set(path, mapOf(
-        "world" to location.world,
-        "x" to location.x,
-        "y" to location.y,
-        "z" to location.z,
-        "pitch" to location.pitch,
-        "yaw" to location.yaw
-    ))
+    createSection(path).apply {
+        set("world", location.world)
+        set("x", location.x)
+        set("y", location.y)
+        set("z", location.z)
+        set("pitch", location.pitch)
+        set("yaw", location.yaw)
+    }
 }
 
 fun ConfigurationSection.getLocation(path: String): Location? {

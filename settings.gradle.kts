@@ -16,7 +16,7 @@ fun importModules() {
     include("module:module-database-mongodb")
     include("module:module-porticus")
     include("module:module-navigation")
-    include("module:module-configuration")
+    include("module:module-configuration", "module:module-configuration-legacy")
 }
 
 fun importPlatforms() {

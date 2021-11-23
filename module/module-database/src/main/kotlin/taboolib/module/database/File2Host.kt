@@ -3,7 +3,7 @@
 package taboolib.module.database
 
 import taboolib.common.Isolated
-import taboolib.module.configuration.ConfigurationSection
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 

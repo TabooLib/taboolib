@@ -4,7 +4,7 @@ import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
-import taboolib.module.configuration.ConfigurationSection
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets

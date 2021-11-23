@@ -53,7 +53,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import taboolib.common.Isolated;
-import taboolib.module.configuration.ConfigurationSection;
+import taboolib.library.configuration.ConfigurationSection;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
