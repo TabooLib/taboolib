@@ -58,7 +58,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
         if (value == "~") {
             return null
         }
-        return value
+        return unwrap(value)
     }
 
     override fun set(path: String, value: Any?) {
@@ -137,7 +137,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
     }
 
     override fun getList(path: String): List<*>? {
-        return get(path) as? List<*>
+        return (get(path) as? List<*>)?.map { unwrap(it) }?.toList()
     }
 
     override fun getList(path: String, def: List<*>?): List<*>? {
@@ -184,8 +184,8 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
         return getList(path)?.map { Coerce.toShort(it) }?.toList() ?: ArrayList()
     }
 
-    override fun getMapList(path: String): List<MutableMap<*, *>> {
-        return getList(path)?.filterIsInstance<Map<*, *>>()?.map { it.toMutableMap() }?.toList() ?: ArrayList()
+    override fun getMapList(path: String): List<Map<*, *>> {
+        return getList(path)?.filterIsInstance<Map<*, *>>()?.toList() ?: ArrayList()
     }
 
     override fun getConfigurationSection(path: String): ConfigurationSection? {
