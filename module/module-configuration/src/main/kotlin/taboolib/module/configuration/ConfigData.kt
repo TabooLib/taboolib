@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap
 private var init = true
 private val files = ConcurrentHashMap<String, Configuration>()
 
-fun createLocal(path: String, saveTime: Long = 1200): Configuration {
+fun createLocal(path: String, saveTime: Long = 1200, type: Type? = null): Configuration {
     if (files.containsKey(path)) {
         return files[path]!!
     }
@@ -22,7 +22,7 @@ fun createLocal(path: String, saveTime: Long = 1200): Configuration {
         init = false
         submit(period = saveTime, async = true) { Local.saveAll() }
     }
-    return files.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true)) }
+    return files.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true), type) }
 }
 
 @Isolated

@@ -339,7 +339,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Integer.
      */
-    fun getIntegerList(path: String): List<Int?>
+    fun getIntegerList(path: String): List<Int>
 
     /**
      * Gets the requested List of Boolean by path.
@@ -356,7 +356,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Boolean.
      */
-    fun getBooleanList(path: String): List<Boolean?>
+    fun getBooleanList(path: String): List<Boolean>
 
     /**
      * Gets the requested List of Double by path.
@@ -373,7 +373,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Double.
      */
-    fun getDoubleList(path: String): List<Double?>
+    fun getDoubleList(path: String): List<Double>
 
     /**
      * Gets the requested List of Float by path.
@@ -390,7 +390,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Float.
      */
-    fun getFloatList(path: String): List<Float?>
+    fun getFloatList(path: String): List<Float>
 
     /**
      * Gets the requested List of Long by path.
@@ -407,7 +407,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Long.
      */
-    fun getLongList(path: String): List<Long?>
+    fun getLongList(path: String): List<Long>
 
     /**
      * Gets the requested List of Byte by path.
@@ -424,7 +424,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Byte.
      */
-    fun getByteList(path: String): List<Byte?>
+    fun getByteList(path: String): List<Byte>
 
     /**
      * Gets the requested List of Character by path.
@@ -441,7 +441,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Character.
      */
-    fun getCharacterList(path: String): List<Char?>
+    fun getCharacterList(path: String): List<Char>
 
     /**
      * Gets the requested List of Short by path.
@@ -458,7 +458,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Short.
      */
-    fun getShortList(path: String): List<Short?>
+    fun getShortList(path: String): List<Short>
 
     /**
      * Gets the requested List of Maps by path.
@@ -475,7 +475,7 @@ interface ConfigurationSection {
      * @param path Path of the List to get.
      * @return Requested List of Maps.
      */
-    fun getMapList(path: String): List<Map<*, *>?>
+    fun getMapList(path: String): List<Map<*, *>>
 
     /**
      * Gets the requested ConfigurationSection by path.
