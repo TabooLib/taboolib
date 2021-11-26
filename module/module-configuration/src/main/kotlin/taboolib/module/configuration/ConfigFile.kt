@@ -50,6 +50,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             if (file.extension != "bak") {
                 file.copyTo(File(file.parent, file.name + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()) + ".bak"))
             }
+            warning("File: $file")
             throw ex
         }
         hook.forEach { it.run() }

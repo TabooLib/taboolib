@@ -1,5 +1,6 @@
 package taboolib.module.configuration
 
+import com.electronwill.nightconfig.core.io.ParsingException
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
