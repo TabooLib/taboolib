@@ -52,13 +52,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
 
     override fun get(path: String, def: Any?): Any? {
         val value = root.getOrElse(path, def)
-        if (value is Config) {
-            return ConfigSection(value, path.substringAfterLast('.'))
-        }
-        if (value == "~") {
-            return null
-        }
-        return unwrap(value)
+        return if (value is Config) ConfigSection(value, path.substringAfterLast('.')) else unwrap(value)
     }
 
     override fun set(path: String, value: Any?) {
@@ -245,11 +239,17 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
 
         private fun unwrap(v: Any?): Any? {
             return when (v) {
-                is Config -> unwrap(v.valueMap())
-                is Collection<*> -> v.map { unwrap(it) }.toList()
-                is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
-                v == "''" || v == "\"\"" -> ""
-                else -> v
+                "~" -> null
+                "''", "\"\"" -> ""
+                else -> when (v) {
+                    is ConfigurationSection -> unwrap(v.getConfig())
+                    is ConfigSection -> v.toMap()
+                    is Config -> unwrap(v.valueMap())
+                    is CommentValue -> unwrap(v.value)
+                    is Collection<*> -> v.map { unwrap(it) }.toList()
+                    is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
+                    else -> v
+                }
             }
         }
 
@@ -259,9 +259,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                     value is List<*> -> unwrap(value, parent)
                     value is Collection<*> && value !is List<*> -> value.toList()
                     value is ConfigurationSection -> value.getConfig()
-                    value is Map<*, *> -> {
-                        value.toConfig(parent)
-                    }
+                    value is Map<*, *> -> value.toConfig(parent)
                     value is CommentValue -> process(value.value)
                     else -> value
                 }
