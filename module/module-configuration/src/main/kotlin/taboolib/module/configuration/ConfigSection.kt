@@ -248,6 +248,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                 is Config -> unwrap(v.valueMap())
                 is Collection<*> -> v.map { unwrap(it) }.toList()
                 is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
+                v == "''" || v == "\"\"" -> ""
                 else -> v
             }
         }
