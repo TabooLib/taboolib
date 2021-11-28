@@ -3,6 +3,7 @@ package taboolib.module.configuration
 import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.EnumGetMethod
+import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
 
@@ -248,6 +249,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                     is CommentValue -> unwrap(v.value)
                     is Collection<*> -> v.map { unwrap(it) }.toList()
                     is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
+                    is String -> v.decodeUnicode()
                     else -> v
                 }
             }

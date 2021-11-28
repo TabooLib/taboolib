@@ -33,3 +33,16 @@ fun String.replaceWithOrder(vararg args: Any): String {
     }
     return builder.toString()
 }
+
+fun String.decodeUnicode(): String {
+    var r = this
+    fun process() {
+        val i = r.indexOf("\\u")
+        if (i != -1) {
+            r = r.substring(0, i) + Integer.parseInt(r.substring(i + 2, i + 6), 16).toChar() + r.substring(i + 6)
+            process()
+        }
+    }
+    process()
+    return r
+}
