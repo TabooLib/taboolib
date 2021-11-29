@@ -249,7 +249,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                     is CommentValue -> unwrap(v.value)
                     is Collection<*> -> v.map { unwrap(it) }.toList()
                     is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
-                    is String -> v.decodeUnicode()
+                    is String -> v.decodeUnicode().removeFinalLineBreak()
                     else -> v
                 }
             }
@@ -267,6 +267,10 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                 }
             }
             return list.map { process(it) }
+        }
+
+        private fun String.removeFinalLineBreak(): String {
+            return if (endsWith('\n')) substringBeforeLast('\n') else this
         }
     }
 }
