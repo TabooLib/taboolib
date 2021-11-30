@@ -2,7 +2,6 @@ package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import taboolib.common.io.runningClasses
-import taboolib.common.platform.function.info
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import java.util.concurrent.ConcurrentHashMap
@@ -43,7 +42,10 @@ inline fun <reified T> nmsProxy(bind: String = "{name}Impl"): T {
  * 向玩家发送数据包
  */
 fun Player.sendPacket(packet: Any) {
-    if (MinecraftVersion.isUniversal) {
+    // 1.18
+    if (MinecraftVersion.major >= 10) {
+        getProperty<Any>("entity/connection")!!.invokeMethod<Any>("send", packet)
+    } else if (MinecraftVersion.isUniversal) {
         getProperty<Any>("entity/connection")!!.invokeMethod<Any>("sendPacket", packet)
     } else {
         getProperty<Any>("entity/playerConnection")!!.invokeMethod<Any>("sendPacket", packet)

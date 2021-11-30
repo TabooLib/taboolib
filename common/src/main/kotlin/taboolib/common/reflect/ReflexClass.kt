@@ -68,7 +68,7 @@ class ReflexClass(val clazz: Class<*>) {
     fun findMethod(m: String, vararg parameter: Any?): Method? {
         var method = m
         Reflex.remapper.forEach {
-            method = it.method(clazz.name, method)
+            method = it.method(clazz.name, method, *parameter)
         }
         savingMethods.firstOrNull { it.name == method && compare(it.parameterTypes, parameter.map { p -> p?.javaClass }.toTypedArray()) }?.run {
             return this
@@ -102,25 +102,27 @@ class ReflexClass(val clazz: Class<*>) {
         return null
     }
 
-    fun compare(primary: Array<Class<*>>, secondary: Array<Class<*>?>): Boolean {
-        if (primary.size != secondary.size) {
-            return false
-        }
-        for (index in primary.indices) {
-            val primaryClass = primary[index].nonPrimitive()
-            val secondaryClass = secondary[index]?.nonPrimitive() ?: continue
-            if (primaryClass == secondaryClass || primaryClass.isAssignableFrom(secondaryClass)) {
-                continue
-            }
-            return false
-        }
-        return true
-    }
-
     companion object {
 
         val savingClass = ConcurrentHashMap<String, ReflexClass>()
 
-        fun find(clazz: Class<*>) = savingClass.computeIfAbsent(clazz.name) { ReflexClass(clazz) }
+        fun find(clazz: Class<*>): ReflexClass {
+            return savingClass.computeIfAbsent(clazz.name) { ReflexClass(clazz) }
+        }
+
+        fun compare(primary: Array<Class<*>>, secondary: Array<Class<*>?>): Boolean {
+            if (primary.size != secondary.size) {
+                return false
+            }
+            for (index in primary.indices) {
+                val primaryClass = primary[index].nonPrimitive()
+                val secondaryClass = secondary[index]?.nonPrimitive() ?: continue
+                if (primaryClass == secondaryClass || primaryClass.isAssignableFrom(secondaryClass)) {
+                    continue
+                }
+                return false
+            }
+            return true
+        }
     }
 }

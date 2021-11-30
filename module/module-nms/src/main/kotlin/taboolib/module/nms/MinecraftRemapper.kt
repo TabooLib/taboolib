@@ -1,6 +1,8 @@
 package taboolib.module.nms
 
 import org.objectweb.asm.commons.Remapper
+import org.objectweb.asm.signature.SignatureReader
+import org.objectweb.asm.signature.SignatureWriter
 
 /**
  * TabooLib
@@ -33,6 +35,22 @@ open class MinecraftRemapper : Remapper() {
         if (MinecraftVersion.isUniversal) {
             val universal = translate(owner).replace('/', '.')
             return mapping.fields.firstOrNull { it.path == universal && it.translateName == name }?.mojangName ?: name
+        }
+        return name
+    }
+
+    override fun mapMethodName(owner: String, name: String, descriptor: String): String {
+        // 1.18
+        if (MinecraftVersion.major >= 10) {
+            val signatureWriter = object : SignatureWriter() {
+                override fun visitClassType(name: String) {
+                    super.visitClassType(translate(name))
+                }
+            }
+            SignatureReader(descriptor).accept(signatureWriter)
+            val desc = signatureWriter.toString()
+            val universal = translate(owner).replace('/', '.')
+            return mapping.methods.firstOrNull { it.path == universal && it.translateName == name && it.descriptor == desc }?.mojangName ?: name
         }
         return name
     }
