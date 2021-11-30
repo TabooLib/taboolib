@@ -518,6 +518,5 @@ interface ConfigurationSection {
 
     fun setComment(path: String, comment: String?)
 
-    @Deprecated("toMap()")
     fun getValues(deep: Boolean): Map<String, Any?>
 }
