@@ -58,6 +58,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
 
     override fun set(path: String, value: Any?) {
         when {
+            value == null -> root.remove(path)
             value is List<*> -> root.set<Any>(path, unwrap(value, this))
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
             value is ConfigurationSection -> set(path, value.getConfig())
@@ -240,7 +241,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
 
         private fun unwrap(v: Any?): Any? {
             return when (v) {
-                "~" -> null
+                "~", "null" -> null
                 "''", "\"\"" -> ""
                 else -> when (v) {
                     is ConfigurationSection -> unwrap(v.getConfig())
