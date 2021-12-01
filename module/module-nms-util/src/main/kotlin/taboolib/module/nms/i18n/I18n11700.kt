@@ -1,6 +1,5 @@
 package taboolib.module.nms.i18n
 
-import com.google.common.collect.Maps
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.bukkit.enchantments.Enchantment
@@ -14,6 +13,7 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.collections.HashMap
 
 /**
  * https://launchermeta.mojang.com/mc/game/version_manifest.json
@@ -29,7 +29,7 @@ object I18n11700 : I18nBase() {
         arrayOf("en_gb", "183945d2bbcd839edf61c8f85439f77804c9fd38")
     )
 
-    private val cache: MutableMap<String, JsonObject> = Maps.newHashMap()
+    private val cache: MutableMap<String, JsonObject> = HashMap()
     private val folder = File("assets")
     private val executor = Executors.newSingleThreadExecutor()
 

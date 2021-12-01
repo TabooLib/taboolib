@@ -21,7 +21,7 @@
  */
 package taboolib.library.xseries;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
@@ -30,9 +30,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.*;
+import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 /**
