@@ -26,11 +26,7 @@ class YamlParser(val configFormat: ConfigFormat<CommentedConfig>) : ConfigParser
 
     override fun parse(reader: Reader, destination: Config, parsingMode: ParsingMode) {
         try {
-            // Fix Final Line Break
-            val readAll = reader.readAll().lines().map {
-                if (it.endsWith(":|-") || it.endsWith(": |-")) it.substring(0, it.length - 1) else it
-            }
-            val mapping = Yaml.createYamlInput(readAll.joinToString("\n"), true).readYamlMapping()
+            val mapping = Yaml.createYamlInput(reader.readAll(), true).readYamlMapping()
             val map = yamlMapToMap(mapping)
             map.forEach { (k, v) -> ConfigSection(destination)[k] = v }
         } catch (e: Exception) {

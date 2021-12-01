@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 dependencies {
     implementation("com.electronwill.night-config:core-conversion:6.0.0")
     compileOnly("com.typesafe:config:1.4.1")
-    compileOnly("com.amihaiemil.web:eo-yaml:6.0.0")
+    compileOnly("io.github.bkm016:eo-yaml:6.0.1")
     compileOnly("com.electronwill.night-config:core:3.6.5")
     compileOnly("com.electronwill.night-config:toml:3.6.5")
     compileOnly("com.electronwill.night-config:json:3.6.5")

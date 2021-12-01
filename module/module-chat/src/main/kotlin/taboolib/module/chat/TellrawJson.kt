@@ -14,7 +14,7 @@ import taboolib.common.platform.ProxyPlayer
  * @since 2018-05-26 14:42json
  */
 @RuntimeDependency(
-    value = "!net.md-5:bungeecord-chat:1.17", test = "!net.md_5.bungee.api.chat.TextComponent", repository = "https://repo2s.ptms.ink/repository/maven-public/"
+    value = "!net.md-5:bungeecord-chat:1.17", test = "!net.md_5.bungee.api.chat.TextComponent", repository = "https://repo2s.ptms.ink/repository/maven-public"
 )
 @Isolated
 class TellrawJson {

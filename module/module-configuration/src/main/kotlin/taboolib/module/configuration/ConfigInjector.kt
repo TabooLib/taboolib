@@ -1,6 +1,5 @@
 package taboolib.module.configuration
 
-import com.electronwill.nightconfig.core.io.ParsingException
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
@@ -19,7 +18,7 @@ import java.util.function.Supplier
 
 @RuntimeDependencies(
     RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
-    RuntimeDependency("!com.amihaiemil.web:eo-yaml:6.0.0", test = "!com.amihaiemil.eoyaml.Yaml"),
+    RuntimeDependency("!io.github.bkm016:eo-yaml:6.0.1", test = "!com.amihaiemil.eoyaml.Yaml", repository = "http://repo.ptms.ink/repository/maven-releases"),
     RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config"),
     RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
     RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.toml.JsonFormat"),
