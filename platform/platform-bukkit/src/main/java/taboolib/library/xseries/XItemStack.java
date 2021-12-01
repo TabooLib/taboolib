@@ -35,8 +35,6 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.EntityType;
@@ -56,6 +54,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.library.configuration.ConfigurationSection;
+import taboolib.module.configuration.Configuration;
+import taboolib.module.configuration.Type;
 
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -349,7 +350,7 @@ public final class XItemStack {
      */
     public static Map<String, Object> serialize(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
-        final ConfigurationSection config = new MemoryConfiguration();
+        final ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
         serialize(item, config);
         return configSectionToMap(config);
     }
@@ -544,8 +545,8 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
-                    if (mapSection.isSet("location")) map.setLocationName(mapSection.getString("location"));
-                    if (mapSection.isSet("color")) {
+                    if (mapSection.contains("location")) map.setLocationName(mapSection.getString("location"));
+                    if (mapSection.contains("color")) {
                         Color color = parseColor(mapSection.getString("color"));
                         map.setColor(color);
                     }
@@ -786,8 +787,7 @@ public final class XItemStack {
      */
     @NotNull
     private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
-        final ConfigurationSection config = new MemoryConfiguration();
-
+        final ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
         for(Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             Object value = entry.getValue();

@@ -32,6 +32,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.common.reflect.Reflex;
+import taboolib.platform.util.ItemBuilder;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -166,23 +168,19 @@ public class XSkull {
     }
 
     @Nullable
-    public static String getSkinValue(@NotNull ItemMeta skull) {
-        Objects.requireNonNull(skull, "Skull ItemStack cannot be null");
-        SkullMeta meta = (SkullMeta) skull;
+    public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
         GameProfile profile = null;
-
         try {
-            profile = (GameProfile) PROFILE_GETTER.invoke(meta);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            profile = Reflex.Companion.getProperty(skull, "profile", false);
+        } catch (Exception ignored) {
         }
-
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
             for (Property property : profile.getProperties().get("textures")) {
-                if (!property.getValue().isEmpty()) return property.getValue();
+                if (!property.getValue().isEmpty()) {
+                    return new ItemBuilder.SkullTexture(property.getValue(), profile.getId());
+                }
             }
         }
-
         return null;
     }
 
