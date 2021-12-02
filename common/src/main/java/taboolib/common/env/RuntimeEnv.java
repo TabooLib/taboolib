@@ -33,16 +33,19 @@ public class RuntimeEnv {
 
     public void setup() {
         try {
-            loadDependency(KotlinEnv.class);
-        } catch (NoClassDefFoundError ignored) { }
-        try {
-            loadDependency(KotlinEnvNoRelocate.class);
-        } catch (NoClassDefFoundError ignored) { }
+            loadDependency(KotlinEnv.class, true);
+        } catch (NoClassDefFoundError ignored) {
+            // 若开启 skip-kotlin-relocate 则加载原始版本
+            try {
+                loadDependency(KotlinEnvNoRelocate.class, true);
+            } catch (NoClassDefFoundError ignored2) {
+            }
+        }
     }
 
     public void inject(@NotNull Class<?> clazz) {
         loadAssets(clazz);
-        loadDependency(clazz);
+        loadDependency(clazz, false);
     }
 
     public void loadAssets(@NotNull Class<?> clazz) {
@@ -101,7 +104,7 @@ public class RuntimeEnv {
         }
     }
 
-    public void loadDependency(@NotNull Class<?> clazz) {
+    public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -113,6 +116,9 @@ public class RuntimeEnv {
         }
         if (dependencies != null) {
             for (RuntimeDependency dependency : dependencies) {
+                if (dependency.initiative() && !initiative) {
+                    continue;
+                }
                 String test = dependency.test().startsWith("!") ? dependency.test().substring(1) : dependency.test();
                 if (test.length() > 0 && ClassAppender.isExists(test)) {
                     continue;

@@ -23,4 +23,6 @@ public @interface RuntimeDependency {
     DependencyScope[] scopes() default {DependencyScope.RUNTIME, DependencyScope.COMPILE};
 
     String[] relocate() default {};
+
+    boolean initiative() default false;
 }
