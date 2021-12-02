@@ -7,6 +7,13 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
+      - name: cache gradle packages
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: setup jdk 8.0
