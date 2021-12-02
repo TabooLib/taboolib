@@ -88,10 +88,10 @@ public class NMSGenericImpl extends NMSGeneric {
     @NotNull
     @Override
     public String getKey(ItemStack itemStack) {
-        Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return itemStack.getType().getKey().getKey();
         } else {
+            Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
             net.minecraft.server.v1_12_R1.Item item = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem();
             String name = new Reflex(net.minecraft.server.v1_12_R1.Item.class).instance(item).get("name");
             String r = "";
@@ -111,7 +111,12 @@ public class NMSGenericImpl extends NMSGeneric {
     public String getName(org.bukkit.inventory.ItemStack itemStack) {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            String name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
+            String name;
+            if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
+                name = Reflex.Companion.invokeMethod(((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem(), "getDescriptionId", new Object[0], false);
+            } else {
+                name = ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem().getName();
+            }
             if (itemStack.getItemMeta() instanceof PotionMeta) {
                 name += ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getTag().getString("Potion").replaceAll("minecraft:(strong_|long_)?", "");
             }

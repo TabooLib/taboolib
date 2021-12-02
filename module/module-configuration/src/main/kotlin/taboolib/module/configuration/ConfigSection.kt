@@ -69,7 +69,7 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
 
     override fun getString(path: String): String? {
         val value = get(path)
-        return if (value is List<*>) value.joinToString("\n") else value.toString()
+        return if (value is List<*>) value.joinToString("\n") else value as? String
     }
 
     override fun getString(path: String, def: String?): String? {
