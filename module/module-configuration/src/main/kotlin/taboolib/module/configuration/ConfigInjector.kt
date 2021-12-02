@@ -21,8 +21,8 @@ import java.util.function.Supplier
     RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
     RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config"),
     RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
-    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.toml.JsonFormat"),
-    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.toml.HoconFormat")
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.json.JsonFormat"),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.hocon.HoconFormat")
 )
 @Awake
 object ConfigInjector : Injector.Fields {
