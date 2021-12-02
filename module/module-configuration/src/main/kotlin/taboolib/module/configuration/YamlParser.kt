@@ -39,7 +39,7 @@ class YamlParser(val configFormat: ConfigFormat<Config>) : ConfigParser<Config> 
     }
 
     fun loadFromString(contents: String, section: ConfigurationSection) {
-        convert(yaml.load(contents), section)
+        convert(yaml.load(contents) ?: return, section)
     }
 
     fun convert(input: Map<*, *>, section: ConfigurationSection) {
