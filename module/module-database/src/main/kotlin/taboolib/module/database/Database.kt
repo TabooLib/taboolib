@@ -4,14 +4,14 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.configuration.Config
-import taboolib.module.configuration.SecuredFile
+import taboolib.module.configuration.Configuration
 import javax.sql.DataSource
 
 @RuntimeDependency("!com.zaxxer:HikariCP:4.0.3", test = "!com.zaxxer.hikari_4_0_3.HikariDataSource", relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3"])
 object Database {
 
     @Config("datasource.yml")
-    lateinit var settingsFile: SecuredFile
+    lateinit var settingsFile: Configuration
         private set
 
     fun createDataSource(host: Host<*>, hikariConfig: HikariConfig? = null): DataSource {

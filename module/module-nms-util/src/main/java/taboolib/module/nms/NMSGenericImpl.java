@@ -42,6 +42,7 @@ import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -60,6 +61,7 @@ public class NMSGenericImpl extends NMSGeneric {
 
     private Field entityTypesField;
     private Constructor packetPlayOutLightUpdateConstructor;
+    private Method getKeyMethod;
 
     public NMSGenericImpl() {
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
@@ -72,6 +74,8 @@ public class NMSGenericImpl extends NMSGeneric {
         }
         if (MinecraftVersion.INSTANCE.getMajor() >= 9) {
             try {
+                Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
+                getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
                 packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
                         net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
                         net.minecraft.server.v1_16_R1.LightEngine.class,
@@ -112,6 +116,7 @@ public class NMSGenericImpl extends NMSGeneric {
         Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             String name;
+            // 1.18 Supported
             if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
                 name = Reflex.Companion.invokeMethod(((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).getItem(), "getDescriptionId", new Object[0], false);
             } else {
@@ -140,8 +145,21 @@ public class NMSGenericImpl extends NMSGeneric {
     @NotNull
     public String getName(Entity entity) {
         if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
-            Object minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle().getEntityType());
-            return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
+            Object nmsEntity = ((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle();
+            Object minecraftKey = null;
+            // 1.18 Supported
+            if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
+                try {
+                    Object type = Reflex.Companion.invokeMethod(nmsEntity, "getType", new Object[0], false);
+                    minecraftKey = getKeyMethod.invoke(null, type);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return "entity.minecraft." + Reflex.Companion.invokeMethod(minecraftKey, "getPath", new Object[0], false);
+            } else {
+                minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((net.minecraft.server.v1_14_R1.Entity) nmsEntity).getEntityType());
+                return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
+            }
         } else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             try {
                 String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(Ref.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
