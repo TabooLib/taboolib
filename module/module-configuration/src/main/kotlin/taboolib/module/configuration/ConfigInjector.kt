@@ -17,8 +17,8 @@ import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.Supplier
 
 @RuntimeDependencies(
+    RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
     RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
-    RuntimeDependency("!io.github.bkm016:eo-yaml:6.0.1", test = "!com.amihaiemil.eoyaml.Yaml", repository = "http://repo.ptms.ink/repository/maven-releases"),
     RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config"),
     RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
     RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.toml.JsonFormat"),

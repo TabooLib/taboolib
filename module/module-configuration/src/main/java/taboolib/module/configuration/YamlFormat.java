@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * @author TheElectronWill, 坏黑
  */
-public final class YamlFormat implements ConfigFormat<CommentedConfig> {
+public final class YamlFormat implements ConfigFormat<Config> {
 
     public static final YamlFormat INSTANCE = new YamlFormat();
 
@@ -36,18 +36,18 @@ public final class YamlFormat implements ConfigFormat<CommentedConfig> {
     }
 
     @Override
-    public ConfigParser<CommentedConfig> createParser() {
+    public ConfigParser<Config> createParser() {
         return new YamlParser(this);
     }
 
     @Override
-    public CommentedConfig createConfig(Supplier<Map<String, Object>> mapCreator) {
-        return CommentedConfig.of(mapCreator, this);
+    public Config createConfig(Supplier<Map<String, Object>> mapCreator) {
+        return Config.of(mapCreator, this);
     }
 
     @Override
     public boolean supportsComments() {
-        return true;
+        return false;
     }
 
     @Override

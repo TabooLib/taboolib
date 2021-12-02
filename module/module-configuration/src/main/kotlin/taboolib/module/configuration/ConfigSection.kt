@@ -63,10 +63,6 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
             value is ConfigurationSection -> set(path, value.getConfig())
             value is Map<*, *> -> set(path, value.toConfig(this))
-            value is CommentValue -> {
-                set(path, value.value)
-                (root as? CommentedConfig)?.setComment(path, value.comment)
-            }
             else -> root.set<Any>(path, value)
         }
     }
@@ -248,10 +244,9 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                     is ConfigurationSection -> unwrap(v.getConfig())
                     is ConfigSection -> v.toMap()
                     is Config -> unwrap(v.valueMap())
-                    is CommentValue -> unwrap(v.value)
                     is Collection<*> -> v.map { unwrap(it) }.toList()
                     is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
-                    is String -> v.decodeUnicode().removeFinalLineBreak()
+                    is String -> v.decodeUnicode()
                     else -> v
                 }
             }
@@ -264,15 +259,10 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                     value is Collection<*> && value !is List<*> -> value.toList()
                     value is ConfigurationSection -> value.getConfig()
                     value is Map<*, *> -> value.toConfig(parent)
-                    value is CommentValue -> process(value.value)
                     else -> value
                 }
             }
             return list.map { process(it) }
-        }
-
-        private fun String.removeFinalLineBreak(): String {
-            return if (endsWith('\n')) substringBeforeLast('\n') else this
         }
     }
 }
