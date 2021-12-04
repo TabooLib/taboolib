@@ -17,7 +17,7 @@ object Kether {
     fun init() {
         try {
             Language.textTransfer += KetherTransfer
-        } catch (ex: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
     }
 
