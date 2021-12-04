@@ -10,11 +10,21 @@ import java.io.FileInputStream
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 
+    val minecraftVersion by lazy {
+        Bukkit.getServer().javaClass.name.split('.')[3]
+    }
+
+    /**
+     * 当前正在运行的版本
+     */
     val runningVersion by lazy {
         val version = Bukkit.getServer().version.split("MC:")[1]
         version.substring(0, version.length - 1).trim()
     }
 
+    /**
+     * 当前所有受支持的版本
+     */
     val supportedVersion = arrayOf(
         arrayOf("1.8", "1.8.3", "1.8.4", "1.8.5", "1.8.6", "1.8.7", "1.8.8", "1.8.9"), // 0
         arrayOf("1.9", "1.9.2", "1.9.4"), // 1
@@ -30,6 +40,9 @@ object MinecraftVersion {
         arrayOf("1.18", "1.18.1"), // 10
     )
 
+    /**
+     * 老版本格式
+     */
     val majorLegacy by lazy {
         when (major) {
             0 -> 10800
@@ -47,10 +60,16 @@ object MinecraftVersion {
         } + minor
     }
 
+    /**
+     * 主版本号
+     */
     val major by lazy {
         supportedVersion.indexOfFirst { it.contains(runningVersion) }
     }
 
+    /**
+     * 次版本号
+     */
     val minor by lazy {
         if (major != -1) {
             supportedVersion[major].indexOf(runningVersion)
@@ -59,10 +78,16 @@ object MinecraftVersion {
         }
     }
 
+    /**
+     * 是否支持当前运行版本
+     */
     val isSupported by lazy {
         supportedVersion.flatten().contains(runningVersion)
     }
 
+    /**
+     * 是否为 1.17 以上版本
+     */
     val isUniversal by lazy {
         major >= 9
     }
@@ -73,10 +98,6 @@ object MinecraftVersion {
             FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
             FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
         )
-    }
-
-    val minecraftVersion by lazy {
-        Bukkit.getServer().javaClass.name.split('.')[3]
     }
 
     init {
