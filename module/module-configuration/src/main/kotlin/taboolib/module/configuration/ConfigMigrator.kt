@@ -118,22 +118,22 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
 //    return contextTarget.toByteArray(StandardCharsets.UTF_8)
 }
 
-private fun String.parentNode(): String {
-    val lastIndexOf = lastIndexOf('.')
-    return if (lastIndexOf != -1) substring(0, lastIndexOf) else this
-}
-
-private fun String.spaceCount(): Int {
-    var i = 0
-    for (it in this) {
-        if (it == ' ') {
-            i++
-        } else {
-            break
-        }
-    }
-    return i
-}
+//private fun String.parentNode(): String {
+//    val lastIndexOf = lastIndexOf('.')
+//    return if (lastIndexOf != -1) substring(0, lastIndexOf) else this
+//}
+//
+//private fun String.spaceCount(): Int {
+//    var i = 0
+//    for (it in this) {
+//        if (it == ' ') {
+//            i++
+//        } else {
+//            break
+//        }
+//    }
+//    return i
+//}
 
 object ConfigFinder {
 
