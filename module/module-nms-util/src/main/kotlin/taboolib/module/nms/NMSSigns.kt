@@ -17,9 +17,9 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
     val location = location
     location.y = 0.0
     try {
-        sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!, 0.toByte())
-    } catch (t: NoSuchMethodError) {
         sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!.createBlockData())
+    } catch (t: NoSuchMethodError) {
+        sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!, 0.toByte())
     }
     sendSignChange(location, lines.format())
     SignsListener.inputs[name] = function
