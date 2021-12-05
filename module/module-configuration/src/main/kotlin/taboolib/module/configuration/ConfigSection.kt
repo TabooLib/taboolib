@@ -3,6 +3,7 @@ package taboolib.module.configuration
 import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.EnumGetMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
@@ -52,8 +53,17 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
     }
 
     override fun get(path: String, def: Any?): Any? {
-        val value = root.getOrElse(path, def)
-        return if (value is Config) ConfigSection(value, path.substringAfterLast('.')) else unwrap(value)
+        return when (val value = root.getOrElse(path, def)) {
+            is Config -> ConfigSection(value, path.substringAfterLast('.'))
+            // 理论是无法获取到 Map 类型
+            // 因为在 set 方法中 Map 会被转换为 Config 类型
+            is Map<*, *> -> {
+                val subConfig = root.createSubConfig()
+                subConfig.setProperty("map", value)
+                ConfigSection(subConfig, path.substringAfterLast('.'))
+            }
+            else -> unwrap(value)
+        }
     }
 
     override fun set(path: String, value: Any?) {
@@ -241,8 +251,8 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
                 "~", "null" -> null
                 "''", "\"\"" -> ""
                 else -> when (v) {
-                    is ConfigurationSection -> unwrap(v.getConfig())
                     is ConfigSection -> v.toMap()
+                    is ConfigurationSection -> unwrap(v.getConfig())
                     is Config -> unwrap(v.valueMap())
                     is Collection<*> -> v.map { unwrap(it) }.toList()
                     is Map<*, *> -> v.map { it.key to unwrap(it.value) }.toMap()
