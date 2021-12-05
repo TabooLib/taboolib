@@ -74,8 +74,10 @@ public class NMSGenericImpl extends NMSGeneric {
         }
         if (MinecraftVersion.INSTANCE.getMajor() >= 9) {
             try {
-                Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
-                getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
+                if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
+                    Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
+                    getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
+                }
                 packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
                         net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
                         net.minecraft.server.v1_16_R1.LightEngine.class,
