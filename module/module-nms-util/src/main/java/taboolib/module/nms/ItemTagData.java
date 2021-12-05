@@ -133,7 +133,10 @@ public class ItemTagData {
     }
 
     public ItemTagList asList() {
-        return (ItemTagList) data;
+        if (data instanceof ItemTagList) {
+            return (ItemTagList) data;
+        }
+        return ItemTagList.of(data);
     }
 
     public ItemTagType getType() {
