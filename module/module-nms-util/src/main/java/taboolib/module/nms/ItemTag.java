@@ -72,12 +72,12 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
     }
 
     @Deprecated
-    public ItemTag fromLegacyJson(String json) {
+    public static ItemTag fromLegacyJson(String json) {
         return fromLegacyJson(new JsonParser().parse(json)).asCompound();
     }
 
     @Deprecated
-    public ItemTagData fromLegacyJson(JsonElement element) {
+    public static ItemTagData fromLegacyJson(JsonElement element) {
         if (element instanceof JsonObject) {
             JsonObject json = (JsonObject) element;
             // base
