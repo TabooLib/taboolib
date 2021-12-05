@@ -121,7 +121,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
             else {
                 ItemTag compound = new ItemTag();
                 for (Entry<String, JsonElement> elementEntry : json.entrySet()) {
-                    compound.put(elementEntry.getKey(), fromJson(elementEntry.getValue()));
+                    compound.put(elementEntry.getKey(), fromLegacyJson(elementEntry.getValue()));
                 }
                 return compound;
             }
@@ -130,7 +130,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         else if (element instanceof JsonArray) {
             ItemTagList list = new ItemTagList();
             for (JsonElement jsonElement : (JsonArray) element) {
-                list.add(fromJson(jsonElement));
+                list.add(fromLegacyJson(jsonElement));
             }
             return list;
         }
