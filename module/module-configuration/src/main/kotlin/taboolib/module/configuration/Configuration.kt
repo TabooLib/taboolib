@@ -109,5 +109,11 @@ interface Configuration : ConfigurationSection {
             ObjectConverter(ignoreConstructor).toObject((section as ConfigSection).root, obj)
             return obj
         }
+
+        fun fromMap(map: Map<*, *>, type: Type = Type.YAML): ConfigurationSection {
+            val empty = empty(type)
+            map.forEach { (k, v) -> empty[k.toString()] = v }
+            return empty
+        }
     }
 }
