@@ -96,8 +96,11 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                 if (optional.isPresent()) {
                     beforeParse();
                     return wrap(optional.get().resolve(this));
+                } else {
+                    beforeParse();
+                    return wrap(new LiteralAction<>(element));
                 }
-                throw LoadError.UNKNOWN_ACTION.create(element);
+                // throw LoadError.UNKNOWN_ACTION.create(element);
             }
         }
     }

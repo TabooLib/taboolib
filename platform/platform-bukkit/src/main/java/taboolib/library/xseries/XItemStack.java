@@ -74,13 +74,10 @@ import static taboolib.library.xseries.XMaterial.supports;
  * ItemStack: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemStack.html
  *
  * @author Crypto Morin
- * @version 5.2.0.1.1
- * @see XMaterial
- * @see XPotion
- * @see XEnchantment
+ * @version 6.0.0
  * @see ItemStack
  */
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "NullableProblems"})
 public final class XItemStack {
     private XItemStack() { }
 
@@ -97,13 +94,15 @@ public final class XItemStack {
     public static void serialize(@NotNull ItemStack item, @NotNull ConfigurationSection config) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
         Objects.requireNonNull(config, "Cannot serialize item from a null configuration section.");
-        ItemMeta meta = item.getItemMeta();
 
         // Material
         config.set("material", XMaterial.matchXMaterial(item).name());
 
         // Amount
         if (item.getAmount() > 1) config.set("amount", item.getAmount());
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return;
 
         // Durability - Damage
         if (supports(13)) {
@@ -114,8 +113,6 @@ public final class XItemStack {
         } else {
             config.set("damage", item.getDurability());
         }
-
-        if (meta == null || !item.hasItemMeta()) return;
 
         // Display Name & Lore
         if (meta.hasDisplayName()) config.set("name", meta.getDisplayName());
@@ -346,11 +343,12 @@ public final class XItemStack {
      * Writes an ItemStack properties into a {@code Map}.
      *
      * @param item the ItemStack to serialize.
+     *
      * @return a Map containing the serialized ItemStack properties.
      */
     public static Map<String, Object> serialize(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
-        final ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
         serialize(item, config);
         return configSectionToMap(config);
     }
@@ -359,8 +357,7 @@ public final class XItemStack {
      * Deserialize an ItemStack from the config.
      *
      * @param config the config section to deserialize the ItemStack object from.
-     *
-     * @return a deserialized ItemStack.
+     * @return a deserialized ItemStack or null if it can't be deserialized (malformed or insufficient data)
      * @since 1.0.0
      */
     @SuppressWarnings("deprecation")
@@ -373,11 +370,13 @@ public final class XItemStack {
         if (material == null) return null;
         ItemStack item = XMaterial.matchXMaterial(material).map(XMaterial::parseItem).orElse(null);
         if (item == null) return null;
-        ItemMeta meta = item.getItemMeta();
 
         // Amount
         int amount = config.getInt("amount");
         if (amount > 1) item.setAmount(amount);
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
 
         // Durability - Damage
         if (supports(13)) {
@@ -389,8 +388,6 @@ public final class XItemStack {
             int damage = config.getInt("damage");
             if (damage > 0) item.setDurability((short) damage);
         }
-
-        if (meta == null) return item;
 
         // Special Items
         if (meta instanceof SkullMeta) {
@@ -626,17 +623,23 @@ public final class XItemStack {
             // Spawn Eggs
             if (supports(11)) {
                 if (meta instanceof SpawnEggMeta) {
-                    SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
-                    EntityType creature = Enums.getIfPresent(EntityType.class, config.getString("creature").toUpperCase(Locale.ENGLISH)).or(EntityType.BAT);
-                    spawnEgg.setSpawnedType(creature);
+                    String creatureName = config.getString("creature");
+                    if (!Strings.isNullOrEmpty(creatureName)) {
+                        SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
+                        com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
+                        if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
+                    }
                 }
             } else {
                 MaterialData data = item.getData();
                 if (data instanceof SpawnEgg) {
-                    SpawnEgg spawnEgg = (SpawnEgg) data;
-                    EntityType creature = Enums.getIfPresent(EntityType.class, config.getString("creature").toUpperCase(Locale.ENGLISH)).or(EntityType.BAT);
-                    spawnEgg.setSpawnedType(creature);
-                    item.setData(data);
+                    String creatureName = config.getString("creature");
+                    if (!Strings.isNullOrEmpty(creatureName)) {
+                        SpawnEgg spawnEgg = (SpawnEgg) data;
+                        com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
+                        if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
+                        item.setData(data);
+                    }
                 }
             }
         }
@@ -771,6 +774,7 @@ public final class XItemStack {
      *
      * @param serializedItem the map holding the item configurations to deserialize
      *                       the ItemStack object from.
+     *
      * @return a deserialized ItemStack.
      */
     @Nullable
@@ -783,18 +787,18 @@ public final class XItemStack {
      * Converts a {@code Map<?, ?>} into a {@code ConfigurationSection}.
      *
      * @param map the map to convert.
+     *
      * @return a {@code ConfigurationSection} containing the map values.
      */
     @NotNull
     private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
-        final ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
-        for(Map.Entry<?, ?> entry : map.entrySet()) {
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
             if (value == null) continue;
-
             if (value instanceof Map<?, ?>) {
-                value = mapToConfigSection((Map<?, ?>)value);
+                value = mapToConfigSection((Map<?, ?>) value);
             }
             config.set(key, value);
         }
@@ -805,16 +809,15 @@ public final class XItemStack {
      * Converts a {@code ConfigurationSection} into a {@code Map<String, Object>}.
      *
      * @param config the configuration section to convert.
+     *
      * @return a {@code Map<String, Object>} containing the configuration section values.
      */
     @NotNull
     private static Map<String, Object> configSectionToMap(@NotNull ConfigurationSection config) {
-        final Map<String, Object> map = new LinkedHashMap<>();
-
-        for(String key : config.getKeys(false)) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        for (String key : config.getKeys(false)) {
             Object value = config.get(key);
             if (value == null) continue;
-
             if (value instanceof ConfigurationSection) {
                 value = configSectionToMap((ConfigurationSection) value);
             }

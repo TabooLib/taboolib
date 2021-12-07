@@ -1,7 +1,6 @@
 package taboolib.library.xseries;
 
 import org.bukkit.Material;
-import taboolib.common.Isolated;
 
 /**
  * This class is excluded from the repository by default. If you wish to add it to your project, you can download it
@@ -12,7 +11,6 @@ import taboolib.common.Isolated;
  *
  * @author Crypto Morin
  */
-@Isolated
 public final class XMaterialUtil {
     /**
      * Checks if this Material is an obtainable item. "Obtainable items" are simply materials that can be displayed in your GUI.
@@ -21,7 +19,7 @@ public final class XMaterialUtil {
      * @return true if this material is an item.
      * @since 1.13
      */
-    public boolean isItem(XMaterial material) {
+    public static boolean isItem(XMaterial material) {
         if (XMaterial.supports(13)) return material.parseMaterial().isItem();
         switch (material) { // All the materials that are NOT an item (only 1.12 materials)
             case ATTACHED_MELON_STEM:
@@ -111,7 +109,7 @@ public final class XMaterialUtil {
      * Some blocks such as piston heads and stairs are considered interactable
      * though may not perform any additional functionality.
      * <p>
-     * Note that the interactability of some materials may be dependant on their
+     * Note that the interactability of some materials may be dependent on their
      * state as well. This method will return true if there is at least one
      * state in which additional interact handling is performed for the
      * material.
@@ -119,7 +117,7 @@ public final class XMaterialUtil {
      * @return true if this material can be interacted with.
      * @since 1.13
      */
-    public boolean isInteractable(XMaterial material) {
+    public static boolean isInteractable(XMaterial material) {
         if (XMaterial.supports(13)) return material.parseMaterial().isInteractable();
         switch (material) { // 1.12 materials only
             case ACACIA_BUTTON:
@@ -283,7 +281,7 @@ public final class XMaterialUtil {
      * @return True if this material is an air block.
      * @since 1.14.4
      */
-    public boolean isAir(XMaterial material) {
+    public static boolean isAir(XMaterial material) {
         switch (material) {
             case AIR:
             case CAVE_AIR:
