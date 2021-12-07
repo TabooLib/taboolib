@@ -5,9 +5,11 @@ import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.function.postpone
-import taboolib.common.platform.function.registerListener
+import taboolib.common.platform.function.registerBungeeListener
+import taboolib.common.platform.function.registerVelocityListener
+import taboolib.common.platform.function.registerSpongeListener
+import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.runningPlatform
-import taboolib.common.platform.function.submit
 import java.lang.reflect.Method
 import java.util.function.Supplier
 
@@ -31,39 +33,39 @@ object EventBus : Injector.Methods {
                 Platform.BUKKIT, Platform.NUKKIT -> {
                     if (method.parameterTypes[0] == OptionalEvent::class.java) {
                         if (eventBind != null) {
-                            registerListener(eventBind, event.priority, event.ignoreCancelled) { method.invoke(obj, OptionalEvent(it)) }
+                            registerBukkitListener(eventBind, event.priority, event.ignoreCancelled) { method.invoke(obj, OptionalEvent(it)) }
                         }
                     } else {
-                        registerListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) { method.invoke(obj, it) }
+                        registerBukkitListener(method.parameterTypes[0], event.priority, event.ignoreCancelled) { method.invoke(obj, it) }
                     }
                 }
                 Platform.BUNGEE -> {
                     val level = if (event.level != 0) event.level else event.priority.level
                     if (method.parameterTypes[0] == OptionalEvent::class.java) {
                         if (eventBind != null) {
-                            registerListener(eventBind, level, event.ignoreCancelled) { method.invoke(obj, OptionalEvent(it)) }
+                            registerBungeeListener(eventBind, level, event.ignoreCancelled) { method.invoke(obj, OptionalEvent(it)) }
                         }
                     } else {
-                        registerListener(method.parameterTypes[0], level, event.ignoreCancelled) { method.invoke(obj, it) }
+                        registerBungeeListener(method.parameterTypes[0], level, event.ignoreCancelled) { method.invoke(obj, it) }
                     }
                 }
                 Platform.VELOCITY -> {
                     if (method.parameterTypes[0] == OptionalEvent::class.java) {
                         if (eventBind != null) {
-                            registerListener(eventBind, event.postOrder) { method.invoke(obj, OptionalEvent(it)) }
+                            registerVelocityListener(eventBind, event.postOrder) { method.invoke(obj, OptionalEvent(it)) }
                         }
                     } else {
-                        registerListener(method.parameterTypes[0], event.postOrder) { method.invoke(obj, it) }
+                        registerVelocityListener(method.parameterTypes[0], event.postOrder) { method.invoke(obj, it) }
                     }
                 }
                 Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
                     postpone {
                         if (method.parameterTypes[0] == OptionalEvent::class.java) {
                             if (eventBind != null) {
-                                registerListener(eventBind, event.order, event.beforeModifications) { method.invoke(obj, OptionalEvent(it)) }
+                                registerSpongeListener(eventBind, event.order, event.beforeModifications) { method.invoke(obj, OptionalEvent(it)) }
                             }
                         } else {
-                            registerListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(obj, it) }
+                            registerSpongeListener(method.parameterTypes[0], event.order, event.beforeModifications) { method.invoke(obj, it) }
                         }
                     }
                 }
