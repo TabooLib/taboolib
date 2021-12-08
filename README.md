@@ -1,6 +1,6 @@
 ![](https://wiki.ptms.ink/images/6/69/Taboolib-png-blue-v2.png)
 
-## TabooLib framework
+## TabooLib Framework [中文版本/Chinese Ver.](https://github.com/TabooLib/TabooLib/blob/master/README-CN.md)
 
 [![](https://app.codacy.com/project/badge/Grade/3e9c747cd4aa484ab7cd74b7666c4c43)](https://www.codacy.com/gh/TabooLib/TabooLib/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TabooLib/TabooLib&amp;utm_campaign=Badge_Grade)
 [![](https://www.codefactor.io/repository/github/taboolib/taboolib/badge)](https://www.codefactor.io/repository/github/taboolib/taboolib)
@@ -13,9 +13,9 @@ TabooLib is a multi-platform plugin development framework for Minecraft Java Ver
 + TabooLib is offered under the MIT License, which is a loose open source license.
 + Development speed comes first
 
-Along with the 6.0 update, we focused more on security and stability. The hot-loading system that was so problematic in the previous version has been abandoned, while it significantly reduced the size of the plugin and introduced a centralized plugin manager. However, with the advent of updates to Minecraft and a multitude of derivatives of Spigot, this has become problematic. So it became clear that a huge update was on the way for v6.0, in which we carefully redesigned every single part of TabooLib.
+Along with the 6.0 update, we focused more on security and stability. The hot-loading system which was problematic in the previous version has been abandoned. While it significantly reduced the size of plugins and introduced a centralized plugin manager, with the advent of updates to Minecraft and a multitude of derivatives of Spigot, this has become troublesome. So it was a foregone conclusion that a huge update to v6.0 was in order, in which we carefully redesigned every single component of TabooLib.
 
-Most TabooLib-based plugins are supposed to work across multiple Minecraft versions without special updates. i. e. in most cases, server owners would not need to be concerned about incompatibility of plugins. Even with extensive use of nms code, TabooLib provides several magical tools.
+Most TabooLib-based plugins are supposed to work across multiple Minecraft versions without special updates. i.e. in most cases, server owners would not need to be concerned about incompatibility of plugins. Even with extensive use of nms code, TabooLib provides several magical tools.
 
 **Simpler, for example you can quickly register commands using the method provided in TabooLib.**
 
@@ -40,7 +40,7 @@ command("tpuuid") {
 }
 ```
 
-For more complex ones, like the followings example, a multi-platform implementation will be created, and TabooLib will select the appropriate implementation class according to the platform where it is currently running.
+For more complex ones, you are able to create your own multi-platform implementation like the following, where TabooLib will select the appropriate implementation class based on the platform currently running.
 
 ```kotlin
 import org.bukkit.Bukkit
@@ -112,24 +112,24 @@ There is no need to do so if your plugin is designed to work only on the Bukkit 
 + __module-lang__: Language File Utilities
 + __module-metrics__: Integration of bStats
 + __module-navigation__: Entity-less Pathfinding Utilities
-+ __module-nms__: 跨版本 nms 解决方案与数据包管理工具
-+ __module-nms-util__: 常用 nms 工具集合
-+ __module-porticus__: BungeeCord 通讯工具
-+ __module-ui__: 箱子菜单构建工具
-+ __module-ui-receptacle__: 箱子菜单构建工具（发包实现）
-+ __platform-bukkit__: Bukkit 实现
-+ __platform-bungee__: BungeeCord 实现
-+ __platform-nukkit__: Nukkit 实现
-+ __platform-sponge-api7__: Sponge (api7) 实现
-+ __platform-sponge-api8__: Sponge (api8) 实现
-+ __platform-sponge-api9__: Sponge (api9) 实现
-+ __platform-velocity__: Velocity 实现
-+ __platform-cloudnet-v3__: CloudNet (v3) 实现
-+ __platform-application__: 独立程序实现
++ __module-nms__: Multi-version NMS Solutions & Packet Management Tools
++ __module-nms-util__: Collection of Common NMS Tools
++ __module-porticus__: BungeeCord Communication Tools
++ __module-ui__: Chest Menu Builder
++ __module-ui-receptacle__: Chest Menu Builder Implemented with Packet
++ __platform-bukkit__: Bukkit Implementation
++ __platform-bungee__: BungeeCord Implementation
++ __platform-nukkit__: Nukkit Implementation
++ __platform-sponge-api7__: Sponge (api7) Implementation
++ __platform-sponge-api8__: Sponge (api8) Implementation
++ __platform-sponge-api9__: Sponge (api9) Implementation
++ __platform-velocity__: Velocity Implementation
++ __platform-cloudnet-v3__: CloudNet (v3) Implementation
++ __platform-application__: Standalone Application Implementation
 
-## 相关链接
+## Links
 
-+ [TabooLib 项目生成器](https://get.tabooproject.org)
-+ [TabooLib 文档](https://docs.tabooproject.org)
++ [TabooLib Project Generator](https://get.tabooproject.org)
++ [TabooLib DOCs](https://docs.tabooproject.org)
 + [TabooLib SDK](https://github.com/taboolib/taboolib-sdk)
 
