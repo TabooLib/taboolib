@@ -13,8 +13,10 @@ subprojects {
         maven("https://libraries.minecraft.net")
         maven("https://repo1.maven.org/maven2")
         maven("https://maven.aliyun.com/repository/central")
-        maven("https://repo2s.ptms.ink/repository/maven-releases/")
         maven("https://repo.codemc.io/repository/nms/")
+        maven("http://repo.ptms.ink/repository/maven-releases/") {
+            isAllowInsecureProtocol = true
+        }
         mavenCentral()
     }
     dependencies {
