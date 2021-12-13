@@ -16,7 +16,7 @@ val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProces
  *
  * @author Kylepoops
  */
-fun File.deepDeleteAsync(await: Boolean = false, futures: MutableSet<Future<*>> = mutableSetOf()) {
+fun File.deepDeleteAsync(await: Boolean = false, futures: MutableSet<Future<*>>? = null) {
     // first submit the task and get the future
     val future = executor.submit {
         if (this.exists()) {
@@ -34,7 +34,7 @@ fun File.deepDeleteAsync(await: Boolean = false, futures: MutableSet<Future<*>> 
         }
     }
     // Add the future to the future set
-    futures.add(future)
+    futures?.add(future)
     // Wait the task to finish before returning if await is true
     // It shouldn't be called inside this function
     if (await) future.get()
