@@ -20,12 +20,12 @@ fun File.deepDeleteAsync(await: Boolean = false, futures: MutableSet<Future<*>>?
     // first submit the task and get the future
     val future = executor.submit {
         if (this.exists()) {
-            if (this.isDirectory) {
+            if (this.isDirectory) listFiles()?.let { files ->
                 // Construct another future set here
                 // Because we need all the subdirectories and files to be deleted before this directory is deleted
                 val thisFutures = mutableSetOf<Future<*>>()
                 // Pass the future set to this, so we can store all the future
-                this.listFiles()?.forEach { it.deepDeleteAsync(futures = thisFutures) }
+                files.forEach { it.deepDeleteAsync(futures = thisFutures) }
                 // Wait for all the subdirectories and files to be deleted
                 thisFutures.forEach(Future<*>::get)
             }
