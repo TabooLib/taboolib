@@ -4,10 +4,12 @@ import com.electronwill.nightconfig.core.conversion.ObjectConverter
 import taboolib.common.reflect.Reflex.Companion.invokeConstructor
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.util.smallHumpToHyphen
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
 import java.io.Serializable
+import kotlin.reflect.KProperty
 
 /**
  * TabooLib
@@ -16,15 +18,53 @@ import java.io.Serializable
  * @author mac
  * @since 2021/11/22 12:30 上午
  */
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 interface Configuration : ConfigurationSection {
 
     /**
-     * Use delegate to access element in configuration.
+     * Use a literal delegate to bind this property to a section in configuration.
      * @param T type of the element, must be serializable
      * @param path path of element
      * @return the delegate instance bound to this element
      */
     fun <T : Serializable> delegate(path: String): ConfigLiteralDelegate<T> = ConfigLiteralDelegate(this, path)
+
+    /**
+     * Bind the property to corresponding element in the configuration.<br/>
+     *
+     * For example: <br/>
+     * ```Kotlin
+     * val modelName: String by config
+     * ```
+     * will bind to section of model-name
+     * @param T type of the element, must be serializable
+     */
+    @Suppress("UNCHECKED_CAST")
+    operator fun <T : Serializable> getValue(thisRef: T?, property: KProperty<*>): T {
+        return try {
+            this.getTypedObject(property.name.smallHumpToHyphen())
+        } catch (ex: Throwable) {
+            throw IllegalAccessException("Can not set property \"${property.name}\"").initCause(ex)
+        }
+    }
+
+    /**
+     * Bind the property to corresponding element in the configuration.<br/>
+     *
+     * For example: <br/>
+     * ```Kotlin
+     * val modelName: String by config
+     * ```
+     * will bind to section of model-name
+     * @param T type of the element, must be serializable
+     */
+    operator fun <T : Serializable> setValue(thisRef: T?, property: KProperty<*>, value: T) {
+        try {
+            this.setObject(property.name.smallHumpToHyphen(), value)
+        } catch (ex: Throwable) {
+            throw IllegalAccessException("Can not set property \"${property.name}\"").initCause(ex)
+        }
+    }
 
     var file: File?
 
@@ -90,8 +130,21 @@ interface Configuration : ConfigurationSection {
             }
         }
 
+        @Deprecated(
+            message = "in favour of ConfigurationSection.getObject(key, ignoreConstructor)",
+            replaceWith = ReplaceWith("getTypedObject(key, ignoreConstructor)"),
+            level = DeprecationLevel.ERROR
+        )
         inline fun <reified T> ConfigurationSection.getObject(key: String, ignoreConstructor: Boolean = false): T {
-            return deserialize(getConfigurationSection(key) ?: error("Not a section"), ignoreConstructor)
+            return deserializeObject(getConfigurationSection(key) ?: error("Not a section"), ignoreConstructor)
+        }
+
+        fun <T> ConfigurationSection.getTypedObject(key: String, ignoreConstructor: Boolean = false, vararg type: T): T {
+            return deserializeObject(
+                getConfigurationSection(key) ?: error("Not a section"),
+                ignoreConstructor,
+                *type
+            )
         }
 
         fun <T> ConfigurationSection.getObject(key: String, obj: T, ignoreConstructor: Boolean = false): T {
@@ -108,8 +161,25 @@ interface Configuration : ConfigurationSection {
             return ConfigSection(config)
         }
 
+        @Deprecated(
+            "in favour of deserializeObject(section, ignoreConstructor)",
+            ReplaceWith("deserializeObject(section, ignoreConstructor)"),
+            level = DeprecationLevel.ERROR
+        )
         inline fun <reified T> deserialize(section: ConfigurationSection, ignoreConstructor: Boolean = false): T {
             val instance = if (ignoreConstructor) T::class.java.unsafeInstance() as T else T::class.java.invokeConstructor()
+            ObjectConverter(ignoreConstructor).toObject((section as ConfigSection).root, instance)
+            return instance
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> deserializeObject(
+            section: ConfigurationSection,
+            ignoreConstructor: Boolean = false,
+            vararg type: T
+        ): T {
+            val clazz = type.javaClass.componentType
+            val instance = if (ignoreConstructor) clazz.unsafeInstance() as T else clazz.invokeConstructor() as T
             ObjectConverter(ignoreConstructor).toObject((section as ConfigSection).root, instance)
             return instance
         }
