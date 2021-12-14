@@ -7,6 +7,7 @@ import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
+import java.io.Serializable
 
 /**
  * TabooLib
@@ -16,6 +17,14 @@ import java.io.Reader
  * @since 2021/11/22 12:30 上午
  */
 interface Configuration : ConfigurationSection {
+
+    /**
+     * Use delegate to access element in configuration.
+     * @param T type of the element, must be serializable
+     * @param path path of element
+     * @return the delegate instance bound to this element
+     */
+    fun <T : Serializable> delegate(path: String): ConfigLiteralDelegate<T> = ConfigLiteralDelegate(this, path)
 
     var file: File?
 
