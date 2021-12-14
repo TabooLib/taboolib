@@ -39,7 +39,7 @@ interface Configuration : ConfigurationSection {
      * @param T type of the element, must be serializable
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun <T : Any> getValue(thisRef: T?, property: KProperty<*>): T {
+    operator fun <T : Any> getValue(thisRef: Any?, property: KProperty<*>): T {
         return try {
             this.getTypedObject(property.name.smallHumpToHyphen())
         } catch (ex: Throwable) {
@@ -57,7 +57,7 @@ interface Configuration : ConfigurationSection {
      * will bind to section of model-name
      * @param T type of the element, must be serializable
      */
-    operator fun <T : Any> setValue(thisRef: T?, property: KProperty<*>, value: T) {
+    operator fun <T : Any> setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         try {
             this.setObject(property.name.smallHumpToHyphen(), value)
         } catch (ex: Throwable) {

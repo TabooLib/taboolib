@@ -9,7 +9,7 @@ class ConfigLiteralDelegate<T : Any> internal constructor(
     val path: String
 ) {
 
-    operator fun getValue(thisRef: T?, property: KProperty<*>): T {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return try {
             config.getTypedObject(path)
         } catch (ex: Throwable) {
@@ -17,7 +17,7 @@ class ConfigLiteralDelegate<T : Any> internal constructor(
         }
     }
 
-    operator fun setValue(thisRef: T?, property: KProperty<*>, value: T) {
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         try {
             config.setObject(path, value)
         } catch (ex: Throwable) {
