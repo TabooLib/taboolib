@@ -130,7 +130,7 @@ interface Configuration : ConfigurationSection {
         }
 
         @Deprecated(
-            message = "in favour of ConfigurationSection.getObject(key, ignoreConstructor)",
+            message = "in favour of ConfigurationSection.getTypedObject(key, ignoreConstructor)",
             replaceWith = ReplaceWith("getTypedObject(key, ignoreConstructor)"),
             level = DeprecationLevel.ERROR
         )
@@ -140,9 +140,7 @@ interface Configuration : ConfigurationSection {
 
         fun <T> ConfigurationSection.getTypedObject(key: String, ignoreConstructor: Boolean = false, vararg type: T): T {
             return deserializeObject(
-                getConfigurationSection(key) ?: error("Not a section"),
-                ignoreConstructor,
-                *type
+                getConfigurationSection(key) ?: error("Not a section"), ignoreConstructor, *type
             )
         }
 
