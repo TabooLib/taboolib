@@ -8,7 +8,6 @@ import taboolib.module.configuration.util.smallHumpToHyphen
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
-import java.io.Serializable
 import kotlin.reflect.KProperty
 
 /**
@@ -27,7 +26,7 @@ interface Configuration : ConfigurationSection {
      * @param path path of element
      * @return the delegate instance bound to this element
      */
-    fun <T : Serializable> delegate(path: String): ConfigLiteralDelegate<T> = ConfigLiteralDelegate(this, path)
+    fun <T : Any> delegate(path: String): ConfigLiteralDelegate<T> = ConfigLiteralDelegate(this, path)
 
     /**
      * Bind the property to corresponding element in the configuration.<br/>
@@ -40,7 +39,7 @@ interface Configuration : ConfigurationSection {
      * @param T type of the element, must be serializable
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun <T : Serializable> getValue(thisRef: T?, property: KProperty<*>): T {
+    operator fun <T : Any> getValue(thisRef: T?, property: KProperty<*>): T {
         return try {
             this.getTypedObject(property.name.smallHumpToHyphen())
         } catch (ex: Throwable) {
@@ -58,7 +57,7 @@ interface Configuration : ConfigurationSection {
      * will bind to section of model-name
      * @param T type of the element, must be serializable
      */
-    operator fun <T : Serializable> setValue(thisRef: T?, property: KProperty<*>, value: T) {
+    operator fun <T : Any> setValue(thisRef: T?, property: KProperty<*>, value: T) {
         try {
             this.setObject(property.name.smallHumpToHyphen(), value)
         } catch (ex: Throwable) {

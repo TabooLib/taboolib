@@ -2,10 +2,9 @@ package taboolib.module.configuration
 
 import taboolib.module.configuration.Configuration.Companion.getTypedObject
 import taboolib.module.configuration.Configuration.Companion.setObject
-import java.io.Serializable
 import kotlin.reflect.KProperty
 
-class ConfigLiteralDelegate<T : Serializable> internal constructor(
+class ConfigLiteralDelegate<T : Any> internal constructor(
     val config: Configuration,
     val path: String
 ) {
