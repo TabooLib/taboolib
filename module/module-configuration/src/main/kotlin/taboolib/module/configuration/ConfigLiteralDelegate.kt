@@ -10,7 +10,8 @@ class ConfigLiteralDelegate<T : Serializable> internal constructor(val config: C
         return try {
             config[path] as T
         } catch (ex: Throwable) {
-            throw IllegalAccessException("Can not get property: ${property.name}").initCause(ex)
+            val message = "Can not get property \"${property.name}\""
+            throw IllegalAccessException(ex.message?.let { "$message: $it" } ?: message).initCause(ex)
         }
     }
 
@@ -18,7 +19,8 @@ class ConfigLiteralDelegate<T : Serializable> internal constructor(val config: C
         try {
             config[path] = value
         } catch (ex: Throwable) {
-            throw IllegalAccessException("Can not set property: ${property.name}").initCause(ex)
+            val message = "Can not set property \"${property.name}\""
+            throw IllegalAccessException(ex.message?.let { "$message: $it" } ?: message).initCause(ex)
         }
     }
 }
