@@ -52,6 +52,8 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         if (newInstance) lazySupplier { getDeclaredConstructor().newInstance() as T } else null
     } catch (ex: ClassNotFoundException) {
         null
+    } catch (ex: IllegalAccessError) {
+        null
     } catch (ex: ExceptionInInitializerError) {
         println(this)
         ex.printStackTrace()
@@ -79,7 +81,7 @@ fun URL.getClasses(): List<Class<*>> {
     JarFile(src).stream().filter { it.name.endsWith(".class") }.forEach {
         try {
             classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, TabooLibCommon::class.java.classLoader))
-        } catch (ex: Throwable) {
+        } catch (_: Throwable) {
         }
     }
     return classes
