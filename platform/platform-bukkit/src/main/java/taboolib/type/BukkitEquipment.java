@@ -1,5 +1,6 @@
 package taboolib.type;
 
+import com.google.common.base.Enums;
 import com.google.common.collect.Maps;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -31,7 +32,7 @@ public enum BukkitEquipment {
     /**
      * 副手
      */
-    OFF_HAND(EquipmentSlot.OFF_HAND, "offhand", 40),
+    OFF_HAND(Enums.getIfPresent(EquipmentSlot.class, "OFF_HAND").or(EquipmentSlot.HAND), "offhand", 40),
 
     /**
      * 脚
