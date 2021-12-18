@@ -55,6 +55,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                     wrap(LiteralAction(nextToken()))
                 }
                 else -> {
+                    // property player[name]
                     val token = nextToken()
                     if (token.isNotEmpty() && token[token.length - 1] == ']' && token.indexOf('[') in 1 until token.length) {
                         val i = token.indexOf('[')
@@ -63,12 +64,17 @@ class KetherScriptLoader : SimpleQuestLoader() {
                         if (optional.isPresent) {
                             val propertyKey = token.substring(i + 1, token.length - 1)
                             return wrap(ActionProperty.Get(wrap(optional.get().resolve<Any>(this)), propertyKey)) as ParsedAction<T>
+                        } else if (Kether.isAllowToleranceParser) {
+                            val propertyKey = token.substring(i + 1, token.length - 1)
+                            return wrap(ActionProperty.Get(wrap(LiteralAction<Any>(element)), propertyKey)) as ParsedAction<T>
                         }
                         throw LoadError.UNKNOWN_ACTION.create(element)
                     } else {
                         val optional = service.registry.getParser(token, namespace)
                         if (optional.isPresent) {
                             return wrap(optional.get().resolve(this))
+                        } else if (Kether.isAllowToleranceParser) {
+                            return wrap(LiteralAction(token))
                         }
                         throw LoadError.UNKNOWN_ACTION.create(token)
                     }

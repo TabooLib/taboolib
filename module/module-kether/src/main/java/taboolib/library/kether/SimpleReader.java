@@ -2,6 +2,7 @@ package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
 import taboolib.library.kether.actions.LiteralAction;
+import taboolib.module.kether.Kether;
 import taboolib.module.kether.action.ActionGet;
 
 import java.util.ArrayList;
@@ -96,11 +97,11 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                 if (optional.isPresent()) {
                     beforeParse();
                     return wrap(optional.get().resolve(this));
-                } else {
+                } else if (Kether.INSTANCE.isAllowToleranceParser()) {
                     beforeParse();
                     return wrap(new LiteralAction<>(element));
                 }
-                // throw LoadError.UNKNOWN_ACTION.create(element);
+                throw LoadError.UNKNOWN_ACTION.create(element);
             }
         }
     }

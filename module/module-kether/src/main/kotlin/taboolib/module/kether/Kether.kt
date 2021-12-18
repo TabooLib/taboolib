@@ -21,6 +21,15 @@ object Kether {
         }
     }
 
+    /**
+     * 是否启用宽容解析器
+     * 禁用时：
+     * tell literal "HelloWorld!" 或 tell *"HelloWorld!"
+     * 启用时：
+     * tell "HelloWorld!"
+     */
+    var isAllowToleranceParser = false
+
     val scriptService by lazy {
         ScriptService
     }
