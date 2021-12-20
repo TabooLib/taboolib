@@ -8,10 +8,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.library.xseries.XMaterial
-import taboolib.module.ui.ClickEvent
-import taboolib.module.ui.ClickType
-import taboolib.module.ui.Menu
-import taboolib.module.ui.buildMenu
+import taboolib.module.ui.*
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 import taboolib.platform.util.isNotAir
@@ -27,6 +24,8 @@ open class Stored(title: String) : Menu(title) {
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     private var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     private var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    private var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
+
     private val rule = Rule()
 
     fun rows(rows: Int) {
@@ -35,6 +34,10 @@ open class Stored(title: String) : Menu(title) {
 
     fun handLocked(handLocked: Boolean) {
         this.handLocked = handLocked
+    }
+
+    fun holder(func: (menu: Basic) -> MenuHolder) {
+        this.holder = func
     }
 
     fun onClick(onClick: (event: ClickEvent) -> Unit) {
@@ -117,6 +120,7 @@ open class Stored(title: String) : Menu(title) {
 
     override fun build(): Inventory {
         return buildMenu<Basic>(title) {
+            holder(this@Stored.holder)
             handLocked(this@Stored.handLocked)
             rows(this@Stored.rows)
             map(*this@Stored.slots.map { it.joinToString("") }.toTypedArray())
