@@ -9,6 +9,7 @@ import taboolib.common.Isolated
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.Menu
+import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.buildMenu
 import taboolib.platform.util.isNotAir
 
@@ -29,8 +30,11 @@ open class Linked<T>(title: String) : Menu(title) {
     private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     private var onBuild: ((inventory: Inventory) -> Unit) = {}
     private var onBuildAsync: ((inventory: Inventory) -> Unit) = {}
-    private var onGenerate: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
-    private var onGenerateAsync: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
+    private var onGenerate: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) =
+        { _, _, _, _ -> ItemStack(Material.AIR) }
+    private var onGenerateAsync: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) =
+        { _, _, _, _ -> ItemStack(Material.AIR) }
+    var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
     private lateinit var player: Player
 
@@ -55,7 +59,10 @@ open class Linked<T>(title: String) : Menu(title) {
         this.menuElements = elements
     }
 
-    fun onGenerate(async: Boolean = false, onGenerate: (player: Player, element: T, index: Int, slot: Int) -> ItemStack) {
+    fun onGenerate(
+        async: Boolean = false,
+        onGenerate: (player: Player, element: T, index: Int, slot: Int) -> ItemStack
+    ) {
         if (async) {
             this.onGenerateAsync = onGenerate
         } else {
@@ -135,6 +142,7 @@ open class Linked<T>(title: String) : Menu(title) {
         val objectsMap = HashMap<Int, T>()
         val items = subList(menuElementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
         return buildMenu<Basic>(title.replace("%p", (page + 1).toString())) {
+            holder = this@Linked.holder
             handLocked(this@Linked.handLocked)
             rows(this@Linked.rows)
             onBuild { p, it ->

@@ -8,10 +8,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.library.xseries.XMaterial
-import taboolib.module.ui.ClickEvent
-import taboolib.module.ui.ClickType
-import taboolib.module.ui.Menu
-import taboolib.module.ui.buildMenu
+import taboolib.module.ui.*
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 import taboolib.platform.util.isNotAir
@@ -28,6 +25,8 @@ open class Stored(title: String) : Menu(title) {
     private var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     private var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
     private val rule = Rule()
+
+    var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
     fun rows(rows: Int) {
         this.rows = rows
@@ -117,6 +116,7 @@ open class Stored(title: String) : Menu(title) {
 
     override fun build(): Inventory {
         return buildMenu<Basic>(title) {
+            holder = this@Stored.holder
             handLocked(this@Stored.handLocked)
             rows(this@Stored.rows)
             map(*this@Stored.slots.map { it.joinToString("") }.toTypedArray())
@@ -193,10 +193,13 @@ open class Stored(title: String) : Menu(title) {
 
     class Rule {
 
-        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> false }
+        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) =
+            { _, _, _ -> false }
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
-        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
-        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot -> inventory.getItem(slot) }
+        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) =
+            { inventory, item, slot -> inventory.setItem(slot, item) }
+        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) =
+            { inventory, slot -> inventory.getItem(slot) }
 
         fun checkSlot(intRange: Int, checkSlot: (inventory: Inventory, itemStack: ItemStack) -> Boolean) {
             checkSlot(intRange..intRange, checkSlot)

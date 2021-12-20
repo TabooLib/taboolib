@@ -23,6 +23,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     var items = HashMap<Char, ItemStack>()
     var slots = ArrayList<List<Char>>()
 
+    var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
     internal val onClick = ArrayList<Consumer<ClickEvent>>()
     internal var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
     internal var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
@@ -140,7 +141,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(MenuHolder(this), if (rows > 0) rows * 9 else slots.size * 9, title)
+        val inventory = Bukkit.createInventory(holder(this), if (rows > 0) rows * 9 else slots.size * 9, title)
         var row = 0
         while (row < slots.size) {
             val line = slots[row]

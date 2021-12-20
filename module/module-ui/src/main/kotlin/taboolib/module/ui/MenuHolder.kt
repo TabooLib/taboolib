@@ -9,7 +9,7 @@ import taboolib.module.ui.type.Basic
  * @author 坏黑
  * @since 2019-05-21 20:28
  */
-class MenuHolder(val menu: Basic) : InventoryHolder {
+open class MenuHolder(val menu: Basic) : InventoryHolder {
 
     private val inventory = Bukkit.createInventory(this, if (menu.rows > 0) menu.rows * 9 else menu.slots.size * 9, menu.title)
 
