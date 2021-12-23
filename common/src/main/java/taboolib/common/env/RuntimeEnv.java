@@ -4,10 +4,7 @@ import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.TabooLibCommon;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -146,7 +143,14 @@ public class RuntimeEnv {
                         downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
                     } else {
                         String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-                        downloader.loadDependencyFromInputStream(new URL(pom).openStream());
+                        try {
+                            downloader.loadDependencyFromInputStream(new URL(pom).openStream());
+                        } catch (FileNotFoundException ex) {
+                            if (ex.toString().contains("@kotlin_version@")) {
+                                return;
+                            }
+                            throw ex;
+                        }
                     }
                     // 加载自身
                     Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
