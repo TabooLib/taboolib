@@ -47,9 +47,13 @@ public class ClassAppender {
             } else {
                 Field ucpField;
                 try {
-                    ucpField = loader.getClass().getDeclaredField("ucp");
-                } catch (NoSuchFieldError | NoSuchFieldException e) {
-                    ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
+                    ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                } catch (NoSuchFieldError | NoSuchFieldException e1) {
+                    try {
+                        ucpField = loader.getClass().getDeclaredField("ucp");
+                    } catch (NoSuchFieldError | NoSuchFieldException e2) {
+                        ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
+                    }
                 }
                 long ucpOffset = unsafe.objectFieldOffset(ucpField);
                 Object ucp = unsafe.getObject(loader, ucpOffset);

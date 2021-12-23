@@ -54,6 +54,8 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         null
     } catch (ex: IllegalAccessError) {
         null
+    } catch (ex: IncompatibleClassChangeError) {
+        null
     } catch (ex: ExceptionInInitializerError) {
         println(this)
         ex.printStackTrace()
@@ -70,18 +72,43 @@ fun <T> Class<T>.findImplementation(): T? {
 }
 
 fun URL.getClasses(): List<Class<*>> {
-    val src = try {
+    val classes = ArrayList<Class<*>>()
+    val src = ArrayList<File>()
+    val srcFile = try {
         File(toURI())
     } catch (ex: IllegalArgumentException) {
         File((openConnection() as JarURLConnection).jarFileURL.toURI())
     } catch (ex: URISyntaxException) {
         File(path)
     }
-    val classes = ArrayList<Class<*>>()
-    JarFile(src).stream().filter { it.name.endsWith(".class") }.forEach {
-        try {
-            classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, TabooLibCommon::class.java.classLoader))
-        } catch (_: Throwable) {
+    val springBootWar = srcFile.parentFile.name == "lib" && srcFile.parentFile.parentFile.name == "WEB-INF"
+    if (springBootWar) {
+        // include taboolib modules
+        srcFile.parentFile.listFiles()?.forEach {
+            if (it.name.startsWith("taboolib")) {
+                src += it
+            }
+        }
+        fun include(file: File, path: String = "") {
+            if (file.isDirectory) {
+                file.listFiles()?.forEach { sub -> include(sub, "$path${file.name}.") }
+            } else {
+                kotlin.runCatching {
+                    classes.add(Class.forName("$path${file.nameWithoutExtension}"))
+                }
+            }
+        }
+        File(srcFile.parentFile.parentFile, "classes").listFiles()?.forEach {
+            include(it)
+        }
+    } else {
+        src += srcFile
+    }
+    src.forEach { s ->
+        JarFile(s).stream().filter { it.name.endsWith(".class") }.forEach {
+            kotlin.runCatching {
+                classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, TabooLibCommon::class.java.classLoader))
+            }
         }
     }
     return classes

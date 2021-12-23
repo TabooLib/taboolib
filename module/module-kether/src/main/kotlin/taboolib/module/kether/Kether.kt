@@ -8,9 +8,6 @@ import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.actions.KetherTypes
 import taboolib.module.lang.Language
 
-@RuntimeDependencies(
-    RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
-)
 object Kether {
 
     @Awake(LifeCycle.INIT)
