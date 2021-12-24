@@ -223,11 +223,11 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
     }
 
     override fun getComment(path: String): String? {
-        return (root as? CommentedConfig)?.getComment(path) ?: error("Not commentable framework")
+        return (root as? CommentedConfig)?.getComment(path)
     }
 
     override fun setComment(path: String, comment: String?) {
-        (root as? CommentedConfig)?.setComment(path, comment) ?: error("Not commentable framework")
+        (root as? CommentedConfig)?.setComment(path, comment)
     }
 
     override fun getValues(deep: Boolean): Map<String, Any?> {
