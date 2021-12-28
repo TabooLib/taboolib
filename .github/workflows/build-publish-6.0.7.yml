@@ -29,7 +29,7 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -Puser=$NEXUS_USERNAME -Ppassword=$NEXUS_PASSWORD
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
       - name: create release
         uses: actions/create-release@v1
         env:
