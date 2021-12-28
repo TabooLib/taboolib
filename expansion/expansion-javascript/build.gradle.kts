@@ -1,7 +1,6 @@
 dependencies {
-    implementation("com.zaxxer:HikariCP:4.0.3")
+    implementation("org.openjdk.nashorn:nashorn-core:15.2")
     compileOnly(project(":common"))
-    compileOnly(project(":module:module-configuration"))
 }
 
 tasks {

@@ -8,9 +8,6 @@ import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.actions.KetherTypes
 import taboolib.module.lang.Language
 
-@RuntimeDependencies(
-    RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
-)
 object Kether {
 
     @Awake(LifeCycle.INIT)
@@ -20,6 +17,15 @@ object Kether {
         } catch (_: NoClassDefFoundError) {
         }
     }
+
+    /**
+     * 是否启用宽容解析器
+     * 禁用时：
+     * tell literal "HelloWorld!" 或 tell *"HelloWorld!"
+     * 启用时：
+     * tell "HelloWorld!"
+     */
+    var isAllowToleranceParser = false
 
     val scriptService by lazy {
         ScriptService

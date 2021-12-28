@@ -50,14 +50,10 @@ publishing {
         create<MavenPublication>("maven") {
             artifactId = "taboolib"
             groupId = "io.izzel"
-            version = if (project.hasProperty("build")) {
-                "${project.version}-${project.findProperty("build")}"
-            } else {
-                "${project.version}"
-            }
+            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
             println("> version $version")
             file("$buildDir/libs").listFiles()?.forEach { file ->
-                if (file.name.endsWith(".jar")) {
+                if (file.extension == "jar") {
                     artifact(file) {
                         classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
                         println("> module $classifier (${file.name})")

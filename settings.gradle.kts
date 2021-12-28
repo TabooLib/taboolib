@@ -16,7 +16,7 @@ fun importModules() {
     include("module:module-database-mongodb")
     include("module:module-porticus")
     include("module:module-navigation")
-    include("module:module-configuration", "module:module-configuration-legacy")
+    include("module:module-configuration", "module:module-configuration-shaded", "module:module-configuration-legacy")
 }
 
 fun importPlatforms() {
@@ -24,7 +24,7 @@ fun importPlatforms() {
     include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
     // include("platform:platform-sponge-api9")
     include("platform:platform-velocity")
-    include("platform:platform-cloudnet-v3")
+    // include("platform:platform-cloudnet-v3")
     include("platform:platform-application")
 }
 
@@ -32,6 +32,9 @@ fun importExtensions() {
     // 临时位置，未来会被移出标准模块
     include("expansion:expansion-command-helper")
     include("expansion:expansion-player-database")
+
+    // 从 common-5 中移除
+    include("expansion:expansion-javascript")
 }
 
 include("common", "common-5")
