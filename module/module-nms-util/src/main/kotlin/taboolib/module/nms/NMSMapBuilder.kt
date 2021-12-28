@@ -8,8 +8,17 @@ import taboolib.platform.util.ItemBuilder
 import java.awt.image.BufferedImage
 import java.io.File
 import java.net.URL
+import java.util.concurrent.CompletableFuture
 import javax.imageio.ImageIO
 
+@Deprecated(
+    "Network I/O on main thread",
+    ReplaceWith(
+        "buildMap(URL(url), hand, width, height, builder)",
+        "java.net.URL",
+        "java.util.concurrent.CompletableFuture"
+    ),
+)
 fun buildMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -18,6 +27,18 @@ fun buildMap(
     builder: ItemBuilder.() -> Unit = {}
 ): NMSMap {
     return NMSMap(URL(url).openStream().use { ImageIO.read(it) }.zoomed(width, height), hand, builder)
+}
+
+fun buildMap(
+    url: URL,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+): CompletableFuture<NMSMap> {
+    return CompletableFuture.supplyAsync {
+        NMSMap(url.openStream().use { ImageIO.read(it) }.zoomed(width, height), hand, builder)
+    }
 }
 
 fun buildMap(
@@ -40,6 +61,13 @@ fun buildMap(
     return NMSMap(image.zoomed(width, height), hand, builder)
 }
 
+@Deprecated(
+    "Unsafe string URL",
+    ReplaceWith(
+        "sendMap(URL(url), hand, width, height, builder)",
+        "java.net.URL"
+    )
+)
 fun Player.sendMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -47,7 +75,17 @@ fun Player.sendMap(
     height: Int = 128,
     builder: ItemBuilder.() -> Unit = {}
 ) {
-    buildMap(url, hand, width, height, builder).sendTo(this)
+    buildMap(URL(url), hand, width, height, builder).thenAccept { it.sendTo(this) }
+}
+
+fun Player.sendMap(
+    url: URL,
+    hand: NMSMap.Hand = NMSMap.Hand.MAIN,
+    width: Int = 128,
+    height: Int = 128,
+    builder: ItemBuilder.() -> Unit = {}
+) {
+    buildMap(url, hand, width, height, builder).thenAccept { it.sendTo(this) }
 }
 
 fun Player.sendMap(
