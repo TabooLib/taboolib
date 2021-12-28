@@ -117,16 +117,19 @@ class BukkitCommand : PlatformCommand {
                     pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, fixed = true))
                 }
             }
+            sync()
             registeredCommands.add(command)
         }
     }
 
     override fun unregisterCommand(command: String) {
         knownCommands.remove(command)
+        sync()
     }
 
     override fun unregisterCommands() {
         registeredCommands.forEach { taboolib.common.platform.function.unregisterCommand(it) }
+        sync()
     }
 
     override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
@@ -146,5 +149,13 @@ class BukkitCommand : PlatformCommand {
             it.isItalic = true
         }
         sender.cast<CommandSender>().spigot().sendMessage(*components.toTypedArray())
+    }
+
+    fun sync() {
+        // 1.13 sync commands
+        kotlin.runCatching {
+            Bukkit.getServer().invokeMethod<Void>("syncCommands")
+            Bukkit.getOnlinePlayers().forEach { it.updateCommands() }
+        }
     }
 }

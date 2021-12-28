@@ -6,7 +6,7 @@ repositories {
 dependencies {
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("net.kyori:adventure-api:4.9.2")
-    compileOnly("net.milkbowl.vault:Vault:1:all")
+    compileOnly("net.milkbowl.vault:Vault:1")
     compileOnly("com.google.guava:guava:21.0")
     compileOnly("com.google.code.gson:gson:2.8.7")
     compileOnly("org.apache.commons:commons-lang3:3.5")
