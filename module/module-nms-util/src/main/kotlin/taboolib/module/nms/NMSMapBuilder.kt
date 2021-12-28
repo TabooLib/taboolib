@@ -64,7 +64,7 @@ fun buildMap(
 @Deprecated(
     "Unsafe string URL",
     ReplaceWith(
-        "buildMap(URL(url), hand, width, height, builder).thenAccept { it.sendTo(this) }",
+        "sendMap(URL(url), hand, width, height, builder)",
         "java.net.URL"
     )
 )
