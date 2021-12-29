@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.game.bukkit
 
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -17,7 +18,9 @@ class ActionSound(val sound: String, val volume: Float, val pitch: Float) : Scri
         if (sound.startsWith("resource:")) {
             viewer.playSound(viewer.location, sound.substring("resource:".length), volume, pitch)
         } else {
-            viewer.playSound(viewer.location, sound, volume, pitch)
+            kotlin.runCatching {
+                viewer.playSound(viewer.location, Sound.valueOf(sound.replace('.', '_').uppercase()), volume, pitch)
+            }
         }
         return CompletableFuture.completedFuture(null)
     }
