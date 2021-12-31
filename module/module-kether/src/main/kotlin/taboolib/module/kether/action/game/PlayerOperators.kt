@@ -9,12 +9,6 @@ enum class PlayerOperators(
     vararg val usable: PlayerOperator.Method,
 ) {
 
-    LOCATION(
-        { it.location },
-        { p, _, v -> p.teleport(v as taboolib.common.util.Location) },
-        PlayerOperator.Method.MODIFY
-    ),
-
     LOCALE({ it.locale }),
 
     WORLD({ it.location.world }),
@@ -81,15 +75,21 @@ enum class PlayerOperators(
 
     COMPASS_Z({ it.compassTarget.blockZ }),
 
+    LOCATION(
+        { taboolib.common.platform.function.platformLocation<Any>(it.location) },
+        { p, _, v -> p.teleport(taboolib.common.platform.function.adaptLocation(v!!)) },
+        PlayerOperator.Method.MODIFY
+    ),
+
     COMPASS_TARGET(
-        { it.location },
-        { p, _, v -> p.compassTarget = v as taboolib.common.util.Location },
+        { taboolib.common.platform.function.platformLocation<Any>(it.compassTarget) },
+        { p, _, v -> p.compassTarget = taboolib.common.platform.function.adaptLocation(v!!) },
         PlayerOperator.Method.MODIFY
     ),
 
     BED_SPAWN(
-        { it.location },
-        { p, _, v -> p.bedSpawnLocation = v as taboolib.common.util.Location },
+        { if (it.bedSpawnLocation != null) taboolib.common.platform.function.platformLocation<Any>(it.bedSpawnLocation!!) else null },
+        { p, _, v -> p.bedSpawnLocation = if (v != null) taboolib.common.platform.function.adaptLocation(v) else null },
         PlayerOperator.Method.MODIFY
     ),
 

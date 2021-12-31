@@ -1,7 +1,7 @@
-package taboolib.module.kether.action.game.bukkit
+package taboolib.module.kether.action.game
 
-import org.bukkit.Bukkit
-import org.bukkit.Location
+import taboolib.common.platform.function.adaptLocation
+import taboolib.common.util.Location
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -22,10 +22,10 @@ class ActionLocation(
     val z: ParsedAction<*>,
     val yaw: ParsedAction<*>,
     val pitch: ParsedAction<*>,
-) : ScriptAction<Location>() {
+) : ScriptAction<Any>() {
 
-    override fun run(frame: QuestContext.Frame): CompletableFuture<Location> {
-        val location = CompletableFuture<Location>()
+    override fun run(frame: QuestContext.Frame): CompletableFuture<Any> {
+        val location = CompletableFuture<Any>()
         frame.newFrame(world).run<Any>().thenApply { world ->
             frame.newFrame(x).run<Any>().thenApply { x ->
                 frame.newFrame(y).run<Any>().thenApply { y ->
@@ -33,14 +33,14 @@ class ActionLocation(
                         frame.newFrame(yaw).run<Any>().thenApply { yaw ->
                             frame.newFrame(pitch).run<Any>().thenApply { pitch ->
                                 location.complete(
-                                    Location(
-                                        Bukkit.getWorld(world.toString()),
+                                    adaptLocation(Location(
+                                        world.toString(),
                                         Coerce.toDouble(x),
                                         Coerce.toDouble(y),
                                         Coerce.toDouble(z),
                                         Coerce.toFloat(yaw),
                                         Coerce.toFloat(pitch)
-                                    )
+                                    ))
                                 )
                             }
                         }

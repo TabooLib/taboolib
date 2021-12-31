@@ -5,6 +5,7 @@ import org.spongepowered.api.Sponge
 import org.spongepowered.api.entity.living.player.server.ServerPlayer
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.Sponge8CommandSender
 import taboolib.platform.type.Sponge8Player
 
@@ -33,5 +34,13 @@ class Sponge8Adapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is ServerPlayer) adaptPlayer(any) else Sponge8CommandSender(any as Audience)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        TODO("Not yet implemented")
     }
 }

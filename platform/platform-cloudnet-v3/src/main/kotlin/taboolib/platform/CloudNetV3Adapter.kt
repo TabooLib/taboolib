@@ -40,9 +40,18 @@ class CloudNetV3Adapter : PlatformAdapter {
     }
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
-        return if (any is CloudPlayer)
+        return if (any is CloudPlayer) {
             adaptPlayer(any)
-        else
+        } else {
             CloudNetV3CommandSender(CloudNet.getInstance().consoleCommandSender)
+        }
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        TODO("Not yet implemented")
     }
 }

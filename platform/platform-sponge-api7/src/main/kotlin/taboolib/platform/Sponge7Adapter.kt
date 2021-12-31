@@ -1,10 +1,12 @@
 package taboolib.platform
 
+import com.flowpowered.math.vector.Vector3d
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.entity.living.player.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.Sponge7CommandSender
 import taboolib.platform.type.Sponge7Player
 
@@ -33,5 +35,13 @@ class Sponge7Adapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is Player) adaptPlayer(any) else Sponge7CommandSender(any as CommandSource)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        TODO("Not yet implemented")
     }
 }

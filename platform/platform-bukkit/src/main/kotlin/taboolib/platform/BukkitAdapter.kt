@@ -5,8 +5,11 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.BukkitCommandSender
 import taboolib.platform.type.BukkitPlayer
+import taboolib.platform.util.toBukkitLocation
+import taboolib.platform.util.toProxyLocation
 
 /**
  * TabooLib
@@ -36,5 +39,13 @@ class BukkitAdapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is Player) adaptPlayer(any) else BukkitCommandSender(any as CommandSender)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        return (any as org.bukkit.Location).toProxyLocation()
+    }
+
+    override fun platformLocation(location: Location): Any {
+        return location.toBukkitLocation()
     }
 }

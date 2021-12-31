@@ -4,6 +4,7 @@ import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.BungeeCommandSender
 import taboolib.platform.type.BungeePlayer
 
@@ -34,5 +35,13 @@ class BungeeAdapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is ProxiedPlayer) adaptPlayer(any) else BungeeCommandSender(any as CommandSender)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        error("unsupported")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        error("unsupported")
     }
 }

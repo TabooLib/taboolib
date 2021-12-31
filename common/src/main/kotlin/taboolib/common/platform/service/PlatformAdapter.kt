@@ -3,6 +3,7 @@ package taboolib.common.platform.service
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.util.Location
 
 /**
  * TabooLib
@@ -21,4 +22,9 @@ interface PlatformAdapter {
     fun adaptPlayer(any: Any): ProxyPlayer
 
     fun adaptCommandSender(any: Any): ProxyCommandSender
+
+    fun adaptLocation(any: Any): Location
+
+    fun platformLocation(location: Location): Any
+
 }

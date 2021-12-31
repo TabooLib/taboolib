@@ -34,4 +34,12 @@ class Sponge9Adapter : PlatformAdapter {
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is ServerPlayer) adaptPlayer(any) else Sponge9CommandSender(any as Audience)
     }
+
+    override fun adaptLocation(any: Any): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        TODO("Not yet implemented")
+    }
 }

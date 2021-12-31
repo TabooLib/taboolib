@@ -1,12 +1,15 @@
 package taboolib.platform
 
+import cn.nukkit.Nukkit
 import cn.nukkit.Server
 import cn.nukkit.command.CommandSender
 import cn.nukkit.player.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.NukkitCommandSender
 import taboolib.platform.type.NukkitPlayer
+import taboolib.platform.util.toCommonLocation
 
 /**
  * TabooLib
@@ -33,5 +36,14 @@ class NukkitAdapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is Player) adaptPlayer(any) else NukkitCommandSender(any as CommandSender)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        return (any as cn.nukkit.level.Location).toCommonLocation()
+    }
+
+    override fun platformLocation(location: Location): Any {
+        val level = NukkitPlugin.getInstance().server.levelManager.getLevelByName(location.world)
+        return cn.nukkit.level.Location.from(location.x.toFloat(), location.y.toFloat(), location.z.toFloat(), location.yaw, location.pitch, level)
     }
 }

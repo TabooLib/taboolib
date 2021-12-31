@@ -4,6 +4,7 @@ import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import java.util.*
 
 /**
@@ -46,4 +47,13 @@ fun getProxyPlayer(name: String): ProxyPlayer? {
  */
 fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
     return onlinePlayers().firstOrNull { it.uniqueId == uuid }
+}
+
+fun adaptLocation(any: Any): Location {
+    return PlatformFactory.getService<PlatformAdapter>().adaptLocation(any)
+}
+
+@Suppress("UNCHECKED_CAST")
+fun <T> platformLocation(location: Location): T {
+    return PlatformFactory.getService<PlatformAdapter>().platformLocation(location) as T
 }

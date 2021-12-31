@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
+import taboolib.common.util.Location
 import taboolib.platform.type.VelocityCommandSender
 import taboolib.platform.type.VelocityPlayer
 
@@ -34,5 +35,13 @@ class VelocityAdapter : PlatformAdapter {
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
         return if (any is Player) adaptPlayer(any) else VelocityCommandSender(any as CommandSource)
+    }
+
+    override fun adaptLocation(any: Any): Location {
+        TODO("Not yet implemented")
+    }
+
+    override fun platformLocation(location: Location): Any {
+        TODO("Not yet implemented")
     }
 }
