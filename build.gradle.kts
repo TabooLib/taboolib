@@ -34,7 +34,8 @@ subprojects {
 
 publishing {
     repositories {
-        maven("https://repo.tabooproject.org/storages/public/releases") {
+        maven("http://ptms.ink:8081/storages/public/releases") {
+            isAllowInsecureProtocol = true
             credentials {
                 username = project.findProperty("taboolibUsername").toString()
                 password = project.findProperty("taboolibPassword").toString()
