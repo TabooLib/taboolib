@@ -1,5 +1,5 @@
 dependencies {
-    implementation("org.openjdk.nashorn:nashorn-core:15.2")
+    implementation("org.openjdk.nashorn:nashorn-core:15.3")
     compileOnly(project(":common"))
 }
 
