@@ -53,6 +53,11 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
     }
 
     override fun get(path: String, def: Any?): Any? {
+        // 不知道为什么大家都喜欢用 getConfigurationSection("")
+        // 感觉都是一个师傅教的
+        if (path.isEmpty()) {
+            return this
+        }
         return when (val value = root.getOrElse(path, def)) {
             is Config -> ConfigSection(value, path.substringAfterLast('.'))
             // 理论是无法获取到 Map 类型
