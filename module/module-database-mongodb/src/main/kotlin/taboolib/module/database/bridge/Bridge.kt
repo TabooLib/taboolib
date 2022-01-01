@@ -3,7 +3,7 @@
     RuntimeDependency(
         value = "!public:mongo-java-driver:3.12.7",
         test = "!com.mongodb.client.MongoClient",
-        repository = "https://repo.tabooproject.org/storages/public/releases"
+        repository = "https://repo.tabooproject.org/repository/releases"
     )
 )
 
