@@ -1,5 +1,7 @@
 package taboolib.module.configuration
 
+import com.electronwill.nightconfig.core.UnmodifiableConfig
+import com.electronwill.nightconfig.core.conversion.Converter
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
 import taboolib.common.reflect.Reflex.Companion.invokeConstructor
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance

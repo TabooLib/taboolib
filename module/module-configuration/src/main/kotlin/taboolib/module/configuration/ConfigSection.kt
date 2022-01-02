@@ -239,6 +239,10 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
         return getKeys(deep).associateWith { get(it) }
     }
 
+    override fun toString(): String {
+        return root.configFormat().createWriter().writeToString(root)
+    }
+
     companion object {
 
         private fun ConfigurationSection.getConfig(): Config {

@@ -31,7 +31,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     }
 
     override fun saveToString(): String {
-        return synchronized(lock) { root.configFormat().createWriter().writeToString(root) }
+        return synchronized(lock) { toString() }
     }
 
     override fun saveToFile(file: File?) {
