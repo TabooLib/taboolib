@@ -13,6 +13,8 @@ fun importModules() {
     include("module:module-kether")
     include("module:module-metrics")
     include("module:module-database")
+    include("module:module-database-core")
+    include("module:module-database-shaded")
     include("module:module-database-mongodb")
     include("module:module-porticus")
     include("module:module-navigation")

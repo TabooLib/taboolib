@@ -68,7 +68,7 @@ object VaultService {
 }
 
 @Isolated
-data class EconomyResponse(val amount: Double, val balance: Double, val type: ResponseType, val errorMessage: String) {
+data class EconomyResponse(val amount: Double, val balance: Double, val type: ResponseType, val errorMessage: String?) {
 
     enum class ResponseType(val id: Int) {
 
