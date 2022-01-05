@@ -1,6 +1,6 @@
 package taboolib.module.kether.action.game
 
-import taboolib.common.platform.function.adaptLocation
+import taboolib.common.platform.function.platformLocation
 import taboolib.common.util.Location
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
@@ -32,16 +32,15 @@ class ActionLocation(
                     frame.newFrame(z).run<Any>().thenApply { z ->
                         frame.newFrame(yaw).run<Any>().thenApply { yaw ->
                             frame.newFrame(pitch).run<Any>().thenApply { pitch ->
-                                location.complete(
-                                    adaptLocation(Location(
-                                        world.toString(),
-                                        Coerce.toDouble(x),
-                                        Coerce.toDouble(y),
-                                        Coerce.toDouble(z),
-                                        Coerce.toFloat(yaw),
-                                        Coerce.toFloat(pitch)
-                                    ))
+                                val loc = Location(
+                                    world.toString(),
+                                    Coerce.toDouble(x),
+                                    Coerce.toDouble(y),
+                                    Coerce.toDouble(z),
+                                    Coerce.toFloat(yaw),
+                                    Coerce.toFloat(pitch)
                                 )
+                                location.complete(platformLocation<Any>(loc))
                             }
                         }
                     }
