@@ -6,6 +6,8 @@ import taboolib.common.TabooLibCommon;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -102,6 +104,14 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
+        File baseDir;
+        try {
+            List<String> lines = Files.readAllLines(new File("libs", "custom.txt").toPath(), StandardCharsets.UTF_8);
+            baseDir = new File(lines.get(0));
+        } catch (Throwable e) {
+            baseDir = new File("libs");
+        }
+
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -132,12 +142,12 @@ public class RuntimeEnv {
                 }
                 try {
                     String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
-                    DependencyDownloader downloader = new DependencyDownloader(relocation);
+                    DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
                     downloader.addRepository(new Repository(dependency.repository()));
                     downloader.setIgnoreOptional(dependency.ignoreOptional());
                     downloader.setDependencyScopes(dependency.scopes());
                     // 解析依赖
-                    File pomFile = new File("libs", String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
+                    File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
                     File pomShaFile = new File(pomFile.getPath() + ".sha1");
                     if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
                         downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());

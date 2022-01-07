@@ -75,7 +75,12 @@ public class DependencyDownloader extends AbstractXmlParser {
     public DependencyDownloader() {
     }
 
-    public DependencyDownloader(@Nullable List<Relocation> relocation) {
+    public DependencyDownloader(@Nullable File baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    public DependencyDownloader(@Nullable File baseDir, @Nullable List<Relocation> relocation) {
+        this.baseDir = baseDir;
         if (relocation != null) {
             for (Relocation rel : relocation) {
                 if (rel != null) {
