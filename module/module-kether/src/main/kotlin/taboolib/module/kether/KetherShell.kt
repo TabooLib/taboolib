@@ -16,9 +16,10 @@ object KetherShell {
         namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
         sender: ProxyCommandSender? = null,
+        vars: VariableMap? = null,
         context: ScriptContext.() -> Unit = {},
     ): CompletableFuture<Any?> {
-        return eval(source.joinToString("\n"), cacheScript, namespace, cache, sender, context)
+        return eval(source.joinToString("\n"), cacheScript, namespace, cache, sender, vars, context)
     }
 
     fun eval(
@@ -27,9 +28,10 @@ object KetherShell {
         namespace: List<String> = emptyList(),
         cache: Cache = mainCache,
         sender: ProxyCommandSender? = null,
+        vars: VariableMap? = null,
         context: ScriptContext.() -> Unit = {},
     ): CompletableFuture<Any?> {
-        val s = if (source.startsWith("def")) source else "def main = { $source }"
+        val s = if (source.startsWith("def ")) source else "def main = { $source }"
         val script = if (cacheScript) cache.scriptMap.computeIfAbsent(s) {
             it.parseKetherScript(namespace)
         } else {
@@ -39,9 +41,12 @@ object KetherShell {
             if (sender != null) {
                 it.sender = sender
             }
+            vars?.map?.forEach { (k, v) -> it.rootFrame().variables()[k] = v }
             context(it)
         }.runActions()
     }
+
+    class VariableMap(vararg val map: Pair<String, Any?>)
 
     class Cache {
 

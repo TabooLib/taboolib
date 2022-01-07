@@ -16,23 +16,21 @@ import taboolib.module.chat.TellrawJson
 class TypeJson : Type {
 
     var text: List<String>? = null
-    var json = ArrayList<List<VariableReader.Part>>()
     var jsonArgs = ArrayList<Map<String, Any>>()
 
     override fun init(source: Map<String, Any>) {
         text = source["text"]?.asList()
-        json.addAll(text?.map { VariableReader(it).parts } ?: emptyList())
         try {
             jsonArgs.addAll((source["args"] as List<*>).map { (it as Map<*, *>).map { (k, v) -> k.toString() to v!! }.toMap() })
-        } catch (ex: ClassCastException) {
+        } catch (_: ClassCastException) {
         }
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         TellrawJson().sendTo(sender) {
             var i = 0
-            json.forEachIndexed { index, line ->
-                line.forEach { part ->
+            text?.forEachIndexed { index, line ->
+                parser.readToFlatten(line).forEach { part ->
                     append(part.text.translate(sender).replaceWithOrder(*args))
                     if (part.isVariable) {
                         val arg = jsonArgs.getOrNull(i++)
@@ -61,10 +59,15 @@ class TypeJson : Type {
                         }
                     }
                 }
-                if (index + 1 < json.size) {
+                if (index + 1 < text!!.size) {
                     newLine()
                 }
             }
         }
+    }
+
+    companion object {
+
+        private val parser = VariableReader("[", "]")
     }
 }

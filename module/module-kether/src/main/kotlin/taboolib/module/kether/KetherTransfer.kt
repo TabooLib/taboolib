@@ -12,7 +12,7 @@ import taboolib.module.lang.TextTransfer
  */
 object KetherTransfer : TextTransfer {
 
-    val cacheMap = KetherFunction.Cache()
+    val cacheMap = KetherShell.Cache()
     val namespace = ArrayList<String>()
 
     override fun translate(sender: ProxyCommandSender, source: String): String {
