@@ -1,4 +1,4 @@
-package taboolib.module.ui.receptacle
+package taboolib.module.ui.receptacle.operates
 
 /**
  * @author Arasple
@@ -10,7 +10,7 @@ package taboolib.module.ui.receptacle
  *
  * This is the ID of the window that was closed. 0 for player inventory.
  */
-class PacketWindowClose : PacketInventory {
+class OperateWindowClose(override val packet: Boolean = true) : OperateInventory {
 
-    val windowId = 119
+    val windowId: Int = if (packet) 119 else 120
 }

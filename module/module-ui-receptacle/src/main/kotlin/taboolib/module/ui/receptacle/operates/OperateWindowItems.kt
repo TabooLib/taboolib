@@ -1,4 +1,4 @@
-package taboolib.module.ui.receptacle
+package taboolib.module.ui.receptacle.operates
 
 import org.bukkit.inventory.ItemStack
 
@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack
  *
  * @param items Array of Slot
  */
-class PacketWindowItems(val items: Array<ItemStack?>) : PacketInventory {
+class OperateWindowItems(val items: Array<ItemStack?>, override val packet: Boolean = true) : OperateInventory {
 
-    val windowId = 119
+    val windowId: Int = if (packet) 119 else 120
 }

@@ -1,4 +1,4 @@
-package taboolib.module.ui.receptacle
+package taboolib.module.ui.receptacle.operates
 
 import org.bukkit.inventory.ItemStack
 
@@ -18,6 +18,13 @@ import org.bukkit.inventory.ItemStack
  * @param itemStack The to update item stack
  *
  */
-class PacketWindowSetSlot(val slot: Int, val itemStack: ItemStack? = null, val windowId: Int = 119, val stateId: Int = 1) : PacketInventory {
+class OperateWindowSetSlot(
+    val slot: Int,
+    val itemStack: ItemStack? = null,
+    windowId: Int? = null,
+    val stateId: Int = 1,
+    override val packet: Boolean = true
+) : OperateInventory {
 
+    val windowId: Int = windowId ?: if (packet) 119 else 120
 }

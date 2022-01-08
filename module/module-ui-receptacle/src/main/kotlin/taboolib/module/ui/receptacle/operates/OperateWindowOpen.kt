@@ -1,4 +1,6 @@
-package taboolib.module.ui.receptacle
+package taboolib.module.ui.receptacle.operates
+
+import taboolib.module.ui.receptacle.ReceptacleType
 
 /**
  * @author Arasple
@@ -13,7 +15,7 @@ package taboolib.module.ui.receptacle
  * @param type The window type to use for display. See ReceptacleType for the different values.
  * @param title The title of the window
  */
-class PacketWindowOpen(val type: ReceptacleType, val title: String) : PacketInventory {
+class OperateWindowOpen(val type: ReceptacleType, val title: String, override val packet: Boolean = true) : OperateInventory {
 
-    val windowId = 119
+    val windowId: Int = if (packet) 119 else 120
 }
