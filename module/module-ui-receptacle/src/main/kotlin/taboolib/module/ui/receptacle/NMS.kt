@@ -1,6 +1,7 @@
 package taboolib.module.ui.receptacle
 
 import org.bukkit.entity.Player
+import taboolib.module.ui.receptacle.operates.OperateInventory
 
 /**
  * @author Arasple
@@ -8,5 +9,5 @@ import org.bukkit.entity.Player
  */
 abstract class NMS {
 
-    abstract fun sendInventoryPacket(player: Player, vararg packets: PacketInventory)
+    abstract fun sendInventoryOperate(player: Player, vararg operates: OperateInventory)
 }

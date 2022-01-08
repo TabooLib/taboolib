@@ -11,16 +11,16 @@ fun buildReceptacle(title: String, row: Int = 1, builder: ChestInventory.() -> U
     return ChestInventory(row, title).also(builder)
 }
 
-fun buildReceptacle(title: String, type: ReceptacleType = ReceptacleType.GENERIC_9X1, packet: Boolean = true, builder: Receptacle.() -> Unit): Receptacle {
-    return Receptacle(type, title, packet).also(builder)
+fun buildReceptacle(title: String, type: ReceptacleType = ReceptacleType.GENERIC_9X1, builder: Receptacle.() -> Unit): Receptacle {
+    return Receptacle(type, title).also(builder)
 }
 
 fun Player.openReceptacle(title: String, row: Int = 1, builder: ChestInventory.() -> Unit) {
     buildReceptacle(title, row, builder).open(this)
 }
 
-fun Player.openReceptacle(title: String, type: ReceptacleType = ReceptacleType.GENERIC_9X1, packet: Boolean = true, builder: Receptacle.() -> Unit) {
-    buildReceptacle(title, type, packet, builder).open(this)
+fun Player.openReceptacle(title: String, type: ReceptacleType = ReceptacleType.GENERIC_9X1, builder: Receptacle.() -> Unit) {
+    buildReceptacle(title, type, builder).open(this)
 }
 
 fun Player.getViewingReceptacle(): Receptacle? {
@@ -35,7 +35,7 @@ fun Player.setViewingReceptacle(receptacle: Receptacle?) {
     }
 }
 
-fun InventoryType.createReceptacle(title: String = defaultTitle, packet: Boolean = true): Receptacle {
+fun InventoryType.createReceptacle(title: String = defaultTitle): Receptacle {
     if (this != CHEST) {
         val receptacleType = when (this.name) {
             "ENDER_CHEST", "BARREL" -> ReceptacleType.GENERIC_9X3
@@ -57,7 +57,7 @@ fun InventoryType.createReceptacle(title: String = defaultTitle, packet: Boolean
             "STONECUTTER" -> ReceptacleType.STONE_CUTTER
             else -> throw IllegalArgumentException("Unsupported $this")
         }
-        return Receptacle(receptacleType, title, packet)
+        return Receptacle(receptacleType, title)
     }
     return ChestInventory()
 }

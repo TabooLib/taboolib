@@ -4,16 +4,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.submit
 import taboolib.module.nms.nmsProxy
-import taboolib.module.ui.receptacle.operates.OperateWindowClose
-import taboolib.module.ui.receptacle.operates.OperateWindowItems
-import taboolib.module.ui.receptacle.operates.OperateWindowOpen
-import taboolib.module.ui.receptacle.operates.OperateWindowSetSlot
 
 /**
  * @author Arasple
  * @date 2020/11/29 10:38
  */
-open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitType().defaultTitle, val packet: Boolean = true) {
+open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitType().defaultTitle) {
 
     private var viewer: Player? = null
 
@@ -60,7 +56,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
     fun setItem(itemStack: ItemStack? = null, vararg slots: Int, display: Boolean = true) {
         slots.forEach { contents[it] = itemStack }
         if (display && viewer != null) {
-            slots.forEach { OperateWindowSetSlot(it, itemStack, stateId = stateId, packet = true).send(viewer!!) }
+            slots.forEach { PacketWindowSetSlot(it, itemStack, stateId = stateId).send(viewer!!) }
         }
     }
 
@@ -75,9 +71,9 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
         if (viewer != null) {
             setupPlayerInventorySlots()
             if (slot >= 0) {
-                OperateWindowSetSlot(slot, contents[slot], stateId = stateId, packet = true).send(viewer!!)
+                PacketWindowSetSlot(slot, contents[slot], stateId = stateId).send(viewer!!)
             } else {
-                OperateWindowItems(contents, packet = packet).send(viewer!!)
+                PacketWindowItems(contents).send(viewer!!)
             }
         }
     }
@@ -104,7 +100,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
     fun close(sendPacket: Boolean = true) {
         if (viewer != null) {
             if (sendPacket) {
-                OperateWindowClose(packet = packet).send(viewer!!)
+                PacketWindowClose().send(viewer!!)
             }
             onClose(viewer!!, this)
             viewer!!.setViewingReceptacle(null)
@@ -119,7 +115,7 @@ open class Receptacle(var type: ReceptacleType, title: String = type.toBukkitTyp
 
     internal fun initializationPackets() {
         if (viewer != null) {
-            nmsProxy<NMS>().sendInventoryOperate(viewer!!, OperateWindowOpen(type, title, packet = packet))
+            nmsProxy<NMS>().sendInventoryPacket(viewer!!, PacketWindowOpen(type, title))
             refresh()
         }
     }
