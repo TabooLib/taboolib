@@ -8,10 +8,11 @@ import taboolib.module.ui.receptacle.NMS
  * @author Arasple
  * @date 2020/12/4 21:22
  */
-interface OperateInventory {
+abstract class OperateInventory {
 
-    val packet: Boolean
+    abstract val packet: Boolean
 
-    fun send(player: Player) = nmsProxy<NMS>().sendInventoryOperate(player, this)
-
+    open fun send(player: Player) {
+        nmsProxy<NMS>().sendInventoryOperate(player, this)
+    }
 }

@@ -10,10 +10,8 @@ import org.bukkit.inventory.ItemStack
  * This includes the main inventory, equipped armour and crafting slots.
  *
  * The ID of window which items are being sent for. 0 for player inventory.
- *
- * @param items Array of Slot
  */
-class OperateWindowItems(val items: Array<ItemStack?>, override val packet: Boolean = true) : OperateInventory {
+class OperateWindowItems(val items: Array<ItemStack?>, override val packet: Boolean = true) : OperateInventory() {
 
     val windowId: Int = if (packet) 119 else 120
 }

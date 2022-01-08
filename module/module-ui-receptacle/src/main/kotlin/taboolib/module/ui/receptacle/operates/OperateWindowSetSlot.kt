@@ -16,15 +16,14 @@ import org.bukkit.inventory.ItemStack
  *
  * @param slot The slot that should be updated
  * @param itemStack The to update item stack
- *
  */
 class OperateWindowSetSlot(
     val slot: Int,
     val itemStack: ItemStack? = null,
     windowId: Int? = null,
     val stateId: Int = 1,
-    override val packet: Boolean = true
-) : OperateInventory {
+    override val packet: Boolean = true,
+) : OperateInventory() {
 
-    val windowId: Int = windowId ?: if (packet) 119 else 120
+    val windowId = windowId ?: if (packet) 119 else 120
 }

@@ -15,7 +15,7 @@ import taboolib.module.ui.receptacle.ReceptacleType
  * @param type The window type to use for display. See ReceptacleType for the different values.
  * @param title The title of the window
  */
-class OperateWindowOpen(val type: ReceptacleType, val title: String, override val packet: Boolean = true) : OperateInventory {
+class OperateWindowOpen(val type: ReceptacleType, val title: String, override val packet: Boolean = true) : OperateInventory() {
 
     val windowId: Int = if (packet) 119 else 120
 }
