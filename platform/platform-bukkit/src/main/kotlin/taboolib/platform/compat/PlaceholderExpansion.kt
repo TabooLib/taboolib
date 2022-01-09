@@ -52,6 +52,10 @@ interface PlaceholderExpansion {
                 val expansion = instance.get() as PlaceholderExpansion
                 object : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
 
+                    override fun persist(): Boolean {
+                        return true
+                    }
+
                     override fun getIdentifier(): String {
                         return expansion.identifier
                     }
