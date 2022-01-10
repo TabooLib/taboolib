@@ -66,7 +66,7 @@ object Language {
                     return source.colored()
                 }
             }
-        } catch (ex: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
     }
 

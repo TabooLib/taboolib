@@ -51,13 +51,13 @@ object ItemTagSerializer {
             is JsonPrimitive -> {
                 val str = json.asString
                 if (str.endsWith("]")) {
-                    when (str.substring(str.length - 2, str.length - 1)) {
+                    when (val i = str.substring(str.length - 2, str.length - 1)) {
                         "b" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toByte(it) }.toByteArray())
                         "i" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toInt(it) }.toIntArray())
-                        else -> error("unsupported")
+                        else -> error("unsupported array $json ($i)")
                     }
                 } else {
-                    when (str.substring(str.length - 1, str.length)) {
+                    when (val i = str.substring(str.length - 1, str.length)) {
                         "n" -> ItemTagData(NumberConversions.toByte(str.substring(0, str.length - 1)))
                         "s" -> ItemTagData(NumberConversions.toShort(str.substring(0, str.length - 1)))
                         "i" -> ItemTagData(NumberConversions.toInt(str.substring(0, str.length - 1)))
@@ -65,11 +65,11 @@ object ItemTagSerializer {
                         "f" -> ItemTagData(NumberConversions.toFloat(str.substring(0, str.length - 1)))
                         "d" -> ItemTagData(NumberConversions.toDouble(str.substring(0, str.length - 1)))
                         "t" -> ItemTagData(str.substring(0, str.length - 1))
-                        else -> error("unsupported")
+                        else -> error("unsupported type $json ($i)")
                     }
                 }
             }
-            else -> error("unsupported")
+            else -> error("unsupported json $json (${json.javaClass.simpleName})")
         }
     }
 }
