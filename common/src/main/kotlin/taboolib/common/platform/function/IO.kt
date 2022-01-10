@@ -82,20 +82,3 @@ fun getDataFolder(): File {
 fun getPlatformData(): Map<String, Any> {
     return PlatformFactory.getService<PlatformIO>().getPlatformData()
 }
-
-/**
- *  @param folder 插件资源主路径
- * @param child 资源路径
- * @param message 文件不存在时输出
- * @param mkdirs 是否创建示例配置
- * @param example 示例配置名称
- * @return 返回资源路径的所有文件
- */
-fun getFiles(folder: String, child: String, message: String, mkdirs: Boolean, example: String = "example.yml"): File {
-    val file = File(folder, child)
-    if (!file.exists() && mkdirs) { // 如果 <child> 不存在时释放示例配置
-        if (message.isNotEmpty()) PlatformFactory.getService<PlatformIO>().info(message)
-        PlatformFactory.getService<PlatformIO>().releaseResourceFile("$child/$example", true)
-    }
-    return file
-}
