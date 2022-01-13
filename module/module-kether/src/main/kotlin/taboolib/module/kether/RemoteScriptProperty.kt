@@ -11,7 +11,7 @@ import taboolib.common.reflect.Reflex.Companion.invokeMethod
  * @author sky
  * @since 2021/8/12 8:37 下午
  */
-class RemoteScriptProperty(val remote: OpenContainer, val source: Any, id: String) : ScriptProperty(id) {
+class RemoteScriptProperty(val remote: OpenContainer, val source: Any, id: String) : ScriptProperty<Any>(id) {
 
     override fun read(instance: Any, key: String): OpenResult {
         return OpenResult.deserialize(source.invokeMethod("read", instance, key))

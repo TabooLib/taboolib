@@ -19,6 +19,10 @@ public class LiteralAction<T> extends QuestAction<T> {
         this.value = value;
     }
 
+    public Object getValue() {
+        return value;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public CompletableFuture<T> process(@NotNull QuestContext.Frame frame) {

@@ -50,7 +50,7 @@ object KetherLoader : Injector.Methods {
             }
         }
         if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
-            val property = method.invoke(instance.get()) as ScriptProperty
+            val property = method.invoke(instance.get()) as ScriptProperty<*>
             val annotation = method.getAnnotation(KetherProperty::class.java)
             if (annotation.shared) {
                 var name = annotation.bind.java.name

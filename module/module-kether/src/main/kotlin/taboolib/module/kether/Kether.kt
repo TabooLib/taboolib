@@ -25,7 +25,7 @@ object Kether {
      * 启用时：
      * tell "HelloWorld!"
      */
-    var isAllowToleranceParser = false
+    var isAllowToleranceParser = true
 
     val scriptService by lazy {
         ScriptService
@@ -42,7 +42,7 @@ object Kether {
         }
     }
 
-    val registeredScriptProperty = HashMap<Class<*>, MutableMap<String, ScriptProperty>>()
+    val registeredScriptProperty = HashMap<Class<*>, MutableMap<String, ScriptProperty<*>>>()
     val registeredPlayerOperator = LinkedHashMap<String, PlayerOperator>()
 
     internal fun addAction(name: Array<String>, parser: QuestActionParser) {
@@ -61,7 +61,7 @@ object Kether {
         registeredPlayerOperator[name] = operator
     }
 
-    internal fun addScriptProperty(clazz: Class<*>, property: ScriptProperty) {
+    internal fun addScriptProperty(clazz: Class<*>, property: ScriptProperty<*>) {
         registeredScriptProperty.computeIfAbsent(clazz) { HashMap() }[property.id] = property
     }
 

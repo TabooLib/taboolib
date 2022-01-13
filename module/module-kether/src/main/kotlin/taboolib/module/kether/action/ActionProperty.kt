@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package taboolib.module.kether.action
 
 import taboolib.library.kether.ParsedAction
@@ -16,13 +18,13 @@ import java.util.concurrent.CompletableFuture
  */
 object ActionProperty {
 
-    fun getScriptProperty(obj: Any): Collection<ScriptProperty>? {
+    fun getScriptProperty(obj: Any): Collection<ScriptProperty<*>>? {
         return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value?.values
     }
 
     fun getScriptProperty(obj: Any, key: String): Any? {
         for (property in getScriptProperty(obj) ?: return null) {
-            val result = property.read(obj, key)
+            val result = (property as ScriptProperty<Any>).read(obj, key)
             if (result.isSuccessful) {
                 return result.value
             }
@@ -41,7 +43,7 @@ object ActionProperty {
                 frame.newFrame(value).run<Any?>().thenAccept close@{ value ->
                     val propertyList = getScriptProperty(instance) ?: error("${instance.javaClass.simpleName}[$key] not supported yet.")
                     for (property in propertyList) {
-                        val result = property.write(instance, key, value)
+                        val result = (property as ScriptProperty<Any>).write(instance, key, value)
                         if (result.isSuccessful) {
                             future.complete(null)
                             return@close
@@ -63,7 +65,7 @@ object ActionProperty {
                 }
                 val propertyList = getScriptProperty(it) ?: error("${it.javaClass.simpleName}[$key] not supported yet.")
                 for (property in propertyList) {
-                    val result = property.read(it, key)
+                    val result = (property as ScriptProperty<Any>).read(it, key)
                     if (result.isSuccessful) {
                         return@thenApply result.value
                     }
