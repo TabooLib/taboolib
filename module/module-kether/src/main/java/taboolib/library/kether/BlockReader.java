@@ -54,10 +54,11 @@ public class BlockReader extends AbstractStringReader {
         if (Kether.INSTANCE.isAllowToleranceParser()) {
             LiteralAction<?> before = null;
             for (ParsedAction<?> action : actions) {
+                if (before != null) {
+                    throw KetherError.CUSTOM.create("Isolate literal \"" + before.getValue() + "\" is not end of block, maybe a misspelled action?");
+                }
                 if (action.getAction() instanceof LiteralAction) {
                     before = (LiteralAction<?>) action.getAction();
-                } else if (before != null) {
-                    throw KetherError.CUSTOM.create("Isolate literal \"" + before.getValue() + "\" is not end of block, maybe a misspelled action?");
                 }
             }
         }
