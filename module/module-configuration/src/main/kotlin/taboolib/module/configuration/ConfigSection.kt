@@ -15,12 +15,13 @@ import taboolib.library.configuration.ConfigurationSection
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(var root: Config, private val id: String = "") : ConfigurationSection {
+open class ConfigSection(
+    var root: Config,
+    override val name: String = "",
+    override val parent: ConfigurationSection? = null,
+) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
-
-    override val name: String
-        get() = id
 
     override val type: Type
         get() = configType
@@ -58,14 +59,22 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
         if (path.isEmpty()) {
             return this
         }
+        var name = path
+        var parent: ConfigurationSection? = null
+        if (path.contains('.')) {
+            name = path.substringAfterLast('.')
+            parent = getConfigurationSection(path.substringBeforeLast('.').substringAfterLast('.'))
+        }
         return when (val value = root.getOrElse(path, def)) {
-            is Config -> ConfigSection(value, path.substringAfterLast('.'))
+            is Config -> {
+                ConfigSection(value, name, parent)
+            }
             // 理论是无法获取到 Map 类型
             // 因为在 set 方法中 Map 会被转换为 Config 类型
             is Map<*, *> -> {
                 val subConfig = root.createSubConfig()
                 subConfig.setProperty("map", value)
-                ConfigSection(subConfig, path.substringAfterLast('.'))
+                ConfigSection(subConfig, name, parent)
             }
             else -> unwrap(value)
         }
@@ -215,7 +224,13 @@ open class ConfigSection(var root: Config, private val id: String = "") : Config
     override fun createSection(path: String): ConfigurationSection {
         val subConfig = root.createSubConfig()
         set(path, subConfig)
-        return ConfigSection(subConfig, path.substringAfterLast('.'))
+        var name = path
+        var parent: ConfigurationSection? = null
+        if (path.contains('.')) {
+            name = path.substringAfterLast('.')
+            parent = getConfigurationSection(path.substringBeforeLast('.').substringAfterLast('.'))
+        }
+        return ConfigSection(subConfig, name, parent)
     }
 
     override fun toMap(): Map<String, Any?> {

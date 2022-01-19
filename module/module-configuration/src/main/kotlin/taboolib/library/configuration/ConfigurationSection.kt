@@ -7,6 +7,8 @@ import taboolib.module.configuration.Type
  */
 interface ConfigurationSection {
 
+    val parent: ConfigurationSection?
+
     val name: String
 
     val type: Type
