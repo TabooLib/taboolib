@@ -5,7 +5,7 @@ import com.electronwill.nightconfig.core.file.FileNotFoundAction
 import com.electronwill.nightconfig.core.io.ConfigParser
 import com.electronwill.nightconfig.core.io.ParsingMode
 import taboolib.common.platform.function.warning
-import taboolib.common.reflect.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.setProperty
 import java.io.File
 import java.io.InputStream
 import java.io.Reader

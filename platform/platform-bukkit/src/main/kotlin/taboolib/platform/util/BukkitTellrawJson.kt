@@ -4,12 +4,12 @@ package taboolib.platform.util
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.chat.TellrawJson
 
 fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
-    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, fixed = true)!!
+    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, isStatic = true)!!
     val nmsKey = try {
         itemStack.type.key.key
     } catch (ex: NoSuchMethodError) {

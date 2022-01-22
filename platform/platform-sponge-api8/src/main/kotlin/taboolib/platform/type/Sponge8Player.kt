@@ -24,7 +24,7 @@ import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.util.toPlain
@@ -105,7 +105,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().asComponent().toPlain())
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
         }
 
     override val isSneaking: Boolean

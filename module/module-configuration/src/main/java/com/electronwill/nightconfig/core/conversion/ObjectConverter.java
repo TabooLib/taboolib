@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

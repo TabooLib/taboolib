@@ -18,6 +18,8 @@ subprojects {
         mavenCentral()
     }
     dependencies {
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.2")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.2")
         "compileOnly"(kotlin("stdlib"))
     }
     tasks.withType<Jar> {
@@ -25,6 +27,9 @@ subprojects {
     }
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
+    }
+    tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+        relocate("org.tabooproject.reflex", "taboolib.common.reflect")
     }
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8

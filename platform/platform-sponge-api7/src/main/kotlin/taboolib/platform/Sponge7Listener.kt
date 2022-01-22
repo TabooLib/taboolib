@@ -13,7 +13,7 @@ import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 
 /**
  * TabooLib

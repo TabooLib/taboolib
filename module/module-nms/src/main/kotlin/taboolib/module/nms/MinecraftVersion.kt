@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.runningPlatform
-import taboolib.common.reflect.Reflex
+import org.tabooproject.reflex.Reflex
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])

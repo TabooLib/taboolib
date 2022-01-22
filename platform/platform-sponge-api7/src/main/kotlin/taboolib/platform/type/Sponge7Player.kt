@@ -29,7 +29,7 @@ import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.net.InetSocketAddress
@@ -107,7 +107,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().name)
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
         }
 
     override val isSneaking: Boolean
@@ -339,9 +339,9 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         for (alias in particle.aliases) {
             try {
                 type = if (alias == "@") {
-                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, fixed = true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, isStatic = true)
                 } else {
-                    ParticleTypes::class.java.getProperty<ParticleType>(alias, fixed = true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(alias, isStatic = true)
                 }
             } catch (ignored: NoSuchFieldException) {
             }

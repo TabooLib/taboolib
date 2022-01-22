@@ -3,7 +3,7 @@ package taboolib.platform.util
 
 import org.bukkit.Bukkit
 import taboolib.common.Isolated
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 
 val isBukkitServerRunning: Boolean
     get() {

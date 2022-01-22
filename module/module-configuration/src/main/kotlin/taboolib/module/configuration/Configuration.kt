@@ -3,8 +3,8 @@ package taboolib.module.configuration
 import com.electronwill.nightconfig.core.UnmodifiableConfig
 import com.electronwill.nightconfig.core.conversion.Converter
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
-import taboolib.common.reflect.Reflex.Companion.invokeConstructor
-import taboolib.common.reflect.Reflex.Companion.unsafeInstance
+import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
+import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream

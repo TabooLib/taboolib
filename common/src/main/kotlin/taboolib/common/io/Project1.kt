@@ -2,6 +2,8 @@
 
 package taboolib.common.io
 
+import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.TabooLibCommon
 import taboolib.common.inject.RuntimeInjector
 import taboolib.common.platform.PlatformFactory
@@ -29,9 +31,9 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         if (awoken != null) {
             return Supplier { awoken }
         }
-    } catch (ex: ClassNotFoundException) {
+    } catch (_: ClassNotFoundException) {
         return null
-    } catch (ex: NoClassDefFoundError) {
+    } catch (_: NoClassDefFoundError) {
         return null
     } catch (ex: InternalError) {
         println(this)
@@ -40,21 +42,18 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     }
     return try {
         val field = if (simpleName == "Companion") {
-            Class.forName(name.substringBeforeLast('$')).getDeclaredField("Companion")
+            ReflexClass.of(Class.forName(name.substringBeforeLast('$'))).getField("Companion", findToParent = false)
         } else {
-            getDeclaredField("INSTANCE")
+            ReflexClass.of(this).getField("INSTANCE", findToParent = false)
         }
-        field.isAccessible = true
-        lazySupplier { field.get(null) as T }
-    } catch (ex: NoClassDefFoundError) {
+        lazySupplier { field.get() as T }
+    } catch (_: NoSuchFieldException) {
+        if (newInstance) lazySupplier { invokeConstructor() } else null
+    } catch (_: ClassNotFoundException) {
         null
-    } catch (ex: NoSuchFieldException) {
-        if (newInstance) lazySupplier { getDeclaredConstructor().newInstance() as T } else null
-    } catch (ex: ClassNotFoundException) {
+    } catch (_: IllegalAccessError) {
         null
-    } catch (ex: IllegalAccessError) {
-        null
-    } catch (ex: IncompatibleClassChangeError) {
+    } catch (_: IncompatibleClassChangeError) {
         null
     } catch (ex: ExceptionInInitializerError) {
         println(this)

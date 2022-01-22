@@ -32,7 +32,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 import taboolib.platform.util.ItemBuilder;
 
 import java.lang.invoke.MethodHandle;

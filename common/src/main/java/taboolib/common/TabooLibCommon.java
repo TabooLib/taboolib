@@ -23,22 +23,13 @@ import java.util.Map;
 @RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLibCommon {
 
-    /**
-     * 保存最近一次初始化的运行环境
-     */
     private static Platform platform = Platform.APPLICATION;
 
-    /**
-     * 是否停止加载
-     */
     private static boolean stopped = false;
 
-    /**
-     * 是否被 Paper 核心拦截控制台打印
-     */
     private static boolean sysoutCatcherFound = false;
 
-    private static boolean init = false;
+    private static boolean isInitiation = false;
 
     private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new HashMap<>();
 
@@ -55,18 +46,19 @@ public class TabooLibCommon {
      * 用于测试的快速启动方法
      * 会按顺序触发 CONST、INIT、LOAD、ENABLE 生命周期
      */
-    public static void testSetup() {
+    public static void startNow() {
         lifeCycle(LifeCycle.CONST);
         lifeCycle(LifeCycle.INIT);
         lifeCycle(LifeCycle.LOAD);
         lifeCycle(LifeCycle.ENABLE);
+        lifeCycle(LifeCycle.ACTIVE);
     }
 
     /**
      * 用于测试的快速注销方法
      * 会触发 DISABLE 生命周期
      */
-    public static void testCancel() {
+    public static void disableNow() {
         lifeCycle(LifeCycle.DISABLE);
     }
 
@@ -118,20 +110,20 @@ public class TabooLibCommon {
                 } catch (NoClassDefFoundError ignored) {
                 }
                 if (isKotlinEnvironment()) {
-                    init = true;
+                    isInitiation = true;
                     PlatformFactory.INSTANCE.init();
                     RuntimeInjector.injectAll(LifeCycle.CONST);
                 }
                 break;
             case INIT:
-                if (init) {
+                if (isInitiation) {
                     RuntimeInjector.injectAll(LifeCycle.INIT);
                 }
                 break;
             case LOAD:
-                if (!init) {
+                if (!isInitiation) {
                     if (isKotlinEnvironment()) {
-                        init = true;
+                        isInitiation = true;
                         PlatformFactory.INSTANCE.init();
                         RuntimeInjector.injectAll(LifeCycle.CONST);
                         RuntimeInjector.injectAll(LifeCycle.INIT);
@@ -189,6 +181,9 @@ public class TabooLibCommon {
         stopped = value;
     }
 
+    /**
+     * 是否被 Paper 核心拦截控制台打印
+     */
     public static boolean isSysoutCatcherFound() {
         return sysoutCatcherFound;
     }

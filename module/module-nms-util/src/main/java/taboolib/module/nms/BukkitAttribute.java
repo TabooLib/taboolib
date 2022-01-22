@@ -1,7 +1,7 @@
 package taboolib.module.nms;
 
 import taboolib.common.Isolated;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 
 import java.util.Arrays;
 

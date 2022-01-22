@@ -1,5 +1,6 @@
 package taboolib.module.configuration
 
+import org.tabooproject.reflex.UnsafeAccess
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
@@ -7,7 +8,6 @@ import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.platform.function.warning
-import taboolib.common.reflect.Ref
 import taboolib.common.util.nonPrimitive
 import taboolib.common5.Coerce
 import taboolib.common5.FileWatcher
@@ -35,7 +35,7 @@ object ConfigInjector : Injector.Fields {
             if (files.containsKey(name)) {
                 try {
                     // ClassCastException
-                    Ref.put(instance.get(), field, files[name]!!.conf)
+                    UnsafeAccess.put(instance.get(), field, files[name]!!.conf)
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
                     return
@@ -55,7 +55,7 @@ object ConfigInjector : Injector.Fields {
                 val conf = if (field.type == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
                 try {
                     // ClassCastException
-                    Ref.put(instance.get(), field, conf)
+                    UnsafeAccess.put(instance.get(), field, conf)
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
                     return
@@ -94,7 +94,7 @@ object ConfigInjector : Injector.Fields {
                 file.nodes += field
                 var data = file.conf[node.value.ifEmpty { field.name }]
                 if (field.type == ConfigNodeTransfer::class.java) {
-                    Ref.get<ConfigNodeTransfer<*, *>>(instance.get(), field)!!.update(data)
+                    UnsafeAccess.get<ConfigNodeTransfer<*, *>>(instance.get(), field)!!.update(data)
                 } else {
                     when (field.type.nonPrimitive()) {
                         Integer::class.java -> data = Coerce.toInteger(data)
@@ -106,7 +106,7 @@ object ConfigInjector : Injector.Fields {
                         java.lang.Short::class.java -> data = Coerce.toShort(data)
                         java.lang.Boolean::class.java -> data = Coerce.toBoolean(data)
                     }
-                    Ref.put(instance.get(), field, data)
+                    UnsafeAccess.put(instance.get(), field, data)
                 }
             }
         }

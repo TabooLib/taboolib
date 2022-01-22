@@ -3,8 +3,8 @@ package taboolib.module.nms
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
-import taboolib.common.reflect.ReflexClass
-import taboolib.common.reflect.ReflexRemapper
+import org.tabooproject.reflex.Reflection
+import org.tabooproject.reflex.ReflexRemapper
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -37,7 +37,7 @@ object RefRemapper : ReflexRemapper {
     }
 
     fun checkParameterType(descriptor: String, vararg parameter: Any?): Boolean {
-        return ReflexClass.compare(getParameterTypes(descriptor).toTypedArray(), parameter.map { p -> p?.javaClass }.toTypedArray())
+        return Reflection.isAssignableFrom(getParameterTypes(descriptor).toTypedArray(), parameter.map { p -> p?.javaClass }.toTypedArray())
     }
 
     fun getParameterTypes(descriptor: String): List<Class<*>> {
