@@ -14,7 +14,7 @@ import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.io.Project1Kt;
+import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
@@ -48,7 +48,7 @@ public class Sponge8Plugin {
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
         if (TabooLibCommon.isKotlinEnvironment()) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
 
@@ -66,7 +66,7 @@ public class Sponge8Plugin {
         TabooLibCommon.lifeCycle(LifeCycle.INIT);
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();

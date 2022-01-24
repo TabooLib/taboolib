@@ -1,32 +1,21 @@
 package taboolib.common.inject
 
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.util.function.Supplier
+import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ClassMethod
+import taboolib.common.io.LazyInstGetter
+import taboolib.common.LifeCycle
 
-/**
- * TabooLib
- * taboolib.common.inject.Injector
- *
- * @author sky
- * @since 2021/6/24 3:36 下午
- */
-class Injector {
+abstract class Injector(val lifeCycle: LifeCycle, val priority: Byte = 0) {
 
-    interface Classes : InjectorOrder {
-
-        fun inject(clazz: Class<*>, instance: Supplier<*>)
-
-        fun postInject(clazz: Class<*>, instance: Supplier<*>)
+    open fun inject(clazz: Class<*>, field: ClassField, instance: LazyInstGetter<*>) {
     }
 
-    interface Fields : InjectorOrder {
-
-        fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>)
+    open fun inject(clazz: Class<*>, method: ClassMethod, instance: LazyInstGetter<*>) {
     }
 
-    interface Methods : InjectorOrder {
+    open fun preInject(clazz: Class<*>, instance: LazyInstGetter<*>) {
+    }
 
-        fun inject(method: Method, clazz: Class<*>, instance: Supplier<*>)
+    open fun postInject(clazz: Class<*>, instance: LazyInstGetter<*>) {
     }
 }

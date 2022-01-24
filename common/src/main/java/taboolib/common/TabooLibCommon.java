@@ -4,9 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
-import taboolib.common.inject.RuntimeInjector;
+import taboolib.common.inject.InjectorFactory;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
+import taboolib.internal.InjectorHandlerImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +32,7 @@ public class TabooLibCommon {
 
     private static boolean isInitiation = false;
 
-    private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new HashMap<>();
+    private static final Map<LifeCycle, List<Runnable>> postponeTask = new HashMap<>();
 
     static {
         try {
@@ -62,13 +63,11 @@ public class TabooLibCommon {
         lifeCycle(LifeCycle.DISABLE);
     }
 
-
     /**
      * 推迟任务到指定 LifeStyle 执行
      */
     public static void postpone(LifeCycle lifeCycle, Runnable runnable) {
-        postponeExecutor.computeIfAbsent(lifeCycle, list -> new ArrayList<>());
-        postponeExecutor.get(lifeCycle).add(runnable);
+        postponeTask.computeIfAbsent(lifeCycle, list -> new ArrayList<>()).add(runnable);
     }
 
     /**
@@ -88,10 +87,12 @@ public class TabooLibCommon {
         if (stopped) {
             return;
         }
+        // 运行平台由第一次 lifeCycle 的平台决定
         if (platform != null) {
             TabooLibCommon.platform = platform;
         }
-        postponeExecutor.forEach((cycle, list) -> {
+        // 执行推迟任务
+        postponeTask.forEach((cycle, list) -> {
             if (cycle == lifeCycle) {
                 list.forEach((runnable) -> {
                     try {
@@ -100,51 +101,59 @@ public class TabooLibCommon {
                         t.printStackTrace();
                     }
                 });
-                postponeExecutor.remove(cycle);
+                postponeTask.remove(cycle);
             }
         });
+        // 生命周期阶段
         switch (lifeCycle) {
             case CONST:
                 try {
                     RuntimeEnv.ENV.setup();
                 } catch (NoClassDefFoundError ignored) {
                 }
+                // 如果 Kotlin 环境就绪
                 if (isKotlinEnvironment()) {
-                    isInitiation = true;
-                    PlatformFactory.INSTANCE.init();
-                    RuntimeInjector.injectAll(LifeCycle.CONST);
+                    preInitiation();
                 }
                 break;
             case INIT:
                 if (isInitiation) {
-                    RuntimeInjector.injectAll(LifeCycle.INIT);
+                    InjectorFactory.INSTANCE.injectAll(LifeCycle.INIT);
                 }
                 break;
             case LOAD:
                 if (!isInitiation) {
                     if (isKotlinEnvironment()) {
-                        isInitiation = true;
-                        PlatformFactory.INSTANCE.init();
-                        RuntimeInjector.injectAll(LifeCycle.CONST);
-                        RuntimeInjector.injectAll(LifeCycle.INIT);
+                        preInitiation();
+                        InjectorFactory.INSTANCE.injectAll(LifeCycle.INIT);
                     } else {
                         stopped = true;
                         throw new RuntimeException("Runtime environment setup failed, please feedback!");
                     }
                 }
-                RuntimeInjector.injectAll(LifeCycle.LOAD);
+                InjectorFactory.INSTANCE.injectAll(LifeCycle.LOAD);
                 break;
             case ENABLE:
-                RuntimeInjector.injectAll(LifeCycle.ENABLE);
+                InjectorFactory.INSTANCE.injectAll(LifeCycle.ENABLE);
                 break;
             case ACTIVE:
-                RuntimeInjector.injectAll(LifeCycle.ACTIVE);
+                InjectorFactory.INSTANCE.injectAll(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
-                RuntimeInjector.injectAll(LifeCycle.DISABLE);
+                InjectorFactory.INSTANCE.injectAll(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }
+    }
+
+    /**
+     * 预初始化过程，初始化 PlatformFactory 并注册一些内部实现，同时注入 CONST 生命周期
+     */
+    private static void preInitiation() {
+        isInitiation = true;
+        PlatformFactory.INSTANCE.init();
+        InjectorFactory.INSTANCE.registerHandler(new InjectorHandlerImpl());
+        InjectorFactory.INSTANCE.injectAll(LifeCycle.CONST);
     }
 
     /**
@@ -172,6 +181,13 @@ public class TabooLibCommon {
      */
     public static boolean isStopped() {
         return stopped;
+    }
+
+    /**
+     * 是否正在运行
+     */
+    public static boolean isRunning() {
+        return !stopped;
     }
 
     /**

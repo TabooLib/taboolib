@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.io.Project1Kt;
+import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
@@ -42,7 +42,7 @@ public class VelocityPlugin {
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
         if (TabooLibCommon.isKotlinEnvironment()) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
 
@@ -64,7 +64,7 @@ public class VelocityPlugin {
         if (!TabooLibCommon.isStopped()) {
             TabooLibCommon.lifeCycle(LifeCycle.LOAD);
             if (pluginInstance == null) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
+                pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
             }
             if (pluginInstance != null) {
                 pluginInstance.onLoad();

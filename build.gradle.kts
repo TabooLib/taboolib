@@ -18,8 +18,8 @@ subprojects {
         mavenCentral()
     }
     dependencies {
-        "compileOnly"("org.tabooproject.reflex:analyser:1.0.2")
-        "compileOnly"("org.tabooproject.reflex:reflex:1.0.2")
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.3")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.3")
         "compileOnly"(kotlin("stdlib"))
     }
     tasks.withType<Jar> {

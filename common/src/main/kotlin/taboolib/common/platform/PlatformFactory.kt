@@ -4,7 +4,7 @@ import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
-import taboolib.common.io.getInstance
+import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
@@ -26,7 +26,7 @@ object PlatformFactory {
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
-                    val instance = it.getInstance(true)?.get() ?: return@forEach
+                    val instance = it.findInstance(true)?.get() ?: return@forEach
                     if (interfaces.contains(Injector.Fields::class.java)) {
                         RuntimeInjector.register(instance as Injector.Fields)
                     }
@@ -46,7 +46,7 @@ object PlatformFactory {
                 if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == runningPlatform) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
-                        awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
+                        awokenMap[interfaces[0].name] = it.findInstance(true)?.get() ?: return@forEach
                     }
                 }
             }

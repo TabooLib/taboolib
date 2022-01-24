@@ -3,14 +3,13 @@ package taboolib.platform;
 import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.io.Project1Kt;
+import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
@@ -48,7 +47,7 @@ public class Sponge7Plugin {
     static {
         TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
         if (TabooLibCommon.isKotlinEnvironment()) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
 
@@ -65,7 +64,7 @@ public class Sponge7Plugin {
     public void e(GamePreInitializationEvent e) {
         TabooLibCommon.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
         if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onLoad();

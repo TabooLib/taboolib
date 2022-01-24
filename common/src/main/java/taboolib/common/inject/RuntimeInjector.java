@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.io.Project1Kt;
+import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.AwakeFunction;
 import taboolib.common.platform.PlatformFactory;
 import taboolib.common.platform.SkipTo;
@@ -55,7 +55,7 @@ public class RuntimeInjector {
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment()) {
             List<Class<?>> classes = new ArrayList<>();
-            for (Class<?> runningClass : Project1Kt.getRunningClasses()) {
+            for (Class<?> runningClass : ClassInstanceKt.getRunningClasses()) {
                 if (PlatformFactory.INSTANCE.checkPlatform(runningClass)) {
                     classes.add(runningClass);
                 }
@@ -84,7 +84,7 @@ public class RuntimeInjector {
                 return;
             }
         }
-        Supplier<?> instance = Project1Kt.getInstance(clazz, false);
+        Supplier<?> instance = ClassInstanceKt.findInstance(clazz, false);
         if (instance == null) {
             return;
         }
