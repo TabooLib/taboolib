@@ -1,7 +1,7 @@
 package taboolib.common5;
 
 import taboolib.common.Isolated;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.ProxyPlayer;
 
@@ -49,7 +49,7 @@ public class Level {
      * @param level 等级
      */
     public static int getExpAtLevel(int level) {
-        if (TabooLibCommon.getRunningPlatform() == Platform.NUKKIT) {
+        if (TabooLib.getRunningPlatform() == Platform.NUKKIT) {
             if (level >= 30) {
                 return 112 + (level - 30) * 9;
             } else if (level >= 15) {

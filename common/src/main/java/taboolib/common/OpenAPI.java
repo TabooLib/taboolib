@@ -14,6 +14,9 @@ import java.util.Map;
  */
 public class OpenAPI {
 
+    OpenAPI() {
+    }
+
     @NotNull
     public static OpenResult call(String name, Object[] data) {
         for (Map.Entry<String, Object> entry : PlatformFactory.INSTANCE.getAwokenMap().entrySet()) {

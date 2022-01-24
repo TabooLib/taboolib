@@ -2,7 +2,7 @@
 
 package taboolib.common.io
 
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
@@ -13,7 +13,7 @@ import java.util.jar.JarFile
 /**
  * 当前当前插件的所有类
  */
-val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.readClasses() }
+val runningClasses by lazy { TabooLib::class.java.protectionDomain.codeSource.location.readClasses() }
 
 /**
  * 通过 URL 获取所有类
@@ -54,7 +54,7 @@ fun URL.readClasses(): List<Class<*>> {
     src.forEach { s ->
         JarFile(s).stream().parallel().filter { it.name.endsWith(".class") }.forEach {
             kotlin.runCatching {
-                val forName = Class.forName(it.name.replace('/', '.').substringBeforeLast('.'), false, TabooLibCommon::class.java.classLoader)
+                val forName = Class.forName(it.name.replace('/', '.').substringBeforeLast('.'), false, TabooLib::class.java.classLoader)
                 forName.name // 尝试获取类名来过滤一些无法访问的类
                 classes.add(forName)
             }

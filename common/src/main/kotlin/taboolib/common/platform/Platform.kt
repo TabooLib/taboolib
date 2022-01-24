@@ -23,7 +23,7 @@ enum class Platform(val key: String) {
 
     SPONGE_API_9("Sponge9"),
 
-    CLOUDNET_V3("CloudNetV3"),
+    CLOUDNET_V3("CloudNet3"),
 
     MINESTOM("Minestom"),
 

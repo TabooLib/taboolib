@@ -5,7 +5,7 @@ import cn.nukkit.plugin.PluginBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
@@ -30,32 +30,32 @@ public class NukkitPlugin extends PluginBase {
     private static NukkitPlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.NUKKIT);
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        TabooLib.lifeCycle(LifeCycle.CONST, Platform.NUKKIT);
+        if (TabooLib.isKotlinEnvironment()) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
 
     public NukkitPlugin() {
         instance = this;
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        TabooLib.lifeCycle(LifeCycle.INIT);
     }
 
     @Override
     public void onLoad() {
-        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
         }
     }
 
     @Override
     public void onEnable() {
-        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (!TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ENABLE);
+        if (!TabooLib.isStopped()) {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
@@ -64,11 +64,11 @@ public class NukkitPlugin extends PluginBase {
             } catch (NoClassDefFoundError ignored) {
             }
         }
-        if (!TabooLibCommon.isStopped()) {
+        if (!TabooLib.isStopped()) {
             Server.getInstance().getScheduler().scheduleTask(this, new Runnable() {
                 @Override
                 public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
                     if (pluginInstance != null) {
                         pluginInstance.onActive();
                     }
@@ -79,8 +79,8 @@ public class NukkitPlugin extends PluginBase {
 
     @Override
     public void onDisable() {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onDisable();
         }
     }

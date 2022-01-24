@@ -13,7 +13,7 @@ import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
 import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
 import org.spongepowered.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
@@ -46,8 +46,8 @@ public class Sponge8Plugin {
     private Path pluginConfigDir;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        TabooLib.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
+        if (TabooLib.isKotlinEnvironment()) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
@@ -63,20 +63,20 @@ public class Sponge8Plugin {
     // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
     public void e(final ConstructPluginEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
-        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        TabooLib.lifeCycle(LifeCycle.INIT);
+        TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
         }
     }
 
     @Listener
     public void e(final StartingEngineEvent<Server> e) {
-        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (!TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ENABLE);
+        if (!TabooLib.isStopped()) {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
@@ -89,16 +89,16 @@ public class Sponge8Plugin {
 
     @Listener
     public void e(final StartedEngineEvent<Server> e) {
-        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ACTIVE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onActive();
         }
     }
 
     @Listener
     public void e(final StoppingEngineEvent<Server> e) {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onDisable();
         }
     }

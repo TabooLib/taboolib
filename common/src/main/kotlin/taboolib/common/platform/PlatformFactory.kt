@@ -1,6 +1,6 @@
 package taboolib.common.platform
 
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.Injector
 import taboolib.common.inject.RuntimeInjector
@@ -17,7 +17,7 @@ object PlatformFactory {
     val serviceMap = HashMap<String, Any>()
 
     fun init() {
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        if (TabooLib.isKotlinEnvironment()) {
             runningClasses.forEach {
                 kotlin.runCatching {
                     RuntimeEnv.ENV.inject(it)

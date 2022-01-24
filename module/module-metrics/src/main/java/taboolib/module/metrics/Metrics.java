@@ -1,7 +1,7 @@
 package taboolib.module.metrics;
 
 import kotlin.Unit;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.File1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.function.AdapterKt;
@@ -24,7 +24,7 @@ public class Metrics {
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public Metrics(int serviceId, String pluginVersion, Platform runningPlatform) {
-        if (TabooLibCommon.getRunningPlatform() != runningPlatform) {
+        if (TabooLib.getRunningPlatform() != runningPlatform) {
             return;
         }
         // Get the config file

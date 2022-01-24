@@ -1,18 +1,13 @@
 package taboolib.common.inject
 
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
+import taboolib.common.boot.SimpleServiceLoader
+import taboolib.internal.SimpleInjectorHandler
 
 object InjectorFactory {
 
-    private lateinit var handler: Handler
-
-    /**
-     * 注册 Handler 实现
-     */
-    fun registerHandler(impl: Handler) {
-        handler = impl
-    }
+    private val handler = SimpleServiceLoader.load(Handler::class.java) { SimpleInjectorHandler }
 
     /**
      * 注册 Injector 实现
@@ -25,7 +20,7 @@ object InjectorFactory {
      * 向所有类注入给定生命周期阶段
      */
     fun injectAll(lifeCycle: LifeCycle) {
-        if (TabooLibCommon.isRunning()) {
+        if (TabooLib.isRunning()) {
             handler.inject(lifeCycle)
         }
     }
@@ -34,7 +29,7 @@ object InjectorFactory {
      * 向特定类注入给定生命周期阶段
      */
     fun injectByLifeCycle(target: Class<*>, lifeCycle: LifeCycle) {
-        if (TabooLibCommon.isRunning()) {
+        if (TabooLib.isRunning()) {
             handler.inject(target, lifeCycle)
         }
     }
@@ -43,7 +38,7 @@ object InjectorFactory {
      * 不检测生命周期向特定类注入
      */
     fun injectIgnoreLifeCycle(target: Class<*>) {
-        if (TabooLibCommon.isRunning()) {
+        if (TabooLib.isRunning()) {
             handler.inject(target)
         }
     }

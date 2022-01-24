@@ -8,7 +8,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.*;
 import org.spongepowered.api.plugin.PluginContainer;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
@@ -45,8 +45,8 @@ public class Sponge7Plugin {
     private Path pluginConfigDir;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        TabooLib.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
+        if (TabooLib.isKotlinEnvironment()) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
@@ -57,24 +57,24 @@ public class Sponge7Plugin {
 
     @Listener
     public void e(GameConstructionEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        TabooLib.lifeCycle(LifeCycle.INIT);
     }
 
     @Listener
     public void e(GamePreInitializationEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
         }
     }
 
     @Listener
     public void e(GameInitializationEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (!TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ENABLE);
+        if (!TabooLib.isStopped()) {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
@@ -87,16 +87,16 @@ public class Sponge7Plugin {
 
     @Listener
     public void e(GameStartedServerEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ACTIVE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onActive();
         }
     }
 
     @Listener
     public void e(GameStoppedServerEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onDisable();
         }
     }

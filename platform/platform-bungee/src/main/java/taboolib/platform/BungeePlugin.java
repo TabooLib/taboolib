@@ -4,7 +4,7 @@ import net.md_5.bungee.BungeeCord;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.ClassInstanceKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
@@ -29,32 +29,32 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     private static BungeePlugin instance;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
+        if (TabooLib.isKotlinEnvironment()) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
     }
 
     public BungeePlugin() {
         instance = this;
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        TabooLib.lifeCycle(LifeCycle.INIT);
     }
 
     @Override
     public void onLoad() {
-        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+        TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
             pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
         }
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
         }
     }
 
     @Override
     public void onEnable() {
-        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        if (!TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.ENABLE);
+        if (!TabooLib.isStopped()) {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
@@ -63,11 +63,11 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             } catch (NoClassDefFoundError ignored) {
             }
         }
-        if (!TabooLibCommon.isStopped()) {
+        if (!TabooLib.isStopped()) {
             BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
                 @Override
                 public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
                     if (pluginInstance != null) {
                         pluginInstance.onActive();
                     }
@@ -78,8 +78,8 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Override
     public void onDisable() {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+        TabooLib.lifeCycle(LifeCycle.DISABLE);
+        if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onDisable();
         }
     }

@@ -1,7 +1,7 @@
 package taboolib.common.env;
 
 import sun.misc.Unsafe;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 
 import java.io.File;
 import java.lang.invoke.MethodHandle;
@@ -40,7 +40,7 @@ public class ClassAppender {
     public static void addPath(Path path) {
         try {
             File file = new File(path.toUri().getPath());
-            ClassLoader loader = TabooLibCommon.class.getClassLoader();
+            ClassLoader loader = TabooLib.class.getClassLoader();
             if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
                 MethodHandle methodHandle = lookup.findVirtual(URLClassLoader.class, "addURL", MethodType.methodType(void.class, java.net.URL.class));
                 methodHandle.invoke(loader, file.toURI().toURL());
@@ -67,7 +67,7 @@ public class ClassAppender {
 
     public static boolean isExists(String path) {
         try {
-            Class.forName(path, false, TabooLibCommon.class.getClassLoader());
+            Class.forName(path, false, TabooLib.class.getClassLoader());
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;

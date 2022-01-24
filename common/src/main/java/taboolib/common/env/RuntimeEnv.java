@@ -2,7 +2,6 @@ package taboolib.common.env;
 
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.TabooLibCommon;
 
 import java.io.*;
 import java.net.URL;
@@ -24,8 +23,6 @@ import java.util.zip.ZipFile;
 public class RuntimeEnv {
 
     public static final RuntimeEnv ENV = new RuntimeEnv();
-
-    private boolean notify = false;
 
     RuntimeEnv() {
     }
@@ -72,16 +69,6 @@ public class RuntimeEnv {
                     file.getParentFile().mkdirs();
                 }
                 try {
-                    if (!notify) {
-                        notify = true;
-                        if (TabooLibCommon.isSysoutCatcherFound()) {
-                            if (System.console() != null) {
-                                System.console().printf("Loading assets, please wait...\n");
-                            }
-                        } else {
-                            System.out.println("Loading assets, please wait...");
-                        }
-                    }
                     if (resource.zip()) {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
                         Repository.downloadToFile(new URL(resource.value() + ".zip"), cacheFile);
@@ -111,7 +98,6 @@ public class RuntimeEnv {
         } catch (Throwable e) {
             baseDir = new File("libs");
         }
-
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
