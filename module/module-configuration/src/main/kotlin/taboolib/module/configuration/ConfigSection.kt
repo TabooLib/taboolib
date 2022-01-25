@@ -7,6 +7,7 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigSection.Companion.getConfig
 
 /**
  * TabooLib
@@ -32,7 +33,7 @@ open class ConfigSection(
             map.forEach { (k, v) ->
                 if (v is Config) {
                     if (deep) {
-                        process(v.valueMap(), "$k.")
+                        process(v.valueMap(), "$parent$k.")
                     } else {
                         keys += "$parent$k"
                     }
