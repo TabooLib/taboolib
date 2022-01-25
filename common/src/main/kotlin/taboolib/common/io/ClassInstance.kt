@@ -1,9 +1,9 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package taboolib.common.io
 
-import taboolib.common.*
+import taboolib.common.InstGetter
 import taboolib.common.platform.PlatformFactory
+import taboolib.internal.ExceptionInstGetter
+import taboolib.internal.LazyInstGetter
 
 /**
  * 取该类在当前项目中被加载的任何实例
@@ -17,14 +17,15 @@ fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
             return InstantInstGetter(this, awoken)
         }
     } catch (ex: Throwable) {
-        return ErrorInstGetter(this, ex)
+        return ExceptionInstGetter(this, ex)
     }
     return LazyInstGetter.of(this, newInstance)
 }
 
 /**
- * 获取平台实现
+ * 根据当前运行平台获取给定类的实例
  */
-fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.findInstance(true)?.get() as? T
+@Suppress("UNCHECKED_CAST")
+fun <T> Class<T>.findInstanceFromPlatform(): T? {
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.findInstance(true) as T?
 }

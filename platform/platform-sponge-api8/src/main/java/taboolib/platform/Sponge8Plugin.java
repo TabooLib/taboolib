@@ -48,7 +48,7 @@ public class Sponge8Plugin {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -66,7 +66,7 @@ public class Sponge8Plugin {
         TabooLib.lifeCycle(LifeCycle.INIT);
         TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
         if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
@@ -81,7 +81,7 @@ public class Sponge8Plugin {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

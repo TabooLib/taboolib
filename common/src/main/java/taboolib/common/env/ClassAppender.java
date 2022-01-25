@@ -26,6 +26,7 @@ public class ClassAppender {
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             unsafe = (Unsafe) field.get(null);
+            unsafe.ensureClassInitialized(MethodHandles.Lookup.class);
             Field lookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
             Object lookupBase = unsafe.staticFieldBase(lookupField);
             long lookupOffset = unsafe.staticFieldOffset(lookupField);

@@ -104,10 +104,6 @@ enum class ProxyParticle(vararg val aliases: String) {
     ELECTRIC_SPARK("~"),
     SCRAPE("~");
 
-    fun sendTo(player: ProxyPlayer, location: Location, offset: Vector = Vector(0, 0, 0), count: Int = 1, speed: Double = 0.0, data: Data? = null) {
-        player.sendParticle(this, location, offset, count, speed, data)
-    }
-
     interface Data
 
     open class DustData(val color: Color, val size: Float) : Data

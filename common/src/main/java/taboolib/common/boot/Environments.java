@@ -1,6 +1,7 @@
 package taboolib.common.boot;
 
 import taboolib.common.TabooLib;
+import taboolib.common.env.RuntimeEnv;
 
 /**
  * TabooLib
@@ -14,9 +15,6 @@ public class Environments {
     Environments() {
     }
 
-    /**
-     * 是否存在 Kotlin 运行环境
-     */
     public static boolean isKotlin() {
         try {
             Class.forName("kotlin.Lazy", false, TabooLib.class.getClassLoader());
@@ -28,7 +26,7 @@ public class Environments {
 
     /**
      * 是否存在 Paper 日志拦截
-     * 他将会阻止插件在未加载之前输出日志
+     * 它将会阻止插件在未加载之前输出日志
      */
     public static boolean isPaperSysoutCatcher() {
         try {

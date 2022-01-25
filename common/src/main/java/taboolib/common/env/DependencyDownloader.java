@@ -33,8 +33,6 @@ import java.util.*;
 @SuppressWarnings("UnusedReturnValue")
 public class DependencyDownloader extends AbstractXmlParser {
 
-    private static boolean notify = false;
-
     /**
      * A set of all of the dependencies that have already been injected into the
      * classpath, so they should not be reinjected (to prevent cyclic
@@ -112,16 +110,6 @@ public class DependencyDownloader extends AbstractXmlParser {
             }
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
-                if (isDebugMode && !notify) {
-                    notify = true;
-                    if (TabooLib.isSysoutCatcherFound()) {
-                        if (System.console() != null) {
-                            System.console().printf("Loading libraries, please wait...\n");
-                        }
-                    } else {
-                        System.out.println("Loading libraries, please wait...");
-                    }
-                }
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());
                 } else {

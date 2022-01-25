@@ -1,25 +1,21 @@
 package taboolib.common.platform
 
+import org.tabooproject.reflex.ClassMethod
+import taboolib.common.InstGetter
 import taboolib.common.LifeCycle
+import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
 import taboolib.common.platform.function.submit
 import java.lang.reflect.Method
 import java.util.function.Supplier
 
 @Awake
-object ScheduleLoader : Injector.Methods {
+@Bind(Schedule::class, target = Bind.Target.METHOD)
+object ScheduleLoader : Injector(LifeCycle.ACTIVE) {
 
-    override val priority: Byte
-        get() = 0
-
-    override val lifeCycle: LifeCycle
-        get() = LifeCycle.ACTIVE
-
-    override fun inject(method: Method, clazz: Class<*>, instance: Supplier<*>) {
-        if (method.isAnnotationPresent(Schedule::class.java)) {
-            val schedule = method.getAnnotation(Schedule::class.java)
-            val obj = instance.get()
-            submit(async = schedule.async, delay = schedule.delay, period = schedule.period) { method.invoke(obj) }
-        }
+    override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
+        val obj = instance.get() ?: return
+        val schedule = method.getAnnotation(Schedule::class.java)!!
+        submit(async = schedule.property("async")!!, delay = schedule.property("delay")!!, period = schedule.property("period")!!) { method.invoke(obj) }
     }
 }

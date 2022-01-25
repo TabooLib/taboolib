@@ -42,7 +42,7 @@ public class VelocityPlugin {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -64,7 +64,7 @@ public class VelocityPlugin {
         if (!TabooLib.isStopped()) {
             TabooLib.lifeCycle(LifeCycle.LOAD);
             if (pluginInstance == null) {
-                pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+                pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
             }
             if (pluginInstance != null) {
                 pluginInstance.onLoad();
@@ -76,7 +76,7 @@ public class VelocityPlugin {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

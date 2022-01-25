@@ -14,8 +14,10 @@ import taboolib.common.platform.Platform;
  */
 public interface Booster {
 
+    @NotNull
     Monitor getMonitor();
 
+    @NotNull
     Platform getPlatform();
 
     void proceed(@NotNull LifeCycle lifeCycle);

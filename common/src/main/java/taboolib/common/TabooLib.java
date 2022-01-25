@@ -1,5 +1,6 @@
 package taboolib.common;
 
+import org.jetbrains.annotations.NotNull;
 import taboolib.common.boot.Booster;
 import taboolib.common.boot.Monitor;
 import taboolib.common.boot.SimpleServiceLoader;
@@ -17,19 +18,22 @@ import taboolib.internal.SimpleBooster;
 @RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLib {
 
-    static final Booster booster = SimpleServiceLoader.load(Booster.class, SimpleBooster::new);
+    static final Booster booster = SimpleServiceLoader.load(Booster.class, () -> SimpleBooster.INSTANCE);
 
     TabooLib() {
     }
 
+    @NotNull
     public static Booster booster() {
         return booster;
     }
 
+    @NotNull
     public static Monitor monitor() {
         return booster().getMonitor();
     }
 
+    @NotNull
     public static Platform runningPlatform() {
         return booster().getPlatform();
     }

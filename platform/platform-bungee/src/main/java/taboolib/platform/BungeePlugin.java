@@ -31,7 +31,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -44,7 +44,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     public void onLoad() {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
         if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
@@ -59,7 +59,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

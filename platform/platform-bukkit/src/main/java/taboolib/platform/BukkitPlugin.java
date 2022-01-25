@@ -33,7 +33,7 @@ public class BukkitPlugin extends JavaPlugin {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -46,7 +46,7 @@ public class BukkitPlugin extends JavaPlugin {
     public void onLoad() {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
         if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
@@ -61,7 +61,7 @@ public class BukkitPlugin extends JavaPlugin {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

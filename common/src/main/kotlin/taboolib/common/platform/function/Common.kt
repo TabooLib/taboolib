@@ -8,7 +8,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformFactory
 
 inline val runningPlatform: Platform
-    get() = TabooLib.getRunningPlatform()
+    get() = TabooLib.runningPlatform()
 
 fun disablePlugin() {
     TabooLib.setStopped(true)
@@ -16,8 +16,4 @@ fun disablePlugin() {
 
 fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
     TabooLib.postpone(lifeCycle, runnable)
-}
-
-inline fun <reified T> implementations(): T {
-    return PlatformFactory.getAPI()
 }

@@ -32,7 +32,7 @@ public class NukkitPlugin extends PluginBase {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.NUKKIT);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -45,7 +45,7 @@ public class NukkitPlugin extends PluginBase {
     public void onLoad() {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
         if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
@@ -60,7 +60,7 @@ public class NukkitPlugin extends PluginBase {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

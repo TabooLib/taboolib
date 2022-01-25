@@ -8,7 +8,6 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
-
     repositories {
         maven("https://libraries.minecraft.net")
         maven("https://repo1.maven.org/maven2")
@@ -18,8 +17,8 @@ subprojects {
         mavenCentral()
     }
     dependencies {
-        "compileOnly"("org.tabooproject.reflex:analyser:1.0.3")
-        "compileOnly"("org.tabooproject.reflex:reflex:1.0.3")
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.4")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.4")
         "compileOnly"(kotlin("stdlib"))
     }
     tasks.withType<Jar> {

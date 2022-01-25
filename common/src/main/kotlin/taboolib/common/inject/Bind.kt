@@ -4,10 +4,10 @@ import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Bind(val value: Array<KClass<*>>, val type: Type, val annotation: KClass<out Annotation>) {
+annotation class Bind(val value: KClass<out Annotation>, val type: Array<KClass<*>> = [], val target: Target = Target.ALL) {
 
-    enum class Type {
+    enum class Target {
 
-        CLASS, FIELD, METHOD
+        CLASS, FIELD, METHOD, ALL
     }
 }

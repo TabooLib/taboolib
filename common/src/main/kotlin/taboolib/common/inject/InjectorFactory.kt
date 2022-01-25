@@ -1,56 +1,33 @@
 package taboolib.common.inject
 
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLib
 import taboolib.common.boot.SimpleServiceLoader
-import taboolib.internal.SimpleInjectorHandler
+import taboolib.internal.SimpleInjectorFactory
 
-object InjectorFactory {
+/**
+ * TabooLib
+ * taboolib.common.inject.InjectorFactory
+ *
+ * @author 坏黑
+ * @since 2022/1/24 7:14 PM
+ */
+interface InjectorFactory {
 
-    private val handler = SimpleServiceLoader.load(Handler::class.java) { SimpleInjectorHandler }
-
-    /**
-     * 注册 Injector 实现
-     */
-    fun registerInjector(injector: Injector) {
-        handler.register(injector)
-    }
+    fun register(injector: Injector)
 
     /**
      * 向所有类注入给定生命周期阶段
      */
-    fun injectAll(lifeCycle: LifeCycle) {
-        if (TabooLib.isRunning()) {
-            handler.inject(lifeCycle)
-        }
-    }
+    fun inject(lifeCycle: LifeCycle)
 
     /**
-     * 向特定类注入给定生命周期阶段
+     * 向特定类注入给定生命周期阶段，若 LifeCycle 为空则跳过生命周期判断
      */
-    fun injectByLifeCycle(target: Class<*>, lifeCycle: LifeCycle) {
-        if (TabooLib.isRunning()) {
-            handler.inject(target, lifeCycle)
-        }
-    }
+    fun inject(target: Class<*>, lifeCycle: LifeCycle? = null)
 
-    /**
-     * 不检测生命周期向特定类注入
-     */
-    fun injectIgnoreLifeCycle(target: Class<*>) {
-        if (TabooLib.isRunning()) {
-            handler.inject(target)
-        }
-    }
+    companion object {
 
-    abstract class Handler {
-
-        abstract fun register(injector: Injector)
-
-        abstract fun inject(lifeCycle: LifeCycle)
-
-        abstract fun inject(target: Class<*>)
-
-        abstract fun inject(target: Class<*>, lifeCycle: LifeCycle)
+        @JvmField
+        val INSTANCE: InjectorFactory = SimpleServiceLoader.load(InjectorFactory::class.java) { SimpleInjectorFactory }
     }
 }

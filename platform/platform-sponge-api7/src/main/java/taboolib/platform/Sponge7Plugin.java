@@ -47,7 +47,7 @@ public class Sponge7Plugin {
     static {
         TabooLib.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_7);
         if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
     }
 
@@ -64,7 +64,7 @@ public class Sponge7Plugin {
     public void e(GamePreInitializationEvent e) {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         if (pluginInstance == null) {
-            pluginInstance = ClassInstanceKt.findImplementation(Plugin.class);
+            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
         }
         if (pluginInstance != null && !TabooLib.isStopped()) {
             pluginInstance.onLoad();
@@ -79,7 +79,7 @@ public class Sponge7Plugin {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startExecutor();
+                ExecutorKt.startNow();
             } catch (NoClassDefFoundError ignored) {
             }
         }

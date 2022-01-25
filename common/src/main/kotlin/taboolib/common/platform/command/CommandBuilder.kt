@@ -2,7 +2,7 @@ package taboolib.common.platform.command
 
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.util.join
+import taboolib.common.util.joinBy
 import taboolib.common.util.subList
 
 /**
@@ -92,7 +92,7 @@ object CommandBuilder {
                             if (children.commandExecutor == null) {
                                 (context.sender as ProxyCommandSender).sendMessage("§cEmpty command.")
                             } else {
-                                children.commandExecutor!!.exec(this, context, join(context.args, cur))
+                                children.commandExecutor!!.exec(this, context, context.args.joinBy(cur))
                             }
                             result
                         } else {

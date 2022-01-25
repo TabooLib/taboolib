@@ -18,10 +18,10 @@ public class OpenAPI {
     }
 
     @NotNull
-    public static OpenResult call(String name, Object[] data) {
-        for (Map.Entry<String, Object> entry : PlatformFactory.INSTANCE.getAwokenMap().entrySet()) {
-            if (entry.getValue() instanceof OpenListener) {
-                OpenResult result = ((OpenListener) entry.getValue()).call(name, data);
+    public static OpenResult call(@NotNull String name, @NotNull Object[] data) {
+        for (Object entry : PlatformFactory.INSTANCE.getInstances()) {
+            if (entry instanceof OpenListener) {
+                OpenResult result = ((OpenListener) entry).call(name, data);
                 if (result.isSuccessful()) {
                     return result;
                 }

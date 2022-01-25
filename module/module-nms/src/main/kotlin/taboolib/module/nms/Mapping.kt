@@ -1,6 +1,6 @@
 package taboolib.module.nms
 
-import taboolib.common.util.join
+import taboolib.common.util.joinBy
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
@@ -38,7 +38,7 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
                 if (args.size >= 3) {
                     // 1.18 开始支持方法映射
                     if (args[2].startsWith("(")) {
-                        val info = join(args.toTypedArray(), 2)
+                        val info = args.joinBy(2)
                         val name = info.substringAfterLast(' ')
                         val parameter = info.substringBeforeLast(' ')
                         methods += Method(args[0].replace("/", "."), args[1], name, parameter)
