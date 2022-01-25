@@ -1,7 +1,6 @@
 package taboolib.common.platform.event
 
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.function.callEvent
 import taboolib.common.platform.service.PlatformEvent
 
 /**
@@ -19,7 +18,7 @@ abstract class ProxyEvent {
     var isCancelled = false
 
     open fun call(): Boolean {
-        PlatformFactory.getService<PlatformEvent>().callEvent(this)
+        PlatformFactory.getPlatformService<PlatformEvent>().callEvent(this)
         return !isCancelled
     }
 

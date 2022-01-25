@@ -3,6 +3,7 @@ package taboolib.common.io
 import taboolib.common.InstGetter
 import taboolib.common.platform.PlatformFactory
 import taboolib.internal.ExceptionInstGetter
+import taboolib.internal.InstantInstGetter
 import taboolib.internal.LazyInstGetter
 
 /**
@@ -12,7 +13,7 @@ import taboolib.internal.LazyInstGetter
  */
 fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
     try {
-        val awoken = PlatformFactory.awokenMap[name] as? T
+        val awoken = PlatformFactory.INSTANCE.getAwakeInstance(this)
         if (awoken != null) {
             return InstantInstGetter(this, awoken)
         }
@@ -27,5 +28,5 @@ fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findInstanceFromPlatform(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.findInstance(true) as T?
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.INSTANCE.checkPlatform(it) }?.findInstance(true) as T?
 }

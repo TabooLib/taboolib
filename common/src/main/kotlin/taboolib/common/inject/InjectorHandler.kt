@@ -2,16 +2,16 @@ package taboolib.common.inject
 
 import taboolib.common.LifeCycle
 import taboolib.common.boot.SimpleServiceLoader
-import taboolib.internal.SimpleInjectorFactory
+import taboolib.internal.SimpleInjectorHandler
 
 /**
  * TabooLib
- * taboolib.common.inject.InjectorFactory
+ * taboolib.common.inject.InjectorHandler
  *
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-interface InjectorFactory {
+interface InjectorHandler {
 
     fun register(injector: Injector)
 
@@ -28,6 +28,6 @@ interface InjectorFactory {
     companion object {
 
         @JvmField
-        val INSTANCE: InjectorFactory = SimpleServiceLoader.load(InjectorFactory::class.java) { SimpleInjectorFactory }
+        val INSTANCE: InjectorHandler = SimpleServiceLoader.load(InjectorHandler::class.java) { SimpleInjectorHandler }
     }
 }

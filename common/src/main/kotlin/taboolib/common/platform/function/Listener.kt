@@ -18,7 +18,7 @@ fun <T> registerBukkitListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val closeableListener = CloseableListener()
-    return PlatformFactory.getService<PlatformListener>().registerListener(event, priority, ignoreCancelled) { func(closeableListener, it) }.also {
+    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, priority, ignoreCancelled) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
     }
 }
@@ -30,7 +30,7 @@ fun <T> registerBungeeListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val closeableListener = CloseableListener()
-    return PlatformFactory.getService<PlatformListener>().registerListener(event, level, ignoreCancelled) { func(closeableListener, it) }.also {
+    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, level, ignoreCancelled) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
     }
 }
@@ -42,7 +42,7 @@ fun <T> registerSpongeListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val closeableListener = CloseableListener()
-    return PlatformFactory.getService<PlatformListener>().registerListener(event, order, beforeModifications) { func(closeableListener, it) }.also {
+    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, order, beforeModifications) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
     }
 }
@@ -53,13 +53,13 @@ fun <T> registerVelocityListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val closeableListener = CloseableListener()
-    return PlatformFactory.getService<PlatformListener>().registerListener(event, postOrder) { func(closeableListener, it) }.also {
+    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, postOrder) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
     }
 }
 
 fun unregisterListener(proxyListener: ProxyListener) {
-    PlatformFactory.getService<PlatformListener>().unregisterListener(proxyListener)
+    PlatformFactory.getPlatformService<PlatformListener>().unregisterListener(proxyListener)
 }
 
 private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"

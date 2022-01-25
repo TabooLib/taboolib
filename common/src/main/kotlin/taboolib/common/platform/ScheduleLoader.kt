@@ -10,7 +10,7 @@ import java.lang.reflect.Method
 import java.util.function.Supplier
 
 @Awake
-@Bind(Schedule::class, target = Bind.Target.METHOD)
+@Bind([Schedule::class], target = Bind.Target.METHOD)
 object ScheduleLoader : Injector(LifeCycle.ACTIVE) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {

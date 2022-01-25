@@ -23,7 +23,7 @@ object SimplePlatformFactory : PlatformFactory {
         TODO("Not yet implemented")
     }
 
-    override fun getInstances(): List<Any> {
+    override fun getAwakeInstances(): List<Any> {
         TODO("Not yet implemented")
     }
 
@@ -31,7 +31,7 @@ object SimplePlatformFactory : PlatformFactory {
         TODO("Not yet implemented")
     }
 
-    override fun <T> getInstance(clazz: Class<T>): T {
+    override fun <T> getAwakeInstance(clazz: Class<T>): T {
         TODO("Not yet implemented")
     }
 

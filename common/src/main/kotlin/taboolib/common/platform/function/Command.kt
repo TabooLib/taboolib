@@ -8,7 +8,7 @@ import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.service.PlatformCommand
 
 fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit) {
-    PlatformFactory.getService<PlatformCommand>().registerCommand(command, executor, completer, commandBuilder)
+    PlatformFactory.getPlatformService<PlatformCommand>().registerCommand(command, executor, completer, commandBuilder)
 }
 
 fun unregisterCommand(command: CommandStructure) {
@@ -17,9 +17,9 @@ fun unregisterCommand(command: CommandStructure) {
 }
 
 fun unregisterCommand(command: String) {
-    PlatformFactory.getService<PlatformCommand>().unregisterCommand(command)
+    PlatformFactory.getPlatformService<PlatformCommand>().unregisterCommand(command)
 }
 
 fun unregisterCommands() {
-    PlatformFactory.getService<PlatformCommand>().unregisterCommands()
+    PlatformFactory.getPlatformService<PlatformCommand>().unregisterCommands()
 }

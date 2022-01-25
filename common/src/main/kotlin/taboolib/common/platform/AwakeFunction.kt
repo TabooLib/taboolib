@@ -6,7 +6,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
 
-@Bind(Awake::class, target = Bind.Target.METHOD)
+@Bind([Awake::class], target = Bind.Target.METHOD)
 class AwakeFunction(lifeCycle: LifeCycle) : Injector(lifeCycle) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {

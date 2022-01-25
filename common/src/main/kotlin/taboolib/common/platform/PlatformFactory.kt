@@ -13,13 +13,13 @@ interface PlatformFactory {
 
     fun cancel()
 
-    fun checkPlatform(clazz: Class<*>): Boolean
-
-    fun getInstances(): List<Any>
+    fun getAwakeInstances(): List<Any>
 
     fun getPlatformServices(): List<Any>
 
-    fun <T> getInstance(clazz: Class<T>): T
+    fun checkPlatform(clazz: Class<*>): Boolean
+
+    fun <T> getAwakeInstance(clazz: Class<T>): T
 
     fun <T> getPlatformService(clazz: Class<T>): T
 
@@ -32,8 +32,8 @@ interface PlatformFactory {
             return INSTANCE.checkPlatform(T::class.java)
         }
 
-        inline fun <reified T> getInstance(): T {
-            return INSTANCE.getInstance(T::class.java)
+        inline fun <reified T> getAwakeInstance(): T {
+            return INSTANCE.getAwakeInstance(T::class.java)
         }
 
         inline fun <reified T> getPlatformService(): T {

@@ -11,9 +11,10 @@ inline val runningPlatform: Platform
     get() = TabooLib.runningPlatform()
 
 fun disablePlugin() {
-    TabooLib.setStopped(true)
+//    TabooLib.setStopped(true)
 }
 
 fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
-    TabooLib.postpone(lifeCycle, runnable)
+    TabooLib.booster().join(lifeCycle, runnable)
+//    TabooLib.postpone(lifeCycle, runnable)
 }

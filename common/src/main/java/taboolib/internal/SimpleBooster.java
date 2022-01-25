@@ -7,7 +7,7 @@ import taboolib.common.boot.Booster;
 import taboolib.common.boot.Environments;
 import taboolib.common.boot.Monitor;
 import taboolib.common.env.RuntimeEnv;
-import taboolib.common.inject.InjectorFactory;
+import taboolib.common.inject.InjectorHandler;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
@@ -71,29 +71,29 @@ public class SimpleBooster implements Booster {
                 break;
             case INIT:
                 if (initiation) {
-                    InjectorFactory.INSTANCE.inject(LifeCycle.INIT);
+                    InjectorHandler.INSTANCE.inject(LifeCycle.INIT);
                 }
                 break;
             case LOAD:
                 if (!initiation) {
                     if (Environments.isKotlin()) {
                         preInitiation();
-                        InjectorFactory.INSTANCE.inject(LifeCycle.INIT);
+                        InjectorHandler.INSTANCE.inject(LifeCycle.INIT);
                     } else {
                         monitor.setShutdown(true);
                         throw new RuntimeException("Runtime environment setup failed, please feedback!");
                     }
                 }
-                InjectorFactory.INSTANCE.inject(LifeCycle.LOAD);
+                InjectorHandler.INSTANCE.inject(LifeCycle.LOAD);
                 break;
             case ENABLE:
-                InjectorFactory.INSTANCE.inject(LifeCycle.ENABLE);
+                InjectorHandler.INSTANCE.inject(LifeCycle.ENABLE);
                 break;
             case ACTIVE:
-                InjectorFactory.INSTANCE.inject(LifeCycle.ACTIVE);
+                InjectorHandler.INSTANCE.inject(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
-                InjectorFactory.INSTANCE.inject(LifeCycle.DISABLE);
+                InjectorHandler.INSTANCE.inject(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }
@@ -107,7 +107,7 @@ public class SimpleBooster implements Booster {
     void preInitiation() {
         initiation = true;
         PlatformFactory.INSTANCE.init();
-        InjectorFactory.INSTANCE.inject(LifeCycle.CONST);
+        InjectorHandler.INSTANCE.inject(LifeCycle.CONST);
     }
 
     boolean setupKotlin() {

@@ -16,18 +16,18 @@ class RegisteredInjector(val injector: Injector) {
 
     val type: List<Class<*>>
     val target: Bind.Target
-    val annotation: Class<out Annotation>?
+    val annotation: List<Class<out Annotation>>
 
     init {
         if (injector.javaClass.isAnnotationPresent(Bind::class.java)) {
             val bind = injector.javaClass.getAnnotation(Bind::class.java)
             type = bind.type.map { it.java }
             target = bind.target
-            annotation = bind.value.java
+            annotation = bind.value.map { it.java }
         } else {
             type = emptyList()
             target = Bind.Target.ALL
-            annotation = null
+            annotation = emptyList()
         }
     }
 
@@ -40,14 +40,14 @@ class RegisteredInjector(val injector: Injector) {
     }
 
     fun check(target: Class<*>): Boolean {
-        return (annotation == null || target.isAnnotationPresent(annotation)) && checkType(target)
+        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target)
     }
 
     fun check(target: ClassField): Boolean {
-        return (annotation == null || target.isAnnotationPresent(annotation)) && checkType(target.fieldType)
+        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target.fieldType)
     }
 
     fun check(target: ClassMethod): Boolean {
-        return (annotation == null || target.isAnnotationPresent(annotation))
+        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) })
     }
 }

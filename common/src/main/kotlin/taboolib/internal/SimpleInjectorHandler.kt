@@ -5,7 +5,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
-import taboolib.common.inject.InjectorFactory
+import taboolib.common.inject.InjectorHandler
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.AwakeFunction
@@ -14,12 +14,12 @@ import kotlin.collections.ArrayList
 
 /**
  * TabooLib
- * taboolib.internal.SimpleInjectorFactory
+ * taboolib.internal.SimpleInjectorHandler
  *
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-object SimpleInjectorFactory : InjectorFactory {
+object SimpleInjectorHandler : InjectorHandler {
 
     val injectors = ArrayList<RegisteredInjector>()
 

@@ -3,8 +3,6 @@ package taboolib.common;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.platform.PlatformFactory;
 
-import java.util.Map;
-
 /**
  * TabooLib
  * taboolib.common.OpenAPI
@@ -19,7 +17,7 @@ public class OpenAPI {
 
     @NotNull
     public static OpenResult call(@NotNull String name, @NotNull Object[] data) {
-        for (Object entry : PlatformFactory.INSTANCE.getInstances()) {
+        for (Object entry : PlatformFactory.INSTANCE.getAwakeInstances()) {
             if (entry instanceof OpenListener) {
                 OpenResult result = ((OpenListener) entry).call(name, data);
                 if (result.isSuccessful()) {

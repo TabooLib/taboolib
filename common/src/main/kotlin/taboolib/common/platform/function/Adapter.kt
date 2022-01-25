@@ -8,19 +8,19 @@ import taboolib.common.util.Location
 import java.util.*
 
 fun console(): ProxyCommandSender {
-    return PlatformFactory.getService<PlatformAdapter>().console()
+    return PlatformFactory.getPlatformService<PlatformAdapter>().console()
 }
 
 fun adaptCommandSender(any: Any): ProxyCommandSender {
-    return PlatformFactory.getService<PlatformAdapter>().adaptCommandSender(any)
+    return PlatformFactory.getPlatformService<PlatformAdapter>().adaptCommandSender(any)
 }
 
 fun onlinePlayers(): List<ProxyPlayer> {
-    return PlatformFactory.getService<PlatformAdapter>().onlinePlayers()
+    return PlatformFactory.getPlatformService<PlatformAdapter>().onlinePlayers()
 }
 
 fun adaptPlayer(any: Any): ProxyPlayer {
-    return PlatformFactory.getService<PlatformAdapter>().adaptPlayer(any)
+    return PlatformFactory.getPlatformService<PlatformAdapter>().adaptPlayer(any)
 }
 
 fun getProxyPlayer(name: String): ProxyPlayer? {
@@ -32,10 +32,10 @@ fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
 }
 
 fun adaptLocation(any: Any): Location {
-    return PlatformFactory.getService<PlatformAdapter>().adaptLocation(any)
+    return PlatformFactory.getPlatformService<PlatformAdapter>().adaptLocation(any)
 }
 
 @Suppress("UNCHECKED_CAST")
 fun <T> platformLocation(location: Location): T {
-    return PlatformFactory.getService<PlatformAdapter>().platformLocation(location) as T
+    return PlatformFactory.getPlatformService<PlatformAdapter>().platformLocation(location) as T
 }
