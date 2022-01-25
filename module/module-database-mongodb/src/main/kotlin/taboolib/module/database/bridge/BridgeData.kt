@@ -50,6 +50,6 @@ class BridgeData {
     }
 
     private fun parse(input: Set<Map.Entry<String, Any>>, node: String) {
-        input.forEach { (k, v) -> if (v is Document) parse(v.entries, "$node.$k.") else data[node + k] = v }
+        input.forEach { (k, v) -> if (v is Document) parse(v.entries, "$node$k.") else data[node + k] = v }
     }
 }
