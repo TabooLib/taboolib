@@ -2,9 +2,9 @@ package taboolib.common.io
 
 import taboolib.common.InstGetter
 import taboolib.common.platform.PlatformFactory
-import taboolib.internal.ExceptionInstGetter
-import taboolib.internal.InstantInstGetter
-import taboolib.internal.LazyInstGetter
+import taboolib.internal.InstGetterException
+import taboolib.internal.InstGetterInstant
+import taboolib.internal.InstGetterLazy
 
 /**
  * 取该类在当前项目中被加载的任何实例
@@ -15,12 +15,12 @@ fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
     try {
         val awoken = PlatformFactory.INSTANCE.getAwakeInstance(this)
         if (awoken != null) {
-            return InstantInstGetter(this, awoken)
+            return InstGetterInstant(this, awoken)
         }
     } catch (ex: Throwable) {
-        return ExceptionInstGetter(this, ex)
+        return InstGetterException(this, ex)
     }
-    return LazyInstGetter.of(this, newInstance)
+    return InstGetterLazy.of(this, newInstance)
 }
 
 /**

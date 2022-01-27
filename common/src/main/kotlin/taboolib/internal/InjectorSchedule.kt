@@ -1,17 +1,17 @@
-package taboolib.common.platform
+package taboolib.internal
 
 import org.tabooproject.reflex.ClassMethod
 import taboolib.common.InstGetter
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
+import taboolib.common.platform.Awake
+import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.submit
-import java.lang.reflect.Method
-import java.util.function.Supplier
 
 @Awake
 @Bind([Schedule::class], target = Bind.Target.METHOD)
-object ScheduleLoader : Injector(LifeCycle.ACTIVE) {
+object InjectorSchedule : Injector(LifeCycle.ACTIVE) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
         val obj = instance.get() ?: return

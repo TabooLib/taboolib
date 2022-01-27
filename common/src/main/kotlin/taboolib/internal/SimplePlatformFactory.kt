@@ -1,5 +1,6 @@
 package taboolib.internal
 
+import taboolib.common.Internal
 import taboolib.common.platform.PlatformFactory
 
 /**

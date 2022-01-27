@@ -1,5 +1,6 @@
 package taboolib.common.platform.function
 
+import taboolib.common.TabooLib
 import taboolib.common.io.groupId
 import taboolib.common.io.taboolibId
 import taboolib.common.platform.PlatformFactory
@@ -62,9 +63,9 @@ fun unregisterListener(proxyListener: ProxyListener) {
     PlatformFactory.getPlatformService<PlatformListener>().unregisterListener(proxyListener)
 }
 
-private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"
+private val proxyEventName = "platform.type.${TabooLib.runningPlatform().key}ProxyEvent"
 
-private val platformEventName = "$taboolibId.platform.type.${runningPlatform.key}ProxyEvent"
+private val platformEventName = "$taboolibId.platform.type.${TabooLib.runningPlatform().key}ProxyEvent"
 
 private val platformClassCache = ConcurrentHashMap<Class<*>, Boolean>()
 

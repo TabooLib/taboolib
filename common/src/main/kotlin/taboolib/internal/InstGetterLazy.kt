@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2022/1/24 7:14 PM
  */
 @Suppress("UNCHECKED_CAST")
-class LazyInstGetter<T> private constructor(source: Class<T>, private val newInstance: Boolean = false) : InstGetter<T>(source) {
+class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false) : InstGetter<T>(source) {
 
     val inst by lazy {
         FastInstGetter(source.name)
@@ -29,10 +29,10 @@ class LazyInstGetter<T> private constructor(source: Class<T>, private val newIns
 
     companion object {
 
-        val getterMap = ConcurrentHashMap<String, LazyInstGetter<*>>()
+        val getterMap = ConcurrentHashMap<String, InstGetterLazy<*>>()
 
-        fun <T> of(source: Class<T>, newInstance: Boolean = false): LazyInstGetter<T> {
-            return getterMap.computeIfAbsent(source.name) { LazyInstGetter(source, newInstance) } as LazyInstGetter<T>
+        fun <T> of(source: Class<T>, newInstance: Boolean = false): InstGetterLazy<T> {
+            return getterMap.computeIfAbsent(source.name) { InstGetterLazy(source, newInstance) } as InstGetterLazy<T>
         }
     }
 }

@@ -8,7 +8,6 @@ import taboolib.common.inject.Injector
 import taboolib.common.inject.InjectorHandler
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
-import taboolib.common.platform.AwakeFunction
 import taboolib.common.platform.SkipTo
 import kotlin.collections.ArrayList
 
@@ -24,7 +23,7 @@ object SimpleInjectorHandler : InjectorHandler {
     val injectors = ArrayList<RegisteredInjector>()
 
     init {
-        LifeCycle.values().forEach { register(AwakeFunction(it)) }
+        LifeCycle.values().forEach { register(InjectorAwake(it)) }
     }
 
     override fun register(injector: Injector) {
@@ -48,7 +47,7 @@ object SimpleInjectorHandler : InjectorHandler {
             return
         }
         val instance = target.findInstance()
-        if (instance is ExceptionInstGetter) {
+        if (instance is InstGetterException) {
             return
         }
         if (reg.checkTarget(Bind.Target.CLASS) && reg.check(target)) {

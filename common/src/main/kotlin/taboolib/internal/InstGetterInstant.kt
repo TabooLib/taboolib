@@ -9,7 +9,7 @@ import taboolib.common.InstGetter
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-class InstantInstGetter<T>(source: Class<T>, val instance: T) : InstGetter<T>(source) {
+class InstGetterInstant<T>(source: Class<T>, val instance: T) : InstGetter<T>(source) {
 
     override fun get(): T? {
         return instance

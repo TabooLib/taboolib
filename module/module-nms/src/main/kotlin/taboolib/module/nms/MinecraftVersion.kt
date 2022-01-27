@@ -5,6 +5,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.runningPlatform
 import org.tabooproject.reflex.Reflex
+import taboolib.common.TabooLib
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])
@@ -101,7 +102,7 @@ object MinecraftVersion {
     }
 
     init {
-        if (runningPlatform == Platform.BUKKIT) {
+        if (TabooLib.runningPlatform() == Platform.BUKKIT) {
             Reflex.remapper.add(RefRemapper)
         }
     }

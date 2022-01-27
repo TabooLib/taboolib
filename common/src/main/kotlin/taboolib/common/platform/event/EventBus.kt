@@ -3,18 +3,12 @@ package taboolib.common.platform.event
 import org.tabooproject.reflex.ClassMethod
 import taboolib.common.InstGetter
 import taboolib.common.LifeCycle
+import taboolib.common.TabooLib
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.function.postpone
-import taboolib.common.platform.function.registerBungeeListener
-import taboolib.common.platform.function.registerVelocityListener
-import taboolib.common.platform.function.registerSpongeListener
-import taboolib.common.platform.function.registerBukkitListener
-import taboolib.common.platform.function.runningPlatform
-import java.lang.reflect.Method
-import java.util.function.Supplier
+import taboolib.common.platform.function.*
 
 @Awake
 @Bind([SubscribeEvent::class], target = Bind.Target.METHOD)
@@ -34,7 +28,7 @@ object EventBus : Injector(LifeCycle.ENABLE) {
                 null
             }
             val obj = instance.get() ?: return
-            when (runningPlatform) {
+            when (TabooLib.runningPlatform()) {
                 Platform.BUKKIT, Platform.NUKKIT -> {
                     if (method.parameterTypes[0] == OptionalEvent::class.java) {
                         if (eventBind != null) {
