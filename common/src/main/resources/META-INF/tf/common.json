@@ -1,14 +1,4 @@
 {
-  "optimize": [
-    {
-      "class": "taboolib/common/util/Location",
-      "type": "METHOD"
-    },
-    {
-      "class": "taboolib/common/util/Vector",
-      "type": "METHOD"
-    }
-  ],
   "group": [
     {
       "commit": "监听器部分",
@@ -409,31 +399,5 @@
   "exclude": [
     "META-INF/maven",
     "taboolib/common/Isolated"
-  ],
-  "backup": [
-    {
-      "commit": "单位",
-      "check": [
-        "taboolib/common/platform/ProxyPlayer",
-        "taboolib/common/platform/ProxyParticle",
-        "taboolib/common/platform/function/AdapterKt",
-        "taboolib/common/platform/service/PlatformAdapter",
-        "taboolib/platform/util/BukkitLangKt",
-        "taboolib/platform/util/BukkitLangQualifyKt"
-      ],
-      "member": [
-        "taboolib/common/platform/ProxyPlayer",
-        "taboolib/common/platform/ProxyParticle",
-        "taboolib/common/platform/ProxyGameMode",
-        "taboolib/platform/type/{platform}Player"
-      ],
-      "exclude": [
-        "taboolib/common/util/PlatformKt",
-        "taboolib/common/platform/ProxyParticleUtilKt",
-        "taboolib/platform/{platform}Adapter",
-        "taboolib/platform/{platform}Command"
-      ],
-      "mode": "REMOVE"
-    }
   ]
 }

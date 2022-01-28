@@ -1,4 +1,7 @@
+@file:Isolated
 package taboolib.common.util
+
+import taboolib.common.Isolated
 
 fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.joinBy(start, separator)

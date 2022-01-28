@@ -2,8 +2,6 @@ package taboolib.common.platform.command
 
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.util.joinBy
-import taboolib.common.util.subList
 
 /**
  * TabooLib
@@ -25,11 +23,11 @@ object CommandBuilder {
         }
 
         var commandIncorrectCommand: CommandUnknownNotify<*> = CommandUnknownNotify(ProxyCommandSender::class.java) { _, context, index, state ->
-            val args = subList(context.args.toList(), 0, index)
+            val args = context.args.toList().subListBy(0, index)
             var str = context.name
             if (args.size > 1) {
                 str += " "
-                str += subList(args, 0, args.size - 1).joinToString(" ").trim()
+                str += args.subListBy(0, args.size - 1).joinToString(" ").trim()
             }
             if (str.length > 10) {
                 str = "...${str.substring(str.length - 10, str.length)}"
@@ -43,6 +41,14 @@ object CommandBuilder {
                 2 -> context.sender.sendMessage("§cIncorrect argument for command")
             }
             context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
+        }
+
+        fun Array<String>.joinBy(start: Int = 0, separator: String = " "): String {
+            return filterIndexed { index, _ -> index >= start }.joinToString(separator)
+        }
+
+        fun <T> List<T>.subListBy(start: Int = 0, end: Int = size): List<T> {
+            return filterIndexed { index, _ -> index in start until end }
         }
 
         fun execute(context: CommandContext<*>): Boolean {

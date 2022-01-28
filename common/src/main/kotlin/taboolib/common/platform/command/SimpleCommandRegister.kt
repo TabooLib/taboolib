@@ -2,13 +2,11 @@ package taboolib.common.platform.command
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
-import taboolib.common.InstGetter
+import taboolib.common.io.InstGetter
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
-import java.lang.reflect.Field
-import java.util.function.Supplier
 
 @Awake
 @Bind([CommandHeader::class, CommandBody::class])

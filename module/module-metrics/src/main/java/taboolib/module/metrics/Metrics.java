@@ -2,7 +2,7 @@ package taboolib.module.metrics;
 
 import kotlin.Unit;
 import taboolib.common.TabooLib;
-import taboolib.common.io.File1Kt;
+import taboolib.common.io.FileKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.function.AdapterKt;
 import taboolib.common.platform.function.ExecutorKt;
@@ -29,7 +29,7 @@ public class Metrics {
         }
         // Get the config file
         File bStatsFolder = new File(IOKt.getDataFolder().getParentFile(), "bStats");
-        File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true, false);
+        File configFile = FileKt.newFile(bStatsFolder, "config.yml", true, false);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
         if (!config.contains("serverUUID")) {
             config.set("enabled", true);

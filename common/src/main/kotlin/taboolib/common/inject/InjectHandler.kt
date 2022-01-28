@@ -10,7 +10,7 @@ import taboolib.common.boot.SimpleServiceLoader
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-interface InjectorHandler {
+interface InjectHandler {
 
     fun register(injector: Injector)
 
@@ -27,6 +27,6 @@ interface InjectorHandler {
     companion object {
 
         @JvmField
-        val INSTANCE: InjectorHandler = SimpleServiceLoader.load(InjectorHandler::class.java)
+        val INSTANCE: InjectHandler = SimpleServiceLoader.load(InjectHandler::class.java)
     }
 }

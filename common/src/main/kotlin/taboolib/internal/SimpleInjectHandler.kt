@@ -5,7 +5,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
-import taboolib.common.inject.InjectorHandler
+import taboolib.common.inject.InjectHandler
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.SkipTo
@@ -18,7 +18,7 @@ import kotlin.collections.ArrayList
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-open class SimpleInjectorHandler : InjectorHandler {
+open class SimpleInjectHandler : InjectHandler {
 
     val injectors = ArrayList<RegisteredInjector>()
 

@@ -2,7 +2,7 @@ package taboolib.internal
 
 import org.tabooproject.reflex.FastInstGetter
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
-import taboolib.common.InstGetter
+import taboolib.common.io.InstGetter
 import java.util.concurrent.ConcurrentHashMap
 
 /**

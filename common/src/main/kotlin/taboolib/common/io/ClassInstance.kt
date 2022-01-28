@@ -1,6 +1,5 @@
 package taboolib.common.io
 
-import taboolib.common.InstGetter
 import taboolib.common.TabooLib
 import taboolib.common.platform.PlatformFactory
 import taboolib.internal.InstGetterException
@@ -32,4 +31,9 @@ fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findInstanceFromPlatform(): T? {
     return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.INSTANCE.checkPlatform(it) }?.findInstance(true) as T?
+}
+
+abstract class InstGetter<T>(val source: Class<T>) {
+
+    abstract fun get(): T?
 }

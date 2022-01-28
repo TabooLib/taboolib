@@ -2,16 +2,16 @@
 
 package taboolib.internal
 
-import taboolib.common.InstGetter
+import taboolib.common.io.InstGetter
 import taboolib.common.TabooLib
 import taboolib.common.boot.Mechanism
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.Injector
-import taboolib.common.inject.InjectorHandler
+import taboolib.common.inject.InjectHandler
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.*
-import taboolib.common.platform.function.unregisterCommands
+import taboolib.common.platform.service.PlatformCommand
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -32,7 +32,7 @@ open class SimplePlatformFactory : PlatformFactory, Mechanism {
     }
 
     override fun shutdown() {
-        kotlin.runCatching { unregisterCommands() }
+        kotlin.runCatching { getPlatformService(PlatformCommand::class.java)!!.unregisterCommands() }
         kotlin.runCatching { getAwakeInstances().filterIsInstance<Releasable>().forEach { it.release() } }
     }
 
@@ -66,7 +66,7 @@ open class SimplePlatformFactory : PlatformFactory, Mechanism {
                 val interfaces = it.interfaces
                 val instance = it.findInstance(true)
                 if (interfaces.contains(Injector::class.java)) {
-                    InjectorHandler.INSTANCE.register(instance.get() as Injector)
+                    InjectHandler.INSTANCE.register(instance.get() as Injector)
                 }
                 interfaces.forEach { int ->
                     if (int.isAnnotationPresent(PlatformService::class.java)) {

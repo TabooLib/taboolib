@@ -1,28 +1,38 @@
 package taboolib.test
 
 import org.junit.jupiter.api.*
-import taboolib.common.io.runningClasses
+import taboolib.common.LifeCycle
 import taboolib.common.TabooLibApplication
 import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.env.SimpleRuntimeEnv
-import taboolib.common.inject.InjectorHandler
-import taboolib.common.io.ClassReader
+import taboolib.common.inject.InjectHandler
+import taboolib.common.io.*
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformFactory
 import taboolib.internal.SimpleBooster
-import taboolib.internal.SimpleInjectorHandler
+import taboolib.internal.SimpleInjectHandler
 import taboolib.internal.SimpleMonitor
 import taboolib.internal.SimplePlatformFactory
 
 /**
- * TabooLib
- * PACKAGE_NAME.TestTabooLib
- *
  * @author 坏黑
  * @since 2022/1/28 5:00 PM
  */
 class TestTabooLib {
+
+    class TestObjectAwaken
+
+    object TestObject {
+
+        var enabled = false
+
+        @Awake(LifeCycle.ENABLE)
+        fun enable() {
+            enabled = true
+        }
+    }
 
     @BeforeEach
     internal fun setUp() {
@@ -48,8 +58,27 @@ class TestTabooLib {
         assert(TabooLib.booster() is SimpleBooster)
         assert(TabooLib.monitor() is SimpleMonitor)
         assert(RuntimeEnv.INSTANCE is SimpleRuntimeEnv)
-        assert(InjectorHandler.INSTANCE is SimpleInjectorHandler)
+        assert(InjectHandler.INSTANCE is SimpleInjectHandler)
         assert(PlatformFactory.INSTANCE is SimplePlatformFactory)
         assert(ClassReader.INSTANCE is TestClassReader)
+    }
+
+    @Test
+    fun testInstance() {
+        assert(TestObject::class.java.findInstance().get() == TestObject)
+        assert(TestObjectAwaken::class.java.findInstance().get() == PlatformFactory.getAwakeInstance<TestObjectAwaken>())
+    }
+
+    @Test
+    fun testAwakeFunction() {
+        assert(TestObject.enabled)
+    }
+
+    @Test
+    fun testSignature() {
+        assert(groupId == "taboolib")
+        assert(taboolibId == "taboolib")
+        assert(taboolibPath == "taboolib.taboolib")
+        assert(TestTabooLib::class.java.groupId == "")
     }
 }

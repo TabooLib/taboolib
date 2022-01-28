@@ -2,8 +2,7 @@ package taboolib.common.inject
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ClassMethod
-import taboolib.common.InstGetter
-import taboolib.common.Internal
+import taboolib.common.io.InstGetter
 import taboolib.common.LifeCycle
 
 /**
