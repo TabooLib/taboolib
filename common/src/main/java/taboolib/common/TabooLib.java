@@ -18,7 +18,7 @@ import taboolib.internal.SimpleBooster;
 @RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLib {
 
-    static final Booster booster = SimpleServiceLoader.load(Booster.class, () -> SimpleBooster.INSTANCE);
+    static final Booster booster = SimpleServiceLoader.load(Booster.class);
 
     TabooLib() {
     }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
 import taboolib.common.boot.Booster;
 import taboolib.common.boot.Environments;
+import taboolib.common.boot.Mechanism;
 import taboolib.common.boot.Monitor;
 import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.InjectorHandler;
@@ -30,9 +31,6 @@ public class SimpleBooster implements Booster {
     Platform runningPlatform = Platform.APPLICATION;
     boolean initiation = false;
 
-    SimpleBooster() {
-    }
-
     @NotNull
     @Override
     public Monitor getMonitor() {
@@ -55,14 +53,18 @@ public class SimpleBooster implements Booster {
         if (monitor.isShutdown()) {
             return;
         }
-        this.runningPlatform = platform;
-        this.postpone.get(lifeCycle).forEach(i -> {
-            try {
-                i.run();
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        if (platform != null) {
+            runningPlatform = platform;
+        }
+        if (postpone.containsKey(lifeCycle)) {
+            postpone.get(lifeCycle).forEach(i -> {
+                try {
+                    i.run();
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
         switch (lifeCycle) {
             case CONST:
                 if (setupKotlin()) {
@@ -94,19 +96,19 @@ public class SimpleBooster implements Booster {
                 break;
             case DISABLE:
                 InjectorHandler.INSTANCE.inject(LifeCycle.DISABLE);
-                PlatformFactory.INSTANCE.cancel();
+                Mechanism.shutdown(PlatformFactory.INSTANCE);
                 break;
         }
     }
 
     @Override
     public void join(@NotNull LifeCycle lifeCycle, @NotNull Runnable runnable) {
-        postpone.get(lifeCycle).add(runnable);
+        postpone.computeIfAbsent(lifeCycle, i -> new ArrayList<>()).add(runnable);
     }
 
     void preInitiation() {
         initiation = true;
-        PlatformFactory.INSTANCE.init();
+        Mechanism.startup(PlatformFactory.INSTANCE);
         InjectorHandler.INSTANCE.inject(LifeCycle.CONST);
     }
 
@@ -116,8 +118,8 @@ public class SimpleBooster implements Booster {
         }
         try {
             // RuntimeEnv 类可能会被插件强制移除导致 NoClassDefFoundError 异常，这是正常的
-            RuntimeEnv.ENV.setup();
-        } catch (NoClassDefFoundError ignored) {
+            Mechanism.startup(RuntimeEnv.INSTANCE);
+        } catch (NoClassDefFoundError | ClassCastException ignored) {
         }
         return Environments.isKotlin();
     }

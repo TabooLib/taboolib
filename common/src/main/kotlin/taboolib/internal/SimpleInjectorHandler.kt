@@ -18,7 +18,7 @@ import kotlin.collections.ArrayList
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-object SimpleInjectorHandler : InjectorHandler {
+open class SimpleInjectorHandler : InjectorHandler {
 
     val injectors = ArrayList<RegisteredInjector>()
 
@@ -27,12 +27,12 @@ object SimpleInjectorHandler : InjectorHandler {
     }
 
     override fun register(injector: Injector) {
-        injectors + RegisteredInjector(injector)
+        injectors += RegisteredInjector(injector)
         injectors.sortBy { it.injector.priority }
     }
 
     override fun inject(lifeCycle: LifeCycle) {
-        injectors.forEach { i -> runningClasses.parallelStream().forEach { inject(it, lifeCycle, i) } }
+        injectors.forEach { i -> runningClasses.forEach { inject(it, lifeCycle, i) } }
     }
 
     override fun inject(target: Class<*>, lifeCycle: LifeCycle?) {

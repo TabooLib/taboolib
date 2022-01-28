@@ -1,10 +1,13 @@
 package taboolib.common.io
 
 import taboolib.common.InstGetter
+import taboolib.common.TabooLib
 import taboolib.common.platform.PlatformFactory
 import taboolib.internal.InstGetterException
 import taboolib.internal.InstGetterInstant
 import taboolib.internal.InstGetterLazy
+
+val runningClasses by lazy { ClassReader.INSTANCE.readClasses(TabooLib::class.java.protectionDomain.codeSource.location) }
 
 /**
  * 取该类在当前项目中被加载的任何实例

@@ -49,7 +49,7 @@ public class Level {
      * @param level 等级
      */
     public static int getExpAtLevel(int level) {
-        if (TabooLib.getRunningPlatform() == Platform.NUKKIT) {
+        if (TabooLib.runningPlatform() == Platform.NUKKIT) {
             if (level >= 30) {
                 return 112 + (level - 30) * 9;
             } else if (level >= 15) {

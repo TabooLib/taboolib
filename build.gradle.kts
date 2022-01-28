@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
@@ -8,6 +10,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
+
     repositories {
         maven("https://libraries.minecraft.net")
         maven("https://repo1.maven.org/maven2")
@@ -16,20 +19,32 @@ subprojects {
         maven("https://repo.tabooproject.org/repository/releases")
         mavenCentral()
     }
+
     dependencies {
+        "compileOnly"(kotlin("stdlib"))
         "compileOnly"("org.tabooproject.reflex:analyser:1.0.4")
         "compileOnly"("org.tabooproject.reflex:reflex:1.0.4")
-        "compileOnly"(kotlin("stdlib"))
+        "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+        "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
+    }
+
+    tasks.withType<ShadowJar> {
+        relocate("org.tabooproject.reflex", "taboolib.common.reflect")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))
     }
-    tasks.withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-    tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-        relocate("org.tabooproject.reflex", "taboolib.common.reflect")
-    }
+
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

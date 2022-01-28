@@ -94,6 +94,8 @@ public class Version implements Comparable<Version> {
 
     public static class VersionFormatException extends IllegalArgumentException {
 
+        public static final long serialVersionUID = 1L;
+
         public VersionFormatException(String source) {
             super("For input version: \"" + source + "\"");
         }
