@@ -1,6 +1,6 @@
 dependencies {
     implementation("org.apache.commons:commons-lang3:3.5")
-    compileOnly(project(":common"))
+    compileOnly(project(":common:common-core"))
 }
 
 tasks {

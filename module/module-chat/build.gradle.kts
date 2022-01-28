@@ -1,7 +1,7 @@
 dependencies {
     compileOnly("com.google.code.gson:gson:2.8.7")
     implementation("net.md-5:bungeecord-chat:1.17")
-    compileOnly(project(":common"))
+    compileOnly(project(":common:common-core"))
 }
 
 tasks {

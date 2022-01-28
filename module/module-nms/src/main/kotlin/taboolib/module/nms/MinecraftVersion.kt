@@ -3,7 +3,6 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.function.runningPlatform
 import org.tabooproject.reflex.Reflex
 import taboolib.common.TabooLib
 import java.io.FileInputStream

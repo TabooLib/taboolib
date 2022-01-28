@@ -1,7 +1,6 @@
 package taboolib.module.kether
 
 import taboolib.common.OpenContainer
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.pluginId
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod

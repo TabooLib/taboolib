@@ -1,0 +1,8 @@
+{
+  "group": [
+  ],
+  "exclude": [
+    "META-INF/maven",
+    "taboolib/common/Isolated"
+  ]
+}

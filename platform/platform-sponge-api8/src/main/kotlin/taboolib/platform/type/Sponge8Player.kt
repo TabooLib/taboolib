@@ -23,7 +23,6 @@ import org.spongepowered.math.vector.Vector3d
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.onlinePlayers
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
@@ -66,7 +65,12 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override val location: Location
         get() {
             val loc = player.location()
-            return Location(world, loc.x(), loc.y(), loc.z(), player.headRotation().get().y().toFloat(), player.headRotation().get().x().toFloat())
+            return Location(world,
+                loc.x(),
+                loc.y(),
+                loc.z(),
+                player.headRotation().get().y().toFloat(),
+                player.headRotation().get().x().toFloat())
         }
 
     override var isOp: Boolean

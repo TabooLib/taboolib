@@ -19,10 +19,18 @@ import java.util.function.Supplier
 @RuntimeDependencies(
     RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
     RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
-    RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config", transitive = false),
-    RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat", transitive = false),
-    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.json.JsonFormat", transitive = false),
-    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.hocon.HoconFormat", transitive = false)
+    RuntimeDependency("!com.electronwill.night-config:core:3.6.5",
+        test = "!com.electronwill.nightconfig.core.Config",
+        transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:toml:3.6.5",
+        test = "!com.electronwill.nightconfig.toml.TomlFormat",
+        transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.5",
+        test = "!com.electronwill.nightconfig.json.JsonFormat",
+        transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5",
+        test = "!com.electronwill.nightconfig.hocon.HoconFormat",
+        transitive = false)
 )
 @Awake
 object ConfigInjector : Injector.Fields {

@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import com.flowpowered.math.vector.Vector3d
 import org.spongepowered.api.Sponge
 import org.spongepowered.api.command.CommandSource
 import org.spongepowered.api.entity.living.player.Player

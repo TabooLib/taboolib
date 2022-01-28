@@ -5,5 +5,5 @@ repositories {
 
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.0.1")
-    compileOnly(project(":common"))
+    compileOnly(project(":common:common-core"))
 }

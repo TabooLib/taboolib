@@ -85,7 +85,12 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.world.name
 
     override val location: Location
-        get() = Location(world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch)
+        get() = Location(world,
+            player.location.x,
+            player.location.y,
+            player.location.z,
+            player.location.yaw,
+            player.location.pitch)
 
     override var compassTarget: Location
         get() = player.compassTarget.toProxyLocation()

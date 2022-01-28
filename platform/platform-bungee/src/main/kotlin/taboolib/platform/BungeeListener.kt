@@ -13,7 +13,6 @@ import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import java.lang.reflect.Method
-import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
