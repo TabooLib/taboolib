@@ -2,7 +2,6 @@ package taboolib.common.platform.command
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
-import taboolib.common.Internal
 import taboolib.common.io.InstGetter
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
@@ -11,7 +10,6 @@ import taboolib.common.platform.Awake
 
 @Awake
 @Bind([CommandHeader::class, CommandBody::class])
-@Internal
 object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
 
     val main = HashMap<String, SimpleCommandMain>()
@@ -39,7 +37,7 @@ object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
             ) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
-                    fun register(body: SimpleCommandBody, component: CommandBuilder.CommandComponent) {
+                    fun register(body: SimpleCommandBody, component: Section) {
                         component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
                             if (body.children.isEmpty()) {
                                 body.func(this)

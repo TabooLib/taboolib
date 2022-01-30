@@ -4,7 +4,7 @@ package taboolib.common.platform.command
  * @author sky
  * @since 2021/6/24 11:48 下午
  */
-class CommandStructure(
+class Command(
     name: String,
     val aliases: List<String>,
     val description: String,

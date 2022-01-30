@@ -1,8 +1,8 @@
 package taboolib.common.platform.command
 
-class SimpleCommandMain(val func: CommandBuilder.CommandBase.() -> Unit = {})
+class SimpleCommandMain(val func: Component.() -> Unit = {})
 
-class SimpleCommandBody(val func: CommandBuilder.CommandComponent.() -> Unit = {}) {
+class SimpleCommandBody(val func: Section.() -> Unit = {}) {
 
     var name = ""
     var aliases = emptyArray<String>()

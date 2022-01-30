@@ -8,5 +8,5 @@ import taboolib.common.platform.ProxyCommandSender
  */
 interface CommandCompleter {
 
-    fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>?
+    fun execute(sender: ProxyCommandSender, command: Command, name: String, args: Array<String>): List<String>?
 }

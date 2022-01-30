@@ -4,9 +4,6 @@ import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformEvent
 
 /**
- * TabooLib
- * ProxyEvent
- *
  * @author sky
  * @since 2021/6/17 1:00 上午
  */

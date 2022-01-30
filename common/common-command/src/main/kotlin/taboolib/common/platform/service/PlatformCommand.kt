@@ -5,19 +5,16 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBuilder
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
-import taboolib.common.platform.command.CommandStructure
+import taboolib.common.platform.command.Command
 
 /**
- * TabooLib
- * PlatformCommand
- *
  * @author sky
  * @since 2021/6/24 11:46 下午
  */
 @PlatformService
 interface PlatformCommand {
 
-    fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit)
+    fun registerCommand(command: Command, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit)
 
     fun unregisterCommand(command: String)
 

@@ -8,9 +8,9 @@ import taboolib.common.platform.ProxyCommandSender
  */
 class CommandContext<T>(
     val sender: T,
-    val command: CommandStructure,
+    val command: Command,
     val name: String,
-    val commandCompound: CommandBuilder.CommandBase,
+    val compound: Component,
     internal val args: Array<String>,
     internal var index: Int = 0,
 ) {

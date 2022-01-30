@@ -1,11 +1,7 @@
 package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.TabooLib;
 import taboolib.common.boot.SimpleServiceLoader;
-
-import java.util.ServiceLoader;
-import java.util.function.Supplier;
 
 /**
  * TabooLib
@@ -24,11 +20,4 @@ public interface RuntimeEnv {
     void loadAssets(@NotNull Class<?> clazz);
 
     void loadDependency(@NotNull Class<?> clazz, boolean initiative);
-
-//    static <T> T loadService(Class<T> clazz, Supplier<T> supplier) {
-//        for (T service : ServiceLoader.load(clazz, TabooLib.class.getClassLoader())) {
-//            return service;
-//        }
-//        return supplier.get();
-//    }
 }
