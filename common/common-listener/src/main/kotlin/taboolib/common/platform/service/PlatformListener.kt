@@ -7,9 +7,6 @@ import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
 
 /**
- * TabooLib
- * PlatformListener
- *
  * @author sky
  * @since 2021/6/17 12:04 上午
  */

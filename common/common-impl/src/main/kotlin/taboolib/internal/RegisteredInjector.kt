@@ -7,7 +7,7 @@ import taboolib.common.inject.Injector
 
 /**
  * TabooLib
- * RegisteredInjector
+ * taboolib.internal.RegisteredInjector
  *
  * @author 坏黑
  * @since 2022/1/24 7:14 PM

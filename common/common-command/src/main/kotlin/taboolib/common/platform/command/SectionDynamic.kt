@@ -14,20 +14,20 @@ open class SectionDynamic(val commit: String, optional: Boolean, permission: Str
         suggestion<T> { _, _ -> onlinePlayers().map { it.name } }
     }
 
-    inline fun <reified T> suggestion(uncheck: Boolean = false, noinline function: () -> List<String>?) {
-        suggestion(T::class.java, uncheck, function)
+    inline fun <reified T> suggestWith(uncheck: Boolean = false, noinline function: () -> List<String>?) {
+        suggestion(T::class.java, uncheck) { _, _ -> function() }
     }
 
     inline fun <reified T> suggestion(uncheck: Boolean = false, noinline function: (sender: T, context: CommandContext<T>) -> List<String>?) {
         suggestion(T::class.java, uncheck, function)
     }
 
-    inline fun <reified T> restrict(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) {
-        restrict(T::class.java, function)
+    inline fun <reified T> restrictWith(noinline function: () -> Boolean) {
+        restrict(T::class.java) { _, _, _ -> function() }
     }
 
-    fun <T> suggestion(bind: Class<T>, uncheck: Boolean = false, function: () -> List<String>?) {
-        this.suggestion = ActionSuggestion(bind, uncheck) { _, _ -> function() }
+    inline fun <reified T> restrict(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Boolean) {
+        restrict(T::class.java, function)
     }
 
     fun <T> suggestion(bind: Class<T>, uncheck: Boolean = false, function: (sender: T, context: CommandContext<T>) -> List<String>?) {

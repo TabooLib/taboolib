@@ -1,4 +1,4 @@
-package taboolib.test
+package io.izzel.taboolib.test
 
 import taboolib.common.TabooLib
 import taboolib.common.io.ClassReader

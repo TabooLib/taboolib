@@ -7,11 +7,15 @@ abstract class Section(val optional: Boolean, val permission: String = "") {
 
     val children = ArrayList<Section>()
 
-    inline fun <reified T> execute(noinline function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {
+    inline fun <reified T> execute(noinline function: ActionExecute.Helper.(sender: T) -> Unit) {
+        execute(T::class.java) { sender, _, _ -> function(sender) }
+    }
+
+    inline fun <reified T> execute(noinline function: ActionExecute.Helper.(sender: T, context: CommandContext<T>, argument: String) -> Unit) {
         execute(T::class.java, function)
     }
 
-    fun <T> execute(bind: Class<T>, function: (sender: T, context: CommandContext<T>, argument: String) -> Unit) {
+    fun <T> execute(bind: Class<T>, function: ActionExecute.Helper.(sender: T, context: CommandContext<T>, argument: String) -> Unit) {
         executor = ActionExecute(bind, function)
     }
 

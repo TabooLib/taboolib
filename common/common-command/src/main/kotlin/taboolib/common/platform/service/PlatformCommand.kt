@@ -2,10 +2,7 @@ package taboolib.common.platform.service
 
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBuilder
-import taboolib.common.platform.command.CommandCompleter
-import taboolib.common.platform.command.CommandExecutor
-import taboolib.common.platform.command.Command
+import taboolib.common.platform.command.*
 
 /**
  * @author sky
@@ -14,7 +11,7 @@ import taboolib.common.platform.command.Command
 @PlatformService
 interface PlatformCommand {
 
-    fun registerCommand(command: Command, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit)
+    fun registerCommand(command: Command, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit)
 
     fun unregisterCommand(command: String)
 

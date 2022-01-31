@@ -1,4 +1,4 @@
-package taboolib.test
+package io.izzel.taboolib.test
 
 import org.junit.jupiter.api.*
 import taboolib.common.LifeCycle
@@ -79,6 +79,6 @@ class TestTabooLib {
         assert(groupId == "taboolib")
         assert(taboolibId == "taboolib")
         assert(taboolibPath == "taboolib.taboolib")
-        assert(TestTabooLib::class.java.groupId == "")
+        assert(TestTabooLib::class.java.groupId == "io.izzel")
     }
 }

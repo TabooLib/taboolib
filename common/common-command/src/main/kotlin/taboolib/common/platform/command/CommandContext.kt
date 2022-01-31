@@ -6,7 +6,7 @@ import taboolib.common.platform.ProxyCommandSender
  * @author sky
  * @since 2021/6/25 10:02 上午
  */
-class CommandContext<T>(
+data class CommandContext<T>(
     val sender: T,
     val command: Command,
     val name: String,
@@ -48,5 +48,27 @@ class CommandContext<T>(
 
     fun argumentOrNull(offset: Int): String? {
         return kotlin.runCatching { argument(offset) }.getOrNull()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is CommandContext<*>) return false
+        if (sender != other.sender) return false
+        if (command != other.command) return false
+        if (name != other.name) return false
+        if (compound != other.compound) return false
+        if (!args.contentEquals(other.args)) return false
+        if (index != other.index) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = sender?.hashCode() ?: 0
+        result = 31 * result + command.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + compound.hashCode()
+        result = 31 * result + args.contentHashCode()
+        result = 31 * result + index
+        return result
     }
 }

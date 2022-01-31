@@ -41,7 +41,7 @@ public class SimpleServiceLoader {
         } catch (Throwable ex) {
             ex.printStackTrace();
         }
-        throw new IllegalStateException("Not yet implemented");
+        throw new IllegalStateException("Not found implementation: " + clazz.getName());
     }
 
     @Nullable

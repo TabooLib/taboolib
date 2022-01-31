@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(project(":common:common-core"))
+    compileOnly(project(":common:common-environment"))
     // Mirror
     compileOnly(project(":common:common-plugin"))
     compileOnly(project(":common:common-adapter"))
