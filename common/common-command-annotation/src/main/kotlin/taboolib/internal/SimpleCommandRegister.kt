@@ -1,13 +1,16 @@
-package taboolib.common.platform.command
+package taboolib.internal
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
+import taboolib.common.Internal
 import taboolib.common.io.InstGetter
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
+import taboolib.common.platform.command.*
 
+@Internal
 @Awake
 @Bind([CommandHeader::class, CommandBody::class])
 object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
@@ -19,7 +22,7 @@ object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
         if (field.isAnnotationPresent(CommandBody::class.java) && field.fieldType == SimpleCommandMain::class.java) {
             main[clazz.name] = field.get(instance) as SimpleCommandMain
         } else {
-            body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
+            body.computeIfAbsent(clazz.name) { ArrayList() } += loadCommandBody(field, instance) ?: return
         }
     }
 
@@ -54,7 +57,7 @@ object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
         }
     }
 
-    fun loadBody(field: ClassField, instance: InstGetter<*>): SimpleCommandBody? {
+    fun loadCommandBody(field: ClassField, instance: InstGetter<*>): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
             val annotation = field.getAnnotation(CommandBody::class.java)!!
             val obj = field.get(instance.get())
@@ -79,7 +82,7 @@ object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
                         permission = annotation.property("permission")!!
                         permissionDefault = annotation.enum("permissionDefault")
                         ReflexClass.of(field.fieldType).structure.fields.forEach {
-                            children += loadBody(it, instance) ?: return@forEach
+                            children += loadCommandBody(it, instance) ?: return@forEach
                         }
                     }
                 }

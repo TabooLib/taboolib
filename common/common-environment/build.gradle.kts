@@ -5,6 +5,7 @@ dependencies {
     implementation("org.ow2.asm:asm-util:9.2")
     implementation("org.ow2.asm:asm-commons:9.2")
     implementation("me.lucko:jar-relocator:1.5")
+    // Core
     compileOnly(project(":common:common-core"))
 }
 

@@ -2,6 +2,7 @@ package taboolib.internal
 
 import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassMethod
+import taboolib.common.Internal
 import taboolib.common.TabooLib
 import taboolib.common.io.InstGetter
 import taboolib.common.platform.Platform
@@ -17,6 +18,7 @@ import taboolib.common.platform.function.registerVelocityListener
  * @author 坏黑
  * @since 2022/1/31 6:33 PM
  */
+@Internal
 class SimpleListenerRegister : ProxyListenerRegister {
 
     override fun register(annotation: ClassAnnotation, method: ClassMethod, instance: InstGetter<*>) {

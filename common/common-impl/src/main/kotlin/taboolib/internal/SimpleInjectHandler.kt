@@ -1,6 +1,7 @@
 package taboolib.internal
 
 import org.tabooproject.reflex.ReflexClass
+import taboolib.common.Internal
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.inject.Bind
@@ -19,7 +20,8 @@ import kotlin.collections.ArrayList
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-open class SimpleInjectHandler : InjectHandler {
+@Internal
+class SimpleInjectHandler : InjectHandler {
 
     val injectors = ArrayList<RegisteredInjector>()
 

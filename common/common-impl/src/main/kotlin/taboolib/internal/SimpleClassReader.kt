@@ -1,5 +1,6 @@
 package taboolib.internal
 
+import taboolib.common.Internal
 import taboolib.common.TabooLib
 import taboolib.common.io.ClassReader
 import java.io.File
@@ -9,7 +10,8 @@ import java.net.URL
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.jar.JarFile
 
-open class SimpleClassReader : ClassReader {
+@Internal
+class SimpleClassReader : ClassReader {
 
     override fun readClasses(url: URL): List<Class<*>> {
         val classes = CopyOnWriteArrayList<Class<*>>()

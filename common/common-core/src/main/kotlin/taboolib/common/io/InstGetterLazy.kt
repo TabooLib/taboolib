@@ -2,6 +2,7 @@ package taboolib.common.io
 
 import org.tabooproject.reflex.FastInstGetter
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
+import taboolib.common.Internal
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
+@Internal
 @Suppress("UNCHECKED_CAST")
 class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false) : InstGetter<T>(source) {
 

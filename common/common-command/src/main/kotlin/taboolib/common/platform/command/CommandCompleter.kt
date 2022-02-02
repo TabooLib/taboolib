@@ -1,5 +1,6 @@
 package taboolib.common.platform.command
 
+import taboolib.common.Internal
 import taboolib.common.platform.ProxyCommandSender
 
 /**

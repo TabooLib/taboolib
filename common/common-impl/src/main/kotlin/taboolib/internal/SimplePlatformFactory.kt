@@ -2,6 +2,7 @@
 
 package taboolib.internal
 
+import taboolib.common.Internal
 import taboolib.common.io.InstGetter
 import taboolib.common.TabooLib
 import taboolib.common.boot.Mechanism
@@ -20,7 +21,8 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-open class SimplePlatformFactory : PlatformFactory, Mechanism {
+@Internal
+class SimplePlatformFactory : PlatformFactory, Mechanism {
 
     val awokenMap = ConcurrentHashMap<String, InstGetter<*>>()
     val serviceMap = ConcurrentHashMap<String, InstGetter<*>>()

@@ -1,5 +1,6 @@
 package taboolib.internal
 
+import taboolib.common.Internal
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 
@@ -10,6 +11,7 @@ import taboolib.common.platform.command.*
  * @author 坏黑
  * @since 2022/1/31 12:03 AM
  */
+@Internal
 class SimpleCompound : Component() {
 
     private var result = true

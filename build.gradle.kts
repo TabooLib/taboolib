@@ -1,15 +1,18 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.tabooproject.shrinkingkt.ShrinkingExt
 
 plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+    id("org.tabooproject.shrinkingkt") version "1.0.1" apply false
 }
 
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "org.tabooproject.shrinkingkt")
 
     repositories {
         maven("https://libraries.minecraft.net")
@@ -22,8 +25,8 @@ subprojects {
 
     dependencies {
         "compileOnly"(kotlin("stdlib"))
-        "compileOnly"("org.tabooproject.reflex:analyser:1.0.4")
-        "compileOnly"("org.tabooproject.reflex:reflex:1.0.4")
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.5")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.5")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
@@ -43,6 +46,10 @@ subprojects {
 
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))
+    }
+
+    configure<ShrinkingExt> {
+        annotation = "taboolib.internal.Internal"
     }
 
     configure<JavaPluginConvention> {
