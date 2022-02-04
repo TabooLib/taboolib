@@ -1,5 +1,5 @@
 tasks {
     withType<Jar> {
-        destinationDirectory.set(file("project/common"))
+        destinationDirectory.set(file("build/libs"))
     }
 }

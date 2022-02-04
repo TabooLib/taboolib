@@ -1,5 +1,5 @@
 tasks {
     withType<Jar> {
-        destinationDirectory.set(file("project/platform/bukkit"))
+        destinationDirectory.set(file("build/libs"))
     }
 }
