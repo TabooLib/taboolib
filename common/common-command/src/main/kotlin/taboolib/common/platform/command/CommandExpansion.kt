@@ -16,17 +16,17 @@ fun command(
     commandBuilder: Component.() -> Unit,
 ) {
     PlatformFactory.getPlatformService<PlatformCommand>().registerCommand(
-        Command(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
+        CommandInfo(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
         object : CommandExecutor {
 
-            override fun execute(sender: ProxyCommandSender, command: Command, name: String, args: Array<String>): Boolean {
+            override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): Boolean {
                 val compound = Component.INSTANCE.createCompound().also(commandBuilder)
                 return compound.execute(CommandContext(sender, command, name, compound, args))
             }
         },
         object : CommandCompleter {
 
-            override fun execute(sender: ProxyCommandSender, command: Command, name: String, args: Array<String>): List<String>? {
+            override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): List<String>? {
                 val compound = Component.INSTANCE.createCompound().also(commandBuilder)
                 return compound.suggest(CommandContext(sender, command, name, compound, args))
             }

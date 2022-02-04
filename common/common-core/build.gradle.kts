@@ -5,7 +5,7 @@ dependencies {
     implementation("org.tabooproject.reflex:reflex:1.0.5")
     implementation("org.tabooproject.reflex:fast-instance-getter:1.0.5")
     // Test
-    testImplementation(project(":common:common-impl"))
+    testImplementation(project(":common:common-core-impl"))
     testImplementation(project(":common:common-environment"))
 }
 

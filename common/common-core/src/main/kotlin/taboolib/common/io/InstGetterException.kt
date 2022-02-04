@@ -1,6 +1,6 @@
 package taboolib.common.io
 
-import taboolib.common.Internal
+import taboolib.internal.Internal
 
 /**
  * TabooLib

@@ -1,6 +1,5 @@
 package taboolib.common.platform.command
 
-import taboolib.common.Internal
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.getProxyPlayer
 

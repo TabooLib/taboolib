@@ -2,7 +2,6 @@ package taboolib.internal
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
-import taboolib.common.Internal
 import taboolib.common.io.InstGetter
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind

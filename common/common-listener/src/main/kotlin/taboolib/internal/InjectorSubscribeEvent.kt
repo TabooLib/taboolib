@@ -1,7 +1,6 @@
 package taboolib.internal
 
 import org.tabooproject.reflex.ClassMethod
-import taboolib.common.Internal
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector

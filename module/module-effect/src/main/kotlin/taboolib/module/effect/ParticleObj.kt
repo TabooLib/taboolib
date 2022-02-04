@@ -1,7 +1,7 @@
 package taboolib.module.effect
 
 import taboolib.common.platform.function.submit
-import taboolib.common.platform.service.PlatformExecutor.PlatformTask
+import taboolib.common.platform.service.PlatformTask
 import taboolib.common.util.Location
 
 /**

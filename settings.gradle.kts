@@ -1,60 +1,23 @@
 rootProject.name = "TabooLib"
 
-fun importCommon() {
-    include("common:common-core")
-    include("common:common-impl")
-    include("common:common-plugin")
-    include("common:common-adapter")
-    include("common:common-scheduler")
-    include("common:common-command")
-    include("common:common-command-annotation")
-    include("common:common-listener")
-    include("common:common-environment")
-    include("common:common-event")
-    include("common:common-util")
-    include("common:common-openapi")
-}
+include("common:common-adapter")
+include("common:common-command")
+include("common:common-command-annotation")
+include("common:common-core")
+include("common:common-core-impl")
+include("common:common-environment")
+include("common:common-event")
+include("common:common-listener")
+include("common:common-openapi")
+include("common:common-plugin")
+include("common:common-scheduler")
+include("common:common-util")
 
-fun importModules() {
-    include("module:module-empty")
-    include("module:module-ai")
-    include("module:module-nms")
-    include("module:module-nms-util")
-    include("module:module-chat")
-    include("module:module-lang")
-    include("module:module-effect")
-    include("module:module-kether")
-    include("module:module-metrics")
-    include("module:module-database")
-    include("module:module-database-core")
-    include("module:module-database-shaded")
-    include("module:module-database-mongodb")
-    include("module:module-porticus")
-    include("module:module-navigation")
-    include("module:module-ui")
-    include("module:module-ui-receptacle")
-    include("module:module-configuration", "module:module-configuration-shaded", "module:module-configuration-legacy")
-}
-
-fun importPlatforms() {
-    include("platform:platform-bukkit", "platform:platform-nukkit", "platform:platform-bungee")
-    include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
-    // include("platform:platform-sponge-api9")
-    include("platform:platform-velocity")
-    // include("platform:platform-cloudnet-v3")
-    include("platform:platform-application")
-}
-
-fun importExtensions() {
-    // 临时位置，未来会被移出标准模块
-    include("expansion:expansion-command-helper")
-    include("expansion:expansion-player-database")
-
-    // 从 common-5 中移除
-    include("expansion:expansion-javascript")
-}
-
-importCommon()
-importModules()
-importPlatforms()
-importExtensions()
+include("platform:platform-bukkit:platform-bukkit-adapter")
+include("platform:platform-bukkit:platform-bukkit-command")
+include("platform:platform-bukkit:platform-bukkit-core")
+include("platform:platform-bukkit:platform-bukkit-event")
+include("platform:platform-bukkit:platform-bukkit-listener")
+include("platform:platform-bukkit:platform-bukkit-openapi")
+include("platform:platform-bukkit:platform-bukkit-plugin")
+include("platform:platform-bukkit:platform-bukkit-scheduler")

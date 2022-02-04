@@ -11,7 +11,7 @@ import taboolib.common.platform.command.*
 @PlatformService
 interface PlatformCommand {
 
-    fun registerCommand(command: Command, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit)
+    fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit)
 
     fun unregisterCommand(command: String)
 

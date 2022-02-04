@@ -1,8 +1,5 @@
-repositories {
-    maven { url = uri("https://repo.nukkitx.com/maven-snapshots") }
-}
-
-dependencies {
-    compileOnly("cn.nukkit:nukkit:2.0.0-SNAPSHOT")
-    compileOnly(project(":common:common-core"))
+tasks {
+    withType<Jar> {
+        destinationDirectory.set(file("build/libs"))
+    }
 }

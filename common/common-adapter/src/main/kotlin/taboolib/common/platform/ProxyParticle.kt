@@ -107,9 +107,9 @@ enum class ProxyParticle(vararg val aliases: String) {
 
     open class DustData(val color: Color, val size: Float) : Data
 
-    class DustTransitionData(color: Color, val toColor: Color, size: Float) : DustData(color, size)
+    open class DustTransitionData(color: Color, val toColor: Color, size: Float) : DustData(color, size)
 
-    class ItemData(
+    open class ItemData(
         val material: String,
         val data: Int = 0,
         val name: String = "",
@@ -117,9 +117,9 @@ enum class ProxyParticle(vararg val aliases: String) {
         val customModelData: Int = -1,
     ) : Data
 
-    class BlockData(val material: String, val data: Int = 0) : Data
+    open class BlockData(val material: String, val data: Int = 0) : Data
 
-    class VibrationData(val origin: Location, val destination: Destination, val arrivalTime: Int) : Data {
+    open class VibrationData(val origin: Location, val destination: Destination, val arrivalTime: Int) : Data {
 
         interface Destination
 
