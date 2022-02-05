@@ -96,7 +96,13 @@ public final class XItemStack {
         Objects.requireNonNull(config, "Cannot serialize item from a null configuration section.");
 
         // Material
-        config.set("material", XMaterial.matchXMaterial(item).name());
+        Material material;
+        try {
+            material = XMaterial.matchXMaterial(item).parseMaterial();
+        } catch (IllegalArgumentException e) {
+            material = item.getType();
+        }
+        config.set("material", material.name());
 
         // Amount
         if (item.getAmount() > 1) config.set("amount", item.getAmount());
@@ -368,7 +374,12 @@ public final class XItemStack {
         // Material
         String material = config.getString("material");
         if (material == null) return null;
-        ItemStack item = XMaterial.matchXMaterial(material).map(XMaterial::parseItem).orElse(null);
+        ItemStack item;
+        try {
+            item = XMaterial.matchXMaterial(material).map(XMaterial::parseItem).orElse(null);
+        } catch (IllegalArgumentException e) {
+            item = new ItemStack(Material.matchMaterial(material));
+        }
         if (item == null) return null;
 
         // Amount
