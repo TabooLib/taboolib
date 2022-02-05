@@ -1,4 +1,4 @@
-package taboolib.module.configuration.type;
+package taboolib.internal;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigFormat;

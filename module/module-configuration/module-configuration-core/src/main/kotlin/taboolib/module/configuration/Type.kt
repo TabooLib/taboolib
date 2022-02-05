@@ -5,7 +5,7 @@ import com.electronwill.nightconfig.core.ConfigFormat
 import com.electronwill.nightconfig.hocon.HoconFormat
 import com.electronwill.nightconfig.json.JsonFormat
 import com.electronwill.nightconfig.toml.TomlFormat
-import taboolib.module.configuration.type.YamlFormat
+import taboolib.internal.YamlFormat
 
 /**
  * TabooLib

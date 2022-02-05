@@ -1,4 +1,4 @@
-package taboolib.module.configuration.type;
+package taboolib.internal;
 
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.representer.Representer;

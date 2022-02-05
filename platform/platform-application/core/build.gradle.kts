@@ -11,7 +11,4 @@ tasks {
             include(dependency("org.apache.commons:commons-lang3:3.5"))
         }
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

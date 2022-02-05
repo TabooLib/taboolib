@@ -16,6 +16,10 @@ dependencies {
     compileOnly(project(":module:module-chat"))
 }
 
+shrinking {
+    shadow = true
+}
+
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
@@ -24,8 +28,5 @@ tasks {
         }
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
         minimize()
-    }
-    build {
-        dependsOn(shadowJar)
     }
 }

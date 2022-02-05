@@ -1,4 +1,4 @@
-package taboolib.module.configuration.type
+package taboolib.module.configuration.util
 
 import taboolib.common.Isolated
 import taboolib.library.configuration.ConfigurationSection

@@ -12,12 +12,13 @@ dependencies {
     compileOnly(project(":common:common-adapter"))
 }
 
+shrinking {
+    shadow = true
+}
+
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
         archiveBaseName.set("${archiveBaseName.get()}-shaded")
-    }
-    build {
-        dependsOn(shadowJar)
     }
 }

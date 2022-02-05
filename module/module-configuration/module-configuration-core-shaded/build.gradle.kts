@@ -14,7 +14,4 @@ tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

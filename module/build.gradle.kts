@@ -1,5 +1,5 @@
-tasks {
-    withType<Jar> {
-        destinationDirectory.set(file("build/libs"))
-    }
-}
+//tasks {
+//    withType<Jar> {
+//        destinationDirectory.set(file("build/libs"))
+//    }
+//}

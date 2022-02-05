@@ -3,7 +3,7 @@ package taboolib.module.configuration.util
 import com.electronwill.nightconfig.core.UnmodifiableConfig
 import com.electronwill.nightconfig.core.conversion.Converter
 import taboolib.common.Isolated
-import taboolib.module.configuration.ConfigSection
+import taboolib.internal.ConfigSection
 import taboolib.module.configuration.Configuration
 import java.util.*
 

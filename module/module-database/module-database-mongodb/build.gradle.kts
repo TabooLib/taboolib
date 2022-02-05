@@ -14,7 +14,4 @@ tasks {
             include(dependency("com.google.code.gson:gson:2.8.7"))
         }
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

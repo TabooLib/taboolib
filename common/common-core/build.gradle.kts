@@ -9,6 +9,10 @@ dependencies {
     testImplementation(project(":common:common-environment"))
 }
 
+shrinking {
+    shadow = true
+}
+
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
@@ -17,8 +21,5 @@ tasks {
             include(dependency("org.tabooproject.reflex:reflex:1.0.5"))
             include(dependency("org.tabooproject.reflex:fast-instance-getter:1.0.5"))
         }
-    }
-    build {
-        dependsOn(shadowJar)
     }
 }

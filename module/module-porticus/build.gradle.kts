@@ -19,7 +19,4 @@ tasks {
             include(dependency("com.google.guava:guava:21.0"))
         }
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

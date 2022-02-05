@@ -1,4 +1,4 @@
-package taboolib.module.configuration.type
+package taboolib.internal
 
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.UnmodifiableConfig
@@ -6,12 +6,12 @@ import com.electronwill.nightconfig.core.io.ConfigWriter
 import com.electronwill.nightconfig.core.io.WritingException
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
-import taboolib.module.configuration.ConfigSection
 import java.io.Writer
 
 /**
  * @author 坏黑
  */
+@Internal
 class YamlWriter : ConfigWriter {
 
     private val blackConfig = "{}\n"

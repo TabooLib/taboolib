@@ -1,4 +1,4 @@
-package taboolib.module.configuration
+package taboolib.internal
 
 import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
@@ -7,14 +7,16 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Type
 
 /**
  * TabooLib
- * taboolib.module.configuration.ConfigSection
+ * taboolib.internal.ConfigSection
  *
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
+@Internal
 open class ConfigSection(var root: Config, override val name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())

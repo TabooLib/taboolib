@@ -18,6 +18,7 @@ import taboolib.common.platform.ProxyPlayer
     repository = "https://repo2s.ptms.ink/repository/maven-public"
 )
 @Isolated
+@Suppress("DEPRECATION")
 open class RawMessage {
 
     var components = ArrayList<BaseComponent>()

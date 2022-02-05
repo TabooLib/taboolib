@@ -1,4 +1,4 @@
-package taboolib.module.configuration.type
+package taboolib.internal
 
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.ConfigFormat
@@ -8,12 +8,12 @@ import com.electronwill.nightconfig.core.io.ParsingMode
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.configuration.ConfigSection
 import java.io.Reader
 
 /**
  * @author 坏黑
  */
+@Internal
 class YamlParser(val configFormat: ConfigFormat<Config>) : ConfigParser<Config> {
 
     private val yamlOptions = DumperOptions()

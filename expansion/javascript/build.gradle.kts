@@ -8,7 +8,4 @@ tasks {
         archiveClassifier.set("")
         archiveBaseName.set("${archiveBaseName.get()}-shaded")
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

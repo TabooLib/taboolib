@@ -1,10 +1,12 @@
-package taboolib.module.configuration
+package taboolib.internal
 
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.file.FileNotFoundAction
 import com.electronwill.nightconfig.core.io.ConfigParser
 import com.electronwill.nightconfig.core.io.ParsingMode
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
@@ -13,11 +15,12 @@ import java.text.SimpleDateFormat
 
 /**
  * TabooLib
- * taboolib.module.configuration.ConfigFile
+ * taboolib.internal.ConfigFile
  *
  * @author mac
  * @since 2021/11/22 12:49 上午
  */
+@Internal
 open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override var file: File? = null

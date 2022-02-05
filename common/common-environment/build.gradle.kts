@@ -22,7 +22,4 @@ tasks {
         relocate("org.objectweb", "taboolib.library")
         minimize()
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

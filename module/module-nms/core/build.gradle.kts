@@ -15,7 +15,4 @@ tasks {
         relocate("me.lucko", "taboolib.library")
         relocate("org.objectweb", "taboolib.library")
     }
-    build {
-        dependsOn(shadowJar)
-    }
 }

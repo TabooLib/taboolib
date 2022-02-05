@@ -1,12 +1,12 @@
 package taboolib.module.configuration
 
-import com.electronwill.nightconfig.core.UnmodifiableConfig
-import com.electronwill.nightconfig.core.conversion.Converter
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.internal.ConfigFile
+import taboolib.internal.ConfigSection
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
