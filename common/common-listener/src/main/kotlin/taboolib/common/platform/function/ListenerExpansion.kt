@@ -2,6 +2,7 @@ package taboolib.common.platform.function
 
 import taboolib.common.TabooLib
 import taboolib.common.io.groupId
+import taboolib.common.io.tabooLibPath
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -38,7 +39,7 @@ val Class<*>.isPlatformEvent: Boolean
  */
 fun Class<*>.getEventClass(): Class<*> {
     val event = getProxyEventAbstract()
-    return if (event != null) Class.forName("${event.groupId}.taboolib.$platformEventName") else this
+    return if (event != null) Class.forName("${event.tabooLibPath}.$platformEventName") else this
 }
 
 private fun Class<*>.getProxyEventAbstract(): Class<*>? {

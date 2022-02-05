@@ -5,6 +5,8 @@ import com.electronwill.nightconfig.core.conversion.Converter
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.env.RuntimeDependencies
+import taboolib.common.env.RuntimeDependency
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
@@ -17,6 +19,14 @@ import java.io.Reader
  * @author mac
  * @since 2021/11/22 12:30 上午
  */
+@RuntimeDependencies(
+    RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
+    RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
+    RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config", transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat", transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.json.JsonFormat", transitive = false),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.hocon.HoconFormat", transitive = false)
+)
 interface Configuration : ConfigurationSection {
 
     var file: File?

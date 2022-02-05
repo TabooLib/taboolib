@@ -23,8 +23,13 @@ import java.util.ServiceLoader;
 public class SimpleServiceLoader {
 
     private static final String PREFIX = "META-INF/services-default/";
+    private static String group;
 
     SimpleServiceLoader() {
+    }
+
+    public static void setGroup(String group) {
+        SimpleServiceLoader.group = group;
     }
 
     @SuppressWarnings("unchecked")
@@ -36,7 +41,11 @@ public class SimpleServiceLoader {
             String fullName = PREFIX + clazz.getName();
             Enumeration<URL> configs = TabooLib.class.getClassLoader().getResources(fullName);
             if (configs.hasMoreElements()) {
-                return (T) Class.forName(parse(configs.nextElement())).getDeclaredConstructor().newInstance();
+                String className = parse(configs.nextElement());
+                if (group != null) {
+                    className = group + "." + className;
+                }
+                return (T) Class.forName(className).getDeclaredConstructor().newInstance();
             }
         } catch (Throwable ex) {
             ex.printStackTrace();

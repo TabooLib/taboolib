@@ -7,7 +7,7 @@ import taboolib.common.util.Location
 
 /**
  * TabooLib
- * taboolib.common.platform.service.PlatformAdaptor
+ * taboolib.common.platform.service.PlatformAdapter
  *
  * @author sky
  * @since 2021/6/17 12:04 上午

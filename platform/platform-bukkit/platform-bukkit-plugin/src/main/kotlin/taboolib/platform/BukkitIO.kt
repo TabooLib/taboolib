@@ -68,10 +68,6 @@ class BukkitIO : PlatformIO {
     }
 
     override fun getPlatformData(): Map<String, Any> {
-        return mapOf(
-            "bukkitVersion" to Bukkit.getVersion(),
-            "bukkitName" to Bukkit.getName(),
-            "onlineMode" to if (Bukkit.getOnlineMode()) 1 else 0
-        )
+        return mapOf("bukkitVersion" to Bukkit.getVersion(), "bukkitName" to Bukkit.getName(), "onlineMode" to if (Bukkit.getOnlineMode()) 1 else 0)
     }
 }

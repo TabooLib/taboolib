@@ -7,7 +7,7 @@ dependencies {
     implementation("com.electronwill.night-config:toml:3.6.5")
     implementation("com.electronwill.night-config:json:3.6.5")
     implementation("com.electronwill.night-config:hocon:3.6.5")
-    implementation(project(":module:module-configuration"))
+    implementation(project(":module:module-configuration:module-configuration-core"))
 }
 
 tasks {

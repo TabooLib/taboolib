@@ -13,6 +13,10 @@ include("common:common-plugin")
 include("common:common-scheduler")
 include("common:common-util")
 
+include("module:module-chat")
+include("module:module-configuration:module-configuration-core")
+include("module:module-configuration:module-configuration-core-shaded")
+
 include("platform:platform-bukkit:platform-bukkit-adapter")
 include("platform:platform-bukkit:platform-bukkit-command")
 include("platform:platform-bukkit:platform-bukkit-core")

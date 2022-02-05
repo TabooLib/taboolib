@@ -9,7 +9,10 @@ dependencies {
     compileOnly("com.electronwill.night-config:json:3.6.5")
     compileOnly("com.electronwill.night-config:hocon:3.6.5")
     compileOnly(project(":common:common-core"))
-    compileOnly(project(":common:common-util"))
+    compileOnly(project(":common:common-util")) // Coerce, decodeUnicode
+    // Optional
+    compileOnly(project(":common:common-adapter"))
+    compileOnly(project(":common:common-environment"))
     compileOnly(project(":module:module-chat"))
 }
 

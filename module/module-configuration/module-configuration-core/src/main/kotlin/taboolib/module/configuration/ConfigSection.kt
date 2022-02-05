@@ -10,16 +10,12 @@ import taboolib.library.configuration.ConfigurationSection
 
 /**
  * TabooLib
- * taboolib.module.configuration.TomlSection
+ * taboolib.module.configuration.ConfigSection
  *
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(
-    var root: Config,
-    override val name: String = "",
-    override val parent: ConfigurationSection? = null,
-) : ConfigurationSection {
+open class ConfigSection(var root: Config, override val name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
 
@@ -28,20 +24,7 @@ open class ConfigSection(
 
     override fun getKeys(deep: Boolean): Set<String> {
         val keys = HashSet<String>()
-        fun process(map: Map<String, Any?>, parent: String = "") {
-            map.forEach { (k, v) ->
-                if (v is Config) {
-                    if (deep) {
-                        process(v.valueMap(), "$parent$k.")
-                    } else {
-                        keys += "$parent$k"
-                    }
-                } else {
-                    keys += "$parent$k"
-                }
-            }
-        }
-        process(root.valueMap())
+        getKeys(root.valueMap(), keys, deep)
         return keys
     }
 
@@ -234,12 +217,9 @@ open class ConfigSection(
     }
 
     override fun toMap(): Map<String, Any?> {
-        fun process(map: Map<String, Any?>): Map<String, Any?> {
-            val newMap = LinkedHashMap<String, Any?>()
-            map.forEach { (k, v) -> newMap[k] = unwrap(v) }
-            return newMap
-        }
-        return process(root.valueMap())
+        val newMap = LinkedHashMap<String, Any?>()
+        root.valueMap().forEach { (k, v) -> newMap[k] = unwrap(v) }
+        return newMap
     }
 
     override fun getComment(path: String): String? {
@@ -297,6 +277,20 @@ open class ConfigSection(
                 }
             }
             return list.map { process(it) }
+        }
+
+        private fun getKeys(input: Map<String, Any?>, output: MutableSet<String>, deep: Boolean, path: String = "") {
+            input.forEach { (k, v) ->
+                if (v is Config) {
+                    if (deep) {
+                        getKeys(v.valueMap(), output, true, "$path$k.")
+                    } else {
+                        output += "$path$k"
+                    }
+                } else {
+                    output += "$path$k"
+                }
+            }
         }
     }
 }

@@ -16,7 +16,5 @@ dependencies {
     compileOnly("ink.ptms.core:v11400:11400-minimize")
     compileOnly(project(":common:common-core"))
     compileOnly(project(":common:common-util"))
-//    compileOnly(project(":module:module-chat"))
-//    compileOnly(project(":module:module-lang"))
-//    compileOnly(project(":module:module-configuration"))
+    compileOnly(project(":platform:platform-bukkit:platform-bukkit-core"))
 }

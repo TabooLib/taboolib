@@ -76,9 +76,9 @@ class TestTabooLib {
 
     @Test
     fun testSignature() {
-        assert(groupId == "taboolib")
+        assert(groupId == null)
         assert(taboolibId == "taboolib")
-        assert(taboolibPath == "taboolib.taboolib")
+        assert(taboolibPath == null)
         assert(TestTabooLib::class.java.groupId == "io.izzel")
     }
 }

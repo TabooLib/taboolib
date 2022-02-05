@@ -4,7 +4,6 @@ import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.file.FileNotFoundAction
 import com.electronwill.nightconfig.core.io.ConfigParser
 import com.electronwill.nightconfig.core.io.ParsingMode
-import taboolib.common.platform.function.warning
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import java.io.File
 import java.io.InputStream
@@ -14,7 +13,7 @@ import java.text.SimpleDateFormat
 
 /**
  * TabooLib
- * taboolib.module.configuration.toml.TomlFileSection
+ * taboolib.module.configuration.ConfigFile
  *
  * @author mac
  * @since 2021/11/22 12:49 上午
@@ -50,7 +49,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             if (file.extension != "bak") {
                 file.copyTo(File(file.parent, file.name + "_" + SimpleDateFormat("yyyyMMddHHmmss").format(System.currentTimeMillis()) + ".bak"))
             }
-            warning("File: $file")
+            println("File: $file")
             throw ex
         }
         hook.forEach { it.run() }
@@ -60,7 +59,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
         try {
             parser().parse(contents, root, ParsingMode.REPLACE)
         } catch (t: Exception) {
-            warning("Source: \n$contents")
+            println("Source: \n$contents")
             throw t
         }
         hook.forEach { it.run() }
