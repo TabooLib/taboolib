@@ -20,6 +20,7 @@ subprojects {
         maven("https://maven.aliyun.com/repository/central")
         maven("https://repo.codemc.io/repository/nms/")
         maven("https://repo.tabooproject.org/repository/releases")
+        maven("https://repo.nukkitx.com/maven-snapshots")
         mavenCentral()
     }
 
