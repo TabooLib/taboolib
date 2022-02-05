@@ -23,6 +23,8 @@ subprojects {
         maven("https://repo.nukkitx.com/maven-snapshots")
         maven("https://repo.cloudnetservice.eu/repository/snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
+        maven("https://nexus.velocitypowered.com/repository/maven-public/")
+        maven("https://repo.iroselle.com/repository/velocity-hosted/") // 防止 velocitypowered repository 炸裂
         mavenCentral()
     }
 
