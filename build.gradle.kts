@@ -21,6 +21,8 @@ subprojects {
         maven("https://repo.codemc.io/repository/nms/")
         maven("https://repo.tabooproject.org/repository/releases")
         maven("https://repo.nukkitx.com/maven-snapshots")
+        maven("https://repo.cloudnetservice.eu/repository/snapshots/")
+        maven("https://oss.sonatype.org/content/repositories/snapshots/")
         mavenCentral()
     }
 

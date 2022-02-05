@@ -1,6 +1,9 @@
 package taboolib.platform;
 
-import net.md_5.bungee.BungeeCord;
+import de.dytanic.cloudnet.CloudNet;
+import de.dytanic.cloudnet.driver.module.ModuleLifeCycle;
+import de.dytanic.cloudnet.driver.module.ModuleTask;
+import de.dytanic.cloudnet.driver.module.driver.DriverModule;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
@@ -11,9 +14,6 @@ import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
 /**
  * TabooLib
  * taboolib.platform.BungeePlugin
@@ -21,25 +21,24 @@ import java.util.concurrent.TimeUnit;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda"})
-@PlatformSide(Platform.BUNGEE)
-public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
+@PlatformSide(Platform.CLOUDNET_V3)
+public class CloudNetV3Plugin extends DriverModule {
 
     @Nullable
     private static Plugin instanceDelegate;
-    private static BungeePlugin instance;
+    private static CloudNetV3Plugin instance;
 
     static {
-        TabooLib.booster().proceed(LifeCycle.CONST, Platform.BUNGEE);
+        TabooLib.booster().proceed(LifeCycle.CONST, Platform.CLOUDNET_V3);
         setupPluginInstance();
     }
 
-    public BungeePlugin() {
+    public CloudNetV3Plugin() {
         instance = this;
         TabooLib.booster().proceed(LifeCycle.INIT);
     }
 
-    @Override
+    @ModuleTask(event = ModuleLifeCycle.LOADED)
     public void onLoad() {
         TabooLib.booster().proceed(LifeCycle.LOAD);
         setupPluginInstance();
@@ -48,26 +47,24 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
         }
     }
 
-    @Override
+    @ModuleTask(event = ModuleLifeCycle.STARTED)
     public void onEnable() {
         TabooLib.booster().proceed(LifeCycle.ENABLE);
         if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onEnable();
         }
         if (isRunning()) {
-            BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                    if (instanceDelegate != null) {
-                        instanceDelegate.onActive();
-                    }
+            CloudNet.getInstance().scheduleTask(() -> {
+                TabooLib.booster().proceed(LifeCycle.ACTIVE);
+                if (instanceDelegate != null) {
+                    instanceDelegate.onActive();
                 }
-            }, 0, TimeUnit.SECONDS);
+                return null;
+            });
         }
     }
 
-    @Override
+    @ModuleTask(event = ModuleLifeCycle.STOPPED)
     public void onDisable() {
         TabooLib.booster().proceed(LifeCycle.DISABLE);
         if (instanceDelegate != null && isRunning()) {
@@ -76,13 +73,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     }
 
     @NotNull
-    @Override
-    public File getFile() {
-        return super.getFile();
-    }
-
-    @NotNull
-    public static BungeePlugin getInstance() {
+    public static CloudNetV3Plugin getInstance() {
         return instance;
     }
 
