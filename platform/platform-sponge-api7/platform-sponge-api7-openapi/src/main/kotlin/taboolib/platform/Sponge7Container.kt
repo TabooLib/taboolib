@@ -1,6 +1,6 @@
 package taboolib.platform
 
-import cn.nukkit.plugin.Plugin
+import org.spongepowered.api.plugin.PluginContainer
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
@@ -8,18 +8,18 @@ import taboolib.internal.Internal
 
 /**
  * TabooLib
- * NukkitOpenContainer
+ * taboolib.platform.type.SpongeOpenContainer
  *
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
 @Internal
-class NukkitContainer(plugin: Plugin) : OpenContainer {
+class Sponge7Container(plugin: PluginContainer) : OpenContainer {
 
-    private val name = plugin.name
-    private val main = plugin.description.main!!
+    private val name = plugin.id
+    private val main = plugin.instance.get().javaClass.name
     private val clazz = try {
-        Class.forName(main.substring(0, main.length - "platform.NukkitPlugin".length) + "common.OpenAPI")
+        Class.forName(main.substring(0, main.length - "platform.Sponge7Plugin".length) + "common.OpenAPI")
     } catch (ignored: Throwable) {
         null
     }

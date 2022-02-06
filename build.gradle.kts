@@ -25,6 +25,7 @@ subprojects {
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
         maven("https://repo.iroselle.com/repository/velocity-hosted/")
+        maven("https://repo.spongepowered.org/maven")
         mavenCentral()
     }
 
