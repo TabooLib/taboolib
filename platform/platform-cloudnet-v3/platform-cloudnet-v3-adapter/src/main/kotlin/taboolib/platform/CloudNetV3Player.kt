@@ -1,45 +1,69 @@
-package taboolib.platform.type
+package taboolib.platform
 
-import com.velocitypowered.api.proxy.Player
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
+import de.dytanic.cloudnet.CloudNet
+import de.dytanic.cloudnet.command.ICommandSender
+import de.dytanic.cloudnet.common.document.gson.JsonDocument
+import de.dytanic.cloudnet.ext.bridge.AdventureComponentMessenger
+import de.dytanic.cloudnet.ext.bridge.BridgeServiceProperty
+import de.dytanic.cloudnet.ext.bridge.player.CloudPlayer
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.kyori.adventure.title.Title
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import taboolib.platform.VelocityPlugin
+import taboolib.internal.Internal
 import java.net.InetSocketAddress
-import java.time.Duration
 import java.util.*
 
 /**
  * TabooLib
- * taboolib.platform.type.VelocityPlayer
+ * taboolib.platform.type.BungeePlayer
  *
  * @author CziSKY
  * @since 2021/6/21 13:41
  */
-class VelocityPlayer(val player: Player) : ProxyPlayer {
+@Internal
+class CloudNetV3Player : ProxyPlayer {
+
+    val sender: ICommandSender
+
+    constructor(cloudPlayer: CloudPlayer): this(cloudPlayer.sender)
+
+    constructor(sender: ICommandSender) {
+        this.sender = sender
+        this.player = sender.getProperty<CloudPlayer>("player")!!
+        this.rawData =
+            CloudNet.getInstance().cloudServiceProvider.getCloudService(player.connectedService.uniqueId).let {
+                it ?: return@let JsonDocument()
+                it.getProperty(BridgeServiceProperty.PLAYERS).orElse(null).find { it.name == this.name }?.rawData
+                    ?: JsonDocument()
+            }
+    }
+
+
+    private val player: CloudPlayer
+
+    // 用于以后支持更多操作
+    val rawData: JsonDocument
 
     override val origin: Any
-        get() = player
+        get() = sender
 
     override val name: String
-        get() = player.username
+        get() = player.name
 
     override val address: InetSocketAddress?
-        get() = player.remoteAddress
+        get() = player.networkConnectionInfo.address.let { kotlin.runCatching { InetSocketAddress(it.host, it.port) }.getOrNull() }
 
     override val uniqueId: UUID
         get() = player.uniqueId
 
     override val ping: Int
-        get() = player.ping.toInt()
+        get() = error("Unsupported")
 
     override val locale: String
         get() = error("Unsupported")
@@ -262,45 +286,35 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun kick(message: String?) {
-        player.disconnect(Component.text(message ?: ""))
+        player.playerExecutor.kick(message ?: "")
     }
 
     override fun chat(message: String) {
-        player.spoofChatInput(message)
+        player.playerExecutor.sendChatMessage(message)
     }
 
-    // TODO: 2021/7/11 可能存在争议的写法
     override fun playSound(location: Location, sound: String, volume: Float, pitch: Float) {
-        player.playSound(Sound.sound(Key.key(sound), Sound.Source.MASTER, volume, pitch), location.x, location.y, location.z)
+        error("Unsupported")
     }
 
     override fun playSoundResource(location: Location, sound: String, volume: Float, pitch: Float) {
-        playSound(location, sound, volume, pitch)
+        error("Unsupported")
     }
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-        player.showTitle(Title.title(
-            Component.text(title ?: ""),
-            Component.text(subtitle ?: ""),
-            Title.Times.of(
-                Duration.ofMillis(fadein * 50L),
-                Duration.ofMillis(stay * 50L),
-                Duration.ofMillis(fadeout * 50L)
-            )
-        ))
+        error("Unsupported")
     }
 
     override fun sendActionBar(message: String) {
-        player.sendActionBar(Component.text(message))
+        error("Unsupported")
     }
 
     override fun sendMessage(message: String) {
-        player.sendMessage(Component.text(message))
+        sender.sendMessage(message)
     }
 
-    // 2021/7/6 Velocity Raw Message
     override fun sendRawMessage(message: String) {
-        player.sendMessage(GsonComponentSerializer.gson().deserialize(message))
+        AdventureComponentMessenger.sendMessage(player, GsonComponentSerializer.gson().deserialize(message))
     }
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
@@ -308,15 +322,33 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun performCommand(command: String): Boolean {
-        VelocityPlugin.getInstance().server.commandManager.executeAsync(player, command)
+        player.playerExecutor.dispatchProxyCommand(command)
         return true
     }
 
     override fun hasPermission(permission: String): Boolean {
-        return player.hasPermission(permission)
+        return sender.hasPermission(permission)
     }
 
     override fun teleport(loc: Location) {
         error("Unsupported")
     }
 }
+
+class FilteredPlayer(@JvmField val player: CloudPlayer) : ICommandSender {
+
+    override fun getName(): String = player.name
+
+    override fun sendMessage(message: String) =
+        AdventureComponentMessenger.sendMessage(player, Component.text(message))
+
+    override fun sendMessage(vararg messages: String) =
+        messages.forEach { sendMessage(it) }
+
+    override fun hasPermission(permission: String) =
+        CloudNet.getInstance().permissionManagement.getUser(player.uniqueId)?.hasPermission(permission)?.asBoolean() ?: false
+}
+
+val CloudPlayer.sender: ICommandSender get() = FilteredPlayer(this)
+
+val FilteredPlayer.asPlayer get() = this.getProperty<CloudPlayer>("player")

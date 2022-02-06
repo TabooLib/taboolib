@@ -1,8 +1,9 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import de.dytanic.cloudnet.CloudNet
 import de.dytanic.cloudnet.command.ICommandSender
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -11,6 +12,7 @@ import taboolib.common.platform.ProxyCommandSender
  * @author CziSKY
  * @since 2021/6/21 13:35
  */
+@Internal
 class CloudNetV3CommandSender(val sender: ICommandSender) : ProxyCommandSender {
 
     override val origin: Any

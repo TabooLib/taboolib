@@ -6,7 +6,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.CloudNetV3OpenContainer
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -15,6 +15,7 @@ import taboolib.platform.type.CloudNetV3OpenContainer
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3OpenContainer : PlatformOpenContainer {
@@ -23,9 +24,9 @@ class CloudNetV3OpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return CloudNet.getInstance().moduleProvider.modules.filter {
-            it.module.javaClass.name.endsWith("platform.BungeePlugin")
+            it.module.javaClass.name.endsWith("platform.CloudNetV3Plugin")
         }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.moduleConfiguration.name) { _ -> CloudNetV3OpenContainer(it.module) }
+            pluginContainer.computeIfAbsent(it.moduleConfiguration.name) { _ -> CloudNetV3Container(it.module) }
         }
     }
 }

@@ -5,8 +5,7 @@ import com.velocitypowered.api.proxy.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
-import taboolib.platform.type.VelocityCommandSender
-import taboolib.platform.type.VelocityPlayer
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -15,6 +14,7 @@ import taboolib.platform.type.VelocityPlayer
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityAdapter : PlatformAdapter {

@@ -11,6 +11,7 @@ import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -19,6 +20,7 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Listener : PlatformListener {
@@ -31,23 +33,12 @@ class CloudNetV3Listener : PlatformListener {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, order: EventOrder, beforeModifications: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = CloudNetV3Listener(event) { func(it as T) }
+        val listener = CloudNetV3RegisteredListener(event) { func(it as T) }
         CloudNet.getInstance().eventManager.registerListener(listener)
         return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
         CloudNet.getInstance().eventManager.unregisterListener(proxyListener)
-    }
-
-    class CloudNetV3Listener(val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener {
-
-        @EventListener
-        fun handle(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
-            if (clazz.isAssignableFrom(origin.javaClass)) {
-                consumer(origin)
-            }
-        }
     }
 }

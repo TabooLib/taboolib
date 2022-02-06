@@ -6,7 +6,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.NukkitOpenContainer
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -15,6 +15,7 @@ import taboolib.platform.type.NukkitOpenContainer
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.NUKKIT])
 class NukkitOpenContainer : PlatformOpenContainer {
@@ -23,7 +24,7 @@ class NukkitOpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Server.getInstance().pluginManager.plugins.values.filter { it.javaClass.name.endsWith("platform.NukkitPlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> NukkitOpenContainer(it) }
+            pluginContainer.computeIfAbsent(it.name) { _ -> NukkitContainer(it) }
         }
     }
 }

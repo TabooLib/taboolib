@@ -7,6 +7,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common.platform.service.PlatformRunnable
 import taboolib.common.platform.service.PlatformTask
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -15,6 +16,7 @@ import taboolib.common.platform.service.PlatformTask
  * @author CziSKY
  * @since 2021/6/16 0:37
  */
+@Internal
 @Awake
 @PlatformSide([Platform.NUKKIT])
 class NukkitExecutor : PlatformExecutor {

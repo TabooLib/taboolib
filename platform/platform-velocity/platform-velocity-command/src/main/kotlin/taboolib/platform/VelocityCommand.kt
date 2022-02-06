@@ -14,6 +14,7 @@ import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandInfo
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -22,18 +23,14 @@ import taboolib.common.platform.service.PlatformCommand
  * @author sky
  * @since 2021/7/4 2:39 下午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityCommand : PlatformCommand {
 
     val registeredCommands = ArrayList<String>()
 
-    override fun registerCommand(
-        command: CommandInfo,
-        executor: CommandExecutor,
-        completer: CommandCompleter,
-        component: taboolib.common.platform.command.Component.() -> Unit,
-    ) {
+    override fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: taboolib.common.platform.command.Component.() -> Unit) {
         registeredCommands.add(command.name)
         VelocityPlugin.getInstance().server.commandManager.register(command.name, object : SimpleCommand {
 
@@ -58,19 +55,5 @@ class VelocityCommand : PlatformCommand {
 
     override fun unregisterCommands() {
         registeredCommands.onEach { VelocityPlugin.getInstance().server.commandManager.unregister(it) }
-    }
-
-    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
-        when (state) {
-            1 -> sender.cast<Audience>()
-                .sendMessage(Component.translatable("command.unknown.command", TextColor.color(0xFF5555)))
-            2 -> sender.cast<Audience>()
-                .sendMessage(Component.translatable("command.unknown.command", TextColor.color(0xFF5555)))
-            else -> return
-        }
-        val components = ArrayList<Component>()
-        components += Component.text(command)
-        components += Component.translatable("command.context.here", TextColor.color(0xFF5555), TextDecoration.ITALIC)
-        sender.cast<Audience>().sendMessage(Component.join(Component.empty(), components))
     }
 }

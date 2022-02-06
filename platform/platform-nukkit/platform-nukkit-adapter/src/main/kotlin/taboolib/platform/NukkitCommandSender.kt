@@ -1,10 +1,11 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import cn.nukkit.command.CommandSender
 import cn.nukkit.event.player.PlayerCommandPreprocessEvent
 import cn.nukkit.event.server.ServerCommandEvent
 import cn.nukkit.player.Player
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.internal.Internal
 import taboolib.platform.NukkitPlugin
 
 /**
@@ -14,6 +15,7 @@ import taboolib.platform.NukkitPlugin
  * @author CziSKY
  * @since 2021/6/19 23:52
  */
+@Internal
 class NukkitCommandSender(val sender: CommandSender) : ProxyCommandSender {
 
     override val origin: Any

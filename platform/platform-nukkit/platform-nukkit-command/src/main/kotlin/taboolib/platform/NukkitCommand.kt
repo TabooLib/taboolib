@@ -14,6 +14,7 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.command.*
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -22,6 +23,7 @@ import taboolib.common.platform.command.*
  * @author sky
  * @since 2021/7/3 1:15 上午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.NUKKIT])
 class NukkitCommand : PlatformCommand {
@@ -68,14 +70,5 @@ class NukkitCommand : PlatformCommand {
 
     override fun unregisterCommands() {
         knownCommands.forEach { registeredCommands.remove(it.name) }
-    }
-
-    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
-        when (state) {
-            1 -> sender.cast<CommandSender>().sendMessage("§cUnknown or incomplete command, see below for error")
-            2 -> sender.cast<CommandSender>().sendMessage("§cIncorrect argument for command")
-            else -> return
-        }
-        sender.cast<CommandSender>().sendMessage("$command§r§c§o<--[HERE]")
     }
 }

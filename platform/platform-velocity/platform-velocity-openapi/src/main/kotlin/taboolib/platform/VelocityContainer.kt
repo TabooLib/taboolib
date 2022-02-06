@@ -1,9 +1,10 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import com.velocitypowered.api.plugin.PluginContainer
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -12,7 +13,8 @@ import org.tabooproject.reflex.Reflex.Companion.invokeMethod
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
-class VelocityOpenContainer(plugin: PluginContainer) : OpenContainer {
+@Internal
+class VelocityContainer(plugin: PluginContainer) : OpenContainer {
 
     private val name = plugin.description.id
     private val main = plugin.instance.get().javaClass.name

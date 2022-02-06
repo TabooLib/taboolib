@@ -1,4 +1,4 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import cn.nukkit.plugin.Plugin
 import taboolib.common.OpenContainer
@@ -12,7 +12,7 @@ import org.tabooproject.reflex.Reflex.Companion.invokeMethod
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
-class NukkitOpenContainer(plugin: Plugin) : OpenContainer {
+class NukkitContainer(plugin: Plugin) : OpenContainer {
 
     private val name = plugin.name
     private val main = plugin.description.main!!

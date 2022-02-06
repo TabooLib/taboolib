@@ -1,8 +1,9 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import com.velocitypowered.api.command.CommandSource
 import net.kyori.adventure.text.Component
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.internal.Internal
 import taboolib.platform.VelocityPlugin
 
 /**
@@ -12,6 +13,7 @@ import taboolib.platform.VelocityPlugin
  * @author CziSKY
  * @since 2021/6/21 13:35
  */
+@Internal
 class VelocityCommandSender(val sender: CommandSource) : ProxyCommandSender {
 
     override val origin: Any

@@ -7,8 +7,6 @@ import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
 import taboolib.internal.Internal
-import taboolib.platform.type.NukkitCommandSender
-import taboolib.platform.type.NukkitPlayer
 import taboolib.platform.util.toCommonLocation
 
 /**

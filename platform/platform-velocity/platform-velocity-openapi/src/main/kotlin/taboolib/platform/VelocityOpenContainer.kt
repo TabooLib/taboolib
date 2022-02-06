@@ -5,7 +5,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.VelocityOpenContainer
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -14,6 +14,7 @@ import taboolib.platform.type.VelocityOpenContainer
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityOpenContainer : PlatformOpenContainer {
@@ -23,7 +24,7 @@ class VelocityOpenContainer : PlatformOpenContainer {
     override fun getOpenContainers(): List<OpenContainer> {
         val plugins = VelocityPlugin.getInstance().server.pluginManager.plugins
         return plugins.filter { it.instance.orElse(null)?.javaClass?.name?.endsWith("platform.VelocityPlugin") == true }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.id) { _ -> VelocityOpenContainer(it) }
+            pluginContainer.computeIfAbsent(it.description.id) { _ -> VelocityContainer(it) }
         }
     }
 }

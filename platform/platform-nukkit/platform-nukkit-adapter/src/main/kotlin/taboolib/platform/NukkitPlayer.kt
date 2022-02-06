@@ -1,4 +1,4 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import cn.nukkit.AdventureSettings
 import cn.nukkit.player.GameMode
@@ -11,6 +11,7 @@ import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
+import taboolib.internal.Internal
 import taboolib.platform.NukkitPlugin
 import taboolib.platform.util.toCommonLocation
 import java.net.InetSocketAddress
@@ -23,6 +24,7 @@ import java.util.*
  * @author CziSKY
  * @since 2021/6/20 0:01
  */
+@Internal
 class NukkitPlayer(val player: Player) : ProxyPlayer {
 
     override val origin: Any

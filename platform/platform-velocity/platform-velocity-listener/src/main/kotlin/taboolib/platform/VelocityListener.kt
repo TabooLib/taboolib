@@ -11,6 +11,7 @@ import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.platform.function.getEventClass
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -19,6 +20,7 @@ import taboolib.common.platform.function.getEventClass
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityListener : PlatformListener {
@@ -31,7 +33,7 @@ class VelocityListener : PlatformListener {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, postOrder: PostOrder, func: (T) -> Unit): ProxyListener {
-        val listener = VelocityListener(event) { func(it as T) }
+        val listener = VelocityRegisteredListener(event) { func(it as T) }
         val eventClass = event.getEventClass()
         plugin.server.eventManager.register(plugin, eventClass as Class<Any>, com.velocitypowered.api.event.PostOrder.values()[postOrder.ordinal], listener)
         return listener
@@ -39,15 +41,5 @@ class VelocityListener : PlatformListener {
 
     override fun unregisterListener(proxyListener: ProxyListener) {
         plugin.server.eventManager.unregister(this, proxyListener as EventHandler<*>)
-    }
-
-    class VelocityListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
-
-        override fun execute(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
-            if (clazz.isAssignableFrom(origin.javaClass)) {
-                consumer(origin)
-            }
-        }
     }
 }

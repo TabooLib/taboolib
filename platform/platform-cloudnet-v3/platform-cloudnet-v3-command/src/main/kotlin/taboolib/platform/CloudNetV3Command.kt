@@ -17,6 +17,7 @@ import taboolib.common.platform.command.*
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.console
 import taboolib.common.platform.service.PlatformCommand
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -25,6 +26,7 @@ import taboolib.common.platform.service.PlatformCommand
  * @author sky
  * @since 2021/7/3 1:03 上午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Command : PlatformCommand {
@@ -59,19 +61,6 @@ class CloudNetV3Command : PlatformCommand {
 
     override fun unregisterCommands() {
         commands.forEach { unregisterCommand(it) }
-    }
-
-    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
-
-        when (state) {
-            1 -> sender.cast<ICommandSender>().sendMessage(Component.translatable("command.unknown.command", TextColor.color(0xFF5555)).legacy)
-            2 -> sender.cast<ICommandSender>().sendMessage(Component.translatable("command.unknown.command", TextColor.color(0xFF5555)).legacy)
-            else -> return
-        }
-        val components = ArrayList<Component>()
-        components += Component.text(command)
-        components += Component.translatable("command.context.here", TextColor.color(0xFF5555), TextDecoration.ITALIC)
-        sender.cast<ICommandSender>().sendMessage(Component.join(Component.empty(), components).legacy)
     }
 
     private val Component.legacy: String

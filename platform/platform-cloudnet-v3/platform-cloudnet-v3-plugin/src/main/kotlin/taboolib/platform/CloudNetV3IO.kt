@@ -8,6 +8,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
+import taboolib.internal.Internal
 import java.io.File
 
 /**
@@ -17,6 +18,7 @@ import java.io.File
  * @author sky
  * @since 2021/6/14 11:10 下午
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3IO : PlatformIO {

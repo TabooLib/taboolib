@@ -6,6 +6,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common.platform.service.PlatformRunnable
 import taboolib.common.platform.service.PlatformTask
+import taboolib.internal.Internal
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit
  * @author CziSKY
  * @since 2021/6/16 0:43
  */
+@Internal
 @Awake
 @PlatformSide([Platform.VELOCITY])
 class VelocityExecutor : PlatformExecutor {

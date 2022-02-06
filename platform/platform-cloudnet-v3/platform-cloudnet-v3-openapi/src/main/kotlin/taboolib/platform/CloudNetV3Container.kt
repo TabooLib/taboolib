@@ -1,9 +1,10 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import de.dytanic.cloudnet.driver.module.IModule
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -12,7 +13,8 @@ import org.tabooproject.reflex.Reflex.Companion.invokeMethod
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
-class CloudNetV3OpenContainer(plugin: IModule) : OpenContainer {
+@Internal
+class CloudNetV3Container(plugin: IModule) : OpenContainer {
 
     private val name = plugin.name
     private val main = plugin.moduleConfig.main!!

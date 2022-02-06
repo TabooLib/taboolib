@@ -8,9 +8,7 @@ import de.dytanic.cloudnet.ext.bridge.player.IPlayerManager
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
-import taboolib.platform.type.CloudNetV3CommandSender
-import taboolib.platform.type.CloudNetV3Player
-import taboolib.platform.type.sender
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -19,6 +17,7 @@ import taboolib.platform.type.sender
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Adapter : PlatformAdapter {

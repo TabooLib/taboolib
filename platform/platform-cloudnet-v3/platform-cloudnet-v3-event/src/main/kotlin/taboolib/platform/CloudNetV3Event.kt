@@ -6,6 +6,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.service.PlatformEvent
+import taboolib.internal.Internal
 import taboolib.platform.type.CloudNetV3ProxyEvent
 
 /**
@@ -15,6 +16,7 @@ import taboolib.platform.type.CloudNetV3ProxyEvent
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Event : PlatformEvent {
