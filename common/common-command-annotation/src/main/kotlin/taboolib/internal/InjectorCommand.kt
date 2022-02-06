@@ -12,7 +12,7 @@ import taboolib.common.platform.command.*
 @Internal
 @Awake
 @Bind([CommandHeader::class, CommandBody::class])
-object SimpleCommandRegister : Injector(LifeCycle.ENABLE) {
+object InjectorCommand : Injector(LifeCycle.ENABLE) {
 
     val main = HashMap<String, SimpleCommandMain>()
     val body = HashMap<String, MutableList<SimpleCommandBody>>()
