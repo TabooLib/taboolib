@@ -37,22 +37,16 @@ class NukkitCommand : PlatformCommand {
         Server.getInstance().commandRegistry.getProperty<MutableMap<String, Command>>("registeredCommands")!!
     }
 
-    override fun registerCommand(
-        command: CommandInfo,
-        executor: CommandExecutor,
-        completer: CommandCompleter,
-        component: Component.() -> Unit
-    ) {
+    override fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit) {
         // TODO: 2021/7/15 Not Support Suggestions
         TabooLib.booster().join(LifeCycle.ENABLE) {
-            val registerCommand = object : Command(
-                command.name, CommandData.builder(command.name)
-                    .setDescription(command.description.ifEmpty { command.name })
-                    .setUsageMessage(command.usage)
-                    .addPermission(command.permission.ifEmpty { "${plugin.name}.command.use" })
-                    .setPermissionMessage(command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
-                    .build()
-            ) {
+            val build = CommandData.builder(command.name)
+                .setDescription(command.description.ifEmpty { command.name })
+                .setUsageMessage(command.usage)
+                .addPermission(command.permission.ifEmpty { "${plugin.name}.command.use" })
+                .setPermissionMessage(command.permissionMessage.ifEmpty { PlatformCommand.defaultPermissionMessage })
+                .build()
+            val registerCommand = object : Command(command.name, build) {
 
                 override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
                     return executor.execute(adaptCommandSender(sender), command, commandLabel, args)

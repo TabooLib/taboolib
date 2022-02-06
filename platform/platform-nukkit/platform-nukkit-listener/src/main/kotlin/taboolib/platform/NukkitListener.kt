@@ -32,7 +32,7 @@ class NukkitListener : PlatformListener {
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = NukkitRegisteredListener(event as Class<Event>) { func(it as T) }
         val eventClass = event.getEventClass()
-        Server.getInstance().pluginManager.registerEvent(eventClass as Class<Event>, listener, priority.toNukkit(), listener, plugin, ignoreCancelled)
+        Server.getInstance().pluginManager.registerEvent(eventClass as Class<Event>, listener, nukkit(priority), listener, plugin, ignoreCancelled)
         return listener
     }
 
@@ -40,7 +40,7 @@ class NukkitListener : PlatformListener {
         HandlerList.unregisterAll(proxyListener as Listener)
     }
 
-    fun EventPriority.toNukkit() = when (this) {
+    fun nukkit(eventPriority: EventPriority) = when (eventPriority) {
         EventPriority.LOWEST -> cn.nukkit.event.EventPriority.LOWEST
         EventPriority.LOW -> cn.nukkit.event.EventPriority.LOW
         EventPriority.NORMAL -> cn.nukkit.event.EventPriority.NORMAL

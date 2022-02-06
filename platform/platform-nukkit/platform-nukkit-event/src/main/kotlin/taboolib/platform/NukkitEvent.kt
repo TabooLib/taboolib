@@ -22,8 +22,7 @@ import taboolib.platform.type.NukkitProxyEvent
 class NukkitEvent : PlatformEvent {
 
     override fun callEvent(proxyEvent: ProxyEvent) {
-        Server.getInstance().pluginManager.callEvent(NukkitProxyEvent(proxyEvent).also {
-            it.proxyEvent?.postCall()
-        })
+        Server.getInstance().pluginManager.callEvent(NukkitProxyEvent(proxyEvent))
+        proxyEvent.postCall()
     }
 }

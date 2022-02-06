@@ -1,6 +1,6 @@
 rootProject.name = "TabooLib"
 
-// common
+include("structure")
 include("common:common-adapter")
 include("common:common-command")
 include("common:common-command-annotation")

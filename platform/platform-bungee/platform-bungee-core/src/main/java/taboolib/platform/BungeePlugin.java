@@ -52,14 +52,12 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
         if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onEnable();
         }
-        if (isRunning()) {
-            BungeeCord.getInstance().getScheduler().schedule(this, () -> {
-                TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                if (isRunning() && instanceDelegate != null) {
-                    instanceDelegate.onActive();
-                }
-            }, 0, TimeUnit.SECONDS);
-        }
+        BungeeCord.getInstance().getScheduler().schedule(this, () -> {
+            TabooLib.booster().proceed(LifeCycle.ACTIVE);
+            if (isRunning() && instanceDelegate != null) {
+                instanceDelegate.onActive();
+            }
+        }, 0, TimeUnit.SECONDS);
     }
 
     @Override

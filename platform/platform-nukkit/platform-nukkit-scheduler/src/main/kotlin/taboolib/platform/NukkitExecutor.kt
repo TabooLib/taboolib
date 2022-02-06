@@ -41,7 +41,6 @@ class NukkitExecutor : PlatformExecutor {
                     init {
                         task = NukkitPlatformTask(this)
                     }
-
                     override fun run() {
                         runnable.executor(task!!)
                     }

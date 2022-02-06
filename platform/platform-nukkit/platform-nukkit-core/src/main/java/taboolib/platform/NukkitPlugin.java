@@ -53,14 +53,12 @@ public class NukkitPlugin extends PluginBase {
         if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onEnable();
         }
-        if (isRunning()) {
-            Server.getInstance().getScheduler().scheduleTask(this, () -> {
-                TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                if (isRunning() && instanceDelegate != null) {
-                    instanceDelegate.onActive();
-                }
-            });
-        }
+        Server.getInstance().getScheduler().scheduleTask(this, () -> {
+            TabooLib.booster().proceed(LifeCycle.ACTIVE);
+            if (isRunning() && instanceDelegate != null) {
+                instanceDelegate.onActive();
+            }
+        });
     }
 
     @Override

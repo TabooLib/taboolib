@@ -1,14 +1,9 @@
 package taboolib.platform
 
 import com.velocitypowered.api.command.SimpleCommand
-import net.kyori.adventure.audience.Audience
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
-import net.kyori.adventure.text.format.TextDecoration
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandInfo

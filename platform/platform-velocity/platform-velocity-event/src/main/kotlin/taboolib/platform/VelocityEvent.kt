@@ -20,11 +20,8 @@ import taboolib.platform.type.VelocityProxyEvent
 @PlatformSide([Platform.VELOCITY])
 class VelocityEvent : PlatformEvent {
 
-    val plugin by lazy { VelocityPlugin.getInstance() }
-
     override fun callEvent(proxyEvent: ProxyEvent) {
-        val event = VelocityProxyEvent(proxyEvent)
-        plugin.server.eventManager.fire(event)
-        event.proxyEvent?.postCall()
+        VelocityPlugin.getInstance().server.eventManager.fire(VelocityProxyEvent(proxyEvent))
+        proxyEvent.postCall()
     }
 }

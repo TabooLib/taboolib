@@ -53,14 +53,12 @@ public class BukkitPlugin extends JavaPlugin {
         if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onEnable();
         }
-        if (isRunning()) {
-            Bukkit.getScheduler().runTask(this, () -> {
-                TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                if (isRunning() && instanceDelegate != null) {
-                    instanceDelegate.onActive();
-                }
-            });
-        }
+        Bukkit.getScheduler().runTask(this, () -> {
+            TabooLib.booster().proceed(LifeCycle.ACTIVE);
+            if (isRunning() && instanceDelegate != null) {
+                instanceDelegate.onActive();
+            }
+        });
     }
 
     @Override

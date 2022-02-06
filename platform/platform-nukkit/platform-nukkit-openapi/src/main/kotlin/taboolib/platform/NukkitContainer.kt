@@ -18,6 +18,7 @@ class NukkitContainer(plugin: Plugin) : OpenContainer {
 
     private val name = plugin.name
     private val main = plugin.description.main!!
+
     private val clazz = try {
         Class.forName(main.substring(0, main.length - "platform.NukkitPlugin".length) + "common.OpenAPI")
     } catch (ignored: Throwable) {

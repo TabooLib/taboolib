@@ -22,9 +22,6 @@ import taboolib.platform.util.toProxyLocation
 @PlatformSide([Platform.BUKKIT])
 class BukkitAdapter : PlatformAdapter {
 
-    val plugin: BukkitPlugin
-        get() = BukkitPlugin.getInstance()
-
     override fun console(): ProxyCommandSender {
         return adaptCommandSender(Bukkit.getConsoleSender())
     }

@@ -22,9 +22,8 @@ import taboolib.platform.type.BukkitProxyEvent
 class BukkitEvent : PlatformEvent {
 
     override fun callEvent(proxyEvent: ProxyEvent) {
-        val bukkitEvent = BukkitProxyEvent(proxyEvent)
-        fireEvent(bukkitEvent)
-        bukkitEvent.proxyEvent?.postCall()
+        fireEvent(BukkitProxyEvent(proxyEvent))
+        proxyEvent.postCall()
     }
 
     fun fireEvent(event: Event) {

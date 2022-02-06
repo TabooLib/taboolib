@@ -22,8 +22,7 @@ import taboolib.platform.type.Sponge7ProxyEvent
 class Sponge7Event : PlatformEvent {
 
     override fun callEvent(proxyEvent: ProxyEvent) {
-        val event = Sponge7ProxyEvent(proxyEvent)
-        Sponge.getEventManager().post(event)
-        event.proxyEvent?.postCall()
+        Sponge.getEventManager().post(Sponge7ProxyEvent(proxyEvent))
+        proxyEvent.postCall()
     }
 }

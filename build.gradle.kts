@@ -66,33 +66,33 @@ subprojects {
     }
 }
 
-//publishing {
-//    repositories {
-//        maven("http://ptms.ink:8081/repository/releases") {
-//            isAllowInsecureProtocol = true
-//            credentials {
-//                username = project.findProperty("taboolibUsername").toString()
-//                password = project.findProperty("taboolibPassword").toString()
-//            }
-//            authentication {
-//                create<BasicAuthentication>("basic")
-//            }
-//        }
-//    }
-//    publications {
-//        create<MavenPublication>("maven") {
-//            artifactId = "taboolib"
-//            groupId = "io.izzel"
-//            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
-//            println("> version $version")
-//            file("$buildDir/libs").listFiles()?.forEach { file ->
-//                if (file.extension == "jar") {
-//                    artifact(file) {
-//                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
-//                        println("> module $classifier (${file.name})")
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+publishing {
+    repositories {
+        maven("http://ptms.ink:8081/repository/releases") {
+            isAllowInsecureProtocol = true
+            credentials {
+                username = project.findProperty("taboolibUsername").toString()
+                password = project.findProperty("taboolibPassword").toString()
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "taboolib"
+            groupId = "io.izzel"
+            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
+            println("> version $version")
+            file("$buildDir/libs").listFiles()?.forEach { file ->
+                if (file.extension == "jar") {
+                    artifact(file) {
+                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
+                        println("> module $classifier (${file.name})")
+                    }
+                }
+            }
+        }
+    }
+}

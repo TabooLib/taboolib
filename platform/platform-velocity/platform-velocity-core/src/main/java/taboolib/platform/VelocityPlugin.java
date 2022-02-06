@@ -26,7 +26,6 @@ import java.nio.file.Path;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings("Convert2Lambda")
 @com.velocitypowered.api.plugin.Plugin(
         id = "@plugin_id@",
         name = "@plugin_name@",
@@ -59,32 +58,21 @@ public class VelocityPlugin {
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (isRunning()) {
-            TabooLib.booster().proceed(LifeCycle.LOAD);
-            if (instanceDelegate == null) {
-                instanceDelegate = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
-            }
-            if (instanceDelegate != null) {
-                instanceDelegate.onLoad();
-            }
+        TabooLib.booster().proceed(LifeCycle.LOAD);
+        setupPluginInstance();
+        if (isRunning() && instanceDelegate != null) {
+            instanceDelegate.onLoad();
         }
-        if (isRunning()) {
-            TabooLib.booster().proceed(LifeCycle.ENABLE);
-            if (instanceDelegate != null) {
-                instanceDelegate.onEnable();
+        TabooLib.booster().proceed(LifeCycle.ENABLE);
+        if (isRunning() && instanceDelegate != null) {
+            instanceDelegate.onEnable();
+        }
+        server.getScheduler().buildTask(this, () -> {
+            TabooLib.booster().proceed(LifeCycle.ACTIVE);
+            if (isRunning() && instanceDelegate != null) {
+                instanceDelegate.onActive();
             }
-        }
-        if (isRunning()) {
-            server.getScheduler().buildTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                    if (instanceDelegate != null) {
-                        instanceDelegate.onActive();
-                    }
-                }
-            }).schedule();
-        }
+        }).schedule();
     }
 
     @Subscribe
