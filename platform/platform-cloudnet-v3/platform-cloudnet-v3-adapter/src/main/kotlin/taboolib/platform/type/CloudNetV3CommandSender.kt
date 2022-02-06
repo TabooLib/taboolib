@@ -20,9 +20,9 @@ class CloudNetV3CommandSender(val sender: ICommandSender) : ProxyCommandSender {
         get() = sender.name
 
     override var isOp: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override fun isOnline(): Boolean {

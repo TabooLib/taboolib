@@ -21,12 +21,12 @@ open class CloudNetV3ProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(), I
             if (proxyEvent.allowCancelled) {
                 proxyEvent.isCancelled = value
             } else {
-                error("unsupported")
+                error("Unsupported")
             }
         } else if (allowCancelled) {
             isCancelled = value
         } else {
-            error("unsupported")
+            error("Unsupported")
         }
     }
 

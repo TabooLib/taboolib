@@ -1,8 +1,9 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.chat.TextComponent
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.internal.Internal
 import taboolib.platform.BungeePlugin
 
 /**
@@ -12,6 +13,7 @@ import taboolib.platform.BungeePlugin
  * @author CziSKY
  * @since 2021/6/21 13:35
  */
+@Internal
 class BungeeCommandSender(val sender: CommandSender) : ProxyCommandSender {
 
     override val origin: Any
@@ -21,9 +23,9 @@ class BungeeCommandSender(val sender: CommandSender) : ProxyCommandSender {
         get() = sender.name
 
     override var isOp: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override fun isOnline(): Boolean {

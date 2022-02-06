@@ -7,8 +7,6 @@ import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
 import taboolib.internal.Internal
-import taboolib.platform.type.BukkitCommandSender
-import taboolib.platform.type.BukkitPlayer
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 

@@ -26,7 +26,7 @@ open class BungeeProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(), Cance
         } else if (allowCancelled) {
             isCancelled = value
         } else {
-            error("unsupported")
+            error("Unsupported")
         }
     }
 

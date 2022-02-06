@@ -18,11 +18,9 @@ import taboolib.platform.type.BungeeProxyEvent
 @PlatformSide([Platform.BUNGEE])
 class BungeeEvent : PlatformEvent {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
-
     override fun callEvent(proxyEvent: ProxyEvent) {
         val event = BungeeProxyEvent(proxyEvent)
-        plugin.proxy.pluginManager.callEvent(event)
+        BungeePlugin.getInstance().proxy.pluginManager.callEvent(event)
         event.proxyEvent?.postCall()
     }
 }

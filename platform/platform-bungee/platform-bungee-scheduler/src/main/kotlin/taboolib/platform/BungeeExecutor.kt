@@ -6,6 +6,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
 import taboolib.common.platform.service.PlatformRunnable
 import taboolib.common.platform.service.PlatformTask
+import taboolib.internal.Internal
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -16,12 +17,13 @@ import java.util.concurrent.TimeUnit
  * @author CziSKY
  * @since 2021/6/16 0:13
  */
+@Internal
 @Awake
 @PlatformSide([Platform.BUNGEE])
 class BungeeExecutor : PlatformExecutor {
 
-    private val tasks = ArrayList<PlatformRunnable>()
     private var started = false
+    private val tasks = ArrayList<PlatformRunnable>()
 
     val plugin by lazy {
         BungeePlugin.getInstance()
@@ -36,80 +38,40 @@ class BungeeExecutor : PlatformExecutor {
         if (started) {
             val scheduler = plugin.proxy.scheduler
             val future = CompletableFuture<Unit>()
-            val task: BungeePlatformTask
+            var task: BungeePlatformTask? = null
+            fun createTask(async: Boolean = false): Runnable {
+                return object : Runnable {
+                    init {
+                        task = BungeePlatformTask(future)
+                    }
+                    override fun run() {
+                        if (async) {
+                            scheduler.runAsync(plugin) { runnable.executor(task!!) }
+                        } else {
+                            runnable.executor(task!!)
+                        }
+                    }
+                }
+            }
             val scheduledTask = when {
                 runnable.period > 0 -> if (runnable.async) {
-                    scheduler.schedule(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            scheduler.runAsync(plugin) {
-                                runnable.executor(task)
-                            }
-                        }
-                    }, runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
+                    scheduler.schedule(plugin, createTask(true), runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
                 } else {
-                    scheduler.schedule(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }, runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
+                    scheduler.schedule(plugin, createTask(), runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
                 }
                 runnable.delay > 0 -> if (runnable.async) {
-                    scheduler.schedule(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            scheduler.runAsync(plugin) {
-                                runnable.executor(task)
-                            }
-                        }
-                    }, runnable.delay, 0, TimeUnit.MILLISECONDS)
+                    scheduler.schedule(plugin, createTask(true), runnable.delay, 0, TimeUnit.MILLISECONDS)
                 } else {
-                    scheduler.schedule(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }, runnable.delay, 0, TimeUnit.MILLISECONDS)
+                    scheduler.schedule(plugin, createTask(), runnable.delay, 0, TimeUnit.MILLISECONDS)
                 }
                 else -> if (runnable.async) {
-                    scheduler.runAsync(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    })
+                    scheduler.runAsync(plugin, createTask(true))
                 } else {
-                    scheduler.schedule(plugin, object : Runnable {
-                        init {
-                            task = BungeePlatformTask(future)
-                        }
-
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }, 0, 0, TimeUnit.MILLISECONDS)
+                    scheduler.schedule(plugin, createTask(), 0, 0, TimeUnit.MILLISECONDS)
                 }
             }
-            future.thenAccept {
-                scheduledTask?.cancel()
-            }
-            return task
+            future.thenAccept { scheduledTask?.cancel() }
+            return task!!
         } else {
             tasks += runnable
             return object : PlatformTask {

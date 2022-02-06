@@ -1,4 +1,4 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender

@@ -1,5 +1,5 @@
 @file:Internal
-package taboolib.platform.util
+package taboolib.internal
 
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
@@ -7,7 +7,6 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
-import taboolib.internal.Internal
 import java.lang.reflect.Constructor
 
 internal val legacyVersion by lazy {

@@ -5,8 +5,8 @@ import org.bukkit.command.Command
 import org.bukkit.command.PluginCommand
 import org.bukkit.command.SimpleCommandMap
 import org.bukkit.permissions.Permission
-import org.bukkit.plugin.Plugin
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.internal.Internal
@@ -15,11 +15,9 @@ import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
-import java.lang.reflect.Constructor
 
 /**
  * TabooLib
@@ -44,17 +42,11 @@ class BukkitCommand : PlatformCommand {
         commandMap.getProperty<MutableMap<String, Command>>("knownCommands")!!
     }
 
-    val constructor: Constructor<PluginCommand> by lazy {
-        PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java).also {
-            it.isAccessible = true
-        }
-    }
-
     val registeredCommands = ArrayList<CommandInfo>()
 
     override fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit) {
         TabooLib.booster().join(LifeCycle.ENABLE) {
-            val pluginCommand = constructor.newInstance(command.name, plugin)
+            val pluginCommand = PluginCommand::class.java.invokeConstructor(command.name, plugin)
             pluginCommand.setExecutor { sender, _, label, args ->
                 executor.execute(adaptCommandSender(sender), command, label, args)
             }
@@ -106,41 +98,22 @@ class BukkitCommand : PlatformCommand {
                     pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic = true))
                 }
             }
-            sync()
+            syncCommands()
             registeredCommands.add(command)
         }
     }
 
     override fun unregisterCommand(command: String) {
         knownCommands.remove(command)
-        sync()
+        syncCommands()
     }
 
     override fun unregisterCommands() {
         registeredCommands.forEach { unregisterCommand(it.name) }
-        sync()
+        syncCommands()
     }
 
-    override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
-//        when (state) {
-//            1 -> sender.cast<CommandSender>().spigot().sendMessage(TranslatableComponent("command.unknown.command").also {
-//                it.color = ChatColor.RED
-//            })
-//            2 -> sender.cast<CommandSender>().spigot().sendMessage(TranslatableComponent("command.unknown.argument").also {
-//                it.color = ChatColor.RED
-//            })
-//            else -> return
-//        }
-//        val components = ArrayList<BaseComponent>()
-//        components += TextComponent(command)
-//        components += TranslatableComponent("command.context.here").also {
-//            it.color = ChatColor.RED
-//            it.isItalic = true
-//        }
-//        sender.cast<CommandSender>().spigot().sendMessage(*components.toTypedArray())
-    }
-
-    fun sync() {
+    fun syncCommands() {
         // 1.13 sync commands
         kotlin.runCatching {
             Bukkit.getServer().invokeMethod<Void>("syncCommands")

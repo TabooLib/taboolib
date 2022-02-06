@@ -1,26 +1,26 @@
-package taboolib.platform.type
+package taboolib.platform
 
-import org.bukkit.plugin.Plugin
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import taboolib.internal.Internal
+import net.md_5.bungee.api.plugin.Plugin
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.internal.Internal
 
 /**
  * TabooLib
- * taboolib.platform.type.BukkitOpenContainer
+ * taboolib.platform.type.BungeeContainer
  *
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
 @Internal
-class BukkitOpenContainer(plugin: Plugin) : OpenContainer {
+class BungeeContainer(plugin: Plugin) : OpenContainer {
 
-    private val name = plugin.name
-    private val main = plugin.description.main
+    private val name = plugin.description.name
+    private val main = plugin.description.main!!
 
     private val openAPI = try {
-        Class.forName(main.substring(0, main.length - "platform.BukkitPlugin".length) + "common.OpenAPI")
+        Class.forName(main.substring(0, main.length - "platform.BungeePlugin".length) + "common.OpenAPI")
     } catch (ignored: Throwable) {
         null
     }

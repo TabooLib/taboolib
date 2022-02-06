@@ -5,8 +5,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
-import taboolib.platform.type.BungeeCommandSender
-import taboolib.platform.type.BungeePlayer
+import taboolib.internal.Internal
 
 /**
  * TabooLib
@@ -15,6 +14,7 @@ import taboolib.platform.type.BungeePlayer
  * @author CziSKY
  * @since 2021/6/21 14:28
  */
+@Internal
 @Awake
 @PlatformSide([Platform.BUNGEE])
 class BungeeAdapter : PlatformAdapter {
@@ -38,10 +38,10 @@ class BungeeAdapter : PlatformAdapter {
     }
 
     override fun adaptLocation(any: Any): Location {
-        error("unsupported")
+        error("Unsupported")
     }
 
     override fun platformLocation(location: Location): Any {
-        error("unsupported")
+        error("Unsupported")
     }
 }

@@ -58,13 +58,13 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
     override var compassTarget: Location
         get() = player.spawn.toCommonLocation()
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var bedSpawnLocation: Location?
         get() = player.spawn.toCommonLocation()
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var displayName: String?
@@ -74,9 +74,9 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override var playerListName: String?
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var gameMode: ProxyGameMode
@@ -92,7 +92,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.isSprinting
 
     override val isBlocking: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var isGliding: Boolean
         get() = player.isGliding
@@ -101,9 +101,9 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override var isGlowing: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var isSwimming: Boolean
@@ -113,28 +113,28 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override val isRiptiding: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isSleeping: Boolean
         get() = player.isSleeping
 
     override val sleepTicks: Int
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var isSleepingIgnored: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val isDead: Boolean
         get() = player.health < 0
 
     override val isConversing: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isLeashed: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isOnGround: Boolean
         get() = player.isOnGround
@@ -143,18 +143,18 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.vehicle != null
 
     override var hasGravity: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val attackCooldown: Int
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var playerTime: Long
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val firstPlayed: Long
@@ -164,9 +164,9 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.lastPlayed
 
     override var absorptionAmount: Double
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var noDamageTicks: Int
@@ -198,15 +198,15 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override var exhaustion: Float
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var saturation: Float
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var foodLevel: Int
@@ -241,9 +241,9 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override var flySpeed: Float
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var walkSpeed: Float
@@ -253,7 +253,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
         }
 
     override val pose: String
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val facing: String
         get() = player.horizontalFacing.name
@@ -300,7 +300,7 @@ class NukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
-        error("unsupported") // ParticleCommand::class.java
+        error("Unsupported") // ParticleCommand::class.java
     }
 
     override fun hasPermission(permission: String): Boolean {

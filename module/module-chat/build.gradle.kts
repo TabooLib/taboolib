@@ -8,10 +8,6 @@ dependencies {
     compileOnly(project(":common:common-environment"))
 }
 
-shrinking {
-    shadow = true
-}
-
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")

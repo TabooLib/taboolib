@@ -21,9 +21,11 @@ import java.util.logging.Logger
 @PlatformSide([Platform.BUNGEE])
 class BungeeIO : PlatformIO {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
+    val plugin by lazy {
+        BungeePlugin.getInstance()
+    }
 
-    private val logger: Logger
+    val logger: Logger
         get() = try {
             BungeePlugin.getInstance().logger
         } catch (ex: Exception) {

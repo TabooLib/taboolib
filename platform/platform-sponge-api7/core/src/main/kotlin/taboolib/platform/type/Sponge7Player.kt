@@ -91,9 +91,9 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override var bedSpawnLocation: Location?
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var displayName: String?
@@ -103,9 +103,9 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override var playerListName: String?
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var gameMode: ProxyGameMode
@@ -139,19 +139,19 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override var isSwimming: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val isRiptiding: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isSleeping: Boolean
         get() = player.getOrElse(Keys.IS_SLEEPING, false)
 
     override val sleepTicks: Int
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var isSleepingIgnored: Boolean
         get() = player.isSleepingIgnored
@@ -163,10 +163,10 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         get() = player.health().get() <= 0
 
     override val isConversing: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isLeashed: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isOnGround: Boolean
         get() = player.isOnGround
@@ -181,12 +181,12 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         }
 
     override val attackCooldown: Int
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var playerTime: Long
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val firstPlayed: Long

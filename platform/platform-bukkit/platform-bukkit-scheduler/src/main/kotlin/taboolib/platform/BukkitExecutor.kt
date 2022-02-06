@@ -21,8 +21,8 @@ import taboolib.common.platform.service.PlatformTask
 @PlatformSide([Platform.BUKKIT])
 class BukkitExecutor : PlatformExecutor {
 
-    private val tasks = ArrayList<PlatformRunnable>()
     private var started = false
+    private val tasks = ArrayList<PlatformRunnable>()
 
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()

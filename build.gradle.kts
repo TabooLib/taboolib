@@ -24,7 +24,7 @@ subprojects {
         maven("https://repo.cloudnetservice.eu/repository/snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
-        maven("https://repo.iroselle.com/repository/velocity-hosted/") // 防止 velocitypowered repository 炸裂
+        maven("https://repo.iroselle.com/repository/velocity-hosted/")
         mavenCentral()
     }
 
@@ -46,21 +46,21 @@ subprojects {
     }
 
     tasks {
-        withType<JavaCompile> {
-            options.encoding = "UTF-8"
-            options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
-        }
-
-        withType<ShadowJar> {
-            relocate("org.tabooproject.reflex", "taboolib.common.reflect")
+        withType<Jar> {
+            destinationDirectory.set(file("$rootDir/build/libs"))
         }
 
         withType<Test> {
             useJUnitPlatform()
         }
 
-        withType<Jar> {
-            destinationDirectory.set(file("$rootDir/build/libs"))
+        withType<ShadowJar> {
+            relocate("org.tabooproject.reflex", "taboolib.common.reflect")
+        }
+
+        withType<JavaCompile> {
+            options.encoding = "UTF-8"
+            options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
         }
     }
 }

@@ -7,7 +7,6 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.BukkitOpenContainer
 
 /**
  * TabooLib
@@ -25,7 +24,7 @@ class BukkitOpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitOpenContainer(it) }
+            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitContainer(it) }
         }
     }
 }

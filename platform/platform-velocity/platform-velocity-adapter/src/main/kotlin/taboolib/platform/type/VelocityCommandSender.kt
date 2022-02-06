@@ -21,9 +21,9 @@ class VelocityCommandSender(val sender: CommandSource) : ProxyCommandSender {
         get() = "console"
 
     override var isOp: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override fun isOnline(): Boolean {

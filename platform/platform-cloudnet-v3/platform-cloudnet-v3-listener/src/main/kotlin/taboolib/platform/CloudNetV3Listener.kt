@@ -26,7 +26,7 @@ class CloudNetV3Listener : PlatformListener {
     val plugin by lazy { CloudNetV3Plugin.getInstance() }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
+        error("Unsupported")
     }
 
     @Suppress("UNCHECKED_CAST")

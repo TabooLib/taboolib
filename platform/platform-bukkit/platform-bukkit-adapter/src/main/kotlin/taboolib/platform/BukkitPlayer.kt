@@ -1,4 +1,4 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.api.chat.TextComponent
@@ -14,8 +14,8 @@ import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import taboolib.platform.util.sendActionBarLegacy
-import taboolib.platform.util.sendTitleLegacy
+import taboolib.internal.sendActionBarLegacy
+import taboolib.internal.sendTitleLegacy
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
@@ -23,7 +23,7 @@ import java.util.*
 
 /**
  * TabooLib
- * taboolib.platform.type.BukkitPlayer
+ * taboolib.platform.BukkitPlayer
  *
  * @author sky
  * @since 2021/6/17 10:33 下午

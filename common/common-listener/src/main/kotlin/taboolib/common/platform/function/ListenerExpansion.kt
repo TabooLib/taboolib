@@ -1,7 +1,6 @@
 package taboolib.common.platform.function
 
 import taboolib.common.TabooLib
-import taboolib.common.io.groupId
 import taboolib.common.io.tabooLibPath
 import java.util.concurrent.ConcurrentHashMap
 
@@ -16,7 +15,7 @@ private val platformClassCacheMap = ConcurrentHashMap<Class<*>, Boolean>()
  * 是否为跨平台事件
  */
 val Class<*>.isProxyEvent: Boolean
-    get() = getProxyEventAbstract() != null
+    get() = getProxyEventAbstractClass() != null
 
 /**
  * 是否为子平台事件
@@ -38,10 +37,10 @@ val Class<*>.isPlatformEvent: Boolean
  * 例如直接继承 Event 接口的 BukkitProxyEvent 类
  */
 fun Class<*>.getEventClass(): Class<*> {
-    val event = getProxyEventAbstract()
+    val event = getProxyEventAbstractClass()
     return if (event != null) Class.forName("${event.tabooLibPath}.$platformEventName") else this
 }
 
-private fun Class<*>.getProxyEventAbstract(): Class<*>? {
-    return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.getProxyEventAbstract()
+private fun Class<*>.getProxyEventAbstractClass(): Class<*>? {
+    return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.getProxyEventAbstractClass()
 }

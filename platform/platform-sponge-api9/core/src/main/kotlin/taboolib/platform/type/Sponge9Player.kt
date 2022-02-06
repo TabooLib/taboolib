@@ -85,9 +85,9 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override var bedSpawnLocation: Location?
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var displayName: String?
@@ -97,9 +97,9 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override var playerListName: String?
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override var gameMode: ProxyGameMode
@@ -133,13 +133,13 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override var isSwimming: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val isRiptiding: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isSleeping: Boolean
         get() = player.get(Keys.IS_SLEEPING).get()
@@ -157,10 +157,10 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
         get() = player.health().get() <= 0
 
     override val isConversing: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isLeashed: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override val isOnGround: Boolean
         get() = player.onGround().get()
@@ -175,12 +175,12 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
         }
 
     override val attackCooldown: Int
-        get() = error("unsupported")
+        get() = error("Unsupported")
 
     override var playerTime: Long
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override val firstPlayed: Long
@@ -337,7 +337,7 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
     }
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
-        error("unsupported")
+        error("Unsupported")
     }
 
     override fun hasPermission(permission: String): Boolean {

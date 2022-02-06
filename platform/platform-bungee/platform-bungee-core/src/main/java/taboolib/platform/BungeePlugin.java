@@ -21,11 +21,9 @@ import java.util.concurrent.TimeUnit;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda"})
 @PlatformSide(Platform.BUNGEE)
 public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
-    @Nullable
     private static Plugin instanceDelegate;
     private static BungeePlugin instance;
 
@@ -55,13 +53,10 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             instanceDelegate.onEnable();
         }
         if (isRunning()) {
-            BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                    if (instanceDelegate != null) {
-                        instanceDelegate.onActive();
-                    }
+            BungeeCord.getInstance().getScheduler().schedule(this, () -> {
+                TabooLib.booster().proceed(LifeCycle.ACTIVE);
+                if (isRunning() && instanceDelegate != null) {
+                    instanceDelegate.onActive();
                 }
             }, 0, TimeUnit.SECONDS);
         }
@@ -70,7 +65,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Override
     public void onDisable() {
         TabooLib.booster().proceed(LifeCycle.DISABLE);
-        if (instanceDelegate != null && isRunning()) {
+        if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onDisable();
         }
     }

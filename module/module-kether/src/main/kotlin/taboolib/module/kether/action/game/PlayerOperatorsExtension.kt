@@ -14,7 +14,7 @@ fun Int.modify(method: PlayerOperator.Method, v: Any?): Int {
         PlayerOperator.Method.MODIFY -> {
             Coerce.toInteger(v)
         }
-        else -> error("unsupported")
+        else -> error("Unsupported")
     }
 }
 
@@ -29,7 +29,7 @@ fun Long.modify(method: PlayerOperator.Method, v: Any?): Long {
         PlayerOperator.Method.MODIFY -> {
             Coerce.toLong(v)
         }
-        else -> error("unsupported")
+        else -> error("Unsupported")
     }
 }
 
@@ -44,7 +44,7 @@ fun Float.modify(method: PlayerOperator.Method, v: Any?, max: Float = Float.NaN,
         PlayerOperator.Method.MODIFY -> {
             Coerce.toFloat(v)
         }
-        else -> error("unsupported")
+        else -> error("Unsupported")
     }
     return when {
         value > max && !max.isNaN() -> max
@@ -64,7 +64,7 @@ fun Double.modify(method: PlayerOperator.Method, v: Any?, max: Double = Double.N
         PlayerOperator.Method.MODIFY -> {
             Coerce.toDouble(v)
         }
-        else -> error("unsupported")
+        else -> error("Unsupported")
     }
     return when {
         value > max && !max.isNaN() -> max

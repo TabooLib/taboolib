@@ -27,7 +27,7 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 class Sponge7Listener : PlatformListener {
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
+        error("Unsupported")
     }
 
     @Suppress("UNCHECKED_CAST")

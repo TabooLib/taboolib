@@ -31,7 +31,7 @@ open class BukkitProxyEvent(val proxyEvent: ProxyEvent? = null) : Event(!Bukkit.
         } else if (allowCancelled) {
             isCancelled = value
         } else {
-            error("unsupported")
+            error("Unsupported")
         }
     }
 

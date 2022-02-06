@@ -33,7 +33,7 @@ open class Sponge8ProxyEvent(val proxyEvent: ProxyEvent? = null) : AbstractEvent
         } else if (allowCancelled) {
             isCancelled = value
         } else {
-            error("unsupported")
+            error("Unsupported")
         }
     }
 
