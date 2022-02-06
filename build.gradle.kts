@@ -15,17 +15,17 @@ subprojects {
     apply(plugin = "com.github.johnrengelman.shadow")
 
     repositories {
-        maven("https://libraries.minecraft.net")
-        maven("https://repo1.maven.org/maven2")
-        maven("https://maven.aliyun.com/repository/central")
+        maven("https://libraries.minecraft.net/")
+        maven("https://repo1.maven.org/maven2/")
+        maven("https://maven.aliyun.com/repository/central/")
         maven("https://repo.codemc.io/repository/nms/")
-        maven("https://repo.tabooproject.org/repository/releases")
-        maven("https://repo.nukkitx.com/maven-snapshots")
+        maven("https://repo.tabooproject.org/repository/releases/")
+        maven("https://repo.spongepowered.org/maven/")
+        maven("https://repo.nukkitx.com/maven-snapshots/")
         maven("https://repo.cloudnetservice.eu/repository/snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
         maven("https://nexus.velocitypowered.com/repository/maven-public/")
         maven("https://repo.iroselle.com/repository/velocity-hosted/")
-        maven("https://repo.spongepowered.org/maven")
         mavenCentral()
     }
 

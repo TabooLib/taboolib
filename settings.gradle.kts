@@ -16,8 +16,10 @@ include("common:common-util")
 
 // module
 include("module:module-chat")
+include("module:module-configuration:module-configuration-annotation")
 include("module:module-configuration:module-configuration-core")
 include("module:module-configuration:module-configuration-core-shaded")
+include("module:module-configuration:module-configuration-data")
 
 // platform-bukkit
 include("platform:platform-bukkit:platform-bukkit-adapter")
@@ -80,14 +82,14 @@ include("platform:platform-sponge-api8:platform-sponge-api8-plugin")
 include("platform:platform-sponge-api8:platform-sponge-api8-scheduler")
 
 // platform-sponge-api9
-include("platform:platform-sponge-api9:platform-sponge-api9-adapter")
-include("platform:platform-sponge-api9:platform-sponge-api9-command")
-include("platform:platform-sponge-api9:platform-sponge-api9-core")
-include("platform:platform-sponge-api9:platform-sponge-api9-event")
-include("platform:platform-sponge-api9:platform-sponge-api9-listener")
-include("platform:platform-sponge-api9:platform-sponge-api9-openapi")
-include("platform:platform-sponge-api9:platform-sponge-api9-plugin")
-include("platform:platform-sponge-api9:platform-sponge-api9-scheduler")
+//include("platform:platform-sponge-api9:platform-sponge-api9-adapter")
+//include("platform:platform-sponge-api9:platform-sponge-api9-command")
+//include("platform:platform-sponge-api9:platform-sponge-api9-core")
+//include("platform:platform-sponge-api9:platform-sponge-api9-event")
+//include("platform:platform-sponge-api9:platform-sponge-api9-listener")
+//include("plat form:platform-sponge-api9:platform-sponge-api9-openapi")
+//include("platform:platform-sponge-api9:platform-sponge-api9-plugin")
+//include("platform:platform-sponge-api9:platform-sponge-api9-scheduler")
 
 // platform-velocity
 include("platform:platform-velocity:platform-velocity-adapter")
