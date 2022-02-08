@@ -7,7 +7,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformOpenContainer
 import taboolib.internal.Internal
-import taboolib.platform.type.Sponge8OpenContainer
 
 /**
  * TabooLib
@@ -25,7 +24,7 @@ class Sponge8OpenContainer : PlatformOpenContainer {
 
     override fun getOpenContainers(): List<OpenContainer> {
         return Sponge.pluginManager().plugins().filter { it.instance()?.javaClass?.name?.endsWith("platform.Sponge8Plugin") == true }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.metadata().id()) { _ -> Sponge8OpenContainer(it) }
+            pluginContainer.computeIfAbsent(it.metadata().id()) { _ -> Sponge8Container(it) }
         }
     }
 }

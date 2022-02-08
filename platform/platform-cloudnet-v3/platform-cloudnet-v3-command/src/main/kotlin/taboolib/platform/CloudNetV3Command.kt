@@ -45,6 +45,7 @@ class CloudNetV3Command : PlatformCommand {
         commands.add(command.name)
         val permission = command.permission.ifEmpty { "${plugin.name}.command.use" }
         CloudNet.getInstance().commandMap.registerCommand(object : Command(arrayOf(command.name), permission), ITabCompleter {
+
             override fun execute(sender: ICommandSender, label: String, args: Array<String>, commandLine: String, properties: Properties) {
                 executor.execute(adaptCommandSender(sender), command, command.name, args)
             }

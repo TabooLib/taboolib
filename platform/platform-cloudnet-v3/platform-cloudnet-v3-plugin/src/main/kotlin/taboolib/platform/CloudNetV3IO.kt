@@ -77,8 +77,6 @@ class CloudNetV3IO : PlatformIO {
 
     override fun getPlatformData(): Map<String, Any> {
         val proxy = CloudNet.getInstance()
-        return mapOf(
-            "managedServers" to proxy.cloudServiceManager.cloudServices.size
-        )
+        return mapOf("managedServers" to proxy.cloudServiceManager.cloudServices.size)
     }
 }

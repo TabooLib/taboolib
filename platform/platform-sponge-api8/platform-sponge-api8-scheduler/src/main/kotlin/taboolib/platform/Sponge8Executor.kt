@@ -54,49 +54,43 @@ class Sponge8Executor : PlatformExecutor {
                         .plugin(plugin.pluginContainer)
                         .delay(Ticks.of(runnable.delay))
                         .interval(Ticks.of(runnable.period))
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 } else {
                     schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
                         .delay(Ticks.of(runnable.delay))
                         .interval(Ticks.of(runnable.period))
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 }
                 runnable.delay > 0 -> if (runnable.async) {
                     schedulerAsync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
                         .delay(Ticks.of(runnable.delay))
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 } else {
                     schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
                         .delay(Ticks.of(runnable.delay))
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 }
                 else -> if (runnable.async) {
                     schedulerAsync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 } else {
                     schedulerSync.submit(Task.builder()
                         .plugin(plugin.pluginContainer)
-                        .execute(Runnable {
-                            runnable.executor(task)
-                        }).build())
+                        .execute(Runnable { runnable.executor(task) })
+                        .build())
                 }
             }
             future.thenAccept {
-                scheduledTask?.cancel()
+                scheduledTask.cancel()
             }
             return task
         } else {

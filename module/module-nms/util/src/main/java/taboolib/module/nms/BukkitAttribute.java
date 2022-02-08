@@ -1,7 +1,10 @@
 package taboolib.module.nms;
 
+import org.bukkit.attribute.Attribute;
+import org.tabooproject.reflex.ClassField;
+import org.tabooproject.reflex.ClassMethod;
+import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.Isolated;
-import org.tabooproject.reflex.Reflex;
 
 import java.util.Arrays;
 
@@ -60,7 +63,7 @@ public enum BukkitAttribute {
     ARMOR("generic.armor", new String[]{"armor"}),
 
     /**
-     * 护甲任性
+     * 护甲韧性
      */
     ARMOR_TOUGHNESS("generic.armorToughness", new String[]{"toughness", "armorToughness"}),
 
@@ -77,23 +80,41 @@ public enum BukkitAttribute {
         this.simplifiedKey = simplifiedKey;
     }
 
+    public static BukkitAttribute parse(String source) {
+        return Arrays.stream(values()).filter(attribute -> attribute.match(source)).findFirst().orElse(null);
+    }
+
     public String getMinecraftKey() {
-        return minecraftKey;
+        return this.minecraftKey;
     }
 
     public String[] getSimplifiedKey() {
-        return simplifiedKey;
+        return this.simplifiedKey;
+    }
+
+    public Attribute toBukkit() {
+        Attribute attribute;
+        try {
+            attribute = Attribute.valueOf(this.name());
+        } catch (Exception e) {
+            attribute = Attribute.valueOf("GENERIC_" + this.name());
+        }
+        return attribute;
     }
 
     public Object toNMS() {
-        return new Reflex(MinecraftServerUtilKt.nmsClass("GenericAttributes")).get(name());
+        Class<?> attributeBaseClass = MinecraftServerUtilKt.nmsClass("AttributeBase");
+        ClassMethod method = ReflexClass.Companion.of(attributeBaseClass).getMethod("getName", false);
+        for (ClassField classField : ReflexClass.Companion.of(MinecraftServerUtilKt.nmsClass("GenericAttributes")).getStructure().getFields()) {
+            Object attribute = classField.get(null);
+            if (method.invoke(attributeBaseClass.cast(attribute)).equals(this.minecraftKey)) {
+                return attribute;
+            }
+        }
+        return null;
     }
 
     public boolean match(String source) {
-        return name().equalsIgnoreCase(source) || minecraftKey.equalsIgnoreCase(source) || Arrays.stream(simplifiedKey).anyMatch(key -> key.equalsIgnoreCase(source));
-    }
-
-    public static BukkitAttribute parse(String source) {
-        return Arrays.stream(values()).filter(attribute -> attribute.match(source)).findFirst().orElse(null);
+        return this.name().equalsIgnoreCase(source) || this.minecraftKey.equalsIgnoreCase(source) || Arrays.stream(this.simplifiedKey).anyMatch(key -> key.equalsIgnoreCase(source));
     }
 }

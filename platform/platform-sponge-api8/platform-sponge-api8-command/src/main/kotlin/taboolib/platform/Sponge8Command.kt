@@ -19,12 +19,7 @@ import taboolib.internal.Internal
 @PlatformSide([Platform.SPONGE_API_8])
 class Sponge8Command : PlatformCommand {
 
-    override fun registerCommand(
-        command: CommandInfo,
-        executor: CommandExecutor,
-        completer: CommandCompleter,
-        component: Component.() -> Unit
-    ) {
+    override fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit) {
         // TODO: 2021/7/15 Not Support
     }
 

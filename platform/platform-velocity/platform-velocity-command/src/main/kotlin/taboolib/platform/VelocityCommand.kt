@@ -34,12 +34,7 @@ class VelocityCommand : PlatformCommand {
             }
 
             override fun suggest(invocation: SimpleCommand.Invocation): MutableList<String> {
-                return completer.execute(
-                    adaptCommandSender(invocation.source()),
-                    command,
-                    command.name,
-                    invocation.arguments()
-                )?.toMutableList() ?: ArrayList()
+                return completer.execute(adaptCommandSender(invocation.source()), command, command.name, invocation.arguments())?.toMutableList() ?: ArrayList()
             }
         }, *command.aliases.toTypedArray())
     }

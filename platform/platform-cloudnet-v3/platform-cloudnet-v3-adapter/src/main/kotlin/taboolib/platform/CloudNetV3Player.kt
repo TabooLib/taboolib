@@ -31,19 +31,16 @@ class CloudNetV3Player : ProxyPlayer {
 
     val sender: ICommandSender
 
-    constructor(cloudPlayer: CloudPlayer): this(cloudPlayer.sender)
+    constructor(cloudPlayer: CloudPlayer) : this(cloudPlayer.sender)
 
     constructor(sender: ICommandSender) {
         this.sender = sender
         this.player = sender.getProperty<CloudPlayer>("player")!!
-        this.rawData =
-            CloudNet.getInstance().cloudServiceProvider.getCloudService(player.connectedService.uniqueId).let {
-                it ?: return@let JsonDocument()
-                it.getProperty(BridgeServiceProperty.PLAYERS).orElse(null).find { it.name == this.name }?.rawData
-                    ?: JsonDocument()
-            }
+        this.rawData = CloudNet.getInstance().cloudServiceProvider.getCloudService(player.connectedService.uniqueId).let {
+            it ?: return@let JsonDocument()
+            it.getProperty(BridgeServiceProperty.PLAYERS).orElse(null).find { it.name == this.name }?.rawData ?: JsonDocument()
+        }
     }
-
 
     private val player: CloudPlayer
 

@@ -1,4 +1,4 @@
-package taboolib.platform.type
+package taboolib.platform
 
 import org.spongepowered.plugin.PluginContainer
 import taboolib.common.OpenContainer
@@ -8,13 +8,13 @@ import taboolib.internal.Internal
 
 /**
  * TabooLib
- * taboolib.platform.type.SpongeOpenContainer
+ * taboolib.platform.Sponge8Container
  *
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
 @Internal
-class Sponge8OpenContainer(plugin: PluginContainer) : OpenContainer {
+class Sponge8Container(plugin: PluginContainer) : OpenContainer {
 
     private val name = plugin.metadata().id()
     private val main = plugin.instance().javaClass.name

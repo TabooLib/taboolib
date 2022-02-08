@@ -2,6 +2,7 @@ package taboolib.platform.util;
 
 import org.bukkit.Material;
 import taboolib.common.Isolated;
+import taboolib.library.xseries.XMaterial;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -126,56 +127,104 @@ public class DefaultAttribute {
     }
 
     public static double getAttackDamage(Material type) {
-        if (type.name().endsWith("_HOE")) {
-            return ATTACK_DAMAGE.get("HOE");
-        } else {
-            return ATTACK_DAMAGE.getOrDefault(type.name(), 0.0);
-        }
+        return getAttackDamage(XMaterial.matchXMaterial(type));
     }
 
     public static double getAttackSpeed(Material type) {
-        if (type.name().endsWith("_SWORD")) {
-            return ATTACK_SPEED.get("SWORD");
-        } else if (type.name().endsWith("_SHOVEL")) {
-            return ATTACK_SPEED.get("SHOVEL");
-        } else if (type.name().endsWith("_PICKAXE")) {
-            return ATTACK_SPEED.get("PICKAXE");
-        } else {
-            return ATTACK_SPEED.getOrDefault(type.name(), 0.0);
-        }
+        return getAttackSpeed(XMaterial.matchXMaterial(type));
     }
 
     public static double getArmor(Material type) {
-        return ARMOR.getOrDefault(type.name(), 0.0);
+        return getArmor(XMaterial.matchXMaterial(type));
     }
 
     public static double getArmorToughness(Material type) {
-        return ARMOR_TOUGHNESS.getOrDefault(type.name(), 0.0);
+        return getArmorToughness(XMaterial.matchXMaterial(type));
     }
 
     public static double getKnockbackResistance(Material type) {
-        return KNOCKBACK_RESISTANCE.getOrDefault(type.name(), 0.0);
+        return getKnockbackResistance(XMaterial.matchXMaterial(type));
+    }
+
+    public static double getAttackDamage(XMaterial type) {
+        return getAttackDamage(type.name());
+    }
+
+    public static double getAttackSpeed(XMaterial type) {
+        return getAttackSpeed(type.name());
+    }
+
+    public static double getArmor(XMaterial type) {
+        return getArmor(type.name());
+    }
+
+    public static double getArmorToughness(XMaterial type) {
+        return getArmorToughness(type.name());
+    }
+
+    public static double getKnockbackResistance(XMaterial type) {
+        return getKnockbackResistance(type.name());
+    }
+
+    public static double getAttackDamage(String name) {
+        if (name.endsWith("_HOE")) {
+            return ATTACK_DAMAGE.get("HOE");
+        } else {
+            return ATTACK_DAMAGE.getOrDefault(name, 0.0);
+        }
+    }
+
+    public static double getAttackSpeed(String name) {
+        if (name.endsWith("_SWORD")) {
+            return ATTACK_SPEED.get("SWORD");
+        } else if (name.endsWith("_SHOVEL")) {
+            return ATTACK_SPEED.get("SHOVEL");
+        } else if (name.endsWith("_PICKAXE")) {
+            return ATTACK_SPEED.get("PICKAXE");
+        } else {
+            return ATTACK_SPEED.getOrDefault(name, 0.0);
+        }
+    }
+
+    public static double getArmor(String name) {
+        return ARMOR.getOrDefault(name, 0.0);
+    }
+
+    public static double getArmorToughness(String name) {
+        return ARMOR_TOUGHNESS.getOrDefault(name, 0.0);
+    }
+
+    public static double getKnockbackResistance(String name) {
+        return KNOCKBACK_RESISTANCE.getOrDefault(name, 0.0);
     }
 
     public static Map<String, Double> getDefault(Material type) {
+        return getDefault(XMaterial.matchXMaterial(type));
+    }
+
+    public static Map<String, Double> getDefault(XMaterial type) {
+        return getDefault(type.name());
+    }
+
+    public static Map<String, Double> getDefault(String name) {
         Map<String, Double> map = new HashMap<>();
-        double attackDamage = getAttackDamage(type);
+        double attackDamage = getAttackDamage(name);
         if (attackDamage > 0) {
             map.put("GENERIC_ATTACK_DAMAGE", attackDamage);
         }
-        double attackSpeed = getAttackSpeed(type);
+        double attackSpeed = getAttackSpeed(name);
         if (attackSpeed > 0) {
             map.put("GENERIC_ATTACK_SPEED", attackSpeed);
         }
-        double armor = getArmor(type);
+        double armor = getArmor(name);
         if (armor > 0) {
             map.put("GENERIC_ARMOR", armor);
         }
-        double armorToughness = getArmorToughness(type);
+        double armorToughness = getArmorToughness(name);
         if (armorToughness > 0) {
             map.put("GENERIC_ARMOR_TOUGHNESS", armorToughness);
         }
-        double knockbackResistance = getKnockbackResistance(type);
+        double knockbackResistance = getKnockbackResistance(name);
         if (knockbackResistance > 0) {
             map.put("GENERIC_KNOCKBACK_RESISTANCE", knockbackResistance);
         }

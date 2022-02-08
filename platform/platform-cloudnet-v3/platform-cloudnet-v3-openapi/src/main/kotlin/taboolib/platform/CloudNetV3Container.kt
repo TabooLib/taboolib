@@ -18,6 +18,7 @@ class CloudNetV3Container(plugin: IModule) : OpenContainer {
 
     private val name = plugin.name
     private val main = plugin.moduleConfig.main!!
+
     private val clazz = try {
         Class.forName(main.substring(0, main.length - "platform.CloudNetV3Plugin".length) + "common.OpenAPI")
     } catch (ignored: Throwable) {

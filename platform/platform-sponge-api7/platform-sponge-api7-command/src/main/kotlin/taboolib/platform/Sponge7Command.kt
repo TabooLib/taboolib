@@ -31,12 +31,7 @@ class Sponge7Command : PlatformCommand {
     val plugin: Sponge7Plugin
         get() = Sponge7Plugin.getInstance()
 
-    override fun registerCommand(
-        command: CommandInfo,
-        executor: CommandExecutor,
-        completer: CommandCompleter,
-        component: Component.() -> Unit,
-    ) {
+    override fun registerCommand(command: CommandInfo, executor: CommandExecutor, completer: CommandCompleter, component: Component.() -> Unit, ) {
         Sponge.getCommandManager().register(Sponge7Plugin.getInstance(), object : CommandCallable {
 
             override fun process(source: CommandSource, arguments: String): CommandResult {

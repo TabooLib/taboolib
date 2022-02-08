@@ -53,15 +53,13 @@ public class CloudNetV3Plugin extends DriverModule {
         if (isRunning() && instanceDelegate != null) {
             instanceDelegate.onEnable();
         }
-        if (isRunning()) {
-            CloudNet.getInstance().scheduleTask(() -> {
-                TabooLib.booster().proceed(LifeCycle.ACTIVE);
-                if (instanceDelegate != null) {
-                    instanceDelegate.onActive();
-                }
-                return null;
-            });
-        }
+        CloudNet.getInstance().scheduleTask(() -> {
+            TabooLib.booster().proceed(LifeCycle.ACTIVE);
+            if (isRunning() && instanceDelegate != null) {
+                instanceDelegate.onActive();
+            }
+            return null;
+        });
     }
 
     @ModuleTask(event = ModuleLifeCycle.STOPPED)
