@@ -10,22 +10,13 @@ plugins {
 
 subprojects {
     apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "org.tabooproject.shrinkingkt")
     apply(plugin = "com.github.johnrengelman.shadow")
 
     repositories {
-        maven("https://libraries.minecraft.net/")
-        maven("https://repo1.maven.org/maven2/")
-        maven("https://maven.aliyun.com/repository/central/")
-        maven("https://repo.codemc.io/repository/nms/")
         maven("https://repo.tabooproject.org/repository/releases/")
-        maven("https://repo.spongepowered.org/maven/")
-        maven("https://repo.nukkitx.com/maven-snapshots/")
-        maven("https://repo.cloudnetservice.eu/repository/snapshots/")
-        maven("https://oss.sonatype.org/content/repositories/snapshots/")
-        maven("https://nexus.velocitypowered.com/repository/maven-public/")
-        maven("https://repo.iroselle.com/repository/velocity-hosted/")
         mavenCentral()
     }
 
@@ -37,7 +28,7 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
 
-    configure<JavaPluginConvention> {
+    configure<JavaPluginExtension> {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -46,11 +37,27 @@ subprojects {
         annotation = "taboolib.internal.Internal"
     }
 
-    tasks {
-        withType<Jar> {
-            destinationDirectory.set(file("$rootDir/build/libs"))
+    publishing {
+        repositories {
+            maven("http://ptms.ink:8081/repository/releases") {
+                isAllowInsecureProtocol = true
+                credentials {
+                    username = project.findProperty("taboolibUsername").toString()
+                    password = project.findProperty("taboolibPassword").toString()
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+            }
         }
+        publications {
+            create<MavenPublication>("maven") {
+                from(components["java"])
+            }
+        }
+    }
 
+    tasks {
         withType<Test> {
             useJUnitPlatform()
         }
@@ -62,37 +69,6 @@ subprojects {
         withType<JavaCompile> {
             options.encoding = "UTF-8"
             options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
-        }
-    }
-}
-
-publishing {
-    repositories {
-        maven("http://ptms.ink:8081/repository/releases") {
-            isAllowInsecureProtocol = true
-            credentials {
-                username = project.findProperty("taboolibUsername").toString()
-                password = project.findProperty("taboolibPassword").toString()
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "taboolib"
-            groupId = "io.izzel"
-            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
-            println("> version $version")
-            file("$buildDir/libs").listFiles()?.forEach { file ->
-                if (file.extension == "jar") {
-                    artifact(file) {
-                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
-                        println("> module $classifier (${file.name})")
-                    }
-                }
-            }
         }
     }
 }
