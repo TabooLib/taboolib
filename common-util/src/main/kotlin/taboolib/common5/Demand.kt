@@ -101,6 +101,5 @@ class Demand(val source: String) {
     companion object {
 
         fun String.toDemand() = Demand(this)
-
     }
 }

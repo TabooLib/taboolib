@@ -85,7 +85,7 @@ public enum RealTime {
         return 0L;
     });
 
-    Function<NextTime, Long> next;
+    final Function<NextTime, Long> next;
 
     RealTime(Function<NextTime, Long> next) {
         this.next = next;

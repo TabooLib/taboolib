@@ -1,4 +1,4 @@
-rootProject.name = "TabooLib"
+rootProject.name = "Taboolib"
 
 include("common-adapter")
 include("common-command")

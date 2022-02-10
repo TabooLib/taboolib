@@ -37,6 +37,20 @@ subprojects {
         annotation = "taboolib.internal.Internal"
     }
 
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
+
+    tasks.withType<ShadowJar> {
+        archiveClassifier.set("")
+        relocate("org.tabooproject.reflex", "taboolib.common.reflect")
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
+    }
+
     publishing {
         repositories {
             maven("http://ptms.ink:8081/repository/releases") {
@@ -54,22 +68,6 @@ subprojects {
             create<MavenPublication>("maven") {
                 from(components["java"])
             }
-        }
-    }
-
-    tasks {
-        withType<Test> {
-            useJUnitPlatform()
-        }
-
-        withType<ShadowJar> {
-            archiveClassifier.set("")
-            relocate("org.tabooproject.reflex", "taboolib.common.reflect")
-        }
-
-        withType<JavaCompile> {
-            options.encoding = "UTF-8"
-            options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
         }
     }
 }
