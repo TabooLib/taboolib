@@ -10,9 +10,3 @@ dependencies {
 shrinking {
     shadow = true
 }
-
-tasks {
-    withType<ShadowJar> {
-        archiveClassifier.set("")
-    }
-}

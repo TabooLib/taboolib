@@ -15,7 +15,6 @@ shrinking {
 
 tasks {
     withType<ShadowJar> {
-        archiveClassifier.set("")
         dependencies {
             include(dependency("org.ow2.asm:asm:9.2"))
             include(dependency("org.ow2.asm:asm-util:9.2"))

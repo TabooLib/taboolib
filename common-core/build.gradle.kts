@@ -15,7 +15,6 @@ shrinking {
 
 tasks {
     withType<ShadowJar> {
-        archiveClassifier.set("")
         dependencies {
             include(dependency("org.tabooproject.reflex:analyser:1.0.5"))
             include(dependency("org.tabooproject.reflex:reflex:1.0.5"))

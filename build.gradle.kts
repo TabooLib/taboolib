@@ -63,6 +63,7 @@ subprojects {
         }
 
         withType<ShadowJar> {
+            archiveClassifier.set("")
             relocate("org.tabooproject.reflex", "taboolib.common.reflect")
         }
 
