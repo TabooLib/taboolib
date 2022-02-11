@@ -4,22 +4,27 @@ package taboolib.common5.util
 
 import taboolib.common.Isolated
 import java.util.*
+import java.util.concurrent.TimeUnit
 
-fun String.parseMillis(): Long {
+fun String.parseMillis(unit: TimeUnit = TimeUnit.MILLISECONDS): Long {
     var time = 0L
-    var num = ""
-    lowercase(Locale.getDefault()).forEach {
-        if (it == '.' || it.toString().toIntOrNull() != null) {
-            num += it
-        } else {
-            when (it) {
-                'd' -> time += (num.toDouble() * 86400000).toLong()
-                'h' -> time += (num.toDouble() * 3600000).toLong()
-                'm' -> time += (num.toDouble() * 60000).toLong()
-                's' -> time += (num.toDouble() * 1000).toLong()
-            }
-            num = ""
-        }
+    val matches = DURATION_REGEX.findAll(this)
+    // 传递过来的字符串不够纯, 例如 19dms19h810s
+    if (matches.sumOf { it.value.length } != length) {
+        return 0
     }
-    return time
+    matches.forEach { result ->
+        val duration = result.groupValues[1].toLong()
+        time += when (result.groupValues[2]) {
+            "d" -> TimeUnit.DAYS
+            "h" -> TimeUnit.HOURS
+            "m" -> TimeUnit.MINUTES
+            "s" -> TimeUnit.SECONDS
+            else -> return@forEach // 未知的单位诶
+        }.toSeconds(duration)
+    }
+    return unit.convert(time, TimeUnit.SECONDS)
 }
+
+@Suppress("SpellCheckingInspection")
+private val DURATION_REGEX = "(\\d+)([dhms])".toRegex(RegexOption.IGNORE_CASE)
