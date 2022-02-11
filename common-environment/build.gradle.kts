@@ -9,9 +9,9 @@ dependencies {
     compileOnly(project(":common-core"))
 }
 
-shrinking {
-    shadow = true
-}
+//shrinking {
+//    shadow = true
+//}
 
 tasks {
     withType<ShadowJar> {
@@ -24,5 +24,8 @@ tasks {
         relocate("me.lucko", "taboolib.library")
         relocate("org.objectweb", "taboolib.library")
         minimize()
+    }
+    build {
+        dependsOn("shadowJar")
     }
 }

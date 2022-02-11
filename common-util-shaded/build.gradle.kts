@@ -5,6 +5,12 @@ dependencies {
     implementation(project(":common-util"))
 }
 
-shrinking {
-    shadow = true
+//shrinking {
+//    shadow = true
+//}
+
+tasks {
+    build {
+        dependsOn("shadowJar")
+    }
 }
