@@ -4,7 +4,7 @@ import org.tabooproject.shrinkingkt.ShrinkingExt
 plugins {
     `maven-publish`
     id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
-    id("org.tabooproject.shrinkingkt") version "1.0.4" apply false
+    id("org.tabooproject.shrinkingkt") version "1.0.5" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
@@ -22,8 +22,8 @@ subprojects {
 
     dependencies {
         "compileOnly"(kotlin("stdlib"))
-        "compileOnly"("org.tabooproject.reflex:analyser:1.0.5")
-        "compileOnly"("org.tabooproject.reflex:reflex:1.0.5")
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.7")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.7")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
