@@ -56,7 +56,7 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
     }
 
     fun setupEnv() {
-        runningClasses.filter { checkPlatform(it) }.forEach { RuntimeEnv.INSTANCE.load(it) }
+        kotlin.runCatching { runningClasses.filter { checkPlatform(it) }.forEach { RuntimeEnv.INSTANCE.load(it) } }
     }
 
     fun setupAwake() {
