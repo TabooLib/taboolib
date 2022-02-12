@@ -9,9 +9,9 @@ dependencies {
     compileOnly(project(":common-core"))
 }
 
-//shrinking {
-//    shadow = true
-//}
+shrinking {
+    shadow = true
+}
 
 tasks {
     withType<ShadowJar> {

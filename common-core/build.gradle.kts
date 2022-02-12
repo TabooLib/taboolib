@@ -9,9 +9,9 @@ dependencies {
     testImplementation(project(":common-environment"))
 }
 
-//shrinking {
-//    shadow = true
-//}
+shrinking {
+    shadow = true
+}
 
 tasks {
     withType<ShadowJar> {
