@@ -2,6 +2,8 @@ package taboolib.internal
 
 import taboolib.common.TabooLib
 import taboolib.common.io.ClassReader
+import taboolib.common.io.groupId
+import taboolib.common.io.taboolibId
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
@@ -26,7 +28,7 @@ class SimpleClassReader : ClassReader {
         if (springBootWar) {
             // include taboolib modules
             srcFile.parentFile.listFiles()?.forEach {
-                if (it.name.startsWith("taboolib")) {
+                if (it.name.startsWith(taboolibId)) {
                     src += it
                 }
             }
@@ -48,9 +50,10 @@ class SimpleClassReader : ClassReader {
         src.forEach { s ->
             JarFile(s).stream().parallel().filter { it.name.endsWith(".class") }.forEach {
                 kotlin.runCatching {
-                    val forName = Class.forName(it.name.replace('/', '.').substringBeforeLast('.'), false, TabooLib::class.java.classLoader)
-                    forName.name // 尝试获取类名来过滤一些无法访问的类
-                    classes.add(forName)
+                    val className = it.name.replace('/', '.').substringBeforeLast('.')
+                    if (className.startsWith(groupId ?: taboolibId)) {
+                        classes.add(Class.forName(className, false, TabooLib::class.java.classLoader))
+                    }
                 }
             }
         }

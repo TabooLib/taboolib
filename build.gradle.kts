@@ -23,8 +23,8 @@ subprojects {
 
     dependencies {
         "compileOnly"(kotlin("stdlib"))
-        "compileOnly"("org.tabooproject.reflex:analyser:1.0.8")
-        "compileOnly"("org.tabooproject.reflex:reflex:1.0.8")
+        "compileOnly"("org.tabooproject.reflex:analyser:1.0.9")
+        "compileOnly"("org.tabooproject.reflex:reflex:1.0.9")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
     }
