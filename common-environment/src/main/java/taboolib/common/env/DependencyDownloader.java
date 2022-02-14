@@ -112,13 +112,15 @@ public class DependencyDownloader extends AbstractXmlParser {
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());
                 } else {
-                    File rel = new File(file.getPath() + ".rel");
+                    File rel = new File(file.getParentFile(), "relocate-2.jar");
                     if (!rel.exists() || rel.length() == 0) {
+                        File temp = new File(file.getParentFile(), "temp.jar");
                         try {
-                            new JarRelocator(copyFile(file, File.createTempFile(file.getName(), ".jar")), rel, relocation).run();
+                            new JarRelocator(copyFile(file, temp), rel, relocation).run();
                         } catch (IOException e) {
                             throw new IllegalStateException(String.format("Unable to relocate %s%n", dep), e);
                         }
+                        temp.delete();
                     }
                     ClassAppender.addPath(rel.toPath());
                 }
