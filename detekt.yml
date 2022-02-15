@@ -1,6 +1,8 @@
 style:
   WildcardImport:
     active: false
+  NewLineAtEndOfFile:
+    active: false
   UseOrEmpty:
     active: true
   UseCheckOrError:
@@ -59,3 +61,7 @@ complexity:
 formatting:
   NoWildcardImports:
     active: false
+  FinalNewline:
+    active: false
+  MaximumLineLength:
+    maxLineLength: 160
