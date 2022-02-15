@@ -24,11 +24,7 @@ interface ProxyCommandSender {
 
     fun hasPermission(permission: String): Boolean
 
-    fun <T> cast(): T {
-        return origin as T
-    }
+    fun <T> cast() = origin as T
 
-    fun <T> castSafely(): T? {
-        return origin as? T
-    }
+    fun <T> castSafely() = origin as? T
 }

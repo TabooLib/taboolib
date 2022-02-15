@@ -76,9 +76,6 @@ class SimpleInjectHandler : InjectHandler {
     }
 
     private fun skipLevel(clazz: Class<*>): Int {
-        return if (clazz.isAnnotationPresent(SkipTo::class.java))
-            clazz.getAnnotation(SkipTo::class.java).value.ordinal
-        else
-            -1
+        return if (clazz.isAnnotationPresent(SkipTo::class.java)) clazz.getAnnotation(SkipTo::class.java).value.ordinal else -1
     }
 }

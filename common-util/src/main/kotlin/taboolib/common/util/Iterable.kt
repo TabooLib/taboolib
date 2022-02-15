@@ -15,6 +15,7 @@ import java.io.Closeable
  * @param action 方法体
  * @return 最后一次方法体执行结果
  */
+@Suppress("ComplexMethod", "NestedBlockDepth", "ReturnCount")
 fun <T, C : Iterable<T>, R> C.each(start: Int = -1, end: Int = -1, reversed: Boolean = false, action: Closeable.(index: Int, T) -> R?): R? {
     val trigger = object : Closeable {
         var closed = false

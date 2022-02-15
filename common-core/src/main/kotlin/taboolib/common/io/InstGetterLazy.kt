@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Internal
 @Suppress("UNCHECKED_CAST")
-class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false)
-    : InstGetter<T>(source) {
+class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false) :
+    InstGetter<T>(source) {
 
     val inst by lazy {
         FastInstGetter(source.name)
@@ -26,16 +26,13 @@ class InstGetterLazy<T> private constructor(source: Class<T>, private val newIns
         runCatching { inst.instance as T }.getOrElse { runCatching { inst.companion as T }.getOrElse { if (newInstance) source.invokeConstructor() else null } }
     }
 
-    override fun get(): T? {
-        return instance
-    }
+    override fun get(): T? = instance
 
     companion object {
 
         val getterMap = ConcurrentHashMap<String, InstGetterLazy<*>>()
 
-        fun <T> of(source: Class<T>, newInstance: Boolean = false): InstGetterLazy<T> {
-            return getterMap.computeIfAbsent(source.name) { InstGetterLazy(source, newInstance) } as InstGetterLazy<T>
-        }
+        fun <T> of(source: Class<T>, newInstance: Boolean = false): InstGetterLazy<T> =
+            getterMap.computeIfAbsent(source.name) { InstGetterLazy(source, newInstance) } as InstGetterLazy<T>
     }
 }

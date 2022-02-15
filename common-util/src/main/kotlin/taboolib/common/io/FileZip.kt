@@ -19,18 +19,15 @@ import java.util.zip.ZipOutputStream
 fun File.zip(target: File, skipParent: Boolean = false) {
     if (skipParent) {
         if (!isDirectory) error("is not directory")
-
         using {
-            val fileStream = FileOutputStream(target).autoClose()
-            val zipStream = ZipOutputStream(fileStream).autoClose()
-
+            val fileStream = FileOutputStream(target).join()
+            val zipStream = ZipOutputStream(fileStream).join()
             this@zip.listFiles()?.forEach { zipStream.putFile(it, "") }
         }
     } else {
         using {
-            val fileStream = FileOutputStream(target).autoClose()
-            val zipStream = ZipOutputStream(fileStream).autoClose()
-
+            val fileStream = FileOutputStream(target).join()
+            val zipStream = ZipOutputStream(fileStream).join()
             zipStream.putFile(this@zip, "")
         }
     }
@@ -48,9 +45,10 @@ fun File.unzip(target: File) {
  * 解压文件
  * @param destDirPath 解压后的文件路径
  */
+@Suppress("NestedBlockDepth")
 fun File.unzip(destDirPath: String) {
     using {
-        val zip = ZipFile(this@unzip).autoClose()
+        val zip = ZipFile(this@unzip).join()
         val stream = zip.stream().parallel()
 
         stream
@@ -60,7 +58,7 @@ fun File.unzip(destDirPath: String) {
         stream
             .filter { !it.isDirectory }
             .forEach { entry ->
-                val inputStream = zip.getInputStream(entry).autoClose()
+                val inputStream = zip.getInputStream(entry).join()
                 File(destDirPath + "/" + entry.name).writeBytes(inputStream.readBytes())
             }
     }
@@ -68,8 +66,7 @@ fun File.unzip(destDirPath: String) {
 
 fun ZipOutputStream.putFile(file: File, path: String) {
     if (file.isDirectory) {
-        file.listFiles()
-            ?.forEach { putFile(it, path + file.name + "/") }
+        file.listFiles()?.forEach { putFile(it, path + file.name + "/") }
     } else {
         FileInputStream(file).use {
             putNextEntry(ZipEntry(path + file.name))

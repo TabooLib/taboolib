@@ -12,8 +12,8 @@ import java.util.zip.GZIPOutputStream
  * 使用 GZIP 算法压缩字节
  */
 fun ByteArray.zip(): ByteArray = using {
-    val byteStream = ByteArrayOutputStream().autoClose()
-    val gzipStream = GZIPOutputStream(byteStream).autoClose()
+    val byteStream = ByteArrayOutputStream().join()
+    val gzipStream = GZIPOutputStream(byteStream).join()
 
     gzipStream.write(this@zip)
     gzipStream.flush()
@@ -25,8 +25,8 @@ fun ByteArray.zip(): ByteArray = using {
  * 使用 GZIP 算法解压字节
  */
 fun ByteArray.unzip(): ByteArray = using {
-    val byteStream = ByteArrayInputStream(this@unzip).autoClose()
-    val gzipStream = GZIPInputStream(byteStream).autoClose()
+    val byteStream = ByteArrayInputStream(this@unzip).join()
+    val gzipStream = GZIPInputStream(byteStream).join()
 
     return gzipStream.readBytes()
 }

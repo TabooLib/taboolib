@@ -54,9 +54,7 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
 
     private fun setupEnv() {
         kotlin.runCatching {
-            runningClasses
-                .filter { checkPlatform(it) }
-                .forEach { RuntimeEnv.INSTANCE.load(it) }
+            runningClasses.filter { checkPlatform(it) }.forEach { RuntimeEnv.INSTANCE.load(it) }
         }
     }
 
@@ -67,7 +65,6 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
             .forEach { clazz ->
                 val interfaces = clazz.interfaces
                 val instance = clazz.findInstance(true)
-
                 if (interfaces.contains(Injector::class.java)) {
                     InjectHandler.INSTANCE.register(instance.get() as Injector)
                 }

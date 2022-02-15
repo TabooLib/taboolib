@@ -17,6 +17,7 @@ class VariableReader(val start: String = "{{", val end: String = "}}") {
     /**
      * 替换嵌套变量
      */
+    @Suppress("LoopWithTooManyJumpStatements")
     fun replaceNested(source: String, transfer: String.() -> String): String {
         var str = source
         while (true) {

@@ -12,12 +12,12 @@ inline fun <T> using(block: ResourceHolder.() -> T): T {
 class ResourceHolder : AutoCloseable, Closeable {
     private val resources = mutableListOf<Any>()
 
-    fun <T : AutoCloseable> T.autoClose(): T {
+    fun <T : AutoCloseable> T.join(): T {
         resources += this
         return this
     }
 
-    fun <T : Closeable> T.autoClose(): T {
+    fun <T : Closeable> T.join(): T {
         resources += this
         return this
     }

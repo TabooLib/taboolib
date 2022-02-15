@@ -1,7 +1,6 @@
 package taboolib.common.platform.service
 
 import taboolib.common.platform.PlatformService
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.*
 
 /**
@@ -19,6 +18,7 @@ interface PlatformCommand {
 
     companion object {
 
-        const val defaultPermissionMessage = "§cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
+        const val defaultPermissionMessage =
+            "§cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
     }
 }

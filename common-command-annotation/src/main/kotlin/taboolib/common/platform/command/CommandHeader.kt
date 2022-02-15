@@ -1,5 +1,6 @@
 package taboolib.common.platform.command
 
+@Suppress("LongParameterList")
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CommandHeader(

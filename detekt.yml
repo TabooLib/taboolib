@@ -44,7 +44,7 @@ style:
   ForbiddenVoid:
     active: true
   ExpressionBodySyntax:
-    active: true
+    active: false
   ExplicitItLambdaParameter:
     active: true
   ExplicitCollectionElementAccessMethod:
@@ -54,7 +54,9 @@ style:
   ClassOrdering:
     active: true
   MaxLineLength:
-    maxLineLength: 160
+    active: false
+  MagicNumber:
+    active: false
 
 complexity:
   TooManyFunctions:
@@ -66,4 +68,8 @@ formatting:
   FinalNewline:
     active: false
   MaximumLineLength:
-    maxLineLength: 160
+    active: false
+  ParameterListWrapping:
+    active: false
+  ImportOrdering:
+    active: false

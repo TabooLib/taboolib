@@ -25,6 +25,7 @@ object InjectorCommand : Injector(LifeCycle.ENABLE) {
         }
     }
 
+    @Suppress("SpreadOperator")
     override fun postInject(clazz: Class<*>, instance: InstGetter<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
@@ -43,7 +44,6 @@ object InjectorCommand : Injector(LifeCycle.ENABLE) {
                 permissionChildren
             ) {
                 main[clazz.name]?.func?.invoke(this)
-
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: Section) {
                         component.literal(
@@ -55,8 +55,7 @@ object InjectorCommand : Injector(LifeCycle.ENABLE) {
                             if (body.children.isEmpty()) {
                                 body.func(this)
                             } else {
-                                body.children
-                                    .forEach { register(it, this) }
+                                body.children.forEach { register(it, this) }
                             }
                         }
                     }
@@ -66,33 +65,28 @@ object InjectorCommand : Injector(LifeCycle.ENABLE) {
         }
     }
 
+    @Suppress("NestedBlockDepth")
     fun loadBody(field: ClassField, instance: InstGetter<*>): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
             val annotation = field.getAnnotation(CommandBody::class.java)!!
             val obj = field.get(instance.get())
             return when (field.fieldType) {
-                SimpleCommandMain::class.java -> {
-                    null
+                SimpleCommandMain::class.java -> null
+                SimpleCommandBody::class.java -> (obj as SimpleCommandBody).apply {
+                    name = field.name
+                    aliases = annotation.property("aliases")!!
+                    optional = annotation.property("optional")!!
+                    permission = annotation.property("permission")!!
+                    permissionDefault = annotation.enum("permissionDefault")
                 }
-                SimpleCommandBody::class.java -> {
-                    (obj as SimpleCommandBody).apply {
-                        name = field.name
-                        aliases = annotation.property("aliases")!!
-                        optional = annotation.property("optional")!!
-                        permission = annotation.property("permission")!!
-                        permissionDefault = annotation.enum("permissionDefault")
-                    }
-                }
-                else -> {
-                    SimpleCommandBody().apply {
-                        name = field.name
-                        aliases = annotation.property("aliases")!!
-                        optional = annotation.property("optional")!!
-                        permission = annotation.property("permission")!!
-                        permissionDefault = annotation.enum("permissionDefault")
-                        ReflexClass.of(field.fieldType).structure.fields.forEach {
-                            children += loadBody(it, instance) ?: return@forEach
-                        }
+                else -> SimpleCommandBody().apply {
+                    name = field.name
+                    aliases = annotation.property("aliases")!!
+                    optional = annotation.property("optional")!!
+                    permission = annotation.property("permission")!!
+                    permissionDefault = annotation.enum("permissionDefault")
+                    ReflexClass.of(field.fieldType).structure.fields.forEach {
+                        children += loadBody(it, instance) ?: return@forEach
                     }
                 }
             }

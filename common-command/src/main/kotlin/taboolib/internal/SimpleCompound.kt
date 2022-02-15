@@ -10,6 +10,7 @@ import taboolib.common.platform.command.*
  * @author 坏黑
  * @since 2022/1/31 12:03 AM
  */
+@Suppress("DuplicatedCode")
 @Internal
 class SimpleCompound : Component() {
 
@@ -19,6 +20,7 @@ class SimpleCompound : Component() {
         sender.sendMessage("§cIncorrect sender for command")
     }
 
+    @Suppress("MagicNumber")
     private var incorrectCommand: ActionIncorrect<*> = ActionIncorrect(ProxyCommandSender::class.java) { _, context, index, state ->
         val args = context.args.toList().subListBy(0, index)
         var str = context.name
@@ -40,10 +42,9 @@ class SimpleCompound : Component() {
         context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
     }
 
-    override fun createCompound(): Component {
-        return SimpleCompound()
-    }
+    override fun createCompound(): Component = SimpleCompound()
 
+    @Suppress("ComplexMethod", "NestedBlockDepth")
     override fun execute(context: CommandContext<*>): Boolean {
         result = true
         // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
@@ -107,6 +108,7 @@ class SimpleCompound : Component() {
         return process(0, this)
     }
 
+    @Suppress("ComplexMethod")
     override fun suggest(context: CommandContext<*>): List<String>? {
         // 空参数不需要触发补全机制
         if (context.args.isEmpty()) {
@@ -131,9 +133,7 @@ class SimpleCompound : Component() {
                 }
             }
             return when {
-                children != null && cur + 1 < context.args.size -> {
-                    process(cur + 1, children)
-                }
+                children != null && cur + 1 < context.args.size -> process(cur + 1, children)
                 cur + 1 == context.args.size -> {
                     context.index = cur
                     val suggest = component.children(context).flatMap {
@@ -160,7 +160,7 @@ class SimpleCompound : Component() {
     }
 
     override fun sendIncorrectSender(context: CommandContext<*>) {
-        incorrectSender.exec(context, 0, 0);
+        incorrectSender.exec(context, 0, 0)
     }
 
     override fun sendIncorrectCommand(context: CommandContext<*>, index: Int, state: Int) {
@@ -171,11 +171,9 @@ class SimpleCompound : Component() {
         result = value
     }
 
-    fun Array<String>.joinBy(start: Int = 0, separator: String = " "): String {
-        return filterIndexed { index, _ -> index >= start }.joinToString(separator)
-    }
+    fun Array<String>.joinBy(start: Int = 0, separator: String = " "): String =
+        filterIndexed { index, _ -> index >= start }.joinToString(separator)
 
-    fun <T> List<T>.subListBy(start: Int = 0, end: Int = size): List<T> {
-        return filterIndexed { index, _ -> index in start until end }
-    }
+    fun <T> List<T>.subListBy(start: Int = 0, end: Int = size): List<T> =
+        filterIndexed { index, _ -> index in start until end }
 }

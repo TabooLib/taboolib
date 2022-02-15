@@ -4,6 +4,7 @@ import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.service.PlatformCommand
 
+@Suppress("LongParameterList")
 fun command(
     name: String,
     aliases: List<String> = emptyList(),

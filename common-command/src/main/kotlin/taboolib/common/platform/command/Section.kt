@@ -1,6 +1,6 @@
 package taboolib.common.platform.command
 
-abstract class Section(val optional: Boolean, val permission: String = "") {
+open class Section(val optional: Boolean, val permission: String = "") {
 
     var executor: ActionExecute<*>? = null
         protected set

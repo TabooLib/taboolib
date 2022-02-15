@@ -4,6 +4,7 @@ package taboolib.common.platform.command
  * @author sky
  * @since 2021/6/24 11:48 下午
  */
+@Suppress("LongParameterList")
 class CommandInfo(
     name: String,
     val aliases: List<String>,
