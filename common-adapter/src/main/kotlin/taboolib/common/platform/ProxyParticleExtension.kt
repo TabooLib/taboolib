@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("LongParameterList")
 
 package taboolib.common.platform
 
@@ -26,5 +27,7 @@ fun ProxyParticle.sendTo(
     speed: Double = 0.0,
     data: ProxyParticle.Data? = null,
 ) {
-    onlinePlayers().filter { it.world == location.world && it.location.distance(location) <= range }.forEach { sendTo(it, location, offset, count, speed, data) }
+    onlinePlayers()
+        .filter { it.world == location.world && it.location.distance(location) <= range }
+        .forEach { sendTo(it, location, offset, count, speed, data) }
 }

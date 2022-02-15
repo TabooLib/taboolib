@@ -3,7 +3,8 @@ package taboolib.common.io
 import taboolib.common.TabooLib
 
 val groupId: String?
-    get() = if (TabooLib::class.java.name.startsWith(taboolibId)) null else TabooLib::class.java.name.substringBefore(".$taboolibId")
+    get() = if (TabooLib::class.java.name.startsWith(taboolibId)) null
+    else TabooLib::class.java.name.substringBefore(".$taboolibId")
 
 val taboolibId: String
     get() = charArrayOf('t', 'a', 'b', 'o', 'o', 'l', 'i', 'b').concatToString()

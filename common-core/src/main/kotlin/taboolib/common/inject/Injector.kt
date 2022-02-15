@@ -9,7 +9,7 @@ import taboolib.common.LifeCycle
  * @author 坏黑
  * @since 2022/1/24 7:14 PM
  */
-abstract class Injector(val lifeCycle: LifeCycle, val priority: Byte = 0) {
+open class Injector(val lifeCycle: LifeCycle, val priority: Byte = 0) {
 
     open fun inject(clazz: Class<*>, field: ClassField, instance: InstGetter<*>) {
     }

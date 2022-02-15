@@ -26,5 +26,4 @@ interface PlatformAdapter {
     fun adaptLocation(any: Any): Location
 
     fun platformLocation(location: Location): Any
-
 }

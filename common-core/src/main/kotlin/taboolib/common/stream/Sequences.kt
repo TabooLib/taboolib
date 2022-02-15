@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package taboolib.common.stream
 
 import java.util.*

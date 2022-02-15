@@ -14,12 +14,14 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Internal
 @Suppress("UNCHECKED_CAST")
-class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false) : InstGetter<T>(source) {
+class InstGetterLazy<T> private constructor(source: Class<T>, private val newInstance: Boolean = false)
+    : InstGetter<T>(source) {
 
     val inst by lazy {
         FastInstGetter(source.name)
     }
 
+    @Suppress("MaxLineLength")
     val instance by lazy {
         runCatching { inst.instance as T }.getOrElse { runCatching { inst.companion as T }.getOrElse { if (newInstance) source.invokeConstructor() else null } }
     }

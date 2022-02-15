@@ -124,6 +124,7 @@ interface ProxyPlayer : ProxyCommandSender {
 
     fun sendRawMessage(message: String)
 
+    @Suppress("LongParameterList", "MaxLineLength")
     fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?)
 
     fun teleport(loc: Location)

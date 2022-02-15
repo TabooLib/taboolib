@@ -20,6 +20,7 @@ import taboolib.internal.SimplePlatformFactory
  * @author 坏黑
  * @since 2022/1/28 5:00 PM
  */
+@Suppress("MaxLineLength")
 class TestTabooLib {
 
     class TestObjectAwaken
