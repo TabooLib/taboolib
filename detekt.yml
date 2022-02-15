@@ -53,6 +53,8 @@ style:
     active: true
   ClassOrdering:
     active: true
+  MaxLineLength:
+    maxLineLength: 160
 
 complexity:
   TooManyFunctions:

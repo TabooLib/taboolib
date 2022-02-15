@@ -8,6 +8,5 @@ fun <T> Optional<T>.presentRun(func: T.() -> Unit) {
     ifPresent(func)
 }
 
-fun <T> Optional<T>.orNull(): T? {
-    return orElse(null)
-}
+fun <T> Optional<T>.orNull(): T? =
+    orElse(null)

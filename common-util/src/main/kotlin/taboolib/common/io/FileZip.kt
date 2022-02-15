@@ -3,6 +3,7 @@
 package taboolib.common.io
 
 import taboolib.common.Isolated
+import taboolib.common.util.using
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -17,14 +18,20 @@ import java.util.zip.ZipOutputStream
  */
 fun File.zip(target: File, skipParent: Boolean = false) {
     if (skipParent) {
-        if (isDirectory) {
-            FileOutputStream(target).use { fileOutputStream -> ZipOutputStream(fileOutputStream).use { listFiles()?.forEach { file -> it.putFile(file, "") } } }
-        } else {
-            error("is not directory")
+        if (!isDirectory) error("is not directory")
+
+        using {
+            val fileStream = FileOutputStream(target).autoClose()
+            val zipStream = ZipOutputStream(fileStream).autoClose()
+
+            this@zip.listFiles()?.forEach { zipStream.putFile(it, "") }
         }
     } else {
-        FileOutputStream(target).use { fileOutputStream ->
-            ZipOutputStream(fileOutputStream).use { it.putFile(this, "") }
+        using {
+            val fileStream = FileOutputStream(target).autoClose()
+            val zipStream = ZipOutputStream(fileStream).autoClose()
+
+            zipStream.putFile(this@zip, "")
         }
     }
 }

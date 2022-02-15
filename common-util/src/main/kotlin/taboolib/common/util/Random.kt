@@ -7,17 +7,14 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.max
 import kotlin.math.min
 
-fun random(): Random {
-    return ThreadLocalRandom.current()
-}
+fun random(): Random =
+    ThreadLocalRandom.current()
 
-fun random(v: Double): Boolean {
-    return ThreadLocalRandom.current().nextDouble() <= v
-}
+fun random(v: Double) =
+    ThreadLocalRandom.current().nextDouble() <= v
 
-fun random(v: Int): Int {
-    return ThreadLocalRandom.current().nextInt(v)
-}
+fun random(v: Int) =
+    ThreadLocalRandom.current().nextInt(v)
 
 fun random(num1: Int, num2: Int): Int {
     val min = min(num1, num2)
