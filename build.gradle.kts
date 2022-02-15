@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.tabooproject.shrinkingkt.ShrinkingExt
 
@@ -17,7 +18,18 @@ detekt {
     source = files(subprojects.map(Project::getName).map { "$it/src/main/kotlin" })
 }
 
+repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+}
+
+dependencies {
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.19.0")
+}
+
 subprojects {
+    apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "java-library")
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.kotlin.jvm")
@@ -61,7 +73,12 @@ subprojects {
     }
 
     tasks.withType<KotlinCompile> {
+        dependsOn("detekt")
         kotlinOptions.freeCompilerArgs += listOf("-module-name", "${project.group}.${project.name}")
+    }
+
+    tasks.withType<Detekt> {
+        jvmTarget = "1.8"
     }
 
     publishing {

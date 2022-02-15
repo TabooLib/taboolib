@@ -4,8 +4,8 @@ import org.tabooproject.reflex.ReflexClass
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.inject.Bind
-import taboolib.common.inject.Injector
 import taboolib.common.inject.InjectHandler
+import taboolib.common.inject.Injector
 import taboolib.common.io.InstGetterException
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
@@ -22,7 +22,7 @@ import kotlin.collections.ArrayList
 @Internal
 class SimpleInjectHandler : InjectHandler {
 
-    val injectors = ArrayList<RegisteredInjector>()
+    private val injectors = ArrayList<RegisteredInjector>()
 
     init {
         LifeCycle.values().forEach { register(InjectorAwake(it)) }
@@ -41,32 +41,44 @@ class SimpleInjectHandler : InjectHandler {
         injectors.forEach { inject(target, lifeCycle, it) }
     }
 
-    fun inject(target: Class<*>, lifeCycle: LifeCycle?, reg: RegisteredInjector) {
-        if (TabooLib.monitor().isShutdown) {
-            return
-        }
-        if (lifeCycle != null && (lifeCycle != reg.injector.lifeCycle || skipLevel(target) > lifeCycle.ordinal)) {
-            return
-        }
+    private fun inject(target: Class<*>, lifeCycle: LifeCycle?, reg: RegisteredInjector) {
+        val shutdown = TabooLib.monitor().isShutdown
+        val skip = lifeCycle != null && (lifeCycle != reg.injector.lifeCycle || skipLevel(target) > lifeCycle.ordinal)
+
         val instance = target.findInstance()
-        if (instance is InstGetterException) {
-            return
-        }
+        val isIge = instance is InstGetterException
+
+        if (shutdown || skip || isIge) return
+
         if (reg.checkTarget(Bind.Target.CLASS) && reg.check(target)) {
             reg.injector.preInject(target, instance)
         }
+
         if (reg.checkTarget(Bind.Target.FIELD)) {
-            ReflexClass.of(target).structure.fields.filter { reg.check(it) }.forEach { reg.injector.inject(target, it, instance) }
+            ReflexClass.of(target)
+                .structure.fields
+                .asSequence()
+                .filter { reg.check(it) }
+                .forEach { reg.injector.inject(target, it, instance) }
         }
+
         if (reg.checkTarget(Bind.Target.METHOD)) {
-            ReflexClass.of(target).structure.methods.filter { reg.check(it) }.forEach { reg.injector.inject(target, it, instance) }
+            ReflexClass.of(target)
+                .structure.methods
+                .asSequence()
+                .filter { reg.check(it) }
+                .forEach { reg.injector.inject(target, it, instance) }
         }
+
         if (reg.checkTarget(Bind.Target.CLASS) && reg.check(target)) {
             reg.injector.postInject(target, instance)
         }
     }
 
-    fun skipLevel(clazz: Class<*>): Int {
-        return if (clazz.isAnnotationPresent(SkipTo::class.java)) clazz.getAnnotation(SkipTo::class.java).value.ordinal else -1
+    private fun skipLevel(clazz: Class<*>): Int {
+        return if (clazz.isAnnotationPresent(SkipTo::class.java))
+            clazz.getAnnotation(SkipTo::class.java).value.ordinal
+        else
+            -1
     }
 }

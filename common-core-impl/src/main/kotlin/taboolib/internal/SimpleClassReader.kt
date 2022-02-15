@@ -41,7 +41,7 @@ class SimpleClassReader : ClassReader {
             File(source.parentFile.parentFile, "classes")
                 .flattenedToList()
                 .parallelStream()
-                .map(::readToClass)
+                .map { it.readToClass() }
                 .forEach { classes.add(it) }
         } else {
             sourceFiles += source
@@ -72,12 +72,12 @@ class SimpleClassReader : ClassReader {
     }
 
     @Throws(IllegalArgumentException::class)
-    private fun readToClass(file: File): Class<*> {
+    private fun File.readToClass(): Class<*> {
         val loader = this::class.java.classLoader
         return try {
-            loader.loadClass("${file.path}.${file.nameWithoutExtension}")
+            loader.loadClass("$path.$nameWithoutExtension")
         } catch (ex: ClassNotFoundException) {
-            throw IllegalArgumentException("file at location ${file.path} is not a valid class file", ex)
+            throw IllegalArgumentException("file at location $path is not a valid class file", ex)
         }
     }
 }
