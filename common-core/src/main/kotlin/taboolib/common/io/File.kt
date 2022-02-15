@@ -36,8 +36,9 @@ fun newFile(path: String, create: Boolean = true, folder: Boolean = false): File
  * @return 该文件自身
  */
 fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
-    if (!file.parentFile.exists()) {
-        file.parentFile.mkdirs()
+    val parentFile = file.canonicalFile.parentFile
+    if (parentFile != null && !parentFile.exists()) {
+        parentFile.mkdirs()
     }
     if (!file.exists() && create) {
         if (folder) {

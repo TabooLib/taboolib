@@ -20,14 +20,14 @@ fun File.zip(target: File, skipParent: Boolean = false) {
     if (skipParent) {
         if (!isDirectory) error("is not directory")
         using {
-            val fileStream = FileOutputStream(target).join()
-            val zipStream = ZipOutputStream(fileStream).join()
+            val fileStream = FileOutputStream(target).cage()
+            val zipStream = ZipOutputStream(fileStream).cage()
             this@zip.listFiles()?.forEach { zipStream.putFile(it, "") }
         }
     } else {
         using {
-            val fileStream = FileOutputStream(target).join()
-            val zipStream = ZipOutputStream(fileStream).join()
+            val fileStream = FileOutputStream(target).cage()
+            val zipStream = ZipOutputStream(fileStream).cage()
             zipStream.putFile(this@zip, "")
         }
     }
@@ -48,7 +48,7 @@ fun File.unzip(target: File) {
 @Suppress("NestedBlockDepth")
 fun File.unzip(destDirPath: String) {
     using {
-        val zip = ZipFile(this@unzip).join()
+        val zip = ZipFile(this@unzip).cage()
         val stream = zip.stream().parallel()
 
         stream
@@ -58,7 +58,7 @@ fun File.unzip(destDirPath: String) {
         stream
             .filter { !it.isDirectory }
             .forEach { entry ->
-                val inputStream = zip.getInputStream(entry).join()
+                val inputStream = zip.getInputStream(entry).cage()
                 File(destDirPath + "/" + entry.name).writeBytes(inputStream.readBytes())
             }
     }

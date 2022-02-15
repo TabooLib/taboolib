@@ -3,7 +3,7 @@ package taboolib.common.util
 
 import taboolib.common.Isolated
 
-fun join(args: Array<String>, start: Int = 0, separator: String = " ") =
+fun cage(args: Array<String>, start: Int = 0, separator: String = " ") =
     args.joinBy(start, separator)
 
 fun List<String>.joinBy(start: Int = 0, separator: String = " ") =
