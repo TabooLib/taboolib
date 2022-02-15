@@ -22,7 +22,6 @@ class SimpleClassReader : ClassReader {
         } catch (_: URISyntaxException) {
             File(url.path)
         }
-
         return readClassFile(srcFile)
     }
 
@@ -32,8 +31,7 @@ class SimpleClassReader : ClassReader {
         val isSpringBootWar = source.parentFile.name == "lib" && source.parentFile.parentFile.name == "WEB-INF"
 
         if (isSpringBootWar) {
-            source
-                .parentFile.listFiles()
+            source.parentFile.listFiles()
                 ?.parallelStream()
                 ?.filter { it.name.startsWith(taboolibId) }
                 ?.forEach { sourceFiles += it }
@@ -60,14 +58,11 @@ class SimpleClassReader : ClassReader {
 
     private fun File.flattenedToList(): List<File> {
         val files = mutableListOf<File>()
-
-        if (isDirectory)
-            listFiles()?.toList()
-                ?.parallelStream()
-                ?.forEach { files += it.flattenedToList() }
-        else
+        if (isDirectory) {
+            listFiles()?.toList()?.parallelStream()?.forEach { files += it.flattenedToList() }
+        } else {
             files += this
-
+        }
         return files
     }
 
