@@ -7,4 +7,10 @@ package taboolib.common.platform.service
  * @author sky
  * @since 2021/6/15 11:17 下午
  */
-class PlatformRunnable(val async: Boolean, val delay: Long, val period: Long, val commit: String?, val executor: PlatformTask.() -> Unit)
+class PlatformRunnable(
+    val async: Boolean,
+    val delay: Long,
+    val period: Long,
+    val commit: String?,
+    val executor: PlatformTask.() -> Unit
+)
