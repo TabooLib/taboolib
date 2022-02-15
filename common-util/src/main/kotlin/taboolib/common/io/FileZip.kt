@@ -49,22 +49,27 @@ fun File.unzip(target: File) {
  * @param destDirPath 解压后的文件路径
  */
 fun File.unzip(destDirPath: String) {
-    ZipFile(this).use { zipFile ->
-        zipFile.stream().forEach { entry ->
-            if (entry.isDirectory) {
-                File(destDirPath + "/" + entry.name).mkdirs()
-            } else {
-                zipFile.getInputStream(entry).use {
-                    File(destDirPath + "/" + entry.name).writeBytes(it.readBytes())
-                }
+    using {
+        val zip = ZipFile(this@unzip).autoClose()
+        val stream = zip.stream().parallel()
+
+        stream
+            .filter { it.isDirectory }
+            .forEach { File(destDirPath + "/" + it.name).mkdirs() }
+
+        stream
+            .filter { !it.isDirectory }
+            .forEach { entry ->
+                val inputStream = zip.getInputStream(entry).autoClose()
+                File(destDirPath + "/" + entry.name).writeBytes(inputStream.readBytes())
             }
-        }
     }
 }
 
 fun ZipOutputStream.putFile(file: File, path: String) {
     if (file.isDirectory) {
-        file.listFiles()?.forEach { putFile(it, path + file.name + "/") }
+        file.listFiles()
+            ?.forEach { putFile(it, path + file.name + "/") }
     } else {
         FileInputStream(file).use {
             putNextEntry(ZipEntry(path + file.name))

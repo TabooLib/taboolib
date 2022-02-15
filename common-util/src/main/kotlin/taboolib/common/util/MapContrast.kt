@@ -47,7 +47,6 @@ fun Map<String, Any?>.contrastAs(target: Map<String, Any?>): Set<Difference> {
 class Difference(val type: Type, val node: String, val value: Any?) : Comparable<Difference> {
 
     enum class Type {
-
         ADD, MODIFY, DELETE
     }
 

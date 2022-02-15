@@ -15,7 +15,6 @@ detekt {
     parallel = true
     config = files("detekt.yml")
     buildUponDefaultConfig = true
-    source = files(subprojects.map(Project::getName).map { "$it/src/main/kotlin" })
 }
 
 repositories {
@@ -47,6 +46,12 @@ subprojects {
         "compileOnly"("org.tabooproject.reflex:reflex:1.0.9")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    }
+
+    detekt {
+        parallel = true
+        config = parent!!.files("detekt.yml")
+        buildUponDefaultConfig = true
     }
 
     configure<JavaPluginExtension> {

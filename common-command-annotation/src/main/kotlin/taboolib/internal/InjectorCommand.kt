@@ -28,25 +28,35 @@ object InjectorCommand : Injector(LifeCycle.ENABLE) {
     override fun postInject(clazz: Class<*>, instance: InstGetter<*>) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
-            command(annotation.name,
+            val permissionChildren = body[clazz.name]
+                ?.filter { it.permission.isNotEmpty() }
+                ?.associate { it.permission to it.permissionDefault } ?: emptyMap()
+
+            command(
+                annotation.name,
                 annotation.aliases.toList(),
                 annotation.description,
                 annotation.usage,
                 annotation.permission,
                 annotation.permissionMessage,
                 annotation.permissionDefault,
-                body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap()
+                permissionChildren
             ) {
                 main[clazz.name]?.func?.invoke(this)
+
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: Section) {
-                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
+                        component.literal(
+                            body.name,
+                            *body.aliases,
+                            optional = body.optional,
+                            permission = body.permission
+                        ) {
                             if (body.children.isEmpty()) {
                                 body.func(this)
                             } else {
-                                body.children.forEach { children ->
-                                    register(children, this)
-                                }
+                                body.children
+                                    .forEach { register(it, this) }
                             }
                         }
                     }
