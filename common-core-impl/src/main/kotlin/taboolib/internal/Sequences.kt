@@ -29,6 +29,7 @@ fun <T> Stream<T>.mapFlattenedParalleled(mapper: (T) -> Collection<T>): Stream<T
     flatMap { mapper(it).parallelStream() }
 
 fun <T> Sequence<T>.peek(action: (T) -> Unit) = map {
+    Objects.hash()
     action(it)
     it
 }

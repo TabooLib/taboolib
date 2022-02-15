@@ -71,7 +71,7 @@ abstract class AbstractXmlParser {
 
 
     /**
-     * Searches for a node and returns the text inside of it
+     * Searches for a node and returns the text inside it
      *
      * @param name The name of the node to search for
      * @param node The node to search inside of

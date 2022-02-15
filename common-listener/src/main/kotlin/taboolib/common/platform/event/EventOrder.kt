@@ -67,5 +67,4 @@ enum class EventOrder {
      * cannot cancel events.</p>
      */
     POST
-
 }

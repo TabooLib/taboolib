@@ -9,13 +9,9 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
  */
 class OptionalEvent(val source: Any) {
 
-    inline fun <reified T> get(): T {
-        return source as T
-    }
+    inline fun <reified T> get() = source as T
 
-    fun <T> read(name: String): T? {
-        return source.getProperty<T>(name)
-    }
+    fun <T> read(name: String) = source.getProperty<T>(name)
 
     fun write(name: String, value: Any?) {
         source.setProperty(name, value)

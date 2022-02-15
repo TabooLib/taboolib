@@ -16,9 +16,11 @@ fun <T> registerBukkitListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val registeredListener = RegisteredListener()
-    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, priority, ignoreCancelled) { func(registeredListener, it) }.also {
-        registeredListener.listener = it
-    }
+
+    return PlatformFactory
+        .getPlatformService<PlatformListener>()
+        .registerListener(event, priority, ignoreCancelled) { func(registeredListener, it) }
+        .also { registeredListener.listener = it }
 }
 
 fun <T> registerBungeeListener(
@@ -28,9 +30,11 @@ fun <T> registerBungeeListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val registeredListener = RegisteredListener()
-    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, level, ignoreCancelled) { func(registeredListener, it) }.also {
-        registeredListener.listener = it
-    }
+
+    return PlatformFactory
+        .getPlatformService<PlatformListener>()
+        .registerListener(event, level, ignoreCancelled) { func(registeredListener, it) }
+        .also { registeredListener.listener = it }
 }
 
 fun <T> registerSpongeListener(
@@ -40,9 +44,10 @@ fun <T> registerSpongeListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val registeredListener = RegisteredListener()
-    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, order, beforeModifications) { func(registeredListener, it) }.also {
-        registeredListener.listener = it
-    }
+
+    return PlatformFactory.getPlatformService<PlatformListener>()
+        .registerListener(event, order, beforeModifications) { func(registeredListener, it) }
+        .also { registeredListener.listener = it }
 }
 
 fun <T> registerVelocityListener(
@@ -51,9 +56,11 @@ fun <T> registerVelocityListener(
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
     val registeredListener = RegisteredListener()
-    return PlatformFactory.getPlatformService<PlatformListener>().registerListener(event, postOrder) { func(registeredListener, it) }.also {
-        registeredListener.listener = it
-    }
+
+    return PlatformFactory
+        .getPlatformService<PlatformListener>()
+        .registerListener(event, postOrder) { func(registeredListener, it) }
+        .also { registeredListener.listener = it }
 }
 
 fun unregisterListener(proxyListener: ProxyListener) {

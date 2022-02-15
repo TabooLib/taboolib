@@ -7,10 +7,10 @@ import taboolib.common.platform.service.PlatformEvent
  * @author sky
  * @since 2021/6/17 1:00 上午
  */
+@Suppress("UnnecessaryAbstractClass", "EmptyFunctionBlock")
 abstract class ProxyEvent {
 
-    open val allowCancelled: Boolean
-        get() = true
+    open val allowCancelled = true
 
     var isCancelled = false
 
@@ -19,6 +19,5 @@ abstract class ProxyEvent {
         return !isCancelled
     }
 
-    open fun postCall() {
-    }
+    fun postCall() {}
 }

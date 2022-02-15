@@ -16,26 +16,45 @@ interface PlatformListener {
     /**
      * bukkit & nukkit
      */
-    fun <T> registerListener(event: Class<T>, priority: EventPriority = EventPriority.NORMAL, ignoreCancelled: Boolean = true, func: (T) -> Unit): ProxyListener
+    fun <T> registerListener(
+        event: Class<T>,
+        priority: EventPriority = EventPriority.NORMAL,
+        ignoreCancelled: Boolean = true,
+        func: (T) -> Unit
+    ): ProxyListener
 
     /**
      * bungeecord
      */
-    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener {
+    fun <T> registerListener(
+        event: Class<T>,
+        level: Int,
+        ignoreCancelled: Boolean = false,
+        func: (T) -> Unit
+    ): ProxyListener {
         error("Unsupported")
     }
 
     /**
      * velocity
      */
-    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener {
+    fun <T> registerListener(
+        event: Class<T>,
+        postOrder: PostOrder = PostOrder.NORMAL,
+        func: (T) -> Unit
+    ): ProxyListener {
         error("Unsupported")
     }
 
     /**
      * sponge
      */
-    fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
+    fun <T> registerListener(
+        event: Class<T>,
+        order: EventOrder = EventOrder.DEFAULT,
+        beforeModifications: Boolean = false,
+        func: (T) -> Unit
+    ): ProxyListener {
         error("Unsupported")
     }
 

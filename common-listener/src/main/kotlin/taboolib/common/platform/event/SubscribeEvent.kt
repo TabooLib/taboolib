@@ -2,6 +2,7 @@ package taboolib.common.platform.event
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
+@Suppress("LongParameterList")
 annotation class SubscribeEvent(
     val priority: EventPriority = EventPriority.NORMAL,
     val ignoreCancelled: Boolean = false,
