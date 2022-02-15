@@ -1,0 +1,61 @@
+style:
+  WildcardImport:
+    active: false
+  UseOrEmpty:
+    active: true
+  UseCheckOrError:
+    active: true
+  UseCheckNotNull:
+    active: true
+  UseRequire:
+    active: true
+  UseRequireNotNull:
+    active: true
+  UseIfEmptyOrIfBlank:
+    active: true
+  UseEmptyCounterpart:
+    active: true
+  UntilInsteadOfRangeTo:
+    active: true
+  UnnecessaryLet:
+    active: true
+  UnnecessaryApply:
+    active: true
+  UnnecessaryFilter:
+    active: true
+  RedundantHigherOrderMapUsage:
+    active: true
+  PreferToOverPairSyntax:
+    active: true
+  OptionalWhenBraces:
+    active: true
+  OptionalUnit:
+    active: true
+  ObjectLiteralToLambda:
+    active: true
+  ModifierOrder:
+    active: true
+  MayBeConst:
+    active: true
+  MandatoryBracesLoops:
+    active: true
+  ForbiddenVoid:
+    active: true
+  ExpressionBodySyntax:
+    active: true
+  ExplicitItLambdaParameter:
+    active: true
+  ExplicitCollectionElementAccessMethod:
+    active: true
+  CollapsibleIfStatements:
+    active: true
+  ClassOrdering:
+    active: true
+
+complexity:
+  TooManyFunctions:
+    active: false
+
+formatting:
+  NoWildcardImports:
+    active: false

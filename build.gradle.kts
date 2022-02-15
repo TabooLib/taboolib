@@ -4,9 +4,17 @@ import org.tabooproject.shrinkingkt.ShrinkingExt
 
 plugins {
     `maven-publish`
-    id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("org.jetbrains.kotlin.jvm") version "1.6.10" apply false
     id("org.tabooproject.shrinkingkt") version "1.0.6" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+}
+
+detekt {
+    parallel = true
+    config = files("detekt.yml")
+    buildUponDefaultConfig = true
+    source = files(subprojects.map(Project::getName).map { "$it/src/main/kotlin" })
 }
 
 subprojects {

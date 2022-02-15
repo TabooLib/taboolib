@@ -15,48 +15,69 @@ import java.util.jar.JarFile
 class SimpleClassReader : ClassReader {
 
     override fun readClasses(url: URL): List<Class<*>> {
-        val classes = CopyOnWriteArrayList<Class<*>>()
-        val src = ArrayList<File>()
         val srcFile = try {
             File(url.toURI())
-        } catch (ex: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
             File((url.openConnection() as JarURLConnection).jarFileURL.toURI())
-        } catch (ex: URISyntaxException) {
+        } catch (_: URISyntaxException) {
             File(url.path)
         }
-        val springBootWar = srcFile.parentFile.name == "lib" && srcFile.parentFile.parentFile.name == "WEB-INF"
-        if (springBootWar) {
-            // include taboolib modules
-            srcFile.parentFile.listFiles()?.forEach {
-                if (it.name.startsWith(taboolibId)) {
-                    src += it
-                }
-            }
-            fun include(file: File, path: String = "") {
-                if (file.isDirectory) {
-                    file.listFiles()?.forEach { sub -> include(sub, "$path${file.name}.") }
-                } else {
-                    kotlin.runCatching {
-                        classes.add(Class.forName("$path${file.nameWithoutExtension}"))
-                    }
-                }
-            }
-            File(srcFile.parentFile.parentFile, "classes").listFiles()?.forEach {
-                include(it)
-            }
+
+        return readClassFile(srcFile)
+    }
+
+    private fun readClassFile(source: File): List<Class<*>> {
+        val classes = CopyOnWriteArrayList<Class<*>>()
+        val sourceFiles = mutableListOf<File>()
+        val isSpringBootWar = source.parentFile.name == "lib" && source.parentFile.parentFile.name == "WEB-INF"
+
+        if (isSpringBootWar) {
+            source
+                .parentFile.listFiles()
+                ?.parallelStream()
+                ?.filter { it.name.startsWith(taboolibId) }
+                ?.forEach { sourceFiles += it }
+
+            File(source.parentFile.parentFile, "classes")
+                .flattenedToList()
+                .parallelStream()
+                .map(::readToClass)
+                .forEach { classes.add(it) }
         } else {
-            src += srcFile
+            sourceFiles += source
         }
-        src.forEach { s ->
-            JarFile(s).stream().parallel().filter { it.name.endsWith(".class") }.forEach {
-                kotlin.runCatching {
-                    val className = it.name.replace('/', '.').substringBeforeLast('.')
-                    if (className.startsWith(groupId ?: taboolibId)) {
-                        classes.add(Class.forName(className, false, TabooLib::class.java.classLoader))
-                    }
-                }
-            }
-        }
+
+        sourceFiles.parallelStream()
+            .map(::JarFile)
+            .filter { it.name.endsWith(".class") }
+            .map { it.name.replace('/', '.').substringBeforeLast('.') }
+            .filter { it.startsWith(groupId ?: taboolibId) }
+            .map { runCatching { Class.forName(it, false, TabooLib::class.java.classLoader) } }
+            .forEach { result -> result.getOrNull()?.let { classes.add(it) } }
+
         return classes
+    }
+
+    private fun File.flattenedToList(): List<File> {
+        val files = mutableListOf<File>()
+
+        if (isDirectory)
+            listFiles()?.toList()
+                ?.parallelStream()
+                ?.forEach { files += it.flattenedToList() }
+        else
+            files += this
+
+        return files
+    }
+
+    @Throws(IllegalArgumentException::class)
+    private fun readToClass(file: File): Class<*> {
+        val loader = this::class.java.classLoader
+        return try {
+            loader.loadClass("${file.path}.${file.nameWithoutExtension}")
+        } catch (ex: ClassNotFoundException) {
+            throw IllegalArgumentException("file at location ${file.path} is not a valid class file", ex)
+        }
     }
 }

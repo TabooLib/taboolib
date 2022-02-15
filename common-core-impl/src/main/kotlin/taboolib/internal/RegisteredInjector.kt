@@ -32,23 +32,18 @@ class RegisteredInjector(val injector: Injector) {
         }
     }
 
-    fun checkType(type: Class<*>): Boolean {
-        return this.type.isEmpty() || this.type.any { it.isAssignableFrom(type) }
-    }
+    fun checkType(type: Class<*>) =
+        this.type.isEmpty() || this.type.any { it.isAssignableFrom(type) }
 
-    fun checkTarget(target: Bind.Target): Boolean {
-        return this.target == Bind.Target.ALL || this.target == target
-    }
+    fun checkTarget(target: Bind.Target) =
+        this.target == Bind.Target.ALL || this.target == target
 
-    fun check(target: Class<*>): Boolean {
-        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target)
-    }
+    fun check(target: Class<*>) =
+        (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target)
 
-    fun check(target: ClassField): Boolean {
-        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target.fieldType)
-    }
+    fun check(target: ClassField) =
+        (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target.fieldType)
 
-    fun check(target: ClassMethod): Boolean {
-        return (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) })
-    }
+    fun check(target: ClassMethod) =
+        annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }
 }
