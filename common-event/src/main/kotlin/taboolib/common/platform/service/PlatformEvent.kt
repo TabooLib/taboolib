@@ -9,5 +9,6 @@ import taboolib.common.platform.event.ProxyEvent
  */
 @PlatformService
 interface PlatformEvent {
+
     fun callEvent(proxyEvent: ProxyEvent)
 }

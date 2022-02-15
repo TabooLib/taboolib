@@ -24,7 +24,9 @@ class SimpleListenerRegister : ProxyListenerRegister {
         val bind = annotation.property<String>("bind")
         val bindEventClass = bind?.let { runCatching { Class.forName(it) } }?.getOrNull()
 
-        if (isOptionalEvent && bindEventClass == null) return
+        if (isOptionalEvent && bindEventClass == null) {
+            return
+        }
 
         val instanceValue = instance.get() ?: return
 
@@ -67,11 +69,7 @@ class SimpleListenerRegister : ProxyListenerRegister {
         instance: Any,
         isOptionalEvent: Boolean
     ) {
-        val level = if (annotation.property<Int>("level") != null)
-            annotation.property<Int>("level")!!
-        else
-            annotation.enum<EventPriority>("priority").level
-
+        val level = if (annotation.property<Int>("level") != null) annotation.property<Int>("level")!! else annotation.enum<EventPriority>("priority").level
         val ignoreCancelled = annotation.property<Boolean>("ignoreCancelled")!!
 
         registerBungeeListener(event, level, ignoreCancelled) {
@@ -104,8 +102,7 @@ class SimpleListenerRegister : ProxyListenerRegister {
         val before = annotation.enum<Boolean>("beforeModifications")
 
         registerSpongeListener(event, order, before) {
-            val value = if (isOptionalEvent) OptionalEvent(it) else it
-            method.invoke(instance, value)
+            method.invoke(instance, if (isOptionalEvent) OptionalEvent(it) else it)
         }
     }
 }

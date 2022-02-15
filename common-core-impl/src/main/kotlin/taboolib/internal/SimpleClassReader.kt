@@ -4,6 +4,7 @@ import taboolib.common.TabooLib
 import taboolib.common.io.ClassReader
 import taboolib.common.io.groupId
 import taboolib.common.io.taboolibId
+import taboolib.common.stream.parallelStream
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException

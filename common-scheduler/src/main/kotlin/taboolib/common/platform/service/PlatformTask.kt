@@ -8,5 +8,6 @@ package taboolib.common.platform.service
  * @since 2021/6/15 11:17 下午
  */
 interface PlatformTask {
+
     fun cancel()
 }

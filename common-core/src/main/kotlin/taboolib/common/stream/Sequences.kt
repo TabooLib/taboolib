@@ -1,4 +1,4 @@
-package taboolib.internal
+package taboolib.common.stream
 
 import java.util.*
 import java.util.stream.DoubleStream

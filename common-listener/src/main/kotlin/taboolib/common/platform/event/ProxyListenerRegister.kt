@@ -14,6 +14,7 @@ interface ProxyListenerRegister {
     fun register(annotation: ClassAnnotation, method: ClassMethod, instance: InstGetter<*>)
 
     companion object {
+
         @JvmField
         val INSTANCE: ProxyListenerRegister = SimpleServiceLoader.load(ProxyListenerRegister::class.java)
     }

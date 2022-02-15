@@ -38,15 +38,9 @@ val Class<*>.isPlatformEvent: Boolean
  */
 fun Class<*>.getEventClass(): Class<*> {
     val event = getProxyEventAbstractClass()
-    return if (event != null)
-        Class.forName("${event.tabooLibPath}.$platformEventName")
-    else
-        this
+    return if (event != null) Class.forName("${event.tabooLibPath}.$platformEventName") else this
 }
 
 private fun Class<*>.getProxyEventAbstractClass(): Class<*>? {
-    return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent"))
-        superclass
-    else
-        superclass?.getProxyEventAbstractClass()
+    return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.getProxyEventAbstractClass()
 }

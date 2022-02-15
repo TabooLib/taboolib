@@ -16,8 +16,7 @@ object InjectorSubscribeEvent : Injector(LifeCycle.ENABLE) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
         if (method.parameter.size == 1) {
-            ProxyListenerRegister.INSTANCE
-                .register(method.getAnnotation(SubscribeEvent::class.java)!!, method, instance)
+            ProxyListenerRegister.INSTANCE.register(method.getAnnotation(SubscribeEvent::class.java)!!, method, instance)
         }
     }
 }

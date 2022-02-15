@@ -11,6 +11,8 @@ import taboolib.common.platform.PlatformService
  */
 @PlatformService
 interface PlatformExecutor {
+
     fun start()
+
     fun submit(runnable: PlatformRunnable): PlatformTask
 }

@@ -6,5 +6,6 @@ package taboolib.common.platform.event
  */
 @Suppress("MagicNumber")
 enum class EventPriority(val level: Int) {
+
     LOWEST(-64), LOW(-32), NORMAL(0), HIGH(32), HIGHEST(64), MONITOR(128)
 }
