@@ -24,9 +24,9 @@ public class OpenAPI {
                 .filter(OpenResult::isSuccessful)
                 .findFirst()
                 .orElse(null);
-
-        if (result != null) { return result; }
-
+        if (result != null) {
+            return result;
+        }
         return OpenResult.failed();
     }
 }

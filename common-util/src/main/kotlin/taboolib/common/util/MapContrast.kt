@@ -11,15 +11,11 @@ fun Map<String, Any?>.flatten(): Map<String, Any?> {
 
     forEach { (k, v) ->
         if (v is Map<*, *>) {
-            (v as Map<String, Any?>)
-                .flatten()
-                .mapKeys { "$k.${it.key}" }
-                .let { flatMap += it }
+            (v as Map<String, Any?>).flatten().mapKeys { "$k.${it.key}" }.let { flatMap += it }
         } else {
             flatMap[k] = v
         }
     }
-
     return flatMap
 }
 
@@ -29,10 +25,7 @@ fun Map<String, Any?>.contrastAs(target: Map<String, Any?>): Set<Difference> {
     val sourceMap = flatten()
     val targetMap = target.flatten()
 
-    targetMap
-        .filter { it.key !in sourceMap }
-        .forEach { update += Difference(Difference.Type.DELETE, it.key, it.value) }
-
+    targetMap.filter { it.key !in sourceMap }.forEach { update += Difference(Difference.Type.DELETE, it.key, it.value) }
     sourceMap.forEach { (k, v) ->
         if (k !in targetMap) {
             update += Difference(Difference.Type.ADD, k, v)
@@ -40,7 +33,6 @@ fun Map<String, Any?>.contrastAs(target: Map<String, Any?>): Set<Difference> {
             update += Difference(Difference.Type.MODIFY, k, v)
         }
     }
-
     return update
 }
 

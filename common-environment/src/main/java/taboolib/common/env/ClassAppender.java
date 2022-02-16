@@ -43,11 +43,11 @@ public class ClassAppender {
             File file = new File(path.toUri().getPath());
             ClassLoader loader = TabooLib.class.getClassLoader();
             if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
-                MethodHandle methodHandle = lookup.findVirtual(URLClassLoader.class, "addURL", MethodType.methodType(void.class, java.net.URL.class));
+                MethodType methodType = MethodType.methodType(void.class, URL.class);
+                MethodHandle methodHandle = lookup.findVirtual(URLClassLoader.class, "addURL", methodType);
                 methodHandle.invoke(loader, file.toURI().toURL());
             } else {
                 Field ucpField;
-
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
                 } catch (NoSuchFieldError | NoSuchFieldException e1) {
@@ -57,10 +57,10 @@ public class ClassAppender {
                         ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
                     }
                 }
-
                 long ucpOffset = unsafe.objectFieldOffset(ucpField);
                 Object ucp = unsafe.getObject(loader, ucpOffset);
-                MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
+                MethodType methodType = MethodType.methodType(void.class, URL.class);
+                MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", methodType);
                 methodHandle.invoke(ucp, file.toURI().toURL());
             }
         } catch (Throwable t) {

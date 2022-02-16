@@ -68,14 +68,9 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
                 if (interfaces.contains(Injector::class.java)) {
                     InjectHandler.INSTANCE.register(instance.get() as Injector)
                 }
-
-                interfaces
-                    .filter { it.isAnnotationPresent(PlatformService::class.java) }
-                    .forEach { serviceMap[it.name] = instance }
-
+                interfaces.filter { it.isAnnotationPresent(PlatformService::class.java) }.forEach { serviceMap[it.name] = instance }
                 awokenMap[clazz.name] = instance
             }
-
         runningClasses.parallelStream()
             .filter { it.isAnnotationPresent(PlatformImplementation::class.java) }
             .filter { it.getAnnotation(PlatformImplementation::class.java).platform == TabooLib.runningPlatform() }

@@ -64,19 +64,25 @@ public class TimeCycle {
                     case DAY:
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) { this.end.add(Calendar.DATE, 1); }
+                        if (startCal.after(this.end)) {
+                            this.end.add(Calendar.DATE, 1);
+                        }
                         break;
                     case WEEK:
                         this.end.set(Calendar.DAY_OF_WEEK, day + 1);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) { this.end.add(Calendar.DATE, 7); }
+                        if (startCal.after(this.end)) {
+                            this.end.add(Calendar.DATE, 7);
+                        }
                         break;
                     case MONTH:
                         this.end.set(Calendar.DAY_OF_MONTH, day);
                         this.end.set(Calendar.HOUR_OF_DAY, hour);
                         this.end.set(Calendar.MINUTE, minute);
-                        if (startCal.after(this.end)) { this.end.add(Calendar.MONTH, 1); }
+                        if (startCal.after(this.end)) {
+                            this.end.add(Calendar.MONTH, 1);
+                        }
                         break;
                 }
             }

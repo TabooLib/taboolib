@@ -122,8 +122,12 @@ object Mirror {
             timeLatest = BigDecimal((stopTime - startTime) / 1000000.0).setScale(2, RoundingMode.HALF_UP)
             timeTotal = timeTotal.add(timeLatest)
 
-            if (timeLatest.compareTo(timeHighest) == 1) { timeHighest = timeLatest }
-            if (timeLatest.compareTo(timeLowest) == -1) { timeLowest = timeLatest }
+            if (timeLatest.compareTo(timeHighest) == 1) {
+                timeHighest = timeLatest
+            }
+            if (timeLatest.compareTo(timeLowest) == -1) {
+                timeLowest = timeLatest
+            }
 
             count++
             return this

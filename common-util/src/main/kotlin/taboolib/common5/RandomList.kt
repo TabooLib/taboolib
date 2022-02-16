@@ -25,7 +25,9 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
             val n = Random().nextInt(sum)
 
             for (obj in value) {
-                if (m <= n && n < m + obj.index) { return obj.element }
+                if (m <= n && n < m + obj.index) {
+                    return obj.element
+                }
                 m += obj.index
             }
         }

@@ -1,4 +1,4 @@
-package taboolib.common.exceptions;
+package taboolib.common.exception;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ public class Result<T> {
 
     private final Throwable throwable;
 
-    public Result(T data,Throwable throwable, boolean isSuccess) {
+    public Result(T data, Throwable throwable, boolean isSuccess) {
         this.data = data;
         this.isSuccess = isSuccess;
         this.throwable = throwable;
@@ -43,6 +43,7 @@ public class Result<T> {
         if (!isSuccess && throwable != null) block.accept(throwable);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public T unwrap() {
         if (isSuccess && data != null) return data;

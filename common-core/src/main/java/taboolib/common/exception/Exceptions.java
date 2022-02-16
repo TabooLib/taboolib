@@ -1,8 +1,9 @@
-package taboolib.common.exceptions;
+package taboolib.common.exception;
 
 import java.util.function.Supplier;
 
 public class Exceptions {
+
     public static <T> Result<? extends T> runCatching(Supplier<? extends T> block) {
         try {
             return Result.success(block.get());
