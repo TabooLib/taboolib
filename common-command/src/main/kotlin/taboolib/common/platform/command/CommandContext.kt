@@ -1,6 +1,8 @@
 package taboolib.common.platform.command
 
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.stream.stream
+import taboolib.common.stream.toTypedArray
 
 /**
  * @author sky
@@ -23,8 +25,12 @@ data class CommandContext<T>(
      * 取全部参数
      */
     fun args(): Array<String> {
-        return args.filterIndexed { i, _ -> i <= index }.toTypedArray().also {
-            it[index] = "${it[index]} ${args.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim()
+        val greaterThanIndex = args.stream().limit((index + 1).toLong()).toTypedArray()
+        val lessThanIndex = args.stream().skip(index.toLong()).toTypedArray()
+
+        return greaterThanIndex.also {
+            val string = it[index] + " " + lessThanIndex.joinToString(" ").trim()
+            it[index] = string
         }
     }
 

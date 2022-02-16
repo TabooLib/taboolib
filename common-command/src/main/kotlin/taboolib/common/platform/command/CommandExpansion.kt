@@ -16,22 +16,25 @@ fun command(
     permissionChildren: Map<String, PermissionDefault> = emptyMap(),
     commandBuilder: Component.() -> Unit,
 ) {
-    PlatformFactory.getPlatformService<PlatformCommand>().registerCommand(
-        CommandInfo(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
-        object : CommandExecutor {
+    val info =
+        CommandInfo(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren)
 
-            override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): Boolean {
-                val compound = Component.INSTANCE.createCompound().also(commandBuilder)
-                return compound.execute(CommandContext(sender, command, name, compound, args))
-            }
-        },
-        object : CommandCompleter {
+    val executor = object : CommandExecutor {
 
-            override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): List<String>? {
-                val compound = Component.INSTANCE.createCompound().also(commandBuilder)
-                return compound.suggest(CommandContext(sender, command, name, compound, args))
-            }
-        },
-        commandBuilder
-    )
+        override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): Boolean {
+            val compound = Component.INSTANCE.createCompound().also(commandBuilder)
+            return compound.execute(CommandContext(sender, command, name, compound, args))
+        }
+    }
+
+    val completer = object : CommandCompleter {
+
+        override fun execute(sender: ProxyCommandSender, command: CommandInfo, name: String, args: Array<String>): List<String>? {
+            val compound = Component.INSTANCE.createCompound().also(commandBuilder)
+            return compound.suggest(CommandContext(sender, command, name, compound, args))
+        }
+    }
+
+    PlatformFactory.getPlatformService<PlatformCommand>()
+        .registerCommand(info, executor, completer, commandBuilder)
 }

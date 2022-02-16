@@ -4,10 +4,12 @@ class ActionRestrict<T>(bind: Class<T>, val function: (sender: T, context: Comma
 
     fun exec(context: CommandContext<*>, argument: String): Boolean? {
         val sender = context.getSender()
-        return if (sender != null) {
-            function.invoke(sender, CommandContext(sender, context.command, context.name, context.compound, context.args, context.index), argument)
-        } else {
-            null
+
+        return sender?.let {
+            val newContext: CommandContext<T> =
+                CommandContext(sender, context.command, context.name, context.compound, context.args, context.index)
+
+            function(it, newContext, argument)
         }
     }
 }

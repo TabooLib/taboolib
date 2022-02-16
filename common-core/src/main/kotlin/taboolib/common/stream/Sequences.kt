@@ -29,6 +29,8 @@ fun <T> Stream<T>.mapFlattened(mapper: (T) -> Collection<T>): Stream<T> =
 fun <T> Stream<T>.mapFlattenedParalleled(mapper: (T) -> Collection<T>): Stream<T> =
     flatMap { mapper(it).parallelStream() }
 
+inline fun <reified T> Stream<T>.toTypedArray() = toArray<T> { arrayOfNulls(0) }
+
 fun <T> Sequence<T>.peek(action: (T) -> Unit) = map {
     Objects.hash()
     action(it)

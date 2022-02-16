@@ -22,6 +22,7 @@ open class SectionDynamic(val commit: String, optional: Boolean, permission: Str
         suggestion(T::class.java, uncheck, function)
     }
 
+    // could be crossinline?
     inline fun <reified T> restrictWith(noinline function: () -> Boolean) {
         restrict(T::class.java) { _, _, _ -> function() }
     }
