@@ -8,8 +8,8 @@ class ActionExecute<T>(bind: Class<T>, val function: Helper.(sender: T, context:
     fun exec(component: Component, context: CommandContext<*>, argument: String) {
         val sender = context.getSender()
         if (sender != null) {
-            val clone = CommandContext<T>(sender, context.command, context.name, context.compound, context.args, context.index)
-            function.invoke(Helper(clone), sender, clone, argument)
+            val newContext = CommandContext<T>(sender, context.command, context.name, context.compound, context.args, context.index)
+            function.invoke(Helper(newContext), sender, newContext, argument)
         } else {
             component.sendIncorrectSender(context)
         }

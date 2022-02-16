@@ -4,11 +4,8 @@ class ActionIncorrect<T>(bind: Class<T>, val function: (sender: T, context: Comm
 
     fun exec(context: CommandContext<*>, index: Int, state: Int) {
         val sender = context.getSender()
-
         sender?.let {
-            val newContext: CommandContext<T> =
-                CommandContext(it, context.command, context.name, context.compound, context.args, context.index)
-
+            val newContext = CommandContext<T>(it, context.command, context.name, context.compound, context.args, context.index)
             function(sender, newContext, index, state)
         }
     }
