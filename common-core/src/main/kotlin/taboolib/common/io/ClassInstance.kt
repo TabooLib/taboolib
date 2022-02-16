@@ -30,7 +30,5 @@ fun <T> Class<T>.findInstance(newInstance: Boolean = false): InstGetter<T> {
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findInstanceFromPlatform(): T? {
-    return runningClasses
-        .firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.INSTANCE.checkPlatform(it) }
-        ?.findInstance(true) as T?
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.INSTANCE.checkPlatform(it) }?.findInstance(true) as T?
 }
