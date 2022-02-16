@@ -11,6 +11,7 @@ import taboolib.common.env.RuntimeEnv;
 import taboolib.common.inject.InjectHandler;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
+import taboolib.common.exceptions.Exceptions;
 
 import java.util.*;
 
@@ -52,31 +53,20 @@ public class SimpleBooster implements Booster {
     @Override
     public void proceed(@NotNull LifeCycle lifeCycle, @Nullable Platform platform) {
         runningLifeCycle = lifeCycle;
-        if (platform != null) {
-            runningPlatform = platform;
-        }
-        if (monitor.isShutdown()) {
-            return;
-        }
+
+        if (platform != null) { runningPlatform = platform; }
+        if (monitor.isShutdown()) { return; }
+
         if (postpone.containsKey(lifeCycle)) {
-            postpone.get(lifeCycle).forEach(i -> {
-                try {
-                    i.run();
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-            });
+            postpone.get(lifeCycle).forEach(block -> Exceptions.runCatching(block).unwrap());
         }
+
         switch (lifeCycle) {
             case CONST:
-                if (setupKotlin()) {
-                    preInitiation();
-                }
+                if (setupKotlin()) { preInitiation(); }
                 break;
             case INIT:
-                if (initiation) {
-                    InjectHandler.INSTANCE.inject(LifeCycle.INIT);
-                }
+                if (initiation) { InjectHandler.INSTANCE.inject(LifeCycle.INIT); }
                 break;
             case LOAD:
                 if (!initiation) {
@@ -88,6 +78,7 @@ public class SimpleBooster implements Booster {
                         throw new RuntimeException("Runtime environment setup failed, please feedback!");
                     }
                 }
+
                 InjectHandler.INSTANCE.inject(LifeCycle.LOAD);
                 break;
             case ENABLE:
@@ -119,14 +110,13 @@ public class SimpleBooster implements Booster {
     }
 
     boolean setupKotlin() {
-        if (Environments.isKotlin()) {
-            return true;
-        }
+        if (Environments.isKotlin()) { return true; }
+
         try {
             // RuntimeEnv 类可能会被插件强制移除导致 NoClassDefFoundError 异常，这是正常的
             Mechanism.startup(RuntimeEnv.INSTANCE);
-        } catch (NoClassDefFoundError | ClassCastException ignored) {
-        }
+        } catch (NoClassDefFoundError | ClassCastException ignored) {}
+
         return Environments.isKotlin();
     }
 }

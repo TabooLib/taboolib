@@ -2,6 +2,8 @@
 package taboolib.common.util
 
 import taboolib.common.Isolated
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 fun String.replaceWithOrder(vararg args: Any): String {
     if (args.isEmpty() || isEmpty()) {
@@ -35,14 +37,18 @@ fun String.replaceWithOrder(vararg args: Any): String {
 }
 
 fun String.decodeUnicode(): String {
-    var r = this
-    fun process() {
-        val i = r.indexOf("\\u")
-        if (i != -1) {
-            r = r.substring(0, i) + Integer.parseInt(r.substring(i + 2, i + 6), 16).toChar() + r.substring(i + 6)
-            process()
-        }
+    val pattern by lazy { Pattern.compile("\\\\u[0-9a-fA-F]{4}") }
+
+    val matcher = pattern.matcher(this)
+    val sb = StringBuffer()
+
+    while (matcher.find()) {
+        val str = matcher.group()
+        val hex = str.substring(2, str.length - 1)
+        val unicode = Integer.parseInt(hex, 16)
+        matcher.appendReplacement(sb, Matcher.quoteReplacement(String(Character.toChars(unicode))))
     }
-    process()
-    return r
+
+    matcher.appendTail(sb)
+    return sb.toString()
 }

@@ -14,16 +14,16 @@ import java.util.concurrent.ConcurrentHashMap
 
 fun <T> mirrorNow(id: String, func: () -> T): T {
     val time = System.nanoTime()
-    return func().also {
-        Mirror.mirrorData.computeIfAbsent(id) { Mirror.MirrorData() }.finish(time)
-    }
+    val result = func()
+    Mirror.mirrorData.computeIfAbsent(id) { Mirror.MirrorData() }.finish(time)
+    return result
 }
 
 fun <T> mirrorFuture(id: String, func: Mirror.MirrorFuture<T>.() -> Unit): CompletableFuture<T> {
     val mf = Mirror.MirrorFuture<T>().also(func)
-    mf.future.thenApply {
-        Mirror.mirrorData.computeIfAbsent(id) { Mirror.MirrorData() }.finish(mf.time)
-    }
+
+    mf.future.thenApply { Mirror.mirrorData.computeIfAbsent(id) { Mirror.MirrorData() }.finish(mf.time) }
+
     return mf.future
 }
 
@@ -35,12 +35,12 @@ object Mirror {
     fun report(sender: ProxyCommandSender, func: MirrorSettings.() -> Unit = {}): MirrorCollect {
         val options = MirrorSettings().also(func)
         val collect = MirrorCollect(options, "/", "/")
+
         mirrorData.forEach { mirror ->
             var point = collect
-            mirror.key.split(":").forEach {
-                point = point.sub.computeIfAbsent(it) { _ -> MirrorCollect(options, mirror.key, it) }
-            }
+            mirror.key.split(":").forEach { point = point.sub.computeIfAbsent(it) { _ -> MirrorCollect(options, mirror.key, it) } }
         }
+
         collect.print(sender, collect.getTotal(), 0)
         return collect
     }
@@ -65,9 +65,7 @@ object Mirror {
 
         fun getTotal(): BigDecimal {
             var total = mirrorData[key]?.timeTotal ?: BigDecimal.ZERO
-            sub.values.forEach {
-                total = total.add(it.getTotal())
-            }
+            sub.values.forEach { total += it.getTotal() }
             return total
         }
 
@@ -75,21 +73,21 @@ object Mirror {
             val prefix = "${"···".repeat(space)}${if (space > 0) " " else ""}"
             val total = getTotal()
             val data = mirrorData[key]
-            if (data != null) {
-                val count = data.count
-                val avg = data.getAverage()
-                val min = data.getLowest()
-                val max = data.getHighest()
+
+            data?.let {
+                val count = it.count
+                val avg = it.getAverage()
+                val min = it.getLowest()
+                val max = it.getHighest()
                 val format = if (sub.isEmpty()) opt.childFormat else opt.parentFormat
+
                 sender.sendMessage(format.replaceWithOrder(prefix, path, count, avg, min, max, percent(all, total)))
             }
-            sub.values.map {
-                it to percent(all, it.getTotal())
-            }.sortedByDescending {
-                it.second
-            }.forEach {
-                it.first.print(sender, all, if (data != null) space + 1 else space)
-            }
+
+            sub.values
+                .map { it to percent(all, it.getTotal()) }
+                .sortedByDescending { it.second }
+                .forEach { it.first.print(sender, all, if (data != null) space + 1 else space) }
         }
 
         fun percent(all: BigDecimal, total: BigDecimal): Double {
@@ -123,12 +121,10 @@ object Mirror {
             val stopTime = System.nanoTime()
             timeLatest = BigDecimal((stopTime - startTime) / 1000000.0).setScale(2, RoundingMode.HALF_UP)
             timeTotal = timeTotal.add(timeLatest)
-            if (timeLatest.compareTo(timeHighest) == 1) {
-                timeHighest = timeLatest
-            }
-            if (timeLatest.compareTo(timeLowest) == -1) {
-                timeLowest = timeLatest
-            }
+
+            if (timeLatest.compareTo(timeHighest) == 1) { timeHighest = timeLatest }
+            if (timeLatest.compareTo(timeLowest) == -1) { timeLowest = timeLatest }
+
             count++
             return this
         }

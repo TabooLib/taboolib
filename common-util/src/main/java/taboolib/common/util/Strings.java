@@ -25,15 +25,13 @@ public class Strings {
     }
 
     private static String bytesToHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (byte aByte : bytes) {
-            String hex = Integer.toHexString(0xFF & aByte);
-            if (hex.length() == 1) {
-                sb.append('0');
-            }
-            sb.append(hex);
+        StringBuilder builder = new StringBuilder();
+
+        for (byte b : bytes) {
+            builder.append(String.format("%02X", b));
         }
-        return sb.toString();
+
+        return builder.toString();
     }
 
     private static String max(String strA, String strB) {
@@ -47,9 +45,7 @@ public class Strings {
     private static String removeSign(String str) {
         StringBuilder builder = new StringBuilder();
         for (char item : str.toCharArray()) {
-            if (charReg(item)) {
-                builder.append(item);
-            }
+            if (charReg(item)) { builder.append(item); }
         }
         return builder.toString();
     }
@@ -64,6 +60,7 @@ public class Strings {
         int m = chars_strA.length;
         int n = chars_strB.length;
         int[][] matrix = new int[m + 1][n + 1];
+
         for (int i = 1; i <= m; i++) {
             for (int j = 1; j <= n; j++) {
                 if (chars_strA[i - 1] == chars_strB[j - 1]) {
@@ -73,8 +70,10 @@ public class Strings {
                 }
             }
         }
+
         char[] result = new char[matrix[m][n]];
         int currentIndex = result.length - 1;
+
         while (matrix[m][n] != 0) {
             if (matrix[n] == matrix[n - 1]) {
                 n--;
@@ -87,6 +86,7 @@ public class Strings {
                 m--;
             }
         }
+
         return new String(result);
     }
 }

@@ -17,14 +17,16 @@ public class OpenAPI {
 
     @NotNull
     public static OpenResult call(@NotNull String name, @NotNull Object[] data) {
-        for (Object entry : PlatformFactory.INSTANCE.getAwakeInstances()) {
-            if (entry instanceof OpenListener) {
-                OpenResult result = ((OpenListener) entry).call(name, data);
-                if (result.isSuccessful()) {
-                    return result;
-                }
-            }
-        }
+        OpenResult result = PlatformFactory.INSTANCE.getAwakeInstances().stream()
+                .filter(entry -> entry instanceof OpenListener)
+                .map(entry -> (OpenListener) entry)
+                .map(entry -> entry.call(name, data))
+                .filter(OpenResult::isSuccessful)
+                .findFirst()
+                .orElse(null);
+
+        if (result != null) { return result; }
+
         return OpenResult.failed();
     }
 }

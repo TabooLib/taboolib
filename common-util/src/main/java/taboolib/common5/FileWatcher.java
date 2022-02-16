@@ -5,20 +5,24 @@ import org.apache.commons.lang3.tuple.Triple;
 import taboolib.common.Isolated;
 import taboolib.common.LifeCycle;
 import taboolib.common.env.RuntimeDependency;
+import taboolib.common.exceptions.Exceptions;
 import taboolib.common.platform.Awake;
 import taboolib.common.platform.Releasable;
 import taboolib.common.platform.SkipTo;
+import taboolib.common.util.Closeables;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * 文件改动监听工具
@@ -37,21 +41,33 @@ public class FileWatcher implements Releasable {
     private final Map<WatchService, Triple<File, Object, Consumer<Object>>> map = new HashMap<>();
 
     public FileWatcher() {
-        service.scheduleAtFixedRate(() -> {
+        Runnable command = () -> {
             synchronized (map) {
-                map.forEach((service, triple) -> {
-                    WatchKey key;
-                    while ((key = service.poll()) != null) {
-                        for (WatchEvent<?> watchEvent : key.pollEvents()) {
-                            if (triple.getLeft().getName().equals(Objects.toString(watchEvent.context()))) {
-                                triple.getRight().accept(triple.getMiddle());
+                map.entrySet().stream()
+                        .filter(entry -> entry.getKey() != null)
+                        .forEach(entry -> {
+                            WatchService service = entry.getKey();
+                            File file = entry.getValue().getLeft();
+                            Object obj = entry.getValue().getMiddle();
+                            Consumer<Object> consumer = entry.getValue().getRight();
+
+                            WatchKey key;
+
+                            while (true) {
+                                key = service.poll();
+                                if (key == null) { break; }
+
+                                key.pollEvents().stream()
+                                        .map(event -> file.getName().equals(Objects.toString(event.context())))
+                                        .forEach(ignored -> consumer.accept(obj));
+
+                                key.reset();
                             }
-                        }
-                        key.reset();
-                    }
-                });
+                        });
             }
-        }, 1000, 100, TimeUnit.MILLISECONDS);
+        };
+
+        service.scheduleAtFixedRate(command, 1000, 100, TimeUnit.MILLISECONDS);
     }
 
     public void addSimpleListener(File file, Runnable runnable) {
@@ -59,13 +75,8 @@ public class FileWatcher implements Releasable {
     }
 
     public void addSimpleListener(File file, Runnable runnable, boolean runFirst) {
-        if (runFirst) {
-            runnable.run();
-        }
-        try {
-            addListener(file, null, obj -> runnable.run());
-        } catch (Throwable ignored) {
-        }
+        if (runFirst) { runnable.run(); }
+        Exceptions.runCatching(() -> addListener(file, null, obj -> runnable.run()));
     }
 
     public void addOnListen(File file, Object obj, Consumer<Object> consumer) {
@@ -73,8 +84,7 @@ public class FileWatcher implements Releasable {
             WatchService service = FileSystems.getDefault().newWatchService();
             file.getParentFile().toPath().register(service, StandardWatchEventKinds.ENTRY_MODIFY);
             map.putIfAbsent(service, Triple.of(file, obj, consumer));
-        } catch (Throwable ignored) {
-        }
+        } catch (Throwable ignored) {}
     }
 
     @SuppressWarnings("unchecked")
@@ -96,28 +106,16 @@ public class FileWatcher implements Releasable {
 
     public void removeListener(File file) {
         synchronized (map) {
-            map.entrySet().removeIf(entry -> {
-                if (entry.getValue().getLeft().getPath().equals(file.getPath())) {
-                    try {
-                        entry.getKey().close();
-                    } catch (IOException ignored) {
-                    }
-                    return true;
-                }
-                return false;
-            });
+            map.entrySet().stream()
+                    .filter(entry -> entry.getValue().getLeft().getPath().equals(file.getPath()))
+                    .peek(entry -> Closeables.closeSafely(entry.getKey()))
+                    .forEach(entry -> map.remove(entry.getKey(), entry.getValue()));
         }
     }
 
     public void unregisterAll() {
         service.shutdown();
-        map.forEach((service, pair) -> {
-            try {
-                service.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        map.forEach((service, pair) -> Closeables.closeSafely(service));
     }
 
     @Override

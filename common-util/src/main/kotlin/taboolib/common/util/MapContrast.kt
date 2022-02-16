@@ -8,13 +8,18 @@ import java.util.*
 @Suppress("UNCHECKED_CAST")
 fun Map<String, Any?>.flatten(): Map<String, Any?> {
     val flatMap = TreeMap<String, Any?>()
+
     forEach { (k, v) ->
         if (v is Map<*, *>) {
-            flatMap += (v as Map<String, Any?>).flatten().mapKeys { "$k.${it.key}" }
+            (v as Map<String, Any?>)
+                .flatten()
+                .mapKeys { "$k.${it.key}" }
+                .let { flatMap += it }
         } else {
             flatMap[k] = v
         }
     }
+
     return flatMap
 }
 

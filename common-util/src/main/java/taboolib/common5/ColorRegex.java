@@ -60,49 +60,33 @@ public class ColorRegex {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
+
             if (ignoreColor && c == '§') {
                 i++;
                 continue;
             }
+
             if (delimiter != null) builder.append(delimiter);
+
             switch (c) {
                 case ':':
-                    builder.append("\\:");
-                    break;
                 case '+':
-                    builder.append("\\+");
-                    break;
                 case '*':
-                    builder.append("\\*");
-                    break;
                 case '?':
-                    builder.append("\\?");
-                    break;
                 case '^':
-                    builder.append("\\^");
-                    break;
                 case '$':
-                    builder.append("\\$");
-                    break;
                 case '.':
-                    builder.append("\\.");
-                    break;
                 case '(':
-                    builder.append("\\(");
-                    break;
                 case ')':
-                    builder.append("\\)");
-                    break;
                 case '[':
-                    builder.append("\\[");
-                    break;
                 case ']':
-                    builder.append("\\]");
+                    builder.append("\\").append(c);
                     break;
                 default:
                     builder.append(c);
             }
         }
+
         return builder.toString();
     }
 }

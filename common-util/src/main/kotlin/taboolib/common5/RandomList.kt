@@ -19,16 +19,17 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
 
     fun random(): T? {
         val sum = value.sumOf { it.index }
+
         if (sum > 0) {
             var m = 0
             val n = Random().nextInt(sum)
+
             for (obj in value) {
-                if (m <= n && n < m + obj.index) {
-                    return obj.element
-                }
+                if (m <= n && n < m + obj.index) { return obj.element }
                 m += obj.index
             }
         }
+
         return null
     }
 

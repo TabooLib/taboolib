@@ -47,6 +47,7 @@ public class ClassAppender {
                 methodHandle.invoke(loader, file.toURI().toURL());
             } else {
                 Field ucpField;
+
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
                 } catch (NoSuchFieldError | NoSuchFieldException e1) {
@@ -56,6 +57,7 @@ public class ClassAppender {
                         ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
                     }
                 }
+
                 long ucpOffset = unsafe.objectFieldOffset(ucpField);
                 Object ucp = unsafe.getObject(loader, ucpOffset);
                 MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
