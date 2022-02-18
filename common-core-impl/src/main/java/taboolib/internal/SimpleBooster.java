@@ -53,6 +53,7 @@ public class SimpleBooster implements Booster {
     @Override
     public void proceed(@NotNull LifeCycle lifeCycle, @Nullable Platform platform) {
         runningLifeCycle = lifeCycle;
+
         if (platform != null) {
             runningPlatform = platform;
         }
@@ -62,6 +63,7 @@ public class SimpleBooster implements Booster {
         if (postpone.containsKey(lifeCycle)) {
             postpone.get(lifeCycle).forEach(block -> Exceptions.runCatching(block).unwrap());
         }
+
         switch (lifeCycle) {
             case CONST:
                 if (setupKotlin()) {
@@ -117,11 +119,11 @@ public class SimpleBooster implements Booster {
         if (Environments.isKotlin()) {
             return true;
         }
-        try {
-            // RuntimeEnv 类可能会被插件强制移除导致 NoClassDefFoundError 异常，这是正常的
-            Mechanism.startup(RuntimeEnv.INSTANCE);
-        } catch (NoClassDefFoundError | ClassCastException ignored) {
-        }
+        // RuntimeEnv 类可能会被插件强制移除导致 NoClassDefFoundError 异常，这是正常的
+        Exceptions.runCatching(() -> Mechanism.startup(RuntimeEnv.INSTANCE))
+                .takeUnlessExceptionOf(NoClassDefFoundError.class, ClassCastException.class)
+                .unwrap();
+
         return Environments.isKotlin();
     }
 }

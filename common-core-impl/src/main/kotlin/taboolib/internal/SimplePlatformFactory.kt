@@ -54,7 +54,7 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
 
     private fun setupEnv() {
         kotlin.runCatching {
-            runningClasses.filter { checkPlatform(it) }.forEach { RuntimeEnv.INSTANCE.load(it) }
+            runningClasses.filter(::checkPlatform).forEach(RuntimeEnv.INSTANCE::load)
         }
     }
 
@@ -65,12 +65,13 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
             .forEach { clazz ->
                 val interfaces = clazz.interfaces
                 val instance = clazz.findInstance(true)
-                if (interfaces.contains(Injector::class.java)) {
+                if (Injector::class.java in interfaces) {
                     InjectHandler.INSTANCE.register(instance.get() as Injector)
                 }
                 interfaces.filter { it.isAnnotationPresent(PlatformService::class.java) }.forEach { serviceMap[it.name] = instance }
                 awokenMap[clazz.name] = instance
             }
+
         runningClasses.parallelStream()
             .filter { it.isAnnotationPresent(PlatformImplementation::class.java) }
             .filter { it.getAnnotation(PlatformImplementation::class.java).platform == TabooLib.runningPlatform() }

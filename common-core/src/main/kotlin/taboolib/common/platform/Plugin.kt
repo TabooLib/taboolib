@@ -6,15 +6,11 @@ package taboolib.common.platform
  */
 open class Plugin {
 
-    open fun onLoad() {
-    }
+    open fun onLoad() {}
 
-    open fun onEnable() {
-    }
+    open fun onEnable() {}
 
-    open fun onActive() {
-    }
+    open fun onActive() {}
 
-    open fun onDisable() {
-    }
+    open fun onDisable() {}
 }

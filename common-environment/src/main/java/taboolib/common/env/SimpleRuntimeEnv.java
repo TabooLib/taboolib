@@ -3,6 +3,7 @@ package taboolib.common.env;
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.boot.Mechanism;
+import taboolib.common.exception.Exceptions;
 
 import java.io.*;
 import java.net.URL;
@@ -25,15 +26,15 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
 
     @Override
     public void startup() {
-        try {
-            loadDependency(KotlinEnv.class, true);
-        } catch (NoClassDefFoundError ignored) {
-            // 若开启 skip-kotlin-relocate 则加载原始版本
-            try {
-                loadDependency(KotlinEnvNoRelocate.class, true);
-            } catch (NoClassDefFoundError ignored2) {
-            }
-        }
+        Exceptions.runCatching(() -> loadDependency(KotlinEnv.class, true))
+                .takeIfExceptionOf(NoClassDefFoundError.class)
+                .printIfFailure()
+                .onFailure(ignored -> {
+                    // 若开启 skip-kotlin-relocate 则加载原始版本
+                    Exceptions.runCatching(() -> loadDependency(KotlinEnvNoRelocate.class, true))
+                            .takeUnlessExceptionOf(NoClassDefFoundError.class)
+                            .unwrap();
+                });
     }
 
     @Override
@@ -42,12 +43,11 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
 
     @Override
     public void load(@NotNull Class<?> clazz) {
-        try {
+        Exceptions.runCatching(() -> {
             loadAssets(clazz);
             loadDependency(clazz, false);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
+        })
+                .unwrap();
     }
 
     @Override
@@ -69,12 +69,15 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
                 } else {
                     file = new File("assets/" + resource.name());
                 }
+
                 if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
                     continue;
                 }
+
                 if (!file.getParentFile().exists()) {
                     file.getParentFile().mkdirs();
                 }
+
                 try {
                     if (resource.zip()) {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");

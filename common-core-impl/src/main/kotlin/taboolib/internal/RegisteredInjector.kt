@@ -1,6 +1,7 @@
 package taboolib.internal
 
 import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ClassMember
 import org.tabooproject.reflex.ClassMethod
 import taboolib.common.inject.Bind
 import taboolib.common.inject.Injector
@@ -39,11 +40,17 @@ class RegisteredInjector(val injector: Injector) {
         this.target == Bind.Target.ALL || this.target == target
 
     fun check(target: Class<*>) =
-        (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target)
+        (annotation.isEmpty() || annotation.anyAnnotated(target) && checkType(target))
 
     fun check(target: ClassField) =
-        (annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }) && checkType(target.fieldType)
+        (annotation.isEmpty() || annotation.anyAnnotated(target)) && checkType(target.fieldType)
 
     fun check(target: ClassMethod) =
-        annotation.isEmpty() || annotation.any { target.isAnnotationPresent(it) }
+        annotation.isEmpty() || annotation.anyAnnotated(target)
+
+    private fun List<Class<out Annotation>>.anyAnnotated(target: ClassMember) =
+        this.any { target.isAnnotationPresent(it) }
+
+    private fun List<Class<out Annotation>>.anyAnnotated(target: Class<*>) =
+        this.any { target.isAnnotationPresent(it) }
 }

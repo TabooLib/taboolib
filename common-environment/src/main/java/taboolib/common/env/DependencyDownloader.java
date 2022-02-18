@@ -79,11 +79,9 @@ public class DependencyDownloader extends AbstractXmlParser {
     public DependencyDownloader(@Nullable File baseDir, @Nullable List<Relocation> relocation) {
         this.baseDir = baseDir;
         if (relocation != null) {
-            for (Relocation rel : relocation) {
-                if (rel != null) {
-                    this.relocation.add(rel);
-                }
-            }
+            relocation.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(this.relocation::add);
         }
     }
 
@@ -107,7 +105,9 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (injectedDependencies.contains(dep)) {
                 continue;
             }
+
             File file = dep.getFile(baseDir, "jar");
+
             if (file.exists()) {
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());
@@ -143,20 +143,20 @@ public class DependencyDownloader extends AbstractXmlParser {
      */
     public Set<Dependency> loadDependency(Collection<Repository> repositories, Dependency dependency) throws IOException {
         if (dependency.getVersion() == null) {
-            IOException e = null;
+            IOException exception = null;
             for (Repository repo : repositories) {
                 try {
                     repo.setVersion(dependency);
-                    e = null;
+                    exception = null;
                     break;
                 } catch (IOException ex) {
-                    if (e == null) {
-                        e = new IOException(String.format("Unable to find latest version of %s", dependency));
+                    if (exception == null) {
+                        exception = new IOException(String.format("Unable to find latest version of %s", dependency));
                     }
-                    e.addSuppressed(ex);
+                    exception.addSuppressed(ex);
                 }
             }
-            if (e != null) {
+            if (exception != null) {
                 DependencyVersion max = null;
                 for (DependencyVersion ver : dependency.getInstalledVersions(baseDir)) {
                     if (max == null || ver.compareTo(max) > 0) {
@@ -164,7 +164,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                     }
                 }
                 if (max == null) {
-                    throw e;
+                    throw exception;
                 } else {
                     dependency.setVersion(max.toString());
                 }
