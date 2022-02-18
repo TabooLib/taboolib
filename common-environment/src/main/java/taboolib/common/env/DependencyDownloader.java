@@ -79,9 +79,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     public DependencyDownloader(@Nullable File baseDir, @Nullable List<Relocation> relocation) {
         this.baseDir = baseDir;
         if (relocation != null) {
-            relocation.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(this.relocation::add);
+            relocation.parallelStream().filter(Objects::nonNull).forEach(this.relocation::add);
         }
     }
 
@@ -105,9 +103,7 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (injectedDependencies.contains(dep)) {
                 continue;
             }
-
             File file = dep.getFile(baseDir, "jar");
-
             if (file.exists()) {
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());

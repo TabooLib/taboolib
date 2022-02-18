@@ -40,22 +40,16 @@ class SimplePlatformFactory : PlatformFactory, Mechanism {
         return TabooLib.runningPlatform() in annotated.value
     }
 
-    override fun getAwakeInstances() =
-        awokenMap.values.mapNotNull { it.get() }
+    override fun getAwakeInstances() = awokenMap.values.mapNotNull { it.get() }
 
-    override fun getPlatformServices() =
-        serviceMap.values.mapNotNull { it.get() }
+    override fun getPlatformServices() = serviceMap.values.mapNotNull { it.get() }
 
-    override fun <T> getAwakeInstance(clazz: Class<T>) =
-        awokenMap[clazz.name]?.get() as T?
+    override fun <T> getAwakeInstance(clazz: Class<T>) = awokenMap[clazz.name]?.get() as T?
 
-    override fun <T> getPlatformService(clazz: Class<T>) =
-        serviceMap[clazz.name]?.get() as T?
+    override fun <T> getPlatformService(clazz: Class<T>) = serviceMap[clazz.name]?.get() as T?
 
     private fun setupEnv() {
-        kotlin.runCatching {
-            runningClasses.filter(::checkPlatform).forEach(RuntimeEnv.INSTANCE::load)
-        }
+        kotlin.runCatching { runningClasses.filter(::checkPlatform).forEach(RuntimeEnv.INSTANCE::load) }
     }
 
     private fun setupAwake() {

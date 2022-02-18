@@ -33,24 +33,17 @@ class RegisteredInjector(val injector: Injector) {
         }
     }
 
-    fun checkType(type: Class<*>) =
-        this.type.isEmpty() || this.type.any { it.isAssignableFrom(type) }
+    fun checkType(type: Class<*>) = this.type.isEmpty() || this.type.any { it.isAssignableFrom(type) }
 
-    fun checkTarget(target: Bind.Target) =
-        this.target == Bind.Target.ALL || this.target == target
+    fun checkTarget(target: Bind.Target) = this.target == Bind.Target.ALL || this.target == target
 
-    fun check(target: Class<*>) =
-        (annotation.isEmpty() || annotation.anyAnnotated(target) && checkType(target))
+    fun check(target: Class<*>) = (annotation.isEmpty() || annotation.anyAnnotated(target) && checkType(target))
 
-    fun check(target: ClassField) =
-        (annotation.isEmpty() || annotation.anyAnnotated(target)) && checkType(target.fieldType)
+    fun check(target: ClassField) = (annotation.isEmpty() || annotation.anyAnnotated(target)) && checkType(target.fieldType)
 
-    fun check(target: ClassMethod) =
-        annotation.isEmpty() || annotation.anyAnnotated(target)
+    fun check(target: ClassMethod) = annotation.isEmpty() || annotation.anyAnnotated(target)
 
-    private fun List<Class<out Annotation>>.anyAnnotated(target: ClassMember) =
-        this.any { target.isAnnotationPresent(it) }
+    private fun List<Class<out Annotation>>.anyAnnotated(target: ClassMember) = any { target.isAnnotationPresent(it) }
 
-    private fun List<Class<out Annotation>>.anyAnnotated(target: Class<*>) =
-        this.any { target.isAnnotationPresent(it) }
+    private fun List<Class<out Annotation>>.anyAnnotated(target: Class<*>) = any { target.isAnnotationPresent(it) }
 }

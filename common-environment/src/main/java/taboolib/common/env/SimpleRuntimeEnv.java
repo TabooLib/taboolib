@@ -26,15 +26,10 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
 
     @Override
     public void startup() {
-        Exceptions.runCatching(() -> loadDependency(KotlinEnv.class, true))
-                .takeIfExceptionOf(NoClassDefFoundError.class)
-                .printIfFailure()
-                .onFailure(ignored -> {
-                    // 若开启 skip-kotlin-relocate 则加载原始版本
-                    Exceptions.runCatching(() -> loadDependency(KotlinEnvNoRelocate.class, true))
-                            .takeUnlessExceptionOf(NoClassDefFoundError.class)
-                            .unwrap();
-                });
+        Exceptions.runCatching(() -> loadDependency(KotlinEnv.class, true)).takeIfExceptionOf(NoClassDefFoundError.class).onFailure(ignored -> {
+            // 若开启 skip-kotlin-relocate 则加载原始版本
+            Exceptions.runCatching(() -> loadDependency(KotlinEnvNoRelocate.class, true));
+        });
     }
 
     @Override
@@ -46,8 +41,7 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
         Exceptions.runCatching(() -> {
             loadAssets(clazz);
             loadDependency(clazz, false);
-        })
-                .unwrap();
+        }).unwrap();
     }
 
     @Override
@@ -69,15 +63,12 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
                 } else {
                     file = new File("assets/" + resource.name());
                 }
-
                 if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
                     continue;
                 }
-
                 if (!file.getParentFile().exists()) {
                     file.getParentFile().mkdirs();
                 }
-
                 try {
                     if (resource.zip()) {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
