@@ -28,6 +28,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.*;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
+import taboolib.common.exception.Exceptions;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -435,11 +436,7 @@ public final class Coerce {
             return ((Number) obj).byteValue();
         }
 
-        try {
-            return Byte.parseByte(Coerce.sanitiseNumber(obj));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return Exceptions.runCatching(() -> Byte.parseByte(Coerce.sanitiseNumber(obj))).getOrElse((byte) 0);
     }
 
     /**
@@ -459,12 +456,8 @@ public final class Coerce {
             return Optional.of(((Number) obj).byteValue());
         }
 
-        try {
-            return Optional.of(Byte.parseByte(Coerce.sanitiseNumber(obj)));
-        } catch (NumberFormatException | NullPointerException e) {
-            // do nothing
-        }
-        return Optional.empty();
+        return Exceptions.runCatching(() -> Optional.of(Byte.parseByte(Coerce.sanitiseNumber(obj))))
+                .getOrElse(Optional.empty());
     }
 
     /**
@@ -482,11 +475,7 @@ public final class Coerce {
             return ((Number) obj).longValue();
         }
 
-        try {
-            return Long.parseLong(Coerce.sanitiseNumber(obj));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return Exceptions.runCatching(() -> Long.parseLong(Coerce.sanitiseNumber(obj))).getOrElse(0L);
     }
 
     /**
@@ -506,12 +495,8 @@ public final class Coerce {
             return Optional.of(((Number) obj).longValue());
         }
 
-        try {
-            return Optional.of(Long.parseLong(Coerce.sanitiseNumber(obj)));
-        } catch (NumberFormatException | NullPointerException e) {
-            // do nothing
-        }
-        return Optional.empty();
+        return Exceptions.runCatching(() -> Optional.of(Long.parseLong(Coerce.sanitiseNumber(obj))))
+                .getOrElse(Optional.empty());
     }
 
     /**
@@ -549,12 +534,9 @@ public final class Coerce {
         if (obj instanceof Character) {
             return Optional.of((Character) obj);
         }
-        try {
-            return Optional.of(obj.toString().charAt(0));
-        } catch (Exception e) {
-            // do nothing
-        }
-        return Optional.empty();
+
+        return Exceptions.runCatching(() -> Optional.of(obj.toString().charAt(0)))
+                .getOrElse(Optional.empty());
     }
 
     /**

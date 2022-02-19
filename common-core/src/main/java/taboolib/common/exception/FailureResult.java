@@ -1,7 +1,10 @@
 package taboolib.common.exception;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class FailureResult<T> implements Result<T> {
 
@@ -58,6 +61,46 @@ public class FailureResult<T> implements Result<T> {
 
     @Override
     public T unwrap() {
+        return null;
+    }
+
+    @Override
+    public T getOrElse(T defaultValue) {
+        return defaultValue;
+    }
+
+    @Override
+    public T getOrElseGet(Supplier<T> defaultValue) {
+        return defaultValue.get();
+    }
+
+    @Override
+    public <U extends Throwable> T getOrElseThrow(Supplier<U> exceptionSupplier) throws U {
+        throw exceptionSupplier.get();
+    }
+
+    @Override
+    public <U extends Throwable> T getOrElseThrow(Class<U> exceptionClass) throws U {
+        try {
+            throw exceptionClass.getConstructor(Throwable.class).newInstance(value);
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException | SecurityException ex) {
+            ex.printStackTrace();
+        } catch (NoSuchMethodException ignored) {
+            try {
+                throw exceptionClass.getConstructor().newInstance().initCause(value);
+            } catch (Throwable ex) {
+                throw new IllegalStateException("Cannot create exception of type " + exceptionClass.getName(), ex);
+            }
+        }
+
+        RuntimeException ex = new IllegalStateException("Cannot create exception of type " + exceptionClass.getName());
+        ex.addSuppressed(value);
+
+        throw ex;
+    }
+
+    @Override
+    public <U> U withResultOrNull(Function<? super T, ? extends U> resultSupplier) {
         return null;
     }
 }
