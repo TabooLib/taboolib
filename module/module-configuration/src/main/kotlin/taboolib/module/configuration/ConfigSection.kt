@@ -3,7 +3,7 @@ package taboolib.module.configuration
 import com.electronwill.nightconfig.core.CommentedConfig
 import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.EnumGetMethod
-import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
@@ -32,7 +32,7 @@ open class ConfigSection(
             map.forEach { (k, v) ->
                 if (v is Config) {
                     if (deep) {
-                        process(v.valueMap(), "$parent$k.")
+                        process(v.valueMap(), "$k.")
                     } else {
                         keys += "$parent$k"
                     }

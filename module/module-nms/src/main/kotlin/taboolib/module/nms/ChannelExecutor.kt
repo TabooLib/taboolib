@@ -8,7 +8,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.pluginId
-import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import java.util.concurrent.Executors
 
 /**

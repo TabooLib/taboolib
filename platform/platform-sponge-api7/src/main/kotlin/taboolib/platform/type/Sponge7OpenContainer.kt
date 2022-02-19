@@ -3,7 +3,7 @@ package taboolib.platform.type
 import org.spongepowered.api.plugin.PluginContainer
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib
@@ -28,7 +28,7 @@ class Sponge7OpenContainer(plugin: PluginContainer) : OpenContainer {
 
     override fun call(name: String, args: Array<Any>): OpenResult {
         return try {
-            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, isStatic = true) ?: return OpenResult.failed())
+            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed())
         } catch (ignored: NoSuchMethodException) {
             OpenResult.failed()
         }

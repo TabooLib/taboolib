@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLib;
-import taboolib.common.io.ClassInstanceKt;
+import taboolib.common.TabooLibCommon;
+import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
@@ -40,9 +40,9 @@ public class VelocityPlugin {
     private static VelocityPlugin instance;
 
     static {
-        TabooLib.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-        if (TabooLib.isKotlinEnvironment()) {
-            pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
+        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
+        if (TabooLibCommon.isKotlinEnvironment()) {
+            pluginInstance = Project1Kt.findImplementation(Plugin.class);
         }
     }
 
@@ -56,35 +56,35 @@ public class VelocityPlugin {
         this.server = server;
         this.configDirectory = configDirectory;
         instance = this;
-        TabooLib.lifeCycle(LifeCycle.INIT);
+        TabooLibCommon.lifeCycle(LifeCycle.INIT);
     }
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (!TabooLib.isStopped()) {
-            TabooLib.lifeCycle(LifeCycle.LOAD);
+        if (!TabooLibCommon.isStopped()) {
+            TabooLibCommon.lifeCycle(LifeCycle.LOAD);
             if (pluginInstance == null) {
-                pluginInstance = ClassInstanceKt.findInstanceFromPlatform(Plugin.class);
+                pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
             if (pluginInstance != null) {
                 pluginInstance.onLoad();
             }
         }
-        if (!TabooLib.isStopped()) {
-            TabooLib.lifeCycle(LifeCycle.ENABLE);
+        if (!TabooLibCommon.isStopped()) {
+            TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
             try {
-                ExecutorKt.startNow();
+                ExecutorKt.startExecutor();
             } catch (NoClassDefFoundError ignored) {
             }
         }
-        if (!TabooLib.isStopped()) {
+        if (!TabooLibCommon.isStopped()) {
             server.getScheduler().buildTask(this, new Runnable() {
                 @Override
                 public void run() {
-                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
+                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
                     if (pluginInstance != null) {
                         pluginInstance.onActive();
                     }
@@ -95,8 +95,8 @@ public class VelocityPlugin {
 
     @Subscribe
     public void e(ProxyShutdownEvent e) {
-        TabooLib.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLib.isStopped()) {
+        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
             pluginInstance.onDisable();
         }
     }

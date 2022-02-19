@@ -2,8 +2,8 @@ package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import taboolib.common.io.runningClasses
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import java.util.concurrent.ConcurrentHashMap
 
 val nmsProxyMap = ConcurrentHashMap<String, Any>()

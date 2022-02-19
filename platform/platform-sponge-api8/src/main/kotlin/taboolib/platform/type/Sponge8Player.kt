@@ -23,7 +23,8 @@ import org.spongepowered.math.vector.Vector3d
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.platform.function.onlinePlayers
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.util.toPlain
@@ -65,12 +66,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override val location: Location
         get() {
             val loc = player.location()
-            return Location(world,
-                loc.x(),
-                loc.y(),
-                loc.z(),
-                player.headRotation().get().y().toFloat(),
-                player.headRotation().get().x().toFloat())
+            return Location(world, loc.x(), loc.y(), loc.z(), player.headRotation().get().y().toFloat(), player.headRotation().get().x().toFloat())
         }
 
     override var isOp: Boolean
@@ -109,7 +105,7 @@ class Sponge8Player(val player: ServerPlayer) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().asComponent().toPlain())
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
         }
 
     override val isSneaking: Boolean

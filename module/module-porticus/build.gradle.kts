@@ -8,7 +8,7 @@ dependencies {
 //    compileOnly("ink.ptms.core:v11605:11605")
     compileOnly("net.md_5.bungee:BungeeCord:1")
     compileOnly("com.velocitypowered:velocity-api:1.1.8")
-    compileOnly(project(":common:common-core"))
+    compileOnly(project(":common"))
 }
 
 tasks {

@@ -1,4 +1,4 @@
 dependencies {
-    compileOnly(project(":common:common-core"))
+    compileOnly(project(":common"))
     compileOnly(project(":module:module-configuration"))
 }

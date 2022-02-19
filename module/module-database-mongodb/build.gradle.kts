@@ -1,7 +1,7 @@
 dependencies {
     implementation("com.mongodb:MongoDB:3.12.2")
     implementation("com.google.code.gson:gson:2.8.7")
-    compileOnly(project(":common:common-core"))
+    compileOnly(project(":common"))
     compileOnly(project(":module:module-configuration"))
 }
 

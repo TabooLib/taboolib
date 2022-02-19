@@ -8,10 +8,10 @@ import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
 import taboolib.common.Isolated
 import taboolib.common.platform.function.submit
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import org.tabooproject.reflex.Reflex.Companion.setProperty
-import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
+import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
@@ -87,7 +87,7 @@ class NMSMap(val image: BufferedImage, val hand: Hand = Hand.MAIN, val builder: 
             } else {
                 container.getProperty<Int>("windowId")
             }!!
-            val nmsItem = classCraftItemStack.invokeMethod<Any>("asNMSCopy", mapItem, isStatic = true)
+            val nmsItem = classCraftItemStack.invokeMethod<Any>("asNMSCopy", mapItem, fixed = true)
             player.sendPacket(classPacketPlayOutSetSlot.unsafeInstance().also {
                 if (MinecraftVersion.isUniversal) {
                     it.setProperty("containerId", windowsId)

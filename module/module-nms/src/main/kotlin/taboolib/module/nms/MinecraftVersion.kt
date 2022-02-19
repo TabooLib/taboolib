@@ -3,8 +3,8 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import org.tabooproject.reflex.Reflex
-import taboolib.common.TabooLib
+import taboolib.common.platform.function.runningPlatform
+import taboolib.common.reflect.Reflex
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])
@@ -101,7 +101,7 @@ object MinecraftVersion {
     }
 
     init {
-        if (TabooLib.runningPlatform() == Platform.BUKKIT) {
+        if (runningPlatform == Platform.BUKKIT) {
             Reflex.remapper.add(RefRemapper)
         }
     }

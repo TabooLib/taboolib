@@ -1,8 +1,8 @@
 package taboolib.module.kether
 
 import taboolib.common.OpenContainer
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 

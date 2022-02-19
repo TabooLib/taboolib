@@ -1,0 +1,439 @@
+{
+  "optimize": [
+    {
+      "class": "taboolib/common/util/Location",
+      "type": "METHOD"
+    },
+    {
+      "class": "taboolib/common/util/Vector",
+      "type": "METHOD"
+    }
+  ],
+  "group": [
+    {
+      "commit": "监听器部分",
+      "check": [
+        "taboolib/common/platform/event/SubscribeEvent",
+        "taboolib/common/platform/event/EventBus",
+        "taboolib/common/platform/function/ListenerKt",
+        "taboolib/platform/event/PlayerJumpEvent",
+        "taboolib/platform/util/BukkitBookKt",
+        "taboolib/platform/util/BukkitChatKt",
+        "taboolib/platform/util/ChatListener",
+        "taboolib/platform/util/BookListener",
+        "taboolib/common/platform/service/PlatformListener"
+      ],
+      "member": [
+        "taboolib/common/platform/event/SubscribeEvent",
+        "taboolib/common/platform/event/EventBus",
+        "taboolib/common/platform/event/OptionalEvent",
+        "taboolib/common/platform/event/EventOrder",
+        "taboolib/common/platform/event/EventPriority",
+        "taboolib/common/platform/event/PostOrder",
+        "taboolib/common/platform/event/ProxyListener",
+        "taboolib/common/platform/service/PlatformListener",
+        "taboolib/common/platform/function/ListenerKt",
+        "taboolib/platform/{platform}Listener"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "事件部分",
+      "check": [
+        "taboolib/common/platform/event/ProxyEvent",
+        "taboolib/platform/event/PlayerJumpEvent",
+        "taboolib/common/platform/service/PlatformEvent"
+      ],
+      "member": [
+        "taboolib/common/platform/event/ProxyEvent",
+        "taboolib/common/platform/function/EventKt",
+        "taboolib/common/platform/service/PlatformEvent",
+        "taboolib/platform/type/{platform}ProxyEvent",
+        "taboolib/platform/{platform}Event"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "事件部分（平台实现）",
+      "check": [
+        "taboolib/platform/type/{platform}ProxyEvent"
+      ],
+      "member": [
+        "taboolib/platform/type/{platform}ProxyEvent"
+      ],
+      "exclude": [
+        "taboolib/platform/{platform}Event"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/event/ProxyEvent"
+        ],
+        "exclude": [
+          "taboolib/common/platform/function/EventKt",
+          "taboolib/common/platform/service/PlatformEvent",
+          "taboolib/platform/{platform}Event"
+        ]
+      },
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "开放接口",
+      "check": [
+        "taboolib/common/OpenListener",
+        "taboolib/common/platform/function/OpenContainerKt",
+        "taboolib/common/platform/service/PlatformOpenContainer"
+      ],
+      "member": [
+        "taboolib/common/OpenListener",
+        "taboolib/common/OpenAPI",
+        "taboolib/common/OpenContainer",
+        "taboolib/common/platform/function/OpenContainerKt",
+        "taboolib/common/platform/service/PlatformOpenContainer",
+        "taboolib/platform/{platform}OpenContainer",
+        "taboolib/platform/type/{platform}OpenContainer"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "开放接口",
+      "check": [
+        "taboolib/common/OpenResult"
+      ],
+      "member": [
+        "taboolib/common/OpenResult"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/OpenListener",
+          "taboolib/common/OpenContainer"
+        ],
+        "exclude": [
+          "taboolib/common/OpenAPI",
+          "taboolib/common/OpenContainer",
+          "taboolib/common/platform/function/OpenContainerKt",
+          "taboolib/common/platform/service/PlatformOpenContainer",
+          "taboolib/platform/{platform}OpenContainer",
+          "taboolib/platform/type/{platform}OpenContainer"
+        ]
+      },
+      "exclude": [
+        "taboolib/common/OpenAPI",
+        "taboolib/common/OpenListener",
+        "taboolib/common/OpenContainer",
+        "taboolib/platform/{platform}OpenContainer",
+        "taboolib/platform/type/{platform}OpenContainer"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "流",
+      "check": [
+        "taboolib/common/platform/function/IOKt",
+        "taboolib/common/platform/service/PlatformIO"
+      ],
+      "member": [
+        "taboolib/common/platform/function/IOKt",
+        "taboolib/common/platform/service/PlatformIO",
+        "taboolib/platform/{platform}IO"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "命令",
+      "check": [
+        "taboolib/common/platform/command/CommandRegisterKt",
+        "taboolib/common/platform/function/CommandKt",
+        "taboolib/common/platform/service/PlatformCommand"
+      ],
+      "member": [
+        "taboolib/common/platform/command/CommandBody",
+        "taboolib/common/platform/command/CommandBuilder",
+        "taboolib/common/platform/command/CommandCompleter",
+        "taboolib/common/platform/command/CommandContext",
+        "taboolib/common/platform/command/CommandExecutor",
+        "taboolib/common/platform/command/CommandHeader",
+        "taboolib/common/platform/command/CommandRegisterKt",
+        "taboolib/common/platform/command/CommandStructure",
+        "taboolib/common/platform/command/PermissionDefault",
+        "taboolib/common/platform/command/SimpleCommandKt",
+        "taboolib/common/platform/command/SimpleCommandBody",
+        "taboolib/common/platform/command/SimpleCommandMain",
+        "taboolib/common/platform/command/SimpleCommandRegister",
+        "taboolib/common/platform/function/CommandKt",
+        "taboolib/common/platform/service/PlatformCommand",
+        "taboolib/platform/{platform}Command"
+      ],
+      "exclude": [
+        "taboolib/common/platform/PlatformFactory"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/command/CommandBuilder"
+        ],
+        "exclude": [
+          "taboolib/common/platform/command/CommandRegisterKt",
+          "taboolib/common/platform/command/SimpleCommandKt",
+          "taboolib/common/platform/command/SimpleCommandBody",
+          "taboolib/common/platform/command/SimpleCommandMain",
+          "taboolib/common/platform/command/SimpleCommandRegister",
+          "taboolib/common/platform/function/CommandKt",
+          "taboolib/common/platform/service/PlatformCommand",
+          "taboolib/platform/{platform}Command"
+        ]
+      },
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "命令",
+      "check": [
+        "taboolib/common/platform/command/SimpleCommandKt"
+      ],
+      "member": [
+        "taboolib/common/platform/command/CommandBody",
+        "taboolib/common/platform/command/CommandHeader",
+        "taboolib/common/platform/command/SimpleCommandKt",
+        "taboolib/common/platform/command/SimpleCommandBody",
+        "taboolib/common/platform/command/SimpleCommandMain",
+        "taboolib/common/platform/command/SimpleCommandRegister"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "调度器",
+      "check": [
+        "taboolib/common/platform/function/ExecutorKt",
+        "taboolib/common/platform/service/PlatformExecutor",
+        "taboolib/common/util/ExecutorKt"
+      ],
+      "member": [
+        "taboolib/common/platform/function/ExecutorKt",
+        "taboolib/common/platform/service/PlatformExecutor",
+        "taboolib/platform/{platform}Executor"
+      ],
+      "exclude": [
+        "taboolib/platform/{platform}Plugin",
+        "taboolib/platform/{platform}Command",
+        "taboolib/common/platform/ScheduleLoader"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/command/CommandBuilder",
+          "taboolib/common/platform/ScheduleLoader",
+          "taboolib/common/platform/AwakeFunction"
+        ],
+        "exclude": [
+          "taboolib/common/platform/command/CommandRegisterKt",
+          "taboolib/common/platform/command/SimpleCommandKt",
+          "taboolib/common/platform/command/SimpleCommandBody",
+          "taboolib/common/platform/command/SimpleCommandMain",
+          "taboolib/common/platform/command/SimpleCommandRegister",
+          "taboolib/common/platform/function/CommandKt",
+          "taboolib/common/platform/service/PlatformCommand",
+          "taboolib/platform/{platform}Command"
+        ]
+      },
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "调度器（注解）",
+      "check": [
+        "taboolib/common/platform/Schedule",
+        "taboolib/common/platform/ScheduleLoader"
+      ],
+      "member": [
+        "taboolib/common/platform/Schedule",
+        "taboolib/common/platform/ScheduleLoader"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "调度器（注解）",
+      "check": [
+        "taboolib/common/platform/Awake"
+      ],
+      "member": [
+        "taboolib/common/platform/AwakeFunction"
+      ],
+      "exclude": [
+        "taboolib/common/platform/PlatformFactory",
+        "taboolib/common/platform/ScheduleLoader",
+        "taboolib.common/platform/command/SimpleCommandRegister",
+        "taboolib/common/platform/event/EventBus",
+        "taboolib/module/configuration/ConfigLoader",
+        "taboolib/module/kether/StandardChannel",
+        "taboolib/module/nms/i18n/I18n",
+        "taboolib/platform/compat/PlaceholderExpansion",
+        "taboolib/platform/{platform}Adapter",
+        "taboolib/platform/{platform}Command",
+        "taboolib/platform/{platform}Event",
+        "taboolib/platform/{platform}Executor",
+        "taboolib/platform/{platform}IO",
+        "taboolib/platform/{platform}Listener",
+        "taboolib/platform/{platform}OpenContainer"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "释放器",
+      "check": [
+        "taboolib/common/platform/Releasable"
+      ],
+      "member": [
+        "taboolib/common/platform/Releasable"
+      ],
+      "exclude": [
+        "taboolib/common/platform/PlatformFactory"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "适配器",
+      "check": [
+        "taboolib/common/platform/function/AdapterKt",
+        "taboolib/common/platform/service/PlatformAdapter",
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
+      ],
+      "member": [
+        "taboolib/platform/{platform}Adapter",
+        "taboolib/common/platform/function/AdapterKt",
+        "taboolib/common/platform/service/PlatformAdapter"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/command/CommandBuilder",
+          "taboolib/common/platform/ProxyParticleUtilKt"
+        ],
+        "exclude": [
+          "taboolib/common/platform/command/CommandRegisterKt",
+          "taboolib/common/platform/command/SimpleCommandKt",
+          "taboolib/common/platform/command/SimpleCommandBody",
+          "taboolib/common/platform/command/SimpleCommandMain",
+          "taboolib/common/platform/command/SimpleCommandRegister",
+          "taboolib/common/platform/function/CommandKt",
+          "taboolib/common/platform/service/PlatformCommand",
+          "taboolib/platform/{platform}Command"
+        ]
+      },
+      "exclude": [
+        "taboolib/platform/{platform}Command",
+        "taboolib/common/platform/ProxyParticleUtilKt"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "坐标",
+      "check": [
+        "taboolib/common/util/Location",
+        "taboolib/common/util/Vector"
+      ],
+      "member": [
+        "taboolib/common/util/Location",
+        "taboolib/common/util/Vector"
+      ],
+      "depend": {
+        "name": [
+          "taboolib/common/platform/ProxyPlayer"
+        ],
+        "exclude": [
+          "taboolib/platform/util/BukkitLocation1Kt",
+          "taboolib/common/platform/ProxyParticle",
+          "taboolib/common/platform/function/AdapterKt",
+          "taboolib/common/platform/service/PlatformAdapter",
+          "taboolib/platform/util/BukkitLangKt",
+          "taboolib/common/util/PlatformKt",
+          "taboolib/platform/{platform}Adapter",
+          "taboolib/platform/{platform}Command",
+          "taboolib/platform/type/{platform}Player",
+          "taboolib/common/platform/function/CommandKt",
+          "taboolib/common/platform/ProxyParticleUtilKt",
+          "taboolib/common/platform/command/CommandContext",
+          "taboolib/common/platform/command/CommandCompleter",
+          "taboolib/common/platform/command/CommandRegisterKt",
+          "taboolib/common/platform/command/CommandExecutor",
+          "taboolib/common/platform/command/SimpleCommandKt",
+          "taboolib/common/platform/command/SimpleCommandMain",
+          "taboolib/common/platform/command/SimpleCommandBody",
+          "taboolib/common/platform/command/SimpleCommandRegister"
+        ]
+      },
+      "exclude": [
+        "taboolib/common/platform/ProxyPlayer",
+        "taboolib/common/platform/ProxyParticle",
+        "taboolib/platform/util/BukkitLocation1Kt",
+        "taboolib/platform/type/{platform}Player",
+        "taboolib/common/platform/ProxyParticleUtilKt"
+      ],
+      "mode": "REMOVE"
+    },
+    {
+      "commit": "单位",
+      "check": [
+        "taboolib/common/platform/ProxyPlayer",
+        "taboolib/common/platform/ProxyCommandSender",
+        "taboolib/common/platform/function/AdapterKt",
+        "taboolib/common/platform/service/PlatformAdapter",
+        "taboolib/common/platform/service/PlatformCommand",
+        "taboolib/common/platform/command/CommandBuilder",
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
+      ],
+      "member": [
+        "taboolib/common/platform/ProxyPlayer",
+        "taboolib/common/platform/ProxyParticle",
+        "taboolib/common/platform/ProxyGameMode",
+        "taboolib/common/platform/ProxyCommandSender",
+        "taboolib/common/platform/function/AdapterKt",
+        "taboolib/common/platform/service/PlatformAdapter",
+        "taboolib/platform/{platform}Adapter",
+        "taboolib/platform/type/{platform}CommandSender"
+      ],
+      "exclude": [
+        "taboolib/common/util/PlatformKt",
+        "taboolib/platform/{platform}Command",
+        "taboolib/platform/type/{platform}Player",
+        "taboolib/common/platform/function/CommandKt",
+        "taboolib/common/platform/ProxyParticleUtilKt",
+        "taboolib/common/platform/command/CommandContext",
+        "taboolib/common/platform/command/CommandCompleter",
+        "taboolib/common/platform/command/CommandRegisterKt",
+        "taboolib/common/platform/command/CommandExecutor",
+        "taboolib/common/platform/command/SimpleCommandKt",
+        "taboolib/common/platform/command/SimpleCommandMain",
+        "taboolib/common/platform/command/SimpleCommandBody",
+        "taboolib/common/platform/command/SimpleCommandRegister"
+      ],
+      "mode": "REMOVE"
+    }
+  ],
+  "exclude": [
+    "META-INF/maven",
+    "taboolib/common/Isolated"
+  ],
+  "backup": [
+    {
+      "commit": "单位",
+      "check": [
+        "taboolib/common/platform/ProxyPlayer",
+        "taboolib/common/platform/ProxyParticle",
+        "taboolib/common/platform/function/AdapterKt",
+        "taboolib/common/platform/service/PlatformAdapter",
+        "taboolib/platform/util/BukkitLangKt",
+        "taboolib/platform/util/BukkitLangQualifyKt"
+      ],
+      "member": [
+        "taboolib/common/platform/ProxyPlayer",
+        "taboolib/common/platform/ProxyParticle",
+        "taboolib/common/platform/ProxyGameMode",
+        "taboolib/platform/type/{platform}Player"
+      ],
+      "exclude": [
+        "taboolib/common/util/PlatformKt",
+        "taboolib/common/platform/ProxyParticleUtilKt",
+        "taboolib/platform/{platform}Adapter",
+        "taboolib/platform/{platform}Command"
+      ],
+      "mode": "REMOVE"
+    }
+  ]
+}

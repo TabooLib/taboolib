@@ -15,8 +15,8 @@ import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion.major
 import taboolib.module.nms.i18n.I18n
 import taboolib.module.nms.type.LightType
@@ -264,13 +264,13 @@ private fun revoke(player: Player, key: NamespacedKey) {
 
 private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
-        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, isStatic = true)
-        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", isStatic = true)!!
+        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, fixed = true)
+        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", fixed = true)!!
         val localLootPredicateManager = localMinecraftServer.invokeMethod<Any>("getLootPredicateManager")
         val lootDeserializationContext = nmsClass("LootDeserializationContext")
             .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
             .newInstance(localMinecraftKey, localLootPredicateManager)
-        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, isStatic = true)
+        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, fixed = true)
         if (localSerializedAdvancement != null) {
             if (major >= 9) {
                 localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!

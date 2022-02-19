@@ -1,6 +1,7 @@
 package taboolib.platform.util;
 
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import taboolib.common.Isolated;
 
 import java.util.HashMap;

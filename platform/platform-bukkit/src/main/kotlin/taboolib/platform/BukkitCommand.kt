@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentBuilder
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -20,9 +21,9 @@ import taboolib.common.platform.command.*
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformCommand
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import java.lang.ClassCastException
 import java.lang.reflect.Constructor
 
@@ -113,7 +114,7 @@ class BukkitCommand : PlatformCommand {
             kotlin.runCatching {
                 if (pluginCommand.getProperty<Any>("timings") == null) {
                     val timingsManager = Class.forName("co.aikar.timings.TimingsManager")
-                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic = true))
+                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, fixed = true))
                 }
             }
             sync()

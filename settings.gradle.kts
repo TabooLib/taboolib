@@ -1,20 +1,5 @@
 rootProject.name = "TabooLib"
 
-fun importCommon() {
-    include("common:common-core")
-    include("common:common-impl")
-    include("common:common-plugin")
-    include("common:common-adapter")
-    include("common:common-scheduler")
-    include("common:common-command")
-    include("common:common-command-annotation")
-    include("common:common-listener")
-    include("common:common-environment")
-    include("common:common-event")
-    include("common:common-util")
-    include("common:common-openapi")
-}
-
 fun importModules() {
     include("module:module-empty")
     include("module:module-ai")
@@ -41,7 +26,7 @@ fun importPlatforms() {
     include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
     // include("platform:platform-sponge-api9")
     include("platform:platform-velocity")
-    // include("platform:platform-cloudnet-v3")
+    include("platform:platform-cloudnet-v3")
     include("platform:platform-application")
 }
 
@@ -54,7 +39,8 @@ fun importExtensions() {
     include("expansion:expansion-javascript")
 }
 
-importCommon()
+include("common", "common-5")
+
 importModules()
 importPlatforms()
 importExtensions()

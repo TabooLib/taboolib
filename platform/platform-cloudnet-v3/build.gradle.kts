@@ -9,5 +9,5 @@ dependencies {
     compileOnly("net.kyori:adventure-api:4.8.1") // 参照 CloudNet
     compileOnly("net.kyori:adventure-text-serializer-gson:4.8.1") // 参照 CloudNet
     compileOnly("net.kyori:adventure-text-serializer-legacy:4.8.1") // 参照 CloudNet
-    compileOnly(project(":common:common-core"))
+    compileOnly(project(":common"))
 }

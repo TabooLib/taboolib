@@ -1,8 +1,9 @@
 @file:RuntimeDependencies(
     RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement"),
     RuntimeDependency(
-        value = "!com.mongodb:mongodb-driver-sync:3.12.2",
-        test = "!com.mongodb.client.MongoClient"
+        value = "!com.mongodb:MongoDB:3.12.2",
+        test = "!com.mongodb.client.MongoClient",
+        repository = "https://repo.tabooproject.org/repository/releases"
     )
 )
 

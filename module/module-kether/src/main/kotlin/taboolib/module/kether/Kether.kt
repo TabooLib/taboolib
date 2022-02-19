@@ -1,6 +1,8 @@
 package taboolib.module.kether
 
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependencies
+import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.actions.KetherTypes

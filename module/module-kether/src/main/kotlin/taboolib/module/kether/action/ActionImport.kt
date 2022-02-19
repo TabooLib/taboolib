@@ -1,6 +1,6 @@
 package taboolib.module.kether.action
 
-import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.module.kether.KetherParser
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame

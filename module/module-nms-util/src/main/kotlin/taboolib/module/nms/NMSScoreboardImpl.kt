@@ -3,8 +3,8 @@ package taboolib.module.nms
 import net.minecraft.server.v1_16_R3.*
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
-import org.tabooproject.reflex.Reflex.Companion.setProperty
-import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.reflect.Reflex.Companion.setProperty
+import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import java.util.*
 
 class NMSScoreboardImpl : NMSScoreboard() {

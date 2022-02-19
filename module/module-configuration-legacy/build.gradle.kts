@@ -1,7 +1,7 @@
 dependencies {
     implementation("org.yaml:snakeyaml:1.28")
-    compileOnly(project(":common:common-core"))
-    compileOnly(project(":common:common-util"))
+    compileOnly(project(":common"))
+    compileOnly(project(":common-5"))
     compileOnly(project(":module:module-chat"))
 }
 

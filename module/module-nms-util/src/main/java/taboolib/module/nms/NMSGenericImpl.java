@@ -35,9 +35,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tabooproject.reflex.UnsafeAccess;
 import taboolib.common.platform.function.IOKt;
-import org.tabooproject.reflex.Reflex;
+import taboolib.common.reflect.Ref;
+import taboolib.common.reflect.Reflex;
 import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Constructor;
@@ -99,7 +99,7 @@ public class NMSGenericImpl extends NMSGeneric {
         } else {
             Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
             net.minecraft.server.v1_12_R1.Item item = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem();
-            String name = Reflex.Companion.getProperty(item, "name", false);
+            String name = new Reflex(net.minecraft.server.v1_12_R1.Item.class).instance(item).get("name");
             String r = "";
             for (char c : name.toCharArray()) {
                 if (Character.isUpperCase(c)) {
@@ -164,7 +164,7 @@ public class NMSGenericImpl extends NMSGeneric {
             }
         } else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             try {
-                String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(UnsafeAccess.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
+                String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(Ref.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
                 if (entity instanceof Villager) {
                     Object career = Reflex.Companion.invokeMethod(entity, "getCareer", new Object[0], false);
                     if (career != null) {
@@ -366,27 +366,24 @@ public class NMSGenericImpl extends NMSGeneric {
                 itemTagList.add((ItemTagData) fromNBTBase(v));
             }
             return itemTagList;
-        } else {
-            Object data = Reflex.Companion.getProperty(base, "data", false);
-            if (base instanceof NBTTagString) {
-                return new ItemTagData((String) data);
-            } else if (base instanceof NBTTagDouble) {
-                return new ItemTagData((Double) data);
-            } else if (base instanceof NBTTagInt) {
-                return new ItemTagData((Integer) data);
-            } else if (base instanceof NBTTagFloat) {
-                return new ItemTagData((Float) data);
-            } else if (base instanceof NBTTagShort) {
-                return new ItemTagData((Short) data);
-            } else if (base instanceof NBTTagLong) {
-                return new ItemTagData((Long) data);
-            } else if (base instanceof NBTTagByte) {
-                return new ItemTagData((Byte) data);
-            } else if (base instanceof NBTTagIntArray) {
-                return new ItemTagData((int[]) data);
-            } else if (base instanceof NBTTagByteArray) {
-                return new ItemTagData((byte[]) data);
-            }
+        } else if (base instanceof NBTTagString) {
+            return new ItemTagData(new Reflex(NBTTagString.class).instance(base).get("data", ""));
+        } else if (base instanceof NBTTagDouble) {
+            return new ItemTagData(new Reflex(NBTTagDouble.class).instance(base).get("data", 0D));
+        } else if (base instanceof NBTTagInt) {
+            return new ItemTagData(new Reflex(NBTTagInt.class).instance(base).get("data", 0));
+        } else if (base instanceof NBTTagFloat) {
+            return new ItemTagData(new Reflex(NBTTagFloat.class).instance(base).get("data", (float) 0));
+        } else if (base instanceof NBTTagShort) {
+            return new ItemTagData(new Reflex(NBTTagShort.class).instance(base).get("data", (short) 0));
+        } else if (base instanceof NBTTagLong) {
+            return new ItemTagData(new Reflex(NBTTagLong.class).instance(base).get("data", 0L));
+        } else if (base instanceof NBTTagByte) {
+            return new ItemTagData(new Reflex(NBTTagByte.class).instance(base).get("data", (byte) 0D));
+        } else if (base instanceof NBTTagIntArray) {
+            return new ItemTagData(new Reflex(NBTTagIntArray.class).instance(base).get("data", new int[0]));
+        } else if (base instanceof NBTTagByteArray) {
+            return new ItemTagData(new Reflex(NBTTagByteArray.class).instance(base).get("data", new byte[0]));
         }
         return null;
     }
@@ -494,7 +491,7 @@ public class NMSGenericImpl extends NMSGeneric {
         if (MinecraftVersion.INSTANCE.getMajor() >= 9) {
             Object lightEngine = ((net.minecraft.server.v1_14_R1.WorldServer) world).getChunkProvider().getLightEngine();
             // 类文件具有错误的版本 60.0, 应为 52.0
-            if (Reflex.Companion.invokeMethod(lightEngine, "z_", new Object[0], false)) {
+            if (new Reflex(LightEngine.class).instance(lightEngine).invoke("z_")) {
                 syncLight(lightEngine, e -> {
                     if (lightType == LightType.BLOCK) {
                         ((LightEngineLayer) ((net.minecraft.server.v1_14_R1.LightEngineThreaded) lightEngine).a(EnumSkyBlock.BLOCK)).a(Integer.MAX_VALUE, true, true);
@@ -628,13 +625,11 @@ public class NMSGenericImpl extends NMSGeneric {
     @NotNull
     public String getEnchantmentKey(Enchantment enchantment) {
         if (MinecraftVersion.INSTANCE.getMajor() > 5) {
-            NamespacedKey namespacedKey = (NamespacedKey) Reflex.Companion.invokeMethod(enchantment, "getKey", new Object[0], false);
-            return "enchantment.minecraft." + namespacedKey.getKey();
+            return "enchantment.minecraft." + new Reflex(Keyed.class).instance(enchantment).<NamespacedKey>invoke("getKey").getKey();
         } else if (MinecraftVersion.INSTANCE.getMajor() == 5) {
-            int id = Reflex.Companion.getProperty(enchantment, "id", false);
-            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(id).g();
+            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(new Reflex(Enchantment.class).instance(enchantment).get("id")).g();
         } else {
-            Map<String, Enchantment> byName = Reflex.Companion.getProperty(Enchantment.class, "byName", true);
+            Map<String, Enchantment> byName = new Reflex(Enchantment.class).get("byName");
             for (Map.Entry<String, Enchantment> entry : byName.entrySet()) {
                 if (entry == enchantment) {
                     return "enchantment.minecraft." + entry.getKey();

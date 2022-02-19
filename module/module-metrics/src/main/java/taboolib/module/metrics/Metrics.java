@@ -1,8 +1,8 @@
 package taboolib.module.metrics;
 
 import kotlin.Unit;
-import taboolib.common.TabooLib;
-import taboolib.common.io.FileKt;
+import taboolib.common.TabooLibCommon;
+import taboolib.common.io.File1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.function.AdapterKt;
 import taboolib.common.platform.function.ExecutorKt;
@@ -24,12 +24,12 @@ public class Metrics {
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public Metrics(int serviceId, String pluginVersion, Platform runningPlatform) {
-        if (TabooLib.getRunningPlatform() != runningPlatform) {
+        if (TabooLibCommon.getRunningPlatform() != runningPlatform) {
             return;
         }
         // Get the config file
         File bStatsFolder = new File(IOKt.getDataFolder().getParentFile(), "bStats");
-        File configFile = FileKt.newFile(bStatsFolder, "config.yml", true, false);
+        File configFile = File1Kt.newFile(bStatsFolder, "config.yml", true, false);
         SecuredFile config = SecuredFile.Companion.loadConfiguration(configFile);
         if (!config.contains("serverUUID")) {
             config.set("enabled", true);

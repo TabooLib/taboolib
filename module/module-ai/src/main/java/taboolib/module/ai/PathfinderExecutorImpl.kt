@@ -5,10 +5,10 @@ import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.tabooproject.reflex.UnsafeAccess.get
-import org.tabooproject.reflex.UnsafeAccess.put
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.reflect.Ref.get
+import taboolib.common.reflect.Ref.put
+import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.module.nms.MinecraftVersion.major
 import java.lang.reflect.Field
 

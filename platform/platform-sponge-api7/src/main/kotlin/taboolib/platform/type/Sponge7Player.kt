@@ -28,7 +28,8 @@ import org.spongepowered.api.util.Tristate
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.platform.function.onlinePlayers
+import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import java.net.InetSocketAddress
@@ -67,12 +68,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override val location: Location
         get() {
             val loc = player.location
-            return Location(world,
-                loc.x,
-                loc.y,
-                loc.z,
-                player.headRotation.y.toFloat(),
-                player.headRotation.x.toFloat())
+            return Location(world, loc.x, loc.y, loc.z, player.headRotation.y.toFloat(), player.headRotation.x.toFloat())
         }
 
     override var isOp: Boolean
@@ -111,7 +107,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().name)
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, fixed = true)!!)
         }
 
     override val isSneaking: Boolean
@@ -343,9 +339,9 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         for (alias in particle.aliases) {
             try {
                 type = if (alias == "@") {
-                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, isStatic = true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, fixed = true)
                 } else {
-                    ParticleTypes::class.java.getProperty<ParticleType>(alias, isStatic = true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(alias, fixed = true)
                 }
             } catch (ignored: NoSuchFieldException) {
             }

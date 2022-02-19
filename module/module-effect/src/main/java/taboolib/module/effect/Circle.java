@@ -39,7 +39,7 @@ public class Circle extends Arc {
      * @param period 特效周期(如果需要可以使用)
      */
     public Circle(Location origin, double radius, double step, long period, ParticleSpawner spawner) {
-        super(origin, 0D, 360D, radius, step, period, spawner);
+        super(origin, 360D, radius, step, period, spawner);
     }
 
 }
