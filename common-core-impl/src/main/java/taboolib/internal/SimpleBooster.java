@@ -121,7 +121,7 @@ public class SimpleBooster implements Booster {
         }
         // RuntimeEnv 类可能会被插件强制移除导致 NoClassDefFoundError 异常，这是正常的
         Exceptions.runCatching(() -> Mechanism.startup(RuntimeEnv.INSTANCE))
-                .takeUnlessExceptionOf(NoClassDefFoundError.class, ClassCastException.class)
+                .takeUnlessExceptionOf(Arrays.asList(NoClassDefFoundError.class, ClassCastException.class))
                 .unwrap();
 
         return Environments.isKotlin();

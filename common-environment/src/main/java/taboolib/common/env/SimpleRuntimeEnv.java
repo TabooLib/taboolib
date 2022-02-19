@@ -3,16 +3,13 @@ package taboolib.common.env;
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.boot.Mechanism;
-import taboolib.common.exception.Exceptions;
+import taboolib.common.exception.*;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.ZipFile;
 
 /**

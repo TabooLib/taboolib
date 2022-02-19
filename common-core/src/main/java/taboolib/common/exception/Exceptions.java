@@ -4,20 +4,24 @@ import java.util.function.Supplier;
 
 public class Exceptions {
 
-    public static <T> Result<? extends T> runCatching(Supplier<? extends T> block) {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static final SuccessResult<?> EMPTY_SUCCESS = new SuccessResult(null);
+
+    public static <T> Result<T> runCatching(Supplier<? extends T> block) {
         try {
-            return Result.success(block.get());
-        } catch (Throwable e) {
-            return Result.failure(e);
+            return new SuccessResult<>(block.get());
+        } catch (Throwable ex) {
+            return new FailureResult<>(ex);
         }
     }
 
-    public static Result<?> runCatching(Runnable block) {
+    @SuppressWarnings("unchecked")
+    public static <T> Result<T> runCatching(Runnable block) {
         try {
             block.run();
-            return Result.success(null);
-        } catch (Exception e) {
-            return Result.failure(e);
+            return (Result<T>) EMPTY_SUCCESS;
+        } catch (Exception ex) {
+            return new FailureResult<>(ex);
         }
     }
 }
