@@ -7,6 +7,7 @@ import taboolib.common5.Coerce
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.Quest
 import java.io.File
+import java.nio.charset.StandardCharsets
 
 /**
  * TabooLibKotlin
@@ -63,7 +64,8 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
                 try {
                     val name = folder.relativize(path).toString().replace(File.separatorChar, '.')
                     if (name.endsWith(extension)) {
-                        val bytes = path.toFile().readBytes()
+                        val text = path.toFile().readText(StandardCharsets.UTF_8).lines()
+                        val bytes = text.mapNotNull { if (it.trim().startsWith("#")) null else it }.joinToString("\n").toByteArray(StandardCharsets.UTF_8)
                         scriptMap[name] = loader.load(ScriptService, name, bytes, namespace)
                     }
                 } catch (e: Exception) {
