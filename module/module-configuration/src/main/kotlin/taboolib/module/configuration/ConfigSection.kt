@@ -32,7 +32,7 @@ open class ConfigSection(
             map.forEach { (k, v) ->
                 if (v is Config) {
                     if (deep) {
-                        process(v.valueMap(), "$k.")
+                        process(v.valueMap(), "$parent$k.")
                     } else {
                         keys += "$parent$k"
                     }
@@ -66,9 +66,7 @@ open class ConfigSection(
             parent = getConfigurationSection(path.substringBeforeLast('.').substringAfterLast('.'))
         }
         return when (val value = root.getOrElse(path, def)) {
-            is Config -> {
-                ConfigSection(value, name, parent)
-            }
+            is Config -> ConfigSection(value, name, parent)
             // 理论是无法获取到 Map 类型
             // 因为在 set 方法中 Map 会被转换为 Config 类型
             is Map<*, *> -> {
