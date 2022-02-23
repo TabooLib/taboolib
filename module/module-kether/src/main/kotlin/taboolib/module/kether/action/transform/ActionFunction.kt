@@ -14,8 +14,13 @@ class ActionFunction(val source: ParsedAction<*>) : ScriptAction<String>() {
     override fun run(frame: ScriptFrame): CompletableFuture<String> {
         val vars = frame.deepVars()
         return frame.newFrame(source).run<Any>().thenApply {
-            KetherFunction.parse(it.toString().trimIndent()) {
-                vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
+            try {
+                KetherFunction.parse(it.toString().trimIndent()) {
+                    vars.forEach { (k, v) -> rootFrame().variables().set(k, v) }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                it.toString()
             }
         }
     }
