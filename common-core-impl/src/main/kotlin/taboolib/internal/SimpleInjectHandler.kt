@@ -10,7 +10,6 @@ import taboolib.common.io.InstGetterException
 import taboolib.common.io.findInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.SkipTo
-import kotlin.collections.ArrayList
 
 /**
  * TabooLib
@@ -25,7 +24,7 @@ class SimpleInjectHandler : InjectHandler {
     private val injectors = ArrayList<RegisteredInjector>()
 
     init {
-        LifeCycle.values().forEach { register(InjectorAwake(it)) }
+        LifeCycle.values().forEach { register(AwakeInjector(it)) }
     }
 
     override fun register(injector: Injector) {

@@ -14,17 +14,12 @@ import taboolib.common.platform.service.PlatformExecutor
 @Internal
 @Awake
 @Bind([Schedule::class], target = Bind.Target.METHOD)
-object InjectorSchedule : Injector(LifeCycle.ACTIVE) {
+object ScheduleInjector : Injector(LifeCycle.ACTIVE) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
         val obj = instance.get() ?: return
         val schedule = method.getAnnotation(Schedule::class.java)!!
-
-        submit(
-            async = schedule.property("async")!!,
-            delay = schedule.property("delay")!!,
-            period = schedule.property("period")!!
-        ) {
+        submit(async = schedule.property("async")!!, delay = schedule.property("delay")!!, period = schedule.property("period")!!) {
             method.invoke(obj)
         }
     }

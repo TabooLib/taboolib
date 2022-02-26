@@ -38,17 +38,14 @@ fun String.replaceWithOrder(vararg args: Any): String {
 
 fun String.decodeUnicode(): String {
     val pattern by lazy { Pattern.compile("\\\\u[0-9a-fA-F]{4}") }
-
     val matcher = pattern.matcher(this)
     val sb = StringBuffer()
-
     while (matcher.find()) {
         val str = matcher.group()
         val hex = str.substring(2, str.length - 1)
         val unicode = Integer.parseInt(hex, 16)
         matcher.appendReplacement(sb, Matcher.quoteReplacement(String(Character.toChars(unicode))))
     }
-
     matcher.appendTail(sb)
     return sb.toString()
 }

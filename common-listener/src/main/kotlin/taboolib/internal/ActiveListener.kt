@@ -21,7 +21,6 @@ abstract class ActiveListener(val clazz: Class<*>, val consumer: (Any) -> Unit) 
 
     protected fun process(event: Any) {
         if (event::class.java in skipEvent) return
-
         var origin: Any = event
         // 如果监听的是跨平台事件
         if (isProxyEvent) {
@@ -34,10 +33,10 @@ abstract class ActiveListener(val clazz: Class<*>, val consumer: (Any) -> Unit) 
                 return
             }
         }
-
-        if (clazz.isAssignableFrom(origin.javaClass))
+        if (clazz.isAssignableFrom(origin.javaClass)) {
             consumer(origin)
-        else
+        } else {
             skipEvent += event.javaClass
+        }
     }
 }

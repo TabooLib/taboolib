@@ -8,7 +8,6 @@ import java.util.*
 @Suppress("UNCHECKED_CAST")
 fun Map<String, Any?>.flatten(): Map<String, Any?> {
     val flatMap = TreeMap<String, Any?>()
-
     forEach { (k, v) ->
         if (v is Map<*, *>) {
             (v as Map<String, Any?>).flatten().mapKeys { "$k.${it.key}" }.let { flatMap += it }
@@ -24,7 +23,6 @@ fun Map<String, Any?>.contrastAs(target: Map<String, Any?>): Set<Difference> {
     val update = TreeSet<Difference>()
     val sourceMap = flatten()
     val targetMap = target.flatten()
-
     targetMap.filter { it.key !in sourceMap }.forEach { update += Difference(Difference.Type.DELETE, it.key, it.value) }
     sourceMap.forEach { (k, v) ->
         if (k !in targetMap) {

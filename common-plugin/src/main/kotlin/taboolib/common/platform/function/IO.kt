@@ -12,8 +12,7 @@ val pluginVersion: String
 val isPrimaryThread: Boolean
     get() = PlatformFactory.getPlatformService<PlatformIO>().isPrimaryThread
 
-fun <T> server() =
-    PlatformFactory.getPlatformService<PlatformIO>().server<T>()
+fun <T> server() = PlatformFactory.getPlatformService<PlatformIO>().server<T>()
 
 fun info(vararg message: Any?) {
     PlatformFactory.getPlatformService<PlatformIO>().info(*message)
@@ -27,14 +26,10 @@ fun warning(vararg message: Any?) {
     PlatformFactory.getPlatformService<PlatformIO>().warning(*message)
 }
 
-fun releaseResourceFile(path: String, replace: Boolean = false) =
-    PlatformFactory.getPlatformService<PlatformIO>().releaseResourceFile(path, replace)
+fun releaseResourceFile(path: String, replace: Boolean = false) = PlatformFactory.getPlatformService<PlatformIO>().releaseResourceFile(path, replace)
 
-fun getJarFile() =
-    PlatformFactory.getPlatformService<PlatformIO>().getJarFile()
+fun getJarFile() = PlatformFactory.getPlatformService<PlatformIO>().getJarFile()
 
-fun getDataFolder() =
-    PlatformFactory.getPlatformService<PlatformIO>().getDataFolder()
+fun getDataFolder() = PlatformFactory.getPlatformService<PlatformIO>().getDataFolder()
 
-fun getPlatformData() =
-    PlatformFactory.getPlatformService<PlatformIO>().getPlatformData()
+fun getPlatformData() = PlatformFactory.getPlatformService<PlatformIO>().getPlatformData()

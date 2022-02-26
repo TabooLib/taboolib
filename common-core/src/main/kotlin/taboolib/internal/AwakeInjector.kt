@@ -9,7 +9,7 @@ import taboolib.common.platform.Awake
 
 @Internal
 @Bind([Awake::class], target = Bind.Target.METHOD)
-class InjectorAwake(lifeCycle: LifeCycle) : Injector(lifeCycle) {
+class AwakeInjector(lifeCycle: LifeCycle) : Injector(lifeCycle) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
         if (method.getAnnotation(Awake::class.java)!!.enum<LifeCycle>("value") == lifeCycle) {

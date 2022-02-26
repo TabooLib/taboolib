@@ -10,9 +10,5 @@ fun submit(
     delay: Long = 0,
     period: Long = 0,
     commit: String? = null,
-    executor: PlatformTask.() -> Unit
-): PlatformTask {
-    return PlatformFactory
-        .getPlatformService<PlatformExecutor>()
-        .submit(PlatformRunnable(async, delay, period, commit, executor))
-}
+    executor: PlatformTask.() -> Unit,
+) = PlatformFactory.getPlatformService<PlatformExecutor>().submit(PlatformRunnable(async, delay, period, commit, executor))

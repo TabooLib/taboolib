@@ -14,10 +14,8 @@ import java.util.zip.GZIPOutputStream
 fun ByteArray.zip(): ByteArray = using {
     val byteStream = ByteArrayOutputStream().cage()
     val gzipStream = GZIPOutputStream(byteStream).cage()
-
     gzipStream.write(this@zip)
     gzipStream.flush()
-
     return byteStream.toByteArray()
 }
 
@@ -27,6 +25,5 @@ fun ByteArray.zip(): ByteArray = using {
 fun ByteArray.unzip(): ByteArray = using {
     val byteStream = ByteArrayInputStream(this@unzip).cage()
     val gzipStream = GZIPInputStream(byteStream).cage()
-
     return gzipStream.readBytes()
 }

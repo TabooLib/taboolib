@@ -5,7 +5,9 @@ import org.tabooproject.reflex.ClassMethod
 import taboolib.common.TabooLib
 import taboolib.common.io.InstGetter
 import taboolib.common.platform.Platform
-import taboolib.common.platform.event.*
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.OptionalEvent
+import taboolib.common.platform.event.ProxyListenerRegister
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.registerBungeeListener
 import taboolib.common.platform.function.registerSpongeListener
@@ -23,26 +25,15 @@ class SimpleListenerRegister : ProxyListenerRegister {
         val isOptionalEvent = type == OptionalEvent::class.java
         val bind = annotation.property<String>("bind")
         val bindEventClass = bind?.let { runCatching { Class.forName(it) } }?.getOrNull()
-
         if (isOptionalEvent && bindEventClass == null) {
             return
         }
-
         val instanceValue = instance.get() ?: return
-
         when (TabooLib.runningPlatform()) {
-            Platform.BUKKIT, Platform.NUKKIT ->
-                registerBukkit(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
-
-            Platform.BUNGEE ->
-                registerBungee(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
-
-            Platform.VELOCITY ->
-                registerVelocity(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
-
-            Platform.SPONGE_API_7, Platform.SPONGE_API_8 ->
-                registerSponge(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
-
+            Platform.BUKKIT, Platform.NUKKIT -> registerBukkit(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
+            Platform.BUNGEE -> registerBungee(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
+            Platform.VELOCITY -> registerVelocity(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
+            Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> registerSponge(bindEventClass ?: type, annotation, method, instanceValue, isOptionalEvent)
             else -> {}
         }
     }
@@ -54,10 +45,7 @@ class SimpleListenerRegister : ProxyListenerRegister {
         instance: Any,
         isOptionalEvent: Boolean
     ) {
-        val priority = annotation.enum<EventPriority>("priority")
-        val ignoreCancelled = annotation.property<Boolean>("ignoreCancelled")!!
-
-        registerBukkitListener(event, priority, ignoreCancelled) {
+        registerBukkitListener(event, annotation.enum("priority"), annotation.property<Boolean>("ignoreCancelled")!!) {
             method.invoke(instance, if (isOptionalEvent) OptionalEvent(it) else it)
         }
     }
@@ -71,7 +59,6 @@ class SimpleListenerRegister : ProxyListenerRegister {
     ) {
         val level = if (annotation.property<Int>("level") != null) annotation.property<Int>("level")!! else annotation.enum<EventPriority>("priority").level
         val ignoreCancelled = annotation.property<Boolean>("ignoreCancelled")!!
-
         registerBungeeListener(event, level, ignoreCancelled) {
             method.invoke(instance, if (isOptionalEvent) OptionalEvent(it) else it)
         }
@@ -84,9 +71,7 @@ class SimpleListenerRegister : ProxyListenerRegister {
         instance: Any,
         isOptionalEvent: Boolean
     ) {
-        val order = annotation.enum<PostOrder>("postOrder")
-
-        registerVelocityListener(event, order) {
+        registerVelocityListener(event, annotation.enum("postOrder")) {
             method.invoke(instance, if (isOptionalEvent) OptionalEvent(it) else it)
         }
     }
@@ -98,10 +83,7 @@ class SimpleListenerRegister : ProxyListenerRegister {
         instance: Any,
         isOptionalEvent: Boolean
     ) {
-        val order = annotation.enum<EventOrder>("postOrder")
-        val before = annotation.enum<Boolean>("beforeModifications")
-
-        registerSpongeListener(event, order, before) {
+        registerSpongeListener(event, annotation.enum("postOrder"), annotation.enum("beforeModifications")) {
             method.invoke(instance, if (isOptionalEvent) OptionalEvent(it) else it)
         }
     }

@@ -3,13 +3,14 @@ package taboolib.common.env;
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.boot.Mechanism;
-import taboolib.common.exception.*;
+import taboolib.common.exception.Exceptions;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
@@ -20,6 +21,24 @@ import java.util.zip.ZipFile;
  * @since 2022/1/28 6:36 PM
  */
 public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
+
+    private static final String ENV_FILE_NAME = "env.properties";
+    private static final Properties ENV_PROPERTIES = new Properties();
+
+    private static String defaultAssets = "assets";
+    private static String defaultLibrary = "libs";
+    private static String defaultRepositoryCentral = "https://maven.aliyun.com/repository/central";
+
+    public SimpleRuntimeEnv() throws IOException {
+        File libs = new File("libs", "custom.txt");
+        if (libs.exists()) {
+            defaultLibrary = Files.readAllLines(libs.toPath(), StandardCharsets.UTF_8).get(0);
+        }
+        ENV_PROPERTIES.load(new FileInputStream(ENV_FILE_NAME));
+        defaultAssets = ENV_PROPERTIES.getProperty("assets", defaultAssets);
+        defaultLibrary = ENV_PROPERTIES.getProperty("library", defaultLibrary);
+        defaultRepositoryCentral = ENV_PROPERTIES.getProperty("repository-central", defaultRepositoryCentral);
+    }
 
     @Override
     public void startup() {
@@ -56,9 +75,9 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
             for (RuntimeResource resource : resources) {
                 File file;
                 if (resource.name().isEmpty()) {
-                    file = new File("assets/" + resource.hash().substring(0, 2) + "/" + resource.hash());
+                    file = new File(defaultAssets, resource.hash().substring(0, 2) + "/" + resource.hash());
                 } else {
-                    file = new File("assets/" + resource.name());
+                    file = new File(defaultAssets, resource.name());
                 }
                 if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
                     continue;
@@ -71,7 +90,8 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
                         Repository.downloadToFile(new URL(resource.value() + ".zip"), cacheFile);
                         try (ZipFile zipFile = new ZipFile(cacheFile)) {
-                            InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(resource.value().substring(resource.value().lastIndexOf('/') + 1)));
+                            ZipEntry zipEntry = zipFile.getEntry(resource.value().substring(resource.value().lastIndexOf('/') + 1));
+                            InputStream inputStream = zipFile.getInputStream(zipEntry);
                             try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
                                 fileOutputStream.write(DependencyDownloader.readFully(inputStream));
                             }
@@ -90,13 +110,7 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
 
     @Override
     public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
-        File baseDir;
-        try {
-            List<String> lines = Files.readAllLines(new File("libs", "custom.txt").toPath(), StandardCharsets.UTF_8);
-            baseDir = new File(lines.get(0));
-        } catch (Throwable e) {
-            baseDir = new File("libs");
-        }
+        File baseDir = new File(defaultLibrary);
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -128,7 +142,16 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
                 try {
                     String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
                     DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
-                    downloader.addRepository(new Repository(dependency.repository()));
+                    // 支持用户对源进行替换
+                    String repository;
+                    if (dependency.repository().isEmpty()) {
+                        repository = defaultRepositoryCentral;
+                    } else if (ENV_PROPERTIES.contains("repository-" + dependency.repository())) {
+                        repository = ENV_PROPERTIES.getProperty("repository-" + dependency.repository());
+                    } else {
+                        repository = dependency.repository();
+                    }
+                    downloader.addRepository(new Repository(repository));
                     downloader.setIgnoreOptional(dependency.ignoreOptional());
                     downloader.setDependencyScopes(dependency.scopes());
                     // 解析依赖
@@ -137,7 +160,7 @@ public class SimpleRuntimeEnv implements RuntimeEnv, Mechanism {
                     if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
                         downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
                     } else {
-                        String pom = String.format("%s/%s/%s/%s/%s-%s.pom", dependency.repository(), args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
+                        String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
                         try {
                             downloader.loadDependencyFromInputStream(new URL(pom).openStream());
                         } catch (FileNotFoundException ex) {

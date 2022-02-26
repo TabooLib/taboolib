@@ -8,10 +8,10 @@ import taboolib.common.boot.Environments;
 import taboolib.common.boot.Mechanism;
 import taboolib.common.boot.Monitor;
 import taboolib.common.env.RuntimeEnv;
+import taboolib.common.exception.Exceptions;
 import taboolib.common.inject.InjectHandler;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
-import taboolib.common.exception.Exceptions;
 
 import java.util.*;
 
@@ -123,7 +123,6 @@ public class SimpleBooster implements Booster {
         Exceptions.runCatching(() -> Mechanism.startup(RuntimeEnv.INSTANCE))
                 .takeUnlessExceptionOf(Arrays.asList(NoClassDefFoundError.class, ClassCastException.class))
                 .unwrap();
-
         return Environments.isKotlin();
     }
 }

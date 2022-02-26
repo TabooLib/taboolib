@@ -14,7 +14,7 @@ public @interface RuntimeDependency {
 
     String test() default "";
 
-    String repository() default "https://maven.aliyun.com/repository/central";
+    String repository() default "";
 
     boolean transitive() default true;
 

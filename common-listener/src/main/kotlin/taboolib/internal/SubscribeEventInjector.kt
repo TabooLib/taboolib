@@ -12,7 +12,7 @@ import taboolib.common.platform.event.SubscribeEvent
 @Internal
 @Awake
 @Bind([SubscribeEvent::class], target = Bind.Target.METHOD)
-object InjectorSubscribeEvent : Injector(LifeCycle.ENABLE) {
+object SubscribeEventInjector : Injector(LifeCycle.ENABLE) {
 
     override fun inject(clazz: Class<*>, method: ClassMethod, instance: InstGetter<*>) {
         if (method.parameter.size == 1) {
