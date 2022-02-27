@@ -51,7 +51,7 @@ public class DependencyDownloader extends AbstractXmlParser {
      *
      * @since 1.0.0
      */
-    private File baseDir = new File("libs");
+    private final File baseDir;
 
     /**
      * The scopes to download dependencies for by default
@@ -68,9 +68,6 @@ public class DependencyDownloader extends AbstractXmlParser {
     private boolean isDebugMode = true;
 
     private boolean ignoreOptional = true;
-
-    public DependencyDownloader() {
-    }
 
     public DependencyDownloader(@Nullable File baseDir) {
         this.baseDir = baseDir;
@@ -362,11 +359,6 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public File getBaseDir() {
         return baseDir;
-    }
-
-    public DependencyDownloader setBaseDir(File baseDir) {
-        this.baseDir = baseDir;
-        return this;
     }
 
     public DependencyScope[] getDependencyScopes() {
