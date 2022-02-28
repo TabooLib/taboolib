@@ -37,10 +37,13 @@ public class RuntimeEnv {
             if (libs.exists()) {
                 defaultLibrary = Files.readAllLines(libs.toPath(), StandardCharsets.UTF_8).get(0);
             }
-            ENV_PROPERTIES.load(new FileInputStream(ENV_FILE_NAME));
-            defaultAssets = ENV_PROPERTIES.getProperty("assets", defaultAssets);
-            defaultLibrary = ENV_PROPERTIES.getProperty("library", defaultLibrary);
-            defaultRepositoryCentral = ENV_PROPERTIES.getProperty("repository-central", defaultRepositoryCentral);
+            File env = new File(ENV_FILE_NAME);
+            if (env.exists()) {
+                ENV_PROPERTIES.load(new FileInputStream(ENV_FILE_NAME));
+                defaultAssets = ENV_PROPERTIES.getProperty("assets", defaultAssets);
+                defaultLibrary = ENV_PROPERTIES.getProperty("library", defaultLibrary);
+                defaultRepositoryCentral = ENV_PROPERTIES.getProperty("repository-central", defaultRepositoryCentral);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
