@@ -10,6 +10,7 @@ import java.io.FileInputStream
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 
+    @Suppress("MemberNameEqualsClassName")
     val minecraftVersion by lazy {
         Bukkit.getServer().javaClass.name.split('.')[3]
     }
@@ -37,7 +38,7 @@ object MinecraftVersion {
         arrayOf("1.16.1", "1.16.2", "1.16.3", "1.16.4", "1.16.5"), // 8
         // universal >= 9
         arrayOf("1.17", "1.17.1"),
-        arrayOf("1.18", "1.18.1"), // 10
+        arrayOf("1.18", "1.18.1", "1.18.2"), // 10
     )
 
     /**

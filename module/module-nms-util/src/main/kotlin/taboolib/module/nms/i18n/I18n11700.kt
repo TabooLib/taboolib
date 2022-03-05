@@ -13,10 +13,9 @@ import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.Executors
-import kotlin.collections.HashMap
 
 /**
- * https://launchermeta.mojang.com/mc/game/version_manifest.json
+ * https://launchermeta.mojang.com/mc/game/version_manifest.json -> [version] -> assetIndex ->
  *
  * @author sky
  * @since 2020-04-04 19:51
@@ -24,9 +23,9 @@ import kotlin.collections.HashMap
 object I18n11700 : I18nBase() {
 
     val locales = arrayOf(
-        arrayOf("zh_cn", "9db7ddaa4a2c4c87304b491ccf4952cc208b6b6d"),
-        arrayOf("zh_tw", "7c3db1d86f29005d22ee5d482e805d2c374b9b5e"),
-        arrayOf("en_gb", "183945d2bbcd839edf61c8f85439f77804c9fd38")
+        arrayOf("zh_cn", "9fabbc798786c7b7364902b31bdb37c2c037e9b8"),
+        arrayOf("zh_tw", "7b5f43b3b856f1c3ebca3bd207c2af5d39ce9da1"),
+        arrayOf("en_gb", "85b316bb1dc13c9e09d00641b61cea71b6b42fa9")
     )
 
     private val cache: MutableMap<String, JsonObject> = HashMap()

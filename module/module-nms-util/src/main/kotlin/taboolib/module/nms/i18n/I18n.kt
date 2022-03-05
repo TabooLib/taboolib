@@ -22,6 +22,7 @@ object I18n {
         version[7] = I18n11700 // 1.15
         version[8] = I18n11700 // 1.16
         version[9] = I18n11700 // 1.17
+        version[10] = I18n11700 // 1.18
         instance = version.getOrDefault(major, I18nOrigin.INSTANCE)
         instance.init()
     }
