@@ -76,7 +76,6 @@ fun ItemStack.getName(player: Player? = null): String {
         return itemMeta!!.displayName
     }
     return getI18nName(player)
-    
 }
 
 /**
