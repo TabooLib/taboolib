@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.registerBukkitListener
@@ -66,7 +67,14 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
  * 获得物品的名称，如果没有则返回译名
  */
 fun ItemStack.getName(player: Player? = null): String {
-    return if (itemMeta?.hasDisplayName() == true) itemMeta!!.displayName else getI18nName(player)
+    if (itemMeta?.hasDisplayName() == true) {
+        // 此类头颅displayName == "", 但客户端显示为"XXX的头"
+        if (itemMeta instanceof SkullMeta && itemMeta.displayName == "" && itemMeta.hasOwner()) {
+            return itemStack.getItemMeta().getOwner() + "的头"
+        }
+        return itemMeta.displayName
+    }
+    return getI18nName(player)
 }
 
 /**
