@@ -70,7 +70,7 @@ fun ItemStack.getName(player: Player? = null): String {
     if (itemMeta?.hasDisplayName() == true) {
         val skullMeta = itemMeta as? SkullMeta
         // 此类头颅displayName == "", 但客户端显示为"XXX的头"
-        if (skullMeta is SkullMeta && itemMeta.displayName == "" && itemMeta.hasOwner()) {
+        if (skullMeta is SkullMeta && skullMeta.displayName == "" && skullMeta.hasOwner()) {
             return skullMeta.getOwner() + "的头"
         }
         return itemMeta.displayName
