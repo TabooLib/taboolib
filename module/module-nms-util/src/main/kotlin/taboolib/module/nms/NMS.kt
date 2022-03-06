@@ -70,7 +70,7 @@ fun ItemStack.getName(player: Player? = null): String {
     if (itemMeta?.hasDisplayName() == true) {
         // 此类头颅displayName == "", 但客户端显示为"XXX的头"
         if (itemMeta is SkullMeta && itemMeta.displayName == "" && itemMeta.hasOwner()) {
-            return itemStack.getItemMeta().getOwner() + "的头"
+            return itemMeta.getOwner() + "的头"
         }
         return itemMeta.displayName
     }
