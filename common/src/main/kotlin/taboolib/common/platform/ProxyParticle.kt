@@ -2,7 +2,7 @@ package taboolib.common.platform
 
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import org.bukkit.Color
+import java.awt.Color
 import java.util.*
 
 /**
