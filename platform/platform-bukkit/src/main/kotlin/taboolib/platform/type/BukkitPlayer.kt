@@ -375,15 +375,15 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         }
         player.spawnParticle(
             bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, when (data) {
-                is ProxyParticle.DustData -> {
-                    Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
-                }
                 is ProxyParticle.DustTransitionData -> {
                     Particle.DustTransition(
                         Color.fromRGB(data.color.red, data.color.green, data.color.blue),
                         Color.fromRGB(data.toColor.red, data.toColor.blue, data.toColor.green),
                         data.size
                     )
+                }
+                is ProxyParticle.DustData -> {
+                    Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
                 }
                 is ProxyParticle.ItemData -> {
                     val item = ItemStack(Material.valueOf(data.material))
