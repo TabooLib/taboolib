@@ -68,7 +68,7 @@ interface PlaceholderExpansion {
                         return BukkitPlugin.getInstance().description.version
                     }
 
-                    override fun onPlaceholderRequest(player: Player, params: String): String {
+                    override fun onPlaceholderRequest(player: Player?, params: String): String {
                         return expansion.onPlaceholderRequest(player, params)
                     }
                 }.register()
