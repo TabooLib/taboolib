@@ -32,26 +32,10 @@ fun Player.sendActionBar(message: String) {
     adaptPlayer(this).sendActionBar(message)
 }
 
-fun Player.getEquipmentItem(slot: EquipmentSlot = HAND): ItemStack? {
-    return when (slot) {
-        HAND -> inventory.itemInMainHand
-        OFF_HAND -> inventory.itemInOffHand
-        HEAD -> inventory.armorContents[0]
-        CHEST -> inventory.armorContents[1]
-        FEET -> inventory.armorContents[2]
-        LEGS -> inventory.armorContents[3]
-    }
-}
-
 fun Player.feed() {
     foodLevel = 20
 }
 
 fun Player.saturate() {
     saturation = 20F
-}
-
-fun Player.feedSaturate() {
-    feed()
-    saturate()
 }
