@@ -17,13 +17,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 0)
         } else {
-            packet.setProperty("a", "TabooScore")
-            if (MinecraftVersion.major >= 5) {
-                packet.setProperty("b", ChatComponentText(title))
-            } else {
-                packet.setProperty("b", title)
-            }
-            packet.setProperty("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            handle2DuplicatedPacket(packet, title)
             packet.setProperty("d", 0)
         }
         player.sendPacket(packet)
@@ -85,13 +79,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 2)
         } else {
-            packet.setProperty("a", "TabooScore")
-            if (MinecraftVersion.major >= 5) {
-                packet.setProperty("b", ChatComponentText(title))
-            } else {
-                packet.setProperty("b", title)
-            }
-            packet.setProperty("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
+            handle2DuplicatedPacket(packet, title)
             packet.setProperty("d", 2)
         }
         player.sendPacket(packet)
@@ -128,12 +116,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("players", listOf(color))
                 val b = universalTeamData.unsafeInstance()
                 b.setProperty("displayName", ChatComponentText(color))
-                b.setProperty("nametagVisibility", "always")
-                b.setProperty("collisionRule", "always")
-                b.setProperty("color", EnumChatFormat.RESET)
-                b.setProperty("options", 3)
-                packet.setProperty("parameters", Optional.of(b))
-                player.sendPacket(packet)
+                handle1DuplicatedPacket(b, packet, player)
                 return@forEach
             }
             if (MinecraftVersion.major >= 5) {
@@ -186,12 +169,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", ChatComponentText(team))
             b.setProperty("playerPrefix", ChatComponentText(content))
-            b.setProperty("nametagVisibility", "always")
-            b.setProperty("collisionRule", "always")
-            b.setProperty("color", EnumChatFormat.RESET)
-            b.setProperty("options", 3)
-            packet.setProperty("parameters", Optional.of(b))
-            player.sendPacket(packet)
+            handle1DuplicatedPacket(b, packet, player)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -274,5 +252,24 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 player.sendPacket(packet)
             }
         }
+    }
+
+    private fun handle1DuplicatedPacket(b: Any, packet: Any, player: Player) {
+        b.setProperty("nametagVisibility", "always")
+        b.setProperty("collisionRule", "always")
+        b.setProperty("color", EnumChatFormat.RESET)
+        b.setProperty("options", 3)
+        packet.setProperty("parameters", Optional.of(b))
+        player.sendPacket(packet)
+    }
+
+    private fun handle2DuplicatedPacket(packet: Any, title: String) {
+        packet.setProperty("a", "TabooScore")
+        if (MinecraftVersion.major >= 5) {
+            packet.setProperty("b", ChatComponentText(title))
+        } else {
+            packet.setProperty("b", title)
+        }
+        packet.setProperty("c", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
     }
 }
