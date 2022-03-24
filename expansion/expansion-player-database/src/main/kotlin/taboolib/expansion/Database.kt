@@ -1,8 +1,8 @@
 package taboolib.expansion
 
-class Database(val type: Type) {
+import javax.sql.DataSource
 
-    val dataSource = type.host().createDataSource()
+class Database(val type: Type, val dataSource: DataSource = type.host().createDataSource()) {
 
     init {
         type.tableVar().createTable(dataSource)

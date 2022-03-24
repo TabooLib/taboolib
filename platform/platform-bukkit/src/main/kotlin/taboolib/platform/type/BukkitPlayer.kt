@@ -373,48 +373,56 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         } catch (ignored: IllegalArgumentException) {
             error("Unsupported particle ${particle.name}")
         }
-        player.spawnParticle(bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, when (data) {
-            is ProxyParticle.DustData -> {
-                Particle.DustOptions(Color.fromRGB(data.color.rgb), data.size)
-            }
-            is ProxyParticle.DustTransitionData -> {
-                Particle.DustTransition(Color.fromRGB(data.color.rgb), Color.fromRGB(data.toColor.rgb), data.size)
-            }
-            is ProxyParticle.ItemData -> {
-                val item = ItemStack(Material.valueOf(data.material))
-                val itemMeta = item.itemMeta!!
-                itemMeta.setDisplayName(data.name)
-                itemMeta.lore = data.lore
-                try {
-                    itemMeta.setCustomModelData(data.customModelData)
-                } catch (ex: NoSuchMethodError) {
+        player.spawnParticle(
+            bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, when (data) {
+                is ProxyParticle.DustTransitionData -> {
+                    Particle.DustTransition(
+                        Color.fromRGB(data.color.red, data.color.green, data.color.blue),
+                        Color.fromRGB(data.toColor.red, data.toColor.blue, data.toColor.green),
+                        data.size
+                    )
                 }
-                item.itemMeta = itemMeta
-                if (data.data != 0) {
-                    item.durability = data.data.toShort()
+                is ProxyParticle.DustData -> {
+                    Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
                 }
-                item
-            }
-            is ProxyParticle.BlockData -> {
-                if (bukkitParticle.dataType == MaterialData::class.java) {
-                    MaterialData(Material.valueOf(data.material), data.data.toByte())
-                } else {
-                    Material.valueOf(data.material).createBlockData()
-                }
-            }
-            is ProxyParticle.VibrationData -> {
-                Vibration(data.origin.toBukkitLocation(), when (val destination = data.destination) {
-                    is ProxyParticle.VibrationData.LocationDestination -> {
-                        Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
+                is ProxyParticle.ItemData -> {
+                    val item = ItemStack(Material.valueOf(data.material))
+                    val itemMeta = item.itemMeta!!
+                    itemMeta.setDisplayName(data.name)
+                    itemMeta.lore = data.lore
+                    try {
+                        itemMeta.setCustomModelData(data.customModelData)
+                    } catch (ex: NoSuchMethodError) {
                     }
-                    is ProxyParticle.VibrationData.EntityDestination -> {
-                        Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
+                    item.itemMeta = itemMeta
+                    if (data.data != 0) {
+                        item.durability = data.data.toShort()
                     }
-                    else -> error("out of case")
-                }, data.arrivalTime)
+                    item
+                }
+                is ProxyParticle.BlockData -> {
+                    if (bukkitParticle.dataType == MaterialData::class.java) {
+                        MaterialData(Material.valueOf(data.material), data.data.toByte())
+                    } else {
+                        Material.valueOf(data.material).createBlockData()
+                    }
+                }
+                is ProxyParticle.VibrationData -> {
+                    Vibration(
+                        data.origin.toBukkitLocation(), when (val destination = data.destination) {
+                            is ProxyParticle.VibrationData.LocationDestination -> {
+                                Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
+                            }
+                            is ProxyParticle.VibrationData.EntityDestination -> {
+                                Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
+                            }
+                            else -> error("out of case")
+                        }, data.arrivalTime
+                    )
+                }
+                else -> null
             }
-            else -> null
-        })
+        )
     }
 
     override fun performCommand(command: String): Boolean {
