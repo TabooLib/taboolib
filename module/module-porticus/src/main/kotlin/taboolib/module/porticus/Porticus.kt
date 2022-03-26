@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.pluginId
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -16,6 +17,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 @RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
 @PlatformSide([Platform.BUKKIT, Platform.BUNGEE])
 object Porticus {
+
+    val channelId by lazy {
+        "t_${if (pluginId.lowercase().length > 10) pluginId.lowercase().substring(0, 10) else pluginId.lowercase()}:main"
+    }
 
     /**
      * 获取正在运行的通讯任务
