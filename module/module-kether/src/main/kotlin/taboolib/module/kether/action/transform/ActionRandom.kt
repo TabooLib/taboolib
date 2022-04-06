@@ -3,6 +3,7 @@ package taboolib.module.kether.action.transform
 import taboolib.common.util.random
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
