@@ -1,6 +1,11 @@
 package taboolib.module.navigation
 
 import org.bukkit.World
+import org.bukkit.block.data.type.RedstoneWire
+import org.bukkit.block.data.type.Sapling
+import org.bukkit.material.LongGrass
+import org.bukkit.material.PressurePlate
+import org.bukkit.material.Rails
 import org.bukkit.util.Vector
 import taboolib.module.navigation.Fluid.Companion.getFluid
 import java.util.*
@@ -145,7 +150,8 @@ open class PathTypeFactory(val entity: NodeEntity) {
                 (-1..1).forEach { oy ->
                     (-1..1).forEach { oz ->
                         if (ox != 0 || oz != 0) {
-                            val block = world.getBlockAtIfLoaded(Vector(position.x + ox, position.y + oy, position.z + oz))
+                            val block =
+                                world.getBlockAtIfLoaded(Vector(position.x + ox, position.y + oy, position.z + oz))
                             if (block != null) {
                                 val name = block.type.name
                                 when {
@@ -155,7 +161,12 @@ open class PathTypeFactory(val entity: NodeEntity) {
                                     name == "SWEET_BERRY_BUSH" -> {
                                         return PathType.DANGER_OTHER
                                     }
-                                    name.getFluid().isLava() || name in arrayOf("FIRE", "MAGMA_BLOCK", "CAMPFIRE", "SOUL_CAMPFIRE") -> {
+                                    name.getFluid().isLava() || name in arrayOf(
+                                        "FIRE",
+                                        "MAGMA_BLOCK",
+                                        "CAMPFIRE",
+                                        "SOUL_CAMPFIRE"
+                                    ) -> {
                                         return PathType.DANGER_FIRE
                                     }
                                     name.getFluid().isWater() -> {
@@ -178,13 +189,17 @@ open class PathTypeFactory(val entity: NodeEntity) {
             val block = world.getBlockAtIfLoaded(position) ?: return PathType.BLOCKED
             val blockType = block.type
             val blockTypeName = blockType.name
+            val blockData = block.blockData
             return when {
                 // 空气
                 blockType.isAirLegacy() -> {
                     PathType.OPEN
                 }
-                // 活板门、睡莲、地毯
-                blockTypeName.endsWith("TRAPDOOR") || blockTypeName.endsWith("TRAP_DOOR") || blockTypeName == "LILY_PAD" || blockTypeName == "CARPET" -> {
+                // 活板门、睡莲、地毯 可穿过的物品
+                blockTypeName.endsWith("TRAPDOOR") || blockTypeName.endsWith("TRAP_DOOR") || blockTypeName == "LILY_PAD" || blockTypeName == "CARPET" ||
+                        blockData is Sapling || blockData is RedstoneWire || blockTypeName.endsWith("GRASS") || blockTypeName == "NETHER_WARTS" ||
+                        blockTypeName == "NETHER_STALK" || blockTypeName == "DOUBLE_PLANT" || blockTypeName.startsWith("FLOWER_POT") || blockTypeName == "RED_ROSE" ||
+                        blockTypeName == "YELLOW_FLOWER" || blockTypeName == "BEETROOT_BLOCK" || blockTypeName.startsWith("DIODE_BLOCK") || blockTypeName == "SUGAR_CANE_BLOCK" -> {
                     // 能够行走，能够穿过。
                     PathType.TRAPDOOR
                 }
