@@ -3,6 +3,7 @@ package taboolib.module.kether
 import taboolib.common.platform.function.warning
 import taboolib.common5.Coerce
 import taboolib.library.kether.*
+import taboolib.library.kether.actions.LiteralAction
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -229,4 +230,8 @@ fun Any.isInt(): Boolean {
     } catch (ex: Exception) {
         false
     }
+}
+
+fun literalAction(any: Any): ParsedAction<*> {
+    return ParsedAction(LiteralAction<Any>(any))
 }

@@ -238,6 +238,9 @@ public final class ObjectConverter {
                 if (converter != null) {
                     value = converter.convertToField(value);
                 }
+                if (value == null) {
+                    continue;
+                }
 
                 // --- Writes the value to the object's field, converting it if needed ---
                 Class<?> fieldType = field.getType();

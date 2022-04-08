@@ -23,10 +23,20 @@ object ChannelExecutor {
     private val removeChannelService = Executors.newSingleThreadExecutor()
 
     fun getPlayerChannel(player: Player): Channel {
-        return if (MinecraftVersion.isUniversal) {
-            player.getProperty<Channel>("entity/connection/connection/channel")!!
+        val playerConnection = if (MinecraftVersion.isUniversal) {
+            player.getProperty<Any>("entity/connection")!!
         } else {
-            player.getProperty<Channel>("entity/playerConnection/networkManager/channel")!!
+            player.getProperty<Any>("entity/playerConnection")!!
+        }
+        // playerConnection 被异常注入
+        return try {
+            if (MinecraftVersion.isUniversal) {
+                playerConnection.getProperty<Channel>("connection/channel")!!
+            } else {
+                playerConnection.getProperty<Channel>("networkManager/channel")!!
+            }
+        } catch (ex: Throwable) {
+            throw IllegalStateException("Unable to get player Channel from ${playerConnection.javaClass}", ex)
         }
     }
 

@@ -1,9 +1,8 @@
 package taboolib.module.kether.action.transform
 
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.scriptParser
+import taboolib.common5.Coerce
+import taboolib.library.kether.ParsedAction
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -13,20 +12,28 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/1/30 9:26 下午
  */
-class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : ScriptAction<List<Any>>() {
+class ActionRange(val from: ParsedAction<*>, val to: ParsedAction<*>, val step: ParsedAction<*> = literalAction(0)) : ScriptAction<List<Any>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Any>> {
-        return if (step == 0.0) {
-            CompletableFuture.completedFuture((from.toInt()..to.toInt()).toList())
-        } else {
-            val intStep = step.toInt().toDouble() == step
-            val array = ArrayList<Any>()
-            var i = from
-            while (i <= to) {
-                array.add(if (intStep) i.toInt() else i)
-                i += step
-            }
-            CompletableFuture.completedFuture(array)
+        return frame.newFrame(step).run<Any>().thenApply { s ->
+            val step = Coerce.toDouble(s)
+            frame.newFrame(from).run<Any>().thenApply { from ->
+                frame.newFrame(to).run<Any>().thenApply { to ->
+                    if (step == 0.0) {
+                        (Coerce.toInteger(from)..Coerce.toInteger(to)).toList()
+                    } else {
+                        val intStep = step.toInt().toDouble() == step
+                        val array = ArrayList<Any>()
+                        var i = Coerce.toDouble(from)
+                        val t = Coerce.toDouble(to)
+                        while (i <= t) {
+                            array.add(if (intStep) i.toInt() else i)
+                            i += step
+                        }
+                        array
+                    }
+                }.join()
+            }.join()
         }
     }
 
@@ -34,16 +41,16 @@ class ActionRange(val from: Double, val to: Double, val step: Double = 0.0) : Sc
 
         @KetherParser(["range"])
         fun parser() = scriptParser {
-            val from = it.nextDouble()
+            val from = it.nextParsedAction()
             it.expect("to")
-            val to = it.nextDouble()
+            val to = it.nextParsedAction()
             it.mark()
             val step = try {
                 it.expect("step")
-                it.nextDouble()
+                it.nextParsedAction()
             } catch (ignored: Exception) {
                 it.reset()
-                0.0
+                literalAction(0)
             }
             ActionRange(from, to, step)
         }

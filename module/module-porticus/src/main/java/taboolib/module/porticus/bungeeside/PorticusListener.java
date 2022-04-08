@@ -9,14 +9,12 @@ import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
-import taboolib.common.platform.function.IOKt;
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.PorticusMission;
 import taboolib.module.porticus.common.Message;
 import taboolib.module.porticus.common.MessageReader;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,7 +26,7 @@ public class PorticusListener implements Listener {
     private static final Plugin plugin = BungeeCord.getInstance().pluginManager.getPlugins().iterator().next();
 
     public PorticusListener() {
-        ProxyServer.getInstance().registerChannel("porticus_" + IOKt.getPluginId().toLowerCase() + ":main");
+        ProxyServer.getInstance().registerChannel(Porticus.INSTANCE.getChannelId());
         ProxyServer.getInstance().getPluginManager().registerListener(plugin, this);
         BungeeCord.getInstance().getScheduler().schedule(plugin, () -> {
             for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
@@ -88,7 +86,7 @@ public class PorticusListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase("porticus_" + IOKt.getPluginId().toLowerCase() + ":main")) {
+        if (e.getSender() instanceof Server && e.getTag().equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
             try {
                 Message message = MessageReader.read(e.getData());
                 if (message.isCompleted()) {

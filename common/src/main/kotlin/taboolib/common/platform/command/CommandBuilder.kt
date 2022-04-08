@@ -69,7 +69,7 @@ object CommandBuilder {
                 val children = component.children(context).firstOrNull {
                     context.index = cur
                     when (it) {
-                        is CommandComponentLiteral -> it.aliases.contains(argument)
+                        is CommandComponentLiteral -> it.aliases.any { a -> a.equals(argument, true) }
                         is CommandComponentDynamic -> {
                             val suggestion = it.commandSuggestion
                             when {
@@ -118,7 +118,7 @@ object CommandBuilder {
                 val children = component.children(context).firstOrNull {
                     context.index = cur
                     when (it) {
-                        is CommandComponentLiteral -> it.aliases.contains(argument)
+                        is CommandComponentLiteral -> it.aliases.any { a -> a.equals(argument, true) }
                         is CommandComponentDynamic -> {
                             val suggestion = it.commandSuggestion
                             when {

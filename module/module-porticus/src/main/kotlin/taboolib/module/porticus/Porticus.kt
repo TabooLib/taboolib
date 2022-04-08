@@ -1,8 +1,11 @@
 package taboolib.module.porticus
 
+import net.md_5.bungee.BungeeCord
+import org.bukkit.Bukkit
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.pluginId
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -15,6 +18,10 @@ import java.util.concurrent.CopyOnWriteArrayList
 @PlatformSide([Platform.BUKKIT, Platform.BUNGEE])
 object Porticus {
 
+    val channelId by lazy {
+        "t_${if (pluginId.lowercase().length > 10) pluginId.lowercase().substring(0, 10) else pluginId.lowercase()}:main"
+    }
+
     /**
      * 获取正在运行的通讯任务
      */
@@ -25,14 +32,14 @@ object Porticus {
      */
     val API by lazy {
         try {
-            Class.forName("org.bukkit.Bukkit")
+            Bukkit.getServer()
             return@lazy taboolib.module.porticus.bukkitside.PorticusAPI()
-        } catch (ignored: Throwable) {
+        } catch (ignored: NoClassDefFoundError) {
         }
         try {
-            Class.forName("net.md_5.bungee.BungeeCord")
+            BungeeCord.getInstance()
             return@lazy taboolib.module.porticus.bungeeside.PorticusAPI()
-        } catch (ignored: Throwable) {
+        } catch (ignored: NoClassDefFoundError) {
         }
         error("unsupported platform")
     }

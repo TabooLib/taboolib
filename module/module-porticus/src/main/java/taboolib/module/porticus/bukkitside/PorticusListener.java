@@ -9,7 +9,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.platform.function.IOKt;
 import taboolib.module.porticus.Porticus;
 import taboolib.module.porticus.PorticusMission;
 import taboolib.module.porticus.common.Message;
@@ -26,8 +25,8 @@ public class PorticusListener implements Listener, PluginMessageListener {
     public PorticusListener() {
         Plugin plugin = JavaPlugin.getProvidingPlugin(Porticus.class);
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "porticus_" + IOKt.getPluginId().toLowerCase() + ":main", this);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "porticus_" + IOKt.getPluginId().toLowerCase() + ":main");
+        Bukkit.getMessenger().registerIncomingPluginChannel(plugin, Porticus.INSTANCE.getChannelId(), this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, Porticus.INSTANCE.getChannelId());
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for (PorticusMission mission : Porticus.INSTANCE.getMissions()) {
                 if (mission.isTimeout()) {
@@ -61,8 +60,8 @@ public class PorticusListener implements Listener, PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte [] bytes) {
-        if (channel.equalsIgnoreCase("porticus_" + IOKt.getPluginId().toLowerCase() + ":main")) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] bytes) {
+        if (channel.equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
             try {
                 Message message = MessageReader.read(bytes);
                 if (message.isCompleted()) {
