@@ -149,16 +149,7 @@ fun Block.createLight(
     }
     val result = nmsGeneric.createLight(this, lightType, lightLevel)
     if (update) {
-        if (MinecraftVersion.isUniversal) {
-            nmsGeneric.updateLightUniversal(this, lightType, viewers)
-        } else {
-            // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
-            (-1..1).forEach { x ->
-                (-1..1).forEach { z ->
-                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
-                }
-            }
-        }
+        updateLight(lightType, viewers)
     }
     return result
 }
@@ -180,18 +171,22 @@ fun Block.deleteLight(
     }
     val result = nmsGeneric.deleteLight(this, lightType)
     if (update) {
-        if (MinecraftVersion.isUniversal) {
-            nmsGeneric.updateLightUniversal(this, lightType, viewers)
-        } else {
-            // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
-            (-1..1).forEach { x ->
-                (-1..1).forEach { z ->
-                    nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
-                }
+        updateLight(lightType, viewers)
+    }
+    return result
+}
+
+private fun Block.updateLight(lightType: LightType, viewers: Collection<Player>) {
+    if (MinecraftVersion.isUniversal) {
+        nmsGeneric.updateLightUniversal(this, lightType, viewers)
+    } else {
+        // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
+        (-1..1).forEach { x ->
+            (-1..1).forEach { z ->
+                nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
             }
         }
     }
-    return result
 }
 
 /**
@@ -238,6 +233,18 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
             revoke(this@sendToast, namespaceKey)
         }
     }
+}
+
+/**
+ * 按照规则获取玩家视角内的实体.
+ *
+ * @param maxRadius 最大半径.
+ * @param matcher 匹配规则.
+ * @return 目标实体.
+ */
+fun Player.getTargetedEntity(maxRadius: Double, matcher: (entity: Entity) -> Boolean): Entity? {
+    // 实现跨版本的获取视角内实体方法, 挖坑.
+    error("not supported yet.")
 }
 
 private fun ItemStack?.isAir(): Boolean {
