@@ -28,6 +28,10 @@ fun Player.getUsingItem(material: Material): ItemStack? {
     }
 }
 
+fun Player.sendActionBar(message: String) {
+    adaptPlayer(this).sendActionBar(message)
+}
+
 fun Player.actionBar(message: String) {
     adaptPlayer(this).sendActionBar(message)
 }
