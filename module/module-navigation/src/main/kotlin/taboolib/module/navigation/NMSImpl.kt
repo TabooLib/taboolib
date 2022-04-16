@@ -89,7 +89,6 @@ class NMSImpl : NMS() {
             }
         }
     }
-
     override fun isDoorOpened(block: Block): Boolean {
         return (block.world as CraftWorld).handle.getType(BlockPosition(block.x, block.y, block.z)).get(BlockDoor.OPEN)
     }
