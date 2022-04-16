@@ -243,7 +243,8 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
  * @return 目标实体.
  */
 fun Player.getTargetedEntity(maxRadius: Double, matcher: (entity: Entity) -> Boolean): Entity? {
-    return null
+    // 实现跨版本的获取视角内实体方法, 挖坑.
+    error("not supported yet.")
 }
 
 private fun ItemStack?.isAir(): Boolean {

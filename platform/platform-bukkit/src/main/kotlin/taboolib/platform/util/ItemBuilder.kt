@@ -43,7 +43,8 @@ inline fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}):
 }
 
 inline fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    if (material.isAir) {
+    // 在低版本, 并没有 Material.isAir() 方法.
+    if (material == Material.AIR) {
         error("air")
     }
     return ItemBuilder(material).also(builder).build()
