@@ -43,7 +43,7 @@ public class ClassAppender {
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
             // Application
             if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
-                ucpAddURL(loader, loader.getClass().getDeclaredField("ucp"), file);
+                addURL(loader, ucp(loader.getClass()), file);
             }
             // Hybrid
             else if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
@@ -56,13 +56,9 @@ public class ClassAppender {
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
                 } catch (NoSuchFieldError | NoSuchFieldException e1) {
-                    try {
-                        ucpField = loader.getClass().getDeclaredField("ucp");
-                    } catch (NoSuchFieldError | NoSuchFieldException e2) {
-                        ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
-                    }
+                    ucpField = ucp(loader.getClass());
                 }
-                ucpAddURL(loader, ucpField, file);
+                addURL(loader, ucpField, file);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -78,13 +74,28 @@ public class ClassAppender {
         }
     }
 
-    private static void ucpAddURL(ClassLoader loader, Field ucpField, File file) throws Throwable {
+    private static void addURL(ClassLoader loader, Field ucpField, File file) throws Throwable {
+        if (ucpField == null) {
+            throw new IllegalStateException("ucp field not found");
+        }
         Object ucp = unsafe.getObject(loader, unsafe.objectFieldOffset(ucpField));
         try {
             MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
             methodHandle.invoke(ucp, file.toURI().toURL());
         } catch (NoSuchMethodError e) {
             throw new IllegalStateException("Unsupported (classloader: " + loader.getClass().getName() + ", ucp: " + ucp.getClass().getName() + ")", e);
+        }
+    }
+
+    private static Field ucp(Class<?> loader) {
+        try {
+            return loader.getDeclaredField("ucp");
+        } catch (NoSuchFieldError | NoSuchFieldException e2) {
+            Class<?> superclass = loader.getSuperclass();
+            if (superclass == Object.class) {
+                return null;
+            }
+            return ucp(superclass);
         }
     }
 }
