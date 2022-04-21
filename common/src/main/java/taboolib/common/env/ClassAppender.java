@@ -41,10 +41,17 @@ public class ClassAppender {
         try {
             File file = new File(path.toUri().getPath());
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
-            if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
+            // Application
+            if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
+                ucpAddURL(loader, loader.getClass().getDeclaredField("ucp"), file);
+            }
+            // Hybrid
+            else if (loader.getClass().getName().equals("net.minecraft.launchwrapper.LaunchClassLoader")) {
                 MethodHandle methodHandle = lookup.findVirtual(URLClassLoader.class, "addURL", MethodType.methodType(void.class, java.net.URL.class));
                 methodHandle.invoke(loader, file.toURI().toURL());
-            } else {
+            }
+            // Bukkit
+            else {
                 Field ucpField;
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
@@ -55,10 +62,7 @@ public class ClassAppender {
                         ucpField = loader.getClass().getSuperclass().getDeclaredField("ucp");
                     }
                 }
-                long ucpOffset = unsafe.objectFieldOffset(ucpField);
-                Object ucp = unsafe.getObject(loader, ucpOffset);
-                MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
-                methodHandle.invoke(ucp, file.toURI().toURL());
+                ucpAddURL(loader, ucpField, file);
             }
         } catch (Throwable t) {
             t.printStackTrace();
@@ -71,6 +75,16 @@ public class ClassAppender {
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;
+        }
+    }
+
+    private static void ucpAddURL(ClassLoader loader, Field ucpField, File file) throws Throwable {
+        Object ucp = unsafe.getObject(loader, unsafe.objectFieldOffset(ucpField));
+        try {
+            MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
+            methodHandle.invoke(ucp, file.toURI().toURL());
+        } catch (NoSuchMethodError e) {
+            throw new IllegalStateException("Unsupported (classloader: " + loader.getClass().getName() + ", ucp: " + ucp.getClass().getName() + ")", e);
         }
     }
 }
