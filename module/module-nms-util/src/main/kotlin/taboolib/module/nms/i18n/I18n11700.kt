@@ -64,50 +64,37 @@ object I18n11700 : I18nBase() {
     }
 
     override fun getName(player: Player?, entity: Entity): String {
-        var locale = cache[player?.locale ?: "zh_cn"]
-        if (locale == null) {
-            locale = cache["en_gb"]
-        }
-        if (locale == null) {
-            return "[ERROR LOCALE]"
-        }
+        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
         val element = locale[entity.getInternalName()]
         return if (element == null) entity.name else element.asString
     }
 
     override fun getName(player: Player?, itemStack: ItemStack): String {
-        var locale = cache[player?.locale ?: "zh_cn"]
-        if (locale == null) {
-            locale = cache["en_gb"]
-        }
-        if (locale == null) {
-            return "[ERROR LOCALE]"
-        }
+        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
         val element = locale[itemStack.getInternalName()]
         return if (element == null) itemStack.type.name.lowercase(Locale.getDefault()).replace("_", "") else element.asString
     }
 
     override fun getName(player: Player?, enchantment: Enchantment): String {
-        var locale = cache[player?.locale ?: "zh_cn"]
-        if (locale == null) {
-            locale = cache["en_gb"]
-        }
-        if (locale == null) {
-            return "[ERROR LOCALE]"
-        }
+        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
         val element = locale[enchantment.getInternalName()]
         return if (element == null) enchantment.name else element.asString
     }
 
     override fun getName(player: Player?, potionEffectType: PotionEffectType): String {
+        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
+        val element = locale[potionEffectType.getInternalName()]
+        return if (element == null) potionEffectType.name else element.asString
+    }
+
+    private fun getLocale(player: Player?): JsonObject? {
         var locale = cache[player?.locale ?: "zh_cn"]
         if (locale == null) {
             locale = cache["en_gb"]
         }
         if (locale == null) {
-            return "[ERROR LOCALE]"
+            return null
         }
-        val element = locale[potionEffectType.getInternalName()]
-        return if (element == null) potionEffectType.name else element.asString
+        return locale
     }
 }
