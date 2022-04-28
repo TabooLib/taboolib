@@ -11,6 +11,7 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module:module-chat"))
+    compileOnly(kotlin("reflect"))
 }
 
 tasks {
