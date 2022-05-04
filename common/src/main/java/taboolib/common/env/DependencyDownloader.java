@@ -72,6 +72,8 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     private boolean ignoreOptional = true;
 
+    private boolean ignoreException = false;
+
     public DependencyDownloader() {
     }
 
@@ -114,13 +116,7 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (file.exists()) {
                 if (isDebugMode && !notify) {
                     notify = true;
-                    if (TabooLibCommon.isSysoutCatcherFound()) {
-                        if (System.console() != null) {
-                            System.console().printf("Loading libraries, please wait...\n");
-                        }
-                    } else {
-                        System.out.println("Loading libraries, please wait...");
-                    }
+                    TabooLibCommon.print("Loading libraries, please wait...");
                 }
                 if (relocation.isEmpty()) {
                     ClassAppender.addPath(file.toPath());
@@ -316,7 +312,9 @@ public class DependencyDownloader extends AbstractXmlParser {
                 }
             }
         } catch (ParseException ex) {
-            throw new IOException("Unable to parse dependencies", ex);
+            if (!ignoreException) {
+                throw new IOException("Unable to parse dependencies", ex);
+            }
         }
         return loadDependency(repos, dependencies);
     }
@@ -416,6 +414,11 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public DependencyDownloader setIgnoreOptional(boolean ignoreOptional) {
         this.ignoreOptional = ignoreOptional;
+        return this;
+    }
+
+    public DependencyDownloader setIgnoreException(boolean ignoreException) {
+        this.ignoreException = ignoreException;
         return this;
     }
 

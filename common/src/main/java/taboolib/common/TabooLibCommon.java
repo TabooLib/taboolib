@@ -167,6 +167,16 @@ public class TabooLibCommon {
         }
     }
 
+    public static void print(Object message) {
+        if (TabooLibCommon.isSysoutCatcherFound()) {
+            if (System.console() != null) {
+                System.console().printf(message + "\n");
+            }
+        } else {
+            System.out.println(message);
+        }
+    }
+
     /**
      * 当前运行平台
      */
