@@ -41,6 +41,6 @@ public interface QuestReader {
     }
 
     default ParsedAction<?> nextParsedAction() {
-        return nextParsedAction();
+        return next(ArgTypes.ACTION);
     }
 }
