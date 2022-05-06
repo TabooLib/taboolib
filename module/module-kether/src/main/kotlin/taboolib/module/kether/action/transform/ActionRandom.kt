@@ -45,6 +45,7 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
         future.complete(if (i.isEmpty()) null else i[Random.nextInt(i.size)])
     }
 
+    @Suppress("UNCHECKED_CAST")
     internal object Parser {
 
         /**
