@@ -93,13 +93,7 @@ public class RuntimeEnv {
                 try {
                     if (!notify) {
                         notify = true;
-                        if (TabooLibCommon.isSysoutCatcherFound()) {
-                            if (System.console() != null) {
-                                System.console().printf("Loading assets, please wait...\n");
-                            }
-                        } else {
-                            System.out.println("Loading assets, please wait...");
-                        }
+                        TabooLibCommon.print("Loading assets, please wait...");
                     }
                     if (resource.zip()) {
                         File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
@@ -167,6 +161,7 @@ public class RuntimeEnv {
                     }
                     downloader.addRepository(new Repository(repository));
                     downloader.setIgnoreOptional(dependency.ignoreOptional());
+                    downloader.setIgnoreException(dependency.ignoreException());
                     downloader.setDependencyScopes(dependency.scopes());
                     // 解析依赖
                     File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));

@@ -256,6 +256,10 @@ open class ConfigSection(
         return root.configFormat().createWriter().writeToString(root)
     }
 
+    override fun clear() {
+        root.clear()
+    }
+
     companion object {
 
         private fun ConfigurationSection.getConfig(): Config {

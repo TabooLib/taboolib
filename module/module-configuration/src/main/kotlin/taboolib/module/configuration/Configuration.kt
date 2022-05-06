@@ -1,7 +1,5 @@
 package taboolib.module.configuration
 
-import com.electronwill.nightconfig.core.UnmodifiableConfig
-import com.electronwill.nightconfig.core.conversion.Converter
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
 import taboolib.common.reflect.Reflex.Companion.invokeConstructor
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
@@ -116,6 +114,10 @@ interface Configuration : ConfigurationSection {
             val empty = empty(type)
             map.forEach { (k, v) -> empty[k.toString()] = v }
             return empty
+        }
+
+        inline fun <reified T> Configuration.toObject(ignoreConstructor: Boolean = false): T {
+            return deserialize(this, ignoreConstructor)
         }
     }
 }

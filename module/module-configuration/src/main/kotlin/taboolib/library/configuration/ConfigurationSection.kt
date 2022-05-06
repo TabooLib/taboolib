@@ -519,4 +519,6 @@ interface ConfigurationSection {
     fun setComment(path: String, comment: String?)
 
     fun getValues(deep: Boolean): Map<String, Any?>
+
+    fun clear()
 }
