@@ -1,4 +1,5 @@
 @file:Isolated
+
 package taboolib.platform.util
 
 import org.bukkit.Bukkit
@@ -17,3 +18,5 @@ val isBukkitServerRunning: Boolean
 
 val onlinePlayers: List<Player>
     get() = Bukkit.getOnlinePlayers().toList()
+
+fun Any.broadcast() = Bukkit.broadcastMessage(this.toString())
