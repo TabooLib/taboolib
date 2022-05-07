@@ -88,4 +88,18 @@ object PlatformFactory {
     inline fun <reified T> getService(): T {
         return serviceMap[T::class.java.name] as T
     }
+
+    /**
+     * 注册 API
+     */
+    inline fun <reified T : Any> registerAPI(instance: Any) {
+        awokenMap[T::class.java.name] = instance
+    }
+
+    /**
+     * 注册跨平台服务
+     */
+    inline fun <reified T : Any> registerService(instance: Any) {
+        serviceMap[T::class.java.name] = instance
+    }
 }
