@@ -53,11 +53,18 @@ publishing {
             version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
             println("> groupId $groupId, artifactId $artifactId, version $version")
             file("$buildDir/libs").listFiles()?.forEach { file ->
-                if (file.extension == "jar") {
-                    artifact(file) {
-                        classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
-                        println("> module $classifier (${file.name})")
-                    }
+                // 排除不需要发布的文件
+                if (file.name.startsWith("module-database-core") || file.extension != "jar") {
+                    return@forEach
+                }
+                val shadeMode = project.hasProperty("shaded")
+                val shadeVersion = file.nameWithoutExtension.contains("shaded")
+                if ((shadeMode && !shadeVersion) || (!shadeMode && shadeVersion)) {
+                    return@forEach
+                }
+                artifact(file) {
+                    classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
+                    println("> module $classifier (${file.name})")
                 }
             }
         }
