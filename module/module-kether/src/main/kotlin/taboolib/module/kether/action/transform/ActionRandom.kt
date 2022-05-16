@@ -3,7 +3,6 @@ package taboolib.module.kether.action.transform
 import taboolib.common.util.random
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.actions.LiteralAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 import kotlin.random.Random
@@ -32,9 +31,15 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
             val future = CompletableFuture<Any?>()
             frame.newFrame(action).run<Any?>().thenAcceptAsync({
                 when (it) {
-                    is Collection<*> -> random(future, it.map { i -> i as Any }.toList())
-                    is Array<*> -> random(future, it.map { i -> i as Any }.toList())
-                    else -> random(future, listOf(it))
+                    is Collection<*> -> {
+                        random(future, it.map { i -> i as Any }.toList())
+                    }
+                    is Array<*> -> {
+                        random(future, it.map { i -> i as Any }.toList())
+                    }
+                    else -> {
+                        future.complete(if (it.isInt()) random(Coerce.toInteger(it)) else random(0.0, Coerce.toDouble(it)))
+                    }
                 }
             }, frame.context().executor)
             return future
@@ -55,23 +60,15 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
          */
         @KetherParser(["random", "random2"])
         fun parser() = scriptParser {
-            it.mark()
+            val from = it.nextParsedAction()
             try {
-                var from = ParsedAction(LiteralAction<Any>("0.0"))
-                var to = it.nextParsedAction()
                 it.mark()
-                try {
-                    it.expect("to")
-                    val next = it.nextParsedAction()
-                    from = to as ParsedAction<Any>
-                    to = next
-                } catch (ignored: Exception) {
-                    it.reset()
-                }
+                it.expect("to")
+                val to = it.nextParsedAction()
                 ActionRandom(from, to)
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 it.reset()
-                ActionRandom(ParsedAction(LiteralAction<Any>("0.0")), ParsedAction(LiteralAction<Any>("0.0")), it.nextParsedAction())
+                ActionRandom(literalAction(0), literalAction(0), from)
             }
         }
     }

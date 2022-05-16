@@ -8,6 +8,8 @@ import taboolib.common.inject.RuntimeInjector;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,7 @@ public class TabooLibCommon {
     private static boolean init = false;
 
     private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new HashMap<>();
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     static {
         try {
@@ -170,7 +173,7 @@ public class TabooLibCommon {
     public static void print(Object message) {
         if (TabooLibCommon.isSysoutCatcherFound()) {
             if (System.console() != null) {
-                System.console().printf(message + "\n");
+                System.console().printf(String.format("[%s INFO]: %s\n", dateTimeFormatter.format(LocalDateTime.now()), message));
             }
         } else {
             System.out.println(message);

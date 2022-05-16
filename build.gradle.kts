@@ -51,7 +51,7 @@ publishing {
             artifactId = "taboolib"
             groupId = "io.izzel"
             version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
-            println("> version $version")
+            println("> groupId $groupId, artifactId $artifactId, version $version")
             file("$buildDir/libs").listFiles()?.forEach { file ->
                 if (file.extension == "jar") {
                     artifact(file) {

@@ -2,6 +2,7 @@ package taboolib.platform;
 
 import org.bukkit.Bukkit;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,8 +13,10 @@ import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
+import taboolib.common.reflect.Reflex;
 
 import java.io.File;
+import java.util.Set;
 
 /**
  * TabooLib
@@ -22,7 +25,7 @@ import java.io.File;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda"})
+@SuppressWarnings({"Convert2Lambda", "ConstantConditions"})
 @PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
@@ -39,6 +42,7 @@ public class BukkitPlugin extends JavaPlugin {
 
     public BukkitPlugin() {
         instance = this;
+        injectAccess();
         TabooLibCommon.lifeCycle(LifeCycle.INIT);
     }
 
@@ -111,5 +115,24 @@ public class BukkitPlugin extends JavaPlugin {
     @Nullable
     public static Plugin getPluginInstance() {
         return pluginInstance;
+    }
+
+    /**
+     * 移除 Spigot 的访问警告：
+     * Loaded class {0} from {1} which is not a depend, softdepend or loadbefore of this plugin
+     */
+    static void injectAccess() {
+        try {
+            PluginDescriptionFile description = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "description", false);
+            Set<String> accessSelf = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess", false);
+            for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+                if (plugin.getClass().getName().endsWith("platform.BukkitPlugin")) {
+                    Set<String> accessOther = Reflex.Companion.getProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess", false);
+                    accessOther.add(description.getName());
+                    accessSelf.add(plugin.getName());
+                }
+            }
+        } catch (Throwable ignored) {
+        }
     }
 }

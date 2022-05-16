@@ -53,7 +53,7 @@ public class RuntimeInjector {
     }
 
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
-        if (TabooLibCommon.isKotlinEnvironment()) {
+        if (TabooLibCommon.isKotlinEnvironment() && !TabooLibCommon.isStopped()) {
             List<Class<?>> classes = new ArrayList<>();
             for (Class<?> runningClass : Project1Kt.getRunningClasses()) {
                 if (PlatformFactory.INSTANCE.checkPlatform(runningClass)) {

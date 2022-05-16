@@ -2,11 +2,16 @@ package taboolib.common.env;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import taboolib.common.TabooLibCommon;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.Objects;
 
@@ -72,6 +77,7 @@ public class Repository extends AbstractXmlParser {
      */
     public void downloadToFile(Dependency dep, File out) throws IOException {
         URL url = new URL(String.format("%s/%s/%s/%s/%s", getUrl(), dep.getGroupId().replace('.', '/'), dep.getArtifactId(), dep.getVersion(), out.getName()));
+        TabooLibCommon.print(String.format("Downloading ... %s", url));
         downloadToFile(url, out);
     }
 
@@ -111,7 +117,7 @@ public class Repository extends AbstractXmlParser {
     @SuppressWarnings("StatementWithEmptyBody")
     public static void downloadToFile(URL url, File out) throws IOException {
         InputStream ins = url.openStream();
-        OutputStream outs = new FileOutputStream(out);
+        OutputStream outs = Files.newOutputStream(out.toPath());
         byte[] buffer = new byte[4096];
         for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
             ;

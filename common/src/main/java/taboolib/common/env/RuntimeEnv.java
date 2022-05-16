@@ -1,6 +1,5 @@
 package taboolib.common.env;
 
-import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import taboolib.common.TabooLibCommon;
 
@@ -8,7 +7,11 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 import java.util.zip.ZipFile;
 
 /**
@@ -29,8 +32,6 @@ public class RuntimeEnv {
     private static String defaultLibrary = "libs";
     private static String defaultRepositoryCentral = "https://maven.aliyun.com/repository/central";
 
-    private boolean notify = false;
-
     RuntimeEnv() {
         try {
             File libs = new File("libs", "custom.txt");
@@ -39,7 +40,7 @@ public class RuntimeEnv {
             }
             File env = new File(ENV_FILE_NAME);
             if (env.exists()) {
-                ENV_PROPERTIES.load(new FileInputStream(ENV_FILE_NAME));
+                ENV_PROPERTIES.load(Files.newInputStream(Paths.get(ENV_FILE_NAME)));
                 defaultAssets = ENV_PROPERTIES.getProperty("assets", defaultAssets);
                 defaultLibrary = ENV_PROPERTIES.getProperty("library", defaultLibrary);
                 defaultRepositoryCentral = ENV_PROPERTIES.getProperty("repository-central", defaultRepositoryCentral);
@@ -76,49 +77,50 @@ public class RuntimeEnv {
                 resources = annotation.value();
             }
         }
-        if (resources != null) {
-            for (RuntimeResource resource : resources) {
-                File file;
-                if (resource.name().isEmpty()) {
-                    file = new File(defaultAssets, resource.hash().substring(0, 2) + "/" + resource.hash());
-                } else {
-                    file = new File(defaultAssets, resource.name());
-                }
-                if (file.exists() && DependencyDownloader.readFileHash(file).equals(resource.hash())) {
-                    continue;
-                }
-                if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
-                }
-                try {
-                    if (!notify) {
-                        notify = true;
-                        TabooLibCommon.print("Loading assets, please wait...");
+        if (resources == null) {
+            return;
+        }
+        for (RuntimeResource resource : resources) {
+            loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+        }
+    }
+
+    public void loadAssets(String name, String hash, String url, boolean zip) {
+        File file;
+        if (name.isEmpty()) {
+            file = new File(defaultAssets, hash.substring(0, 2) + "/" + hash);
+        } else {
+            file = new File(defaultAssets, name);
+        }
+        if (file.exists() && DependencyDownloader.readFileHash(file).equals(hash)) {
+            return;
+        }
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        TabooLibCommon.print("Downloading assets " + url.substring(url.lastIndexOf('/') + 1));
+        try {
+            if (zip) {
+                File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
+                Repository.downloadToFile(new URL(url + ".zip"), cacheFile);
+                try (ZipFile zipFile = new ZipFile(cacheFile)) {
+                    InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(url.substring(url.lastIndexOf('/') + 1)));
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                        fileOutputStream.write(DependencyDownloader.readFully(inputStream));
                     }
-                    if (resource.zip()) {
-                        File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
-                        Repository.downloadToFile(new URL(resource.value() + ".zip"), cacheFile);
-                        try (ZipFile zipFile = new ZipFile(cacheFile)) {
-                            InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(resource.value().substring(resource.value().lastIndexOf('/') + 1)));
-                            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                                fileOutputStream.write(DependencyDownloader.readFully(inputStream));
-                            }
-                        } finally {
-                            cacheFile.delete();
-                        }
-                    } else {
-                        Repository.downloadToFile(new URL(resource.value()), file);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } finally {
+                    cacheFile.delete();
                 }
+            } else {
+                Repository.downloadToFile(new URL(url), file);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
         File baseDir = new File(defaultLibrary);
-
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -137,7 +139,7 @@ public class RuntimeEnv {
                 if (test.length() > 0 && ClassAppender.isExists(test)) {
                     continue;
                 }
-                List<Relocation> relocation = new ArrayList<>();
+                List<JarRelocation> relocation = new ArrayList<>();
                 String[] relocate = dependency.relocate();
                 if (relocate.length % 2 != 0) {
                     throw new IllegalArgumentException("unformatted relocate");
@@ -145,7 +147,7 @@ public class RuntimeEnv {
                 for (int i = 0; i + 1 < relocate.length; i += 2) {
                     String pattern = relocate[i].startsWith("!") ? relocate[i].substring(1) : relocate[i];
                     String relocatePattern = relocate[i + 1].startsWith("!") ? relocate[i + 1].substring(1) : relocate[i + 1];
-                    relocation.add(new Relocation(pattern, relocatePattern));
+                    relocation.add(new JarRelocation(pattern, relocatePattern));
                 }
                 try {
                     String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
@@ -171,6 +173,7 @@ public class RuntimeEnv {
                     } else {
                         String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
                         try {
+                            TabooLibCommon.print(String.format("Downloading library %s:%s:%s", args[0], args[1], args[2]));
                             downloader.loadDependencyFromInputStream(new URL(pom).openStream());
                         } catch (FileNotFoundException ex) {
                             if (ex.toString().contains("@kotlin_version@")) {
@@ -181,9 +184,8 @@ public class RuntimeEnv {
                     }
                     // 加载自身
                     Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
-                    Set<Dependency> dependenciesWithTransitive = downloader.loadDependency(downloader.getRepositories(), current);
                     if (dependency.transitive()) {
-                        downloader.injectClasspath(dependenciesWithTransitive);
+                        downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), current));
                     } else {
                         downloader.injectClasspath(Collections.singleton(current));
                     }
