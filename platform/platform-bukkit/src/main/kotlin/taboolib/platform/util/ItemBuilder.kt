@@ -26,7 +26,7 @@ import java.util.*
 
 val ItemStack.isAir get() = type == Material.AIR || type.name.endsWith("_AIR")
 
-inline fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (itemStack.isAir) {
         error("air")
     }
@@ -35,14 +35,14 @@ inline fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {})
 
 val XMaterial.isAir get() = this == XMaterial.AIR || this == XMaterial.CAVE_AIR || this == XMaterial.VOID_AIR
 
-inline fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (material.isAir) {
         error("air")
     }
     return ItemBuilder(material).also(builder).build()
 }
 
-inline fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemStack {
+fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     // 在低版本, 并没有 Material.isAir() 方法.
     if (material == Material.AIR) {
         error("air")

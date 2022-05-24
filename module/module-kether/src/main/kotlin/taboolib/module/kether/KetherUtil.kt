@@ -12,7 +12,7 @@ typealias Script = Quest
 
 typealias ScriptFrame = QuestContext.Frame
 
-inline fun runKether(func: () -> Unit) {
+fun runKether(func: () -> Unit) {
     try {
         func()
     } catch (ex: Exception) {

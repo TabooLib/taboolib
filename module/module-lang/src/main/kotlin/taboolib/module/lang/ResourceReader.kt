@@ -67,7 +67,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     fun loadNodes(file: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
         migrateLegacyVersion(file)
         file.getKeys(false).forEach { node ->
-            when (val obj = file.get(node)) {
+            when (val obj = file[node]) {
                 is String -> {
                     nodesMap[node] = TypeText(obj)
                 }
