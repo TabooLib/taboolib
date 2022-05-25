@@ -11,9 +11,9 @@ import taboolib.common.platform.PlatformFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * TabooLib
@@ -42,7 +42,7 @@ public class TabooLibCommon {
 
     private static boolean init = false;
 
-    private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new HashMap<>();
+    private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new ConcurrentHashMap<>();
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     static {
