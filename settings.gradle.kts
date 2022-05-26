@@ -18,6 +18,7 @@ fun importModules() {
     include("module:module-navigation")
     include("module:module-ui")
     include("module:module-ui-receptacle")
+    include("module:module-ui-nextgen")
     include("module:module-configuration", "module:module-configuration-shaded", "module:module-configuration-legacy")
 }
 
