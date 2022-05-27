@@ -2,6 +2,7 @@ package taboolib.module.ui.nextgen.api
 
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.module.ui.nextgen.internal.SimpleNuiElement
 

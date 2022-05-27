@@ -1,5 +1,6 @@
 package taboolib.module.ui.nextgen.internal
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
@@ -37,7 +38,7 @@ internal data class SimpleNuiElement(
         }
         ctxReferenceMap[uuid] = context
 
-        return item.clone().apply { setItemTag(tag) }
+        return item.clone().setItemTag(tag)
     }
 
     companion object {
@@ -46,6 +47,7 @@ internal data class SimpleNuiElement(
 
         fun fromItem(item: ItemStack): SimpleNuiElement? {
             val tag = item.getItemTag()
+            Bukkit.broadcastMessage(tag.asString())
             if (!tag.containsKey(ID_KEY)) return null
             val ctx = ctxReferenceMap[UUID.fromString(tag[ID_KEY]!!.asString())]!!
             return SimpleNuiElement(clearNuiID(item), ctx)

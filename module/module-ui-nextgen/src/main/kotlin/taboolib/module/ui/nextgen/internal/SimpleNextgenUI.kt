@@ -11,6 +11,7 @@ class SimpleNextgenUI : NextgenUI {
     private lateinit var viewer: Player
     private var rows: Int? = null
     private var title: String? = null
+    private var inited = false
 
     override fun viewer(player: Player) {
         viewer = player
@@ -24,48 +25,44 @@ class SimpleNextgenUI : NextgenUI {
         this.title = title
     }
 
+    fun inited() {
+        inited = true
+    }
+
     override fun addElement(rows: Int, columns: Int, element: NuiElement) {
         elements += LocatedNuiElement(rows, columns, element)
-        render()
+        if (inited) render()
     }
 
     override fun removeElement(element: NuiElement) {
         val result = elements.removeIf { it.element == element }
-        if (result) render()
+        if (inited && result) render()
     }
 
     override fun removeElementAt(rows: Int, columns: Int) {
         val result = elements.removeIf { it.rows == rows && it.columns == columns }
-        if (result) render()
+        if (inited && result) render()
     }
 
     override fun removeAllBy(item: ItemStack) {
         val result = elements.removeIf { it.element.item() == item }
-        if (result) render()
+        if (inited && result) render()
     }
 
     override fun render() {
+        val predictSize = elements.maxOfOrNull { it.rows * 9 + 9 } ?: 9
         val inventory = when {
-            rows == null && title == null -> {
-                val size = elements.maxOfOrNull { it.rows * 9 + 9 } ?: 9
-                Bukkit.createInventory(NuiListener.GlobalHolder, size)
-            }
-            rows == null && title != null -> {
-                val size = elements.maxOfOrNull { it.rows * 9 + 9 } ?: 9
-                Bukkit.createInventory(NuiListener.GlobalHolder, size, title!!)
-            }
-            rows != null && title == null -> {
+            rows == null && title == null ->
+                Bukkit.createInventory(NuiListener.GlobalHolder, predictSize)
+            rows == null && title != null ->
+                Bukkit.createInventory(NuiListener.GlobalHolder, predictSize, title!!)
+            rows != null && title == null ->
                 Bukkit.createInventory(NuiListener.GlobalHolder, rows!! * 9)
-            }
-            else -> {
+            else ->
                 Bukkit.createInventory(NuiListener.GlobalHolder, rows!! * 9, title!!)
-            }
         }
         for (element in elements) {
-            inventory.setItem(
-                ((element.rows - 1) * 9) + (element.columns - 1),
-                (element.element as SimpleNuiElement).initializedItem()
-            )
+            element.applyTo(inventory)
         }
 
         viewer.openInventory(inventory)
