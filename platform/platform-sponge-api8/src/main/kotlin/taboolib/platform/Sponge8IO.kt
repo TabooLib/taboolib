@@ -55,7 +55,7 @@ class Sponge8IO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(Sponge8Plugin.getInstance().pluginConfigDir, path)
+        val file = File(getDataFolder(), path)
         if (file.exists() && !replace) {
             return file
         }
@@ -64,11 +64,11 @@ class Sponge8IO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(Sponge8Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
+        return Sponge8Plugin.getPluginInstance()?.getJarFile() ?: File(Sponge8Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
     }
 
     override fun getDataFolder(): File {
-        return Sponge8Plugin.getInstance().pluginConfigDir
+        return Sponge8Plugin.getPluginInstance()?.getDataFolder() ?: Sponge8Plugin.getInstance().pluginConfigDir
     }
 
     override fun getPlatformData(): Map<String, Any> {

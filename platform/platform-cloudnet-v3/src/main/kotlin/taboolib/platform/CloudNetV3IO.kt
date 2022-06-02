@@ -9,7 +9,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
 import java.io.File
-import java.util.logging.Logger
 
 /**
  * TabooLib
@@ -67,11 +66,11 @@ class CloudNetV3IO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(CloudNetV3Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
+        return CloudNetV3Plugin.getPluginInstance()?.getJarFile() ?: File(CloudNetV3Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
     }
 
     override fun getDataFolder(): File {
-        return CloudNetV3Plugin.getInstance().moduleWrapper.dataDirectory.toFile()
+        return CloudNetV3Plugin.getPluginInstance()?.getDataFolder() ?: CloudNetV3Plugin.getInstance().moduleWrapper.dataDirectory.toFile()
     }
 
     override fun getPlatformData(): Map<String, Any> {

@@ -1,5 +1,6 @@
 plugins {
     `maven-publish`
+    java
     id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
@@ -18,7 +19,7 @@ subprojects {
         mavenCentral()
     }
     dependencies {
-        "compileOnly"(kotlin("stdlib"))
+        compileOnly(kotlin("stdlib"))
     }
     tasks.withType<Jar> {
         destinationDirectory.set(file("$rootDir/build/libs"))

@@ -55,7 +55,7 @@ class BungeeIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(BungeePlugin.getInstance().dataFolder, path)
+        val file = File(getDataFolder(), path)
         if (file.exists() && !replace) {
             return file
         }
@@ -64,11 +64,11 @@ class BungeeIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return BungeePlugin.getInstance().file
+        return BungeePlugin.getPluginInstance()?.getJarFile() ?: BungeePlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return BungeePlugin.getInstance().dataFolder
+        return BungeePlugin.getPluginInstance()?.getDataFolder() ?: BungeePlugin.getInstance().dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {

@@ -57,7 +57,7 @@ class VelocityIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(VelocityPlugin.getInstance().configDirectory.toFile(), path)
+        val file = File(getDataFolder(), path)
         if (file.exists() && !replace) {
             return file
         }
@@ -66,11 +66,11 @@ class VelocityIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return File(VelocityPlugin::class.java.protectionDomain.codeSource.location.toURI().path)
+        return VelocityPlugin.getPluginInstance()?.getJarFile() ?: File(VelocityPlugin::class.java.protectionDomain.codeSource.location.toURI().path)
     }
 
     override fun getDataFolder(): File {
-        return VelocityPlugin.getInstance().configDirectory.toFile()
+        return VelocityPlugin.getPluginInstance()?.getDataFolder() ?: VelocityPlugin.getInstance().configDirectory.toFile()
     }
 
     override fun getPlatformData(): Map<String, Any> {

@@ -49,7 +49,7 @@ class BukkitIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(plugin.dataFolder, path)
+        val file = File(getDataFolder(), path)
         if (file.exists() && !replace) {
             return file
         }
@@ -58,11 +58,11 @@ class BukkitIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return plugin.file
+        return BukkitPlugin.getPluginInstance()?.getJarFile() ?: plugin.file
     }
 
     override fun getDataFolder(): File {
-        return plugin.dataFolder
+        return BukkitPlugin.getPluginInstance()?.getDataFolder() ?: plugin.dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {

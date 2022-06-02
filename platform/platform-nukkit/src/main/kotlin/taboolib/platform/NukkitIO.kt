@@ -55,7 +55,7 @@ class NukkitIO : PlatformIO {
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(NukkitPlugin.getInstance().dataFolder, path)
+        val file = File(getDataFolder(), path)
         if (file.exists() && !replace) {
             return file
         }
@@ -64,11 +64,11 @@ class NukkitIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return NukkitPlugin.getInstance().file
+        return NukkitPlugin.getPluginInstance()?.getJarFile() ?: NukkitPlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return NukkitPlugin.getInstance().dataFolder
+        return NukkitPlugin.getPluginInstance()?.getDataFolder() ?: NukkitPlugin.getInstance().dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {
