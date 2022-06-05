@@ -23,11 +23,11 @@ abstract class Plugin {
     open fun onDisable() {
     }
 
-    open fun getJarFile(): File? {
+    open fun nativeJarFile(): File? {
         return null
     }
 
-    open fun getDataFolder(): File? {
+    open fun nativeDataFolder(): File? {
         return null
     }
 }

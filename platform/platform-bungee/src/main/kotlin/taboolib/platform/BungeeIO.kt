@@ -64,11 +64,11 @@ class BungeeIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return BungeePlugin.getPluginInstance()?.getJarFile() ?: BungeePlugin.getInstance().file
+        return BungeePlugin.getPluginInstance()?.nativeJarFile() ?: BungeePlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return BungeePlugin.getPluginInstance()?.getDataFolder() ?: BungeePlugin.getInstance().dataFolder
+        return BungeePlugin.getPluginInstance()?.nativeDataFolder() ?: BungeePlugin.getInstance().dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {

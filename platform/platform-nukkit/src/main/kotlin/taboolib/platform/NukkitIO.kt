@@ -64,11 +64,11 @@ class NukkitIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return NukkitPlugin.getPluginInstance()?.getJarFile() ?: NukkitPlugin.getInstance().file
+        return NukkitPlugin.getPluginInstance()?.nativeJarFile() ?: NukkitPlugin.getInstance().file
     }
 
     override fun getDataFolder(): File {
-        return NukkitPlugin.getPluginInstance()?.getDataFolder() ?: NukkitPlugin.getInstance().dataFolder
+        return NukkitPlugin.getPluginInstance()?.nativeDataFolder() ?: NukkitPlugin.getInstance().dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {

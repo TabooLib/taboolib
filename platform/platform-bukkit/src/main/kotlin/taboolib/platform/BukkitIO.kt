@@ -58,11 +58,11 @@ class BukkitIO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return BukkitPlugin.getPluginInstance()?.getJarFile() ?: plugin.file
+        return BukkitPlugin.getPluginInstance()?.nativeJarFile() ?: plugin.file
     }
 
     override fun getDataFolder(): File {
-        return BukkitPlugin.getPluginInstance()?.getDataFolder() ?: plugin.dataFolder
+        return BukkitPlugin.getPluginInstance()?.nativeDataFolder() ?: plugin.dataFolder
     }
 
     override fun getPlatformData(): Map<String, Any> {

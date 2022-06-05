@@ -64,11 +64,11 @@ class Sponge7IO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return Sponge7Plugin.getPluginInstance()?.getJarFile() ?: File(Sponge7Plugin.getInstance().pluginContainer.source.get().toUri().path)
+        return Sponge7Plugin.getPluginInstance()?.nativeJarFile() ?: File(Sponge7Plugin.getInstance().pluginContainer.source.get().toUri().path)
     }
 
     override fun getDataFolder(): File {
-        return Sponge7Plugin.getPluginInstance()?.getDataFolder() ?: Sponge7Plugin.getInstance().pluginConfigDir
+        return Sponge7Plugin.getPluginInstance()?.nativeDataFolder() ?: Sponge7Plugin.getInstance().pluginConfigDir
     }
 
     override fun getPlatformData(): Map<String, Any> {

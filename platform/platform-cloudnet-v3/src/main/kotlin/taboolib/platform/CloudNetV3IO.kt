@@ -66,11 +66,11 @@ class CloudNetV3IO : PlatformIO {
     }
 
     override fun getJarFile(): File {
-        return CloudNetV3Plugin.getPluginInstance()?.getJarFile() ?: File(CloudNetV3Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
+        return CloudNetV3Plugin.getPluginInstance()?.nativeJarFile() ?: File(CloudNetV3Plugin::class.java.protectionDomain.codeSource.location.toURI().path)
     }
 
     override fun getDataFolder(): File {
-        return CloudNetV3Plugin.getPluginInstance()?.getDataFolder() ?: CloudNetV3Plugin.getInstance().moduleWrapper.dataDirectory.toFile()
+        return CloudNetV3Plugin.getPluginInstance()?.nativeDataFolder() ?: CloudNetV3Plugin.getInstance().moduleWrapper.dataDirectory.toFile()
     }
 
     override fun getPlatformData(): Map<String, Any> {
