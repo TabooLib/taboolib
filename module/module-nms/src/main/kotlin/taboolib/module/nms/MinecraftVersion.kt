@@ -1,14 +1,26 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.disablePlugin
 import taboolib.common.platform.function.runningPlatform
+import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
+
+    @Awake(LifeCycle.INIT)
+    fun init() {
+        if (!isSupported) {
+            warning("Unsupported Minecraft Version: $minecraftVersion")
+            disablePlugin()
+        }
+    }
 
     @Suppress("MemberNameEqualsClassName")
     val minecraftVersion by lazy {
@@ -39,6 +51,7 @@ object MinecraftVersion {
         // universal >= 9
         arrayOf("1.17", "1.17.1"),
         arrayOf("1.18", "1.18.1", "1.18.2"), // 10
+        arrayOf("1.19") // 11
     )
 
     /**
@@ -57,6 +70,7 @@ object MinecraftVersion {
             8 -> 11600
             9 -> 11700
             10 -> 11800
+            11 -> 11900
             else -> 0
         } + minor
     }

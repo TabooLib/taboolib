@@ -23,9 +23,9 @@ import java.util.concurrent.Executors
 object I18n11700 : I18nBase() {
 
     val locales = arrayOf(
-        arrayOf("zh_cn", "9fabbc798786c7b7364902b31bdb37c2c037e9b8"),
-        arrayOf("zh_tw", "7b5f43b3b856f1c3ebca3bd207c2af5d39ce9da1"),
-        arrayOf("en_gb", "85b316bb1dc13c9e09d00641b61cea71b6b42fa9")
+        arrayOf("zh_cn", "1d1291c554a9bdfce7abd4b40207c82f8f9f1a6f"),
+        arrayOf("zh_tw", "0587a4c3de3f56cba952fb92453fda612c94d1df"),
+        arrayOf("en_gb", "d72da85adc86e9c31ea84a45ef89ecd9f421f23b")
     )
 
     private val cache: MutableMap<String, JsonObject> = HashMap()
