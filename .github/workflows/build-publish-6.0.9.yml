@@ -35,8 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 6.0.8-${{ github.run_number }}
-          release_name: Release 6.0.8-${{ github.run_number }}
+          tag_name: 6.0.9-${{ github.run_number }}
+          release_name: Release 6.0.9-${{ github.run_number }}
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
         with:
