@@ -8,7 +8,7 @@ dependencies {
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
-        relocate("com.zaxxer.hikari", "com.zaxxer.hikari_4_0_3")
+        relocate("com.zaxxer.hikari.", "com.zaxxer.hikari_4_0_3.")
     }
     build {
         dependsOn(shadowJar)
