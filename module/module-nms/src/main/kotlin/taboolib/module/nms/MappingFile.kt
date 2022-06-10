@@ -75,13 +75,13 @@ import taboolib.common.env.RuntimeResources
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19-cl.csrg",
         hash = "44eaa87a517f3fb7661afe387edd68669b782435",
         zip = true,
-        tag = "1.9:combined"
+        tag = "1.19:combined"
     ),
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-2f7944eb-members.csrg",
         hash = "213f64b57f20f414309125b1f4eb7cbbcf159508",
         zip = true,
-        tag = "1.9:fields"
+        tag = "1.19:fields"
     )
 )
 class MappingFile(val combined: String, val fields: String) {
