@@ -19,7 +19,7 @@ import java.io.File
 @Awake
 @PlatformSide([Platform.APPLICATION])
 @RuntimeDependency(value = "!org.apache.commons:commons-lang3:3.5", test = "!org.apache.commons.lang3.concurrent.BasicThreadFactory")
-class AppIO : PlatformIO {
+open class AppIO : PlatformIO {
 
     val date: String
         get() = DateFormatUtils.format(System.currentTimeMillis(), "HH:mm:ss")
