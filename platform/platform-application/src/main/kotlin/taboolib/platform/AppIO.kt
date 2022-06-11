@@ -19,7 +19,7 @@ import java.io.File
 @Awake
 @PlatformSide([Platform.APPLICATION])
 @RuntimeDependency(value = "!org.apache.commons:commons-lang3:3.5", test = "!org.apache.commons.lang3.concurrent.BasicThreadFactory")
-open class AppIO : PlatformIO {
+class AppIO : PlatformIO {
 
     val date: String
         get() = DateFormatUtils.format(System.currentTimeMillis(), "HH:mm:ss")
@@ -63,7 +63,7 @@ open class AppIO : PlatformIO {
     }
 
     override fun getDataFolder(): File {
-        return File("")
+        return File(getJarFile().parent)
     }
 
     override fun getPlatformData(): Map<String, Any> {
