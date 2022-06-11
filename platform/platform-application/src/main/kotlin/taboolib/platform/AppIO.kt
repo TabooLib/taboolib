@@ -63,7 +63,7 @@ open class AppIO : PlatformIO {
     }
 
     override fun getDataFolder(): File {
-        return File("")
+        return File(getJarFile().parent)
     }
 
     override fun getPlatformData(): Map<String, Any> {
