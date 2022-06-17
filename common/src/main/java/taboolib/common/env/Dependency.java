@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author Zach Deibert, sky
  * @since 1.0.0
  */
-class Dependency extends AbstractXmlParser {
+public class Dependency extends AbstractXmlParser {
 
     /**
      * A placeholder string for when the version has not been specified

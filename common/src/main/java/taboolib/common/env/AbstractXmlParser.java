@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * @author Zach Deibert, sky
  * @since 1.0.0
  */
-abstract class AbstractXmlParser {
+public abstract class AbstractXmlParser {
 
     /**
      * The pattern to use to detect when a variable should be substituted in the

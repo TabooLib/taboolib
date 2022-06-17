@@ -10,7 +10,7 @@ import java.util.List;
  * @author Zach Deibert
  * @since 1.0.0
  */
-class DependencyVersion implements Comparable<DependencyVersion> {
+public class DependencyVersion implements Comparable<DependencyVersion> {
 
     /**
      * A list of the components of the version
