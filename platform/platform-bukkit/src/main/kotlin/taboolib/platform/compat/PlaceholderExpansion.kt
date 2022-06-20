@@ -2,6 +2,7 @@
 package taboolib.platform.compat
 
 import me.clip.placeholderapi.PlaceholderAPI
+import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.common.Isolated
 import taboolib.common.LifeCycle
@@ -38,7 +39,20 @@ interface PlaceholderExpansion {
 
     val identifier: String
 
-    fun onPlaceholderRequest(player: Player?, args: String): String
+    /**
+     * 是否启用
+     */
+    fun isEnabled(): Boolean {
+        return true
+    }
+
+    fun onPlaceholderRequest(player: Player?, args: String): String {
+        return "ERROR"
+    }
+
+    fun onPlaceholderRequest(player: OfflinePlayer?, args: String): String {
+        return "ERROR"
+    }
 
     @Awake
     object PlaceholderRegister : Injector.Classes {
@@ -50,6 +64,9 @@ interface PlaceholderExpansion {
         override fun inject(clazz: Class<*>, instance: Supplier<*>) {
             if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
                 val expansion = instance.get() as PlaceholderExpansion
+                if (!expansion.isEnabled()) {
+                    return
+                }
                 object : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
 
                     override fun persist(): Boolean {
@@ -69,6 +86,10 @@ interface PlaceholderExpansion {
                     }
 
                     override fun onPlaceholderRequest(player: Player?, params: String): String {
+                        return expansion.onPlaceholderRequest(player, params)
+                    }
+
+                    override fun onRequest(player: OfflinePlayer?, params: String): String {
                         return expansion.onPlaceholderRequest(player, params)
                     }
                 }.register()
