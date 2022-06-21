@@ -24,12 +24,11 @@ package taboolib.library.xseries;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownPotion;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -41,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Potion type support for multiple aliases.
@@ -68,11 +68,12 @@ public enum XPotion {
     CONDUIT_POWER("CONDUIT", "POWER_CONDUIT"),
     CONFUSION("NAUSEA", "SICKNESS", "SICK"),
     DAMAGE_RESISTANCE("RESISTANCE", "ARMOR", "DMG_RESIST", "DMG_RESISTANCE"),
+    DARKNESS,
     DOLPHINS_GRACE("DOLPHIN", "GRACE"),
     FAST_DIGGING("HASTE", "SUPER_PICK", "DIGFAST", "DIG_SPEED", "QUICK_MINE", "SHARP"),
     FIRE_RESISTANCE("FIRE_RESIST", "RESIST_FIRE", "FIRE_RESISTANCE"),
     GLOWING("GLOW", "SHINE", "SHINY"),
-    HARM("INJURE", "DAMAGE", "HARMING", "INFLICT"),
+    HARM("INJURE", "DAMAGE", "HARMING", "INFLICT", "INSTANT_DAMAGE"),
     HEAL("HEALTH", "INSTA_HEAL", "INSTANT_HEAL", "INSTA_HEALTH", "INSTANT_HEALTH"),
     HEALTH_BOOST("BOOST_HEALTH", "BOOST", "HP"),
     HERO_OF_THE_VILLAGE("HERO", "VILLAGE_HERO"),
@@ -113,6 +114,18 @@ public enum XPotion {
             SLOW, SLOW_DIGGING, UNLUCK, WEAKNESS, WITHER)
     );
 
+    /**
+     * Efficient mapping to get {@link XPotion} from a {@link PotionEffectType}
+     * Note that <code>values.length + 1</code> is intentional as it allocates one useless space since IDs start from 1
+     */
+    private static final XPotion[] POTIONEFFECTTYPE_MAPPING = new XPotion[VALUES.length + 1];
+
+    static {
+        for (XPotion pot : VALUES)
+            if (pot.type != null) //noinspection deprecation
+                POTIONEFFECTTYPE_MAPPING[pot.type.getId()] = pot;
+    }
+
     private final PotionEffectType type;
 
     XPotion(@NotNull String... aliases) {
@@ -128,6 +141,7 @@ public enum XPotion {
      * the normal RegEx + String Methods approach for both formatted and unformatted material names.
      *
      * @param name the potion effect type name to format.
+     *
      * @return an enum name.
      * @since 1.0.0
      */
@@ -161,13 +175,14 @@ public enum XPotion {
      * Supports type IDs.
      *
      * @param potion the type of the type's ID of the potion effect type.
+     *
      * @return a potion effect type.
      * @since 1.0.0
      */
     @NotNull
     public static Optional<XPotion> matchXPotion(@NotNull String potion) {
         Validate.notEmpty(potion, "Cannot match XPotion of a null or empty potion effect type");
-        PotionEffectType idType = getIdFromString(potion);
+        PotionEffectType idType = fromId(potion);
         if (idType != null) {
             XPotion type = Data.NAMES.get(idType.getName());
             if (type == null) throw new NullPointerException("Unsupported potion effect type ID: " + idType);
@@ -180,14 +195,16 @@ public enum XPotion {
      * Parses the XPotion for this potion effect.
      *
      * @param type the potion effect type.
+     *
      * @return the XPotion of this potion effect.
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
      * @since 1.0.0
      */
+    @SuppressWarnings("deprecation")
     @NotNull
     public static XPotion matchXPotion(@NotNull PotionEffectType type) {
         Objects.requireNonNull(type, "Cannot match XPotion of a null potion effect type");
-        return Objects.requireNonNull(Data.NAMES.get(type.getName()), () -> "Unsupported potion effect type: " + type.getName());
+        return POTIONEFFECTTYPE_MAPPING[type.getId()];
     }
 
     /**
@@ -199,7 +216,7 @@ public enum XPotion {
      */
     @Nullable
     @SuppressWarnings("deprecation")
-    private static PotionEffectType getIdFromString(@NotNull String type) {
+    private static PotionEffectType fromId(@NotNull String type) {
         try {
             int id = Integer.parseInt(type);
             return PotionEffectType.getById(id);
@@ -211,54 +228,78 @@ public enum XPotion {
     /**
      * Parse a {@link PotionEffect} from a string, usually from config.
      * Supports potion type IDs.
+     * <br>
+     * Format: <b>Potion, Duration (in seconds), Amplifier (level) [%chance]</b>
      * <pre>
      *     WEAKNESS, 30, 1
      *     SLOWNESS 200 10
-     *     1, 10000, 100
+     *     1, 10000, 100 %50
      * </pre>
+     * The last argument (the amplifier can also have a chance which if not met, returns null.
      *
      * @param potion the potion string to parse.
+     *
      * @return a potion effect, or null if the potion type is wrong.
-     * @see #parsePotion(int, int)
+     * @see #buildPotionEffect(int, int)
      * @since 1.0.0
      */
     @Nullable
-    public static PotionEffect parsePotionEffectFromString(@Nullable String potion) {
+    public static Effect parseEffect(@Nullable String potion) {
         if (Strings.isNullOrEmpty(potion) || potion.equalsIgnoreCase("none")) return null;
         String[] split = StringUtils.split(StringUtils.deleteWhitespace(potion), ',');
         if (split.length == 0) split = StringUtils.split(potion, ' ');
 
+        double chance = 100;
+        int chanceIndex = 0;
+        if (split.length > 2) {
+            chanceIndex = split[2].indexOf('%');
+            if (chanceIndex != -1) chance = NumberUtils.toDouble(split[2].substring(chanceIndex + 1), 100);
+        }
+
         Optional<XPotion> typeOpt = matchXPotion(split[0]);
         if (!typeOpt.isPresent()) return null;
-        PotionEffectType type = typeOpt.get().parsePotionEffectType();
+        PotionEffectType type = typeOpt.get().type;
         if (type == null) return null;
 
         int duration = 2400; // 20 ticks * 60 seconds * 2 minutes
         int amplifier = 0;
         if (split.length > 1) {
             duration = NumberUtils.toInt(split[1]) * 20;
-            if (split.length > 2) amplifier = NumberUtils.toInt(split[2]) - 1;
+            if (split.length > 2) amplifier = NumberUtils.toInt(chanceIndex <= 0 ? split[2] : split[2].substring(0, chanceIndex)) - 1;
         }
 
-        return new PotionEffect(type, duration, amplifier);
+        return new Effect(new PotionEffect(type, duration, amplifier), chance);
     }
 
     /**
-     * Add a list of potion effects to a player from a string list, usually from config.
+     * Add a list of potion effects to an entity from a string list, usually from config.
      *
-     * @param player  the player to add potion effects to.
-     * @param effects the list of potion effects to parse and add to the player.
-     * @see #parsePotionEffectFromString(String)
+     * @param entity  the entity to add potion effects to.
+     * @param effects the list of potion effects to parse and add to the entity.
+     *
+     * @see #parseEffect(String)
      * @since 1.0.0
      */
-    public static void addPotionEffectsFromString(@NotNull Player player, @Nullable List<String> effects) {
-        if (effects == null || effects.isEmpty()) return;
-        Objects.requireNonNull(player, "Cannot add potion effects to null player");
+    public static void addEffects(@NotNull LivingEntity entity, @Nullable List<String> effects) {
+        Objects.requireNonNull(entity, "Cannot add potion effects to null entity");
+        for (Effect effect : parseEffects(effects)) effect.apply(entity);
+    }
 
-        for (String effect : effects) {
-            PotionEffect potionEffect = parsePotionEffectFromString(effect);
-            if (potionEffect != null) player.addPotionEffect(potionEffect);
+    /**
+     * @param effectsString a list of effects with a format following {@link #parseEffect(String)}
+     * @return a list of parsed effets.
+     * @since 3.0.0
+     */
+    public static List<Effect> parseEffects(@Nullable List<String> effectsString) {
+        if (effectsString == null || effectsString.isEmpty()) return new ArrayList<>();
+        List<Effect> effects = new ArrayList<>(effectsString.size());
+
+        for (String effectStr : effectsString) {
+            Effect effect = parseEffect(effectStr);
+            if (effect != null) effects.add(effect);
         }
+
+        return effects;
     }
 
     /**
@@ -268,6 +309,7 @@ public enum XPotion {
      * @param entity  the entity to throw the potion from.
      * @param color   the color of the potion's bottle.
      * @param effects the effects of the potion.
+     *
      * @return a thrown splash potion.
      * @since 1.0.0
      */
@@ -305,6 +347,7 @@ public enum XPotion {
      * @param type    the type of the potion.
      * @param color   the color of the potion's bottle.
      * @param effects the effects of the potion.
+     *
      * @return an item with the specified effects.
      * @since 1.0.0
      */
@@ -330,6 +373,7 @@ public enum XPotion {
      * You should avoid using them or use XMaterial instead.
      *
      * @param material the material to check.
+     *
      * @return true if the material is a potion, otherwise false.
      * @since 1.0.0
      */
@@ -345,7 +389,7 @@ public enum XPotion {
      * @since 1.0.0
      */
     @Nullable
-    public PotionEffectType parsePotionEffectType() {
+    public PotionEffectType getPotionEffectType() {
         return this.type;
     }
 
@@ -355,14 +399,14 @@ public enum XPotion {
      * An invocation of this method yields exactly the same result as the expression:
      * <p>
      * <blockquote>
-     * {@link #parsePotionEffectType()} != null
+     * {@link #getPotionEffectType()} != null
      * </blockquote>
      *
      * @return true if the current version has this potion effect type, otherwise false.
      * @since 1.0.0
      */
     public boolean isSupported() {
-        return this.parsePotionEffectType() != null;
+        return this.type != null;
     }
 
     /**
@@ -370,14 +414,13 @@ public enum XPotion {
      * Usually for potion items.
      *
      * @return a potion type for potions.
-     * @see #parsePotionEffectType()
+     * @see #getPotionEffectType()
      * @since 1.0.0
      * @deprecated not for removal, but use {@link PotionEffectType} instead.
      */
     @Nullable
     @Deprecated
     public PotionType getPotionType() {
-        PotionEffectType type = this.parsePotionEffectType();
         return type == null ? null : PotionType.getByEffect(type);
     }
 
@@ -386,18 +429,18 @@ public enum XPotion {
      *
      * @param duration  the duration of the potion effect.
      * @param amplifier the amplifier of the potion effect.
+     *
      * @return a potion effect.
-     * @see #parsePotionEffectFromString(String)
+     * @see #parseEffect(String)
      * @since 1.0.0
      */
     @Nullable
-    public PotionEffect parsePotion(int duration, int amplifier) {
-        PotionEffectType type = this.parsePotionEffectType();
+    public PotionEffect buildPotionEffect(int duration, int amplifier) {
         return type == null ? null : new PotionEffect(type, duration, amplifier);
     }
 
     /**
-     * In most cases your should be using {@link #name()} instead.
+     * In most cases you should be using {@link #name()} instead.
      *
      * @return a friendly readable string name.
      */
@@ -407,11 +450,54 @@ public enum XPotion {
     }
 
     /**
-     * Used for datas that need to be accessed during enum initilization.
+     * Used for data that need to be accessed during enum initialization.
      *
      * @since 2.0.0
      */
     private static final class Data {
         private static final Map<String, XPotion> NAMES = new HashMap<>();
+    }
+
+    /**
+     * For now, this merely acts as a chance wrapper for potion effects.
+     *
+     * @since 3.0.0
+     */
+    public static class Effect {
+        private PotionEffect effect;
+        private double chance;
+
+        public Effect(PotionEffect effect, double chance) {
+            this.effect = effect;
+            this.chance = chance;
+        }
+
+        public XPotion getXPotion() {
+            return XPotion.matchXPotion(effect.getType());
+        }
+
+        public double getChance() {
+            return chance;
+        }
+
+        public boolean hasChance() {
+            return chance >= 100 || ThreadLocalRandom.current().nextDouble(0, 100) <= chance;
+        }
+
+        public void setChance(double chance) {
+            this.chance = chance;
+        }
+
+        public void apply(LivingEntity entity) {
+            if (hasChance()) entity.addPotionEffect(effect);
+        }
+
+        public PotionEffect getEffect() {
+            return effect;
+        }
+
+        public void setEffect(PotionEffect effect) {
+            this.effect = effect;
+        }
     }
 }

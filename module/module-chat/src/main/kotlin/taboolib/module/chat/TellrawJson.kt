@@ -53,6 +53,31 @@ class TellrawJson {
         return this
     }
 
+    fun appendTranslatable(node: String, vararg obj: Any): TellrawJson {
+        new()
+        componentsLatest.add(TranslatableComponent(node, obj))
+        return this
+    }
+
+    @Suppress("SpellCheckingInspection")
+    fun appendKeybind(keybind: String): TellrawJson {
+        new()
+        componentsLatest.add(KeybindComponent(keybind))
+        return this
+    }
+
+    fun appendScore(name: String, objective: String): TellrawJson {
+        new()
+        componentsLatest.add(ScoreComponent(name, objective))
+        return this
+    }
+
+    fun appendSelector(selector: String): TellrawJson {
+        new()
+        componentsLatest.add(SelectorComponent(selector))
+        return this
+    }
+
     fun append(json: TellrawJson): TellrawJson {
         new()
         componentsLatest.addAll(json.componentsAll)
