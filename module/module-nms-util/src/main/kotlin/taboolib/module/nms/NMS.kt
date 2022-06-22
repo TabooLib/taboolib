@@ -207,6 +207,32 @@ fun Player.sendScoreboard(vararg content: String) {
     }
 }
 
+fun Player.setPrefix(prefix:String) {
+    val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
+        return@getOrPut PacketScoreboard(this)
+    }
+    if (prefix == "") {
+        scoreboardObj.clearPrefix()
+        return
+    }
+    scoreboardObj.run {
+        setPrefix(prefix)
+    }
+}
+
+fun Player.setSuffix(suffix:String) {
+    val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
+        return@getOrPut PacketScoreboard(this)
+    }
+    if (suffix == "") {
+        scoreboardObj.clearSuffix()
+        return
+    }
+    scoreboardObj.run {
+        setSuffix(suffix)
+    }
+}
+
 /**
  * 发送虚拟 Toast 成就信息
  * @param icon 图标
@@ -341,6 +367,8 @@ private class PacketScoreboard(val player: Player) {
 
     private var currentTitle = ""
     private val currentContent = HashMap<Int, String>()
+    private val prefix = ""
+    private val suffix = ""
     var deleted = false
 
     init {
@@ -364,5 +392,21 @@ private class PacketScoreboard(val player: Player) {
         deleted = nmsScoreboard.changeContent(player, lines, currentContent)
         currentContent.clear()
         currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
+    }
+
+    fun setPrefix(prefix: String) {
+        nmsScoreboard
+    }
+
+    fun clearPrefix() {
+
+    }
+
+    fun setSuffix(prefix: String) {
+
+    }
+
+    fun clearSuffix() {
+
     }
 }

@@ -6,8 +6,11 @@ import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class NMSScoreboardImpl : NMSScoreboard() {
+    private val prefix:Hashtable<UUID,String> = Hashtable()
+    private val suffix:Hashtable<UUID,String> = Hashtable()
 
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
@@ -69,6 +72,32 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("b", "TabooScore")
         }
         player.sendPacket(packet)
+    }
+
+    override fun setPrefix(player: Player,prefix: String) {
+        if (!this.prefix.containsKey(player.uniqueId) && !this.suffix.containsKey(player.uniqueId)) {
+            createTeam(player)
+        }
+        if (prefix == "") {
+            this.prefix.remove(player.uniqueId)
+            updateTeam(player,"",this.suffix[player.uniqueId]?:"")
+        }else {
+            this.prefix[player.uniqueId] = prefix
+            updateTeam(player,prefix,this.suffix[player.uniqueId]?:"")
+        }
+    }
+
+    override fun setSuffix(player: Player,suffix: String) {
+        if (!this.prefix.containsKey(player.uniqueId) && !this.suffix.containsKey(player.uniqueId)) {
+            createTeam(player)
+        }
+        if (suffix == "") {
+            this.suffix.remove(player.uniqueId)
+            updateTeam(player,this.prefix[player.uniqueId]?:"","")
+        }else {
+            this.suffix[player.uniqueId] = suffix
+            updateTeam(player,this.prefix[player.uniqueId]?:"",suffix)
+        }
     }
 
     override fun setDisplayName(player: Player, title: String) {
@@ -149,6 +178,100 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
             player.sendPacket(packet)
         }
+    }
+
+    private fun createTeam(player: Player) {
+        if (MinecraftVersion.isUniversal) {
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+            packet.setProperty("method", 0)
+            packet.setProperty("name", player.displayName)
+            packet.setProperty("players", listOf(player.name))
+            val b = universalTeamData.unsafeInstance()
+            b.setProperty("displayName", ChatComponentText(player.displayName))
+            b.setProperty("nametagVisibility", "always")
+            b.setProperty("collisionRule", "always")
+            b.setProperty("color", EnumChatFormat.RESET)
+            b.setProperty("options", 3)
+            packet.setProperty("parameters", Optional.of(b))
+            player.sendPacket(packet)
+            return
+        }
+        if (MinecraftVersion.major >= 5) {
+            val packet = PacketPlayOutScoreboardTeam()
+            packet.setProperty("a", player.displayName)
+            packet.setProperty("b", ChatComponentText(player.displayName))
+            packet.setProperty("e", "always")
+            packet.setProperty("f", "always")
+            packet.setProperty("g", EnumChatFormat.RESET)
+            packet.setProperty("h", listOf(player.displayName))
+            packet.setProperty("i", 0)
+            packet.setProperty("j", -1)
+            player.sendPacket(packet)
+            return
+        }
+        val packet = PacketPlayOutScoreboardTeam()
+        packet.setProperty("a", player.displayName)
+        packet.setProperty("b", player.displayName)
+        packet.setProperty("e", ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e)
+        if (MinecraftVersion.major >= 1) {
+            packet.setProperty("f", "always")
+            packet.setProperty("g", -1)
+            packet.setProperty("h", listOf(player.displayName))
+            packet.setProperty("i", 0)
+        } else {
+            packet.setProperty("f", -1)
+            packet.setProperty("g", listOf(player.displayName))
+            packet.setProperty("h", 0)
+        }
+        player.sendPacket(packet)
+    }
+
+    private fun updateTeam(player: Player,prefix: String,suffix: String) {
+        if (MinecraftVersion.isUniversal) {
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+            packet.setProperty("method", 2)
+            packet.setProperty("name", player.displayName)
+            val b = universalTeamData.unsafeInstance()
+            b.setProperty("displayName", ChatComponentText(player.displayName))
+            b.setProperty("playerPrefix", ChatComponentText(prefix))
+            b.setProperty("playerSuffix", ChatComponentText(suffix))
+            b.setProperty("nametagVisibility", "always")
+            b.setProperty("collisionRule", "always")
+            b.setProperty("color", EnumChatFormat.RESET)
+            b.setProperty("options", 3)
+            packet.setProperty("parameters", Optional.of(b))
+            player.sendPacket(packet)
+            return
+        }
+        if (MinecraftVersion.major >= 5) {
+            val packet = PacketPlayOutScoreboardTeam()
+            packet.setProperty("a", player.displayName)
+            packet.setProperty("b", ChatComponentText(player.displayName))
+            packet.setProperty("c", ChatComponentText(prefix))
+            packet.setProperty("d", ChatComponentText(suffix))
+            packet.setProperty("e", "always")
+            packet.setProperty("f", "always")
+            packet.setProperty("g", EnumChatFormat.RESET)
+            packet.setProperty("i", 2)
+            packet.setProperty("j", -1)
+            player.sendPacket(packet)
+            return
+        }
+        val packet = PacketPlayOutScoreboardTeam()
+        packet.setProperty("a", player.displayName)
+        packet.setProperty("b", player.displayName)
+        packet.setProperty("c", prefix)
+        packet.setProperty("d", suffix)
+        packet.setProperty("e", ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e)
+        if (MinecraftVersion.major >= 1) {
+            packet.setProperty("f", "always")
+            packet.setProperty("g", -1)
+            packet.setProperty("i", 2)
+        } else {
+            packet.setProperty("f", -1)
+            packet.setProperty("h", 2)
+        }
+        player.sendPacket(packet)
     }
 
     private fun validateLineCount(line: Int) {
