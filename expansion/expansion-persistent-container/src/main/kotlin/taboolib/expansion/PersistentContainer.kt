@@ -28,7 +28,7 @@ fun persistentContainer(
 
 class PersistentContainer {
 
-    internal val container: Container
+    val container: Container
 
     /**
      * 设置源
@@ -89,6 +89,13 @@ class PersistentContainer {
      */
     operator fun get(name: String): ContainerOperator {
         return container.operator(name)
+    }
+
+    /**
+     * 关闭容器
+     */
+    fun close() {
+        container.close()
     }
 }
 
