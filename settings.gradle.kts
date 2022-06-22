@@ -34,6 +34,7 @@ fun importExtensions() {
     // 临时位置，未来会被移出标准模块
     include("expansion:expansion-command-helper")
     include("expansion:expansion-player-database")
+    include("expansion:expansion-persistent-container")
 
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
