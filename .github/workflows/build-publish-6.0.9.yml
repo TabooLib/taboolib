@@ -3,7 +3,7 @@ on: [ push ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: checkout repository
         uses: actions/checkout@v2
