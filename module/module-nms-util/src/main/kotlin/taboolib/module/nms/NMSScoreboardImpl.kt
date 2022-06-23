@@ -6,7 +6,6 @@ import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.type.BukkitPlayer
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -211,46 +210,21 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("displayName", ChatComponentText(player.displayName))
             b.setProperty("playerPrefix", ChatComponentText(prefix))
             b.setProperty("playerSuffix", ChatComponentText(suffix))
-            b.setProperty("nametagVisibility", "always")
-            b.setProperty("collisionRule", "always")
-            b.setProperty("color", EnumChatFormat.RESET)
-            b.setProperty("options", 3)
-            packet.setProperty("parameters", Optional.of(b))
-            for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
-                p.sendPacket(packet)
-            }
+            handle1DuplicatedPacketAll(b, packet)
             return
         }
         if (MinecraftVersion.major >= 5) {
             val packet = PacketPlayOutScoreboardTeam()
             packet.setProperty("a", player.displayName)
-            packet.setProperty("b", ChatComponentText(player.displayName))
             packet.setProperty("c", ChatComponentText(prefix))
             packet.setProperty("d", ChatComponentText(suffix))
-            packet.setProperty("e", "always")
-            packet.setProperty("f", "always")
-            packet.setProperty("g", EnumChatFormat.RESET)
             packet.setProperty("i", 2)
-            packet.setProperty("j", -1)
-            for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
-                p.sendPacket(packet)
-            }
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
         packet.setProperty("a", player.displayName)
-        packet.setProperty("b", player.displayName)
         packet.setProperty("c", prefix)
         packet.setProperty("d", suffix)
-        packet.setProperty("e", ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e)
-        if (MinecraftVersion.major >= 1) {
-            packet.setProperty("f", "always")
-            packet.setProperty("g", -1)
-            packet.setProperty("i", 2)
-        } else {
-            packet.setProperty("f", -1)
-            packet.setProperty("h", 2)
-        }
         for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
             p.sendPacket(packet)
         }
@@ -366,6 +340,17 @@ class NMSScoreboardImpl : NMSScoreboard() {
         b.setProperty("options", 3)
         packet.setProperty("parameters", Optional.of(b))
         player.sendPacket(packet)
+    }
+
+    private fun handle1DuplicatedPacketAll(b: Any, packet: Any) {
+        b.setProperty("nametagVisibility", "always")
+        b.setProperty("collisionRule", "always")
+        b.setProperty("color", EnumChatFormat.RESET)
+        b.setProperty("options", 3)
+        packet.setProperty("parameters", Optional.of(b))
+        for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+            p.sendPacket(packet)
+        }
     }
 
     private fun handle2DuplicatedPacket(packet: Any, title: String) {
