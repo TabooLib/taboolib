@@ -367,8 +367,8 @@ private class PacketScoreboard(val player: Player) {
 
     private var currentTitle = ""
     private val currentContent = HashMap<Int, String>()
-    private val prefix = ""
-    private val suffix = ""
+    private var prefix = ""
+    private var suffix = ""
     var deleted = false
 
     init {
@@ -395,18 +395,22 @@ private class PacketScoreboard(val player: Player) {
     }
 
     fun setPrefix(prefix: String) {
-        nmsScoreboard
+        this.prefix = prefix
+        nmsScoreboard.updateTeam(player,prefix,suffix)
     }
 
     fun clearPrefix() {
-
+        this.prefix = ""
+        nmsScoreboard.updateTeam(player,"",suffix)
     }
 
-    fun setSuffix(prefix: String) {
-
+    fun setSuffix(suffix: String) {
+        this.suffix = suffix
+        nmsScoreboard.updateTeam(player,prefix,suffix)
     }
 
     fun clearSuffix() {
-
+        this.suffix = ""
+        nmsScoreboard.updateTeam(player,prefix,"")
     }
 }

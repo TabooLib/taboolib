@@ -5,12 +5,13 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
+import taboolib.platform.BukkitPlugin
+import taboolib.platform.type.BukkitPlayer
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 class NMSScoreboardImpl : NMSScoreboard() {
-    private val prefix:Hashtable<UUID,String> = Hashtable()
-    private val suffix:Hashtable<UUID,String> = Hashtable()
+    private val setuped:Set<UUID> = ConcurrentHashMap.newKeySet()
 
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
@@ -72,32 +73,6 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("b", "TabooScore")
         }
         player.sendPacket(packet)
-    }
-
-    override fun setPrefix(player: Player,prefix: String) {
-        if (!this.prefix.containsKey(player.uniqueId) && !this.suffix.containsKey(player.uniqueId)) {
-            createTeam(player)
-        }
-        if (prefix == "") {
-            this.prefix.remove(player.uniqueId)
-            updateTeam(player,"",this.suffix[player.uniqueId]?:"")
-        }else {
-            this.prefix[player.uniqueId] = prefix
-            updateTeam(player,prefix,this.suffix[player.uniqueId]?:"")
-        }
-    }
-
-    override fun setSuffix(player: Player,suffix: String) {
-        if (!this.prefix.containsKey(player.uniqueId) && !this.suffix.containsKey(player.uniqueId)) {
-            createTeam(player)
-        }
-        if (suffix == "") {
-            this.suffix.remove(player.uniqueId)
-            updateTeam(player,this.prefix[player.uniqueId]?:"","")
-        }else {
-            this.suffix[player.uniqueId] = suffix
-            updateTeam(player,this.prefix[player.uniqueId]?:"",suffix)
-        }
     }
 
     override fun setDisplayName(player: Player, title: String) {
@@ -226,7 +201,8 @@ class NMSScoreboardImpl : NMSScoreboard() {
         player.sendPacket(packet)
     }
 
-    private fun updateTeam(player: Player,prefix: String,suffix: String) {
+    override fun updateTeam(player: Player, prefix: String, suffix: String) {
+        if (!setuped.contains(player.uniqueId)) createTeam(player)
         if (MinecraftVersion.isUniversal) {
             val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
             packet.setProperty("method", 2)
@@ -240,7 +216,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("color", EnumChatFormat.RESET)
             b.setProperty("options", 3)
             packet.setProperty("parameters", Optional.of(b))
-            player.sendPacket(packet)
+            for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+                p.sendPacket(packet)
+            }
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -254,7 +232,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("g", EnumChatFormat.RESET)
             packet.setProperty("i", 2)
             packet.setProperty("j", -1)
-            player.sendPacket(packet)
+            for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+                p.sendPacket(packet)
+            }
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
@@ -271,7 +251,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("f", -1)
             packet.setProperty("h", 2)
         }
-        player.sendPacket(packet)
+        for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+            p.sendPacket(packet)
+        }
     }
 
     private fun validateLineCount(line: Int) {

@@ -47,7 +47,5 @@ abstract class NMSScoreboard {
 
     abstract fun display(player: Player)
 
-    abstract fun setPrefix(player: Player,prefix:String)
-
-    abstract fun setSuffix(player: Player,suffix:String)
+    abstract fun updateTeam(player: Player,prefix:String,suffix:String)
 }
