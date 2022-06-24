@@ -47,11 +47,14 @@ interface PlaceholderExpansion {
     }
 
     fun onPlaceholderRequest(player: Player?, args: String): String {
-        return "ERROR"
+        return "onPlaceholderRequest(player: Player?, args: String) not implemented"
     }
 
     fun onPlaceholderRequest(player: OfflinePlayer?, args: String): String {
-        return "ERROR"
+        if (player?.isOnline == true) {
+            return onPlaceholderRequest(player.player, args)
+        }
+        return "onPlaceholderRequest(player: OfflinePlayer?, args: String) not implemented"
     }
 
     @Awake
