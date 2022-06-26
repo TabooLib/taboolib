@@ -1,26 +1,15 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
-import taboolib.common.LifeCycle
-import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.disablePlugin
 import taboolib.common.platform.function.runningPlatform
-import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
-
-    @Awake(LifeCycle.INIT)
-    fun init() {
-        if (!isSupported) {
-            warning("Unsupported Minecraft Version: $minecraftVersion")
-            disablePlugin()
-        }
-    }
 
     @Suppress("MemberNameEqualsClassName")
     val minecraftVersion by lazy {
@@ -109,9 +98,13 @@ object MinecraftVersion {
 
     val mapping by lazy {
         val mappingFile = if (isUniversal) {
-            MappingFile.files[runningVersion] ?: error("Unsupported $runningVersion")
+            MappingFile.files[runningVersion]
         } else {
             MappingFile.files["1.17"]!!
+        }
+        if (mappingFile == null) {
+            disablePlugin()
+            error("Unsupported $runningVersion")
         }
         Mapping(
             FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
