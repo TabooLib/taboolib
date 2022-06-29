@@ -5,9 +5,12 @@ import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
+import taboolib.platform.BukkitPlugin
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class NMSScoreboardImpl : NMSScoreboard() {
+    private val setuped:Set<UUID> = ConcurrentHashMap.newKeySet()
 
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
@@ -151,6 +154,82 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
+    private fun createTeam(player: Player) {
+        if (MinecraftVersion.isUniversal) {
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+            packet.setProperty("method", 0)
+            packet.setProperty("name", player.displayName)
+            packet.setProperty("players", listOf(player.name))
+            val b = universalTeamData.unsafeInstance()
+            b.setProperty("displayName", ChatComponentText(player.displayName))
+            b.setProperty("nametagVisibility", "always")
+            b.setProperty("collisionRule", "always")
+            b.setProperty("color", EnumChatFormat.RESET)
+            b.setProperty("options", 3)
+            packet.setProperty("parameters", Optional.of(b))
+            player.sendPacket(packet)
+            return
+        }
+        if (MinecraftVersion.major >= 5) {
+            val packet = PacketPlayOutScoreboardTeam()
+            packet.setProperty("a", player.displayName)
+            packet.setProperty("b", ChatComponentText(player.displayName))
+            packet.setProperty("e", "always")
+            packet.setProperty("f", "always")
+            packet.setProperty("g", EnumChatFormat.RESET)
+            packet.setProperty("h", listOf(player.displayName))
+            packet.setProperty("i", 0)
+            packet.setProperty("j", -1)
+            player.sendPacket(packet)
+            return
+        }
+        val packet = PacketPlayOutScoreboardTeam()
+        packet.setProperty("a", player.displayName)
+        packet.setProperty("b", player.displayName)
+        packet.setProperty("e", ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e)
+        if (MinecraftVersion.major >= 1) {
+            packet.setProperty("f", "always")
+            packet.setProperty("g", -1)
+            packet.setProperty("h", listOf(player.displayName))
+            packet.setProperty("i", 0)
+        } else {
+            packet.setProperty("f", -1)
+            packet.setProperty("g", listOf(player.displayName))
+            packet.setProperty("h", 0)
+        }
+        player.sendPacket(packet)
+    }
+
+    override fun updateTeam(player: Player, prefix: String, suffix: String) {
+        if (!setuped.contains(player.uniqueId)) createTeam(player)
+        if (MinecraftVersion.isUniversal) {
+            val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
+            packet.setProperty("method", 2)
+            packet.setProperty("name", player.displayName)
+            val b = universalTeamData.unsafeInstance()
+            b.setProperty("displayName", ChatComponentText(player.displayName))
+            b.setProperty("playerPrefix", ChatComponentText(prefix))
+            b.setProperty("playerSuffix", ChatComponentText(suffix))
+            handle1DuplicatedPacketAll(b, packet)
+            return
+        }
+        if (MinecraftVersion.major >= 5) {
+            val packet = PacketPlayOutScoreboardTeam()
+            packet.setProperty("a", player.displayName)
+            packet.setProperty("c", ChatComponentText(prefix))
+            packet.setProperty("d", ChatComponentText(suffix))
+            packet.setProperty("i", 2)
+            return
+        }
+        val packet = PacketPlayOutScoreboardTeam()
+        packet.setProperty("a", player.displayName)
+        packet.setProperty("c", prefix)
+        packet.setProperty("d", suffix)
+        for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+            p.sendPacket(packet)
+        }
+    }
+
     private fun validateLineCount(line: Int) {
         if (uniqueColors.size < line) {
             throw IllegalArgumentException("Lines size are larger than supported.")
@@ -261,6 +340,17 @@ class NMSScoreboardImpl : NMSScoreboard() {
         b.setProperty("options", 3)
         packet.setProperty("parameters", Optional.of(b))
         player.sendPacket(packet)
+    }
+
+    private fun handle1DuplicatedPacketAll(b: Any, packet: Any) {
+        b.setProperty("nametagVisibility", "always")
+        b.setProperty("collisionRule", "always")
+        b.setProperty("color", EnumChatFormat.RESET)
+        b.setProperty("options", 3)
+        packet.setProperty("parameters", Optional.of(b))
+        for (p in BukkitPlugin.getInstance().server.onlinePlayers) {
+            p.sendPacket(packet)
+        }
     }
 
     private fun handle2DuplicatedPacket(packet: Any, title: String) {

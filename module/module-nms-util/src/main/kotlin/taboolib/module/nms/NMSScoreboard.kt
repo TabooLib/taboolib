@@ -46,4 +46,6 @@ abstract class NMSScoreboard {
     abstract fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean
 
     abstract fun display(player: Player)
+
+    abstract fun updateTeam(player: Player,prefix:String,suffix:String)
 }
