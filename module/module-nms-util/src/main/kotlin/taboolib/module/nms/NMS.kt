@@ -207,7 +207,7 @@ fun Player.sendScoreboard(vararg content: String) {
     }
 }
 
-fun Player.setPrefix(prefix:String) {
+fun Player.setPrefix(prefix: String) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
@@ -220,7 +220,7 @@ fun Player.setPrefix(prefix:String) {
     }
 }
 
-fun Player.setSuffix(suffix:String) {
+fun Player.setSuffix(suffix: String) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
@@ -370,6 +370,7 @@ private class PacketScoreboard(val player: Player) {
     private var prefix = ""
     private var suffix = ""
     var deleted = false
+    var created = false
 
     init {
         nmsScoreboard.setupScoreboard(player, true)
@@ -396,21 +397,25 @@ private class PacketScoreboard(val player: Player) {
 
     fun setPrefix(prefix: String) {
         this.prefix = prefix
-        nmsScoreboard.updateTeam(player,prefix,suffix)
+        nmsScoreboard.updateTeam(player, prefix, suffix, !created)
+        created = true
     }
 
     fun clearPrefix() {
         this.prefix = ""
-        nmsScoreboard.updateTeam(player,"",suffix)
+        nmsScoreboard.updateTeam(player, "", suffix, !created)
+        created = true
     }
 
     fun setSuffix(suffix: String) {
         this.suffix = suffix
-        nmsScoreboard.updateTeam(player,prefix,suffix)
+        nmsScoreboard.updateTeam(player, prefix, suffix, !created)
+        created = true
     }
 
     fun clearSuffix() {
         this.suffix = ""
-        nmsScoreboard.updateTeam(player,prefix,"")
+        nmsScoreboard.updateTeam(player, prefix, "", !created)
+        created = true
     }
 }
