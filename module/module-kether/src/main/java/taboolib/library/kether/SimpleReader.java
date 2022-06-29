@@ -99,7 +99,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                     return wrap(optional.get().resolve(this));
                 } else if (Kether.INSTANCE.isAllowToleranceParser()) {
                     beforeParse();
-                    return wrap(new LiteralAction<>(element));
+                    return wrap(new LiteralAction<>(element, true));
                 }
                 throw LoadError.UNKNOWN_ACTION.create(element);
             }

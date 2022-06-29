@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 public class LiteralAction<T> extends QuestAction<T> {
 
     private final Object value;
+    private boolean misspelled = false;
 
     public LiteralAction(Object value) {
         this.value = value;
@@ -19,8 +20,17 @@ public class LiteralAction<T> extends QuestAction<T> {
         this.value = value;
     }
 
+    public LiteralAction(String value, boolean misspelled) {
+        this.value = value;
+        this.misspelled = misspelled;
+    }
+
     public Object getValue() {
         return value;
+    }
+
+    public boolean isMisspelled() {
+        return misspelled;
     }
 
     @SuppressWarnings("unchecked")

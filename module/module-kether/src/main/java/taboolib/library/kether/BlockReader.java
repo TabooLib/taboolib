@@ -57,7 +57,7 @@ public class BlockReader extends AbstractStringReader {
                 if (before != null) {
                     throw KetherError.CUSTOM.create("Isolate literal \"" + before.getValue() + "\" is not end of block, maybe a misspelled action?");
                 }
-                if (action.getAction() instanceof LiteralAction) {
+                if (action.getAction() instanceof LiteralAction && ((LiteralAction<?>) action.getAction()).isMisspelled()) {
                     before = (LiteralAction<?>) action.getAction();
                 }
             }

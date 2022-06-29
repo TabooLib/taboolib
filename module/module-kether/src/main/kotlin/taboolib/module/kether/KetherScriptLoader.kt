@@ -66,7 +66,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                             return wrap(ActionProperty.Get(wrap(optional.get().resolve<Any>(this)), propertyKey)) as ParsedAction<T>
                         } else if (Kether.isAllowToleranceParser) {
                             val propertyKey = token.substring(i + 1, token.length - 1)
-                            return wrap(ActionProperty.Get(wrap(LiteralAction<Any>(element)), propertyKey)) as ParsedAction<T>
+                            return wrap(ActionProperty.Get(wrap(LiteralAction<Any>(element, true)), propertyKey)) as ParsedAction<T>
                         }
                         throw LoadError.UNKNOWN_ACTION.create(element)
                     } else {
@@ -74,7 +74,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                         if (optional.isPresent) {
                             return wrap(optional.get().resolve(this))
                         } else if (Kether.isAllowToleranceParser) {
-                            return wrap(LiteralAction(token))
+                            return wrap(LiteralAction(token, true))
                         }
                         throw LoadError.UNKNOWN_ACTION.create(token)
                     }
