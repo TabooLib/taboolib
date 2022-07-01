@@ -175,7 +175,13 @@ public abstract class Baffle {
 
         @Override
         public boolean hasNext(String id, boolean update) {
-            int i = data.computeIfAbsent(id, a -> 0);
+            int i;
+            if (data.containsKey(id)) {
+                i = data.get(id);
+            } else {
+                i = 0;
+                data.put(id, 0);
+            }
             if (i < count) {
                 if (update) {
                     data.put(id, i + 1);
