@@ -17,7 +17,9 @@ subprojects {
         maven("https://repo1.maven.org/maven2")
         maven("https://maven.aliyun.com/repository/central")
         maven("https://repo.codemc.io/repository/nms/")
-        maven("https://http://ptms.ink:8081/repository/releases")
+        maven("http://ptms.ink:8081/repository/releases") {
+            isAllowInsecureProtocol = true
+        }
         mavenCentral()
     }
     dependencies {
