@@ -128,6 +128,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("players", listOf(color))
                 val b = universalTeamData.unsafeInstance()
                 b.setProperty("displayName", component(color))
+                b.setProperty("playerPrefix", IChatBaseComponent.empty())
+                b.setProperty("playerSuffix", IChatBaseComponent.empty())
+                println(IChatBaseComponent.empty())
                 handle1DuplicatedPacket(b, packet, player)
                 return@forEach
             }
@@ -257,6 +260,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", component(team))
             b.setProperty("playerPrefix", component(content))
+            b.setProperty("playerSuffix", IChatBaseComponent.empty())
             handle1DuplicatedPacket(b, packet, player)
             return
         }
