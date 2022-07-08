@@ -14,7 +14,7 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
 
     enum class Symbol {
 
-        NOT_EQUALS, EQUALS, EQUALS_MEMORY, EQUALS_IGNORE_CASE, GT, GT_EQ, LT, LT_EQ
+        NOT_EQUALS, EQUALS, EQUALS_MEMORY, EQUALS_IGNORE_CASE, GT, GTE, LT, LTE, CONTAINS, IN
     }
 
     fun check(left: Any?, right: Any?): Boolean {
@@ -24,9 +24,22 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
             EQUALS_IGNORE_CASE -> left.toString().equals(right.toString(), ignoreCase = true)
             NOT_EQUALS -> left != right
             GT -> Coerce.toDouble(left) > Coerce.toDouble(right)
-            GT_EQ -> Coerce.toDouble(left) >= Coerce.toDouble(right)
+            GTE -> Coerce.toDouble(left) >= Coerce.toDouble(right)
             LT -> Coerce.toDouble(left) < Coerce.toDouble(right)
-            LT_EQ -> Coerce.toDouble(left) <= Coerce.toDouble(right)
+            LTE -> Coerce.toDouble(left) <= Coerce.toDouble(right)
+            CONTAINS -> when (left) {
+                is Collection<*> -> left.contains(right)
+                is Array<*> -> left.contains(right)
+                is Map<*, *> -> left.containsKey(right)
+                else -> toString().contains(right.toString())
+            }
+
+            IN -> when (right) {
+                is Collection<*> -> right.contains(left)
+                is Array<*> -> right.contains(left)
+                is Map<*, *> -> right.containsKey(left)
+                else -> toString().contains(left.toString())
+            }
         }
     }
 
@@ -51,9 +64,11 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
                 "=?", "is?" -> EQUALS_IGNORE_CASE
                 "!=", "!is", "not" -> NOT_EQUALS
                 ">", "gt" -> GT
-                ">=" -> GT_EQ
+                ">=", "gte" -> GTE
                 "<", "lt" -> LT
-                "<=" -> LT_EQ
+                "<=", "lte" -> LTE
+                "in" -> IN
+                "contains", "has" -> CONTAINS
                 else -> throw KetherError.NOT_SYMBOL.create(type)
             }
             val right = it.next(ArgTypes.ACTION)
