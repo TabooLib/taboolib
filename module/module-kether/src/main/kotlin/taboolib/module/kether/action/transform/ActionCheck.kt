@@ -30,7 +30,6 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun run(frame: ScriptFrame): CompletableFuture<Boolean> {
         return CompletableFuture<Boolean>().also { future ->
             frame.newFrame(left).run<Any?>().thenAccept { left ->
