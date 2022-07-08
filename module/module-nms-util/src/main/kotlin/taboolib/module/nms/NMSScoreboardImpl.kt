@@ -175,12 +175,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("players", listOf(player.name))
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", component(player.displayName))
-            b.setProperty("nametagVisibility", "always")
-            b.setProperty("collisionRule", "always")
-            b.setProperty("color", EnumChatFormat.RESET)
-            b.setProperty("options", 3)
-            packet.setProperty("parameters", Optional.of(b))
-            player.sendPacket(packet)
+            handle1DuplicatedPacketAll(b, packet)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -193,7 +188,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("h", listOf(player.displayName))
             packet.setProperty("i", 0)
             packet.setProperty("j", -1)
-            player.sendPacket(packet)
+            onlinePlayers.forEach { p -> p.sendPacket(packet) }
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
@@ -210,10 +205,17 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("g", listOf(player.displayName))
             packet.setProperty("h", 0)
         }
-        player.sendPacket(packet)
+        onlinePlayers.forEach { p -> p.sendPacket(packet) }
     }
 
-    override fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean) {
+    /**
+     *
+     * player -> 需要设置前缀或后缀的玩家
+     *
+     * @see EnumChatFormat
+     * @see PacketPlayOutScoreboardTeam
+     */
+    override fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean, all:Boolean) {
         if (created) {
             createTeam(player)
         }
@@ -225,7 +227,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("displayName", component(player.displayName))
             b.setProperty("playerPrefix", component(prefix))
             b.setProperty("playerSuffix", component(suffix))
-            handle1DuplicatedPacketAll(b, packet)
+            if (all) {
+                handle1DuplicatedPacketAll(b, packet)
+            }else handle1DuplicatedPacket(b,packet,player)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -234,13 +238,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("c", component(prefix))
             packet.setProperty("d", component(suffix))
             packet.setProperty("i", 2)
+            if (all) {
+                onlinePlayers.forEach { p -> p.sendPacket(packet) }
+            }else player.sendPacket(packet)
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
         packet.setProperty("a", player.displayName)
         packet.setProperty("c", prefix)
         packet.setProperty("d", suffix)
-        onlinePlayers.forEach { p -> p.sendPacket(packet) }
+        if (all) {
+            onlinePlayers.forEach { p -> p.sendPacket(packet) }
+        }else player.sendPacket(packet)
     }
 
     private fun validateLineCount(line: Int) {
