@@ -207,29 +207,29 @@ fun Player.sendScoreboard(vararg content: String) {
     }
 }
 
-fun Player.setPrefix(prefix: String) {
+fun Player.setPrefix(prefix: String, all: Boolean) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
     if (prefix == "") {
-        scoreboardObj.clearPrefix()
+        scoreboardObj.clearPrefix(all)
         return
     }
     scoreboardObj.run {
-        setPrefix(prefix)
+        setPrefix(prefix, all)
     }
 }
 
-fun Player.setSuffix(suffix: String) {
+fun Player.setSuffix(suffix: String, all: Boolean) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
     if (suffix == "") {
-        scoreboardObj.clearSuffix()
+        scoreboardObj.clearSuffix(all)
         return
     }
     scoreboardObj.run {
-        setSuffix(suffix)
+        setSuffix(suffix, all)
     }
 }
 
@@ -299,13 +299,20 @@ private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
         val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, fixed = true)
         val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", fixed = true)!!
-        val localLootPredicateManager = localMinecraftServer.invokeMethod<Any>("getLootPredicateManager")
+        val localLootPredicateManager = if (major >= 9) {
+            localMinecraftServer.invokeMethod<Any>("getPredicateManager")
+        } else {
+            localMinecraftServer.invokeMethod<Any>("getLootPredicateManager")
+        }
         val lootDeserializationContext = nmsClass("LootDeserializationContext")
             .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
             .newInstance(localMinecraftKey, localLootPredicateManager)
         val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, fixed = true)
         if (localSerializedAdvancement != null) {
-            if (major >= 9) {
+            if (major >= 10) {
+                localMinecraftServer.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!
+                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
+            } else if (major >= 9) {
                 localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
                     .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
             } else {
@@ -395,27 +402,27 @@ private class PacketScoreboard(val player: Player) {
         currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
     }
 
-    fun setPrefix(prefix: String) {
+    fun setPrefix(prefix: String, all: Boolean) {
         this.prefix = prefix
-        nmsScoreboard.updateTeam(player, prefix, suffix, !created)
+        nmsScoreboard.updateTeam(player, prefix, suffix, !created, all)
         created = true
     }
 
-    fun clearPrefix() {
+    fun clearPrefix(all: Boolean) {
         this.prefix = ""
-        nmsScoreboard.updateTeam(player, "", suffix, !created)
+        nmsScoreboard.updateTeam(player, "", suffix, !created, all)
         created = true
     }
 
-    fun setSuffix(suffix: String) {
+    fun setSuffix(suffix: String, all: Boolean) {
         this.suffix = suffix
-        nmsScoreboard.updateTeam(player, prefix, suffix, !created)
+        nmsScoreboard.updateTeam(player, prefix, suffix, !created, all)
         created = true
     }
 
-    fun clearSuffix() {
+    fun clearSuffix(all: Boolean) {
         this.suffix = ""
-        nmsScoreboard.updateTeam(player, prefix, "", !created)
+        nmsScoreboard.updateTeam(player, prefix, "", !created, all)
         created = true
     }
 }
