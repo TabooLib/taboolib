@@ -83,6 +83,10 @@ object ConfigInjector : Injector.Fields {
                 }
                 file.nodes += field
                 var data = file.conf[node.value.ifEmpty { field.name }]
+                if (data == null) {
+                    warning("${node.bind}: ${node.value.ifEmpty { field.name }} is null")
+                    return
+                }
                 if (field.type == ConfigNodeTransfer::class.java) {
                     Ref.get<ConfigNodeTransfer<*, *>>(instance.get(), field)!!.update(data)
                 } else {
