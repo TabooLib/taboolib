@@ -47,5 +47,5 @@ abstract class NMSScoreboard {
 
     abstract fun display(player: Player)
 
-    abstract fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean)
+    abstract fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean, all: Boolean)
 }

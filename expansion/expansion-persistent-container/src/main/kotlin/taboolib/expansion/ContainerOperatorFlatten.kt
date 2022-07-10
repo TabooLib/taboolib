@@ -42,7 +42,7 @@ class ContainerOperatorFlatten(val table: Table<*, *>, val dataSource: DataSourc
         // 插入数据
         if (insertMap.isNotEmpty()) {
             table.insert(dataSource, "username", key, value) {
-                insertMap.filter { it.value != null }.forEach { (k, v) -> value(uniqueId, k, v!!) }
+                insertMap.filter { it.value != null }.forEach { (k, v) -> value(uniqueId.toString(), k, v!!) }
             }
         }
     }

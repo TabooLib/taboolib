@@ -255,7 +255,7 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
                     ParsedAction<?> action = optional.get();
                     CompletableFuture<?> newFuture = action.process(this);
                     if (!newFuture.isDone()) {
-                        newFuture.thenRunAsync(() -> this.process(newFuture), context().getExecutor());
+                        newFuture.thenRun(() -> this.process(newFuture));
                         return;
                     } else {
                         future = newFuture;
