@@ -47,9 +47,11 @@ interface PlaceholderExpansion {
     /**
      * 是否启用
      */
-    fun isEnabled(): Boolean {
-        return true
-    }
+    val enabled: Boolean
+        get() = true
+
+    val autoReload: Boolean
+        get() = false
 
     fun onPlaceholderRequest(player: Player?, args: String): String {
         return "onPlaceholderRequest(player: Player?, args: String) not implemented"
@@ -72,7 +74,7 @@ interface PlaceholderExpansion {
         override fun inject(clazz: Class<*>, instance: Supplier<*>) {
             if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
                 val expansion = instance.get() as PlaceholderExpansion
-                if (!expansion.isEnabled()) {
+                if (!expansion.enabled) {
                     return
                 }
                 object : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
@@ -101,6 +103,7 @@ interface PlaceholderExpansion {
                         return expansion.onPlaceholderRequest(player, params)
                     }
                 }.also { papiExpansion ->
+                    if (!expansion.autoReload) return@also
                     registerBukkitListener(ExpansionUnregisterEvent::class.java) {
                         if (it.expansion != papiExpansion) {
                             return@registerBukkitListener
