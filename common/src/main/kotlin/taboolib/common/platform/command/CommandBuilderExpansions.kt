@@ -17,6 +17,7 @@ fun <T> CommandContext<T>.playerAt(index: Int): ProxyPlayer {
 }
 
 fun <T> CommandContext<T>.location(offset: Int, detailed: Boolean = false): Location {
+    val sender = sender()
     val world = if (sender is ProxyPlayer && argument(offset) == "~") sender.world else argument(offset)
     val x = if (sender is ProxyPlayer && argument(offset + 1) == "~") sender.location.x else argument(offset + 1).toDoubleOrNull() ?: 0.0
     val y = if (sender is ProxyPlayer && argument(offset + 2) == "~") sender.location.y else argument(offset + 2).toDoubleOrNull() ?: 0.0
@@ -30,6 +31,7 @@ fun <T> CommandContext<T>.location(offset: Int, detailed: Boolean = false): Loca
 }
 
 fun <T> CommandContext<T>.locationAt(index: Int, detailed: Boolean = false): Location {
+    val sender = sender()
     val world = if (sender is ProxyPlayer && get(index) == "~") sender.world else get(index)
     val x = if (sender is ProxyPlayer && get(index + 1) == "~") sender.location.x else get(index + 1).toDoubleOrNull() ?: 0.0
     val y = if (sender is ProxyPlayer && get(index + 2) == "~") sender.location.y else get(index + 2).toDoubleOrNull() ?: 0.0

@@ -12,7 +12,7 @@ import taboolib.common.util.subList
  * @author sky
  * @since 2021/6/25 12:50 上午
  */
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "DuplicatedCode")
 @Isolated
 object CommandBuilder {
 

@@ -1,6 +1,7 @@
 package taboolib.common.platform.command
 
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.function.adaptCommandSender
 
 /**
  * TabooLib
@@ -10,7 +11,7 @@ import taboolib.common.platform.ProxyCommandSender
  * @since 2021/6/25 10:02 上午
  */
 class CommandContext<T>(
-    val sender: T,
+    internal val sender: T,
     val command: CommandStructure,
     val name: String,
     val commandCompound: CommandBuilder.CommandBase,
@@ -18,8 +19,12 @@ class CommandContext<T>(
     internal var index: Int = 0,
 ) {
 
+    fun sender(): ProxyCommandSender {
+        return if (sender is ProxyCommandSender) sender else adaptCommandSender(sender as Any)
+    }
+
     fun checkPermission(permission: String): Boolean {
-        return (sender as ProxyCommandSender).hasPermission(permission)
+        return sender().hasPermission(permission)
     }
 
     /**
