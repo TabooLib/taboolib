@@ -1,13 +1,18 @@
 @file:Isolated
+
 package taboolib.platform.compat
 
 import me.clip.placeholderapi.PlaceholderAPI
+import me.clip.placeholderapi.events.ExpansionUnregisterEvent
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.registerBukkitListener
 import taboolib.platform.BukkitPlugin
 import java.util.function.Supplier
 
@@ -42,9 +47,11 @@ interface PlaceholderExpansion {
     /**
      * 是否启用
      */
-    fun isEnabled(): Boolean {
-        return true
-    }
+    val enabled: Boolean
+        get() = true
+
+    val autoReload: Boolean
+        get() = false
 
     fun onPlaceholderRequest(player: Player?, args: String): String {
         return "onPlaceholderRequest(player: Player?, args: String) not implemented"
@@ -67,7 +74,7 @@ interface PlaceholderExpansion {
         override fun inject(clazz: Class<*>, instance: Supplier<*>) {
             if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
                 val expansion = instance.get() as PlaceholderExpansion
-                if (!expansion.isEnabled()) {
+                if (!expansion.enabled) {
                     return
                 }
                 object : me.clip.placeholderapi.expansion.PlaceholderExpansion() {
@@ -94,6 +101,14 @@ interface PlaceholderExpansion {
 
                     override fun onRequest(player: OfflinePlayer?, params: String): String {
                         return expansion.onPlaceholderRequest(player, params)
+                    }
+                }.also { papiExpansion ->
+                    if (!expansion.autoReload) return@also
+                    registerBukkitListener(ExpansionUnregisterEvent::class.java) {
+                        if (it.expansion != papiExpansion) {
+                            return@registerBukkitListener
+                        }
+                        Bukkit.getScheduler().runTask(BukkitPlugin.getInstance(), papiExpansion::register)
                     }
                 }.register()
             }
