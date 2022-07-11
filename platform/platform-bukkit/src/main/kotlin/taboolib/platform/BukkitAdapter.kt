@@ -48,4 +48,8 @@ class BukkitAdapter : PlatformAdapter {
     override fun platformLocation(location: Location): Any {
         return location.toBukkitLocation()
     }
+
+    override fun allWorlds(): List<String> {
+        return Bukkit.getWorlds().map { it.name }
+    }
 }

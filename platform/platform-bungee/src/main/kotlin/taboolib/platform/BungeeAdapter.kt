@@ -44,4 +44,8 @@ class BungeeAdapter : PlatformAdapter {
     override fun platformLocation(location: Location): Any {
         error("unsupported")
     }
+
+    override fun allWorlds(): List<String> {
+        TODO("Not yet implemented")
+    }
 }

@@ -42,4 +42,8 @@ class Sponge9Adapter : PlatformAdapter {
     override fun platformLocation(location: Location): Any {
         TODO("Not yet implemented")
     }
+
+    override fun allWorlds(): List<String> {
+        TODO("Not yet implemented")
+    }
 }

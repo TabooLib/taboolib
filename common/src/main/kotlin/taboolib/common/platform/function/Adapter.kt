@@ -57,3 +57,10 @@ fun adaptLocation(any: Any): Location {
 fun <T> platformLocation(location: Location): T {
     return PlatformFactory.getService<PlatformAdapter>().platformLocation(location) as T
 }
+
+/**
+ * 获取所有世界
+ */
+fun allWorlds(): List<String> {
+    return PlatformFactory.getService<PlatformAdapter>().allWorlds()
+}

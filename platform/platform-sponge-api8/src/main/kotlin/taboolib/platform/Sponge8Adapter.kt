@@ -43,4 +43,8 @@ class Sponge8Adapter : PlatformAdapter {
     override fun platformLocation(location: Location): Any {
         TODO("Not yet implemented")
     }
+
+    override fun allWorlds(): List<String> {
+        return Sponge.server().worldManager().worldKeys().map { it.formatted() }
+    }
 }

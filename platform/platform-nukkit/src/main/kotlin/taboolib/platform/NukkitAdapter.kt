@@ -1,6 +1,5 @@
 package taboolib.platform
 
-import cn.nukkit.Nukkit
 import cn.nukkit.Server
 import cn.nukkit.command.CommandSender
 import cn.nukkit.player.Player
@@ -45,5 +44,9 @@ class NukkitAdapter : PlatformAdapter {
     override fun platformLocation(location: Location): Any {
         val level = NukkitPlugin.getInstance().server.levelManager.getLevelByName(location.world)
         return cn.nukkit.level.Location.from(location.x.toFloat(), location.y.toFloat(), location.z.toFloat(), location.yaw, location.pitch, level)
+    }
+
+    override fun allWorlds(): List<String> {
+        return Server.getInstance().levels.map { it.name }
     }
 }

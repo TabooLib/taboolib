@@ -27,4 +27,6 @@ interface PlatformAdapter {
 
     fun platformLocation(location: Location): Any
 
+    fun allWorlds(): List<String>
+
 }

@@ -8,8 +8,8 @@ plugins {
 }
 
 subprojects {
-    apply(plugin = "java-library")
-    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "java-library") w
+            apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
 
     repositories {
