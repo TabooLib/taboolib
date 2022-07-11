@@ -54,16 +54,16 @@ fun CommandBuilder.CommandComponent.location(detailed: Boolean = false, dynamic:
     dynamic("world") {
         suggestion<ProxyCommandSender> { sender, _ -> worlds(sender) }
         dynamic("x") {
-            suggestion<ProxyPlayer> { sender, _ -> listOf(format(sender.location.x), "~") }
+            suggestion<ProxyPlayer>(uncheck = true) { sender, _ -> listOf(format(sender.location.x), "~") }
             dynamic("y") {
-                suggestion<ProxyPlayer> { sender, _ -> listOf(format(sender.location.y), "~") }
+                suggestion<ProxyPlayer>(uncheck = true) { sender, _ -> listOf(format(sender.location.y), "~") }
                 dynamic("z") {
-                    suggestion<ProxyPlayer> { sender, _ -> listOf(format(sender.location.z), "~") }
+                    suggestion<ProxyPlayer>(uncheck = true) { sender, _ -> listOf(format(sender.location.z), "~") }
                     if (detailed) {
                         dynamic("yaw") {
-                            suggestion<ProxyPlayer> { sender, _ -> listOf(format(sender.location.y), "~") }
+                            suggestion<ProxyPlayer>(uncheck = true) { sender, _ -> listOf(format(sender.location.y), "~") }
                             dynamic("pitch") {
-                                suggestion<ProxyPlayer> { sender, _ -> listOf(format(sender.location.z), "~") }
+                                suggestion<ProxyPlayer>(uncheck = true) { sender, _ -> listOf(format(sender.location.z), "~") }
                                 dynamic(this)
                             }
                         }
