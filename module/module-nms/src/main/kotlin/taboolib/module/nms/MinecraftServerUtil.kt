@@ -43,9 +43,18 @@ inline fun <reified T> nmsProxy(bind: String = "{name}Impl"): T {
 }
 
 /**
+ * 向玩家发送数据包（异步）
+ */
+fun Player.sendPacket(packet: Any): CompletableFuture<Unit> {
+    val future = CompletableFuture<Unit>()
+    packetPool.submit { future.complete(sendPacketBlocking(packet)) }
+    return future
+}
+
+/**
  * 向玩家发送数据包
  */
-fun Player.sendPacket(packet: Any) {
+fun Player.sendPacketBlocking(packet: Any) {
     // 1.18
     if (MinecraftVersion.major >= 10) {
         getProperty<Any>("entity/connection")!!.invokeMethod<Any>("send", packet)
@@ -54,13 +63,4 @@ fun Player.sendPacket(packet: Any) {
     } else {
         getProperty<Any>("entity/playerConnection")!!.invokeMethod<Any>("sendPacket", packet)
     }
-}
-
-/**
- * 向玩家发送数据包（异步）
- */
-fun Player.sendPacketAsync(packet: Any): CompletableFuture<Unit> {
-    val future = CompletableFuture<Unit>()
-    packetPool.submit { future.complete(sendPacket(packet)) }
-    return future
 }
