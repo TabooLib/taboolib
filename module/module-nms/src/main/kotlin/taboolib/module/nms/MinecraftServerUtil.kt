@@ -4,9 +4,13 @@ import org.bukkit.entity.Player
 import taboolib.common.io.runningClasses
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 
 val nmsProxyMap = ConcurrentHashMap<String, Any>()
+
+private val packetPool = Executors.newFixedThreadPool(32)
 
 fun obcClass(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
@@ -50,4 +54,13 @@ fun Player.sendPacket(packet: Any) {
     } else {
         getProperty<Any>("entity/playerConnection")!!.invokeMethod<Any>("sendPacket", packet)
     }
+}
+
+/**
+ * 向玩家发送数据包（异步）
+ */
+fun Player.sendPacketAsync(packet: Any): CompletableFuture<Unit> {
+    val future = CompletableFuture<Unit>()
+    packetPool.submit { future.complete(sendPacket(packet)) }
+    return future
 }
