@@ -39,9 +39,9 @@ object PacketSender {
             playerConnectionMap[player.name]!!
         } else {
             val connection = if (MinecraftVersion.isUniversal) {
-                getProperty<Any>("entity/connection")!!
+                player.getProperty<Any>("entity/connection")!!
             } else {
-                getProperty<Any>("entity/playerConnection")!!
+                player.getProperty<Any>("entity/playerConnection")!!
             }
             playerConnectionMap[player.name] = connection
             connection

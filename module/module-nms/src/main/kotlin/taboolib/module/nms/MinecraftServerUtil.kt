@@ -45,7 +45,14 @@ inline fun <reified T> nmsProxy(bind: String = "{name}Impl"): T {
  */
 fun Player.sendPacket(packet: Any): CompletableFuture<Unit> {
     val future = CompletableFuture<Unit>()
-    packetPool.submit { future.complete(sendPacketBlocking(packet)) }
+    packetPool.submit {
+        try {
+            future.complete(sendPacketBlocking(packet))
+        } catch (e: Throwable) {
+            future.completeExceptionally(e)
+            e.printStackTrace()
+        }
+    }
     return future
 }
 

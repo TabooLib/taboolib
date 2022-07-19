@@ -119,29 +119,29 @@ open class ItemBuilder {
         }
         try {
             customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
-        } catch (ex: NoSuchFieldException) {
+        } catch (_: NoSuchFieldException) {
         }
         try {
             isUnbreakable = itemMeta.isUnbreakable
         } catch (ex: NoSuchMethodError) {
             try {
                 isUnbreakable = itemMeta.invokeMethod<Any>("spigot")!!.invokeMethod<Boolean>("isUnbreakable") ?: false
-            } catch (ex: NoSuchMethodException) {
+            } catch (_: NoSuchMethodException) {
             }
         }
         try {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
-        } catch (ex: NoClassDefFoundError) {
-        } catch (ex: UnsupportedOperationException) {
+        } catch (_: NoClassDefFoundError) {
+        } catch (_: UnsupportedOperationException) {
 
         }
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
-        } catch (ex: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
         }
     }
 
