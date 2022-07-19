@@ -7,6 +7,7 @@ import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
 import taboolib.platform.type.VelocityCommandSender
 import taboolib.platform.type.VelocityPlayer
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -19,7 +20,7 @@ import taboolib.platform.type.VelocityPlayer
 @PlatformSide([Platform.VELOCITY])
 class VelocityAdapter : PlatformAdapter {
 
-    val plugin by lazy { VelocityPlugin.getInstance() }
+    val plugin by unsafeLazy { VelocityPlugin.getInstance() }
 
     override fun console(): ProxyCommandSender {
         return adaptCommandSender(plugin.server.consoleCommandSource)

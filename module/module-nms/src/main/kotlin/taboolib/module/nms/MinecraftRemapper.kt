@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureWriter
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -21,7 +22,7 @@ open class MinecraftRemapper : Remapper() {
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
 
-    val mapping by lazy {
+    val mapping by unsafeLazy {
         MinecraftVersion.mapping
     }
 

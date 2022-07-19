@@ -5,6 +5,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
+import taboolib.common.util.unsafeLazy
 import java.io.File
 import java.util.logging.Logger
 
@@ -19,7 +20,7 @@ import java.util.logging.Logger
 @PlatformSide([Platform.BUNGEE])
 class BungeeIO : PlatformIO {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
+    val plugin by unsafeLazy { BungeePlugin.getInstance() }
 
     private val logger: Logger
         get() = try {

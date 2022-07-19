@@ -23,15 +23,15 @@ class Sponge9Executor : PlatformExecutor {
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
-    val plugin by lazy {
+    val plugin by unsafeLazy {
         Sponge9Plugin.getInstance()
     }
 
-    private val schedulerSync by lazy {
+    private val schedulerSync by unsafeLazy {
         Sponge.server().scheduler()
     }
 
-    private val schedulerAsync by lazy {
+    private val schedulerAsync by unsafeLazy {
         Sponge.game().asyncScheduler()
     }
 

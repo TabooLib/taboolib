@@ -23,7 +23,7 @@ import taboolib.platform.type.sender
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Adapter : PlatformAdapter {
 
-    val plugin by lazy { CloudNetV3Plugin.getInstance() }
+    val plugin by unsafeLazy { CloudNetV3Plugin.getInstance() }
 
     override fun console(): ProxyCommandSender {
         return adaptCommandSender(CloudNet.getInstance().consoleCommandSender)

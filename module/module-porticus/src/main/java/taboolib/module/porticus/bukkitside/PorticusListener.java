@@ -60,7 +60,7 @@ public class PorticusListener implements Listener, PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte @NotNull [] bytes) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] bytes) {
         if (channel.equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
             try {
                 Message message = MessageReader.read(bytes);

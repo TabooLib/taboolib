@@ -8,6 +8,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.CompletableFuture
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -23,15 +24,15 @@ class Sponge8Executor : PlatformExecutor {
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
-    val plugin by lazy {
+    val plugin by unsafeLazy {
         Sponge8Plugin.getInstance()
     }
 
-    private val schedulerSync by lazy {
+    private val schedulerSync by unsafeLazy {
         Sponge.server().scheduler()
     }
 
-    private val schedulerAsync by lazy {
+    private val schedulerAsync by unsafeLazy {
         Sponge.game().asyncScheduler()
     }
 

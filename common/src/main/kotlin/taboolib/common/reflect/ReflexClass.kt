@@ -42,7 +42,7 @@ class ReflexClass(val clazz: Class<*>) {
             clazz.interfaces.forEach {
                 interfaces.add(ReflexClass(it))
             }
-        } catch (ex: Throwable) {
+        } catch (_: Throwable) {
         }
     }
 

@@ -16,19 +16,22 @@ import java.util.concurrent.ConcurrentHashMap
  */
 object RefRemapper : ReflexRemapper {
 
+    val major = MinecraftVersion.major
+    var isUniversal = MinecraftVersion.isUniversal
+    val mapping = MinecraftVersion.mapping
     val methodRemapperCacheMap = ConcurrentHashMap<String, List<Class<*>>>()
 
     override fun field(name: String, field: String): String {
-        if (MinecraftVersion.isUniversal) {
-            return MinecraftVersion.mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName ?: field
+        if (isUniversal) {
+            return mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName ?: field
         }
         return field
     }
 
     override fun method(name: String, method: String, vararg parameter: Any?): String {
         // 1.18
-        if (MinecraftVersion.major >= 10) {
-            return MinecraftVersion.mapping.methods.firstOrNull {
+        if (major >= 10) {
+            return mapping.methods.firstOrNull {
                 // 判断方法描述符获取准确方法
                 it.path == name && it.translateName == method && checkParameterType(it.descriptor, *parameter)
             }?.mojangName ?: method

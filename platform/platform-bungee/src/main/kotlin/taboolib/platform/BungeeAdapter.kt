@@ -5,6 +5,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
+import taboolib.common.util.unsafeLazy
 import taboolib.platform.type.BungeeCommandSender
 import taboolib.platform.type.BungeePlayer
 
@@ -19,7 +20,7 @@ import taboolib.platform.type.BungeePlayer
 @PlatformSide([Platform.BUNGEE])
 class BungeeAdapter : PlatformAdapter {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
+    val plugin by unsafeLazy { BungeePlugin.getInstance() }
 
     override fun console(): ProxyCommandSender {
         return adaptCommandSender(plugin.proxy.console)

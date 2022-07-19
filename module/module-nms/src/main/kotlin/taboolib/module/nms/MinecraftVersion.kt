@@ -1,25 +1,35 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.disablePlugin
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.reflect.Reflex
+import taboolib.common.util.unsafeLazy
 import java.io.FileInputStream
 
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 
+    @Awake(LifeCycle.LOAD)
+    fun init() {
+        if (runningPlatform == Platform.BUKKIT) {
+            Reflex.remapper.add(RefRemapper)
+        }
+    }
+
     @Suppress("MemberNameEqualsClassName")
-    val minecraftVersion by lazy {
+    val minecraftVersion by unsafeLazy {
         Bukkit.getServer().javaClass.name.split('.')[3]
     }
 
     /**
      * 当前正在运行的版本
      */
-    val runningVersion by lazy {
+    val runningVersion by unsafeLazy {
         val version = Bukkit.getServer().version.split("MC:")[1]
         version.substring(0, version.length - 1).trim()
     }
@@ -46,7 +56,7 @@ object MinecraftVersion {
     /**
      * 老版本格式
      */
-    val majorLegacy by lazy {
+    val majorLegacy by unsafeLazy {
         when (major) {
             0 -> 10800
             1 -> 10900
@@ -67,14 +77,14 @@ object MinecraftVersion {
     /**
      * 主版本号
      */
-    val major by lazy {
+    val major by unsafeLazy {
         supportedVersion.indexOfFirst { it.contains(runningVersion) }
     }
 
     /**
      * 次版本号
      */
-    val minor by lazy {
+    val minor by unsafeLazy {
         if (major != -1) {
             supportedVersion[major].indexOf(runningVersion)
         } else {
@@ -85,18 +95,18 @@ object MinecraftVersion {
     /**
      * 是否支持当前运行版本
      */
-    val isSupported by lazy {
+    val isSupported by unsafeLazy {
         supportedVersion.flatten().contains(runningVersion)
     }
 
     /**
      * 是否为 1.17 以上版本
      */
-    val isUniversal by lazy {
+    val isUniversal by unsafeLazy {
         major >= 9
     }
 
-    val mapping by lazy {
+    val mapping by unsafeLazy {
         val mappingFile = if (isUniversal) {
             MappingFile.files[runningVersion]
         } else {
@@ -110,11 +120,5 @@ object MinecraftVersion {
             FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
             FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
         )
-    }
-
-    init {
-        if (runningPlatform == Platform.BUKKIT) {
-            Reflex.remapper.add(RefRemapper)
-        }
     }
 }

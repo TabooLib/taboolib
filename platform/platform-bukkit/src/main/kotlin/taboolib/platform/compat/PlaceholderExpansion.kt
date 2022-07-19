@@ -11,8 +11,8 @@ import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
-import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.registerBukkitListener
+import taboolib.common.util.unsafeLazy
 import taboolib.platform.BukkitPlugin
 import java.util.function.Supplier
 
@@ -67,7 +67,7 @@ interface PlaceholderExpansion {
     @Awake
     object PlaceholderRegister : Injector.Classes {
 
-        val hooked by lazy {
+        val hooked by unsafeLazy {
             kotlin.runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
         }
 

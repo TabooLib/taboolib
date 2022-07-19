@@ -15,6 +15,7 @@ import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
+import taboolib.common.util.unsafeLazy
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
 import java.net.InetSocketAddress
@@ -27,25 +28,26 @@ import java.util.*
  * @author sky
  * @since 2021/6/17 10:33 下午
  */
+@Suppress("HasPlatformType")
 class BukkitPlayer(val player: Player) : ProxyPlayer {
 
-    val legacyVersion by lazy {
+    val legacyVersion by unsafeLazy {
         Bukkit.getServer().javaClass.name.split('.')[3]
     }
 
-    val rChatCompoundText by lazy {
+    val rChatCompoundText by unsafeLazy {
         nmsClass("ChatComponentText").getDeclaredConstructor(String::class.java)
     }
 
-    val rPacketPlayOutTitle by lazy {
+    val rPacketPlayOutTitle by unsafeLazy {
         nmsClass("PacketPlayOutTitle").getDeclaredConstructor()
     }
 
-    val rEnumTitleAction by lazy {
+    val rEnumTitleAction by unsafeLazy {
         nmsClass("PacketPlayOutTitle\$EnumTitleAction").enumConstants
     }
 
-    val rPacketPlayOutChat by lazy {
+    val rPacketPlayOutChat by unsafeLazy {
         nmsClass("PacketPlayOutChat").getDeclaredConstructor()
     }
 

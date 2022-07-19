@@ -5,6 +5,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.service.PlatformEvent
+import taboolib.common.util.unsafeLazy
 import taboolib.platform.type.BungeeProxyEvent
 
 /**
@@ -18,7 +19,7 @@ import taboolib.platform.type.BungeeProxyEvent
 @PlatformSide([Platform.BUNGEE])
 class BungeeEvent : PlatformEvent {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
+    val plugin by unsafeLazy { BungeePlugin.getInstance() }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
         val event = BungeeProxyEvent(proxyEvent)

@@ -15,6 +15,7 @@ import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -32,7 +33,7 @@ class NukkitCommand : PlatformCommand {
 
     val knownCommands = ArrayList<CommandStructure>()
 
-    val registeredCommands by lazy {
+    val registeredCommands by unsafeLazy {
         Server.getInstance().commandRegistry.getProperty<MutableMap<String, Command>>("registeredCommands")!!
     }
 

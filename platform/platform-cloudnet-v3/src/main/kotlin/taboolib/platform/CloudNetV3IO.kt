@@ -21,7 +21,7 @@ import java.io.File
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3IO : PlatformIO {
 
-    val plugin by lazy { CloudNetV3Plugin.getInstance() }
+    val plugin by unsafeLazy { CloudNetV3Plugin.getInstance() }
 
     private val logger: ILogger
         get() = try {

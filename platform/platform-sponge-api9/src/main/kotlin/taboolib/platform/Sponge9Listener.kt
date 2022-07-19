@@ -27,7 +27,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 @PlatformSide([Platform.SPONGE_API_9])
 class Sponge9Listener : PlatformListener {
 
-    val plugin by lazy {
+    val plugin by unsafeLazy {
         Sponge9Plugin.getInstance()
     }
 

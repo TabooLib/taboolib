@@ -9,6 +9,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
 import java.io.File
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -21,7 +22,7 @@ import java.io.File
 @PlatformSide([Platform.VELOCITY])
 class VelocityIO : PlatformIO {
 
-    val plugin by lazy { VelocityPlugin.getInstance() }
+    val plugin by unsafeLazy { VelocityPlugin.getInstance() }
 
     private val logger: Logger
         get() = try {

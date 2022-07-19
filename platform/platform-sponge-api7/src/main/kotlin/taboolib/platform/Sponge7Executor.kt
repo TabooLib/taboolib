@@ -6,6 +6,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
 import java.util.concurrent.CompletableFuture
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -21,7 +22,7 @@ class Sponge7Executor : PlatformExecutor {
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private var started = false
 
-    val plugin by lazy {
+    val plugin by unsafeLazy {
         Sponge7Plugin.getInstance()
     }
 

@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.util.unsafeLazy
 import taboolib.module.chat.TellrawJson
 
 fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
@@ -28,7 +29,7 @@ fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
     return hoverItem(nmsKey, nmsItemStack.invokeMethod<Any>("getTag")?.toString() ?: "{}")
 }
 
-private val classCraftItemStack by lazy {
+private val classCraftItemStack by unsafeLazy {
     obcClassLegacy("inventory.CraftItemStack")
 }
 

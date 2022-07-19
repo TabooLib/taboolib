@@ -1,7 +1,6 @@
 package taboolib.platform
 
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.ComponentBuilder
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.BaseComponent
 import net.md_5.bungee.api.chat.TextComponent
@@ -24,7 +23,7 @@ import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
-import java.lang.ClassCastException
+import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Constructor
 
 /**
@@ -41,15 +40,15 @@ class BukkitCommand : PlatformCommand {
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
 
-    val commandMap by lazy {
+    val commandMap by unsafeLazy {
         Bukkit.getPluginManager().getProperty<SimpleCommandMap>("commandMap")!!
     }
 
-    val knownCommands by lazy {
+    val knownCommands by unsafeLazy {
         commandMap.getProperty<MutableMap<String, Command>>("knownCommands")!!
     }
 
-    val constructor: Constructor<PluginCommand> by lazy {
+    val constructor: Constructor<PluginCommand> by unsafeLazy {
         PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java).also {
             it.isAccessible = true
         }

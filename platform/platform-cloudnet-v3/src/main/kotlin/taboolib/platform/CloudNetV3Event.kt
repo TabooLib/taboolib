@@ -19,7 +19,7 @@ import taboolib.platform.type.CloudNetV3ProxyEvent
 @PlatformSide([Platform.CLOUDNET_V3])
 class CloudNetV3Event : PlatformEvent {
 
-    val plugin by lazy { CloudNetV3Plugin.getInstance() }
+    val plugin by unsafeLazy { CloudNetV3Plugin.getInstance() }
 
     override fun callEvent(proxyEvent: ProxyEvent) {
         val event = CloudNetV3ProxyEvent(proxyEvent)

@@ -9,6 +9,7 @@ import taboolib.common.Isolated
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.setProperty
+import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.TellrawJson
 
@@ -48,15 +49,15 @@ private val isUniversal = try {
     true
 }
 
-private val classCraftItemStack by lazy {
+private val classCraftItemStack by unsafeLazy {
     obcClassLegacy("inventory.CraftItemStack")
 }
 
-private val classChatSerializer by lazy {
+private val classChatSerializer by unsafeLazy {
     nmsClassLegacy("IChatBaseComponent\$ChatSerializer")
 }
 
-private val enumHandMainHand by lazy {
+private val enumHandMainHand by unsafeLazy {
     nmsClassLegacy("EnumHand").enumConstants[0]
 }
 

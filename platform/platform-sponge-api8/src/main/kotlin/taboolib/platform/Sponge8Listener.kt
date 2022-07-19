@@ -15,6 +15,7 @@ import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -27,7 +28,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 @PlatformSide([Platform.SPONGE_API_8])
 class Sponge8Listener : PlatformListener {
 
-    val plugin by lazy {
+    val plugin by unsafeLazy {
         Sponge8Plugin.getInstance()
     }
 

@@ -12,8 +12,8 @@ import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Method
-import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * TabooLib
@@ -26,17 +26,17 @@ import java.util.concurrent.CopyOnWriteArraySet
 @PlatformSide([Platform.BUNGEE])
 class BungeeListener : PlatformListener {
 
-    val plugin by lazy { BungeePlugin.getInstance() }
+    val plugin by unsafeLazy { BungeePlugin.getInstance() }
 
-    val eventBus by lazy {
+    val eventBus by unsafeLazy {
         BungeeCord.getInstance().pluginManager.getProperty<EventBus>("eventBus")!!
     }
 
-    val byListenerAndPriority by lazy {
+    val byListenerAndPriority by unsafeLazy {
         eventBus.getProperty<MutableMap<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>>("byListenerAndPriority")!!
     }
 
-    val byEventBaked by lazy {
+    val byEventBaked by unsafeLazy {
         eventBus.getProperty<MutableMap<Class<*>, Array<EventHandlerMethod>>>("byEventBaked")!!
     }
 

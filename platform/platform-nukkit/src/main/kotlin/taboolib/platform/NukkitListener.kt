@@ -14,6 +14,7 @@ import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.util.unsafeLazy
 import java.util.concurrent.CopyOnWriteArraySet
 
 /**
@@ -27,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArraySet
 @PlatformSide([Platform.NUKKIT])
 class NukkitListener : PlatformListener {
 
-    private val plugin by lazy { NukkitPlugin.getInstance() }
+    private val plugin by unsafeLazy { NukkitPlugin.getInstance() }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {

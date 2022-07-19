@@ -11,6 +11,7 @@ import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.reflect.Reflex.Companion.getProperty
+import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib
@@ -23,7 +24,7 @@ import taboolib.common.reflect.Reflex.Companion.getProperty
 @PlatformSide([Platform.VELOCITY])
 class VelocityListener : PlatformListener {
 
-    val plugin by lazy { VelocityPlugin.getInstance() }
+    val plugin by unsafeLazy { VelocityPlugin.getInstance() }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         error("unsupported")
