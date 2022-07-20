@@ -4,12 +4,7 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.Injector
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
-import taboolib.common.platform.function.postpone
-import taboolib.common.platform.function.registerBungeeListener
-import taboolib.common.platform.function.registerVelocityListener
-import taboolib.common.platform.function.registerSpongeListener
-import taboolib.common.platform.function.registerBukkitListener
-import taboolib.common.platform.function.runningPlatform
+import taboolib.common.platform.function.*
 import java.lang.reflect.Method
 import java.util.function.Supplier
 

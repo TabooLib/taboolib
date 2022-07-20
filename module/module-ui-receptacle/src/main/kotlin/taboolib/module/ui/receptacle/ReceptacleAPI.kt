@@ -2,7 +2,7 @@ package taboolib.module.ui.receptacle
 
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.event.inventory.InventoryType.*
+import org.bukkit.event.inventory.InventoryType.CHEST
 import java.util.*
 
 private val viewingReceptacleMap = HashMap<UUID, Receptacle>()

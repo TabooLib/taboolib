@@ -1,10 +1,8 @@
 package taboolib.module.configuration.util
 
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Configuration.Companion.getObject
 import taboolib.module.configuration.Configuration.Companion.setObject
-import taboolib.module.configuration.Type
 import kotlin.reflect.KProperty
 
 /**

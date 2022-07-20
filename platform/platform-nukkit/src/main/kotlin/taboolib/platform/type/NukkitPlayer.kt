@@ -9,7 +9,6 @@ import com.nukkitx.protocol.bedrock.packet.PlaySoundPacket
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.platform.NukkitPlugin

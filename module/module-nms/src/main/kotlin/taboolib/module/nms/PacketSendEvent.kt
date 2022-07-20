@@ -1,7 +1,6 @@
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
-import taboolib.common.platform.event.ProxyEvent
 import taboolib.platform.type.BukkitProxyEvent
 
 /**

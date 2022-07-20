@@ -1,13 +1,13 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
+import org.tabooproject.reflex.Reflex
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.disablePlugin
 import taboolib.common.platform.function.runningPlatform
-import taboolib.common.reflect.Reflex
 import taboolib.common.util.unsafeLazy
 import java.io.FileInputStream
 

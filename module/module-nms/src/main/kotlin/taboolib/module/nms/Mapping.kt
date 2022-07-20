@@ -3,6 +3,7 @@ package taboolib.module.nms
 import taboolib.common.util.join
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import java.util.*
 
 /**
  * TabooLib
@@ -13,9 +14,9 @@ import java.nio.charset.StandardCharsets
  */
 class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) {
 
-    val classMap = HashMap<String, String>()
-    val fields = ArrayList<Field>()
-    val methods = ArrayList<Method>() // 1.18 only
+    val classMap = LinkedHashMap<String, String>()
+    val fields = LinkedList<Field>()
+    val methods = LinkedList<Method>() // 1.18 only
 
     init {
         inputStreamCombined.use {
@@ -55,7 +56,7 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
         val className = path.substringAfterLast('.', "")
     }
 
-    class Method(val path: String, val mojangName: String, val translateName: String, val descriptor: String) {
+    data class Method(val path: String, val mojangName: String, val translateName: String, val descriptor: String) {
 
         val className = path.substringAfterLast('.', "")
     }

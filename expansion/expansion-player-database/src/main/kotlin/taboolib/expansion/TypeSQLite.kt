@@ -2,7 +2,10 @@ package taboolib.expansion
 
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.pluginId
-import taboolib.module.database.*
+import taboolib.module.database.ColumnTypeSQLite
+import taboolib.module.database.Host
+import taboolib.module.database.Table
+import taboolib.module.database.getHost
 import java.io.File
 
 class TypeSQLite(file: File) : Type() {

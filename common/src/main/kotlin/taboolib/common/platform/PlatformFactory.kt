@@ -9,7 +9,6 @@ import taboolib.common.io.runningClasses
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
 
-@Suppress("UNCHECKED_CAST", "NO_REFLECTION_IN_CLASS_PATH")
 object PlatformFactory {
 
     val awokenMap = HashMap<String, Any>()
