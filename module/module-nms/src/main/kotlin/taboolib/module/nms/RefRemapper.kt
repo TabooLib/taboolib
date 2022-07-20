@@ -46,7 +46,7 @@ object RefRemapper : ReflexRemapper {
         if (major >= 10) {
             val namespace = "$name#$method(${parameter.joinToString(",") { it?.javaClass?.name.toString() }})"
             return if (methodRemapCacheMap.containsKey(namespace)) {
-                fieldRemapCacheMap[namespace]!!
+                methodRemapCacheMap[namespace]!!
             } else {
                 val value = mapping.methods.firstOrNull {
                     // 判断方法描述符获取准确方法
