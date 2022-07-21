@@ -23,7 +23,7 @@ class Reflex {
 
         @Deprecated("Use taboolib.library.reflex.Reflex")
         fun <T> Class<T>.invokeConstructor(vararg parameter: Any?): T {
-            return invokeConstructor0(this, *parameter)
+            return invokeConstructor0(*parameter)
         }
 
         @Deprecated("Use taboolib.library.reflex.Reflex")
