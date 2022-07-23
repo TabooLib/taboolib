@@ -60,6 +60,10 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         println(this)
         ex.printStackTrace()
         null
+    } catch (ex: InternalError) {
+        println(this)
+        ex.printStackTrace()
+        null
     }
 }
 

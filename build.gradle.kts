@@ -62,7 +62,8 @@ publishing {
         create<MavenPublication>("maven") {
             artifactId = "taboolib"
             groupId = "io.izzel"
-            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
+            version = "test-0723-1"
+            // version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
             println("> groupId $groupId, artifactId $artifactId, version $version")
             file("$buildDir/libs").listFiles()?.forEach { file ->
                 // 排除不需要发布的文件
