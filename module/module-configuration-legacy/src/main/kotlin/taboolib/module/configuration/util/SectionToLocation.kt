@@ -12,8 +12,8 @@ fun ConfigurationSection.setLocation(path: String, location: Location) {
         set("x", location.x)
         set("y", location.y)
         set("z", location.z)
-        set("pitch", location.pitch)
         set("yaw", location.yaw)
+        set("pitch", location.pitch)
     }
 }
 
@@ -24,8 +24,8 @@ fun ConfigurationSection.getLocation(path: String): Location? {
             section.getDouble("x"),
             section.getDouble("y"),
             section.getDouble("z"),
-            section.getDouble("pitch").toFloat(),
-            section.getDouble("yaw").toFloat()
+            section.getDouble("yaw").toFloat(),
+            section.getDouble("pitch").toFloat()
         )
     } ?: return null
 }
