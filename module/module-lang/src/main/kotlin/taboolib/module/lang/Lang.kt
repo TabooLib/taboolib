@@ -16,15 +16,40 @@ fun ProxyCommandSender.sendLang(node: String, vararg args: Any) {
         }
     }
 }
+fun ProxyCommandSender.sendLang(node: String, func: (String?) -> String?) {
+    val file = getLocaleFile()
+    if (file == null) {
+        sendMessage("{$node}")
+    } else {
+        val type = file.nodes[node]
+        if (type != null) {
+            type.send(this, func)
+        } else {
+            sendMessage("{$node}")
+        }
+    }
+}
 
 fun ProxyCommandSender.asLangText(node: String, vararg args: Any): String {
     return asLangTextOrNull(node, *args) ?: "{$node}"
+}
+
+fun ProxyCommandSender.asLangText(node: String, func: (String?) -> String?): String {
+    return asLangTextOrNull(node, func) ?: "{$node}"
 }
 
 fun ProxyCommandSender.asLangTextOrNull(node: String, vararg args: Any): String? {
     val file = getLocaleFile()
     if (file != null) {
         return (file.nodes[node] as? TypeText)?.asText(this, *args)
+    }
+    return null
+}
+
+fun ProxyCommandSender.asLangTextOrNull(node: String, func: (String?) -> String?): String? {
+    val file = getLocaleFile()
+    if (file != null) {
+        return (file.nodes[node] as? TypeText)?.asText(this, func)
     }
     return null
 }
@@ -41,6 +66,26 @@ fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<Stri
             }
             is TypeList -> {
                 type.asTextList(this, *args)
+            }
+            else -> {
+                listOf("{$node}")
+            }
+        }
+    }
+}
+
+fun ProxyCommandSender.asLangTextList(node: String, func: (String?) -> String?): List<String> {
+    val file = getLocaleFile()
+    return if (file == null) {
+        listOf("{$node}")
+    } else {
+        when (val type = file.nodes[node]) {
+            is TypeText -> {
+                val text = type.asText(this, func)
+                if (text != null) listOf(text) else emptyList()
+            }
+            is TypeList -> {
+                type.asTextList(this, func)
             }
             else -> {
                 listOf("{$node}")

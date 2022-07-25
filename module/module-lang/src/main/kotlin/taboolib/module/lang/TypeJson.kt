@@ -66,6 +66,46 @@ class TypeJson : Type {
         }
     }
 
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        TellrawJson().sendTo(sender) {
+            var i = 0
+            text?.forEachIndexed { index, line ->
+                parser.readToFlatten(line).forEach { part ->
+                    append(func.invoke(part.text.translate(sender))!!)
+                    if (part.isVariable) {
+                        val arg = jsonArgs.getOrNull(i++)
+                        if (arg != null) {
+                            if (arg.containsKey("hover")) {
+                                hoverText(func.invoke(arg["hover"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("command")) {
+                                runCommand(func.invoke(arg["command"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("suggest")) {
+                                suggestCommand(func.invoke(arg["suggest"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("insertion")) {
+                                insertion(func.invoke(arg["insertion"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("copy")) {
+                                copyToClipboard(func.invoke(arg["copy"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("file")) {
+                                openFile(func.invoke(arg["file"].toString().translate(sender))!!)
+                            }
+                            if (arg.containsKey("url")) {
+                                openURL(func.invoke(arg["url"].toString().translate(sender))!!)
+                            }
+                        }
+                    }
+                }
+                if (index + 1 < text!!.size) {
+                    newLine()
+                }
+            }
+        }
+    }
+
     companion object {
 
         private val parser = VariableReader("[", "]")

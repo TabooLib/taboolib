@@ -39,6 +39,10 @@ class TypeSound : Type {
         }
     }
 
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        send(sender)
+    }
+
     override fun toString(): String {
         return "NodeSound(sound='$sound', volume=$volume, pitch=$pitch)"
     }
