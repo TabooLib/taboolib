@@ -118,7 +118,7 @@ enum class PlayerOperators(
     GAMEMODE(
         { it.gameMode.name },
         { p, _, v ->
-            p.gameMode = when (v.toString().uppercase(java.util.Locale.getDefault())) {
+            p.gameMode = when (v.toString().uppercase()) {
                 "SURVIVAL", "0" -> taboolib.common.platform.ProxyGameMode.SURVIVAL
                 "CREATIVE", "1" -> taboolib.common.platform.ProxyGameMode.CREATIVE
                 "ADVENTURE", "2" -> taboolib.common.platform.ProxyGameMode.ADVENTURE
@@ -205,19 +205,19 @@ enum class PlayerOperators(
 
     ABSORPTION_AMOUNT(
         { it.absorptionAmount },
-        { p, m, v -> p.absorptionAmount = p.absorptionAmount.modify(m, v) },
+        { p, m, v -> p.absorptionAmount = p.absorptionAmount.modify(m, v, min = 0.0) },
         *PlayerOperator.Method.values()
     ),
 
     NO_DAMAGE_TICKS(
         { it.noDamageTicks },
-        { p, m, v -> p.noDamageTicks = p.noDamageTicks.modify(m, v) },
+        { p, m, v -> p.noDamageTicks = p.noDamageTicks.modify(m, v, min = 0) },
         *PlayerOperator.Method.values()
     ),
 
     REMAINING_AIR(
         { it.remainingAir },
-        { p, m, v -> p.remainingAir = p.remainingAir.modify(m, v) },
+        { p, m, v -> p.remainingAir = p.remainingAir.modify(m, v, min = 0) },
         *PlayerOperator.Method.values()
     ),
 
@@ -225,13 +225,13 @@ enum class PlayerOperators(
 
     EXP(
         { it.exp },
-        { p, m, v -> p.exp = p.exp.modify(m, v) },
+        { p, m, v -> p.exp = p.exp.modify(m, v, max = 1f, min = 0f) },
         *PlayerOperator.Method.values()
     ),
 
     LEVEL(
         { it.level },
-        { p, m, v -> p.level = p.level.modify(m, v) },
+        { p, m, v -> p.level = p.level.modify(m, v, min = 0) },
         *PlayerOperator.Method.values()
     ),
 
@@ -243,25 +243,25 @@ enum class PlayerOperators(
 
     SATURATION(
         { it.saturation },
-        { p, m, v -> p.saturation = p.saturation.modify(m, v) },
+        { p, m, v -> p.saturation = p.saturation.modify(m, v, max = 20f, min = 0f) },
         *PlayerOperator.Method.values()
     ),
 
     FOOD_LEVEL(
         { it.foodLevel },
-        { p, m, v -> p.foodLevel = p.foodLevel.modify(m, v) },
+        { p, m, v -> p.foodLevel = p.foodLevel.modify(m, v, max = 20, min = 0) },
         *PlayerOperator.Method.values()
     ),
 
     HEALTH(
         { it.health },
-        { p, m, v -> p.health = p.health.modify(m, v) },
+        { p, m, v -> p.health = p.health.modify(m, v, max = p.maxHealth, min = 0.0) },
         *PlayerOperator.Method.values()
     ),
 
     MAX_HEALTH(
         { it.maxHealth },
-        { p, m, v -> p.maxHealth = p.maxHealth.modify(m, v) },
+        { p, m, v -> p.maxHealth = p.maxHealth.modify(m, v, min = 0.0) },
         *PlayerOperator.Method.values()
     ),
 
