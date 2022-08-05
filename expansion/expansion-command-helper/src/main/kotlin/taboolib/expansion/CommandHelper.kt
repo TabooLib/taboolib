@@ -2,6 +2,7 @@ package taboolib.expansion
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBuilder
+import taboolib.common.platform.command.mainCommand
 import taboolib.module.lang.asLangText
 
 fun CommandBuilder.CommandComponent.createHelper() {

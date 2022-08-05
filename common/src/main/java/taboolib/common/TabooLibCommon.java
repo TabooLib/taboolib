@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.RuntimeDependency;
 import taboolib.common.env.RuntimeEnv;
-import taboolib.common.inject.RuntimeInjector;
+import taboolib.common.inject.VisitorHandler;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
@@ -41,6 +41,8 @@ public class TabooLibCommon {
     private static boolean sysoutCatcherFound = false;
 
     private static boolean init = false;
+
+    private static LifeCycle lifeCycle = LifeCycle.CONST;
 
     private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new ConcurrentHashMap<>();
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -102,6 +104,7 @@ public class TabooLibCommon {
         if (platform != null) {
             TabooLibCommon.platform = platform;
         }
+        TabooLibCommon.lifeCycle = lifeCycle;
         postponeExecutor.forEach((cycle, list) -> {
             if (cycle == lifeCycle) {
                 list.forEach((runnable) -> {
@@ -123,12 +126,12 @@ public class TabooLibCommon {
                 if (isKotlinEnvironment()) {
                     init = true;
                     PlatformFactory.INSTANCE.init();
-                    RuntimeInjector.injectAll(LifeCycle.CONST);
+                    VisitorHandler.injectAll(LifeCycle.CONST);
                 }
                 break;
             case INIT:
                 if (init) {
-                    RuntimeInjector.injectAll(LifeCycle.INIT);
+                    VisitorHandler.injectAll(LifeCycle.INIT);
                 }
                 break;
             case LOAD:
@@ -136,23 +139,23 @@ public class TabooLibCommon {
                     if (isKotlinEnvironment()) {
                         init = true;
                         PlatformFactory.INSTANCE.init();
-                        RuntimeInjector.injectAll(LifeCycle.CONST);
-                        RuntimeInjector.injectAll(LifeCycle.INIT);
+                        VisitorHandler.injectAll(LifeCycle.CONST);
+                        VisitorHandler.injectAll(LifeCycle.INIT);
                     } else {
                         stopped = true;
                         throw new RuntimeException("Runtime environment setup failed, please feedback!");
                     }
                 }
-                RuntimeInjector.injectAll(LifeCycle.LOAD);
+                VisitorHandler.injectAll(LifeCycle.LOAD);
                 break;
             case ENABLE:
-                RuntimeInjector.injectAll(LifeCycle.ENABLE);
+                VisitorHandler.injectAll(LifeCycle.ENABLE);
                 break;
             case ACTIVE:
-                RuntimeInjector.injectAll(LifeCycle.ACTIVE);
+                VisitorHandler.injectAll(LifeCycle.ACTIVE);
                 break;
             case DISABLE:
-                RuntimeInjector.injectAll(LifeCycle.DISABLE);
+                VisitorHandler.injectAll(LifeCycle.DISABLE);
                 PlatformFactory.INSTANCE.cancel();
                 break;
         }
@@ -204,5 +207,12 @@ public class TabooLibCommon {
 
     public static boolean isSysoutCatcherFound() {
         return sysoutCatcherFound;
+    }
+
+    /**
+     * 获取当前生命周期
+     */
+    public static LifeCycle getLifeCycle() {
+        return lifeCycle;
     }
 }

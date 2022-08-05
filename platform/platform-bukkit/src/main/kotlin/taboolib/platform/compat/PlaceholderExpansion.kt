@@ -4,14 +4,16 @@ package taboolib.platform.compat
 
 import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.events.ExpansionUnregisterEvent
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ClassMethod
 import taboolib.common.Isolated
 import taboolib.common.LifeCycle
-import taboolib.common.inject.Injector
+import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.registerBukkitListener
+import taboolib.common.platform.function.submit
 import taboolib.common.util.unsafeLazy
 import taboolib.platform.BukkitPlugin
 import java.util.function.Supplier
@@ -65,15 +67,15 @@ interface PlaceholderExpansion {
     }
 
     @Awake
-    object PlaceholderRegister : Injector.Classes {
+    class PlaceholderRegister : ClassVisitor(0) {
 
         val hooked by unsafeLazy {
             kotlin.runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
         }
 
-        override fun inject(clazz: Class<*>, instance: Supplier<*>) {
+        override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {
             if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
-                val expansion = instance.get() as PlaceholderExpansion
+                val expansion = instance?.get() as? PlaceholderExpansion ?: error("PlaceholderExpansion must have an instance")
                 if (!expansion.enabled) {
                     return
                 }
@@ -103,24 +105,20 @@ interface PlaceholderExpansion {
                         return expansion.onPlaceholderRequest(player, params)
                     }
                 }.also { papiExpansion ->
-                    if (!expansion.autoReload) return@also
-                    registerBukkitListener(ExpansionUnregisterEvent::class.java) {
-                        if (it.expansion != papiExpansion) {
-                            return@registerBukkitListener
+                    // 自动重载
+                    if (expansion.autoReload) {
+                        registerBukkitListener(ExpansionUnregisterEvent::class.java) {
+                            if (it.expansion == papiExpansion) {
+                                submit { papiExpansion.register() }
+                            }
                         }
-                        Bukkit.getScheduler().runTask(BukkitPlugin.getInstance(), papiExpansion::register)
                     }
                 }.register()
             }
         }
 
-        override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
+        override fun getLifeCycle(): LifeCycle {
+            return LifeCycle.ENABLE
         }
-
-        override val lifeCycle: LifeCycle
-            get() = LifeCycle.ENABLE
-
-        override val priority: Byte
-            get() = 0
     }
 }

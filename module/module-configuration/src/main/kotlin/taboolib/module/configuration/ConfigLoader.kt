@@ -3,15 +3,24 @@ package taboolib.module.configuration
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ClassMethod
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common5.FileWatcher
 import java.util.function.Supplier
 
-@RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml")
+@RuntimeDependencies(
+    RuntimeDependency("!org.yaml:snakeyaml:1.28", test = "!org.yaml.snakeyaml.Yaml"),
+    RuntimeDependency("!com.typesafe:config:1.4.1", test = "!com.typesafe.config.Config"),
+    RuntimeDependency("!com.electronwill.night-config:core:3.6.5", test = "!com.electronwill.nightconfig.core.Config"),
+    RuntimeDependency("!com.electronwill.night-config:toml:3.6.5", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.5", test = "!com.electronwill.nightconfig.json.JsonFormat"),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.5", test = "!com.electronwill.nightconfig.hocon.HoconFormat")
+)
 @Awake
 class ConfigLoader : ClassVisitor(1) {
 
@@ -23,32 +32,24 @@ class ConfigLoader : ClassVisitor(1) {
                 field.set(instance?.get(), files[name]!!.conf)
             } else {
                 val file = releaseResourceFile(name)
-                if (configAnno.property<Boolean>("migrate")!!) {
-                    val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
-                    if (resourceAsStream != null) {
-                        val bytes = resourceAsStream.migrateTo(file.inputStream())
-                        if (bytes != null) {
-                            file.writeBytes(bytes)
-                        }
-                    }
-                }
-                val conf = SecuredFile.loadConfiguration(file)
+                // 兼容模式加载
+                val conf = if (field.type == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
+                // 赋值
                 field.set(instance?.get(), conf)
-                // 自动重载文件
+                // 自动重载
                 if (configAnno.property<Boolean>("autoReload")!! && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         if (file.exists()) {
-                            conf.load(file)
+                            conf.loadFromFile(file)
                         }
                     }
                 }
-                val nodeFile = ConfigNodeFile(conf, file)
-                // 自动重载节点
+                val configFile = ConfigNodeFile(conf, file)
                 conf.onReload {
                     val loader = PlatformFactory.getAPI<ConfigNodeLoader>()
-                    nodeFile.nodes.forEach { loader.visit(it, clazz, instance) }
+                    configFile.nodes.forEach { loader.visit(it, clazz, instance) }
                 }
-                files[name] = nodeFile
+                files[name] = configFile
             }
         }
     }

@@ -2,8 +2,8 @@ package taboolib.common.platform
 
 import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeEnv
-import taboolib.common.inject.Injector
-import taboolib.common.inject.RuntimeInjector
+import taboolib.common.inject.ClassVisitor
+import taboolib.common.inject.VisitorHandler
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.function.runningPlatform
@@ -17,24 +17,22 @@ object PlatformFactory {
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
+            // 加载运行环境
             runningClasses.forEach {
                 kotlin.runCatching {
                     RuntimeEnv.ENV.inject(it)
                 }.exceptionOrNull()?.printStackTrace()
             }
+            // 加载接口
             runningClasses.forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
-                    if (interfaces.contains(Injector.Fields::class.java)) {
-                        RuntimeInjector.register(instance as Injector.Fields)
+                    // 依赖注入接口
+                    if (ClassVisitor::class.java.isAssignableFrom(it)) {
+                        VisitorHandler.register(instance as ClassVisitor)
                     }
-                    if (interfaces.contains(Injector.Methods::class.java)) {
-                        RuntimeInjector.register(instance as Injector.Methods)
-                    }
-                    if (interfaces.contains(Injector.Classes::class.java)) {
-                        RuntimeInjector.register(instance as Injector.Classes)
-                    }
+                    // 平台服务
                     interfaces.forEach { int ->
                         if (int.isAnnotationPresent(PlatformService::class.java)) {
                             serviceMap[int.name] = instance
@@ -42,6 +40,7 @@ object PlatformFactory {
                     }
                     awokenMap[it.name] = instance
                 }
+                // 平台实现
                 if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == runningPlatform) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {

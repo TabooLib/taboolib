@@ -56,6 +56,8 @@ class BukkitCommand : PlatformCommand {
 
     val registeredCommands = ArrayList<CommandStructure>()
 
+    private var isSupportedUnknownCommand = false
+
     override fun registerCommand(
         command: CommandStructure,
         executor: CommandExecutor,
@@ -150,11 +152,16 @@ class BukkitCommand : PlatformCommand {
         sender.cast<CommandSender>().spigot().sendMessage(*components.toTypedArray())
     }
 
+    override fun isSupportedUnknownCommand(): Boolean {
+        return isSupportedUnknownCommand
+    }
+
     fun sync() {
         // 1.13 sync commands
         kotlin.runCatching {
             Bukkit.getServer().invokeMethod<Void>("syncCommands")
             Bukkit.getOnlinePlayers().forEach { it.updateCommands() }
+            isSupportedUnknownCommand = true
         }
     }
 }

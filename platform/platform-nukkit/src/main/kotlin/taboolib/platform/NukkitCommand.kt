@@ -16,6 +16,7 @@ import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.common.util.unsafeLazy
+import java.util.Locale
 
 /**
  * TabooLib
@@ -74,6 +75,5 @@ class NukkitCommand : PlatformCommand {
             2 -> sender.cast<CommandSender>().sendMessage("§cIncorrect argument for command")
             else -> return
         }
-        sender.cast<CommandSender>().sendMessage("$command§r§c§o<--[HERE]")
     }
 }

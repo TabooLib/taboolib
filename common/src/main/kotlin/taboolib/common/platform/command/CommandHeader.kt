@@ -10,4 +10,5 @@ annotation class CommandHeader(
     val permission: String = "",
     val permissionMessage: String = "",
     val permissionDefault: PermissionDefault = PermissionDefault.OP,
+    val helper: Boolean = false,
 )

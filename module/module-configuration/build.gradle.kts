@@ -11,6 +11,8 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module:module-chat"))
+    compileOnly("org.tabooproject.reflex:reflex:1.0.15")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.15")
 }
 
 tasks {
@@ -20,6 +22,7 @@ tasks {
             include(dependency("com.electronwill.night-config:core-conversion:6.0.0"))
         }
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
+        relocate("org.tabooproject", "taboolib.library")
         minimize()
     }
     build {

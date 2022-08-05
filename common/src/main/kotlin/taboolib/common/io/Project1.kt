@@ -2,21 +2,24 @@
 
 package taboolib.common.io
 
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.TabooLibCommon
-import taboolib.common.inject.RuntimeInjector
+import taboolib.common.inject.VisitorHandler
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.util.lazySupplier
+import taboolib.common.util.unsafeLazy
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
 import java.net.URL
+import java.util.*
 import java.util.function.Supplier
 import java.util.jar.JarFile
 
 /**
  * 当前插件的所有类
  */
-val runningClasses by lazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
+val runningClasses by unsafeLazy { LinkedList(TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()) }
 
 /**
  * 取该类在当前项目中被加载的任何实例
@@ -40,16 +43,16 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     }
     return try {
         val field = if (simpleName == "Companion") {
-            Class.forName(name.substringBeforeLast('$')).getDeclaredField("Companion")
+            val companion = Class.forName(name.substringBeforeLast('$'), false, TabooLibCommon::class.java.classLoader)
+            ReflexClass.of(companion).getField("Companion", findToParent = false, remap = false)
         } else {
-            getDeclaredField("INSTANCE")
+            ReflexClass.of(this).getField("INSTANCE", findToParent = false, remap = false)
         }
-        field.isAccessible = true
-        lazySupplier { field.get(null) as T }
-    } catch (ex: NoClassDefFoundError) {
-        null
+        lazySupplier { field.get() as T }
     } catch (ex: NoSuchFieldException) {
         if (newInstance) lazySupplier { getDeclaredConstructor().newInstance() as T } else null
+    } catch (ex: NoClassDefFoundError) {
+        null
     } catch (ex: ClassNotFoundException) {
         null
     } catch (ex: IllegalAccessError) {
@@ -68,7 +71,7 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
 }
 
 fun <T> Class<T>.inject() {
-    return RuntimeInjector.injectAll(this)
+    return VisitorHandler.injectAll(this)
 }
 
 fun <T> Class<T>.findImplementation(): T? {

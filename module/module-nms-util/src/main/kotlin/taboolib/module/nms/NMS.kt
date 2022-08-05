@@ -12,6 +12,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
+import taboolib.common.LifeCycle
+import taboolib.common.TabooLibCommon
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.platform.function.submit
@@ -31,6 +33,10 @@ import java.util.function.Consumer
 private val classJsonElement = Class.forName("com.google.gson.JsonElement")
 
 private val scoreboardMap = ConcurrentHashMap<UUID, PacketScoreboard>().also {
+    // 卸载时不再注册事件
+    if (TabooLibCommon.getLifeCycle() == LifeCycle.DISABLE) {
+        return@also
+    }
     registerBukkitListener(PlayerQuitEvent::class.java, priority = EventPriority.NORMAL) { event ->
         it.remove(event.player.uniqueId)
     }

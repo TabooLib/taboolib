@@ -10,4 +10,16 @@ dependencies {
     compileOnly(project(":module:module-nms-util"))
     compileOnly(project(":module:module-configuration"))
     compileOnly(project(":expansion:expansion-javascript"))
+    compileOnly("org.tabooproject.reflex:reflex:1.0.15")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.15")
+}
+
+tasks {
+    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+        archiveClassifier.set("")
+        relocate("org.tabooproject", "taboolib.library")
+    }
+    build {
+        dependsOn(shadowJar)
+    }
 }

@@ -3,6 +3,8 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module:module-chat"))
+    compileOnly("org.tabooproject.reflex:reflex:1.0.15")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.15")
 }
 
 tasks {
@@ -12,6 +14,7 @@ tasks {
         dependencies {
             include(dependency("org.yaml:snakeyaml:1.28"))
         }
+        relocate("org.tabooproject", "taboolib.library")
     }
     build {
         dependsOn(shadowJar)

@@ -1,43 +1,45 @@
 package taboolib.common.platform.command
 
+import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ClassMethod
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.LifeCycle
-import taboolib.common.inject.Injector
+import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
-import java.lang.reflect.Field
 import java.util.function.Supplier
 
 @Awake
-object SimpleCommandRegister : Injector.Classes, Injector.Fields {
+class SimpleCommandRegister : ClassVisitor(0) {
 
     val main = HashMap<String, SimpleCommandMain>()
     val body = HashMap<String, MutableList<SimpleCommandBody>>()
 
-    fun loadBody(field: Field, instance: Supplier<*>): SimpleCommandBody? {
+    fun loadBody(field: ClassField, instance: Supplier<*>?): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
-            val annotation = field.getAnnotation(CommandBody::class.java)
-            val obj = field.get(instance.get())
-            return when (field.type) {
+            val annotation = field.getAnnotation(CommandBody::class.java)!!
+            val obj = field.get(instance?.get())
+            return when (field.fieldType) {
                 SimpleCommandMain::class.java -> {
                     null
                 }
                 SimpleCommandBody::class.java -> {
                     (obj as SimpleCommandBody).apply {
                         name = field.name
-                        aliases = annotation.aliases
-                        optional = annotation.optional
-                        permission = annotation.permission
-                        permissionDefault = annotation.permissionDefault
+                        aliases = annotation.property("aliases")!!
+                        optional = annotation.property("optional")!!
+                        permission = annotation.property("permission")!!
+                        permissionDefault = annotation.enum("permissionDefault")
                     }
                 }
                 else -> {
                     SimpleCommandBody().apply {
                         name = field.name
-                        aliases = annotation.aliases
-                        optional = annotation.optional
-                        permission = annotation.permission
-                        permissionDefault = annotation.permissionDefault
-                        field.type.declaredFields.forEach {
-                            it.isAccessible = true
+                        aliases = annotation.property("aliases")!!
+                        optional = annotation.property("optional")!!
+                        permission = annotation.property("permission")!!
+                        permissionDefault = annotation.enum("permissionDefault")
+                        // 向下搜索字段
+                        ReflexClass.of(field.fieldType).structure.fields.forEach {
                             children += loadBody(it, instance) ?: return@forEach
                         }
                     }
@@ -47,18 +49,15 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
         return null
     }
 
-    override fun inject(clazz: Class<*>, instance: Supplier<*>) {
-    }
-
-    override fun inject(field: Field, clazz: Class<*>, instance: Supplier<*>) {
+    override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(CommandBody::class.java) && field.type == SimpleCommandMain::class.java) {
-            main[clazz.name] = field.get(instance) as SimpleCommandMain
+            main[clazz.name] = field.get(instance?.get()) as SimpleCommandMain
         } else {
             body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
         }
     }
 
-    override fun postInject(clazz: Class<*>, instance: Supplier<*>) {
+    override fun visitEnd(clazz: Class<*>, instance: Supplier<*>?) {
         if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotation(CommandHeader::class.java)
             command(annotation.name,
@@ -89,9 +88,7 @@ object SimpleCommandRegister : Injector.Classes, Injector.Fields {
         }
     }
 
-    override val lifeCycle: LifeCycle
-        get() = LifeCycle.ENABLE
-
-    override val priority: Byte
-        get() = 0
+    override fun getLifeCycle(): LifeCycle {
+        return LifeCycle.ENABLE
+    }
 }

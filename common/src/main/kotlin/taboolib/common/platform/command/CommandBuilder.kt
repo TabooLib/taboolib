@@ -1,7 +1,9 @@
 package taboolib.common.platform.command
 
 import taboolib.common.Isolated
+import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.service.PlatformCommand
 import taboolib.common.util.join
 import taboolib.common.util.subList
 
@@ -38,11 +40,16 @@ object CommandBuilder {
                 str += " "
                 str += "§c§n${args.last()}"
             }
-            when (state) {
-                1 -> context.sender.sendMessage("§cUnknown or incomplete command, see below for error")
-                2 -> context.sender.sendMessage("§cIncorrect argument for command")
+            val command = PlatformFactory.getService<PlatformCommand>()
+            if (command.isSupportedUnknownCommand()) {
+                command.unknownCommand(context.sender, str, state)
+            } else {
+                when (state) {
+                    1 -> context.sender.sendMessage("§cUnknown or incomplete command, see below for error")
+                    2 -> context.sender.sendMessage("§cIncorrect argument for command")
+                }
+                context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
             }
-            context.sender.sendMessage("§7$str§r§c§o<--[HERE]")
         }
 
         fun execute(context: CommandContext<*>): Boolean {

@@ -24,7 +24,6 @@ fun Map<String, Any>.flatten(): Map<String, Any> {
 /**
  * 计算 Map 差异（源 -> 目标）
  */
-@Suppress("UNCHECKED_CAST")
 fun Map<String, Any>.contrastAs(target: Map<String, Any>): Set<Update> {
     val update = TreeSet<Update>()
     val sourceMap = flatten()
