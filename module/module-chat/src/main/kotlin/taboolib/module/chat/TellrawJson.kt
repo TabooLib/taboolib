@@ -8,6 +8,7 @@ import taboolib.common.Isolated
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.onlinePlayers
 
 /**
  * @author sky
@@ -29,6 +30,11 @@ class TellrawJson {
         } else {
             sender.sendMessage(toLegacyText())
         }
+    }
+
+    fun broadcast(builder: TellrawJson.() -> Unit = {}) {
+        builder(this)
+        onlinePlayers().forEach { p -> sendTo(p) }
     }
 
     fun toRawMessage(): String {
@@ -155,6 +161,10 @@ class TellrawJson {
     private fun new() {
         components.addAll(componentsLatest)
         componentsLatest.clear()
+    }
+
+    override fun toString(): String {
+        return toRawMessage()
     }
 
     companion object {

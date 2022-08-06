@@ -13,14 +13,23 @@ import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.TellrawJson
 
+/**
+ * 构建一本书
+ */
 fun buildBook(builder: BookBuilder.() -> Unit = {}): ItemStack {
     return BookBuilder().also(builder).build()
 }
 
+/**
+ * 构建一本书并发送给玩家
+ */
 fun Player.sendBook(builder: BookBuilder.() -> Unit = {}) {
     sendBook(buildBook(builder))
 }
 
+/**
+ * 发送一本书给玩家
+ */
 fun Player.sendBook(itemStack: ItemStack) {
     try {
         invokeMethod<Void>("openBook", itemStack)

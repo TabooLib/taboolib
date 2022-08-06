@@ -3,6 +3,7 @@
 package taboolib.platform.util
 
 import org.bukkit.Material
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
@@ -49,15 +50,4 @@ fun Player.feed() {
 
 fun Player.saturate() {
     saturation = 20F
-}
-
-fun Player.getEquipment(slot: BukkitEquipment): ItemStack? {
-    return BukkitEquipment.getItems(this)[slot]
-}
-
-fun Player.setEquipment(slot: BukkitEquipment, item: ItemStack) {
-    if (item.isAir()) {
-        error("air.")
-    }
-    BukkitEquipment.getItems(this)[slot] = item
 }
