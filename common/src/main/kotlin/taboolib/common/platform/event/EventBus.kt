@@ -8,6 +8,7 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.function.*
+import taboolib.common.util.optional
 import java.util.function.Supplier
 
 @Awake
@@ -15,8 +16,8 @@ class EventBus : ClassVisitor(0) {
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
         if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameter.size == 1) {
-            val anno = method.getAnnotation(SubscribeEvent::class.java)!!
-            val bind = anno.property<String>("bind").toString()
+            val anno = method.getAnnotation(SubscribeEvent::class.java)
+            val bind = anno.property("bind", "")
             val optionalEvent = if (bind.isNotEmpty()) {
                 try {
                     Class.forName(bind)
@@ -26,80 +27,89 @@ class EventBus : ClassVisitor(0) {
             } else {
                 null
             }
-            val obj = instance?.get()
-            // 判定运行平台
-            when (runningPlatform) {
-                // bk 平台与 nk 平台使用相同参数
-                Platform.BUKKIT, Platform.NUKKIT -> {
-                    registerBukkit(method, optionalEvent, anno, obj)
-                }
-                Platform.BUNGEE -> {
-                    registerBungee(method, optionalEvent, anno, obj)
-                }
-                Platform.VELOCITY -> {
-                    registerVelocity(method, optionalEvent, anno, obj)
-                }
-                Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
-                    postpone { registerSponge(method, optionalEvent, anno, obj) }
-                }
-                else -> {
+            optional(anno) {
+                val obj = instance?.get()
+                // 判定运行平台
+                when (runningPlatform) {
+                    // bk 平台与 nk 平台使用相同参数
+                    Platform.BUKKIT, Platform.NUKKIT -> {
+                        registerBukkit(method, optionalEvent, anno, obj)
+                    }
+                    Platform.BUNGEE -> {
+                        registerBungee(method, optionalEvent, anno, obj)
+                    }
+                    Platform.VELOCITY -> {
+                        registerVelocity(method, optionalEvent, anno, obj)
+                    }
+                    Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
+                        postpone { registerSponge(method, optionalEvent, anno, obj) }
+                    }
+                    else -> {
+                    }
                 }
             }
         }
     }
 
-    private fun registerBukkit(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?, ) {
+    private fun registerBukkit(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
+        val priority = event.enum<EventPriority>("priority", EventPriority.NORMAL)
+        val ignoreCancelled = event.property("ignoreCancelled", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerBukkitListener(optionalBind, event.property("priority")!!, event.property("ignoreCancelled")!!) {
+                registerBukkitListener(optionalBind, priority, ignoreCancelled) {
                     invoke(obj, method, it, true)
                 }
             }
         } else {
-            registerBukkitListener(method.parameterTypes[0], event.property("priority")!!, event.property("ignoreCancelled")!!) {
+            registerBukkitListener(method.parameterTypes[0], priority, ignoreCancelled) {
                 invoke(obj, method, it)
             }
         }
     }
 
     private fun registerBungee(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
-        val level = if (event.property<Int>("level") != 0) event.property<Int>("level")!! else event.enum<EventPriority>("priority").level
+        val annoLevel = event.property("level", -1)
+        val level = if (annoLevel != 0) annoLevel else event.enum<EventPriority>("priority", EventPriority.NORMAL).level
+        val ignoreCancelled = event.property("ignoreCancelled", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerBungeeListener(optionalBind, level, event.property("ignoreCancelled")!!) {
+                registerBungeeListener(optionalBind, level, ignoreCancelled) {
                     invoke(obj, method, it, true)
                 }
             }
         } else {
-            registerBungeeListener(method.parameterTypes[0], level, event.property("ignoreCancelled")!!) {
+            registerBungeeListener(method.parameterTypes[0], level, ignoreCancelled) {
                 invoke(obj, method, it)
             }
         }
     }
 
     private fun registerVelocity(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
+        val postOrder = event.enum<PostOrder>("postOrder", PostOrder.NORMAL)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerVelocityListener(optionalBind, event.enum("postOrder")) {
+                registerVelocityListener(optionalBind, postOrder) {
                     invoke(obj, method, it, true)
                 }
             }
         } else {
-            registerVelocityListener(method.parameterTypes[0], event.enum("postOrder")) {
+            registerVelocityListener(method.parameterTypes[0], postOrder) {
                 invoke(obj, method, it)
             }
         }
     }
 
     private fun registerSponge(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
+        val order = event.enum<EventOrder>("order", EventOrder.DEFAULT)
+        val beforeModifications = event.property("beforeModifications", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerSpongeListener(optionalBind, event.enum("order"), event.property("beforeModifications")!!) {
+                registerSpongeListener(optionalBind, order, beforeModifications) {
                     invoke(obj, method, it, true)
                 }
             }
         } else {
-            registerSpongeListener(method.parameterTypes[0], event.enum("order"), event.property("beforeModifications")!!) {
+            registerSpongeListener(method.parameterTypes[0], order, beforeModifications) {
                 invoke(obj, method, it)
             }
         }

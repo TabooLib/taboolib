@@ -13,15 +13,15 @@ class ConfigNodeLoader : ClassVisitor(1) {
 
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(ConfigNode::class.java)) {
-            val node = field.getAnnotation(ConfigNode::class.java)!!
-            val bind = node.property<String>("bind")!!
+            val node = field.getAnnotation(ConfigNode::class.java)
+            val bind = node.property("bind", "config.yml")
             val file = ConfigLoader.files[bind]
             if (file == null) {
                 warning("$bind not defined")
                 return
             }
             file.nodes += field
-            val value = node.property<String>("value").toString()
+            val value = node.property("value", "")
             val data = file.conf[value.ifEmpty { field.name.toNode() }]
             if (data == null) {
                 warning("$value not found in $bind")

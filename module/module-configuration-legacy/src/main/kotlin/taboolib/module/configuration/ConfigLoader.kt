@@ -17,13 +17,13 @@ class ConfigLoader : ClassVisitor(1) {
 
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(Config::class.java)) {
-            val configAnno = field.getAnnotation(Config::class.java)!!
-            val name = configAnno.property<String>("value")!!
+            val configAnno = field.getAnnotation(Config::class.java)
+            val name = configAnno.property("value", "config.yml")
             if (files.containsKey(name)) {
                 field.set(instance?.get(), files[name]!!.conf)
             } else {
                 val file = releaseResourceFile(name)
-                if (configAnno.property<Boolean>("migrate")!!) {
+                if (configAnno.property("migrate", false)) {
                     val resourceAsStream = clazz.classLoader.getResourceAsStream(file.name)
                     if (resourceAsStream != null) {
                         val bytes = resourceAsStream.migrateTo(file.inputStream())
@@ -35,7 +35,7 @@ class ConfigLoader : ClassVisitor(1) {
                 val conf = SecuredFile.loadConfiguration(file)
                 field.set(instance?.get(), conf)
                 // 自动重载文件
-                if (configAnno.property<Boolean>("autoReload")!! && isFileWatcherHook) {
+                if (configAnno.property("autoReload", false) && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         if (file.exists()) {
                             conf.load(file)

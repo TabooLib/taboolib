@@ -26,18 +26,18 @@ class ConfigLoader : ClassVisitor(1) {
 
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(Config::class.java)) {
-            val configAnno = field.getAnnotation(Config::class.java)!!
-            val name = configAnno.property<String>("value")!!
+            val configAnno = field.getAnnotation(Config::class.java)
+            val name = configAnno.property("value", "config.yml")
             if (files.containsKey(name)) {
                 field.set(instance?.get(), files[name]!!.conf)
             } else {
                 val file = releaseResourceFile(name)
                 // 兼容模式加载
-                val conf = if (field.type == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
+                val conf = if (field.fieldType == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
                 // 赋值
                 field.set(instance?.get(), conf)
                 // 自动重载
-                if (configAnno.property<Boolean>("autoReload")!! && isFileWatcherHook) {
+                if (configAnno.property("autoReload", false) && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
                         if (file.exists()) {
                             conf.loadFromFile(file)

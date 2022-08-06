@@ -24,10 +24,10 @@ class KetherLoader : ClassVisitor(0) {
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
         if (method.isAnnotationPresent(KetherParser::class.java) && method.returnType == ScriptActionParser::class.java) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptActionParser<*>
-            val annotation = method.getAnnotation(KetherParser::class.java)!!
-            val value = annotation.property<Array<String>>("value")!!
-            val namespace = annotation.property<String>("namespace")!!
-            if (annotation.property("shared")!!) {
+            val annotation = method.getAnnotation(KetherParser::class.java)
+            val value = annotation.property<Array<String>>("value", arrayOf())
+            val namespace = annotation.property("namespace", "kether")
+            if (annotation.property("shared", false)) {
                 sharedParser += value to namespace
                 getOpenContainers().forEach {
                     it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, value, namespace))
@@ -39,17 +39,17 @@ class KetherLoader : ClassVisitor(0) {
         }
         if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
             val property = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptProperty<*>
-            val annotation = method.getAnnotation(KetherProperty::class.java)!!
-            val bind = annotation.property<KClass<*>>("bind")!!
-            if (annotation.property("shared")!!) {
-                var name = bind.java.name
+            val annotation = method.getAnnotation(KetherProperty::class.java)
+            val bind = annotation.property<Class<*>>("bind") ?: error("KetherProperty bind is null")
+            if (annotation.property("shared", false)) {
+                var name = bind.name
                 name = if (name.startsWith(taboolibPath)) "@${name.substring(taboolibPath.length)}" else name
                 sharedScriptProperty += name to property.id
                 getOpenContainers().forEach {
                     it.call(StandardChannel.REMOTE_ADD_PROPERTY, arrayOf(pluginId, name, property))
                 }
             }
-            Kether.addScriptProperty(bind.java, property)
+            Kether.addScriptProperty(bind, property)
         }
     }
 

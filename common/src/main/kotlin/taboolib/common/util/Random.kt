@@ -30,3 +30,7 @@ fun random(num1: Double, num2: Double): Double {
     val max = max(num1, num2)
     return if (min == max) max else ThreadLocalRandom.current().nextDouble(min, max)
 }
+
+fun randomDouble(): Double {
+    return random().nextDouble()
+}

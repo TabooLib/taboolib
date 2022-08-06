@@ -16,7 +16,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
 
     fun loadBody(field: ClassField, instance: Supplier<*>?): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
-            val annotation = field.getAnnotation(CommandBody::class.java)!!
+            val annotation = field.getAnnotation(CommandBody::class.java)
             val obj = field.get(instance?.get())
             return when (field.fieldType) {
                 SimpleCommandMain::class.java -> {
@@ -25,19 +25,19 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 SimpleCommandBody::class.java -> {
                     (obj as SimpleCommandBody).apply {
                         name = field.name
-                        aliases = annotation.property("aliases")!!
-                        optional = annotation.property("optional")!!
-                        permission = annotation.property("permission")!!
-                        permissionDefault = annotation.enum("permissionDefault")
+                        aliases = annotation.property("aliases", emptyArray())
+                        optional = annotation.property("optional", false)
+                        permission = annotation.property("permission", "")
+                        permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
                     }
                 }
                 else -> {
                     SimpleCommandBody().apply {
                         name = field.name
-                        aliases = annotation.property("aliases")!!
-                        optional = annotation.property("optional")!!
-                        permission = annotation.property("permission")!!
-                        permissionDefault = annotation.enum("permissionDefault")
+                        aliases = annotation.property("aliases", emptyArray())
+                        optional = annotation.property("optional", false)
+                        permission = annotation.property("permission", "")
+                        permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
                         // 向下搜索字段
                         ReflexClass.of(field.fieldType).structure.fields.forEach {
                             children += loadBody(it, instance) ?: return@forEach
@@ -50,7 +50,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
     }
 
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
-        if (field.isAnnotationPresent(CommandBody::class.java) && field.type == SimpleCommandMain::class.java) {
+        if (field.isAnnotationPresent(CommandBody::class.java) && field.fieldType == SimpleCommandMain::class.java) {
             main[clazz.name] = field.get(instance?.get()) as SimpleCommandMain
         } else {
             body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
