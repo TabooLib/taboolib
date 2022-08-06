@@ -24,7 +24,7 @@ import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
 import java.util.*
 
-val ItemStack.isAir get() = type == Material.AIR || type.name.endsWith("_AIR")
+val ItemStack?.isAir get() = isAir()
 
 fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
     if (itemStack.isAir) {

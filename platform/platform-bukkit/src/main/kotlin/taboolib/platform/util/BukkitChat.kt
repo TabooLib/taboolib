@@ -13,10 +13,16 @@ import taboolib.common.platform.event.SubscribeEvent
 import taboolib.platform.BukkitPlugin
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * 捕获玩家输入的消息
+ */
 fun Player.nextChat(function: (message: String) -> Unit) {
     ChatListener.inputs[name] = function
 }
 
+/**
+ * 捕获玩家输入的消息
+ */
 fun Player.nextChat(function: (message: String) -> Unit, reuse: (player: Player) -> Unit = {}) {
     if (ChatListener.inputs.containsKey(name)) {
         reuse(this)
@@ -25,6 +31,9 @@ fun Player.nextChat(function: (message: String) -> Unit, reuse: (player: Player)
     }
 }
 
+/**
+ * 捕获玩家输入的消息（在一定时间内）
+ */
 fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: (player: Player) -> Unit = {}, reuse: (player: Player) -> Unit = {}) {
     if (ChatListener.inputs.containsKey(name)) {
         reuse(this)

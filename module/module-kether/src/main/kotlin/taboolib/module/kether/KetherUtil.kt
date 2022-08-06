@@ -12,12 +12,13 @@ typealias Script = Quest
 
 typealias ScriptFrame = QuestContext.Frame
 
-fun runKether(func: () -> Unit) {
+fun <T> runKether(func: () -> T): T? {
     try {
-        func()
+        return func()
     } catch (ex: Exception) {
         ex.printKetherErrorMessage()
     }
+    return null
 }
 
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionParser<T> {

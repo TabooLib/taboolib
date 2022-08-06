@@ -8,7 +8,7 @@ import java.util.function.Supplier
 class AwakeFunction(private val lifeCycle: LifeCycle) : ClassVisitor(0) {
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
-        if (method.isAnnotationPresent(Awake::class.java) && method.getAnnotation(Awake::class.java)!!.enum<LifeCycle>("value") == lifeCycle) {
+        if (method.isAnnotationPresent(Awake::class.java) && method.getAnnotation(Awake::class.java).enum<LifeCycle>("value", LifeCycle.ENABLE) == lifeCycle) {
             if (instance != null) {
                 method.invoke(instance.get())
             } else {

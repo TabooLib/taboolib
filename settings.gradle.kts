@@ -26,8 +26,8 @@ fun importPlatforms() {
     include("platform:platform-minestom")
     // include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
     // include("platform:platform-sponge-api9")
-//    include("platform:platform-velocity")
-//    include("platform:platform-cloudnet-v3")
+    include("platform:platform-velocity")
+    // include("platform:platform-cloudnet-v3")
     include("platform:platform-application")
 }
 

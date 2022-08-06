@@ -154,7 +154,7 @@ public class NMSGenericImpl extends NMSGeneric {
             // 1.18 Supported
             if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
                 try {
-                    Object type = Reflex.Companion.invokeMethod(nmsEntity, "getType", new Object[0], false, false);
+                    Object type = Reflex.Companion.invokeMethod(nmsEntity, "getType", new Object[0], false, true);
                     minecraftKey = getKeyMethod.invoke(null, type);
                 } catch (Exception e) {
                     e.printStackTrace();

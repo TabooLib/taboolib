@@ -2,7 +2,9 @@ package taboolib.module.porticus
 
 import net.md_5.bungee.BungeeCord
 import org.bukkit.Bukkit
+import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
@@ -30,17 +32,20 @@ object Porticus {
     /**
      * 获取 Porticus API
      */
-    val API by lazy {
+    lateinit var API: API
+        private set
+
+    @Awake(LifeCycle.LOAD)
+    private fun onLoad() {
         try {
             Bukkit.getServer()
-            return@lazy taboolib.module.porticus.bukkitside.PorticusAPI()
+            API = taboolib.module.porticus.bukkitside.PorticusAPI()
         } catch (ignored: NoClassDefFoundError) {
         }
         try {
             BungeeCord.getInstance()
-            return@lazy taboolib.module.porticus.bungeeside.PorticusAPI()
+            API = taboolib.module.porticus.bungeeside.PorticusAPI()
         } catch (ignored: NoClassDefFoundError) {
         }
-        error("unsupported platform")
     }
 }

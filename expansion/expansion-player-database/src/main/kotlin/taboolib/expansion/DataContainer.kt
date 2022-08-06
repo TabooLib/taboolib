@@ -22,6 +22,18 @@ class DataContainer(val user: String, val database: Database) {
         return source[key]
     }
 
+    fun keys(): Set<String> {
+        return source.keys
+    }
+
+    fun values(): Map<String, String> {
+        return source
+    }
+
+    fun size(): Int {
+        return source.size
+    }
+
     fun save(key: String) {
         submit(async = true) { database[user, key] = source[key]!! }
     }
