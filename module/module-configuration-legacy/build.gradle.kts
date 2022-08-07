@@ -3,8 +3,8 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module:module-chat"))
-    compileOnly("org.tabooproject.reflex:reflex:1.0.17")
-    compileOnly("org.tabooproject.reflex:analyser:1.0.17")
+    compileOnly("org.tabooproject.reflex:reflex:1.0.18")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.18")
 }
 
 tasks {

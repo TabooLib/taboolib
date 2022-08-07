@@ -1,5 +1,8 @@
 package taboolib.common.platform
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FILE)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+/**
+ * 1. 忽略注入
+ * 2. 忽略事件加载警告
+ */
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Ghost

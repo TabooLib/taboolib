@@ -5,8 +5,8 @@ dependencies {
     implementation("org.ow2.asm:asm-util:9.2")
     implementation("org.ow2.asm:asm-commons:9.2")
     implementation("me.lucko:jar-relocator:1.5")
-    implementation("org.tabooproject.reflex:reflex:1.0.17")
-    implementation("org.tabooproject.reflex:analyser:1.0.17")
+    implementation("org.tabooproject.reflex:reflex:1.0.18")
+    implementation("org.tabooproject.reflex:analyser:1.0.18")
 }
 
 tasks {
@@ -17,8 +17,8 @@ tasks {
             include(dependency("org.ow2.asm:asm-util:9.2"))
             include(dependency("org.ow2.asm:asm-commons:9.2"))
             include(dependency("me.lucko:jar-relocator:1.5"))
-            include(dependency("org.tabooproject.reflex:reflex:1.0.17"))
-            include(dependency("org.tabooproject.reflex:analyser:1.0.17"))
+            include(dependency("org.tabooproject.reflex:reflex:1.0.18"))
+            include(dependency("org.tabooproject.reflex:analyser:1.0.18"))
         }
         relocate("me.lucko", "taboolib.library")
         relocate("org.objectweb", "taboolib.library")

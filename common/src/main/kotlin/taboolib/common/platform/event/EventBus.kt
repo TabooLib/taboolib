@@ -3,9 +3,11 @@ package taboolib.common.platform.event
 import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ClassMethod
+import org.tabooproject.reflex.Unknown
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Ghost
 import taboolib.common.platform.Platform
 import taboolib.common.platform.function.*
 import taboolib.common.util.optional
@@ -26,6 +28,17 @@ class EventBus : ClassVisitor(0) {
                 }
             } else {
                 null
+            }
+            if (method.parameterTypes.size != 1) {
+                error("$clazz#${method.name} must have 1 parameter and must be an event type")
+            }
+            // 未找到事件类
+            if (method.parameterTypes[0] == Unknown::class.java) {
+                // 忽略警告
+                if (!method.isAnnotationPresent(Ghost::class.java)) {
+                    warning("${method.parameter[0].name} not found, use @Ghost to turn off this warning")
+                }
+                return
             }
             optional(anno) {
                 val obj = instance?.get()

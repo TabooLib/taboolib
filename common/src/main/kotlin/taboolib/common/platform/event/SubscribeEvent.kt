@@ -1,7 +1,7 @@
 package taboolib.common.platform.event
 
 @Target(AnnotationTarget.FUNCTION)
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class SubscribeEvent(
     val priority: EventPriority = EventPriority.NORMAL,
     val ignoreCancelled: Boolean = false,

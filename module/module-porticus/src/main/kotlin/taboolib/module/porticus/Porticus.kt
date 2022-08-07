@@ -35,7 +35,7 @@ object Porticus {
     lateinit var API: API
         private set
 
-    @Awake(LifeCycle.LOAD)
+    @Awake(LifeCycle.ENABLE)
     private fun onLoad() {
         try {
             Bukkit.getServer()
