@@ -50,7 +50,7 @@ object MinecraftVersion {
         // universal >= 9
         arrayOf("1.17", "1.17.1"),
         arrayOf("1.18", "1.18.1", "1.18.2"), // 10
-        arrayOf("1.19", "1.19.1") // 11
+        arrayOf("1.19", "1.19.1", "1.19.2") // 11
     )
 
     /**

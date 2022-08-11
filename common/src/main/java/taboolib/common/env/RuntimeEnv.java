@@ -1,6 +1,7 @@
 package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import taboolib.common.TabooLibCommon;
 
 import java.io.*;
@@ -120,7 +121,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
-        File baseDir = new File(defaultLibrary);
+        File baseFile = new File(defaultLibrary);
         RuntimeDependency[] dependencies = null;
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
@@ -150,49 +151,71 @@ public class RuntimeEnv {
                     relocation.add(new JarRelocation(pattern, relocatePattern));
                 }
                 try {
-                    String[] args = dependency.value().startsWith("!") ? dependency.value().substring(1).split(":") : dependency.value().split(":");
-                    DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
-                    // 支持用户对源进行替换
-                    String repository;
-                    if (dependency.repository().isEmpty()) {
-                        repository = defaultRepositoryCentral;
-                    } else if (ENV_PROPERTIES.contains("repository-" + dependency.repository())) {
-                        repository = ENV_PROPERTIES.getProperty("repository-" + dependency.repository());
-                    } else {
-                        repository = dependency.repository();
-                    }
-                    downloader.addRepository(new Repository(repository));
-                    downloader.setIgnoreOptional(dependency.ignoreOptional());
-                    downloader.setIgnoreException(dependency.ignoreException());
-                    downloader.setDependencyScopes(dependency.scopes());
-                    // 解析依赖
-                    File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
-                    File pomShaFile = new File(pomFile.getPath() + ".sha1");
-                    if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
-                        downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
-                    } else {
-                        String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-                        try {
-                            TabooLibCommon.print(String.format("Downloading library %s:%s:%s", args[0], args[1], args[2]));
-                            downloader.loadDependencyFromInputStream(new URL(pom).openStream());
-                        } catch (FileNotFoundException ex) {
-                            if (ex.toString().contains("@kotlin_version@")) {
-                                return;
-                            }
-                            throw ex;
-                        }
-                    }
-                    // 加载自身
-                    Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
-                    if (dependency.transitive()) {
-                        downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), current));
-                    } else {
-                        downloader.injectClasspath(Collections.singleton(current));
-                    }
+                    String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
+                    loadDependency(url, baseFile, relocation, null, dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             }
+        }
+    }
+
+    public void loadDependency(@NotNull String url) throws IOException {
+        loadDependency(url, new File(defaultLibrary));
+    }
+
+    public void loadDependency(@NotNull String url, @Nullable String repository) throws IOException {
+        loadDependency(url, new File(defaultLibrary), repository);
+    }
+
+    public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws IOException {
+        loadDependency(url, new File(defaultLibrary));
+    }
+
+    public void loadDependency(@NotNull String url, @NotNull File baseDir) throws IOException {
+        loadDependency(url, baseDir, null);
+    }
+
+    public void loadDependency(@NotNull String url, @NotNull File baseDir, @Nullable String repository) throws IOException {
+        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+    }
+
+    public void loadDependency(@NotNull String url, @NotNull File baseDir, @NotNull List<JarRelocation> relocation, @Nullable String repository, boolean ignoreOptional, boolean ignoreException, boolean transitive, @NotNull DependencyScope[] dependencyScopes) throws IOException {
+        String[] args = url.split(":");
+        DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
+        // 支持用户对源进行替换
+        if (repository == null || repository.isEmpty()) {
+            repository = defaultRepositoryCentral;
+        } else if (ENV_PROPERTIES.contains("repository-" + repository)) {
+            repository = ENV_PROPERTIES.getProperty("repository-" + repository);
+        }
+        downloader.addRepository(new Repository(repository));
+        downloader.setIgnoreOptional(ignoreOptional);
+        downloader.setIgnoreException(ignoreException);
+        downloader.setDependencyScopes(dependencyScopes);
+        // 解析依赖
+        File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
+        File pomShaFile = new File(pomFile.getPath() + ".sha1");
+        if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
+            downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
+        } else {
+            String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
+            try {
+                TabooLibCommon.print(String.format("Downloading library %s:%s:%s", args[0], args[1], args[2]));
+                downloader.loadDependencyFromInputStream(new URL(pom).openStream());
+            } catch (FileNotFoundException ex) {
+                if (ex.toString().contains("@kotlin_version@")) {
+                    return;
+                }
+                throw ex;
+            }
+        }
+        // 加载自身
+        Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+        if (transitive) {
+            downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), current));
+        } else {
+            downloader.injectClasspath(Collections.singleton(current));
         }
     }
 }

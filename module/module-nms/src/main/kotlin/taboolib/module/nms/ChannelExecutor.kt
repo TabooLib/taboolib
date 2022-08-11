@@ -11,6 +11,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.pluginId
+import taboolib.common.platform.function.warning
 import taboolib.platform.util.onlinePlayers
 import java.util.concurrent.Executors
 
@@ -44,6 +45,10 @@ object ChannelExecutor {
     }
 
     fun addPlayerChannel(player: Player) {
+        if (!MinecraftVersion.isSupported) {
+            warning("Unsupported Minecraft version, packet handler will not be added.")
+            return
+        }
         addChannelService.submit {
             try {
                 getPlayerChannel(player).pipeline().addBefore("packet_handler", id, ChannelHandler(player))
@@ -54,6 +59,10 @@ object ChannelExecutor {
     }
 
     fun removePlayerChannel(player: Player) {
+        if (!MinecraftVersion.isSupported) {
+            warning("Unsupported Minecraft version, packet handler will not be added.")
+            return
+        }
         removeChannelService.submit {
             try {
                 val playerChannel = getPlayerChannel(player)
