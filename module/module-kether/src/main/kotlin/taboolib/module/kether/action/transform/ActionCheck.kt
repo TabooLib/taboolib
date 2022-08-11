@@ -31,14 +31,14 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
                 is Collection<*> -> left.contains(right)
                 is Array<*> -> left.contains(right)
                 is Map<*, *> -> left.containsKey(right)
-                else -> toString().contains(right.toString())
+                else -> left.toString().contains(right.toString())
             }
 
             IN -> when (right) {
                 is Collection<*> -> right.contains(left)
                 is Array<*> -> right.contains(left)
                 is Map<*, *> -> right.containsKey(left)
-                else -> toString().contains(left.toString())
+                else -> right.toString().contains(left.toString())
             }
         }
     }
