@@ -11,7 +11,7 @@ import taboolib.common5.Coerce
 import java.util.function.Supplier
 
 @Awake
-class ConfigNodeLoader : ClassVisitor(1) {
+class ConfigNodeLoader : ClassVisitor(2) {
 
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(ConfigNode::class.java)) {
@@ -19,7 +19,7 @@ class ConfigNodeLoader : ClassVisitor(1) {
             val bind = node.property("bind", "config.yml")
             val file = ConfigLoader.files[bind]
             if (file == null) {
-                warning("$bind not defined")
+                warning("$bind not defined: $field")
                 return
             }
             file.nodes += field

@@ -15,11 +15,18 @@ import java.net.URL
 import java.util.*
 import java.util.function.Supplier
 import java.util.jar.JarFile
+import kotlin.collections.LinkedHashMap
 
 /**
  * 当前插件的所有类
  */
-val runningClasses by unsafeLazy { LinkedList(TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses()) }
+val runningClassMap by unsafeLazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
+
+val runningClasses by unsafeLazy { LinkedList(runningClassMap.values) }
+
+val runningExactClassMap by unsafeLazy { runningClassMap.filter { it.key.substringAfterLast('$').toIntOrNull() == null } }
+
+val runningExactClasses by unsafeLazy { LinkedList(runningExactClassMap.values) }
 
 /**
  * 取该类在当前项目中被加载的任何实例
@@ -78,8 +85,8 @@ fun <T> Class<T>.findImplementation(): T? {
     return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.getInstance(true)?.get() as? T
 }
 
-fun URL.getClasses(): List<Class<*>> {
-    val classes = ArrayList<Class<*>>()
+fun URL.getClasses(): Map<String, Class<*>> {
+    val classes = LinkedHashMap<String, Class<*>>()
     val src = ArrayList<File>()
     val srcFile = try {
         File(toURI())
@@ -100,8 +107,9 @@ fun URL.getClasses(): List<Class<*>> {
             if (file.isDirectory) {
                 file.listFiles()?.forEach { sub -> include(sub, "$path${file.name}.") }
             } else {
+                val className = "$path${file.nameWithoutExtension}"
                 kotlin.runCatching {
-                    classes.add(Class.forName("$path${file.nameWithoutExtension}"))
+                    classes[className] = Class.forName(className, false, TabooLibCommon::class.java.classLoader)
                 }
             }
         }
@@ -113,8 +121,9 @@ fun URL.getClasses(): List<Class<*>> {
     }
     src.forEach { s ->
         JarFile(s).stream().filter { it.name.endsWith(".class") }.forEach {
+            val className = it.name.replace('/', '.').substring(0, it.name.length - 6)
             kotlin.runCatching {
-                classes.add(Class.forName(it.name.replace('/', '.').substring(0, it.name.length - 6), false, TabooLibCommon::class.java.classLoader))
+                classes[className] = Class.forName(className, false, TabooLibCommon::class.java.classLoader)
             }
         }
     }

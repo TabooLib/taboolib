@@ -8,12 +8,14 @@ import taboolib.common.inject.VisitorHandler;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformFactory;
 
-import java.time.LocalDateTime;
+import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * TabooLib
@@ -47,12 +49,18 @@ public class TabooLibCommon {
     private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new ConcurrentHashMap<>();
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    private static String file = "TabooLib";
+
     static {
         try {
             // 无法理解 paper 的伞兵行为
             Class.forName("io.papermc.paper.logging.SysoutCatcher");
             sysoutCatcherFound = true;
         } catch (ClassNotFoundException ignored) {
+        }
+        try {
+            file = new File(TabooLibCommon.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName();
+        } catch (Throwable ignored) {
         }
     }
 
@@ -173,11 +181,13 @@ public class TabooLibCommon {
         }
     }
 
+    public static boolean isDevelopmentMode() {
+        return new File("dev").exists();
+    }
+
     public static void print(Object message) {
         if (TabooLibCommon.isSysoutCatcherFound()) {
-            if (System.console() != null) {
-                System.console().printf(String.format("[%s INFO]: %s\n", dateTimeFormatter.format(LocalDateTime.now()), message));
-            }
+            Logger.getLogger(file).info(Objects.toString(message));
         } else {
             System.out.println(message);
         }

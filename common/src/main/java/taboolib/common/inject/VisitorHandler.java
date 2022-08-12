@@ -8,7 +8,6 @@ import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
-import taboolib.common.io.Project2Kt;
 import taboolib.common.platform.AwakeFunction;
 import taboolib.common.platform.Ghost;
 import taboolib.common.platform.PlatformFactory;
@@ -27,6 +26,7 @@ import java.util.function.Supplier;
 public class VisitorHandler {
 
     private static final TreeMap<Byte, VisitorGroup> propertyMap = new TreeMap<>();
+    private static final List<Class<?>> classes = new ArrayList<>();
 
     static {
         try {
@@ -59,16 +59,8 @@ public class VisitorHandler {
      */
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment() && !TabooLibCommon.isStopped()) {
-            List<Class<?>> classes = new ArrayList<>();
-            // 获取所有类
-            for (Class<?> runningClass : Project1Kt.getRunningClasses()) {
-                // 检查平台是否支持
-                if (PlatformFactory.INSTANCE.checkPlatform(runningClass)) {
-                    classes.add(runningClass);
-                }
-            }
             for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
-                for (Class<?> clazz : classes) {
+                for (Class<?> clazz : getClasses()) {
                     inject(clazz, entry.getValue(), lifeCycle);
                 }
             }
@@ -152,5 +144,18 @@ public class VisitorHandler {
                 new ClassVisitException(clazz, group, lifeCycle, ex).printStackTrace();
             }
         }
+    }
+
+    private static List<Class<?>> getClasses() {
+        if (classes.isEmpty()) {
+            // 获取所有类
+            for (Class<?> runningClass : Project1Kt.getRunningClasses()) {
+                // 检查平台是否支持
+                if (PlatformFactory.INSTANCE.checkPlatform(runningClass)) {
+                    classes.add(runningClass);
+                }
+            }
+        }
+        return classes;
     }
 }

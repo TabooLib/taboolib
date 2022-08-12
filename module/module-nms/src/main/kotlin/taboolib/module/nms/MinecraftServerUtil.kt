@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
+import taboolib.common.io.runningClassMap
 import taboolib.common.io.runningClasses
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -27,9 +28,9 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
     return nmsProxyMap.computeIfAbsent("${clazz.name}:$bind") {
         val bindClass = bind.replace("{name}", clazz.name)
         val instance = AsmClassTransfer(bindClass).run().getDeclaredConstructor().newInstance()
-        runningClasses.forEach {
-            if (it.name.startsWith("$bindClass\$")) {
-                AsmClassTransfer(it.name).run()
+        runningClassMap.forEach { (name, _) ->
+            if (name.startsWith("$bindClass\$")) {
+                AsmClassTransfer(name).run()
             }
         }
         instance

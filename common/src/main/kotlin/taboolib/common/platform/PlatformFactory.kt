@@ -6,6 +6,7 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
+import taboolib.common.io.runningExactClasses
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
 
@@ -17,14 +18,21 @@ object PlatformFactory {
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
-            // 加载运行环境
-            runningClasses.forEach {
-                kotlin.runCatching {
-                    RuntimeEnv.ENV.inject(it)
-                }.exceptionOrNull()?.printStackTrace()
+            // 开发环境
+            if (TabooLibCommon.isDevelopmentMode()) {
+                val time = System.currentTimeMillis()
+                TabooLibCommon.print("RunningClasses = ${runningClasses.size}")
+                TabooLibCommon.print("RunningClasses (Exact) = ${runningExactClasses.size}")
+                TabooLibCommon.print("${System.currentTimeMillis() - time}ms")
             }
+
+            // 加载运行环境
+            runningExactClasses.parallelStream().forEach {
+                kotlin.runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.printStackTrace()
+            }
+
             // 加载接口
-            runningClasses.forEach {
+            runningExactClasses.parallelStream().forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
@@ -46,6 +54,14 @@ object PlatformFactory {
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
                     }
+                }
+            }
+
+            // 开发环境
+            if (TabooLibCommon.isDevelopmentMode()) {
+                TabooLibCommon.print("Service = ${serviceMap.size}")
+                serviceMap.forEach { (k, v) ->
+                    TabooLibCommon.print(" = $k -> $v")
                 }
             }
         }
