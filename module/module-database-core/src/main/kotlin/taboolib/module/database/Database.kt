@@ -7,7 +7,11 @@ import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 import javax.sql.DataSource
 
-@RuntimeDependency("!com.zaxxer:HikariCP:4.0.3", test = "!com.zaxxer.hikari_4_0_3.HikariDataSource", relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3"])
+@RuntimeDependency(
+    "!com.zaxxer:HikariCP:4.0.3",
+    test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
+    relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3"]
+)
 object Database {
 
     @Config("datasource.yml")
@@ -16,6 +20,18 @@ object Database {
 
     fun createDataSource(host: Host<*>, hikariConfig: HikariConfig? = null): DataSource {
         return HikariDataSource(hikariConfig ?: createHikariConfig(host))
+    }
+
+    fun createDataSourceWithoutConfig(host: Host<*>): DataSource {
+        val config = HikariConfig()
+        config.jdbcUrl = host.connectionUrl
+        if (host is HostSQL) {
+            config.username = host.user
+            config.password = host.password
+        } else {
+            error("Unsupported host: $host")
+        }
+        return HikariDataSource(config)
     }
 
     fun createHikariConfig(host: Host<*>): HikariConfig {
