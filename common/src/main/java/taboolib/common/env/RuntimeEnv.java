@@ -9,10 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.zip.ZipFile;
 
 /**
@@ -120,6 +117,11 @@ public class RuntimeEnv {
         }
     }
 
+    private boolean test(String path){
+        String test = path.startsWith("!") ? path.substring(1) : path;
+        return test.length() > 0 && ClassAppender.isExists(test);
+    }
+
     public void loadDependency(@NotNull Class<?> clazz, boolean initiative) {
         File baseFile = new File(defaultLibrary);
         RuntimeDependency[] dependencies = null;
@@ -136,8 +138,14 @@ public class RuntimeEnv {
                 if (dependency.initiative() && !initiative) {
                     continue;
                 }
-                String test = dependency.test().startsWith("!") ? dependency.test().substring(1) : dependency.test();
-                if (test.length() > 0 && ClassAppender.isExists(test)) {
+                String allTest = dependency.test();
+                List<String> tests = new ArrayList<>();
+                if(allTest.contains(",")){
+                    tests.addAll(Arrays.asList(allTest.split(",")));
+                }else {
+                    tests.add(allTest);
+                }
+                if(tests.stream().anyMatch(path -> !test(path))){
                     continue;
                 }
                 List<JarRelocation> relocation = new ArrayList<>();
