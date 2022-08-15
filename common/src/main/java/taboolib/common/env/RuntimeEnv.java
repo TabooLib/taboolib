@@ -117,7 +117,7 @@ public class RuntimeEnv {
         }
     }
 
-    private boolean test(String path){
+    private boolean test(String path) {
         String test = path.startsWith("!") ? path.substring(1) : path;
         return test.length() > 0 && ClassAppender.isExists(test);
     }
@@ -140,12 +140,12 @@ public class RuntimeEnv {
                 }
                 String allTest = dependency.test();
                 List<String> tests = new ArrayList<>();
-                if(allTest.contains(",")){
+                if (allTest.contains(",")) {
                     tests.addAll(Arrays.asList(allTest.split(",")));
-                }else {
+                } else {
                     tests.add(allTest);
                 }
-                if(tests.stream().anyMatch(path -> !test(path))){
+                if (tests.stream().allMatch(this::test)) {
                     continue;
                 }
                 List<JarRelocation> relocation = new ArrayList<>();
@@ -160,7 +160,7 @@ public class RuntimeEnv {
                 }
                 try {
                     String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
-                    loadDependency(url, baseFile, relocation, null, dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
+                    loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }

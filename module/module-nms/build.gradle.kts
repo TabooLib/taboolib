@@ -1,8 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
-    compileOnly("org.tabooproject.reflex:reflex:1.0.18")
-    compileOnly("org.tabooproject.reflex:analyser:1.0.18")
+    compileOnly("org.tabooproject.reflex:reflex:1.0.19")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     compileOnly("org.ow2.asm:asm:9.1")
     compileOnly("org.ow2.asm:asm-commons:9.1")
     compileOnly("io.netty:netty-all:5.0.0.Alpha2")

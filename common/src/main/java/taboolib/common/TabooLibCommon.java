@@ -62,6 +62,10 @@ public class TabooLibCommon {
             file = new File(TabooLibCommon.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName();
         } catch (Throwable ignored) {
         }
+        // 开发环境调试信息
+        if (isDevelopmentMode()) {
+            TabooLibCommon.print("TabooLib is in development mode.");
+        }
     }
 
     /**
@@ -125,11 +129,20 @@ public class TabooLibCommon {
                 postponeExecutor.remove(cycle);
             }
         });
+        if (isDevelopmentMode()) {
+            TabooLibCommon.print("LifeCycle: " + lifeCycle);
+        }
         switch (lifeCycle) {
             case CONST:
                 try {
+                    if (isDevelopmentMode()) {
+                        TabooLibCommon.print("RuntimeEnv setup...");
+                    }
                     RuntimeEnv.ENV.setup();
                 } catch (NoClassDefFoundError ignored) {
+                    if (isDevelopmentMode()) {
+                        TabooLibCommon.print("RuntimeEnv not found.");
+                    }
                 }
                 if (isKotlinEnvironment()) {
                     init = true;
@@ -151,7 +164,8 @@ public class TabooLibCommon {
                         VisitorHandler.injectAll(LifeCycle.INIT);
                     } else {
                         stopped = true;
-                        throw new RuntimeException("Runtime environment setup failed, please feedback!");
+                        String testClass = "kotlin.Lazy";
+                        throw new RuntimeException("Runtime environment setup failed, please feedback! (test: " + testClass + ", " + "classloader: " + TabooLibCommon.class.getClassLoader() + ")");
                     }
                 }
                 VisitorHandler.injectAll(LifeCycle.LOAD);

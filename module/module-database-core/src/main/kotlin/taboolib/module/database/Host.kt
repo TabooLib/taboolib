@@ -18,8 +18,9 @@ abstract class Host<T : ColumnBuilder> {
 
     abstract val connectionUrlSimple: String?
 
-    fun createDataSource(autoRelease: Boolean = true): DataSource {
-        return Database.createDataSource(this).also {
+    fun createDataSource(autoRelease: Boolean = true, withoutConfig: Boolean = false): DataSource {
+        val dataSource = if (withoutConfig) Database.createDataSourceWithoutConfig(this) else Database.createDataSource(this)
+        return dataSource.also {
             if (autoRelease) {
                 dataSources += it as HikariDataSource
             }

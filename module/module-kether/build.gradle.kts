@@ -10,8 +10,8 @@ dependencies {
     compileOnly(project(":module:module-nms-util"))
     compileOnly(project(":module:module-configuration"))
     compileOnly(project(":expansion:expansion-javascript"))
-    compileOnly("org.tabooproject.reflex:reflex:1.0.18")
-    compileOnly("org.tabooproject.reflex:analyser:1.0.18")
+    compileOnly("org.tabooproject.reflex:reflex:1.0.19")
+    compileOnly("org.tabooproject.reflex:analyser:1.0.19")
 }
 
 tasks {
