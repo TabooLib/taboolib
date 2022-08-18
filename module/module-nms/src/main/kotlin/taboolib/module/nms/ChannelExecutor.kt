@@ -89,4 +89,9 @@ object ChannelExecutor {
     internal fun onEnable() {
         onlinePlayers.forEach { addPlayerChannel(it) }
     }
+
+    @Awake(LifeCycle.DISABLE)
+    internal fun onDisable() {
+        onlinePlayers.forEach { removePlayerChannel(it) }
+    }
 }

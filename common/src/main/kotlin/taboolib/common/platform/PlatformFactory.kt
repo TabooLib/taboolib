@@ -93,14 +93,14 @@ object PlatformFactory {
      * 获取已被唤醒的 API 实例
      */
     inline fun <reified T> getAPI(): T {
-        return awokenMap[T::class.java.name] as T
+        return awokenMap[T::class.java.name] as? T ?: error("API (${T::class.java.name}) not found, currently: ${awokenMap.keys}")
     }
 
     /**
      * 获取已注册的跨平台服务
      */
     inline fun <reified T> getService(): T {
-        return serviceMap[T::class.java.name] as T
+        return serviceMap[T::class.java.name] as? T ?: error("Service (${T::class.java}) not found, currently: ${serviceMap.keys}")
     }
 
     /**

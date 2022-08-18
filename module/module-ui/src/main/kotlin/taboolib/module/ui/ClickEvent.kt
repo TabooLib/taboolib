@@ -1,17 +1,19 @@
 package taboolib.module.ui
 
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.module.ui.type.Basic
 
 /**
  * @author 坏黑
  * @since 2019-05-21 18:09
  */
-class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType: ClickType, val slot: Char) {
+class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType: ClickType, val slot: Char, val builder: Basic) {
 
     val rawSlot: Int
         get() = if (clickType === ClickType.CLICK) clickEvent().rawSlot else -1
@@ -38,6 +40,15 @@ class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType:
                 clickEvent().currentItem = item
             }
         }
+
+    fun getItem(slot: Char): ItemStack? {
+        val idx = builder.slots.flatten().indexOf(slot)
+        return if (idx in 0 until inventory.size) inventory.getItem(idx) else null
+    }
+
+    fun getItems(slot: Char): List<ItemStack> {
+        return builder.slots.flatten().mapIndexedNotNull { index, c -> if (c == slot) inventory.getItem(index) ?: ItemStack(Material.AIR) else null }
+    }
 
     fun onClick(consumer: InventoryClickEvent.() -> Unit): ClickEvent {
         consumer(clickEvent())

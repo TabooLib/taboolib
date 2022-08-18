@@ -12,16 +12,17 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Ghost
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
-import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.platform.BukkitPlugin
 import taboolib.platform.util.isNotAir
 
 @PlatformSide([Platform.BUKKIT])
-object ClickListener {
+internal object ClickListener {
 
     @Awake(LifeCycle.DISABLE)
     fun onDisable() {
@@ -33,33 +34,35 @@ object ClickListener {
     }
 
     @SubscribeEvent
-    fun e(e: InventoryOpenEvent) {
+    fun onOpen(e: InventoryOpenEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
         submit {
             builder.onBuild(e.player as Player, e.inventory)
         }
-        submit(async = true) {
+        submitAsync {
             builder.onBuildAsync(e.player as Player, e.inventory)
         }
     }
 
     @SubscribeEvent
-    fun e(e: InventoryClickEvent) {
+    fun onClick(e: InventoryClickEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
-        // lock hand
+        // 锁定主手
         if (builder.handLocked && (e.rawSlot - e.inventory.size - 27 == e.whoClicked.inventory.heldItemSlot || e.click == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.hotbarButton == e.whoClicked.inventory.heldItemSlot)) {
             e.isCancelled = true
         }
+        // 处理事件
         try {
-            val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot))
+            val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot), builder)
             builder.onClick.forEach { it.accept(event) }
         } catch (t: Throwable) {
             t.printStackTrace()
         }
+        // 如果事件取消则不处理后续逻辑
         if (e.isCancelled) {
             return
         }
-        // drop on empty area
+        // 丢弃逻辑
         if (e.currentItem.isNotAir() && e.click == org.bukkit.event.inventory.ClickType.DROP) {
             val item = VectorUtil.itemDrop(e.whoClicked as Player, e.currentItem)
             item.pickupDelay = 20
@@ -84,20 +87,19 @@ object ClickListener {
     }
 
     @SubscribeEvent
-    fun e(e: InventoryDragEvent) {
-        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ')
-        MenuHolder.fromInventory(e.inventory)?.onClick?.forEach {
-            it.accept(clickEvent)
-        }
+    fun onDrag(e: InventoryDragEvent) {
+        val builder = MenuHolder.fromInventory(e.inventory) ?: return
+        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', builder)
+        builder.onClick.forEach { it.accept(clickEvent) }
     }
 
     @SubscribeEvent
-    fun e(e: InventoryCloseEvent) {
+    fun onClose(e: InventoryCloseEvent) {
         MenuHolder.fromInventory(e.inventory)?.onClose?.invoke(e)
     }
 
     @SubscribeEvent
-    fun e(e: PlayerDropItemEvent) {
+    fun onDropItem(e: PlayerDropItemEvent) {
         val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked && !e.itemDrop.hasMetadata("internal-drop")) {
             e.isCancelled = true
@@ -105,16 +107,16 @@ object ClickListener {
     }
 
     @SubscribeEvent
-    fun e(e: PlayerItemHeldEvent) {
+    fun onItemHeld(e: PlayerItemHeldEvent) {
         val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked) {
             e.isCancelled = true
         }
     }
 
-    @SubscribeEvent(bind = "org.bukkit.event.player.PlayerSwapHandItemsEvent")
-    fun onSwap(ope: OptionalEvent) {
-        val e = ope.get<PlayerSwapHandItemsEvent>()
+    @Ghost
+    @SubscribeEvent
+    fun onSwap(e: PlayerSwapHandItemsEvent) {
         val builder = MenuHolder.fromInventory(e.player.openInventory.topInventory) ?: return
         if (builder.handLocked) {
             e.isCancelled = true

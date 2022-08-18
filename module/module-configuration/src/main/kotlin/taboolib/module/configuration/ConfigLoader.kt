@@ -1,8 +1,8 @@
 package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
-import org.tabooproject.reflex.ClassMethod
 import taboolib.common.LifeCycle
+import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
@@ -50,6 +50,10 @@ class ConfigLoader : ClassVisitor(1) {
                     configFile.nodes.forEach { loader.visit(it, clazz, instance) }
                 }
                 files[name] = configFile
+                // 开发模式
+                if (TabooLibCommon.isDevelopmentMode()) {
+                    TabooLibCommon.print("Loaded config file: ${file.absolutePath}")
+                }
             }
         }
     }

@@ -84,7 +84,7 @@ open class MinecraftRemapper : Remapper() {
         } else {
             // 将高版本包名替换为低版本包名
             // net/minecraft/server/level/EntityPlayer -> net/minecraft/server/v1_17_R1/EntityPlayer
-            if (mapping.classMap.containsValue(key.replace('/', '.'))) {
+            if (mapping.classMap.containsValue(key.replace('.', '/'))) {
                 "net/minecraft/server/${MinecraftVersion.minecraftVersion}/${key.substringAfterLast('/', "")}"
             } else {
                 key.replace(nms1, nms2)
