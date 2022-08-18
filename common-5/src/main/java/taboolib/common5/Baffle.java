@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import taboolib.common.Isolated;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 冷却工具
@@ -105,6 +107,7 @@ public abstract class Baffle {
 
         private final long millis;
         private final Map<String, Long> data = Maps.newConcurrentMap();
+        private long globalTime;
 
         public BaffleTime(long millis) {
             this.millis = millis;
@@ -117,31 +120,50 @@ public abstract class Baffle {
          * @return long
          */
         public long nextTime(String id) {
-            long result = data.get(id) + millis - System.currentTimeMillis();
+            long result;
+            if (Objects.equals(id, "*")) {
+                result = globalTime + millis - System.currentTimeMillis();
+            } else {
+                result = data.getOrDefault(id, 0L) + millis - System.currentTimeMillis();
+            }
             return result >= 0 ? result : 0L;
         }
 
         @Override
         public void resetAll() {
             data.clear();
+            globalTime = 0L;
         }
 
         @Override
         public void reset(String id) {
-            data.remove(id);
+            if (Objects.equals(id, "*")) {
+                globalTime = 0L;
+            } else {
+                data.remove(id);
+            }
         }
 
         @Override
         public void next(String id) {
-            data.put(id, System.currentTimeMillis());
+            if (Objects.equals(id, "*")) {
+                globalTime = System.currentTimeMillis();
+            } else {
+                data.put(id, System.currentTimeMillis());
+            }
         }
 
         @Override
         public boolean hasNext(String id, boolean update) {
-            long time = data.getOrDefault(id, 0L);
+            long time;
+            if (Objects.equals(id, "*")) {
+                time = globalTime;
+            } else {
+                time = data.getOrDefault(id, 0L);
+            }
             if (time + millis < System.currentTimeMillis()) {
                 if (update) {
-                    data.put(id, System.currentTimeMillis());
+                    next(id);
                 }
                 return true;
             }
@@ -153,6 +175,7 @@ public abstract class Baffle {
 
         private final int count;
         private final Map<String, Integer> data = Maps.newConcurrentMap();
+        private final AtomicInteger globalCount = new AtomicInteger();
 
         public BaffleCounter(int count) {
             this.count = count;
@@ -161,35 +184,56 @@ public abstract class Baffle {
         @Override
         public void resetAll() {
             data.clear();
+            globalCount.set(0);
         }
 
         @Override
         public void reset(String id) {
-            data.remove(id);
+            if (Objects.equals(id, "*")) {
+                globalCount.set(0);
+            } else {
+                data.remove(id);
+            }
         }
 
         @Override
         public void next(String id) {
-            data.put(id, data.computeIfAbsent(id, a -> 0) + 1);
+            if (Objects.equals(id, "*")) {
+                globalCount.getAndIncrement();
+            } else {
+                data.put(id, data.computeIfAbsent(id, a -> 0) + 1);
+            }
         }
 
         @Override
         public boolean hasNext(String id, boolean update) {
-            int i;
-            if (data.containsKey(id)) {
-                i = data.get(id);
-            } else {
-                i = 0;
-                data.put(id, 0);
-            }
-            if (i < count) {
-                if (update) {
-                    data.put(id, i + 1);
+            if (Objects.equals(id, "*")) {
+                if (globalCount.get() < count) {
+                    if (update) {
+                        globalCount.getAndIncrement();
+                    }
+                    return false;
                 }
-                return false;
-            }
-            if (update) {
-                data.put(id, 0);
+                if (update) {
+                    globalCount.set(0);
+                }
+            } else {
+                int i;
+                if (data.containsKey(id)) {
+                    i = data.get(id);
+                } else {
+                    i = 0;
+                    data.put(id, 0);
+                }
+                if (i < count) {
+                    if (update) {
+                        data.put(id, i + 1);
+                    }
+                    return false;
+                }
+                if (update) {
+                    data.put(id, 0);
+                }
             }
             return true;
         }
