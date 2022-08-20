@@ -63,10 +63,15 @@ class AppIO : PlatformIO {
     }
 
     override fun getDataFolder(): File {
-        return File(getJarFile().parent)
+        return nativeDataFolder ?: File(getJarFile().parent)
     }
 
     override fun getPlatformData(): Map<String, Any> {
         return emptyMap()
+    }
+
+    companion object {
+
+        var nativeDataFolder: File? = null
     }
 }
