@@ -9,12 +9,13 @@ import taboolib.common.io.runningClasses
 import taboolib.common.io.runningExactClasses
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
+import java.util.concurrent.ConcurrentHashMap
 
 object PlatformFactory {
 
-    val awokenMap = HashMap<String, Any>()
+    val awokenMap = ConcurrentHashMap<String, Any>()
 
-    val serviceMap = HashMap<String, Any>()
+    val serviceMap = ConcurrentHashMap<String, Any>()
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
