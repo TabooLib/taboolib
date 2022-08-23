@@ -22,9 +22,13 @@ import kotlin.collections.LinkedHashMap
  */
 val runningClassMap by unsafeLazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
 
+val runningClassMapWithoutLibrary by unsafeLazy { runningClassMap.filterKeys { !it.contains("$taboolibId.library") } }
+
 val runningClasses by unsafeLazy { LinkedList(runningClassMap.values) }
 
-val runningExactClassMap by unsafeLazy { runningClassMap.filter { it.key.substringAfterLast('$').toIntOrNull() == null } }
+val runningClassesWithoutLibrary by unsafeLazy { LinkedList(runningClassMapWithoutLibrary.values) }
+
+val runningExactClassMap by unsafeLazy { runningClassMap.filter { !it.key.contains('$') && it.key.substringAfterLast('$').toIntOrNull() == null } }
 
 val runningExactClasses by unsafeLazy { LinkedList(runningExactClassMap.values) }
 

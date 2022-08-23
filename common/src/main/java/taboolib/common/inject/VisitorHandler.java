@@ -8,7 +8,6 @@ import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
-import taboolib.common.platform.AwakeFunction;
 import taboolib.common.platform.Ghost;
 import taboolib.common.platform.PlatformFactory;
 import taboolib.common.platform.SkipTo;
@@ -27,15 +26,6 @@ public class VisitorHandler {
 
     private static final TreeMap<Byte, VisitorGroup> propertyMap = new TreeMap<>();
     private static final List<Class<?>> classes = new ArrayList<>();
-
-    static {
-        try {
-            for (LifeCycle value : LifeCycle.values()) {
-                register(new AwakeFunction(value));
-            }
-        } catch (NoClassDefFoundError ignored) {
-        }
-    }
 
     /**
      * 注册依赖注入接口

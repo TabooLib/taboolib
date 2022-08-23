@@ -1,12 +1,11 @@
 package taboolib.common.platform
 
+import taboolib.common.LifeCycle
 import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
-import taboolib.common.io.getInstance
-import taboolib.common.io.runningClasses
-import taboolib.common.io.runningExactClasses
+import taboolib.common.io.*
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
 import java.util.concurrent.ConcurrentHashMap
@@ -19,21 +18,28 @@ object PlatformFactory {
 
     fun init() {
         if (TabooLibCommon.isKotlinEnvironment()) {
+            // 注册 Awake 接口
+            try {
+                LifeCycle.values().forEach { VisitorHandler.register(AwakeFunction(it)) }
+            } catch (_: NoClassDefFoundError) {
+            }
+
             // 开发环境
             if (TabooLibCommon.isDevelopmentMode()) {
                 val time = System.currentTimeMillis()
                 TabooLibCommon.print("RunningClasses = ${runningClasses.size}")
                 TabooLibCommon.print("RunningClasses (Exact) = ${runningExactClasses.size}")
+                TabooLibCommon.print("RunningClasses (WithoutLibrary) = ${runningClassesWithoutLibrary.size}")
                 TabooLibCommon.print("${System.currentTimeMillis() - time}ms")
             }
 
             // 加载运行环境
-            runningExactClasses.parallelStream().forEach {
+            runningClassesWithoutLibrary.parallelStream().forEach {
                 kotlin.runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.printStackTrace()
             }
 
             // 加载接口
-            runningExactClasses.parallelStream().forEach {
+            runningClassesWithoutLibrary.parallelStream().forEach {
                 if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
