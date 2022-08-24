@@ -122,7 +122,7 @@ public class NMSGenericImpl extends NMSGeneric {
             // 1.18 Supported
             if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
                 net.minecraft.server.v1_8_R3.Item nmsItem = ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getItem();
-                name = Reflex.Companion.invokeMethod(nmsItem, "getDescriptionId", new Object[0], false, false);
+                name = Reflex.Companion.invokeMethod(nmsItem, "getDescriptionId", new Object[0], false, true);
             } else {
                 name = ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getItem().getName();
             }
