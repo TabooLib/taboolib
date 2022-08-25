@@ -1,6 +1,7 @@
 package taboolib.expansion
 
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.pluginId
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.database.HostSQL
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 private var playerDatabase: Database? = null
 
-private val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
+val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
 
 fun setupPlayerDatabase(conf: ConfigurationSection, table: String = conf.getString("table").toString()) {
     playerDatabase = Database(TypeSQL(HostSQL(conf), table))

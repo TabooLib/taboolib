@@ -5,6 +5,7 @@ import taboolib.common.LifeCycle;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * TabooLib
@@ -16,7 +17,7 @@ import java.util.List;
 public class VisitorGroup {
 
     private final byte priority;
-    private final List<ClassVisitor> list = new LinkedList<>();
+    private final List<ClassVisitor> list = new CopyOnWriteArrayList<>();
 
     public VisitorGroup(byte priority) {
         this.priority = priority;
