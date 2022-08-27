@@ -39,7 +39,6 @@ private class ResettableLazyImpl<T>(group: String, initializer: () -> T) : Reset
         get() {
             if (localValue === UninitializedValue) {
                 localValue = initializer!!()
-                initializer = null
             }
             return localValue as T
         }
@@ -76,7 +75,6 @@ private class ResettableSynchronizedLazyImpl<T>(group: String, initializer: () -
                 } else {
                     val typedValue = initializer!!()
                     localValue = typedValue
-                    initializer = null
                     typedValue
                 }
             }

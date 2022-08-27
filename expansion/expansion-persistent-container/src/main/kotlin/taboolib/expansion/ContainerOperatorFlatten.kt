@@ -5,7 +5,12 @@ import taboolib.module.database.Where
 import java.util.*
 import javax.sql.DataSource
 
-class ContainerOperatorFlatten(val table: Table<*, *>, val dataSource: DataSource, val key: String, val value: String) : ContainerOperator() {
+class ContainerOperatorFlatten(
+    override val table: Table<*, *>,
+    override val dataSource: DataSource,
+    val key: String,
+    val value: String,
+) : ContainerOperator() {
 
     override fun keys(uniqueId: UUID): List<String> {
         return table.select(dataSource) {
@@ -56,6 +61,10 @@ class ContainerOperatorFlatten(val table: Table<*, *>, val dataSource: DataSourc
     }
 
     override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {
+        error("Not supported in flatten container")
+    }
+
+    override fun insert(map: Map<String, Any?>) {
         error("Not supported in flatten container")
     }
 }

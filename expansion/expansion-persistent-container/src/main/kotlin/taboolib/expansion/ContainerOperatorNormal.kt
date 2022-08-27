@@ -5,8 +5,12 @@ import taboolib.module.database.Where
 import java.util.*
 import javax.sql.DataSource
 
-class ContainerOperatorNormal(val table: Table<*, *>, val dataSource: DataSource, val player: Boolean, val data: List<ContainerBuilder.Data>) :
-    ContainerOperator() {
+class ContainerOperatorNormal(
+    override val table: Table<*, *>,
+    override val dataSource: DataSource,
+    val player: Boolean,
+    val data: List<ContainerBuilder.Data>,
+) : ContainerOperator() {
 
     override fun keys(uniqueId: UUID): List<String> {
         error("Not supported in normal container")
@@ -80,6 +84,12 @@ class ContainerOperatorNormal(val table: Table<*, *>, val dataSource: DataSource
             table.insert(dataSource, *map.keys.toTypedArray()) {
                 value(map.values.toTypedArray())
             }
+        }
+    }
+
+    override fun insert(map: Map<String, Any?>) {
+        table.insert(dataSource, *map.keys.toTypedArray()) {
+            value(map.values.toTypedArray())
         }
     }
 }
