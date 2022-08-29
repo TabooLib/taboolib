@@ -81,15 +81,15 @@ class ContainerOperatorNormal(
                 map.forEach { (k, v) -> set(k, v) }
             }
         } else {
-            table.insert(dataSource, *map.keys.toTypedArray()) {
-                value(map.values.toTypedArray())
+            table.insert(dataSource, *map.filter { it.value != null }.keys.toTypedArray()) {
+                value(*map.values.filterNotNull().toTypedArray())
             }
         }
     }
 
     override fun insert(map: Map<String, Any?>) {
-        table.insert(dataSource, *map.keys.toTypedArray()) {
-            value(map.values.toTypedArray())
+        table.insert(dataSource, *map.filter { it.value != null }.keys.toTypedArray()) {
+            value(*map.values.filterNotNull().toTypedArray())
         }
     }
 }
