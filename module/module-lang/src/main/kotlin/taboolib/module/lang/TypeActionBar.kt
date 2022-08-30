@@ -27,6 +27,12 @@ class TypeActionBar : Type {
         }
     }
 
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        if (sender is ProxyPlayer) {
+            sender.sendActionBar(func.invoke(text.translate(sender))!!)
+        }
+    }
+
     override fun toString(): String {
         return "NodeActionBar(text='$text')"
     }

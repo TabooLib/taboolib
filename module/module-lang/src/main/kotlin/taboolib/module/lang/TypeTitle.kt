@@ -35,6 +35,14 @@ class TypeTitle : Type {
         }
     }
 
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        if (sender is ProxyPlayer) {
+            sender.sendTitle(func.invoke(title?.translate(sender)), func.invoke(subtitle?.translate(sender)), fadein, stay, fadeout)
+        } else {
+            sender.sendMessage(toString())
+        }
+    }
+
     override fun toString(): String {
         return "NodeTitle(title=$title, subtitle=$subtitle, fadein=$fadein, stay=$stay, fadeout=$fadeout)"
     }

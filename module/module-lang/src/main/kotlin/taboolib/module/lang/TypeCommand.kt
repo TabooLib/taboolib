@@ -23,6 +23,10 @@ class TypeCommand : Type {
         command?.forEach { console().performCommand(it.replace("@p", sender.name)) }
     }
 
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        send(sender)
+    }
+
     override fun toString(): String {
         return "TypeCommand(command='$command')"
     }

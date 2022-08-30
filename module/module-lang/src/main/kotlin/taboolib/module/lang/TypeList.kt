@@ -15,11 +15,19 @@ class TypeList(val list: List<Type>) : Type {
         return list.filterIsInstance<TypeText>().mapNotNull { it.asText(sender, *args) }
     }
 
+    fun asTextList(sender: ProxyCommandSender, func: (String) -> (String)): List<String> {
+        return list.filterIsInstance<TypeText>().mapNotNull { it.asText(sender, func) }
+    }
+
     override fun init(source: Map<String, Any>) {
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         list.forEach { it.send(sender, *args) }
+    }
+
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        list.forEach { it.send(sender, func) }
     }
 
     override fun toString(): String {

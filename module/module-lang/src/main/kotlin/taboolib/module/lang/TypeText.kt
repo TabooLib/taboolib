@@ -25,6 +25,10 @@ class TypeText : Type {
         return text?.translate(sender)?.replaceWithOrder(*args)
     }
 
+    fun asText(sender: ProxyCommandSender, func: (String?) -> (String?)): String? {
+        return func.invoke(text?.translate(sender))
+    }
+
     override fun init(source: Map<String, Any>) {
         text = source["text"]?.toString()
         // if blocked
@@ -36,6 +40,12 @@ class TypeText : Type {
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         if (text != null) {
             sender.sendMessage(text!!.translate(sender).replaceWithOrder(*args))
+        }
+    }
+
+    override fun send(sender: ProxyCommandSender, func: (String?) -> String?) {
+        if (text != null) {
+            sender.sendMessage(func.invoke(text!!.translate(sender))!!)
         }
     }
 
