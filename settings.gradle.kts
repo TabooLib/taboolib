@@ -36,6 +36,7 @@ fun importExtensions() {
     include("expansion:expansion-command-helper")
     include("expansion:expansion-player-database")
     include("expansion:expansion-persistent-container")
+    include("expansion:expansion-alkaid-redis")
 
     // 从 common-5 中移除
     include("expansion:expansion-javascript")

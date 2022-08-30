@@ -1,12 +1,14 @@
 package taboolib.module.configuration
 
 import com.electronwill.nightconfig.core.conversion.ObjectConverter
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.reflect.Reflex.Companion.invokeConstructor
 import taboolib.common.reflect.Reflex.Companion.unsafeInstance
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
+import java.lang.IllegalStateException
 
 /**
  * TabooLib
@@ -65,6 +67,18 @@ interface Configuration : ConfigurationSection {
             val configFile = ConfigFile(type.newFormat().createConfig())
             configFile.loadFromInputStream(inputStream)
             return configFile
+        }
+
+        fun loadFromOther(otherConfig: Any, type: Type = Type.YAML): ConfigFile {
+            return try {
+                loadFromString(otherConfig.invokeMethod<String>("saveToString")!!, type)
+            } catch (ex: NoSuchMethodException) {
+                try {
+                    loadFromString(otherConfig.toString(), type)
+                } catch (ex: Throwable) {
+                    throw IllegalStateException("Could not load configuration from other configuration", ex)
+                }
+            }
         }
 
         fun getTypeFromFile(file: File, def: Type = Type.YAML): Type {

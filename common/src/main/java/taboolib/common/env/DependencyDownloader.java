@@ -74,6 +74,8 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     private boolean ignoreException = false;
 
+    private boolean isTransitive = true;
+
     public DependencyDownloader() {
     }
 
@@ -132,8 +134,13 @@ public class DependencyDownloader extends AbstractXmlParser {
                 }
                 injectedDependencies.add(dep);
             } else {
-                TabooLibCommon.setStopped(true);
-                throw new RuntimeException("Runtime not exist: " + file);
+                try {
+                    loadDependency(repositories, dep);
+                    injectClasspath(Collections.singleton(dep));
+                } catch (IOException e) {
+                    TabooLibCommon.setStopped(true);
+                    throw new IllegalStateException("Unable to load dependency: " + dep, e);
+                }
             }
         }
     }
@@ -299,21 +306,23 @@ public class DependencyDownloader extends AbstractXmlParser {
         } catch (ParseException ex) {
             throw new IOException("Unable to parse repositories", ex);
         }
-        nodes = pom.getElementsByTagName("dependency");
-        try {
-            for (int i = 0; i < nodes.getLength(); ++i) {
-                // ignore optional
-                if (ignoreOptional && find("optional", (Element) nodes.item(i), "false").equals("true")) {
-                    continue;
+        if (isTransitive) {
+            nodes = pom.getElementsByTagName("dependency");
+            try {
+                for (int i = 0; i < nodes.getLength(); ++i) {
+                    // ignore optional
+                    if (ignoreOptional && find("optional", (Element) nodes.item(i), "false").equals("true")) {
+                        continue;
+                    }
+                    Dependency dep = new Dependency((Element) nodes.item(i));
+                    if (scopeSet.contains(dep.getScope())) {
+                        dependencies.add(dep);
+                    }
                 }
-                Dependency dep = new Dependency((Element) nodes.item(i));
-                if (scopeSet.contains(dep.getScope())) {
-                    dependencies.add(dep);
+            } catch (ParseException ex) {
+                if (!ignoreException) {
+                    throw new IOException("Unable to parse dependencies", ex);
                 }
-            }
-        } catch (ParseException ex) {
-            if (!ignoreException) {
-                throw new IOException("Unable to parse dependencies", ex);
             }
         }
         return loadDependency(repos, dependencies);
@@ -424,6 +433,14 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public Set<JarRelocation> getRelocation() {
         return relocation;
+    }
+
+    public boolean isTransitive() {
+        return isTransitive;
+    }
+
+    public void setTransitive(boolean transitive) {
+        isTransitive = transitive;
     }
 
     @NotNull

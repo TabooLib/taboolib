@@ -38,6 +38,8 @@ public class MissionBungee extends PorticusMission {
             sendBungeeMessage((Server) target, command);
         } else if (target instanceof ProxiedPlayer) {
             sendBungeeMessage((ProxiedPlayer) target, command);
+        } else {
+            throw new IllegalStateException("target must be Server or ProxiedPlayer");
         }
     }
 

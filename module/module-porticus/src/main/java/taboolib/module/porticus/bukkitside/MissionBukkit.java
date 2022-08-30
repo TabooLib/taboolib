@@ -33,7 +33,11 @@ public class MissionBukkit extends PorticusMission {
     @Override
     public void run(@NotNull Object target) {
         super.run(target);
-        sendBukkitMessage((Player) target, command);
+        if (target instanceof Player) {
+            sendBukkitMessage((Player) target, command);
+        } else {
+            throw new IllegalStateException("target must be Player");
+        }
     }
 
     public void sendBukkitMessage(Player player, String[] command) {

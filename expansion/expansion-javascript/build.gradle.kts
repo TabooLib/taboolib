@@ -1,14 +1,6 @@
-dependencies {
-    implementation("org.openjdk.nashorn:nashorn-core:15.3")
-    compileOnly(project(":common"))
-}
+@file:Suppress("GradlePackageUpdate")
 
-tasks {
-    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-        archiveClassifier.set("")
-        archiveBaseName.set("${archiveBaseName.get()}-shaded")
-    }
-    build {
-        dependsOn(shadowJar)
-    }
+dependencies {
+    compileOnly("org.openjdk.nashorn:nashorn-core:15.3")
+    compileOnly(project(":common"))
 }

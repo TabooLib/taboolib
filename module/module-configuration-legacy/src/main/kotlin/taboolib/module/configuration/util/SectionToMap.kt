@@ -19,3 +19,7 @@ fun <K, V> ConfigurationSection.getMap(path: String): Map<K, V> {
     }
     return map
 }
+
+fun <K, V> ConfigurationSection.getMap(path: String, transform: (String, Any) -> Pair<K, V>): Map<K, V> {
+    return getMap<Any, Any>(path).map { transform(it.key.toString(), it.value) }.toMap()
+}

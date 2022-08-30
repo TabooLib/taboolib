@@ -201,6 +201,7 @@ public class RuntimeEnv {
         downloader.setIgnoreOptional(ignoreOptional);
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(dependencyScopes);
+        downloader.setTransitive(transitive);
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
         File pomShaFile = new File(pomFile.getPath() + ".sha1");
@@ -209,7 +210,7 @@ public class RuntimeEnv {
         } else {
             String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
             try {
-                TabooLibCommon.print(String.format("Downloading library %s:%s:%s", args[0], args[1], args[2]));
+                TabooLibCommon.print(String.format("Downloading library %s:%s:%s %s", args[0], args[1], args[2], transitive ? "(transitive)" : ""));
                 downloader.loadDependencyFromInputStream(new URL(pom).openStream());
             } catch (FileNotFoundException ex) {
                 if (ex.toString().contains("@kotlin_version@")) {
