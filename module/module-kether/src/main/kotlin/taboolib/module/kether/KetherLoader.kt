@@ -8,6 +8,7 @@ import taboolib.common.io.taboolibPath
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getOpenContainers
 import taboolib.common.platform.function.pluginId
+import taboolib.common.util.asList
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
@@ -25,7 +26,7 @@ class KetherLoader : ClassVisitor(0) {
         if (method.isAnnotationPresent(KetherParser::class.java) && method.returnType == ScriptActionParser::class.java) {
             val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptActionParser<*>
             val annotation = method.getAnnotation(KetherParser::class.java)
-            val value = annotation.property<Array<String>>("value", arrayOf())
+            val value = annotation.property<Any>("value")?.asList()?.toTypedArray() ?: arrayOf()
             val namespace = annotation.property("namespace", "kether")
             if (annotation.property("shared", false)) {
                 sharedParser += value to namespace
