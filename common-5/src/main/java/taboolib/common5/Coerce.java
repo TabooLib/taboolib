@@ -197,8 +197,11 @@ public final class Coerce {
         if (obj == null) {
             return false;
         }
-
-        return (obj instanceof Boolean) ? (Boolean) obj : obj.toString().trim().matches("^(1|true|yes)$");
+        if (obj instanceof Boolean) {
+            return (Boolean) obj;
+        }
+        String value = obj.toString().trim();
+        return value.equals("1") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes");
     }
 
     /**

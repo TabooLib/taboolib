@@ -6,39 +6,26 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.util.asList
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.script
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import taboolib.module.nms.sendScoreboard
 import java.util.concurrent.CompletableFuture
 
-/**
- * @author IzzelAliz
- */
-class ActionScoreboard(val content: ParsedAction<*>) : ScriptAction<Void>() {
+@PlatformSide([Platform.BUKKIT])
+internal object ActionScoreboard {
 
-    override fun run(frame: QuestContext.Frame): CompletableFuture<Void> {
-        return frame.newFrame(content).run<Any>().thenAccept { content ->
-            val viewer: Player = frame.script().sender?.castSafely<Player>() ?: error("No player selected.")
-            if (content == null) {
-                viewer.sendScoreboard()
-            } else {
-                val body = if (content is List<*>) content.asList() else content.toString().trimIndent().split('\n')
-                viewer.sendScoreboard(body[0], *body.filterIndexed { index, _ -> index > 0 }.toTypedArray())
+    @KetherParser(["scoreboard"])
+    internal fun actionScoreboard() = scriptParser {
+        val value = it.nextParsedAction()
+        actionNow {
+            run(value).thenAccept { o ->
+                val viewer = player().cast<Player>()
+                if (o == null) {
+                    viewer.sendScoreboard()
+                } else {
+                    val body = if (o is Collection<*> || o is Array<*>) o.asList() else o.toString().trimIndent().lines()
+                    viewer.sendScoreboard(body[0], *body.filterIndexed { index, _ -> index > 0 }.toTypedArray())
+                }
             }
-        }
-    }
-
-    internal object Parser {
-
-        /**
-         * scoreboard *"123"
-         */
-        @PlatformSide([Platform.BUKKIT])
-        @KetherParser(["scoreboard"])
-        fun parser() = scriptParser {
-            ActionScoreboard(it.nextAction<Any>())
         }
     }
 }

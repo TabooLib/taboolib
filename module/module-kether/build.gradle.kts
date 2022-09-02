@@ -1,3 +1,5 @@
+@file:Suppress("VulnerableLibrariesLocal")
+
 dependencies {
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("com.google.guava:guava:17.0")

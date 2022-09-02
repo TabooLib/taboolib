@@ -1,8 +1,8 @@
 package taboolib.library.kether;
 
-import taboolib.library.kether.actions.LiteralAction;
 import taboolib.module.kether.Kether;
 import taboolib.module.kether.KetherError;
+import taboolib.module.kether.action.ActionLiteral;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,13 +52,13 @@ public class BlockReader extends AbstractStringReader {
 
     public void checkLiteral(List<ParsedAction<?>> actions) {
         if (Kether.INSTANCE.isAllowToleranceParser()) {
-            LiteralAction<?> before = null;
+            ActionLiteral<?> before = null;
             for (ParsedAction<?> action : actions) {
                 if (before != null) {
                     throw KetherError.CUSTOM.create("Isolate literal \"" + before.getValue() + "\" is not end of block, maybe a misspelled action?");
                 }
-                if (action.getAction() instanceof LiteralAction && ((LiteralAction<?>) action.getAction()).isMisspelled()) {
-                    before = (LiteralAction<?>) action.getAction();
+                if (action.getAction() instanceof ActionLiteral && ((ActionLiteral<?>) action.getAction()).isMisspelled()) {
+                    before = (ActionLiteral<?>) action.getAction();
                 }
             }
         }

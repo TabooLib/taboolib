@@ -34,9 +34,9 @@ class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) :
 
         @KetherParser(["while"])
         fun parser() = scriptParser {
-            ActionWhile(it.next(ArgTypes.ACTION), it.run {
+            ActionWhile(it.nextParsedAction(), it.run {
                 expect("then")
-                next(ArgTypes.ACTION)
+                it.nextParsedAction()
             })
         }
     }

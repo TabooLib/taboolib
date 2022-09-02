@@ -2,8 +2,9 @@ package taboolib.module.kether
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
+import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestActionParser
-import taboolib.library.kether.actions.KetherTypes
+import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.lang.Language
 
 object Kether {
@@ -31,13 +32,13 @@ object Kether {
 
     val scriptRegistry by lazy {
         try {
-            ScriptService.registry.also {
-                KetherTypes.registerInternals(it, scriptService)
-            }
+            ScriptService.registry.registerAction("noop", QuestActionParser.of { QuestAction.noop<Any>() })
+            ScriptService.registry.registerAction("literal", ActionLiteral.parser())
         } catch (ex: Throwable) {
             ex.printStackTrace()
             error(ex.toString())
         }
+        ScriptService.registry
     }
 
     val registeredScriptProperty = HashMap<Class<*>, MutableMap<String, ScriptProperty<*>>>()

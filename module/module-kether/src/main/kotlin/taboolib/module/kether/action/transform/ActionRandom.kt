@@ -18,8 +18,8 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
 
     override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
         if (action == null) {
-            return frame.newFrame(from).run<Any>().thenApply { from ->
-                frame.newFrame(to).run<Any>().thenApply { to ->
+            return frame.run(from).str { from ->
+                frame.run(to).str { to ->
                     if (from.isInt() && to.isInt()) {
                         random(Coerce.toInteger(from), Coerce.toInteger(to))
                     } else {
@@ -31,12 +31,8 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
             val future = CompletableFuture<Any?>()
             frame.newFrame(action).run<Any?>().thenAcceptAsync({
                 when (it) {
-                    is Collection<*> -> {
-                        random(future, it.map { i -> i as Any }.toList())
-                    }
-                    is Array<*> -> {
-                        random(future, it.map { i -> i as Any }.toList())
-                    }
+                    is Collection<*> -> random(future, it.map { i -> i as Any })
+                    is Array<*> -> random(future, it.map { i -> i as Any })
                     else -> {
                         future.complete(if (it.isInt()) random(Coerce.toInteger(it)) else random(0.0, Coerce.toDouble(it)))
                     }
@@ -50,7 +46,6 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
         future.complete(if (i.isEmpty()) null else i[Random.nextInt(i.size)])
     }
 
-    @Suppress("UNCHECKED_CAST")
     internal object Parser {
 
         /**

@@ -1,6 +1,5 @@
 package taboolib.module.kether
 
-import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ClassMethod
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -10,7 +9,6 @@ import taboolib.common.platform.function.getOpenContainers
 import taboolib.common.platform.function.pluginId
 import taboolib.common.util.asList
 import java.util.function.Supplier
-import kotlin.reflect.KClass
 
 /**
  * TabooLibKotlin
@@ -30,15 +28,10 @@ class KetherLoader : ClassVisitor(0) {
             val namespace = annotation.property("namespace", "kether")
             if (annotation.property("shared", false)) {
                 sharedParser += value to namespace
-                getOpenContainers().forEach {
-                    it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, value, namespace))
-                }
+                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, value, namespace)) }
             }
-            value.forEach {
-                Kether.addAction(it, parser, namespace)
-            }
-        }
-        if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
+            value.forEach { Kether.addAction(it, parser, namespace) }
+        } else if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
             val property = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptProperty<*>
             val annotation = method.getAnnotation(KetherProperty::class.java)
             val bind = annotation.property<Class<*>>("bind") ?: error("KetherProperty bind is null")
@@ -46,9 +39,7 @@ class KetherLoader : ClassVisitor(0) {
                 var name = bind.name
                 name = if (name.startsWith(taboolibPath)) "@${name.substring(taboolibPath.length)}" else name
                 sharedScriptProperty += name to property.id
-                getOpenContainers().forEach {
-                    it.call(StandardChannel.REMOTE_ADD_PROPERTY, arrayOf(pluginId, name, property))
-                }
+                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_PROPERTY, arrayOf(pluginId, name, property)) }
             }
             Kether.addScriptProperty(bind, property)
         }

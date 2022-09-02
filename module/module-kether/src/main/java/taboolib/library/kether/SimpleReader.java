@@ -1,7 +1,7 @@
 package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
-import taboolib.library.kether.actions.LiteralAction;
+import taboolib.module.kether.action.ActionLiteral;
 import taboolib.module.kether.Kether;
 import taboolib.module.kether.action.ActionGet;
 
@@ -89,7 +89,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
             case '*': {
                 skip(1);
                 beforeParse();
-                return wrap(new LiteralAction<>(nextToken()));
+                return wrap(new ActionLiteral<>(nextToken()));
             }
             default: {
                 String element = nextToken();
@@ -99,7 +99,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                     return wrap(optional.get().resolve(this));
                 } else if (Kether.INSTANCE.isAllowToleranceParser()) {
                     beforeParse();
-                    return wrap(new LiteralAction<>(element, true));
+                    return wrap(new ActionLiteral<>(element, true));
                 }
                 throw LoadError.UNKNOWN_ACTION.create(element);
             }

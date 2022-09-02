@@ -272,7 +272,7 @@ open class ConfigSection(
             return section.root
         }
 
-        private fun unwrap(v: Any?): Any? {
+        fun unwrap(v: Any?): Any? {
             return when (v) {
                 "~", "null" -> null
                 "''", "\"\"" -> ""
@@ -288,7 +288,7 @@ open class ConfigSection(
             }
         }
 
-        private fun unwrap(list: List<*>, parent: ConfigSection): List<*> {
+        fun unwrap(list: List<*>, parent: ConfigSection): List<*> {
             fun process(value: Any?): Any? {
                 return when {
                     value is List<*> -> unwrap(value, parent)

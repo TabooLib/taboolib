@@ -17,15 +17,14 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
     }
 
     override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-        return frame.newFrame(command).run<Any>().thenAcceptAsync({
+        return frame.run(command).thenAcceptAsync({
             val command = it.toString().trimIndent()
+            val viewer = frame.player()
             when (type) {
                 Type.PLAYER -> {
-                    val viewer = frame.script().sender ?: error("No sender selected.")
                     viewer.performCommand(command.replace("@sender", viewer.name))
                 }
                 Type.OPERATOR -> {
-                    val viewer = frame.script().sender ?: error("No sender selected.")
                     val isOp = viewer.isOp
                     viewer.isOp = true
                     try {
@@ -36,8 +35,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
                     viewer.isOp = isOp
                 }
                 Type.CONSOLE -> {
-                    val viewer = frame.script().sender?.name.toString()
-                    console().performCommand(command.replace("@sender", viewer))
+                    console().performCommand(command.replace("@sender", viewer.name))
                 }
             }
         }, frame.context().executor)
@@ -47,7 +45,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
 
         @KetherParser(["command"])
         fun parser() = scriptParser {
-            val command = it.next(ArgTypes.ACTION)
+            val command = it.nextParsedAction()
             it.mark()
             val by = try {
                 it.expects("by", "with", "as")

@@ -36,25 +36,15 @@ class ActionType {
 
     enum class TypeTo(val transfer: (Any) -> Any) {
 
-        INT({
-            Coerce.toInteger(it)
-        }),
+        INT({ Coerce.toInteger(it) }),
 
-        LONG({
-            Coerce.toLong(it)
-        }),
+        LONG({ Coerce.toLong(it) }),
 
-        FLOAT({
-            Coerce.toFloat(it)
-        }),
+        FLOAT({ Coerce.toFloat(it) }),
 
-        DOUBLE({
-            Coerce.toDouble(it)
-        }),
+        DOUBLE({ Coerce.toDouble(it) }),
 
-        BOOLEAN({
-            Coerce.toBoolean(it)
-        })
+        BOOLEAN({ Coerce.toBoolean(it) })
     }
 
     internal object Parser {

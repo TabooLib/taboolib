@@ -11,8 +11,8 @@ import java.util.concurrent.CompletableFuture
 class ActionPrinted(val date: ParsedAction<*>, val separator: ParsedAction<*>) : ScriptAction<List<String>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
-        return frame.newFrame(date).run<Any>().thenApply { date ->
-            frame.newFrame(separator).run<Any>().thenApply { separator ->
+        return frame.run(date).thenApply { date ->
+            frame.run(separator).thenApply { separator ->
                 date.toString().printed(separator.toString())
             }.join()
         }

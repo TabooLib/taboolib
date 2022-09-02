@@ -66,7 +66,6 @@ internal object Actions {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     @KetherProperty(bind = List::class)
     fun propertyList() = object : ScriptProperty<MutableList<Any?>>("list.operator") {
 
@@ -88,7 +87,6 @@ internal object Actions {
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     @KetherProperty(bind = Array::class)
     fun propertyArray() = object : ScriptProperty<Array<Any?>>("array.operator") {
 

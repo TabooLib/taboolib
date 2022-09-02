@@ -2,7 +2,7 @@ package taboolib.module.kether
 
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.kether.*
-import taboolib.library.kether.actions.LiteralAction
+import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.kether.action.ActionGet
 import taboolib.module.kether.action.ActionProperty
 
@@ -52,7 +52,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                 }
                 '*' -> {
                     skip(1)
-                    wrap(LiteralAction(nextToken()))
+                    wrap(ActionLiteral(nextToken()))
                 }
                 else -> {
                     // property player[name]
@@ -66,7 +66,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                             return wrap(ActionProperty.Get(wrap(optional.get().resolve<Any>(this)), propertyKey)) as ParsedAction<T>
                         } else if (Kether.isAllowToleranceParser) {
                             val propertyKey = token.substring(i + 1, token.length - 1)
-                            return wrap(ActionProperty.Get(wrap(LiteralAction<Any>(element, true)), propertyKey)) as ParsedAction<T>
+                            return wrap(ActionProperty.Get(wrap(ActionLiteral<Any>(element, true)), propertyKey)) as ParsedAction<T>
                         }
                         throw LoadError.UNKNOWN_ACTION.create(element)
                     } else {
@@ -74,7 +74,7 @@ class KetherScriptLoader : SimpleQuestLoader() {
                         if (optional.isPresent) {
                             return wrap(optional.get().resolve(this))
                         } else if (Kether.isAllowToleranceParser) {
-                            return wrap(LiteralAction(token, true))
+                            return wrap(ActionLiteral(token, true))
                         }
                         throw LoadError.UNKNOWN_ACTION.create(token)
                     }

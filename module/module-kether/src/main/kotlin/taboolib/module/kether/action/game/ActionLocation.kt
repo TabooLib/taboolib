@@ -6,10 +6,8 @@ import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
-import taboolib.library.kether.actions.LiteralAction
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.ScriptAction
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
+import taboolib.module.kether.action.ActionLiteral
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -22,32 +20,22 @@ class ActionLocation(
     val z: ParsedAction<*>,
     val yaw: ParsedAction<*>,
     val pitch: ParsedAction<*>,
-) : ScriptAction<Any>() {
+) : ScriptAction<Any?>() {
 
-    override fun run(frame: QuestContext.Frame): CompletableFuture<Any> {
-        val location = CompletableFuture<Any>()
-        frame.newFrame(world).run<Any>().thenApply { world ->
-            frame.newFrame(x).run<Any>().thenApply { x ->
-                frame.newFrame(y).run<Any>().thenApply { y ->
-                    frame.newFrame(z).run<Any>().thenApply { z ->
-                        frame.newFrame(yaw).run<Any>().thenApply { yaw ->
-                            frame.newFrame(pitch).run<Any>().thenApply { pitch ->
-                                val loc = Location(
-                                    world.toString(),
-                                    Coerce.toDouble(x),
-                                    Coerce.toDouble(y),
-                                    Coerce.toDouble(z),
-                                    Coerce.toFloat(yaw),
-                                    Coerce.toFloat(pitch)
-                                )
-                                location.complete(platformLocation<Any>(loc))
-                            }
-                        }
-                    }
-                }
-            }
+    override fun run(frame: QuestContext.Frame): CompletableFuture<Any?> {
+        return frame.run(world).str { world ->
+            frame.run(x).double { x ->
+                frame.run(y).double { y ->
+                    frame.run(z).double { z ->
+                        frame.run(yaw).float { yaw ->
+                            frame.run(pitch).float { pitch ->
+                                platformLocation<Any>(Location(world, x, y, z, yaw, pitch))
+                            }.join()
+                        }.join()
+                    }.join()
+                }.join()
+            }.join()
         }
-        return location
     }
 
     internal object Parser {
@@ -57,17 +45,17 @@ class ActionLocation(
          */
         @KetherParser(["loc", "location"])
         fun parser() = scriptParser {
-            val world = it.next(ArgTypes.ACTION)
-            val x = it.next(ArgTypes.ACTION)
-            val y = it.next(ArgTypes.ACTION)
-            val z = it.next(ArgTypes.ACTION)
-            var yaw: ParsedAction<*> = ParsedAction(LiteralAction<Any>("0"))
-            var pitch: ParsedAction<*> = ParsedAction(LiteralAction<Any>("0"))
+            val world = it.nextParsedAction()
+            val x = it.nextParsedAction()
+            val y = it.nextParsedAction()
+            val z = it.nextParsedAction()
+            var yaw = literalAction(0)
+            var pitch = literalAction(0)
             it.mark()
             try {
                 it.expect("and")
-                yaw = it.next(ArgTypes.ACTION)
-                pitch = it.next(ArgTypes.ACTION)
+                yaw = it.nextParsedAction()
+                pitch = it.nextParsedAction()
             } catch (ignored: Exception) {
                 it.reset()
             }
