@@ -19,7 +19,7 @@ class ActionFormat(val date: ParsedAction<*>, val format: ParsedAction<*>) : Scr
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * format *date with "yyyy-MM-dd HH:mm"

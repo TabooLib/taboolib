@@ -34,7 +34,7 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: ParsedAction<
         return future
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * join [ 1 2 3 ] by -

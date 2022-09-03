@@ -4,7 +4,7 @@ import taboolib.common5.Coerce
 import taboolib.module.kether.*
 import kotlin.math.roundToLong
 
-internal object Actions {
+object Actions {
 
     @KetherParser(["scale", "scaled"])
     fun actionScale() = scriptParser {

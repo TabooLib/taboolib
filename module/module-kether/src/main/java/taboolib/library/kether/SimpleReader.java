@@ -26,6 +26,11 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
 
     @Override
     public String nextToken() {
+        return nextTokenBlock().getToken();
+    }
+
+    @NotNull
+    public TokenBlock nextTokenBlock() {
         skipBlank();
         switch (peek()) {
             case '"': {
@@ -46,7 +51,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                 if (met < cnt) throw LoadError.STRING_NOT_CLOSE.create(cnt);
                 String ret = new String(content, index, i - cnt - index);
                 index = i;
-                return ret;
+                return new TokenBlock(ret, true);
             }
             case '\'': {
                 skip(1);
@@ -56,10 +61,10 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
                 }
                 String ret = new String(content, i, index - i);
                 skip(1);
-                return ret;
+                return new TokenBlock(ret, true);
             }
             default: {
-                return super.nextToken();
+                return new TokenBlock(super.nextToken(), false);
             }
         }
     }

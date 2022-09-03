@@ -3,11 +3,10 @@ package taboolib.module.kether.action.supplier
 import taboolib.common.OpenResult
 import taboolib.module.kether.*
 
-
 /**
  * @author IzzelAliz
  */
-internal object Actions {
+object Actions {
 
     @KetherParser(["null"])
     fun parser1() = scriptParser {
@@ -29,9 +28,10 @@ internal object Actions {
 
         override fun read(instance: String, key: String): OpenResult {
             return when (key) {
-                "uppercase" -> OpenResult.successful(instance.uppercase())
-                "lowercase" -> OpenResult.successful(instance.lowercase())
+                "upper", "uppercase" -> OpenResult.successful(instance.uppercase())
+                "lower", "lowercase" -> OpenResult.successful(instance.lowercase())
                 "length", "size" -> OpenResult.successful(instance.length)
+                "trim" -> OpenResult.successful(instance.trim())
                 else -> OpenResult.failed()
             }
         }
@@ -48,6 +48,8 @@ internal object Actions {
             return when {
                 key.startsWith("@") -> OpenResult.successful(instance[key.substring(1)])
                 key == "length" || key == "size" -> OpenResult.successful(instance.size)
+                key == "keys" -> OpenResult.successful(instance.keys)
+                key == "values" -> OpenResult.successful(instance.values)
                 else -> OpenResult.failed()
             }
         }

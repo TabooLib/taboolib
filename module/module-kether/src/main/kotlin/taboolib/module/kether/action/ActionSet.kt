@@ -14,7 +14,7 @@ class ActionSet {
             if (value == null || value == "null") {
                 frame.variables()[key] = null
             } else {
-                frame.variables()[key] = value
+                frame.variables()[key] = value.inferType()
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -24,12 +24,12 @@ class ActionSet {
 
         override fun process(frame: QuestContext.Frame): CompletableFuture<Void> {
             return frame.run(action).thenAccept {
-                frame.variables().set(key, it)
+                frame.variables().set(key, it.inferType())
             }
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * set xx to xx
@@ -50,7 +50,7 @@ class ActionSet {
                     it.reset()
                     ActionProperty.Set(action.instance, action.key, literalAction(it.nextToken()))
                 }
-            } else if (token != "property") {
+            } else if (token == "property") {
                 it.mark()
                 try {
                     val property = it.nextToken()

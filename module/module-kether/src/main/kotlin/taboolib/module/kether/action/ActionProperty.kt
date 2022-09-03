@@ -2,6 +2,7 @@
 
 package taboolib.module.kether.action
 
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.Kether
 import taboolib.module.kether.ScriptAction
@@ -35,8 +36,7 @@ object ActionProperty {
     class Set(val instance: ParsedAction<*>, val key: String, val value: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            val future = CompletableFuture<Void>()
-            frame.newFrame(instance).run<Any>().thenAccept { instance ->
+            return frame.newFrame(instance).run<Any>().thenApply { instance ->
                 if (instance == null) {
                     error("Property object must be not null.")
                 }
@@ -45,14 +45,12 @@ object ActionProperty {
                     for (property in propertyList) {
                         val result = (property as ScriptProperty<Any>).write(instance, key, value)
                         if (result.isSuccessful) {
-                            future.complete(null)
                             return@close
                         }
                     }
                     error("${instance.javaClass.simpleName}[$key] not supported yet.")
-                }
+                }.join()
             }
-            return future
         }
     }
 

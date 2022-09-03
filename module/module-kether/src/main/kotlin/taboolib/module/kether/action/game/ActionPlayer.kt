@@ -29,7 +29,7 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         init {
             PlayerOperators.values().forEach { Kether.addPlayerOperator(it.name, it.build()) }

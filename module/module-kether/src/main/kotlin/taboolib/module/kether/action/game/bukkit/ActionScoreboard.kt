@@ -11,7 +11,7 @@ import taboolib.module.nms.sendScoreboard
 import java.util.concurrent.CompletableFuture
 
 @PlatformSide([Platform.BUKKIT])
-internal object ActionScoreboard {
+object ActionScoreboard {
 
     @KetherParser(["scoreboard"])
     internal fun actionScoreboard() = scriptParser {

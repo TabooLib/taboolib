@@ -9,7 +9,7 @@ import taboolib.library.kether.QuestFuture
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
-internal object Actions {
+object Actions {
 
     @KetherParser(["import"])
     fun actionImport() = scriptParser {

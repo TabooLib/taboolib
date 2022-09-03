@@ -53,7 +53,7 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         @KetherParser(["check"])
         fun parser() = scriptParser {

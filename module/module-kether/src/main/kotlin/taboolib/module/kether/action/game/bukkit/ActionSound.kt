@@ -28,7 +28,7 @@ class ActionSound(val sound: ParsedAction<*>, val volume: ParsedAction<*>, val p
         return CompletableFuture.completedFuture(null)
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * sound block_stone_break by 1 1

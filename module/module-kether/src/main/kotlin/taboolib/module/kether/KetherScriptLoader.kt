@@ -1,5 +1,6 @@
 package taboolib.module.kether
 
+import taboolib.common.platform.function.info
 import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.kether.*
 import taboolib.module.kether.action.ActionLiteral
@@ -30,6 +31,11 @@ class KetherScriptLoader : SimpleQuestLoader() {
             return super.nextToken().replace("\\s", " ")
         }
 
+        override fun nextTokenBlock(): TokenBlock {
+            val block = super.nextTokenBlock()
+            return TokenBlock(block.token.replace("\\s", " "), block.isBlock)
+        }
+
         @Suppress("UNCHECKED_CAST")
         override fun <T : Any?> nextAction(): ParsedAction<T> {
             skipBlank()
@@ -56,8 +62,9 @@ class KetherScriptLoader : SimpleQuestLoader() {
                 }
                 else -> {
                     // property player[name]
-                    val token = nextToken()
-                    if (token.isNotEmpty() && token[token.length - 1] == ']' && token.indexOf('[') in 1 until token.length) {
+                    val tokenBlock = nextTokenBlock()
+                    val token = tokenBlock.token
+                    if (!tokenBlock.isBlock && token.isNotEmpty() && token[token.length - 1] == ']' && token.indexOf('[') in 1 until token.length) {
                         val i = token.indexOf('[')
                         val element = token.substring(0, i)
                         val optional = service.registry.getParser(element, namespace)

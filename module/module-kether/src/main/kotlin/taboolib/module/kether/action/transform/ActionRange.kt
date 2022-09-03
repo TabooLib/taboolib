@@ -37,7 +37,7 @@ class ActionRange(val from: ParsedAction<*>, val to: ParsedAction<*>, val step: 
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         @KetherParser(["range"])
         fun parser() = scriptParser {

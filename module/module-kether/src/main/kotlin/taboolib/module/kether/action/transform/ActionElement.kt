@@ -45,7 +45,7 @@ class ActionElement {
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * size &array

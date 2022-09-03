@@ -57,7 +57,7 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
         return future
     }
 
-    internal object Parser {
+    object Parser {
 
         @KetherParser(["map"])
         fun parser() = scriptParser {

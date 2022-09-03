@@ -6,7 +6,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.module.kether.*
 
 @PlatformSide([Platform.BUKKIT])
-internal object ActionPlaceholder {
+object ActionPlaceholder {
 
     @KetherParser(["papi", "placeholder"])
     internal fun actionPlaceholder() = scriptParser {

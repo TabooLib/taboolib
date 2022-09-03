@@ -47,7 +47,7 @@ class ActionType {
         BOOLEAN({ Coerce.toBoolean(it) })
     }
 
-    internal object Parser {
+    object Parser {
 
         val types = TypeTo.values().map { it.name.lowercase(Locale.getDefault()) }.toTypedArray()
 

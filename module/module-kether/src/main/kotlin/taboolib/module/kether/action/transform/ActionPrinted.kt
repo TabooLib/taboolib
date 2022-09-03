@@ -18,7 +18,7 @@ class ActionPrinted(val date: ParsedAction<*>, val separator: ParsedAction<*>) :
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * printed *xxx by "_"

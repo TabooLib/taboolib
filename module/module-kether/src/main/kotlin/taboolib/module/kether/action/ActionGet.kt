@@ -11,7 +11,7 @@ class ActionGet<T>(val key: String) : QuestAction<T>() {
         return CompletableFuture.completedFuture(frame.variables().get<T?>(key).orElse(null))
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * get xx

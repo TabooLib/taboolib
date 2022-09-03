@@ -38,7 +38,7 @@ class ActionLocation(
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * location 10 20 10 and 0 0

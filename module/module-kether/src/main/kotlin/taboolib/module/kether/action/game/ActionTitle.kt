@@ -36,7 +36,7 @@ class ActionTitle(
         return CompletableFuture.completedFuture(null)
     }
 
-    internal object Parser {
+    object Parser {
 
         @KetherParser(["title"])
         fun parser() = scriptParser {

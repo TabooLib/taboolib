@@ -62,7 +62,7 @@ class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>
         }
     }
 
-    internal object Parser {
+    object Parser {
 
         @Awake(LifeCycle.LOAD)
         fun parser() {

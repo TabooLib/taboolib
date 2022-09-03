@@ -12,20 +12,21 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/3/16 2:56 下午
  */
+@Deprecated("use calc")
 class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptAction<Number>() {
 
     enum class Type(val exec: List<Any>.() -> Number) {
 
         ADD({
-            if (intAll()) {
-                sumBy { Coerce.toInteger(it) }
+            if (allInt()) {
+                sumOf { Coerce.toInteger(it) }
             } else {
-                sumByDouble { Coerce.toDouble(it) }
+                sumOf { Coerce.toDouble(it) }
             }
         }),
 
         SUB({
-            if (intAll()) {
+            if (allInt()) {
                 subBy { Coerce.toInteger(it) }
             } else {
                 subByDouble { Coerce.toDouble(it) }
@@ -33,7 +34,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         }),
 
         MUL({
-            if (intAll()) {
+            if (allInt()) {
                 mulBy { Coerce.toInteger(it) }
             } else {
                 mulByDouble { Coerce.toDouble(it) }
@@ -41,7 +42,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         }),
 
         DIV({
-            if (intAll()) {
+            if (allInt()) {
                 divBy { Coerce.toInteger(it) }
             } else {
                 divByDouble { Coerce.toDouble(it) }
@@ -50,7 +51,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
 
         companion object {
 
-            fun List<Any>.intAll() = all { it is Int || it.isInt() }
+            fun List<Any>.allInt() = all { it is Int || it.isInt() }
 
             fun fromString(value: String): Type? {
                 return when (value) {
@@ -86,7 +87,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         return future
     }
 
-    internal object Parser {
+    object Parser {
 
         val math = arrayOf(arrayOf("add", "+"), arrayOf("sub", "-"), arrayOf("mul", "*"), arrayOf("div", "/"))
         val mathGroup = math.flatten().toTypedArray()

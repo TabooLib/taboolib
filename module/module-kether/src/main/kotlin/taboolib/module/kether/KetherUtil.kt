@@ -260,26 +260,30 @@ fun QuestContext.Frame.run(action: ParsedAction<*>): CompletableFuture<Any?> {
     return newFrame(action).run()
 }
 
-fun CompletableFuture<Any?>.str(then: (String) -> Any?): CompletableFuture<Any?> {
-    return thenApply { then(it.toString().trimIndent()) }
+fun <T> CompletableFuture<Any?>.str(then: (String) -> T): CompletableFuture<T> {
+    return thenApply { then(it?.toString()?.trimIndent() ?: "") }
 }
 
-fun CompletableFuture<Any?>.bool(then: (Boolean) -> Any?): CompletableFuture<Any?> {
+fun <T> CompletableFuture<Any?>.strOrNull(then: (String?) -> T): CompletableFuture<T> {
+    return thenApply { then(it?.toString()?.trimIndent()) }
+}
+
+fun <T> CompletableFuture<Any?>.bool(then: (Boolean) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toBoolean(it)) }
 }
 
-fun CompletableFuture<Any?>.int(then: (Int) -> Any?): CompletableFuture<Any?> {
+fun <T> CompletableFuture<Any?>.int(then: (Int) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toInteger(it)) }
 }
 
-fun CompletableFuture<Any?>.long(then: (Long) -> Any?): CompletableFuture<Any?> {
+fun <T> CompletableFuture<Any?>.long(then: (Long) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toLong(it)) }
 }
 
-fun CompletableFuture<Any?>.double(then: (Double) -> Any?): CompletableFuture<Any?> {
+fun <T> CompletableFuture<Any?>.double(then: (Double) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toDouble(it)) }
 }
 
-fun CompletableFuture<Any?>.float(then: (Float) -> Any?): CompletableFuture<Any?> {
+fun <T> CompletableFuture<Any?>.float(then: (Float) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toFloat(it)) }
 }

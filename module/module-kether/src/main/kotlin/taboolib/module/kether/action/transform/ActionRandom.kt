@@ -46,7 +46,7 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
         future.complete(if (i.isEmpty()) null else i[Random.nextInt(i.size)])
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * random 1 to 10

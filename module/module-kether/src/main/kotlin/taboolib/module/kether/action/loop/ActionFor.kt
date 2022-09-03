@@ -53,7 +53,7 @@ class ActionFor(val key: String, val values: ParsedAction<*>, val action: Parsed
         return future
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * for i in players then {  }

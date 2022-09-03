@@ -27,7 +27,7 @@ class ActionOptional(val value: ParsedAction<*>, val elseOf: ParsedAction<*>) : 
         return future
     }
 
-    internal object Parser {
+    object Parser {
 
         /**
          * optional null else 123

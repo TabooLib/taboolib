@@ -46,7 +46,10 @@ object KetherShell {
         }.runActions()
     }
 
-    class VariableMap(vararg val map: Pair<String, Any?>)
+    class VariableMap(val map: Map<String, Any?>) {
+
+        constructor(vararg map: Pair<String, Any?>) : this(map.toMap())
+    }
 
     class Cache {
 

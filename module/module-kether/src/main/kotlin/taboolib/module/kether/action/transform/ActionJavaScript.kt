@@ -31,7 +31,7 @@ class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
             get() = false
     }
 
-    internal object Parser {
+    object Parser {
 
         @KetherParser(["$", "js", "javascript"])
         fun parser() = scriptParser {

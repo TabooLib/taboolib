@@ -14,12 +14,14 @@ dependencies {
     compileOnly(project(":expansion:expansion-javascript"))
     compileOnly("org.tabooproject.reflex:reflex:1.0.19")
     compileOnly("org.tabooproject.reflex:analyser:1.0.19")
+    compileOnly("org.apache.commons:commons-jexl3:3.2.1")
 }
 
 tasks {
     withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
         archiveClassifier.set("")
         relocate("org.tabooproject", "taboolib.library")
+        relocate("org.apache.commons.jexl3", "org.apache.commons.jexl3_3_2_1")
     }
     build {
         dependsOn(shadowJar)
