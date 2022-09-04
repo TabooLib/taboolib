@@ -123,11 +123,11 @@ public class BukkitPlugin extends JavaPlugin {
      */
     static void injectAccess() {
         try {
-            PluginDescriptionFile description = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "description", false);
-            Set<String> accessSelf = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess", false);
+            PluginDescriptionFile description = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "description", false, true, false);
+            Set<String> accessSelf = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess", false, true, false);
             for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
                 if (plugin.getClass().getName().endsWith("platform.BukkitPlugin")) {
-                    Set<String> accessOther = Reflex.Companion.getProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess", false);
+                    Set<String> accessOther = Reflex.Companion.getProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess", false, true, false);
                     accessOther.add(description.getName());
                     accessSelf.add(plugin.getName());
                 }

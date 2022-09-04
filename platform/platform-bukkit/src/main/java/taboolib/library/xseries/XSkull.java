@@ -170,7 +170,7 @@ public class XSkull {
     public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
         GameProfile profile = null;
         try {
-            profile = Reflex.Companion.getProperty(skull, "profile", false);
+            profile = Reflex.Companion.getProperty(skull, "profile", false, true, true);
         } catch (Exception ignored) {
         }
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {

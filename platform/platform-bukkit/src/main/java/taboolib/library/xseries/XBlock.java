@@ -276,7 +276,7 @@ public final class XBlock {
                 String color = xName.substring(0, colorIndex);
                 if (color.equals("LIGHT")) color = xName.substring(0, "LIGHT_".length() + 4);
 
-                Reflex.Companion.invokeMethod(banner, "setBaseColor", new Object[]{DyeColor.valueOf(color)}, false);
+                Reflex.Companion.invokeMethod(banner, "setBaseColor", new Object[]{DyeColor.valueOf(color)}, false, true, false);
             } else state.setRawData(material.getData());
             update = true;
         } else if (handling == LegacyMaterial.Handling.WOOD_SPECIES) {
