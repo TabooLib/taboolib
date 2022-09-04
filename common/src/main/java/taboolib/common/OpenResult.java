@@ -43,8 +43,8 @@ public class OpenResult {
     }
 
     public static OpenResult deserialize(Object source) {
-        Object successful = Reflex.Companion.getProperty(source, "successful", false, true);
-        Object value = Reflex.Companion.getProperty(source, "value", false, true);
+        Object successful = Reflex.Companion.getProperty(source, "successful", false, true, false);
+        Object value = Reflex.Companion.getProperty(source, "value", false, true, false);
         return new OpenResult(Boolean.TRUE.equals(successful), value);
     }
 }
