@@ -1,3 +1,5 @@
+@file:Suppress("GradlePackageUpdate", "VulnerableLibrariesLocal")
+
 repositories {
     maven { url = uri("https://jitpack.io") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/" )}

@@ -5,7 +5,8 @@ import taboolib.common.OpenResult
 import taboolib.common.io.groupId
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getOpenContainer
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.util.asList
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.ParsedAction
 
@@ -53,15 +54,11 @@ object StandardChannel : OpenListener {
             }
             REMOTE_ADD_ACTION -> {
                 val remote = getOpenContainer(data[0].toString())!!
-                (data[1] as Array<String>).forEach {
-                    Kether.addAction(it, RemoteActionParser(remote, it, data[2].toString()), data[2].toString())
-                }
+                data[1].asList().forEach { Kether.addAction(it, RemoteActionParser(remote, it, data[2].toString()), data[2].toString()) }
                 OpenResult.successful()
             }
             REMOTE_REMOVE_ACTION -> {
-                (data[0] as Array<String>).forEach {
-                    Kether.removeAction(it, data[1].toString())
-                }
+                data[0].asList().forEach { Kether.removeAction(it, data[1].toString()) }
                 OpenResult.successful()
             }
             REMOTE_ADD_PROPERTY -> {

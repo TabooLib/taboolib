@@ -9,13 +9,21 @@ import taboolib.common.util.VariableReader
 object KetherFunction {
 
     val reader = VariableReader()
-    val mainCache = KetherShell.Cache()
+
+    fun parse(input: List<String>, options: ScriptOptions = ScriptOptions()): List<String> {
+        return input.map { parse(it, options) }
+    }
+
+    fun parse(input: String, options: ScriptOptions = ScriptOptions()): String {
+        fun process() = parse(input, options.useCache, options.namespace, options.cache, options.sender, options.vars, options.context)
+        return if (options.exception) process() else runKether { process() } ?: "ERROR"
+    }
 
     fun parse(
         input: List<String>,
         cacheScript: Boolean = true,
         namespace: List<String> = emptyList(),
-        cache: KetherShell.Cache = mainCache,
+        cache: KetherShell.Cache = KetherShell.mainCache,
         sender: ProxyCommandSender? = null,
         vars: KetherShell.VariableMap? = null,
         context: ScriptContext.() -> Unit = {},
@@ -27,7 +35,7 @@ object KetherFunction {
         input: String,
         cacheScript: Boolean = true,
         namespace: List<String> = emptyList(),
-        cache: KetherShell.Cache = mainCache,
+        cache: KetherShell.Cache = KetherShell.mainCache,
         sender: ProxyCommandSender? = null,
         vars: KetherShell.VariableMap? = null,
         context: ScriptContext.() -> Unit = {},

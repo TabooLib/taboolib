@@ -13,7 +13,7 @@ import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 
 import java.io.File;
 import java.util.Set;

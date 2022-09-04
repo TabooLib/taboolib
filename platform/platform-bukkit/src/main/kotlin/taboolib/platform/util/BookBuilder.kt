@@ -6,9 +6,9 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import taboolib.common.Isolated
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.common.reflect.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import taboolib.module.chat.TellrawJson
@@ -37,7 +37,7 @@ fun Player.sendBook(itemStack: ItemStack) {
         val itemInHand = itemInHand
         setItemInHand(itemStack)
         try {
-            val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, fixed = true)
+            val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, isStatic =true)
             val handle = getProperty<Any>("entity")!!
             try {
                 handle.invokeMethod<Void>("a", nmsItemStack, enumHandMainHand)
@@ -115,7 +115,7 @@ open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
                         getProperty<Boolean>("resolved")
                         pages += it.text
                     } catch (ex: NoSuchFieldException) {
-                        pages += classChatSerializer.invokeMethod<Any>("a", it.text, fixed = true)!!
+                        pages += classChatSerializer.invokeMethod<Any>("a", it.text, isStatic =true)!!
                     }
                 } else {
                     addPage(it.text)

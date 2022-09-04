@@ -9,7 +9,7 @@ import taboolib.module.kether.*
 object ActionPlaceholder {
 
     @KetherParser(["papi", "placeholder"])
-    internal fun actionPlaceholder() = scriptParser {
+    fun actionPlaceholder() = scriptParser {
         val str = it.nextParsedAction()
         actionTake { run(str).str { s -> PlaceholderAPI.setPlaceholders(player().cast(), s) } }
     }

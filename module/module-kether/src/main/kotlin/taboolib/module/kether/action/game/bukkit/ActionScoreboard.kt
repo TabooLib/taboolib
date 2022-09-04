@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture
 object ActionScoreboard {
 
     @KetherParser(["scoreboard"])
-    internal fun actionScoreboard() = scriptParser {
+    fun actionScoreboard() = scriptParser {
         val value = it.nextParsedAction()
         actionNow {
             run(value).thenAccept { o ->

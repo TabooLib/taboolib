@@ -3,7 +3,7 @@ package taboolib.platform.type
 import org.bukkit.plugin.Plugin
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib
@@ -28,7 +28,7 @@ class BukkitOpenContainer(plugin: Plugin) : OpenContainer {
 
     override fun call(name: String, args: Array<Any>): OpenResult {
         return try {
-            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, fixed = true) ?: return OpenResult.failed())
+            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, isStatic =true) ?: return OpenResult.failed())
         } catch (ignored: NoSuchMethodException) {
             OpenResult.failed()
         }

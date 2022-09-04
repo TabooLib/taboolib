@@ -18,6 +18,7 @@ import taboolib.module.kether.*
 object ActionJexl3 {
 
     val jexl: JexlEngine by unsafeLazy { JexlBuilder().create() }
+    var autoContext = true
 
     /**
      * calc dynamic ""
@@ -57,9 +58,11 @@ object ActionJexl3 {
 
     fun Frame.createMapContext(): MapContext {
         val context = MapContext(deepVars())
-        context.set("script", script())
-        context.set("sender", script().sender)
-        context.set("console", console())
+        if (autoContext) {
+            context.set("script", script())
+            context.set("sender", script().sender)
+            context.set("console", console())
+        }
         return context
     }
 }

@@ -1,7 +1,6 @@
 package taboolib.module.kether
 
-import taboolib.common.platform.function.info
-import taboolib.common.reflect.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.library.kether.*
 import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.kether.action.ActionGet

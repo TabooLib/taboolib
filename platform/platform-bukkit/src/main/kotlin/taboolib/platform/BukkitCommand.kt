@@ -20,9 +20,9 @@ import taboolib.common.platform.command.*
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformCommand
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.common.reflect.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Constructor
 
@@ -115,7 +115,7 @@ class BukkitCommand : PlatformCommand {
             kotlin.runCatching {
                 if (pluginCommand.getProperty<Any>("timings") == null) {
                     val timingsManager = Class.forName("co.aikar.timings.TimingsManager")
-                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, fixed = true))
+                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic =true))
                 }
             }
             sync()

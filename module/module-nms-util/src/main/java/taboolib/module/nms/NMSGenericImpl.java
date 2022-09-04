@@ -37,8 +37,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.platform.function.IOKt;
-import taboolib.common.reflect.Ref;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Ref;
+import org.tabooproject.reflex.Reflex;
 import taboolib.module.nms.type.LightType;
 
 import java.lang.reflect.Constructor;

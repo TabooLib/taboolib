@@ -9,6 +9,7 @@ import taboolib.library.kether.QuestRegistry
 import taboolib.library.kether.QuestService
 import taboolib.library.kether.ServiceHolder
 import taboolib.module.configuration.Config
+import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.util.*
@@ -30,7 +31,8 @@ object ScriptService : QuestService<ScriptContext> {
     private val asyncExecutor = Executors.newScheduledThreadPool(2)
 
     @Config("kether.yml")
-    lateinit var locale: SecuredFile
+    lateinit var locale: Configuration
+        private set
 
     val mainspace by lazy {
         Workspace(File(getDataFolder(), "kether"))

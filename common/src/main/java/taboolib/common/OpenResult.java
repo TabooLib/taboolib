@@ -2,7 +2,7 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 
 public class OpenResult {
 

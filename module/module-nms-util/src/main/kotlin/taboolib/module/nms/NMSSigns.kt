@@ -9,7 +9,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 
@@ -64,7 +64,7 @@ internal object SignsListener {
                     e.packet.read<Array<String>>("b")!!
                 }
                 else -> {
-                    e.packet.read<Array<Any>>("b")!!.map { classChatSerializer.invokeMethod<String>("a", it, fixed = true)!! }.toTypedArray()
+                    e.packet.read<Array<Any>>("b")!!.map { classChatSerializer.invokeMethod<String>("a", it, isStatic =true)!! }.toTypedArray()
                 }
             }
             submit { function.invoke(lines) }

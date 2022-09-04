@@ -10,6 +10,15 @@ object KetherShell {
 
     val mainCache = Cache()
 
+    fun eval(source: List<String>, options: ScriptOptions = ScriptOptions()): CompletableFuture<Any?> {
+        return eval(source.joinToString("\n"), options)
+    }
+
+    fun eval(source: String, options: ScriptOptions = ScriptOptions()): CompletableFuture<Any?> {
+        fun process() = eval(source, options.useCache, options.namespace, options.cache, options.sender, options.vars, options.context)
+        return if (options.exception) process() else runKether { process() } ?: CompletableFuture.completedFuture(null)
+    }
+
     fun eval(
         source: List<String>,
         cacheScript: Boolean = true,

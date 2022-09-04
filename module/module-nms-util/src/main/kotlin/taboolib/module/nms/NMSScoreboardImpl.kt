@@ -4,9 +4,9 @@ import net.minecraft.network.chat.IChatBaseComponent
 import net.minecraft.server.v1_16_R3.*
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
-import taboolib.common.reflect.Reflex.Companion.invokeMethod
-import taboolib.common.reflect.Reflex.Companion.setProperty
-import taboolib.common.reflect.Reflex.Companion.unsafeInstance
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import org.tabooproject.reflex.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.platform.BukkitPlugin
 import taboolib.platform.util.onlinePlayers
 import java.util.*
@@ -15,7 +15,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
-            IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, fixed = true)!!
+            IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic =true)!!
         } else {
             ChatComponentText(text)
         }

@@ -14,7 +14,7 @@ import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
-import taboolib.common.reflect.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.util.unsafeLazy
 import java.util.Locale
 

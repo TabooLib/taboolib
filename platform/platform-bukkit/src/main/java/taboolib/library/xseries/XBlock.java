@@ -34,7 +34,7 @@ import org.bukkit.material.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
-import taboolib.common.reflect.Reflex;
+import org.tabooproject.reflex.Reflex;
 
 import java.util.*;
 

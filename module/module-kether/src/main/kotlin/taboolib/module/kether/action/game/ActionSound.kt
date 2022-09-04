@@ -1,4 +1,4 @@
-package taboolib.module.kether.action.game.bukkit
+package taboolib.module.kether.action.game
 
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

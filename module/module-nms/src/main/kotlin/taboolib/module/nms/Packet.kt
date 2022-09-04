@@ -1,7 +1,7 @@
 package taboolib.module.nms
 
-import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.setProperty
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.setProperty
 
 /**
  * TabooLib
