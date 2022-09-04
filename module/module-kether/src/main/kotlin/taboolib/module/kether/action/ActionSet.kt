@@ -14,7 +14,7 @@ class ActionSet {
             if (value == null || value == "null") {
                 frame.variables()[key] = null
             } else {
-                frame.variables()[key] = value.inferType()
+                frame.variables()[key] = value
             }
             return CompletableFuture.completedFuture(null)
         }
@@ -24,7 +24,7 @@ class ActionSet {
 
         override fun process(frame: QuestContext.Frame): CompletableFuture<Void> {
             return frame.run(action).thenAccept {
-                frame.variables().set(key, it.inferType())
+                frame.variables().set(key, it)
             }
         }
     }
