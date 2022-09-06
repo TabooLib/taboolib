@@ -35,7 +35,7 @@ object PlatformFactory {
 
             // 加载运行环境
             runningClassesWithoutLibrary.parallelStream().forEach {
-                kotlin.runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.printStackTrace()
+                kotlin.runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.takeIf { it !is NoClassDefFoundError }?.printStackTrace()
             }
 
             // 加载接口
