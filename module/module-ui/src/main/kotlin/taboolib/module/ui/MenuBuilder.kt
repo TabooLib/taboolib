@@ -19,6 +19,9 @@ inline fun <reified T : Menu> Player.openMenu(title: String = "chest", builder: 
     }
 }
 
+/**
+ * 获取当前点击事件下所有受影响的物品
+ */
 fun InventoryClickEvent.getAffectItems(): List<ItemStack> {
     val items = ArrayList<ItemStack>()
     if (click == ClickType.NUMBER_KEY) {

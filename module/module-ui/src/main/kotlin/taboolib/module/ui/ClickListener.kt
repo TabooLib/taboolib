@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
-import org.bukkit.metadata.FixedMetadataValue
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
@@ -18,8 +17,8 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
-import taboolib.platform.BukkitPlugin
 import taboolib.platform.util.isNotAir
+import taboolib.platform.util.setMeta
 
 @PlatformSide([Platform.BUKKIT])
 internal object ClickListener {
@@ -36,12 +35,10 @@ internal object ClickListener {
     @SubscribeEvent
     fun onOpen(e: InventoryOpenEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
-        submit {
-            builder.onBuild(e.player as Player, e.inventory)
-        }
-        submitAsync {
-            builder.onBuildAsync(e.player as Player, e.inventory)
-        }
+        // 构建回调
+        submit { builder.buildCallback(e.player as Player, e.inventory) }
+        // 异步构建回调
+        submitAsync { builder.asyncBuildCallback(e.player as Player, e.inventory) }
     }
 
     @SubscribeEvent
@@ -54,7 +51,7 @@ internal object ClickListener {
         // 处理事件
         try {
             val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot), builder)
-            builder.onClick.forEach { it.accept(event) }
+            builder.clickCallback.forEach { it.invoke(event) }
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -66,7 +63,7 @@ internal object ClickListener {
         if (e.currentItem.isNotAir() && e.click == org.bukkit.event.inventory.ClickType.DROP) {
             val item = VectorUtil.itemDrop(e.whoClicked as Player, e.currentItem)
             item.pickupDelay = 20
-            item.setMetadata("internal-drop", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+            item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
             if (event.isCancelled) {
                 event.itemDrop.remove()
@@ -76,7 +73,7 @@ internal object ClickListener {
         } else if (e.cursor.isNotAir() && e.rawSlot == -999) {
             val item = VectorUtil.itemDrop(e.whoClicked as Player, e.cursor)
             item.pickupDelay = 20
-            item.setMetadata("internal-drop", FixedMetadataValue(BukkitPlugin.getInstance(), true))
+            item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
             if (event.isCancelled) {
                 event.itemDrop.remove()
@@ -90,12 +87,14 @@ internal object ClickListener {
     fun onDrag(e: InventoryDragEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
         val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', builder)
-        builder.onClick.forEach { it.accept(clickEvent) }
+        builder.clickCallback.forEach { it.invoke(clickEvent) }
     }
 
     @SubscribeEvent
     fun onClose(e: InventoryCloseEvent) {
-        MenuHolder.fromInventory(e.inventory)?.onClose?.invoke(e)
+        val close = MenuHolder.fromInventory(e.inventory)
+        close?.closeCallback?.invoke(e)
+        close?.closeCallback = {}
     }
 
     @SubscribeEvent

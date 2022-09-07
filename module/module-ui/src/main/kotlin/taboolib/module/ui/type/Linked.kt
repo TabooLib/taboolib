@@ -2,187 +2,186 @@ package taboolib.module.ui.type
 
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
-import taboolib.module.ui.Menu
-import taboolib.module.ui.MenuHolder
-import taboolib.module.ui.buildMenu
 import taboolib.platform.util.isNotAir
 
 @Isolated
-open class Linked<T>(title: String) : Menu(title) {
+open class Linked<T>(title: String) : Basic(title) {
 
+    /** 页数 **/
     var page = 0
         private set
 
-    private var rows = 1
-    private var handLocked = true
-    private val button = HashMap<Int, ClickEvent.() -> Unit>()
-    private val menuSlots = ArrayList<Int>()
-    private var menuElements: (() -> List<T>) = { emptyList() }
-    private var menuElementsCache = emptyList<T>()
-    private var onClick: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
-    private var onClickGeneral: ((event: ClickEvent) -> Unit) = {}
-    private var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
-    private var onBuild: ((inventory: Inventory) -> Unit) = {}
-    private var onBuildAsync: ((inventory: Inventory) -> Unit) = {}
-    private var onGenerate: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
-    private var onGenerateAsync: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
-    private var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
+    /** 锁定所有位置 **/
+    internal var menuLocked = true
 
+    /** 页面可用位置 **/
+    internal val menuSlots = arrayListOf<Int>()
+
+    /** 页面可用元素回调 **/
+    internal var elementsCallback: (() -> List<T>) = { emptyList() }
+
+    /** 页面可用元素缓存 **/
+    internal var elementsCache = emptyList<T>()
+
+    /** 点击事件回调 **/
+    internal var elementClickCallback: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
+
+    /** 元素生成回调 **/
+    internal var generateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
+
+    /** 异步元素生成回调 **/
+    internal var asyncGenerateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
+
+    /** 页面玩家 **/
     private lateinit var player: Player
 
-    fun page(page: Int) {
+    /**
+     * 是否锁定所有位置
+     * 默认为 true
+     */
+    open fun menuLocked(lockAll: Boolean) {
+        this.menuLocked = lockAll
+    }
+
+    /**
+     * 设置页数
+     */
+    open fun page(page: Int) {
         this.page = page
     }
 
-    fun rows(rows: Int) {
-        this.rows = rows
-    }
-
-    fun handLocked(handLocked: Boolean) {
-        this.handLocked = handLocked
-    }
-
-    fun holder(func: (menu: Basic) -> MenuHolder) {
-        this.holder = func
-    }
-
-    fun slots(slots: List<Int>) {
+    /**
+     * 设置可用位置
+     */
+    open fun slots(slots: List<Int>) {
         this.menuSlots.clear()
         this.menuSlots += slots
     }
 
-    fun elements(elements: () -> List<T>) {
-        this.menuElements = elements
+    /**
+     * 通过抽象字符选择由 map 函数铺设的页面位置
+     */
+    open fun slotsBy(char: Char) {
+        slots(getSlots(char))
     }
 
-    fun onGenerate(async: Boolean = false, onGenerate: (player: Player, element: T, index: Int, slot: Int) -> ItemStack) {
+    /**
+     * 可用元素列表回调
+     */
+    open fun elements(elements: () -> List<T>) {
+        elementsCallback = elements
+    }
+
+    /**
+     * 元素对应物品生成回调
+     */
+    open fun onGenerate(async: Boolean = false, callback: (player: Player, element: T, index: Int, slot: Int) -> ItemStack) {
         if (async) {
-            this.onGenerateAsync = onGenerate
+            asyncGenerateCallback = callback
         } else {
-            this.onGenerate = onGenerate
+            generateCallback = callback
         }
     }
 
-    fun onBuild(async: Boolean = false, onBuild: (inventory: Inventory) -> Unit) {
-        if (async) {
-            val e = this.onBuildAsync
-            this.onBuildAsync = { inventory ->
-                onBuild(inventory)
-                e(inventory)
-            }
-        } else {
-            val e = this.onBuild
-            this.onBuild = { inventory ->
-                onBuild(inventory)
-                e(inventory)
-            }
-        }
+    /**
+     * 页面构建回调
+     */
+    open fun onBuild(async: Boolean, callback: (inventory: Inventory) -> Unit) {
+        onBuild(async = async) { _, inventory -> callback(inventory) }
     }
 
-    fun onClose(onClose: (event: InventoryCloseEvent) -> Unit) {
-        this.onClose = onClose
-    }
-
-    fun onClick(onClick: (event: ClickEvent, element: T) -> Unit) {
-        this.onClick = onClick
-    }
-
-    fun onClick(onClick: (event: ClickEvent) -> Unit) {
-        this.onClickGeneral = onClick
-    }
-
-    fun set(slot: Int, itemStack: ItemStack, onClick: ClickEvent.() -> Unit = {}) {
-        button[slot] = onClick
-        onBuild {
-            it.setItem(slot, itemStack)
-        }
-    }
-
-    fun setNextPage(slot: Int, onGenerate: (page: Int, hasNextPage: Boolean) -> ItemStack) {
-        button[slot] = {
+    /**
+     * 设置下一页按钮
+     */
+    open fun setNextPage(slot: Int, callback: (page: Int, hasNextPage: Boolean) -> ItemStack) {
+        // 设置物品
+        set(slot) { callback(page, hasNextPage()) }
+        // 点击事件
+        onClick(slot) {
             if (hasNextPage()) {
                 page++
                 player.openInventory(build())
             }
         }
-        onBuild {
-            it.setItem(slot, onGenerate(page, hasNextPage()))
-        }
     }
 
-    fun setPreviousPage(slot: Int, onGenerate: (page: Int, hasPreviousPage: Boolean) -> ItemStack) {
-        button[slot] = {
+    /**
+     * 设置上一页按钮
+     */
+    open fun setPreviousPage(slot: Int, callback: (page: Int, hasPreviousPage: Boolean) -> ItemStack) {
+        // 设置物品
+        set(slot) { callback(page, hasPreviousPage()) }
+        // 点击事件
+        onClick(slot) {
             if (hasPreviousPage()) {
                 page--
                 player.openInventory(build())
             }
         }
-        onBuild {
-            it.setItem(slot, onGenerate(page, hasPreviousPage()))
-        }
     }
 
-    fun hasPreviousPage(): Boolean {
+    /**
+     * 是否可以返回上一页
+     */
+    open fun hasPreviousPage(): Boolean {
         return page > 0
     }
 
-    fun hasNextPage(): Boolean {
-        return isNext(page, menuElementsCache.size, menuSlots.size)
+    /**
+     * 是否可以前往下一页
+     */
+    open fun hasNextPage(): Boolean {
+        return isNext(page, elementsCache.size, menuSlots.size)
     }
 
+    /**
+     * 构建页面
+     */
     override fun build(): Inventory {
-        menuElementsCache = menuElements()
-        val objectsMap = HashMap<Int, T>()
-        val items = subList(menuElementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
-        return buildMenu<Basic>(title.replace("%p", (page + 1).toString())) {
-            holder(this@Linked.holder)
-            handLocked(this@Linked.handLocked)
-            rows(this@Linked.rows)
-            onBuild { p, it ->
-                player = p
-                items.forEachIndexed { index, item ->
-                    val slot = menuSlots.getOrNull(index) ?: 0
-                    objectsMap[slot] = item
-                    val itemStack = onGenerate(player, item, index, slot)
-                    if (itemStack.isNotAir()) {
-                        it.setItem(slot, itemStack)
-                    }
+        // 本次页面所使用的元素缓存
+        val elementMap = hashMapOf<Int, T>()
+        val elementItems = subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
+
+        // 更新标题
+        title = title.replace("%p", (page + 1).toString())
+        // 更新元素列表缓存
+        elementsCache = elementsCallback()
+
+        /**
+         * 构建事件处理函数
+         */
+        fun processBuild(p: Player, inventory: Inventory, async: Boolean) {
+            player = p
+            elementItems.forEachIndexed { index, item ->
+                val slot = menuSlots.getOrNull(index) ?: 0
+                elementMap[slot] = item
+                // 生成元素对应物品
+                val callback = if (async) asyncGenerateCallback else generateCallback
+                val itemStack = callback(player, item, index, slot)
+                if (itemStack.isNotAir()) {
+                    inventory.setItem(slot, itemStack)
                 }
-                this@Linked.onBuild(it)
-            }
-            onBuild(true) { p, it ->
-                player = p
-                items.forEachIndexed { index, item ->
-                    val slot = menuSlots.getOrNull(index) ?: 0
-                    objectsMap[slot] = item
-                    val itemStack = onGenerateAsync(player, item, index, slot)
-                    if (itemStack.isNotAir()) {
-                        it.setItem(slot, itemStack)
-                    }
-                }
-                this@Linked.onBuildAsync(it)
-            }
-            onClick(lock = true) {
-                if (objectsMap.containsKey(it.rawSlot)) {
-                    this@Linked.onClick(it, objectsMap[it.rawSlot]!!)
-                } else if (button.containsKey(it.rawSlot)) {
-                    button[it.rawSlot]!!(it)
-                } else {
-                    onClickGeneral(it)
-                }
-            }
-            onClose {
-                this@Linked.onClose(it)
             }
         }
+
+        // 生成回调
+        onBuild { p, it -> processBuild(p, it, false) }
+        // 生成异步回调
+        onBuild(async = true) { p, it -> processBuild(p, it, true) }
+        // 生成点击回调
+        onClick(lock = menuLocked) { elementClickCallback(it, elementMap[it.rawSlot] ?: return@onClick) }
+        // 构建页面
+        return super.build()
     }
 
+    /**
+     * 是否存在下一页
+     */
     private fun isNext(page: Int, size: Int, entry: Int): Boolean {
         return size / entry.toDouble() > page + 1
     }

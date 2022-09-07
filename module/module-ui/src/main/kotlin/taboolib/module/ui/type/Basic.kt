@@ -13,23 +13,41 @@ import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
-import java.util.function.Consumer
 
 open class Basic(title: String = "chest") : Menu(title) {
 
+    /** 行数 **/
     internal var rows = -1
+
+    /** 锁定主手 **/
     internal var handLocked = true
 
-    var items = HashMap<Char, ItemStack>()
-    var slots = ArrayList<List<Char>>()
+    /** MenuHolder 回调 **/
+    internal var holderCallback: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
-    internal var holder: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
-    internal val onClick = ArrayList<Consumer<ClickEvent>>()
-    internal var onClose: ((event: InventoryCloseEvent) -> Unit) = {}
-    internal var onBuild: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
-    internal var onBuildAsync: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    /** 点击回调 **/
+    internal val clickCallback = arrayListOf<(event: ClickEvent) -> Unit>()
 
-    fun rows(rows: Int) {
+    /** 关闭回调 **/
+    internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
+
+    /** 构建回调 **/
+    internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
+    /** 异步构建回调 **/
+    internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
+    /** 物品与对应抽象字符关系 **/
+    var items = hashMapOf<Char, ItemStack>()
+
+    /** 抽象字符布局 **/
+    var slots = arrayListOf<List<Char>>()
+
+    /**
+     * 行数
+     * 为 1 - 6 之间的整数，并非原版 9 的倍数
+     */
+    open fun rows(rows: Int) {
         this.rows = rows
     }
 
@@ -40,95 +58,166 @@ open class Basic(title: String = "chest") : Menu(title) {
      *
      * @param handLocked 锁定
      */
-    fun handLocked(handLocked: Boolean) {
+    open fun handLocked(handLocked: Boolean) {
         this.handLocked = handLocked
     }
 
-    fun holder(func: (menu: Basic) -> MenuHolder) {
-        this.holder = func
+    open fun holder(func: (menu: Basic) -> MenuHolder) {
+        this.holderCallback = func
     }
 
-    fun onBuild(async: Boolean = false, onBuild: (player: Player, inventory: Inventory) -> Unit) {
+    /**
+     * 页面构建时触发回调
+     * 可选是否异步执行
+     */
+    open fun onBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
         if (async) {
-            val e = this.onBuildAsync
-            this.onBuildAsync = { player, inventory ->
-                onBuild(player, inventory)
-                e(player, inventory)
+            val before = asyncBuildCallback
+            asyncBuildCallback = { player, inventory ->
+                callback(player, inventory)
+                before(player, inventory)
             }
         } else {
-            val e = this.onBuild
-            this.onBuild = { player, inventory ->
-                onBuild(player, inventory)
-                e(player, inventory)
+            val before = buildCallback
+            buildCallback = { player, inventory ->
+                callback(player, inventory)
+                before(player, inventory)
             }
         }
     }
 
-    fun onClose(onClose: (event: InventoryCloseEvent) -> Unit) {
-        this.onClose = onClose
+    /**
+     * 页面关闭时触发回调
+     * 只能触发一次（玩家客户端强制关闭时会触发两次原版 InventoryCloseEvent 事件）
+     */
+    open fun onClose(callback: (event: InventoryCloseEvent) -> Unit) {
+        closeCallback = callback
     }
 
-    fun onClick(bind: Int, onClick: (event: ClickEvent) -> Unit = {}) {
+    /**
+     * 点击事件回调
+     * 仅在特定位置下触发
+     */
+    open fun onClick(bind: Int, callback: (event: ClickEvent) -> Unit = {}) {
         onClick {
             if (it.rawSlot == bind) {
                 it.isCancelled = true
+                // 只处理 CLICK 类型
                 if (it.clickType == ClickType.CLICK) {
-                    onClick(it)
+                    callback(it)
                 }
             }
         }
     }
 
-    fun onClick(bind: Char, onClick: (event: ClickEvent) -> Unit = {}) {
+    /**
+     * 点击事件回调
+     * 仅在特定位置下触发
+     */
+    open fun onClick(bind: Char, callback: (event: ClickEvent) -> Unit = {}) {
         onClick {
             if (it.slot == bind) {
                 it.isCancelled = true
+                // 只处理 CLICK 类型
                 if (it.clickType == ClickType.CLICK) {
-                    onClick(it)
+                    callback(it)
                 }
             }
         }
     }
 
-    fun onClick(lock: Boolean = false, onClick: (event: ClickEvent) -> Unit = {}) {
+    /**
+     * 整页点击事件回调
+     * 可选是否自动锁定点击位置
+     */
+    open fun onClick(lock: Boolean = false, callback: (event: ClickEvent) -> Unit = {}) {
         if (lock) {
-            this.onClick += Consumer {
+            clickCallback += {
                 it.isCancelled = true
+                // 只处理 CLICK 类型
                 if (it.clickType == ClickType.CLICK) {
-                    onClick(it)
+                    callback(it)
                 }
             }
         } else {
-            this.onClick += Consumer {
-                onClick(it)
-            }
+            clickCallback += callback
         }
     }
 
-    fun map(vararg slots: String) {
+    /**
+     * 使用抽象字符页面布局
+     */
+    open fun map(vararg slots: String) {
         this.slots.clear()
         this.slots.addAll(slots.map { it.toCharArray().toList() })
+        // 自动修改行数
+        if (rows < slots.size) {
+            rows = slots.size
+        }
     }
 
-    fun set(slot: Char, itemStack: ItemStack) {
+    /**
+     * 根据抽象符号设置物品
+     */
+    open fun set(slot: Char, itemStack: ItemStack) {
         items[slot] = itemStack
     }
 
-    fun set(slot: Char, material: XMaterial, itemBuilder: ItemBuilder.() -> Unit) {
+    /**
+     * 根据位置设置物品
+     */
+    open fun set(slot: Int, itemStack: ItemStack) {
+        onBuild { _, it -> it.setItem(slot, itemStack) }
+    }
+
+    /**
+     * 根据抽象符号设置物品
+     */
+    open fun set(slot: Char, callback: () -> ItemStack) {
+        onBuild { _, it -> getSlots(slot).forEach { s -> it.setItem(s, callback()) } }
+    }
+
+    /**
+     * 根据位置设置物品
+     */
+    open fun set(slot: Int, callback: () -> ItemStack) {
+        onBuild { _, it -> it.setItem(slot, callback()) }
+    }
+
+    /**
+     * 根据抽象符号设置物品
+     */
+    open fun set(slot: Char, material: XMaterial, itemBuilder: ItemBuilder.() -> Unit = {}) {
         set(slot, buildItem(material, itemBuilder))
     }
 
-    fun set(slot: Int, material: XMaterial, itemBuilder: ItemBuilder.() -> Unit) {
+    /**
+     * 根据位置设置物品
+     */
+    open fun set(slot: Int, material: XMaterial, itemBuilder: ItemBuilder.() -> Unit = {}) {
         set(slot, buildItem(material, itemBuilder))
     }
 
-    fun set(slot: Int, itemStack: ItemStack) {
-        onBuild { _, it ->
-            it.setItem(slot, itemStack)
-        }
+    /**
+     * 根据抽象符号设置物品
+     */
+    open fun set(slot: Char, itemStack: ItemStack, onClick: ClickEvent.() -> Unit = {}) {
+        set(slot, itemStack)
+        onClick(slot, onClick)
     }
 
-    fun getSlot(slot: Int): Char {
+    /**
+     * 根据位置设置物品
+     */
+    open fun set(slot: Int, itemStack: ItemStack, onClick: ClickEvent.() -> Unit = {}) {
+        set(slot, itemStack)
+        onClick(slot, onClick)
+    }
+
+    /**
+     * 获取位置对应的抽象字符
+     */
+    open fun getSlot(slot: Int): Char {
         var row = 0
         while (row < slots.size) {
             val line = slots[row]
@@ -144,8 +233,31 @@ open class Basic(title: String = "chest") : Menu(title) {
         return ' '
     }
 
+    /**
+     * 获取抽象字符对应的位置
+     */
+    open fun getSlots(slot: Char): List<Int> {
+        val list = mutableListOf<Int>()
+        var row = 0
+        while (row < slots.size) {
+            val line = slots[row]
+            var cel = 0
+            while (cel < line.size && cel < 9) {
+                if (line[cel] == slot) {
+                    list.add(row * 9 + cel)
+                }
+                cel++
+            }
+            row++
+        }
+        return list
+    }
+
+    /**
+     * 构建页面
+     */
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(holder(this), if (rows > 0) rows * 9 else slots.size * 9, title)
+        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, title)
         var row = 0
         while (row < slots.size) {
             val line = slots[row]
