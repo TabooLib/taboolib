@@ -150,14 +150,14 @@ open class Linked<T>(title: String) : Basic(title) {
      * 构建页面
      */
     override fun build(): Inventory {
-        // 本次页面所使用的元素缓存
-        val elementMap = hashMapOf<Int, T>()
-        val elementItems = subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
-
         // 更新标题
         title = title.replace("%p", (page + 1).toString())
         // 更新元素列表缓存
         elementsCache = elementsCallback()
+
+        // 本次页面所使用的元素缓存
+        val elementMap = hashMapOf<Int, T>()
+        val elementItems = subList(elementsCache, page * menuSlots.size, (page + 1) * menuSlots.size)
 
         /**
          * 构建事件处理函数
