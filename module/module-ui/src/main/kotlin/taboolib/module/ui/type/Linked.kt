@@ -96,6 +96,13 @@ open class Linked<T>(title: String) : Basic(title) {
     }
 
     /**
+     * 元素点击回调
+     */
+    open fun onClick(callback: (event: ClickEvent, element: T) -> Unit) {
+        elementClickCallback = callback
+    }
+
+    /**
      * 设置下一页按钮
      */
     open fun setNextPage(slot: Int, callback: (page: Int, hasNextPage: Boolean) -> ItemStack) {
