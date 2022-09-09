@@ -106,7 +106,15 @@ object Actions {
                 it.reset()
             }
         }
-        actionTake { run(condition).bool { b -> if (b) run(trueAction).join() else if (falseAction != null) run(falseAction).join() else null } }
+        actionFuture { f ->
+            run(condition).bool { b ->
+                if (b) {
+                    run(trueAction).thenAccept { f.complete(it) }
+                } else if (falseAction != null) {
+                    run(falseAction).thenAccept { f.complete(it) }
+                } else null
+            }
+        }
     }
 
     @KetherParser(["not"])

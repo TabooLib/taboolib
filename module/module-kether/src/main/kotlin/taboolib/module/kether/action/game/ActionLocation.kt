@@ -23,19 +23,21 @@ class ActionLocation(
 ) : ScriptAction<Any?>() {
 
     override fun run(frame: QuestContext.Frame): CompletableFuture<Any?> {
-        return frame.run(world).str { world ->
+        val future = CompletableFuture<Any?>()
+        frame.run(world).str { world ->
             frame.run(x).double { x ->
                 frame.run(y).double { y ->
                     frame.run(z).double { z ->
                         frame.run(yaw).float { yaw ->
                             frame.run(pitch).float { pitch ->
-                                platformLocation<Any>(Location(world, x, y, z, yaw, pitch))
-                            }.join()
-                        }.join()
-                    }.join()
-                }.join()
-            }.join()
+                                future.complete(platformLocation<Any>(Location(world, x, y, z, yaw, pitch)))
+                            }
+                        }
+                    }
+                }
+            }
         }
+        return future
     }
 
     object Parser {

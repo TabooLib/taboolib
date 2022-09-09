@@ -12,11 +12,13 @@ import java.util.concurrent.CompletableFuture
 class ActionFormat(val date: ParsedAction<*>, val format: ParsedAction<*>) : ScriptAction<String>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<String> {
-        return frame.newFrame(date).run<Any>().thenApply { date ->
+        val future = CompletableFuture<String>()
+        frame.newFrame(date).run<Any>().thenApply { date ->
             frame.newFrame(format).run<Any>().thenApply { format ->
-                DateFormatUtils.format(Coerce.toLong(date), format.toString())
-            }.join()
+                future.complete(DateFormatUtils.format(Coerce.toLong(date), format.toString()))
+            }
         }
+        return future
     }
 
     object Parser {

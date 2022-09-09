@@ -11,11 +11,13 @@ import java.util.concurrent.CompletableFuture
 class ActionPrinted(val date: ParsedAction<*>, val separator: ParsedAction<*>) : ScriptAction<List<String>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<String>> {
-        return frame.run(date).thenApply { date ->
+        val future = CompletableFuture<List<String>>()
+        frame.run(date).thenApply { date ->
             frame.run(separator).thenApply { separator ->
-                date.toString().printed(separator.toString())
-            }.join()
+                future.complete(date.toString().printed(separator.toString()))
+            }
         }
+        return future
     }
 
     object Parser {

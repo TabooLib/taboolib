@@ -19,7 +19,13 @@ object ActionMatcher {
         val str = it.nextParsedAction()
         it.expects("by", "with", "using")
         val regex = it.nextParsedAction()
-        actionTake { run(str).str { s -> run(regex).str { r -> Pattern.compile(r, Pattern.CASE_INSENSITIVE).matcher(s).also { m -> m.find() } }.join() } }
+        actionFuture { f ->
+            run(str).str { s ->
+                run(regex).str { r ->
+                    f.complete(Pattern.compile(r, Pattern.CASE_INSENSITIVE).matcher(s).also { m -> m.find() })
+                }
+            }
+        }
     }
 
     @KetherProperty(bind = Matcher::class)

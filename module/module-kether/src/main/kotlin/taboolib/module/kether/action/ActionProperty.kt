@@ -36,7 +36,8 @@ object ActionProperty {
     class Set(val instance: ParsedAction<*>, val key: String, val value: ParsedAction<*>) : ScriptAction<Void>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Void> {
-            return frame.newFrame(instance).run<Any>().thenApply { instance ->
+            val future = CompletableFuture<Void>()
+            frame.newFrame(instance).run<Any>().thenApply { instance ->
                 if (instance == null) {
                     error("Property object must be not null.")
                 }
@@ -45,12 +46,14 @@ object ActionProperty {
                     for (property in propertyList) {
                         val result = (property as ScriptProperty<Any>).write(instance, key, value)
                         if (result.isSuccessful) {
+                            future.complete(null)
                             return@close
                         }
                     }
                     error("${instance.javaClass.simpleName}[$key] not supported yet.")
-                }.join()
+                }
             }
+            return future
         }
     }
 

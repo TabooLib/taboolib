@@ -17,29 +17,29 @@ import kotlin.random.Random
 class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val action: ParsedAction<*>? = null) : ScriptAction<Any?>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
+        val future = CompletableFuture<Any?>()
         if (action == null) {
             return frame.run(from).str { from ->
                 frame.run(to).str { to ->
                     if (from.isInt() && to.isInt()) {
-                        random(Coerce.toInteger(from), Coerce.toInteger(to))
+                        future.complete(random(Coerce.toInteger(from), Coerce.toInteger(to)))
                     } else {
-                        random(Coerce.toDouble(from), Coerce.toDouble(to))
+                        future.complete(random(Coerce.toDouble(from), Coerce.toDouble(to)))
                     }
-                }.join()
+                }
             }
         } else {
-            val future = CompletableFuture<Any?>()
-            frame.newFrame(action).run<Any?>().thenAcceptAsync({
+            frame.run(action).thenAccept {
                 when (it) {
                     is Collection<*> -> random(future, it.map { i -> i as Any })
                     is Array<*> -> random(future, it.map { i -> i as Any })
                     else -> {
-                        future.complete(if (it.isInt()) random(Coerce.toInteger(it)) else random(0.0, Coerce.toDouble(it)))
+                        future.complete(if (it?.isInt() == true) random(Coerce.toInteger(it)) else random(0.0, Coerce.toDouble(it)))
                     }
                 }
-            }, frame.context().executor)
-            return future
+            }
         }
+        return future
     }
 
     fun random(future: CompletableFuture<Any?>, i: List<Any>) {

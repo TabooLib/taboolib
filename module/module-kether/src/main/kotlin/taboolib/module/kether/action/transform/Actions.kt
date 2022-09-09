@@ -29,12 +29,12 @@ object Actions {
             it.reset()
             null
         }
-        actionTake {
+        actionFuture { f ->
             run(str).str { s ->
                 if (regex != null) {
-                    run(regex).str { r -> s.split(r.toRegex()) }.join()
+                    run(regex).str { r -> f.complete(s.split(r.toRegex())) }
                 } else {
-                    s.toCharArray().map { c -> c.toString() }
+                    f.complete(s.toCharArray().map { c -> c.toString() })
                 }
             }
         }

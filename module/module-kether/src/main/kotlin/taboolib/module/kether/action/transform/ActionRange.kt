@@ -15,11 +15,12 @@ import java.util.concurrent.CompletableFuture
 class ActionRange(val from: ParsedAction<*>, val to: ParsedAction<*>, val step: ParsedAction<*> = literalAction(0)) : ScriptAction<List<Any>>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<List<Any>> {
-        return frame.newFrame(step).run<Any>().thenApply { s ->
+        val future = CompletableFuture<List<Any>>()
+        frame.newFrame(step).run<Any>().thenApply { s ->
             val step = Coerce.toDouble(s)
             frame.newFrame(from).run<Any>().thenApply { from ->
                 frame.newFrame(to).run<Any>().thenApply { to ->
-                    if (step == 0.0) {
+                    val value = if (step == 0.0) {
                         (Coerce.toInteger(from)..Coerce.toInteger(to)).toList()
                     } else {
                         val intStep = step.toInt().toDouble() == step
@@ -32,9 +33,11 @@ class ActionRange(val from: ParsedAction<*>, val to: ParsedAction<*>, val step: 
                         }
                         array
                     }
-                }.join()
-            }.join()
+                    future.complete(value)
+                }
+            }
         }
+        return future
     }
 
     object Parser {
