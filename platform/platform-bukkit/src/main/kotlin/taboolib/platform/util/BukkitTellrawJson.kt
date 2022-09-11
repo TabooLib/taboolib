@@ -10,7 +10,7 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.chat.TellrawJson
 
 fun TellrawJson.hoverItem(itemStack: ItemStack): TellrawJson {
-    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, isStatic =true)!!
+    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", itemStack, isStatic = true)!!
     val nmsKey = try {
         itemStack.type.key.key
     } catch (ex: NoSuchMethodError) {

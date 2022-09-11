@@ -64,7 +64,7 @@ internal object SignsListener {
                     e.packet.read<Array<String>>("b")!!
                 }
                 else -> {
-                    e.packet.read<Array<Any>>("b")!!.map { classChatSerializer.invokeMethod<String>("a", it, isStatic =true)!! }.toTypedArray()
+                    e.packet.read<Array<Any>>("b")!!.map { classChatSerializer.invokeMethod<String>("a", it, isStatic = true)!! }.toTypedArray()
                 }
             }
             submit { function.invoke(lines) }

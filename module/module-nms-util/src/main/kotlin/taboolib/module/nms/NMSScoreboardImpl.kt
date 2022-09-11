@@ -15,7 +15,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
-            IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic =true)!!
+            IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic = true)!!
         } else {
             ChatComponentText(text)
         }

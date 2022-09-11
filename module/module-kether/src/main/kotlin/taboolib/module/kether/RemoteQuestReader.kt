@@ -9,43 +9,44 @@ import taboolib.library.kether.QuestReader
 class RemoteQuestReader(val remote: OpenContainer, val source: Any) : QuestReader {
 
     override fun peek(): Char {
-        return source.invokeMethod("peek")!!
+        return source.invokeMethod("peek", remap = false)!!
     }
 
     override fun peek(n: Int): Char {
-        return source.invokeMethod("peek", n)!!
+        return source.invokeMethod("peek", n, remap = false)!!
     }
 
     override fun getIndex(): Int {
-        return source.invokeMethod("getIndex")!!
+        return source.invokeMethod("getIndex", remap = false)!!
     }
 
     override fun getMark(): Int {
-        return source.invokeMethod("getMark")!!
+        return source.invokeMethod("getMark", remap = false)!!
     }
 
     override fun hasNext(): Boolean {
-        return source.invokeMethod("hasNext")!!
+        return source.invokeMethod("hasNext", remap = false)!!
     }
 
     override fun nextToken(): String {
-        return source.invokeMethod("nextToken")!!
+        return source.invokeMethod("nextToken", remap = false)!!
     }
 
     override fun mark() {
-        source.invokeMethod<Void>("mark")
+        source.invokeMethod<Void>("mark", remap = false)
     }
 
     override fun reset() {
-        source.invokeMethod<Void>("reset")
+        source.invokeMethod<Void>("reset", remap = false)
     }
 
     override fun <T> nextAction(): ParsedAction<T> {
-        val action = source.invokeMethod<T>("nextAction")!!
-        return ParsedAction(RemoteQuestAction<T>(remote, action.getProperty<Any>("action")!!), action.getProperty<Map<String, Any>>("properties")!!)
+        val action = source.invokeMethod<T>("nextAction", remap = false)!!
+        val questAction = RemoteQuestAction<T>(remote, action.getProperty<Any>("action", remap = false)!!)
+        return ParsedAction(questAction, action.getProperty<Map<String, Any>>("properties")!!)
     }
 
     override fun expect(value: String) {
-        source.invokeMethod<Void>("expect", value)
+        source.invokeMethod<Void>("expect", value, remap = false)
     }
 }

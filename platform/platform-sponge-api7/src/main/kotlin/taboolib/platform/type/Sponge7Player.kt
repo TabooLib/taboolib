@@ -107,7 +107,7 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().name)
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic =true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
         }
 
     override val isSneaking: Boolean
@@ -339,9 +339,9 @@ class Sponge7Player(val player: Player) : ProxyPlayer {
         for (alias in particle.aliases) {
             try {
                 type = if (alias == "@") {
-                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, isStatic =true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(particle.name, isStatic = true)
                 } else {
-                    ParticleTypes::class.java.getProperty<ParticleType>(alias, isStatic =true)
+                    ParticleTypes::class.java.getProperty<ParticleType>(alias, isStatic = true)
                 }
             } catch (ignored: NoSuchFieldException) {
             }

@@ -303,8 +303,8 @@ private fun revoke(player: Player, key: NamespacedKey) {
 
 private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
-        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, isStatic =true)
-        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", isStatic =true)!!
+        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, isStatic = true)
+        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", isStatic = true)!!
         val localLootPredicateManager = if (major >= 9) {
             localMinecraftServer.invokeMethod<Any>("getPredicateManager")
         } else {
@@ -313,7 +313,7 @@ private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
         val lootDeserializationContext = nmsClass("LootDeserializationContext")
             .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
             .newInstance(localMinecraftKey, localLootPredicateManager)
-        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, isStatic =true)
+        val localSerializedAdvancement = nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, isStatic = true)
         if (localSerializedAdvancement != null) {
             if (major >= 10) {
                 localMinecraftServer.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!

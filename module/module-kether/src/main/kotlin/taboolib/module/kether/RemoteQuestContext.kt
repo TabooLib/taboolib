@@ -24,40 +24,40 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : ScriptCon
 
     override fun setExitStatus(exitStatus: ExitStatus) {
         val status = remote.call(StandardChannel.REMOTE_CREATE_EXIT_STATUS, arrayOf(exitStatus.isRunning, exitStatus.isWaiting, exitStatus.startTime))
-        source.invokeMethod<Void>("setExitStatus", status)
+        source.invokeMethod<Void>("setExitStatus", status, remap = false)
     }
 
     override fun getExitStatus(): Optional<ExitStatus> {
-        val status = source.invokeMethod<Optional<Any>>("getExitStatus")!!.orNull() ?: return Optional.empty()
+        val status = source.invokeMethod<Optional<Any>>("getExitStatus", remap = false)!!.orNull() ?: return Optional.empty()
         return Optional.of(ExitStatus(status.getProperty("running")!!, status.getProperty("waiting")!!, status.getProperty("startTime")!!))
     }
 
     override fun runActions(): CompletableFuture<Any> {
-        return source.invokeMethod("runActions")!!
+        return source.invokeMethod("runActions", remap = false)!!
     }
 
     override fun getExecutor(): QuestExecutor? {
-        return source.invokeMethod("getExecutor")!!
+        return source.invokeMethod("getExecutor", remap = false)!!
     }
 
     override fun terminate() {
-        source.invokeMethod<Void>("terminate")
+        source.invokeMethod<Void>("terminate", remap = false)
     }
 
     override fun rootFrame(): QuestContext.Frame {
-        return RemoteFrame(remote, source.invokeMethod("rootFrame")!!)
+        return RemoteFrame(remote, source.invokeMethod("rootFrame", remap = false)!!)
     }
 
     class RemoteFrame(val remote: OpenContainer, val source: Any) : QuestContext.Frame {
 
-        val remoteQuestContext by lazy { RemoteQuestContext(remote, source.invokeMethod("context")!!) }
+        val remoteQuestContext by lazy { RemoteQuestContext(remote, source.invokeMethod("context", remap = false)!!) }
 
         override fun close() {
-            source.invokeMethod<Void>("close")
+            source.invokeMethod<Void>("close", remap = false)
         }
 
         override fun name(): String {
-            return source.invokeMethod("name")!!
+            return source.invokeMethod("name", remap = false)!!
         }
 
         override fun context(): QuestContext {
@@ -65,7 +65,7 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : ScriptCon
         }
 
         override fun currentAction(): Optional<ParsedAction<*>> {
-            val currentAction = source.invokeMethod<Optional<Any>>("currentAction")!!
+            val currentAction = source.invokeMethod<Optional<Any>>("currentAction", remap = false)!!
             return if (currentAction.isPresent) {
                 val action = currentAction.get().getProperty<Any>("action")!!
                 val properties = currentAction.get().getProperty<Map<String, Any>>("properties")!!
@@ -76,11 +76,11 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : ScriptCon
         }
 
         override fun children(): MutableList<QuestContext.Frame> {
-            return source.invokeMethod<List<Any>>("children")!!.map { RemoteFrame(remote, it) }.toMutableList()
+            return source.invokeMethod<List<Any>>("children", remap = false)!!.map { RemoteFrame(remote, it) }.toMutableList()
         }
 
         override fun parent(): Optional<QuestContext.Frame> {
-            val parent = source.invokeMethod<Optional<Any>>("parent")!!
+            val parent = source.invokeMethod<Optional<Any>>("parent", remap = false)!!
             return if (parent.isPresent) {
                 Optional.of(RemoteFrame(remote, parent.get()))
             } else {
@@ -90,84 +90,84 @@ class RemoteQuestContext(val remote: OpenContainer, val source: Any) : ScriptCon
 
         override fun setNext(action: ParsedAction<*>) {
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
-            source.invokeMethod<Void>("setNext", remoteAction.value)
+            source.invokeMethod<Void>("setNext", remoteAction.value, remap = false)
         }
 
         override fun setNext(block: Quest.Block) {
-            context().quest.getBlock(block.label).ifPresent { source.invokeMethod<Void>("setNext", it) }
+            context().quest.getBlock(block.label).ifPresent { source.invokeMethod<Void>("setNext", it, remap = false) }
         }
 
         override fun newFrame(name: String): QuestContext.Frame {
-            return RemoteFrame(remote, source.invokeMethod<Any>("newFrame", name)!!)
+            return RemoteFrame(remote, source.invokeMethod<Any>("newFrame", name, remap = false)!!)
         }
 
         override fun newFrame(action: ParsedAction<*>): QuestContext.Frame {
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, action.action, action.properties))
-            return RemoteFrame(remote, source.invokeMethod("newFrame", remoteAction.value)!!)
+            return RemoteFrame(remote, source.invokeMethod("newFrame", remoteAction.value, remap = false)!!)
         }
 
         override fun variables(): QuestContext.VarTable {
-            return RemoteVarTable(remote, source.invokeMethod<Any>("variables")!!)
+            return RemoteVarTable(remote, source.invokeMethod<Any>("variables", remap = false)!!)
         }
 
         override fun <T : AutoCloseable?> addClosable(closeable: T): T {
-            return source.invokeMethod("addClosable", closeable)!!
+            return source.invokeMethod("addClosable", closeable, remap = false)!!
         }
 
         override fun <T : Any?> run(): CompletableFuture<T> {
-            return source.invokeMethod("run")!!
+            return source.invokeMethod("run", remap = false)!!
         }
 
         override fun isDone(): Boolean {
-            return source.invokeMethod("isDone")!!
+            return source.invokeMethod("isDone", remap = false)!!
         }
     }
 
     class RemoteVarTable(val remote: OpenContainer, val source: Any) : QuestContext.VarTable {
 
         override fun <T> get(name: String): Optional<T> {
-            return source.invokeMethod("get", name)!!
+            return source.invokeMethod("get", name, remap = false)!!
         }
 
         override fun <T> getFuture(name: String): Optional<QuestFuture<T>> {
-            return source.invokeMethod("getFuture", name)!!
+            return source.invokeMethod("getFuture", name, remap = false)!!
         }
 
         override fun set(name: String, value: Any?) {
-            source.invokeMethod<Void>("set", name, value)
+            source.invokeMethod<Void>("set", name, value, remap = false)
         }
 
         override fun <T> set(name: String, owner: ParsedAction<T>, future: CompletableFuture<T>) {
             val remoteAction = remote.call(StandardChannel.REMOTE_CREATE_PARSED_ACTION, arrayOf(pluginId, owner.action, owner.properties))
-            source.invokeMethod<Void>("set", name, remoteAction.value, future)
+            source.invokeMethod<Void>("set", name, remoteAction.value, future, remap = false)
         }
 
         override fun remove(name: String) {
-            source.invokeMethod<Void>("remote", name)
+            source.invokeMethod<Void>("remote", name, remap = false)
         }
 
         override fun clear() {
-            source.invokeMethod<Void>("clear")
+            source.invokeMethod<Void>("clear", remap = false)
         }
 
         override fun keys(): MutableSet<String> {
-            return source.invokeMethod("keys")!!
+            return source.invokeMethod("keys", remap = false)!!
         }
 
         override fun values(): MutableCollection<MutableMap.MutableEntry<String, Any>> {
-            return source.invokeMethod("values")!!
+            return source.invokeMethod("values", remap = false)!!
         }
 
         override fun initialize(frame: QuestContext.Frame) {
-            source.invokeMethod<Void>("initialize", remote.call(StandardChannel.REMOTE_CREATE_FLAME, arrayOf(pluginId, frame)).value)
+            source.invokeMethod<Void>("initialize", remote.call(StandardChannel.REMOTE_CREATE_FLAME, arrayOf(pluginId, frame)).value, remap = false)
         }
 
         override fun close() {
-            source.invokeMethod<Void>("close")
+            source.invokeMethod<Void>("close", remap = false)
         }
 
         override fun parent(): QuestContext.VarTable {
-            return RemoteVarTable(remote, source.invokeMethod("parent")!!)
+            return RemoteVarTable(remote, source.invokeMethod("parent", remap = false)!!)
         }
     }
 }

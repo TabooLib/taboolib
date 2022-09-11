@@ -115,7 +115,7 @@ class BukkitCommand : PlatformCommand {
             kotlin.runCatching {
                 if (pluginCommand.getProperty<Any>("timings") == null) {
                     val timingsManager = Class.forName("co.aikar.timings.TimingsManager")
-                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic =true))
+                    pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic = true))
                 }
             }
             sync()

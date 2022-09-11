@@ -28,7 +28,7 @@ class Sponge7OpenContainer(plugin: PluginContainer) : OpenContainer {
 
     override fun call(name: String, args: Array<Any>): OpenResult {
         return try {
-            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, isStatic =true) ?: return OpenResult.failed())
+            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, isStatic = true, remap = false) ?: return OpenResult.failed())
         } catch (ignored: NoSuchMethodException) {
             OpenResult.failed()
         }

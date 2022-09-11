@@ -105,7 +105,7 @@ class Sponge9Player(val player: ServerPlayer) : ProxyPlayer {
     override var gameMode: ProxyGameMode
         get() = ProxyGameMode.fromString(player.gameMode().get().asComponent().toPlain())
         set(value) {
-            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic =true)!!)
+            player.gameMode().set(GameModes::class.java.getProperty(value.name, isStatic = true)!!)
         }
 
     override val isSneaking: Boolean

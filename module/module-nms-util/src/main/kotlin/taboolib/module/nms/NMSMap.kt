@@ -87,7 +87,7 @@ class NMSMap(val image: BufferedImage, val hand: Hand = Hand.MAIN, val builder: 
             } else {
                 container.getProperty<Int>("windowId")
             }!!
-            val nmsItem = classCraftItemStack.invokeMethod<Any>("asNMSCopy", mapItem, isStatic =true)
+            val nmsItem = classCraftItemStack.invokeMethod<Any>("asNMSCopy", mapItem, isStatic = true)
             player.sendPacket(classPacketPlayOutSetSlot.unsafeInstance().also {
                 if (MinecraftVersion.isUniversal) {
                     it.setProperty("containerId", windowsId)

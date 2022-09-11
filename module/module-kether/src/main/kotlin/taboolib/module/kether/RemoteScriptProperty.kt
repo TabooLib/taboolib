@@ -14,10 +14,10 @@ import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 class RemoteScriptProperty(val remote: OpenContainer, val source: Any, id: String) : ScriptProperty<Any>(id) {
 
     override fun read(instance: Any, key: String): OpenResult {
-        return OpenResult.deserialize(source.invokeMethod("read", instance, key))
+        return OpenResult.deserialize(source.invokeMethod("read", instance, key, remap = false))
     }
 
     override fun write(instance: Any, key: String, value: Any?): OpenResult {
-        return OpenResult.deserialize(source.invokeMethod("write", instance, key, value))
+        return OpenResult.deserialize(source.invokeMethod("write", instance, key, value, remap = false))
     }
 }
