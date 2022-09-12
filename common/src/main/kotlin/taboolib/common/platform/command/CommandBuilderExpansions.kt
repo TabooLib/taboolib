@@ -8,6 +8,30 @@ import taboolib.common.util.Location
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+fun <T> CommandContext<T>.int(offset: Int): Int {
+    return argument(offset).toInt()
+}
+
+fun <T> CommandContext<T>.intAt(index: Int): Int {
+    return get(index).toInt()
+}
+
+fun <T> CommandContext<T>.double(offset: Int): Double {
+    return argument(offset).toDouble()
+}
+
+fun <T> CommandContext<T>.doubleAt(index: Int): Double {
+    return get(index).toDouble()
+}
+
+fun <T> CommandContext<T>.bool(offset: Int): Boolean {
+    return argument(offset).toBooleanStrict()
+}
+
+fun <T> CommandContext<T>.boolAt(index: Int): Boolean {
+    return get(index).toBoolean()
+}
+
 fun <T> CommandContext<T>.player(offset: Int): ProxyPlayer {
     return onlinePlayers().first { it.name == argument(offset) }
 }
@@ -48,8 +72,24 @@ fun CommandBuilder.CommandComponentDynamic.suggest(suggest: () -> List<String>?)
     suggestion<ProxyCommandSender> { _, _ -> suggest() }
 }
 
+fun CommandBuilder.CommandComponentDynamic.suggestBoolean() {
+    suggestion<ProxyCommandSender> { _, _ -> listOf("true", "false") }
+}
+
 fun CommandBuilder.CommandComponentDynamic.suggestPlayers() {
     suggestion<ProxyCommandSender> { _, _ -> onlinePlayers().map { it.name } }
+}
+
+fun CommandBuilder.CommandComponentDynamic.restrictInt() {
+    restrict<ProxyCommandSender> { _, _, args -> args.toIntOrNull() != null }
+}
+
+fun CommandBuilder.CommandComponentDynamic.restrictDouble() {
+    restrict<ProxyCommandSender> { _, _, args -> args.toDoubleOrNull() != null }
+}
+
+fun CommandBuilder.CommandComponentDynamic.restrictBoolean() {
+    restrict<ProxyCommandSender> { _, _, args -> args.toBooleanStrictOrNull() != null }
 }
 
 fun CommandBuilder.CommandComponent.location(detailed: Boolean = false, dynamic: CommandBuilder.CommandComponentDynamic.() -> Unit) {
