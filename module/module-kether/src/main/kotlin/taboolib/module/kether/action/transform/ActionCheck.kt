@@ -14,12 +14,13 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
 
     enum class Symbol {
 
-        NOT_EQUALS, EQUALS, EQUALS_MEMORY, EQUALS_IGNORE_CASE, GT, GTE, LT, LTE, CONTAINS, IN
+        NOT_EQUALS, EQUALS, EQUALS_NO_INFER, EQUALS_MEMORY, EQUALS_IGNORE_CASE, GT, GTE, LT, LTE, CONTAINS, IN
     }
 
     fun check(left: Any?, right: Any?): Boolean {
         return when (symbol) {
             EQUALS -> left.inferType() == right.inferType()
+            EQUALS_NO_INFER -> left == right
             EQUALS_MEMORY -> left === right
             EQUALS_IGNORE_CASE -> left.toString().equals(right.toString(), ignoreCase = true)
             NOT_EQUALS -> left != right
@@ -33,7 +34,6 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
                 is Map<*, *> -> left.containsKey(right)
                 else -> left.toString().contains(right.toString())
             }
-
             IN -> when (right) {
                 is Collection<*> -> right.contains(left)
                 is Array<*> -> right.contains(left)
@@ -60,7 +60,8 @@ class ActionCheck(val left: ParsedAction<*>, val right: ParsedAction<*>, val sym
             val left = it.next(ArgTypes.ACTION)
             val symbol = when (val type = it.nextToken()) {
                 "==", "is" -> EQUALS
-                "=!", "is!" -> EQUALS_MEMORY
+                "=!", "is!" -> EQUALS_NO_INFER
+                "=!!", "is!!" -> EQUALS_MEMORY
                 "=?", "is?" -> EQUALS_IGNORE_CASE
                 "!=", "!is", "not" -> NOT_EQUALS
                 ">", "gt" -> GT

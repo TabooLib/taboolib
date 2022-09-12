@@ -63,47 +63,16 @@ fun Throwable.printKetherErrorMessage() {
 }
 
 fun Any?.inferType(): Any? {
-    val asInteger = asInteger(this)
-    if (asInteger.isPresent) {
-        return asInteger.get()
-    }
-    val asLong = Coerce.asLong(this)
-    if (asLong.isPresent) {
-        return asLong.get()
-    }
-    val asDouble = Coerce.asDouble(this)
-    if (asDouble.isPresent) {
-        return asDouble.get()
-    }
-    val asBoolean = Coerce.asBoolean(this)
-    if (asBoolean.isPresent) {
-        return asBoolean.get()
-    }
+    if (this !is String) return this
+    toIntOrNull()?.let { return it }
+    toLongOrNull()?.let { return it }
+    toDoubleOrNull()?.let { return it }
+    toBooleanStrictOrNull()?.let { return it }
     return this
 }
 
-private fun asInteger(obj: Any?): Optional<Int> {
-    return when (obj) {
-        null -> {
-            Optional.empty()
-        }
-        is Number -> {
-            Optional.of(obj.toInt())
-        }
-        else -> {
-            try {
-                Optional.ofNullable(Integer.valueOf(obj.toString()))
-            } catch (ignored: NumberFormatException) {
-                Optional.empty()
-            }
-        }
-    }
-}
-
 fun ScriptContext.extend(map: Map<String, Any?>) {
-    rootFrame().variables().run {
-        map.forEach { (k, v) -> set(k, v) }
-    }
+    rootFrame().variables().run { map.forEach { (k, v) -> set(k, v) } }
 }
 
 fun QuestReader.expects(vararg args: String): String {
