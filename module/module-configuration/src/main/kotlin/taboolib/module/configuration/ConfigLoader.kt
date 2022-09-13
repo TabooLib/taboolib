@@ -8,7 +8,6 @@ import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common5.FileWatcher
 import java.util.function.Supplier

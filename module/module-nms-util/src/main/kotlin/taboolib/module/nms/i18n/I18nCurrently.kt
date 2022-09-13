@@ -20,7 +20,7 @@ import java.util.concurrent.Executors
  * @author sky
  * @since 2020-04-04 19:51
  */
-object I18n11700 : I18nBase() {
+object I18nCurrently : I18nBase() {
 
     val locales = arrayOf(
         arrayOf("zh_cn", "1d1291c554a9bdfce7abd4b40207c82f8f9f1a6f"),

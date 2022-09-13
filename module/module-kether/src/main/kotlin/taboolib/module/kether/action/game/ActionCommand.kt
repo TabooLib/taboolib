@@ -1,7 +1,6 @@
 package taboolib.module.kether.action.game
 
 import taboolib.common.platform.function.console
-import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture

@@ -5,7 +5,8 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
-import taboolib.module.ui.*
+import taboolib.module.ui.ClickEvent
+import taboolib.module.ui.ClickType
 import taboolib.platform.util.isNotAir
 
 @Isolated

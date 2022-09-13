@@ -103,7 +103,7 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
 
     @Override
     public boolean containsAll(@NotNull Collection<?> c) {
-        return value.containsAll(c);
+        return new HashSet<>(value).containsAll(c);
     }
 
     @Override

@@ -4,11 +4,8 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.util.asList
-import taboolib.library.kether.ParsedAction
-import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import taboolib.module.nms.sendScoreboard
-import java.util.concurrent.CompletableFuture
 
 @PlatformSide([Platform.BUKKIT])
 object ActionScoreboard {

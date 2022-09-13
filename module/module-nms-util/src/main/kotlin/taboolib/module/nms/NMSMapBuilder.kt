@@ -11,14 +11,7 @@ import java.net.URL
 import java.util.concurrent.CompletableFuture
 import javax.imageio.ImageIO
 
-@Deprecated(
-    "Network I/O on main thread",
-    ReplaceWith(
-        "buildMap(URL(url), hand, width, height, builder)",
-        "java.net.URL",
-        "java.util.concurrent.CompletableFuture"
-    ),
-)
+@Deprecated("Network I/O on main thread", ReplaceWith("buildMap(URL(url), hand, width, height, builder)", "java.net.URL", "java.util.concurrent.CompletableFuture"))
 fun buildMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -61,13 +54,7 @@ fun buildMap(
     return NMSMap(image.zoomed(width, height), hand, builder)
 }
 
-@Deprecated(
-    "Unsafe string URL",
-    ReplaceWith(
-        "sendMap(URL(url), hand, width, height, builder)",
-        "java.net.URL"
-    )
-)
+@Deprecated("Unsafe string URL", ReplaceWith("sendMap(URL(url), hand, width, height, builder)", "java.net.URL"))
 fun Player.sendMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,

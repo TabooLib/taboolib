@@ -1,6 +1,6 @@
 package taboolib.common.util
 
-import java.util.LinkedList
+import java.util.*
 
 fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)
 

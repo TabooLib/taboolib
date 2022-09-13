@@ -19,12 +19,12 @@ object I18n {
     val instance: I18nBase
 
     init {
-        version[7] = I18n11700 // 1.15
-        version[8] = I18n11700 // 1.16
-        version[9] = I18n11700 // 1.17
-        version[10] = I18n11700 // 1.18
-        version[11] = I18n11700 // 1.19
-        instance = version.getOrDefault(major, I18nOrigin.INSTANCE)
+        version[7] = I18nCurrently // 1.15
+        version[8] = I18nCurrently // 1.16
+        version[9] = I18nCurrently // 1.17
+        version[10] = I18nCurrently // 1.18
+        version[11] = I18nCurrently // 1.19
+        instance = version.getOrDefault(major, I18nLegacy.INSTANCE)
         instance.init()
     }
 }

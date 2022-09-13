@@ -16,6 +16,7 @@ import java.util.function.Function;
  * @author 坏黑
  * @since 2019-05-24 17:44
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
 
     private final Map<String, ItemTagData> value = Maps.newConcurrentMap();
@@ -27,7 +28,7 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
     }
 
     public void saveTo(ItemStack item) {
-        item.setItemMeta(NMSKt.setItemTag(item, this).getItemMeta());
+        item.setItemMeta(NMSToastKt.setItemTag(item, this).getItemMeta());
     }
 
     public String toJson() {
@@ -113,8 +114,9 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
                         }
                         return new ItemTagData(ints);
                     }
-                    default:
+                    default: {
                         return new ItemTagData("error: " + element);
+                    }
                 }
             }
             // compound
@@ -229,7 +231,6 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         return value.remove(key);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void putAll(@NotNull Map m) {
         this.value.putAll(m);
@@ -240,14 +241,12 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         this.value.clear();
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @NotNull
     @Override
     public Set keySet() {
         return this.value.keySet();
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @NotNull
     @Override
     public Collection values() {

@@ -15,7 +15,6 @@ import java.net.URL
 import java.util.*
 import java.util.function.Supplier
 import java.util.jar.JarFile
-import kotlin.collections.LinkedHashMap
 
 /**
  * 当前插件的所有类

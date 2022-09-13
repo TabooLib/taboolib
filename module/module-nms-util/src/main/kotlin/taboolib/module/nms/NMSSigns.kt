@@ -4,12 +4,12 @@ package taboolib.module.nms
 
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,7 +23,7 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
     }
     sendSignChange(location, lines.format())
     SignsListener.inputs[name] = function
-    nmsProxy<NMSGeneric>().openSignEditor(this, location.block)
+    nmsGeneric.openSignEditor(this, location.block)
 }
 
 private fun Array<String>.format(): Array<String> {
@@ -39,7 +39,7 @@ private fun Array<String>.format(): Array<String> {
 
 @Isolated
 @PlatformSide([Platform.BUKKIT])
-internal object SignsListener {
+private object SignsListener {
 
     val inputs = ConcurrentHashMap<String, (Array<String>) -> Unit>()
 
@@ -48,12 +48,12 @@ internal object SignsListener {
     }
 
     @SubscribeEvent
-    fun e(e: PlayerQuitEvent) {
+    fun onQuit(e: PlayerQuitEvent) {
         inputs.remove(e.player.name)
     }
 
     @SubscribeEvent
-    fun e(e: PacketReceiveEvent) {
+    fun onReceive(e: PacketReceiveEvent) {
         if (e.packet.name == "PacketPlayInUpdateSign" && inputs.containsKey(e.player.name)) {
             val function = inputs.remove(e.player.name) ?: return
             val lines = when {

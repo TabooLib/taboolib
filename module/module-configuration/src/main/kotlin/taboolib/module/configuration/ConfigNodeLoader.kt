@@ -1,7 +1,6 @@
 package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
-import org.tabooproject.reflex.ClassMethod
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake

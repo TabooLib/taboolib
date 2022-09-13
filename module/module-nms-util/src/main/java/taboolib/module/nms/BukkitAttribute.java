@@ -16,6 +16,7 @@ import static taboolib.module.nms.MinecraftServerUtilKt.nmsClass;
  * @author sky
  * @since 2019-12-11 19:31
  */
+@SuppressWarnings("ConstantConditions")
 @Isolated
 public enum BukkitAttribute {
 
@@ -104,7 +105,6 @@ public enum BukkitAttribute {
         return attribute;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public Object toNMS() {
         ReflexClass genericAttributesClass = ReflexClass.Companion.of(nmsClass("GenericAttributes"), true);
         ReflexClass attributeBaseClass = ReflexClass.Companion.of(nmsClass("AttributeBase"), true);

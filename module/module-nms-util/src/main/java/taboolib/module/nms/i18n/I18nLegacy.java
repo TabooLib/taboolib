@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.RuntimeResource;
 import taboolib.module.nms.ItemTag;
 import taboolib.module.nms.MinecraftVersion;
-import taboolib.module.nms.NMSKt;
+import taboolib.module.nms.NMSToastKt;
 
 import java.io.File;
 import java.util.Locale;
@@ -36,9 +36,9 @@ import java.util.Objects;
         hash = "476754933e2e486048f39726b822f24447d60ecb",
         zip = true
 )
-public class I18nOrigin extends I18nBase {
+public class I18nLegacy extends I18nBase {
 
-    public static final I18nOrigin INSTANCE = new I18nOrigin();
+    public static final I18nLegacy INSTANCE = new I18nLegacy();
 
     private static FileConfiguration lang;
 
@@ -50,7 +50,7 @@ public class I18nOrigin extends I18nBase {
     @Override
     public @NotNull
     String getName(Player player, @NotNull Entity entity) {
-        return Objects.requireNonNull(lang.getString(NMSKt.getInternalName(entity).replace(".", "_"), entity.getName()));
+        return Objects.requireNonNull(lang.getString(NMSToastKt.getInternalName(entity).replace(".", "_"), entity.getName()));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class I18nOrigin extends I18nBase {
         // < 1.11
         if (MinecraftVersion.INSTANCE.getMajor() < 3) {
             if (itemStack.getType().name().equals("MONSTER_EGG")) {
-                ItemTag itemTag = NMSKt.getItemTag(itemStack);
+                ItemTag itemTag = NMSToastKt.getItemTag(itemStack);
                 if (itemTag.containsKey("EntityTag")) {
                     return lang.getString("item_monsterPlacer_name") + " " + lang.getString("entity_" + itemTag.get("EntityTag").asCompound().get("id").asString() + "_name");
                 }
@@ -75,14 +75,14 @@ public class I18nOrigin extends I18nBase {
             if (itemMeta instanceof SpawnEggMeta) {
                 String spawnEggType = lang.getString("entity_" + ((SpawnEggMeta) itemMeta).getSpawnedType().getEntityClass().getSimpleName().replace(".", "_") + "_name");
                 if (spawnEggType != null) {
-                    return lang.getString(NMSKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")) + " " + spawnEggType;
+                    return lang.getString(NMSToastKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")) + " " + spawnEggType;
                 }
             }
         }
         if (itemStack.getType().equals(Material.AIR)) {
             return Objects.requireNonNull(lang.getString("item_air"));
         } else {
-            return Objects.requireNonNull(lang.getString(NMSKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")));
+            return Objects.requireNonNull(lang.getString(NMSToastKt.getInternalName(itemStack).replace(".", "_"), itemStack.getType().name().toLowerCase(Locale.getDefault()).replace("_", "")));
         }
     }
 

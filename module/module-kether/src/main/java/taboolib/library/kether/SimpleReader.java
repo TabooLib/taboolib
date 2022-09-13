@@ -1,9 +1,9 @@
 package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
-import taboolib.module.kether.action.ActionLiteral;
 import taboolib.module.kether.Kether;
 import taboolib.module.kether.action.ActionGet;
+import taboolib.module.kether.action.ActionLiteral;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,12 +1,10 @@
-package taboolib.module.nms.i18n;
+package taboolib.module.nms.i18n
 
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffectType
 
 /**
  * 原版语言文件实现接口
@@ -14,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
  * @author sky
  * @since 2020-04-04 19:42
  */
-public abstract class I18nBase {
+abstract class I18nBase {
 
-    abstract public void init();
+    abstract fun init()
 
     /**
      * 获取实体对应译名
@@ -26,8 +24,7 @@ public abstract class I18nBase {
      * @param entity 实体
      * @return String
      */
-    @NotNull
-    abstract public String getName(@Nullable Player player, @NotNull Entity entity);
+    abstract fun getName(player: Player?, entity: Entity): String
 
     /**
      * 获取物品对应译名
@@ -37,8 +34,7 @@ public abstract class I18nBase {
      * @param itemStack 物品
      * @return String
      */
-    @NotNull
-    abstract public String getName(@Nullable Player player, @NotNull ItemStack itemStack);
+    abstract fun getName(player: Player?, itemStack: ItemStack): String
 
     /**
      * 获取附魔对应译名
@@ -48,8 +44,7 @@ public abstract class I18nBase {
      * @param enchantment 附魔
      * @return String
      */
-    @NotNull
-    abstract public String getName(@Nullable Player player, @NotNull Enchantment enchantment);
+    abstract fun getName(player: Player?, enchantment: Enchantment): String
 
     /**
      * 获取药水效果对应译名
@@ -59,8 +54,7 @@ public abstract class I18nBase {
      * @param potionEffectType 药水效果
      * @return String
      */
-    @NotNull
-    abstract public String getName(@Nullable Player player, @NotNull PotionEffectType potionEffectType);
+    abstract fun getName(player: Player?, potionEffectType: PotionEffectType): String
 
     /**
      * 获取实体对应中文译名
@@ -68,8 +62,8 @@ public abstract class I18nBase {
      * @param entity 实体
      * @return String
      */
-    public String getName(@NotNull Entity entity) {
-        return getName(null, entity);
+    fun getName(entity: Entity): String {
+        return getName(null, entity)
     }
 
     /**
@@ -78,8 +72,8 @@ public abstract class I18nBase {
      * @param itemStack 物品
      * @return String
      */
-    public String getName(@NotNull ItemStack itemStack) {
-        return getName(null, itemStack);
+    fun getName(itemStack: ItemStack): String {
+        return getName(null, itemStack)
     }
 
     /**
@@ -88,8 +82,8 @@ public abstract class I18nBase {
      * @param enchantment 实体
      * @return String
      */
-    public String getName(@NotNull Enchantment enchantment) {
-        return getName(null, enchantment);
+    fun getName(enchantment: Enchantment): String {
+        return getName(null, enchantment)
     }
 
     /**
@@ -98,7 +92,7 @@ public abstract class I18nBase {
      * @param potionEffectType 药水效果
      * @return String
      */
-    public String getName(@NotNull PotionEffectType potionEffectType) {
-        return getName(null, potionEffectType);
+    fun getName(potionEffectType: PotionEffectType): String {
+        return getName(null, potionEffectType)
     }
 }

@@ -6,12 +6,12 @@ import org.bukkit.inventory.meta.MapMeta
 import org.bukkit.map.MapCanvas
 import org.bukkit.map.MapRenderer
 import org.bukkit.map.MapView
-import taboolib.common.Isolated
-import taboolib.common.platform.function.submit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.Isolated
+import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem

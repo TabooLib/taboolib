@@ -2,8 +2,8 @@ package taboolib.module.kether
 
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.library.kether.*
-import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.kether.action.ActionGet
+import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.kether.action.ActionProperty
 
 /**

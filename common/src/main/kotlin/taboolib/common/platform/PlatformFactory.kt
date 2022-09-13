@@ -5,7 +5,10 @@ import taboolib.common.TabooLibCommon
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
-import taboolib.common.io.*
+import taboolib.common.io.getInstance
+import taboolib.common.io.runningClasses
+import taboolib.common.io.runningClassesWithoutLibrary
+import taboolib.common.io.runningExactClasses
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.platform.function.unregisterCommands
 import java.util.concurrent.ConcurrentHashMap

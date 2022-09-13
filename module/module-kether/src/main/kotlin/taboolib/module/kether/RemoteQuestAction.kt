@@ -1,8 +1,8 @@
 package taboolib.module.kether
 
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.platform.function.pluginId
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext
 import java.util.concurrent.CompletableFuture

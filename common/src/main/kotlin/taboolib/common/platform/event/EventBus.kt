@@ -1,7 +1,6 @@
 package taboolib.common.platform.event
 
 import org.tabooproject.reflex.ClassAnnotation
-import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.Unknown
 import taboolib.common.LifeCycle

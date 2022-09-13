@@ -2,8 +2,6 @@
 package taboolib.common.util
 
 import taboolib.common.Isolated
-import java.lang.IllegalStateException
-import java.lang.NullPointerException
 import java.util.*
 
 fun <T> Optional<T>.presentRun(func: T.() -> Unit) {

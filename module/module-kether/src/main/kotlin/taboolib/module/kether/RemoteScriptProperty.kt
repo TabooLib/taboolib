@@ -1,8 +1,8 @@
 package taboolib.module.kether
 
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib

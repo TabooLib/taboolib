@@ -3,7 +3,6 @@ package taboolib.module.kether.action
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestActionParser
 import taboolib.library.kether.QuestContext
-import taboolib.library.kether.QuestReader
 import java.util.concurrent.CompletableFuture
 
 class ActionLiteral<T> : QuestAction<T> {

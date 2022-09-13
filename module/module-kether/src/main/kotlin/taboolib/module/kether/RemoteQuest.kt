@@ -1,9 +1,9 @@
 package taboolib.module.kether
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.platform.function.pluginId
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.Quest
 import java.util.*

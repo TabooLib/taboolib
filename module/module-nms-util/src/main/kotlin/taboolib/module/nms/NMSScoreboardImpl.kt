@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.module.nms.type.ChatColorFormat
 import taboolib.platform.BukkitPlugin
 import taboolib.platform.util.onlinePlayers
 import java.util.*
@@ -132,7 +133,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     b.setProperty("playerPrefix", IChatBaseComponent.empty())
                     b.setProperty("playerSuffix", IChatBaseComponent.empty())
                 }
-                handle1DuplicatedPacket(b, packet, player,EnumChatFormat.RESET)
+                handle1DuplicatedPacket(b, packet, player, EnumChatFormat.RESET)
                 return@forEach
             }
             if (MinecraftVersion.major >= 5) {
@@ -175,7 +176,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("players", listOf(player.name))
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", component(player.displayName))
-            handle1DuplicatedPacketAll(b, packet,EnumChatFormat.RESET)
+            handle1DuplicatedPacketAll(b, packet, EnumChatFormat.RESET)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -216,7 +217,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @see EnumChatFormat
      * @see PacketPlayOutScoreboardTeam
      */
-    override fun updateTeam(player: Player, prefix: String, suffix: String, color: EnumChatFormat, created: Boolean, p: Player?) {
+    override fun updateTeam(player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?) {
         if (created) {
             createTeam(player)
         }
@@ -228,9 +229,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("displayName", component(player.displayName))
             b.setProperty("playerPrefix", component(prefix))
             b.setProperty("playerSuffix", component(suffix))
-            if (p == null) {
-                handle1DuplicatedPacketAll(b, packet,color)
-            }else handle1DuplicatedPacket(b,packet,p,color)
+            if (target == null) {
+                handle1DuplicatedPacketAll(b, packet, EnumChatFormat.valueOf(color.name.uppercase()))
+            } else {
+                handle1DuplicatedPacket(b, packet, target, EnumChatFormat.valueOf(color.name.uppercase()))
+            }
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -239,18 +242,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("c", component(prefix))
             packet.setProperty("d", component(suffix))
             packet.setProperty("i", 2)
-            if (p == null) {
+            if (target == null) {
                 onlinePlayers.forEach { pp -> pp.sendPacket(packet) }
-            }else p.sendPacket(packet)
+            } else target.sendPacket(packet)
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
         packet.setProperty("a", player.displayName)
         packet.setProperty("c", prefix)
         packet.setProperty("d", suffix)
-        if (p == null) {
+        if (target == null) {
             onlinePlayers.forEach { pp -> pp.sendPacket(packet) }
-        }else p.sendPacket(packet)
+        } else target.sendPacket(packet)
     }
 
     private fun validateLineCount(line: Int) {
@@ -274,7 +277,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             if (MinecraftVersion.major >= 11) { // 1.19 "unexpected null component"
                 b.setProperty("playerSuffix", IChatBaseComponent.empty())
             }
-            handle1DuplicatedPacket(b, packet, player,EnumChatFormat.RESET)
+            handle1DuplicatedPacket(b, packet, player, EnumChatFormat.RESET)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -359,7 +362,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
-    private fun handle1DuplicatedPacket(b: Any, packet: Any, player: Player, color:EnumChatFormat) {
+    private fun handle1DuplicatedPacket(b: Any, packet: Any, player: Player, color: EnumChatFormat) {
         b.setProperty("nametagVisibility", "always")
         b.setProperty("collisionRule", "always")
         b.setProperty("color", color)
@@ -368,7 +371,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
         player.sendPacket(packet)
     }
 
-    private fun handle1DuplicatedPacketAll(b: Any, packet: Any, color:EnumChatFormat) {
+    private fun handle1DuplicatedPacketAll(b: Any, packet: Any, color: EnumChatFormat) {
         b.setProperty("nametagVisibility", "always")
         b.setProperty("collisionRule", "always")
         b.setProperty("color", color)

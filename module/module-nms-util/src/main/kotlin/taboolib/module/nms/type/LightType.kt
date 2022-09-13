@@ -1,4 +1,4 @@
-package taboolib.module.nms.type;
+package taboolib.module.nms.type
 
 /**
  * TabooLib
@@ -7,7 +7,7 @@ package taboolib.module.nms.type;
  * @author sky
  * @since 2021/6/19 5:07 下午
  */
-public enum LightType {
+enum class LightType {
 
     SKY, BLOCK, ALL
 }

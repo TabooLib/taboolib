@@ -26,6 +26,12 @@ object ChannelExecutor {
     private val addChannelService = Executors.newSingleThreadExecutor()
     private val removeChannelService = Executors.newSingleThreadExecutor()
 
+    private var isDisabled = false
+
+    fun disable() {
+        isDisabled = true
+    }
+
     fun getPlayerChannel(player: Player): Channel {
         val playerConnection = if (MinecraftVersion.isUniversal) {
             player.getProperty<Any>("entity/connection")!!
@@ -45,6 +51,9 @@ object ChannelExecutor {
     }
 
     fun addPlayerChannel(player: Player) {
+        if (isDisabled) {
+            return
+        }
         if (!MinecraftVersion.isSupported) {
             warning("Unsupported Minecraft version, packet handler will not be added.")
             return
@@ -59,6 +68,9 @@ object ChannelExecutor {
     }
 
     fun removePlayerChannel(player: Player) {
+        if (isDisabled) {
+            return
+        }
         if (!MinecraftVersion.isSupported) {
             warning("Unsupported Minecraft version, packet handler will not be added.")
             return
