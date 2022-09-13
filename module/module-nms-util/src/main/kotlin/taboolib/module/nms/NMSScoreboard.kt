@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import net.minecraft.server.v1_16_R3.EnumChatFormat
 import org.bukkit.entity.Player
 
 abstract class NMSScoreboard {
@@ -47,5 +48,5 @@ abstract class NMSScoreboard {
 
     abstract fun display(player: Player)
 
-    abstract fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean, all: Boolean)
+    abstract fun updateTeam(player: Player, prefix: String, suffix: String, color: EnumChatFormat, created: Boolean, p: Player?)
 }

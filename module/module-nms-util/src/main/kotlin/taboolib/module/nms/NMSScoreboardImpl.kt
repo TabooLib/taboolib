@@ -132,7 +132,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     b.setProperty("playerPrefix", IChatBaseComponent.empty())
                     b.setProperty("playerSuffix", IChatBaseComponent.empty())
                 }
-                handle1DuplicatedPacket(b, packet, player)
+                handle1DuplicatedPacket(b, packet, player,EnumChatFormat.RESET)
                 return@forEach
             }
             if (MinecraftVersion.major >= 5) {
@@ -175,7 +175,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("players", listOf(player.name))
             val b = universalTeamData.unsafeInstance()
             b.setProperty("displayName", component(player.displayName))
-            handle1DuplicatedPacketAll(b, packet)
+            handle1DuplicatedPacketAll(b, packet,EnumChatFormat.RESET)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -211,11 +211,12 @@ class NMSScoreboardImpl : NMSScoreboard() {
     /**
      *
      * player -> 需要设置前缀或后缀的玩家
+     * p -> 向该玩家发包,如果为Null则为全体发包
      *
      * @see EnumChatFormat
      * @see PacketPlayOutScoreboardTeam
      */
-    override fun updateTeam(player: Player, prefix: String, suffix: String, created: Boolean, all:Boolean) {
+    override fun updateTeam(player: Player, prefix: String, suffix: String, color: EnumChatFormat, created: Boolean, p: Player?) {
         if (created) {
             createTeam(player)
         }
@@ -227,9 +228,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
             b.setProperty("displayName", component(player.displayName))
             b.setProperty("playerPrefix", component(prefix))
             b.setProperty("playerSuffix", component(suffix))
-            if (all) {
-                handle1DuplicatedPacketAll(b, packet)
-            }else handle1DuplicatedPacket(b,packet,player)
+            if (p == null) {
+                handle1DuplicatedPacketAll(b, packet,color)
+            }else handle1DuplicatedPacket(b,packet,p,color)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -238,18 +239,18 @@ class NMSScoreboardImpl : NMSScoreboard() {
             packet.setProperty("c", component(prefix))
             packet.setProperty("d", component(suffix))
             packet.setProperty("i", 2)
-            if (all) {
-                onlinePlayers.forEach { p -> p.sendPacket(packet) }
-            }else player.sendPacket(packet)
+            if (p == null) {
+                onlinePlayers.forEach { pp -> pp.sendPacket(packet) }
+            }else p.sendPacket(packet)
             return
         }
         val packet = PacketPlayOutScoreboardTeam()
         packet.setProperty("a", player.displayName)
         packet.setProperty("c", prefix)
         packet.setProperty("d", suffix)
-        if (all) {
-            onlinePlayers.forEach { p -> p.sendPacket(packet) }
-        }else player.sendPacket(packet)
+        if (p == null) {
+            onlinePlayers.forEach { pp -> pp.sendPacket(packet) }
+        }else p.sendPacket(packet)
     }
 
     private fun validateLineCount(line: Int) {
@@ -273,7 +274,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             if (MinecraftVersion.major >= 11) { // 1.19 "unexpected null component"
                 b.setProperty("playerSuffix", IChatBaseComponent.empty())
             }
-            handle1DuplicatedPacket(b, packet, player)
+            handle1DuplicatedPacket(b, packet, player,EnumChatFormat.RESET)
             return
         }
         if (MinecraftVersion.major >= 5) {
@@ -358,19 +359,19 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
-    private fun handle1DuplicatedPacket(b: Any, packet: Any, player: Player) {
+    private fun handle1DuplicatedPacket(b: Any, packet: Any, player: Player, color:EnumChatFormat) {
         b.setProperty("nametagVisibility", "always")
         b.setProperty("collisionRule", "always")
-        b.setProperty("color", EnumChatFormat.RESET)
+        b.setProperty("color", color)
         b.setProperty("options", 3)
         packet.setProperty("parameters", Optional.of(b))
         player.sendPacket(packet)
     }
 
-    private fun handle1DuplicatedPacketAll(b: Any, packet: Any) {
+    private fun handle1DuplicatedPacketAll(b: Any, packet: Any, color:EnumChatFormat) {
         b.setProperty("nametagVisibility", "always")
         b.setProperty("collisionRule", "always")
-        b.setProperty("color", EnumChatFormat.RESET)
+        b.setProperty("color", color)
         b.setProperty("options", 3)
         packet.setProperty("parameters", Optional.of(b))
         for (p in BukkitPlugin.getInstance().server.onlinePlayers) {

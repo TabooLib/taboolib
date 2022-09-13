@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import com.google.gson.JsonObject
+import net.minecraft.server.v1_16_R3.EnumChatFormat
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -212,30 +213,51 @@ fun Player.sendScoreboard(vararg content: String) {
         sendContent(content.filterIndexed { index, _ -> index > 0 })
     }
 }
-
-fun Player.setPrefix(prefix: String, all: Boolean) {
+/**
+ * 发送记分板数据包
+ * @param prefix 前缀,传入""时为清除前缀
+ * @param player 发包给的玩家,传入Null时为给全体发送
+ */
+fun Player.setPrefix(prefix: String, player: Player?) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
     if (prefix == "") {
-        scoreboardObj.clearPrefix(all)
+        scoreboardObj.clearPrefix(player)
         return
     }
     scoreboardObj.run {
-        setPrefix(prefix, all)
+        setPrefix(prefix, player)
     }
 }
-
-fun Player.setSuffix(suffix: String, all: Boolean) {
+/**
+ * 修改后缀
+ * @param suffix 后缀,传入""时为清除后缀
+ *  * @param player 发包给的玩家,传入Null时为给全体发送
+ */
+fun Player.setSuffix(suffix: String, player: Player?) {
     val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
         return@getOrPut PacketScoreboard(this)
     }
     if (suffix == "") {
-        scoreboardObj.clearSuffix(all)
+        scoreboardObj.clearSuffix(player)
         return
     }
     scoreboardObj.run {
-        setSuffix(suffix, all)
+        setSuffix(suffix, player)
+    }
+}
+/**
+ * 修改颜色
+ * @param color 颜色
+ *  * @param player 发包给的玩家,传入Null时为给全体发送
+ */
+fun Player.setTeamColor(color:EnumChatFormat, player: Player?) {
+    val scoreboardObj = scoreboardMap.getOrPut(uniqueId) {
+        return@getOrPut PacketScoreboard(this)
+    }
+    scoreboardObj.run {
+        setColor(player,color)
     }
 }
 
@@ -382,6 +404,7 @@ private class PacketScoreboard(val player: Player) {
     private val currentContent = HashMap<Int, String>()
     private var prefix = ""
     private var suffix = ""
+    private var color = EnumChatFormat.RESET
     var deleted = false
     var created = false
 
@@ -408,27 +431,32 @@ private class PacketScoreboard(val player: Player) {
         currentContent.putAll(lines.mapIndexed { index, s -> index to s }.toMap())
     }
 
-    fun setPrefix(prefix: String, all: Boolean) {
+    fun setPrefix(prefix: String, p: Player?) {
         this.prefix = prefix
-        nmsScoreboard.updateTeam(player, prefix, suffix, !created, all)
+        nmsScoreboard.updateTeam(player, prefix, suffix, color, !created, p)
         created = true
     }
 
-    fun clearPrefix(all: Boolean) {
+    fun clearPrefix(p: Player?) {
         this.prefix = ""
-        nmsScoreboard.updateTeam(player, "", suffix, !created, all)
+        nmsScoreboard.updateTeam(player, "", suffix, color, !created, p)
         created = true
     }
 
-    fun setSuffix(suffix: String, all: Boolean) {
+    fun setSuffix(suffix: String, p: Player?) {
         this.suffix = suffix
-        nmsScoreboard.updateTeam(player, prefix, suffix, !created, all)
+        nmsScoreboard.updateTeam(player, prefix, suffix, color, !created, p)
         created = true
     }
 
-    fun clearSuffix(all: Boolean) {
+    fun clearSuffix(p: Player?) {
         this.suffix = ""
-        nmsScoreboard.updateTeam(player, prefix, "", !created, all)
+        nmsScoreboard.updateTeam(player, prefix, "", color, !created, p)
+        created = true
+    }
+    fun setColor(p: Player?, color:EnumChatFormat) {
+        this.color = color
+        nmsScoreboard.updateTeam(player, prefix, suffix, color, !created, p)
         created = true
     }
 }
