@@ -110,10 +110,10 @@ public class TabooLibCommon {
         }
         // 记录运行环境
         if (platform != null) {
-            TabooLibCommon.runningPlatform = platform;
+            runningPlatform = platform;
         }
         // 记录生命周期
-        TabooLibCommon.currentLifeCycle = lifeCycle;
+        currentLifeCycle = lifeCycle;
         // 运行推迟任务
         postponeExecutor.forEach((cycle, list) -> {
             if (cycle == lifeCycle) {
@@ -148,10 +148,11 @@ public class TabooLibCommon {
                 }
                 // Kotlin 环境已就绪
                 if (TabooLibCommon.isKotlinEnvironment()) {
-                    TabooLibCommon.isKotlinLoaded = true;
+                    isKotlinLoaded = true;
                     PlatformFactory.INSTANCE.init();
                     VisitorHandler.injectAll(LifeCycle.CONST);
                 }
+                break;
             }
             case INIT: {
                 if (isKotlinLoaded) {
