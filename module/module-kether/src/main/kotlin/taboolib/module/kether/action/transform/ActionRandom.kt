@@ -19,7 +19,7 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
     override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
         val future = CompletableFuture<Any?>()
         if (action == null) {
-            return frame.run(from).str { from ->
+            frame.run(from).str { from ->
                 frame.run(to).str { to ->
                     if (from.isInt() && to.isInt()) {
                         future.complete(random(Coerce.toInteger(from), Coerce.toInteger(to)))
