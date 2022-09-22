@@ -13,6 +13,8 @@ import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 open class Basic(title: String = "chest") : Menu(title) {
 
@@ -26,7 +28,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     internal var holderCallback: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
     /** 点击回调 **/
-    internal val clickCallback = arrayListOf<(event: ClickEvent) -> Unit>()
+    internal val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
 
     /** 关闭回调 **/
     internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
@@ -38,10 +40,10 @@ open class Basic(title: String = "chest") : Menu(title) {
     internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
     /** 物品与对应抽象字符关系 **/
-    var items = hashMapOf<Char, ItemStack>()
+    var items = ConcurrentHashMap<Char, ItemStack>()
 
     /** 抽象字符布局 **/
-    var slots = arrayListOf<List<Char>>()
+    var slots = CopyOnWriteArrayList<List<Char>>()
 
     /**
      * 行数
