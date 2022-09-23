@@ -80,7 +80,7 @@ class EventBus : ClassVisitor(0) {
     }
 
     private fun registerBungee(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
-        val annoLevel = event.property("level", -1)
+        val annoLevel = event.property("level", 0)
         val level = if (annoLevel != 0) annoLevel else event.enum<EventPriority>("priority", EventPriority.NORMAL).level
         val ignoreCancelled = event.property("ignoreCancelled", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {

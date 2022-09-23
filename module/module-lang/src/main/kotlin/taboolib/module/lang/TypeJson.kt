@@ -23,6 +23,7 @@ class TypeJson : Type {
         try {
             jsonArgs.addAll((source["args"] as List<*>).map { (it as Map<*, *>).map { (k, v) -> k.toString() to v!! }.toMap() })
         } catch (_: ClassCastException) {
+        } catch (_: NullPointerException) {
         }
     }
 

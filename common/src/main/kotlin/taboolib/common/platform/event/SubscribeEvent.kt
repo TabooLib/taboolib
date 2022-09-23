@@ -6,7 +6,7 @@ annotation class SubscribeEvent(
     val priority: EventPriority = EventPriority.NORMAL,
     val ignoreCancelled: Boolean = false,
     // only bungeecord platform
-    val level: Int = -1,
+    val level: Int = 0,
     // only velocity
     val postOrder: PostOrder = PostOrder.NORMAL,
     // only sponge platform

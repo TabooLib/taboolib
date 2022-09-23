@@ -52,8 +52,8 @@ class BungeeListener : PlatformListener {
         byListenerAndPriority.computeIfAbsent(eventClass) { HashMap() }.run {
             computeIfAbsent(level.toByte()) { HashMap() }.run {
                 put(listener, arrayOf(BungeeListener.method))
-                forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } }
             }
+            toSortedMap().forEach { (_, map) -> map.forEach { (listener, methods) -> methods.forEach { array += EventHandlerMethod(listener, it) } } }
         }
         byEventBaked[eventClass] = array
         return listener
