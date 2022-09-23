@@ -8,6 +8,7 @@ import taboolib.common.Isolated
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
 import taboolib.platform.util.isNotAir
+import java.util.concurrent.CopyOnWriteArrayList
 
 @Isolated
 open class Linked<T>(title: String) : Basic(title) {
@@ -20,10 +21,10 @@ open class Linked<T>(title: String) : Basic(title) {
     internal var menuLocked = true
 
     /** 页面可用位置 **/
-    internal val menuSlots = arrayListOf<Int>()
+    internal val menuSlots = CopyOnWriteArrayList<Int>()
 
     /** 页面可用元素回调 **/
-    internal var elementsCallback: (() -> List<T>) = { emptyList() }
+    internal var elementsCallback: (() -> List<T>) = { CopyOnWriteArrayList() }
 
     /** 页面可用元素缓存 **/
     internal var elementsCache = emptyList<T>()
