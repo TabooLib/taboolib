@@ -30,6 +30,9 @@ open class Basic(title: String = "chest") : Menu(title) {
     /** 点击回调 **/
     internal val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
 
+    /** 点击回调 **/
+    internal var selfClickCallback: (event: ClickEvent) -> Unit = {}
+
     /** 关闭回调 **/
     internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
 
@@ -38,6 +41,12 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     /** 异步构建回调 **/
     internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
+    /** 构建回调 **/
+    internal var selfBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
+    /** 异步构建回调 **/
+    internal var selfAsyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
     /** 物品与对应抽象字符关系 **/
     var items = ConcurrentHashMap<Char, ItemStack>()
@@ -85,6 +94,14 @@ open class Basic(title: String = "chest") : Menu(title) {
                 callback(player, inventory)
                 before(player, inventory)
             }
+        }
+    }
+
+    protected open fun selfBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
+        if (async) {
+            selfBuildCallback = callback
+        } else {
+            selfAsyncBuildCallback = callback
         }
     }
 
@@ -144,6 +161,10 @@ open class Basic(title: String = "chest") : Menu(title) {
         } else {
             clickCallback += callback
         }
+    }
+
+    protected open fun selfClick(lock: Boolean = false, callback: (event: ClickEvent) -> Unit = {}) {
+        selfClickCallback = callback
     }
 
     /**
@@ -255,11 +276,15 @@ open class Basic(title: String = "chest") : Menu(title) {
         return list
     }
 
+    protected open fun createTitle(): String {
+        return title
+    }
+
     /**
      * 构建页面
      */
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, title)
+        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
         var row = 0
         while (row < slots.size) {
             val line = slots[row]

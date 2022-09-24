@@ -36,9 +36,15 @@ internal object ClickListener {
     fun onOpen(e: InventoryOpenEvent) {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
         // 构建回调
-        submit { builder.buildCallback(e.player as Player, e.inventory) }
+        submit {
+            builder.buildCallback(e.player as Player, e.inventory)
+            builder.selfBuildCallback(e.player as Player, e.inventory)
+        }
         // 异步构建回调
-        submitAsync { builder.asyncBuildCallback(e.player as Player, e.inventory) }
+        submitAsync {
+            builder.asyncBuildCallback(e.player as Player, e.inventory)
+            builder.selfAsyncBuildCallback(e.player as Player, e.inventory)
+        }
     }
 
     @SubscribeEvent
@@ -51,7 +57,8 @@ internal object ClickListener {
         // 处理事件
         try {
             val event = ClickEvent(e, ClickType.CLICK, builder.getSlot(e.rawSlot), builder)
-            builder.clickCallback.forEach { it.invoke(event) }
+            builder.clickCallback.forEach { it(event) }
+            builder.selfClickCallback(event)
         } catch (t: Throwable) {
             t.printStackTrace()
         }
@@ -88,6 +95,7 @@ internal object ClickListener {
         val builder = MenuHolder.fromInventory(e.inventory) ?: return
         val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', builder)
         builder.clickCallback.forEach { it.invoke(clickEvent) }
+        builder.selfClickCallback(clickEvent)
     }
 
     @SubscribeEvent
