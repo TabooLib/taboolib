@@ -119,6 +119,7 @@ abstract class NMSScoreboard {
         "§黬",
         "§黭",
     )
+    val key = UUID.randomUUID().toString().substring(0..7)
 
     protected val universalTeamData: Class<*> by lazy {
         Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam\$b")
@@ -132,5 +133,12 @@ abstract class NMSScoreboard {
 
     abstract fun display(player: Player)
 
-    abstract fun updateTeam(player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?)
+    abstract fun updateTeam(
+        player: Player,
+        prefix: String,
+        suffix: String,
+        color: ChatColorFormat,
+        created: Boolean,
+        target: Player?
+    )
 }

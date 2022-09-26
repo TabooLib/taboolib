@@ -2,6 +2,7 @@ package taboolib.module.nms
 
 import net.minecraft.network.chat.IChatBaseComponent
 import net.minecraft.server.v1_16_R3.*
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
@@ -9,14 +10,12 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.module.nms.type.ChatColorFormat
 import taboolib.platform.BukkitPlugin
+import taboolib.platform.util.hasMeta
 import taboolib.platform.util.onlinePlayers
+import taboolib.platform.util.setMeta
 import java.util.*
 
 class NMSScoreboardImpl : NMSScoreboard() {
-    companion object {
-        val uid = UUID.randomUUID()
-        val key = uid.toString().substring(0..7)
-    }
 
     fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
@@ -125,6 +124,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @see PacketPlayOutScoreboardTeam
      */
     private fun initTeam(player: Player) {
+        if (Bukkit.getWorlds()[0].hasMeta("t_scoreboard_init")) {
+            return
+        }
         uniqueColors.forEach { color ->
             if (MinecraftVersion.isUniversal) {
                 val packet = PacketPlayOutScoreboardTeam::class.java.unsafeInstance()
@@ -170,6 +172,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
             player.sendPacket(packet)
         }
+        Bukkit.getWorlds()[0].setMeta("t_scoreboard_init", true)
     }
 
     private fun createTeam(player: Player) {
@@ -221,7 +224,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @see EnumChatFormat
      * @see PacketPlayOutScoreboardTeam
      */
-    override fun updateTeam(player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?) {
+    override fun updateTeam(
+        player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?
+    ) {
         if (created) {
             createTeam(player)
         }
@@ -336,7 +341,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("a", uniqueColors[i])
                 packet.setProperty("b", key)
                 packet.setProperty("c", i)
-                packet.setProperty("d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE)
+                packet.setProperty(
+                    "d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE
+                )
                 player.sendPacket(packet)
             }
         } else {
@@ -360,7 +367,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 val packet = PacketPlayOutScoreboardScore()
                 packet.setProperty("a", uniqueColors[i])
                 packet.setProperty("b", key)
-                packet.setProperty("d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.REMOVE)
+                packet.setProperty(
+                    "d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.REMOVE
+                )
                 player.sendPacket(packet)
             }
         }
