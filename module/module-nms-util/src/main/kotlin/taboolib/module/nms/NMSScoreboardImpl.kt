@@ -13,6 +13,10 @@ import taboolib.platform.util.onlinePlayers
 import java.util.*
 
 class NMSScoreboardImpl : NMSScoreboard() {
+    companion object {
+        val uid = UUID.randomUUID()
+        val key = uid.toString().substring(0..7)
+    }
 
     fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
@@ -25,7 +29,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("objectiveName", "TabooScore")
+            packet.setProperty("objectiveName", key)
             packet.setProperty("displayName", component(title))
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 0)
@@ -43,12 +47,12 @@ class NMSScoreboardImpl : NMSScoreboard() {
         if (content.isEmpty()) {
             val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
             if (MinecraftVersion.isUniversal) {
-                packet.setProperty("objectiveName", "TabooScore")
+                packet.setProperty("objectiveName", key)
                 packet.setProperty("displayName", component("ScoreBoard"))
                 packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
                 packet.setProperty("method", 1)
             } else {
-                packet.setProperty("a", "TabooScore")
+                packet.setProperty("a", key)
                 if (MinecraftVersion.major >= 5) {
                     packet.setProperty("b", component("ScoreBoard"))
                 } else {
@@ -76,10 +80,10 @@ class NMSScoreboardImpl : NMSScoreboard() {
         val packet = PacketPlayOutScoreboardDisplayObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
             packet.setProperty("slot", 1)
-            packet.setProperty("objectiveName", "TabooScore")
+            packet.setProperty("objectiveName", key)
         } else {
             packet.setProperty("a", 1)
-            packet.setProperty("b", "TabooScore")
+            packet.setProperty("b", key)
         }
         player.sendPacket(packet)
     }
@@ -87,7 +91,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun setDisplayName(player: Player, title: String) {
         val packet = PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("objectiveName", "TabooScore")
+            packet.setProperty("objectiveName", key)
             packet.setProperty("displayName", component(title))
             packet.setProperty("renderType", IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 2)
@@ -313,7 +317,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 if (MinecraftVersion.major >= 9) {
                     val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                     packet.setProperty("owner", uniqueColors[i])
-                    packet.setProperty("objectiveName", "TabooScore")
+                    packet.setProperty("objectiveName", key)
                     packet.setProperty("score", i)
                     packet.setProperty("method", ScoreboardServer.Action.CHANGE)
                     player.sendPacket(packet)
@@ -322,7 +326,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 if (MinecraftVersion.major >= 5) {
                     val packet = PacketPlayOutScoreboardScore()
                     packet.setProperty("a", uniqueColors[i])
-                    packet.setProperty("b", "TabooScore")
+                    packet.setProperty("b", key)
                     packet.setProperty("c", i)
                     packet.setProperty("d", ScoreboardServer.Action.CHANGE)
                     player.sendPacket(packet)
@@ -330,7 +334,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 }
                 val packet = PacketPlayOutScoreboardScore()
                 packet.setProperty("a", uniqueColors[i])
-                packet.setProperty("b", "TabooScore")
+                packet.setProperty("b", key)
                 packet.setProperty("c", i)
                 packet.setProperty("d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE)
                 player.sendPacket(packet)
@@ -340,7 +344,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 if (MinecraftVersion.major >= 9) {
                     val packet = PacketPlayOutScoreboardScore::class.java.unsafeInstance()
                     packet.setProperty("owner", uniqueColors[i])
-                    packet.setProperty("objectiveName", "TabooScore")
+                    packet.setProperty("objectiveName", key)
                     packet.setProperty("method", ScoreboardServer.Action.REMOVE)
                     player.sendPacket(packet)
                     return@forEach
@@ -348,14 +352,14 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 if (MinecraftVersion.major >= 5) {
                     val packet = PacketPlayOutScoreboardScore()
                     packet.setProperty("a", uniqueColors[i])
-                    packet.setProperty("b", "TabooScore")
+                    packet.setProperty("b", key)
                     packet.setProperty("d", ScoreboardServer.Action.REMOVE)
                     player.sendPacket(packet)
                     return@forEach
                 }
                 val packet = PacketPlayOutScoreboardScore()
                 packet.setProperty("a", uniqueColors[i])
-                packet.setProperty("b", "TabooScore")
+                packet.setProperty("b", key)
                 packet.setProperty("d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.REMOVE)
                 player.sendPacket(packet)
             }
@@ -383,7 +387,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
     }
 
     private fun handle2DuplicatedPacket(packet: Any, title: String) {
-        packet.setProperty("a", "TabooScore")
+        packet.setProperty("a", key)
         if (MinecraftVersion.major >= 5) {
             packet.setProperty("b", component(title))
         } else {
