@@ -4,12 +4,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.common.Isolated
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
 import taboolib.platform.util.isNotAir
+import java.util.concurrent.CopyOnWriteArrayList
 
-@Isolated
 open class Linked<T>(title: String) : Basic(title) {
 
     /** 页数 **/
@@ -20,10 +19,10 @@ open class Linked<T>(title: String) : Basic(title) {
     internal var menuLocked = true
 
     /** 页面可用位置 **/
-    internal val menuSlots = arrayListOf<Int>()
+    internal val menuSlots = CopyOnWriteArrayList<Int>()
 
     /** 页面可用元素回调 **/
-    internal var elementsCallback: (() -> List<T>) = { emptyList() }
+    internal var elementsCallback: (() -> List<T>) = { CopyOnWriteArrayList() }
 
     /** 页面可用元素缓存 **/
     internal var elementsCache = emptyList<T>()
@@ -146,12 +145,14 @@ open class Linked<T>(title: String) : Basic(title) {
         return isNext(page, elementsCache.size, menuSlots.size)
     }
 
+    override fun createTitle(): String {
+        return title.replace("%p", (page + 1).toString())
+    }
+
     /**
      * 构建页面
      */
     override fun build(): Inventory {
-        // 更新标题
-        title = title.replace("%p", (page + 1).toString())
         // 更新元素列表缓存
         elementsCache = elementsCallback()
 
@@ -177,11 +178,11 @@ open class Linked<T>(title: String) : Basic(title) {
         }
 
         // 生成回调
-        onBuild { p, it -> processBuild(p, it, false) }
+        selfBuild { p, it -> processBuild(p, it, false) }
         // 生成异步回调
-        onBuild(async = true) { p, it -> processBuild(p, it, true) }
+        selfBuild(async = true) { p, it -> processBuild(p, it, true) }
         // 生成点击回调
-        onClick(lock = menuLocked) { elementClickCallback(it, elementMap[it.rawSlot] ?: return@onClick) }
+        selfClick(lock = menuLocked) { elementClickCallback(it, elementMap[it.rawSlot] ?: return@selfClick) }
         // 构建页面
         return super.build()
     }

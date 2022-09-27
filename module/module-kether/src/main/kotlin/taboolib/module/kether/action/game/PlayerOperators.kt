@@ -129,7 +129,7 @@ enum class PlayerOperators(
         PlayerOperator.Method.MODIFY
     ),
 
-    ADDRESS({ it.address?.hostName }),
+    ADDRESS({ it.address?.hostString }),
 
     SNEAKING({ it.isSneaking }),
 

@@ -64,10 +64,10 @@ open class Stored(title: String) : Basic(title) {
 
     override fun build(): Inventory {
         // 生成点击回调
-        onClick {
+        selfClick {
             // 如果事件被取消则不再继续处理
             if (it.isCancelled) {
-                return@onClick
+                return@selfClick
             }
             // 处理拖拽事件
             if (it.clickType === ClickType.DRAG) {
@@ -96,7 +96,7 @@ open class Stored(title: String) : Basic(title) {
                     // 阻止无法处理的合并行为
                     if (it.clickEvent().action == InventoryAction.COLLECT_TO_CURSOR) {
                         it.isCancelled = true
-                        return@onClick
+                        return@selfClick
                     }
                     // 获取行为
                     val action = when {

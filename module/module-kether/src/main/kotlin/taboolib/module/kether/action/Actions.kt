@@ -109,10 +109,12 @@ object Actions {
         actionFuture { f ->
             run(condition).bool { b ->
                 if (b) {
-                    run(trueAction).thenAccept { f.complete(it) }
+                    run(trueAction).thenAccept { r -> f.complete(r) }
                 } else if (falseAction != null) {
-                    run(falseAction).thenAccept { f.complete(it) }
-                } else null
+                    run(falseAction).thenAccept { r -> f.complete(r) }
+                } else {
+                    f.complete(null)
+                }
             }
         }
     }

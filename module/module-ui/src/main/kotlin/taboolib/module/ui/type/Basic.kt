@@ -13,6 +13,8 @@ import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 open class Basic(title: String = "chest") : Menu(title) {
 
@@ -26,7 +28,10 @@ open class Basic(title: String = "chest") : Menu(title) {
     internal var holderCallback: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
     /** 点击回调 **/
-    internal val clickCallback = arrayListOf<(event: ClickEvent) -> Unit>()
+    internal val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
+
+    /** 点击回调 **/
+    internal var selfClickCallback: (event: ClickEvent) -> Unit = {}
 
     /** 关闭回调 **/
     internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
@@ -37,11 +42,17 @@ open class Basic(title: String = "chest") : Menu(title) {
     /** 异步构建回调 **/
     internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
+    /** 构建回调 **/
+    internal var selfBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
+    /** 异步构建回调 **/
+    internal var selfAsyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+
     /** 物品与对应抽象字符关系 **/
-    var items = hashMapOf<Char, ItemStack>()
+    var items = ConcurrentHashMap<Char, ItemStack>()
 
     /** 抽象字符布局 **/
-    var slots = arrayListOf<List<Char>>()
+    var slots = CopyOnWriteArrayList<List<Char>>()
 
     /**
      * 行数
@@ -83,6 +94,14 @@ open class Basic(title: String = "chest") : Menu(title) {
                 callback(player, inventory)
                 before(player, inventory)
             }
+        }
+    }
+
+    protected open fun selfBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
+        if (async) {
+            selfBuildCallback = callback
+        } else {
+            selfAsyncBuildCallback = callback
         }
     }
 
@@ -142,6 +161,10 @@ open class Basic(title: String = "chest") : Menu(title) {
         } else {
             clickCallback += callback
         }
+    }
+
+    protected open fun selfClick(lock: Boolean = false, callback: (event: ClickEvent) -> Unit = {}) {
+        selfClickCallback = callback
     }
 
     /**
@@ -253,11 +276,15 @@ open class Basic(title: String = "chest") : Menu(title) {
         return list
     }
 
+    protected open fun createTitle(): String {
+        return title
+    }
+
     /**
      * 构建页面
      */
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, title)
+        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
         var row = 0
         while (row < slots.size) {
             val line = slots[row]

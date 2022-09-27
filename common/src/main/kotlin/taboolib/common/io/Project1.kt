@@ -74,8 +74,11 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         ex.printStackTrace()
         null
     } catch (ex: InternalError) {
-        println(this)
-        ex.printStackTrace()
+        // 非常奇怪的错误
+        if (ex.message != "Malformed class name") {
+            println(this)
+            ex.printStackTrace()
+        }
         null
     }
 }
