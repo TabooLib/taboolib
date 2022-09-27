@@ -1,6 +1,7 @@
 package taboolib.module.nms.type
 
 import org.bukkit.entity.Player
+import taboolib.common.platform.function.info
 import taboolib.module.nms.nmsScoreboard
 
 class PlayerScoreboard(val player: Player) {

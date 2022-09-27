@@ -29,8 +29,8 @@ internal val playerScoreboardMap = ConcurrentHashMap<UUID, PlayerScoreboard>().a
  * @param content 记分板内容（设置为空时注销记分板）
  */
 fun Player.sendScoreboard(vararg content: String) {
-    val scoreboardObj = playerScoreboardMap.getOrPut(uniqueId) {
-        return@getOrPut PlayerScoreboard(this)
+    val scoreboardObj = playerScoreboardMap.computeIfAbsent(uniqueId) {
+        return@computeIfAbsent PlayerScoreboard(this)
     }
     if (content.isEmpty()) {
         scoreboardObj.sendContent(emptyList())
@@ -46,8 +46,8 @@ fun Player.sendScoreboard(vararg content: String) {
  * @param player 发包给的玩家,传入Null时为给全体发送
  */
 fun Player.setPrefix(prefix: String, player: Player?) {
-    val scoreboardObj = playerScoreboardMap.getOrPut(uniqueId) {
-        return@getOrPut PlayerScoreboard(this)
+    val scoreboardObj = playerScoreboardMap.computeIfAbsent(uniqueId) {
+        return@computeIfAbsent PlayerScoreboard(this)
     }
     if (prefix == "") {
         scoreboardObj.clearPrefix(player)
@@ -62,8 +62,8 @@ fun Player.setPrefix(prefix: String, player: Player?) {
  *  * @param player 发包给的玩家,传入Null时为给全体发送
  */
 fun Player.setSuffix(suffix: String, player: Player?) {
-    val scoreboardObj = playerScoreboardMap.getOrPut(uniqueId) {
-        return@getOrPut PlayerScoreboard(this)
+    val scoreboardObj = playerScoreboardMap.computeIfAbsent(uniqueId) {
+        return@computeIfAbsent PlayerScoreboard(this)
     }
     if (suffix == "") {
         scoreboardObj.clearSuffix(player)
@@ -78,8 +78,8 @@ fun Player.setSuffix(suffix: String, player: Player?) {
  * @param target 数据包接收单位, 传入 null 时为给全体发送
  */
 fun Player.setTeamColor(color: ChatColorFormat, target: Player? = null) {
-    val scoreboardObj = playerScoreboardMap.getOrPut(uniqueId) {
-        return@getOrPut PlayerScoreboard(this)
+    val scoreboardObj = playerScoreboardMap.computeIfAbsent(uniqueId) {
+        return@computeIfAbsent PlayerScoreboard(this)
     }
     scoreboardObj.setColor(color, target)
 }
