@@ -9,6 +9,7 @@ import taboolib.common.platform.function.registerBukkitListener
 import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.type.ChatColorFormat
 import taboolib.module.nms.type.PlayerScoreboard
+import taboolib.platform.util.removeMeta
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -21,6 +22,7 @@ internal val playerScoreboardMap = ConcurrentHashMap<UUID, PlayerScoreboard>().a
     }
     registerBukkitListener(PlayerQuitEvent::class.java, priority = EventPriority.NORMAL) { event ->
         it.remove(event.player.uniqueId)
+        event.player.removeMeta("t_scoreboard_init")
     }
 }
 
