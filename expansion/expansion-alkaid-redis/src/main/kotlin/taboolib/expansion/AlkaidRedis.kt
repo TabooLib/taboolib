@@ -22,7 +22,7 @@ import taboolib.common.env.RuntimeDependency
     RuntimeDependency(
         "!redis.clients:jedis:4.2.3",
         test = "!redis.clients.jedis_4_2_3.Jedis",
-        relocate = ["!redis.clients:jedis", "!redis.clients:jedis_4_2_3"],
+        relocate = ["!redis.clients.jedis", "!redis.clients.jedis_4_2_3"],
         transitive = false
     ),
     RuntimeDependency(
