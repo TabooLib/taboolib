@@ -1,14 +1,18 @@
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.io.runningClassMap
+import taboolib.common.platform.event.SubscribeEvent
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 val nmsProxyMap = ConcurrentHashMap<String, Any>()
 
-private val packetPool = Executors.newFixedThreadPool(32)
+private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 
 fun obcClass(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
@@ -45,7 +49,8 @@ inline fun <reified T> nmsProxy(bind: String = "{name}Impl"): T {
  */
 fun Player.sendPacket(packet: Any): CompletableFuture<Unit> {
     val future = CompletableFuture<Unit>()
-    packetPool.submit {
+    val pool = packetPool.computeIfAbsent(name) { Executors.newSingleThreadExecutor() }
+    pool.submit {
         try {
             future.complete(sendPacketBlocking(packet))
         } catch (e: Throwable) {
@@ -61,4 +66,20 @@ fun Player.sendPacket(packet: Any): CompletableFuture<Unit> {
  */
 fun Player.sendPacketBlocking(packet: Any) {
     PacketSender.sendPacket(this, packet)
+}
+
+/**
+ * 监听器
+ */
+private object PoolListener {
+
+    @SubscribeEvent
+    private fun onJoin(e: PlayerJoinEvent) {
+        packetPool.computeIfAbsent(e.player.name) { Executors.newSingleThreadExecutor() }
+    }
+
+    @SubscribeEvent
+    private fun onQuit(e: PlayerQuitEvent) {
+        packetPool.remove(e.player.name)?.shutdownNow()
+    }
 }
