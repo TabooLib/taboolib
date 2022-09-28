@@ -124,7 +124,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * @see PacketPlayOutScoreboardTeam
      */
     private fun initTeam(player: Player) {
-        if (Bukkit.getWorlds()[0].hasMeta("t_scoreboard_init")) {
+        if (player.hasMeta("t_scoreboard_init")) {
             return
         }
         uniqueColors.forEach { color ->
@@ -172,7 +172,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
             player.sendPacket(packet)
         }
-        Bukkit.getWorlds()[0].setMeta("t_scoreboard_init", true)
+        player.setMeta("t_scoreboard_init", true)
     }
 
     private fun createTeam(player: Player) {
