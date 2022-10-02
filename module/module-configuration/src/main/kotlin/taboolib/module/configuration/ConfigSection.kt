@@ -15,11 +15,7 @@ import taboolib.library.configuration.ConfigurationSection
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(
-    var root: Config,
-    override val name: String = "",
-    override val parent: ConfigurationSection? = null,
-) : ConfigurationSection {
+open class ConfigSection(var root: Config, override val name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
 
@@ -244,8 +240,23 @@ open class ConfigSection(
         return (root as? CommentedConfig)?.getComment(path)
     }
 
+    override fun getComments(path: String): List<String> {
+        return getComment(path)?.lines() ?: emptyList()
+    }
+
     override fun setComment(path: String, comment: String?) {
-        (root as? CommentedConfig)?.setComment(path, comment)
+        (root as? CommentedConfig)?.setComment(path, if (comment?.isBlank() == true) null else comment)
+    }
+
+    override fun setComments(path: String, comments: List<String>) {
+        return setComment(path, comments.joinToString("\n"))
+    }
+
+    override fun addComments(path: String, comments: List<String>) {
+        getComments(path).toMutableList().apply {
+            addAll(comments)
+            setComments(path, this)
+        }
     }
 
     override fun getValues(deep: Boolean): Map<String, Any?> {

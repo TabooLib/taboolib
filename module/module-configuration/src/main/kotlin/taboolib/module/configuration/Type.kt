@@ -25,7 +25,7 @@ enum class Type(private val format: () -> ConfigFormat<out Config>) {
 
     HOCON({ HoconFormat.instance() });
 
-    internal fun newFormat(): ConfigFormat<out Config> {
+    fun newFormat(): ConfigFormat<out Config> {
         return format()
     }
 

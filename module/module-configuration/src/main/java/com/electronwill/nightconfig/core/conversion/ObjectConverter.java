@@ -355,7 +355,6 @@ public final class ObjectConverter {
             if (parameter instanceof ParameterizedType) {
                 ParameterizedType genericParameter = (ParameterizedType) parameter;
                 Class<?> paramClass = (Class<?>) genericParameter.getRawType();
-
                 storage.add(paramClass);
                 if (Collection.class.isAssignableFrom(paramClass)) {
                     detectElementTypes(genericParameter, storage);
@@ -406,10 +405,7 @@ public final class ObjectConverter {
      * @param dst             the collection of objects, destination
      * @param dstElementTypes the type of lists and objects in dst
      */
-    private void convertConfigsToObject(Collection<?> src,
-                                        Collection<Object> dst,
-                                        List<Class<?>> dstElementTypes,
-                                        int currentLevel) {
+    private void convertConfigsToObject(Collection<?> src, Collection<Object> dst, List<Class<?>> dstElementTypes, int currentLevel) {
         final Class<?> currentType = dstElementTypes.get(currentLevel);
         for (Object elem : src) {
             if (elem == null) {
@@ -447,10 +443,7 @@ public final class ObjectConverter {
      * @param dst           the collection of configs, destination
      * @param parentConfig  the parent configuration, used to create the new configs to put in dst
      */
-    private void convertObjectsToConfigs(Collection<?> src,
-                                         Class<?> srcBottomType,
-                                         Collection<Object> dst,
-                                         Config parentConfig) {
+    private void convertObjectsToConfigs(Collection<?> src, Class<?> srcBottomType, Collection<Object> dst, Config parentConfig) {
         for (Object elem : src) {
             if (elem == null) {
                 dst.add(null);

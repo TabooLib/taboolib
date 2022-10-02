@@ -23,23 +23,18 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override var file: File? = null
 
-    private val lock = Any()
-    private val hook = ArrayList<Runnable>()
+    private val reloadCallback = ArrayList<Runnable>()
 
     override fun onReload(runnable: Runnable) {
-        hook.add(runnable)
+        reloadCallback.add(runnable)
     }
 
     override fun saveToString(): String {
-        return synchronized(lock) { toString() }
+        return toString()
     }
 
     override fun saveToFile(file: File?) {
         (file ?: this.file)?.writeText(saveToString()) ?: error("No file")
-    }
-
-    override fun set(path: String, value: Any?) {
-        synchronized(lock) { super.set(path, value) }
     }
 
     override fun loadFromFile(file: File) {
@@ -53,7 +48,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             warning("File: $file")
             throw ex
         }
-        hook.forEach { it.run() }
+        reloadCallback.forEach { it.run() }
     }
 
     override fun loadFromString(contents: String) {
@@ -63,17 +58,17 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
             warning("Source: \n$contents")
             throw t
         }
-        hook.forEach { it.run() }
+        reloadCallback.forEach { it.run() }
     }
 
     override fun loadFromReader(reader: Reader) {
         parser().parse(reader, root, ParsingMode.REPLACE)
-        hook.forEach { it.run() }
+        reloadCallback.forEach { it.run() }
     }
 
     override fun loadFromInputStream(inputStream: InputStream) {
         parser().parse(inputStream, root, ParsingMode.REPLACE)
-        hook.forEach { it.run() }
+        reloadCallback.forEach { it.run() }
     }
 
     override fun reload() {

@@ -41,29 +41,29 @@ interface Configuration : ConfigurationSection {
     companion object {
 
         fun empty(type: Type = Type.YAML): ConfigFile {
-            return ConfigFile(type.newFormat().createConfig())
+            return ConfigFile(type.newFormat().createConcurrentConfig())
         }
 
         fun loadFromFile(file: File, type: Type? = null): ConfigFile {
-            val configFile = ConfigFile((type ?: getTypeFromFile(file)).newFormat().createConfig())
+            val configFile = ConfigFile((type ?: getTypeFromFile(file)).newFormat().createConcurrentConfig())
             configFile.loadFromFile(file)
             return configFile
         }
 
         fun loadFromReader(reader: Reader, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConfig())
+            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
             configFile.loadFromReader(reader)
             return configFile
         }
 
         fun loadFromString(contents: String, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConfig())
+            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
             configFile.loadFromString(contents)
             return configFile
         }
 
         fun loadFromInputStream(inputStream: InputStream, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConfig())
+            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
             configFile.loadFromInputStream(inputStream)
             return configFile
         }
@@ -107,7 +107,7 @@ interface Configuration : ConfigurationSection {
         }
 
         fun serialize(obj: Any, type: Type = Type.YAML): ConfigurationSection {
-            val config = type.newFormat().createConfig()
+            val config = type.newFormat().createConcurrentConfig()
             ObjectConverter().toConfig(obj, config)
             return ConfigSection(config)
         }

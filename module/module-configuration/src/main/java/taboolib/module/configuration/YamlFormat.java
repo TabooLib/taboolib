@@ -1,5 +1,6 @@
 package taboolib.module.configuration;
 
+import com.electronwill.nightconfig.core.CommentedConfig;
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.io.ConfigParser;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * @author TheElectronWill, 坏黑
  */
-public final class YamlFormat implements ConfigFormat<Config> {
+public final class YamlFormat implements ConfigFormat<CommentedConfig> {
 
     public static final YamlFormat INSTANCE = new YamlFormat();
 
@@ -35,18 +36,18 @@ public final class YamlFormat implements ConfigFormat<Config> {
     }
 
     @Override
-    public ConfigParser<Config> createParser() {
+    public ConfigParser<CommentedConfig> createParser() {
         return new YamlParser(this);
     }
 
     @Override
-    public Config createConfig(Supplier<Map<String, Object>> mapCreator) {
-        return Config.of(mapCreator, this);
+    public CommentedConfig createConfig(Supplier<Map<String, Object>> mapCreator) {
+        return CommentedConfig.of(mapCreator, this);
     }
 
     @Override
     public boolean supportsComments() {
-        return false;
+        return true;
     }
 
     @Override

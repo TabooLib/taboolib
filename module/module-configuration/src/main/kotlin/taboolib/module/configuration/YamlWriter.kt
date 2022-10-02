@@ -5,8 +5,12 @@ import com.electronwill.nightconfig.core.UnmodifiableConfig
 import com.electronwill.nightconfig.core.io.ConfigWriter
 import com.electronwill.nightconfig.core.io.WritingException
 import org.yaml.snakeyaml.DumperOptions
+import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
+import taboolib.library.configuration.BukkitYaml
+import taboolib.library.configuration.YamlConstructor
 import taboolib.library.configuration.YamlRepresenter
+import java.io.StringWriter
 import java.io.Writer
 
 /**
@@ -15,20 +19,39 @@ import java.io.Writer
 class YamlWriter : ConfigWriter {
 
     private val blackConfig = "{}\n"
-    private val yamlOptions = DumperOptions()
-    private val yamlRepresenter = YamlRepresenter()
-    private val yaml = Yaml(yamlRepresenter, yamlOptions)
+    private val dumperOptions = DumperOptions()
+    private val loaderOptions = LoaderOptions()
+    private val representer = YamlRepresenter()
+    private val constructor = YamlConstructor()
+    private val yaml: Yaml
+    private val yamlCommentLoader: YamlCommentLoader
+
+    init {
+        representer.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
+        dumperOptions.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
+        loaderOptions.maxAliasesForCollections = Integer.MAX_VALUE
+        yaml = BukkitYaml(constructor, representer, dumperOptions, loaderOptions)
+        yamlCommentLoader = YamlCommentLoader(dumperOptions, loaderOptions, constructor, representer, yaml)
+    }
 
     override fun write(config: UnmodifiableConfig, writer: Writer) {
+        if (config !is Config) {
+            throw WritingException("YAML writing failed: config cannot be the primitive type")
+        }
         try {
-            yamlOptions.indent = 2
-            yamlOptions.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-            yamlRepresenter.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
-            var dump = yaml.dump(ConfigSection(config as Config).toMap())
-            if (dump == blackConfig) {
-                dump = ""
+            dumperOptions.indent = 2
+            dumperOptions.isProcessComments = true
+            val node = yamlCommentLoader.toNodeTree(ConfigSection(config))
+            val stringWriter = StringWriter()
+            if (node.value.isEmpty()) {
+                stringWriter.write("")
+            } else {
+                if (node.value.isEmpty()) {
+                    node.flowStyle = DumperOptions.FlowStyle.FLOW
+                }
+                yaml.serialize(node, stringWriter)
             }
-            writer.write(dump)
+            writer.write(stringWriter.toString())
         } catch (e: Exception) {
             throw WritingException("YAML writing failed", e)
         }

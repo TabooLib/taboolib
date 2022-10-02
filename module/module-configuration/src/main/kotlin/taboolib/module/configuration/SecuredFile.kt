@@ -4,7 +4,7 @@ import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 
 @Deprecated("Use Configuration")
-class SecuredFile : ConfigFile(Type.YAML.newFormat().createConfig()) {
+class SecuredFile : ConfigFile(Type.YAML.newFormat().createConcurrentConfig()) {
 
     companion object {
 

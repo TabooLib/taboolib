@@ -516,7 +516,13 @@ interface ConfigurationSection {
 
     fun getComment(path: String): String?
 
+    fun getComments(path: String): List<String>
+
     fun setComment(path: String, comment: String?)
+
+    fun setComments(path: String, comments: List<String>)
+
+    fun addComments(path: String, comments: List<String>)
 
     fun getValues(deep: Boolean): Map<String, Any?>
 
