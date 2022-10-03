@@ -1,3 +1,5 @@
+package time
+
 import java.text.SimpleDateFormat
 
 /**
@@ -70,6 +72,6 @@ object Expiry {
         val h = hh * 60 * 60
         val m = mm * 60
         val var1 = d + h + m + ss
-        return (var1.toString() + "000").toLong()
+        return var1 * 1000
     }
 }
