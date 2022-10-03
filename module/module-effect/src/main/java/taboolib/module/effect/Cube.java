@@ -1,5 +1,6 @@
 package taboolib.module.effect;
 
+import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
@@ -8,12 +9,14 @@ import taboolib.common.util.Vector;
  *
  * @author Zoyn
  */
+@Isolated
 public class Cube extends ParticleObj {
 
     /**
      * 向上的向量
      */
     private static final Vector UP = new Vector(0, 1, 0).normalize();
+
     /**
      * 向 X正半轴 的向量
      */

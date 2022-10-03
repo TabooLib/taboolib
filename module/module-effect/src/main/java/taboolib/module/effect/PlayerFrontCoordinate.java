@@ -36,5 +36,4 @@ public class PlayerFrontCoordinate {
     public Location newLocation(double x, double y, double z) {
         return LocationUtils.rotateLocationAboutPoint(originDot.clone().add(y, z, x), rotateAngle, originDot);
     }
-
 }
