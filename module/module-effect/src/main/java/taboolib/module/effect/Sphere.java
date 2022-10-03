@@ -74,7 +74,7 @@ public class Sphere extends ParticleObj {
 
     public void resetLocations() {
         locations.clear();
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < sample; i++) {
             // y goes from 1 to -1
             double y = 1 - (i / (sample - 1f)) * 2;
             // radius at y
