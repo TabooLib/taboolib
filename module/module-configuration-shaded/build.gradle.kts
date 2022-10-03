@@ -13,6 +13,7 @@ dependencies {
 tasks {
     withType<ShadowJar> {
         archiveClassifier.set("")
+        relocate("org.yaml.snakeyaml.", "org.yaml.snakeyaml_1_32.")
     }
     build {
         dependsOn(shadowJar)

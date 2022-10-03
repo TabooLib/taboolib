@@ -13,7 +13,11 @@ import taboolib.common5.FileWatcher
 import java.util.function.Supplier
 
 @RuntimeDependencies(
-    RuntimeDependency("!org.yaml:snakeyaml:1.32", test = "!org.yaml.snakeyaml.Yaml"),
+    RuntimeDependency(
+        "!org.yaml:snakeyaml:1.32",
+        test = "!org.yaml.snakeyaml_1_32.Yaml",
+        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_1_32"]
+    ),
     RuntimeDependency("!com.typesafe:config:1.4.2", test = "!com.typesafe.config.Config"),
     RuntimeDependency("!com.electronwill.night-config:core:3.6.6", test = "!com.electronwill.nightconfig.core.Config"),
     RuntimeDependency("!com.electronwill.night-config:toml:3.6.6", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
