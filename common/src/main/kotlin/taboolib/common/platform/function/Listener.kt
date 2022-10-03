@@ -3,13 +3,17 @@ package taboolib.common.platform.function
 import taboolib.common.io.groupId
 import taboolib.common.io.taboolibId
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.event.EventOrder
-import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.event.PostOrder
-import taboolib.common.platform.event.ProxyListener
+import taboolib.common.platform.event.*
 import taboolib.common.platform.service.PlatformListener
 import java.io.Closeable
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
+
+private val listenEvents = CopyOnWriteArraySet<Class<*>>()
+
+fun Class<*>.isListened(): Boolean {
+    return listenEvents.contains(this)
+}
 
 fun <T> registerBukkitListener(
     event: Class<T>,
@@ -17,6 +21,7 @@ fun <T> registerBukkitListener(
     ignoreCancelled: Boolean = true,
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
+    listenEvents += event
     val closeableListener = CloseableListener()
     return PlatformFactory.getService<PlatformListener>().registerListener(event, priority, ignoreCancelled) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
@@ -29,6 +34,7 @@ fun <T> registerBungeeListener(
     ignoreCancelled: Boolean = false,
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
+    listenEvents += event
     val closeableListener = CloseableListener()
     return PlatformFactory.getService<PlatformListener>().registerListener(event, level, ignoreCancelled) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
@@ -41,6 +47,7 @@ fun <T> registerSpongeListener(
     beforeModifications: Boolean = false,
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
+    listenEvents += event
     val closeableListener = CloseableListener()
     return PlatformFactory.getService<PlatformListener>().registerListener(event, order, beforeModifications) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it
@@ -52,6 +59,7 @@ fun <T> registerVelocityListener(
     postOrder: PostOrder = PostOrder.NORMAL,
     func: Closeable.(T) -> Unit,
 ): ProxyListener {
+    listenEvents += event
     val closeableListener = CloseableListener()
     return PlatformFactory.getService<PlatformListener>().registerListener(event, postOrder) { func(closeableListener, it) }.also {
         closeableListener.proxyListener = it

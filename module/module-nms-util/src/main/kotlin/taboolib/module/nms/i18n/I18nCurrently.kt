@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
+import taboolib.common.TabooLibCommon
 import taboolib.module.nms.getInternalName
 import java.io.File
 import java.net.URL
@@ -36,7 +37,10 @@ object I18nCurrently : I18nBase() {
         locales.forEach {
             val file = File(folder, "${it[1].substring(0, 2)}/${it[1]}")
             if (file.exists()) {
-                cache[it[0]] = JsonParser().parse(file.readText(StandardCharsets.UTF_8)).asJsonObject
+                val jsonObject = JsonParser().parse(file.readText(StandardCharsets.UTF_8)).asJsonObject
+                if (jsonObject.size() > 0) {
+                    cache[it[0]] = jsonObject
+                }
             }
         }
     }
@@ -45,7 +49,7 @@ object I18nCurrently : I18nBase() {
         executor.submit {
             load()
             if (cache.isEmpty()) {
-                println("Loading language files, please wait...")
+                TabooLibCommon.print("Loading language files, please wait...")
                 try {
                     locales.forEach {
                         val file = File(folder, "${it[1].substring(0, 2)}/${it[1]}")
@@ -64,37 +68,44 @@ object I18nCurrently : I18nBase() {
     }
 
     override fun getName(player: Player?, entity: Entity): String {
-        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
+        if (cache.isEmpty()) {
+            return "[LOADING]"
+        }
+        val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
         val element = locale[entity.getInternalName()]
         return if (element == null) entity.name else element.asString
     }
 
     override fun getName(player: Player?, itemStack: ItemStack): String {
-        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
+        if (cache.isEmpty()) {
+            return "[LOADING]"
+        }
+        val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
         val element = locale[itemStack.getInternalName()]
         return if (element == null) itemStack.type.name.lowercase(Locale.getDefault()).replace("_", "") else element.asString
     }
 
     override fun getName(player: Player?, enchantment: Enchantment): String {
-        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
+        if (cache.isEmpty()) {
+            return "[LOADING]"
+        }
+        val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
         val element = locale[enchantment.getInternalName()]
         return if (element == null) enchantment.name else element.asString
     }
 
     override fun getName(player: Player?, potionEffectType: PotionEffectType): String {
-        val locale = getLocale(player) ?: return "[ERROR LOCALE]"
+        if (cache.isEmpty()) {
+            return "[LOADING]"
+        }
+        val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
         val element = locale[potionEffectType.getInternalName()]
         return if (element == null) potionEffectType.name else element.asString
     }
 
     private fun getLocale(player: Player?): JsonObject? {
-        var locale = cache[player?.locale ?: "zh_cn"]
-        if (locale == null) {
-            locale = cache["en_gb"]
-        }
-        if (locale == null) {
-            return null
-        }
-        return locale
+        // 获取玩家语言
+        // 若玩家语言在支持范围外，则使用中文
+        return cache[player?.locale ?: "zh_cn"] ?: cache["zh_cn"]
     }
 }

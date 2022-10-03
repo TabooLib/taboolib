@@ -26,6 +26,13 @@ fun nmsClass(name: String): Class<*> {
     }
 }
 
+/**
+ * 禁用数据包监听器
+ */
+fun disablePacketListener() {
+    ChannelExecutor.disable()
+}
+
 @Suppress("UNCHECKED_CAST")
 fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl"): T {
     return nmsProxyMap.computeIfAbsent("${clazz.name}:$bind") {

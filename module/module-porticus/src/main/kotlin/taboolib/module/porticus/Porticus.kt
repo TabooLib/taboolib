@@ -35,8 +35,11 @@ object Porticus {
     lateinit var API: API
         private set
 
+    /**
+     * 因需要注册监听器，该方法不能在 onEnable 之前运行
+     */
     @Awake(LifeCycle.ENABLE)
-    private fun onLoad() {
+    private fun onEnable() {
         try {
             Bukkit.getServer()
             API = taboolib.module.porticus.bukkitside.PorticusAPI()
