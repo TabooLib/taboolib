@@ -58,9 +58,14 @@ class YamlParser(val configFormat: ConfigFormat<CommentedConfig>) : ConfigParser
     }
 
     fun loadFromString(contents: String, section: ConfigurationSection) {
+        if (contents.isEmpty()) {
+            return
+        }
         loaderOptions.isProcessComments = true
         var node: MappingNode
-        UnicodeReader(ByteArrayInputStream(contents.toByteArray(StandardCharsets.UTF_8))).use { reader -> node = yaml.compose(reader) as MappingNode }
+        UnicodeReader(ByteArrayInputStream(contents.toByteArray(StandardCharsets.UTF_8))).use { reader ->
+            node = yaml.compose(reader) as? MappingNode ?: return
+        }
         yamlCommentLoader.adjustNodeComments(node)
         yamlCommentLoader.fromNodeTree(node, section)
     }
