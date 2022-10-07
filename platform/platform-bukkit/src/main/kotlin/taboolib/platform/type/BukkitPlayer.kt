@@ -438,4 +438,8 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override fun teleport(loc: Location) {
         player.teleport(Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
     }
+
+    override fun giveExp(exp: Int) {
+        player.giveExp(exp)
+    }
 }

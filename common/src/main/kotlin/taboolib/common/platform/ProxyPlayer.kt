@@ -127,4 +127,6 @@ interface ProxyPlayer : ProxyCommandSender {
     fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?)
 
     fun teleport(loc: Location)
+
+    fun giveExp(exp: Int)
 }

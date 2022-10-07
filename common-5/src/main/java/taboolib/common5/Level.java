@@ -22,20 +22,9 @@ public class Level {
      * @param exp 经验
      */
     public static void setTotalExperience(ProxyPlayer player, int exp) {
-        player.setExp(0);
         player.setLevel(0);
-        int amount = exp;
-        while (amount > 0) {
-            int expToLevel = getExpAtLevel(player);
-            amount -= expToLevel;
-            if (amount >= 0) {
-                player.setExp(player.getExp() + expToLevel);
-            } else {
-                amount += expToLevel;
-                player.setExp(player.getExp() + amount);
-                amount = 0;
-            }
-        }
+        player.setExp(0);
+        player.giveExp(exp);
     }
 
     private static int getExpAtLevel(ProxyPlayer player) {
