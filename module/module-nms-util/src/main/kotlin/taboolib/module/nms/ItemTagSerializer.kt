@@ -58,7 +58,7 @@ object ItemTagSerializer {
                     }
                 } else {
                     when (val i = str.substring(str.length - 1, str.length)) {
-                        "n" -> ItemTagData(NumberConversions.toByte(str.substring(0, str.length - 1)))
+                        "b" -> ItemTagData(NumberConversions.toByte(str.substring(0, str.length - 1)))
                         "s" -> ItemTagData(NumberConversions.toShort(str.substring(0, str.length - 1)))
                         "i" -> ItemTagData(NumberConversions.toInt(str.substring(0, str.length - 1)))
                         "l" -> ItemTagData(NumberConversions.toLong(str.substring(0, str.length - 1)))
