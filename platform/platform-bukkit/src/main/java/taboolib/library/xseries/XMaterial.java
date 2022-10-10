@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * <b>XMaterial</b> - Data Values/Pre-flattening<br>
@@ -74,8 +75,8 @@ public enum XMaterial {
     ACACIA_DOOR("ACACIA_DOOR", "ACACIA_DOOR_ITEM"),
     ACACIA_FENCE,
     ACACIA_FENCE_GATE,
-    ACACIA_LEAVES("LEAVES_2"),
-    ACACIA_LOG("LOG_2"),
+    ACACIA_LEAVES(0, "LEAVES_2"),
+    ACACIA_LOG(0, "LOG_2"),
     ACACIA_PLANKS(4, "WOOD"),
     ACACIA_PRESSURE_PLATE("WOOD_PLATE"),
     ACACIA_SAPLING(4, "SAPLING"),
@@ -84,7 +85,7 @@ public enum XMaterial {
     ACACIA_STAIRS,
     ACACIA_TRAPDOOR("TRAP_DOOR"),
     ACACIA_WALL_SIGN("WALL_SIGN"),
-    ACACIA_WOOD("LOG_2"),
+    ACACIA_WOOD(0, "LOG_2"),
     ACTIVATOR_RAIL,
     /**
      * https://minecraft.gamepedia.com/Air
@@ -847,21 +848,21 @@ public enum XMaterial {
     MULE_SPAWN_EGG(32, "MONSTER_EGG"),
     MUSHROOM_STEM("BROWN_MUSHROOM"),
     MUSHROOM_STEW("MUSHROOM_SOUP"),
-    MUSIC_DISC_11("GOLD_RECORD"),
-    MUSIC_DISC_13("GREEN_RECORD"),
+    MUSIC_DISC_11("RECORD_11"),
+    MUSIC_DISC_13("GOLD_RECORD"),
     MUSIC_DISC_5,
     MUSIC_DISC_BLOCKS("RECORD_3"),
-    MUSIC_DISC_CAT("RECORD_4"),
-    MUSIC_DISC_CHIRP("RECORD_5"),
-    MUSIC_DISC_FAR("RECORD_6"),
-    MUSIC_DISC_MALL("RECORD_7"),
-    MUSIC_DISC_MELLOHI("RECORD_8"),
+    MUSIC_DISC_CAT("GREEN_RECORD"),
+    MUSIC_DISC_CHIRP("RECORD_4"),
+    MUSIC_DISC_FAR("RECORD_5"),
+    MUSIC_DISC_MALL("RECORD_6"),
+    MUSIC_DISC_MELLOHI("RECORD_7"),
     MUSIC_DISC_OTHERSIDE,
     MUSIC_DISC_PIGSTEP,
-    MUSIC_DISC_STAL("RECORD_9"),
-    MUSIC_DISC_STRAD("RECORD_10"),
-    MUSIC_DISC_WAIT("RECORD_11"),
-    MUSIC_DISC_WARD("RECORD_12"),
+    MUSIC_DISC_STAL("RECORD_8"),
+    MUSIC_DISC_STRAD("RECORD_9"),
+    MUSIC_DISC_WAIT("RECORD_12"),
+    MUSIC_DISC_WARD("RECORD_10"),
     MUTTON,
     MYCELIUM("MYCEL"),
     NAME_TAG,
@@ -1011,36 +1012,36 @@ public enum XMaterial {
     POTATOES("POTATO"),
     POTION,
     POTTED_ACACIA_SAPLING(4, "FLOWER_POT"),
-    POTTED_ALLIUM(2, "RED_ROSE", "FLOWER_POT"),
+    POTTED_ALLIUM(2, "FLOWER_POT"),
     POTTED_AZALEA_BUSH,
-    POTTED_AZURE_BLUET(3, "RED_ROSE", "FLOWER_POT"),
+    POTTED_AZURE_BLUET(3, "FLOWER_POT"),
     POTTED_BAMBOO,
     POTTED_BIRCH_SAPLING(2, "FLOWER_POT"),
-    POTTED_BLUE_ORCHID(1, "RED_ROSE", "FLOWER_POT"),
+    POTTED_BLUE_ORCHID(1, "FLOWER_POT"),
     POTTED_BROWN_MUSHROOM("FLOWER_POT"),
     POTTED_CACTUS("FLOWER_POT"),
     POTTED_CORNFLOWER,
     POTTED_CRIMSON_FUNGUS,
     POTTED_CRIMSON_ROOTS,
-    POTTED_DANDELION("YELLOW_FLOWER", "FLOWER_POT"),
+    POTTED_DANDELION("FLOWER_POT"),
     POTTED_DARK_OAK_SAPLING(5, "FLOWER_POT"),
     POTTED_DEAD_BUSH("FLOWER_POT"),
-    POTTED_FERN(2, "LONG_GRASS", "FLOWER_POT"),
+    POTTED_FERN(2, "FLOWER_POT"),
     POTTED_FLOWERING_AZALEA_BUSH,
     POTTED_JUNGLE_SAPLING(3, "FLOWER_POT"),
     POTTED_LILY_OF_THE_VALLEY,
     POTTED_MANGROVE_PROPAGULE,
     POTTED_OAK_SAPLING("FLOWER_POT"),
-    POTTED_ORANGE_TULIP(5, "RED_ROSE", "FLOWER_POT"),
-    POTTED_OXEYE_DAISY(8, "RED_ROSE", "FLOWER_POT"),
-    POTTED_PINK_TULIP(7, "RED_ROSE", "FLOWER_POT"),
-    POTTED_POPPY("RED_ROSE", "FLOWER_POT"),
+    POTTED_ORANGE_TULIP(5, "FLOWER_POT"),
+    POTTED_OXEYE_DAISY(8, "FLOWER_POT"),
+    POTTED_PINK_TULIP(7, "FLOWER_POT"),
+    POTTED_POPPY("FLOWER_POT"),
     POTTED_RED_MUSHROOM("FLOWER_POT"),
-    POTTED_RED_TULIP(4, "RED_ROSE", "FLOWER_POT"),
+    POTTED_RED_TULIP(4, "FLOWER_POT"),
     POTTED_SPRUCE_SAPLING(1, "FLOWER_POT"),
     POTTED_WARPED_FUNGUS,
     POTTED_WARPED_ROOTS,
-    POTTED_WHITE_TULIP(6, "RED_ROSE", "FLOWER_POT"),
+    POTTED_WHITE_TULIP(6, "FLOWER_POT"),
     POTTED_WITHER_ROSE,
     POWDER_SNOW,
     POWDER_SNOW_BUCKET,
@@ -1129,6 +1130,10 @@ public enum XMaterial {
     RED_CARPET(14, "CARPET"),
     RED_CONCRETE(14, "CONCRETE"),
     RED_CONCRETE_POWDER(14, "CONCRETE_POWDER"),
+    /**
+     * 1.13 renamed to ROSE_RED
+     * 1.14 renamed to RED_DYE
+     */
     RED_DYE(1, "INK_SACK", "ROSE_RED"),
     RED_GLAZED_TERRACOTTA,
     RED_MUSHROOM,
@@ -1263,22 +1268,22 @@ public enum XMaterial {
     STRAY_SPAWN_EGG(6, "MONSTER_EGG"),
     STRIDER_SPAWN_EGG,
     STRING,
-    STRIPPED_ACACIA_LOG("LOG_2"),
-    STRIPPED_ACACIA_WOOD("LOG_2"),
-    STRIPPED_BIRCH_LOG(2, "LOG"),
-    STRIPPED_BIRCH_WOOD(2, "LOG"),
+    STRIPPED_ACACIA_LOG,
+    STRIPPED_ACACIA_WOOD,
+    STRIPPED_BIRCH_LOG,
+    STRIPPED_BIRCH_WOOD,
     STRIPPED_CRIMSON_HYPHAE,
     STRIPPED_CRIMSON_STEM,
-    STRIPPED_DARK_OAK_LOG("LOG"),
-    STRIPPED_DARK_OAK_WOOD("LOG"),
-    STRIPPED_JUNGLE_LOG(3, "LOG"),
-    STRIPPED_JUNGLE_WOOD(3, "LOG"),
+    STRIPPED_DARK_OAK_LOG,
+    STRIPPED_DARK_OAK_WOOD,
+    STRIPPED_JUNGLE_LOG,
+    STRIPPED_JUNGLE_WOOD,
     STRIPPED_MANGROVE_LOG,
     STRIPPED_MANGROVE_WOOD,
-    STRIPPED_OAK_LOG("LOG"),
-    STRIPPED_OAK_WOOD("LOG"),
-    STRIPPED_SPRUCE_LOG(1, "LOG"),
-    STRIPPED_SPRUCE_WOOD(1, "LOG"),
+    STRIPPED_OAK_LOG,
+    STRIPPED_OAK_WOOD,
+    STRIPPED_SPRUCE_LOG,
+    STRIPPED_SPRUCE_WOOD,
     STRIPPED_WARPED_HYPHAE,
     STRIPPED_WARPED_STEM,
     STRUCTURE_BLOCK,
@@ -1431,6 +1436,10 @@ public enum XMaterial {
     YELLOW_CARPET(4, "CARPET"),
     YELLOW_CONCRETE(4, "CONCRETE"),
     YELLOW_CONCRETE_POWDER(4, "CONCRETE_POWDER"),
+    /**
+     * 1.13 renamed to DANDELION_YELLOW
+     * 1.14 renamed to YELLOW_DYE
+     */
     YELLOW_DYE(11, "INK_SACK", "DANDELION_YELLOW"),
     YELLOW_GLAZED_TERRACOTTA,
     YELLOW_SHULKER_BOX,
@@ -1570,48 +1579,7 @@ public enum XMaterial {
         this.material = mat;
     }
 
-    XMaterial(String... legacy) {
-        this(0, legacy);
-    }
-
-    /**
-     * Checks if the version is 1.13 Aquatic Update or higher.
-     * An invocation of this method yields the cached result from the expression:
-     * <p>
-     * <blockquote>
-     * {@link #supports(int) 13}}
-     * </blockquote>
-     *
-     * @return true if 1.13 or higher.
-     * @see #getVersion()
-     * @see #supports(int)
-     * @since 1.0.0
-     * @deprecated Use {@code XMaterial.supports(13)} instead. This method name can be confusing.
-     */
-    @Deprecated
-    public static boolean isNewVersion() {
-        return Data.ISFLAT;
-    }
-
-    /**
-     * This is just an extra method that can be used for many cases.
-     * It can be used in {@link org.bukkit.event.player.PlayerInteractEvent}
-     * or when accessing {@link org.bukkit.entity.Player#getMainHand()},
-     * or other compatibility related methods.
-     * <p>
-     * An invocation of this method yields exactly the same result as the expression:
-     * <p>
-     * <blockquote>
-     * !{@link #supports(int)} 9
-     * </blockquote>
-     *
-     * @since 2.0.0
-     * @deprecated Use {@code !XMaterial.supports(9)} instead.
-     */
-    @Deprecated
-    public static boolean isOneEight() {
-        return !supports(9);
-    }
+    XMaterial(String... legacy) {this(0, legacy);}
 
     /**
      * Gets the XMaterial with this name similar to {@link #valueOf(String)}
@@ -1672,7 +1640,7 @@ public enum XMaterial {
      */
     @NotNull
     public static Optional<XMaterial> matchXMaterial(@NotNull String name) {
-        Validate.notEmpty(name, "Cannot match a material with null or empty material name");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
         Optional<XMaterial> oldMatch = matchXMaterialWithData(name);
         return oldMatch.isPresent() ? oldMatch : matchDefinedXMaterial(format(name), UNKNOWN_DATA_VALUE);
     }
@@ -1701,7 +1669,7 @@ public enum XMaterial {
             String mat = format(name.substring(0, index));
             try {
                 // We don't use Byte.parseByte because we have our own range check.
-                byte data = (byte) Integer.parseInt(StringUtils.deleteWhitespace(name.substring(index + 1)));
+                byte data = (byte) Integer.parseInt(name.substring(index + 1).replace(" ", ""));
                 return data >= 0 && data < MAX_DATA_VALUE ? matchDefinedXMaterial(mat, data) : matchDefinedXMaterial(mat, UNKNOWN_DATA_VALUE);
             } catch (NumberFormatException ignored) {
                 return matchDefinedXMaterial(mat, UNKNOWN_DATA_VALUE);
@@ -1744,8 +1712,8 @@ public enum XMaterial {
         String material = item.getType().name();
         byte data = (byte) (Data.ISFLAT || item.getType().getMaxDurability() > 0 ? 0 : item.getDurability());
 
-        // They didn't really use the items data value in older versions.
-        if (!Data.ISFLAT && item.hasItemMeta() && material.equals("MONSTER_EGG")) {
+        // Versions 1.9-1.12 didn't really use the items data value.
+        if (supports(9) && !supports(13) && item.hasItemMeta() && material.equals("MONSTER_EGG")) {
             ItemMeta meta = item.getItemMeta();
             if (meta instanceof SpawnEggMeta) {
                 SpawnEggMeta egg = (SpawnEggMeta) meta;
@@ -1761,11 +1729,15 @@ public enum XMaterial {
         }
 
         // Refer to the enum for info.
-        // Currently this is the only material with a non-zero data value
+        // Currently, these are the only materials with a non-zero data value
         // that has been renamed after the flattening update.
-        // If this happens to more materials in the future,
-        // I might have to change then system.
-        if (Data.ISFLAT && !supports(14) && material.equals("CACTUS_GREEN")) return GREEN_DYE;
+        // If this happens to more materials in the future, I might have to change the system.
+        if (supports(13) && !supports(14)) {
+            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/diff/src/main/java/org/bukkit/Material.java?until=67d908a9830c71267ee740f5bddd728ce9c64cc7
+            if (material.equals("CACTUS_GREEN")) return GREEN_DYE;
+            if (material.equals("ROSE_RED")) return RED_DYE;
+            if (material.equals("DANDELION_YELLOW")) return YELLOW_DYE;
+        }
 
         // Check FILLED_MAP enum for more info.
         // if (!Data.ISFLAT && item.hasItemMeta() && item.getItemMeta() instanceof org.bukkit.inventory.meta.MapMeta) return FILLED_MAP;
@@ -1790,7 +1762,7 @@ public enum XMaterial {
      * @since 3.0.0
      */
     @NotNull
-    static Optional<XMaterial> matchDefinedXMaterial(@NotNull String name, byte data) {
+    protected static Optional<XMaterial> matchDefinedXMaterial(@NotNull String name, byte data) {
         // if (!Boolean.valueOf(Boolean.getBoolean(Boolean.TRUE.toString())).equals(Boolean.FALSE.booleanValue())) return null;
         Boolean duplicated = null;
         boolean isAMap = name.equalsIgnoreCase("MAP");
@@ -1865,7 +1837,7 @@ public enum XMaterial {
      * @since 2.0.0
      */
     @NotNull
-    static String format(@NotNull String name) {
+    protected static String format(@NotNull String name) {
         int len = name.length();
         char[] chs = new char[len];
         int count = 0;
@@ -2058,7 +2030,9 @@ public enum XMaterial {
     @Override
     @NotNull
     public String toString() {
-        return WordUtils.capitalize(this.name().replace('_', ' ').toLowerCase(Locale.ENGLISH));
+        return Arrays.stream(name().split("_"))
+                .map(t -> t.charAt(0) + t.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     /**
@@ -2152,6 +2126,21 @@ public enum XMaterial {
      */
     public boolean isSupported() {
         return this.material != null;
+    }
+
+    /**
+     * Checks if this material is supported in the current version and
+     * returns itself if yes.
+     * <p>
+     * In the other case, the alternate material will get returned,
+     * no matter if it is supported or not.
+     *
+     * @param alternateMaterial the material to get if this one is not supported.
+     * @return this material or the {@code alternateMaterial} if not supported.
+     */
+    @Nullable
+    public XMaterial or(@Nullable XMaterial alternateMaterial) {
+        return isSupported() ? this : alternateMaterial;
     }
 
     /**

@@ -11,6 +11,7 @@ import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.nodes.MappingNode
 import org.yaml.snakeyaml.reader.UnicodeReader
+import taboolib.common.platform.function.info
 import taboolib.library.configuration.BukkitYaml
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.YamlConstructor
@@ -44,7 +45,7 @@ class YamlParser(val configFormat: ConfigFormat<CommentedConfig>) : ConfigParser
     }
 
     override fun parse(reader: Reader): CommentedConfig {
-        val config = configFormat.createConcurrentConfig()
+        val config = configFormat.createConfig { LinkedHashMap() }
         parse(reader, config, ParsingMode.MERGE)
         return config
     }

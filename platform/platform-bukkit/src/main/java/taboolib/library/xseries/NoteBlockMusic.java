@@ -131,6 +131,7 @@ public final class NoteBlockMusic {
      * https://minecraft.gamepedia.com/Note_Block#Notes
      *
      * @param ch the character of the note tone.
+     *
      * @return the note tone or null if not found.
      * @since 3.0.0
      */
@@ -162,6 +163,7 @@ public final class NoteBlockMusic {
      * You can still give me the script and I'll put it on the Spigot page.
      *
      * @param player the player to send the notes to.
+     *
      * @return the async task handling the notes.
      * @since 1.0.0
      */
@@ -177,6 +179,7 @@ public final class NoteBlockMusic {
      * @param player   the player to play the music to.
      * @param location the location to play the notes to.
      * @param path     the path of the file to read the music notes from.
+     *
      * @return the async task handling the file operations and music parsers.
      * @see #playMusic(Player, Supplier, String)
      * @since 1.0.0
@@ -238,6 +241,7 @@ public final class NoteBlockMusic {
      * @param player   in order to play the note we need a player instance. Any player.
      * @param location the location to play this note to.
      * @param script   the music script.
+     *
      * @return the async task processing the script.
      * @see #fromFile(Player, Supplier, Path)
      * @since 1.0.0
@@ -326,6 +330,7 @@ public final class NoteBlockMusic {
      * {@link Character#isDigit(char)} won't work perfectly in this case.
      *
      * @param ch the character to check.
+     *
      * @return if and only if this character is an English digit number.
      * @since 1.2.0
      */
@@ -420,8 +425,7 @@ public final class NoteBlockMusic {
 
     @SuppressWarnings("StringBufferField")
     private static final class InstructionBuilder {
-        @NotNull
-        final CharSequence script;
+        @NotNull final CharSequence script;
         final int len;
         final StringBuilder
                 instrumentBuilder = new StringBuilder(10),
@@ -651,8 +655,7 @@ public final class NoteBlockMusic {
      * @since 3.0.0
      */
     public abstract static class Instruction {
-        @Nullable
-        public Sequence parent;
+        @Nullable public Sequence parent;
         public int restatement, restatementFermata, fermata;
 
         public Instruction(int restatement, int restatementFermata, int fermata) {
@@ -664,7 +667,7 @@ public final class NoteBlockMusic {
         public abstract void play(Player player, Supplier<Location> location);
 
         public long getEstimatedLength() {
-            return restatement * restatementFermata;
+            return (long) restatement * restatementFermata;
         }
     }
 
@@ -726,7 +729,7 @@ public final class NoteBlockMusic {
 
         @Override
         public long getEstimatedLength() {
-            long result = restatement * restatementFermata;
+            long result = (long) restatement * restatementFermata;
             for (Instruction instruction : instructions) result += instruction.getEstimatedLength();
             return result;
         }

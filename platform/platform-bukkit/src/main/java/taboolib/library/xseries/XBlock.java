@@ -21,7 +21,6 @@
  */
 package taboolib.library.xseries;
 
-import org.apache.commons.lang3.Validate;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
@@ -57,7 +56,6 @@ import java.util.*;
 @SuppressWarnings({"deprecation", "ConstantConditions"})
 @Isolated
 public final class XBlock {
-
     public static final Set<XMaterial> CROPS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.CARROT, XMaterial.POTATO, XMaterial.NETHER_WART, XMaterial.WHEAT_SEEDS, XMaterial.PUMPKIN_SEEDS,
             XMaterial.MELON_SEEDS, XMaterial.BEETROOT_SEEDS, XMaterial.SUGAR_CANE, XMaterial.BAMBOO_SAPLING, XMaterial.CHORUS_PLANT,
@@ -86,8 +84,7 @@ public final class XBlock {
         ITEM_TO_BLOCK.put(XMaterial.PUMPKIN_PIE, XMaterial.PUMPKIN);
     }
 
-    private XBlock() {
-    }
+    private XBlock() {}
 
     public static boolean isLit(Block block) {
         if (ISFLAT) {
@@ -248,7 +245,7 @@ public final class XBlock {
         if (material.parseMaterial() == null) return false;
 
         block.setType(material.parseMaterial(), applyPhysics);
-        if (XMaterial.supports(13)) return false;
+        if (ISFLAT) return false;
 
         String parsedName = material.parseMaterial().name();
         if (parsedName.endsWith("_ITEM")) {
@@ -328,13 +325,11 @@ public final class XBlock {
                         case REDWOOD:
                         case BIRCH:
                         case JUNGLE:
-                            if (!firstType)
-                                throw new AssertionError("Invalid tree species " + species + " for block type" + legacyMaterial + ", use block type 2 instead");
+                            if (!firstType) throw new AssertionError("Invalid tree species " + species + " for block type" + legacyMaterial + ", use block type 2 instead");
                             break;
                         case ACACIA:
                         case DARK_OAK:
-                            if (firstType)
-                                throw new AssertionError("Invalid tree species " + species + " for block type 2 " + legacyMaterial + ", use block type instead");
+                            if (firstType) throw new AssertionError("Invalid tree species " + species + " for block type 2 " + legacyMaterial + ", use block type instead");
                             break;
                     }
                     state.setRawData((byte) ((state.getRawData() & 0xC) | (species.getData() & 0x3)));
@@ -492,7 +487,7 @@ public final class XBlock {
     }
 
     public static void setCakeSlices(Block block, int amount) {
-        Validate.isTrue(isCake(block.getType()), "Block is not a cake: " + block.getType());
+        if (!isCake(block.getType())) throw new IllegalArgumentException("Block is not a cake: " + block.getType());
         if (ISFLAT) {
             BlockData data = block.getBlockData();
             org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) data;
@@ -518,7 +513,7 @@ public final class XBlock {
     }
 
     public static int addCakeSlices(Block block, int slices) {
-        Validate.isTrue(isCake(block.getType()), "Block is not a cake: " + block.getType());
+        if (!isCake(block.getType())) throw new IllegalArgumentException("Block is not a cake: " + block.getType());
         if (ISFLAT) {
             BlockData data = block.getBlockData();
             org.bukkit.block.data.type.Cake cake = (org.bukkit.block.data.type.Cake) data;

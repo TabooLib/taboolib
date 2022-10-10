@@ -23,7 +23,7 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
         get() = configType
 
     override fun getKeys(deep: Boolean): Set<String> {
-        val keys = HashSet<String>()
+        val keys = LinkedHashSet<String>()
         fun process(map: Map<String, Any?>, parent: String = "") {
             map.forEach { (k, v) ->
                 if (v is Config) {

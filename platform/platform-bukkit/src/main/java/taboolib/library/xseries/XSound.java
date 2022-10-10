@@ -23,23 +23,22 @@ package taboolib.library.xseries;
 
 import com.google.common.base.Enums;
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.platform.BukkitPlugin;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * <b>XSound</b> - Universal Minecraft Sound Support<br>
@@ -61,7 +60,6 @@ import java.util.concurrent.CompletableFuture;
  * @see Sound
  */
 public enum XSound {
-
     AMBIENT_BASALT_DELTAS_ADDITIONS,
     AMBIENT_BASALT_DELTAS_LOOP,
     AMBIENT_BASALT_DELTAS_MOOD,
@@ -1475,7 +1473,7 @@ public enum XSound {
      */
     @NotNull
     public static Optional<XSound> matchXSound(@NotNull String sound) {
-        Validate.notEmpty(sound, "Cannot match XSound of a null or empty sound name");
+        if (sound == null || sound.isEmpty()) throw new IllegalArgumentException("Cannot match XSound of a null or empty sound name");
         return Optional.ofNullable(Data.NAMES.get(format(sound)));
     }
 
@@ -1523,18 +1521,42 @@ public enum XSound {
      * @see #play(Location, String)
      * @since 3.0.0
      */
-    @NotNull
-    public static CompletableFuture<Record> play(@NotNull Location location, @Nullable String sound) {
+    @Nullable
+    public static Record play(@NotNull Location location, @Nullable String sound) {
         Objects.requireNonNull(location, "Cannot play sound to null location");
-        return CompletableFuture.supplyAsync(() -> {
-            Record record = parse(sound);
-            if (record == null) return null;
-            record.atLocation(location).play();
-            return record;
-        }).exceptionally(x -> {
-            x.printStackTrace();
-            return null;
-        });
+        Record record = parse(sound);
+        if (record == null) return null;
+        record.atLocation(location).play();
+        return record;
+    }
+
+    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+        List<String> list = new ArrayList<>(5);
+        boolean match = false, lastMatch = false;
+        int len = str.length();
+        int start = 0;
+
+        for (int i = 0; i < len; i++) {
+            if (str.charAt(i) == separatorChar) {
+                if (match) {
+                    list.add(str.substring(start, i));
+                    match = false;
+                    lastMatch = true;
+                }
+
+                // This is important, it should not be i++
+                start = i + 1;
+                continue;
+            }
+
+            lastMatch = false;
+            match = true;
+        }
+
+        if (match || lastMatch) {
+            list.add(str.substring(start, len));
+        }
+        return list;
     }
 
     /**
@@ -1577,9 +1599,9 @@ public enum XSound {
     @Nullable
     public static Record parse(@Nullable String sound) {
         if (Strings.isNullOrEmpty(sound) || sound.equalsIgnoreCase("none")) return null;
-        String[] split = StringUtils.split(StringUtils.deleteWhitespace(sound), ',');
+        List<String> split = split(sound.replace(" ", ""), ',');
 
-        String name = split[0];
+        String name = split.get(0);
         boolean playAtLocation;
         if (name.charAt(0) == '~') {
             name = name.substring(1);
@@ -1594,14 +1616,14 @@ public enum XSound {
         float pitch = DEFAULT_PITCH;
 
         try {
-            if (split.length > 1) volume = Float.parseFloat(split[1]);
+            if (split.size() > 1) volume = Float.parseFloat(split.get(1));
         } catch (NumberFormatException ex) {
-            throw new NumberFormatException("Invalid number '" + split[1] + "' for sound volume '" + sound + '\'');
+            throw new NumberFormatException("Invalid number '" + split.get(1) + "' for sound volume '" + sound + '\'');
         }
         try {
-            if (split.length > 2) pitch = Float.parseFloat(split[2]);
+            if (split.size() > 2) pitch = Float.parseFloat(split.get(2));
         } catch (NumberFormatException ex) {
-            throw new NumberFormatException("Invalid number '" + split[2] + "' for sound pitch '" + sound + '\'');
+            throw new NumberFormatException("Invalid number '" + split.get(2) + "' for sound pitch '" + sound + '\'');
         }
 
         return new Record(soundType.get(), null, null, volume, pitch, playAtLocation);
@@ -1643,7 +1665,6 @@ public enum XSound {
      * Plays an instrument's notes in an ascending form.
      * This method is not really relevant to this utility class, but a nice feature.
      *
-     * @param plugin      the plugin handling schedulers.
      * @param player      the player to play the note from.
      * @param playTo      the entity to play the note to.
      * @param instrument  the instrument.
@@ -1654,14 +1675,13 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public static BukkitTask playAscendingNote(@NotNull JavaPlugin plugin, @NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
+    public static BukkitTask playAscendingNote(@NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
                                                int ascendLevel, int delay) {
-        Objects.requireNonNull(player, "Cannot play note from null player");
         Objects.requireNonNull(playTo, "Cannot play note to null entity");
 
-        Validate.isTrue(ascendLevel > 0, "Note ascend level cannot be lower than 1");
-        Validate.isTrue(ascendLevel <= 7, "Note ascend level cannot be greater than 7");
-        Validate.isTrue(delay > 0, "Delay ticks must be at least 1");
+        if (ascendLevel <= 0) throw new IllegalArgumentException("Note ascend level cannot be lower than 1");
+        if (ascendLevel > 7) throw new IllegalArgumentException("Note ascend level cannot be greater than 7");
+        if (delay <= 0) throw new IllegalArgumentException("Delay ticks must be at least 1");
 
         return new BukkitRunnable() {
             int repeating = ascendLevel;
@@ -1671,7 +1691,7 @@ public enum XSound {
                 player.playNote(playTo.getLocation(), instrument, Note.natural(1, Note.Tone.values()[ascendLevel - repeating]));
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimerAsynchronously(plugin, 0, delay);
+        }.runTaskTimerAsynchronously(BukkitPlugin.getInstance(), 0, delay);
     }
 
     /**
@@ -1681,7 +1701,9 @@ public enum XSound {
      */
     @Override
     public String toString() {
-        return WordUtils.capitalize(this.name().replace('_', ' ').toLowerCase(Locale.ENGLISH));
+        return Arrays.stream(name().split("_"))
+                .map(t -> t.charAt(0) + t.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     /**
@@ -1714,7 +1736,6 @@ public enum XSound {
     /**
      * Plays a sound repeatedly with the given delay at a moving target's location.
      *
-     * @param plugin the plugin handling schedulers. (You can replace this with a static instance)
      * @param entity the entity to play the sound to. We exactly need an entity to keep the track of location changes.
      * @param volume the volume of the sound.
      * @param pitch  the pitch of the sound.
@@ -1726,12 +1747,11 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public BukkitTask playRepeatedly(@NotNull JavaPlugin plugin, @NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
-        Objects.requireNonNull(plugin, "Cannot play repeating sound from null plugin");
+    public BukkitTask playRepeatedly(@NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
         Objects.requireNonNull(entity, "Cannot play repeating sound at null location");
 
-        Validate.isTrue(repeat > 0, "Cannot repeat playing sound " + repeat + " times");
-        Validate.isTrue(delay > 0, "Delay ticks must be at least 1");
+        if (repeat <= 0) throw new IllegalArgumentException("Cannot repeat playing sound " + repeat + " times");
+        if (delay <= 0) throw new IllegalArgumentException("Delay ticks must be at least 1");
 
         return new BukkitRunnable() {
             int repeating = repeat;
@@ -1741,7 +1761,7 @@ public enum XSound {
                 play(entity.getLocation(), volume, pitch);
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimer(plugin, 0, delay);
+        }.runTaskTimer(BukkitPlugin.getInstance(), 0, delay);
     }
 
     /**
@@ -1844,14 +1864,11 @@ public enum XSound {
      * @since 3.0.0
      */
     public static class Record {
-        @NotNull
-        public final XSound sound;
+        @NotNull public final XSound sound;
         public final float volume, pitch;
         public boolean playAtLocation;
-        @Nullable
-        public Player player;
-        @Nullable
-        public Location location;
+        @Nullable public Player player;
+        @Nullable public Location location;
 
         public Record(@NotNull XSound sound) {
             this(sound, DEFAULT_VOLUME, DEFAULT_PITCH);
@@ -1914,7 +1931,6 @@ public enum XSound {
          *
          * @since 3.0.0
          */
-        @SuppressWarnings("ConstantConditions")
         public void play(@NotNull Location updatedLocation) {
             Objects.requireNonNull(updatedLocation, "Cannot play sound at null location");
             if (playAtLocation || player == null) location.getWorld().playSound(updatedLocation, sound.parseSound(), volume, pitch);
@@ -1931,7 +1947,6 @@ public enum XSound {
          *
          * @since 7.0.2
          */
-        @SuppressWarnings("ConstantConditions")
         public void stopSound() {
             if (playAtLocation) {
                 for (Entity entity : location.getWorld().getNearbyEntities(location, volume, volume, volume)) {

@@ -24,952 +24,764 @@ package taboolib.library.xseries;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import taboolib.common.Isolated;
 
 import java.util.*;
 
 public final class XMaterialUtil<T extends Enum<T>> {
 
-    @NotNull
-    public static final XMaterialUtil<XMaterial> AIR;
+    @NotNull public static final XMaterialUtil<XMaterial> AIR;
 
-    @NotNull
-    public static final XMaterialUtil<XMaterial> INVENTORY_NOT_DISPLAYABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> INVENTORY_NOT_DISPLAYABLE;
 
     /**
      * Tag representing all acacia log and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ACACIA_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> ACACIA_LOGS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ALIVE_CORAL_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> ALIVE_CORAL_BLOCKS;
     /**
      * Tag representing all dead coral non-walled fans
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ALIVE_CORAL_FANS;
+    @NotNull public static final XMaterialUtil<XMaterial> ALIVE_CORAL_FANS;
     /**
      * Tag representing all non-dead coral plants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ALIVE_CORAL_PLANTS;
+    @NotNull public static final XMaterialUtil<XMaterial> ALIVE_CORAL_PLANTS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ALIVE_CORAL_WALL_FANS;
+    @NotNull public static final XMaterialUtil<XMaterial> ALIVE_CORAL_WALL_FANS;
     /**
      * Tag representing all possible blocks available for animals to spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ANIMALS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> ANIMALS_SPAWNABLE_ON;
     /**
      * Tag representing all variants of anvil
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ANVIL;
+    @NotNull public static final XMaterialUtil<XMaterial> ANVIL;
     /**
      * Tag representing all items that can tempt axolotl
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> AXOLOTL_TEMPT_ITEMS;
+    @NotNull public static final XMaterialUtil<XMaterial> AXOLOTL_TEMPT_ITEMS;
     /**
      * Tag representing all possible blocks for axolotls to spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> AXOLOTLS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> AXOLOTLS_SPAWNABLE_ON;
     /**
      * Tag representing all possible blocks for azalea to grow on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> AZALEA_GROWS_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> AZALEA_GROWS_ON;
     /**
      * Tag representing all possible blocks that can be replaced by azalea
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> AZALEA_ROOT_REPLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> AZALEA_ROOT_REPLACEABLE;
     /**
      * Tag representing all possible blocks bamboo may be planted on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BAMBOO_PLANTABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> BAMBOO_PLANTABLE_ON;
     /**
      * Tag representing all banner blocks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BANNERS;
+    @NotNull public static final XMaterialUtil<XMaterial> BANNERS;
     /**
      * Tag representing the nether base materials
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BASE_STONE_NETHER;
+    @NotNull public static final XMaterialUtil<XMaterial> BASE_STONE_NETHER;
     /**
      * Tag representing the overworld base materials
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BASE_STONE_OVERWORLD;
+    @NotNull public static final XMaterialUtil<XMaterial> BASE_STONE_OVERWORLD;
     /**
      * Tag representing all possible blocks that can be used as beacon base
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BEACON_BASE_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> BEACON_BASE_BLOCKS;
     /**
      * Tag representing all possible variants of bed
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BEDS;
+    @NotNull public static final XMaterialUtil<XMaterial> BEDS;
     /**
      * Tag representing all possible blocks/crops that be grown by bees
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BEE_GROWABLES;
+    @NotNull public static final XMaterialUtil<XMaterial> BEE_GROWABLES;
     /**
      * Tag representing all possible blocks big dripleaf may be planted on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BIG_DRIPLEAF_PLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> BIG_DRIPLEAF_PLACEABLE;
     /**
      * Tag representing all birch log and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BIRCH_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> BIRCH_LOGS;
     /**
      * Tag representing all possible variants of buttons
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> BUTTONS;
+    @NotNull public static final XMaterialUtil<XMaterial> BUTTONS;
     /**
      * Tag representing all possible variants of campfires
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CAMPFIRES;
+    @NotNull public static final XMaterialUtil<XMaterial> CAMPFIRES;
     /**
      * Tag representing all possible variants of candle cakes
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CANDLE_CAKES;
+    @NotNull public static final XMaterialUtil<XMaterial> CANDLE_CAKES;
     /**
      * Tag representing all possible variants of candles
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CANDLES;
+    @NotNull public static final XMaterialUtil<XMaterial> CANDLES;
     /**
      * Tag representing all possible variants of carpets
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CARPETS;
+    @NotNull public static final XMaterialUtil<XMaterial> CARPETS;
     /**
      * Tag representing all possible variants of cauldrons
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CAULDRONS;
+    @NotNull public static final XMaterialUtil<XMaterial> CAULDRONS;
     /**
      * Tag representing all possible variants of cave vines
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CAVE_VINES;
+    @NotNull public static final XMaterialUtil<XMaterial> CAVE_VINES;
     /**
      * Tag representing all climbable blocks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CLIMBABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> CLIMBABLE;
     /**
      * Tag representing all preferred items for harvesting clusters{unused as of 1.18}
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CLUSTER_MAX_HARVESTABLES;
+    @NotNull public static final XMaterialUtil<XMaterial> CLUSTER_MAX_HARVESTABLES;
     /**
      * Tag representing all possible variants of coal ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> COAL_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> COAL_ORES;
     /**
      * Tag representing all possible variants of concrete
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CONCRETE;
+    @NotNull public static final XMaterialUtil<XMaterial> CONCRETE;
     /**
      * Tag representing all possible variants of concrete_powder
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CONCRETE_POWDER;
+    @NotNull public static final XMaterialUtil<XMaterial> CONCRETE_POWDER;
     /**
      * Tag representing all possible variants of copper ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> COPPER_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> COPPER_ORES;
     /**
      * Tag representing all corals
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CORALS;
+    @NotNull public static final XMaterialUtil<XMaterial> CORALS;
     /**
      * Tag representing all crimson log and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CRIMSON_STEMS;
+    @NotNull public static final XMaterialUtil<XMaterial> CRIMSON_STEMS;
     /**
      * Tag representing all crops
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CROPS;
+    @NotNull public static final XMaterialUtil<XMaterial> CROPS;
     /**
      * Tag representing all possible blocks that can make crystal sounds
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CRYSTAL_SOUND_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> CRYSTAL_SOUND_BLOCKS;
     /**
      * Tag representing all dark oak log and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DARK_OAK_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> DARK_OAK_LOGS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DEAD_CORAL_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> DEAD_CORAL_BLOCKS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DEAD_CORAL_FANS;
+    @NotNull public static final XMaterialUtil<XMaterial> DEAD_CORAL_FANS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DEAD_CORAL_PLANTS;
+    @NotNull public static final XMaterialUtil<XMaterial> DEAD_CORAL_PLANTS;
     /**
      *
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DEAD_CORAL_WALL_FANS;
+    @NotNull public static final XMaterialUtil<XMaterial> DEAD_CORAL_WALL_FANS;
     /**
      * Tag representing all possible blocks that may be replaced by deepslate ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DEEPSLATE_ORE_REPLACEABLES;
+    @NotNull public static final XMaterialUtil<XMaterial> DEEPSLATE_ORE_REPLACEABLES;
     /**
      * Tag representing all possible variants of diamond ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DIAMOND_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> DIAMOND_ORES;
     /**
      * Tag representing all dirt
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DIRT;
+    @NotNull public static final XMaterialUtil<XMaterial> DIRT;
     /**
      * Tag representing all possible types of doors
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DOORS;
+    @NotNull public static final XMaterialUtil<XMaterial> DOORS;
     /**
      * Tag representing all blocks that can't be destroyed by dragons
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DRAGON_IMMUNE;
+    @NotNull public static final XMaterialUtil<XMaterial> DRAGON_IMMUNE;
     /**
      * Tag representing all possible blocks that can be replaced by dripstone
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DRIPSTONE_REPLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> DRIPSTONE_REPLACEABLE;
     /**
      * Tag representing all variants of emerald ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> EMERALD_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> EMERALD_ORES;
     /**
      * Tag representing all possible blocks that can be picked up by endermen
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ENDERMAN_HOLDABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> ENDERMAN_HOLDABLE;
     /**
      * Tag representing all blocks that cant be replaced by world generation features
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FEATURES_CANNOT_REPLACE;
+    @NotNull public static final XMaterialUtil<XMaterial> FEATURES_CANNOT_REPLACE;
     /**
      * Tag representing all possible variants of fence gates
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FENCE_GATES;
+    @NotNull public static final XMaterialUtil<XMaterial> FENCE_GATES;
     /**
      * Tag representing all possible variants of fences
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FENCES;
+    @NotNull public static final XMaterialUtil<XMaterial> FENCES;
     /**
      * Tag representing all possible variants fire
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FIRE;
+    @NotNull public static final XMaterialUtil<XMaterial> FIRE;
     /**
      * Tag representing all possible variants of flower pots
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FLOWER_POTS;
+    @NotNull public static final XMaterialUtil<XMaterial> FLOWER_POTS;
     /**
      * Tag representing all possible types of flowers
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FLOWERS;
+    @NotNull public static final XMaterialUtil<XMaterial> FLOWERS;
     /**
      * Tag representing all items can be used as food for fox
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FOX_FOOD;
+    @NotNull public static final XMaterialUtil<XMaterial> FOX_FOOD;
     /**
      * Tag representing all possible blocks foxes may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FOXES_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> FOXES_SPAWNABLE_ON;
     /**
      * Tag representing all possible items can be used to avoid freezing
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> FREEZE_IMMUNE_WEARABLES;
+    @NotNull public static final XMaterialUtil<XMaterial> FREEZE_IMMUNE_WEARABLES;
     /**
      * Tag representing all blocks that geodes will not spawn in
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GEODE_INVALID_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> GEODE_INVALID_BLOCKS;
     /**
      * Tag representing all variants of glass
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GLASS;
+    @NotNull public static final XMaterialUtil<XMaterial> GLASS;
     /**
      * Tag representing all possible variants of glazed terracotta
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GLAZED_TERRACOTTA;
+    @NotNull public static final XMaterialUtil<XMaterial> GLAZED_TERRACOTTA;
     /**
      * Tag representing all possible blocks goats may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GOATS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> GOATS_SPAWNABLE_ON;
     /**
      * Tag representing all possible variants of gold ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GOLD_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> GOLD_ORES;
     /**
      * Tag representing all block types that are guarded by piglins
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GUARDED_BY_PIGLINS;
+    @NotNull public static final XMaterialUtil<XMaterial> GUARDED_BY_PIGLINS;
     /**
      * Tag representing all block types that repel hoglins
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> HOGLIN_REPELLENTS;
+    @NotNull public static final XMaterialUtil<XMaterial> HOGLIN_REPELLENTS;
     /**
      * Tag representing all possible variants of ice
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ICE;
+    @NotNull public static final XMaterialUtil<XMaterial> ICE;
     /**
      * Tag representing all items ignored by baby piglins
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> IGNORED_BY_PIGLIN_BABIES;
+    @NotNull public static final XMaterialUtil<XMaterial> IGNORED_BY_PIGLIN_BABIES;
     /**
      * Tag representing all possible block types that do not drip water/lava
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> IMPERMEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> IMPERMEABLE;
     /**
      * Tag representing all block types that can burn for infinitely long in the end
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> INFINIBURN_END;
+    @NotNull public static final XMaterialUtil<XMaterial> INFINIBURN_END;
     /**
      * Tag representing all block types that can burn for infinitely long in the nether
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> INFINIBURN_NETHER;
+    @NotNull public static final XMaterialUtil<XMaterial> INFINIBURN_NETHER;
     /**
      * Tag representing all block types that can burn for infinitely long in the overworld
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> INFINIBURN_OVERWORLD;
+    @NotNull public static final XMaterialUtil<XMaterial> INFINIBURN_OVERWORLD;
     /**
      * Tag representing all block types that play muffled step sounds
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> INSIDE_STEP_SOUND_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> INSIDE_STEP_SOUND_BLOCKS;
     /**
      * Tag representing all possible variants of iron ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> IRON_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> IRON_ORES;
     /**
      * Tag representing all possible variants of arrows
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_ARROWS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_ARROWS;
     /**
      * Tag representing all items that can be used as banners
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_BANNERS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_BANNERS;
     /**
      * Tag representing all items that can be used to fuel beacon
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_BEACON_PAYMENT_ITEMS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_BEACON_PAYMENT_ITEMS;
     /**
      * Tag representing all possible variants of boats
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_BOATS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_BOATS;
     /**
      * Tag representing all possible variants of coal
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_COALS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_COALS;
     /**
      * Tag representing all possible music discs that can be dropped by creeper
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_CREEPER_DROP_MUSIC_DISCS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_CREEPER_DROP_MUSIC_DISCS;
     /**
      * Tag representing all possible types of fish
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_FISHES;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_FISHES;
     /**
      * Tag representing all furnace materials {empty in spigot as of 1.18}
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_FURNACE_MATERIALS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_FURNACE_MATERIALS;
     /**
      * Tag representing all possible book types that can be placed on lecterns
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_LECTERN_BOOKS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_LECTERN_BOOKS;
     /**
      * Tag representing all types of music discs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_MUSIC_DISCS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_MUSIC_DISCS;
     /**
      * Tag representing all items loved by piglins
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_PIGLIN_LOVED;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_PIGLIN_LOVED;
     /**
      * Tag representing all stone tool materials
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ITEMS_STONE_TOOL_MATERIALS;
+    @NotNull public static final XMaterialUtil<XMaterial> ITEMS_STONE_TOOL_MATERIALS;
     /**
      * Tag representing all possible types of wall banners
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WALL_BANNERS;
+    @NotNull public static final XMaterialUtil<XMaterial> WALL_BANNERS;
     /**
      * Tag representing all jungle log and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> JUNGLE_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> JUNGLE_LOGS;
     /**
      * Tag representing all possible variants of lapis ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LAPIS_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> LAPIS_ORES;
     /**
      * Tag representing all blocks that can't be replaced by lava pools
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LAVA_POOL_STONE_CANNOT_REPLACE;
+    @NotNull public static final XMaterialUtil<XMaterial> LAVA_POOL_STONE_CANNOT_REPLACE;
     /**
      * Tag representing all types of leaves
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LEAVES;
+    @NotNull public static final XMaterialUtil<XMaterial> LEAVES;
     /**
      * Tag representing all wood and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> LOGS;
     /**
      * Tag representing all wood and bark variants that can catch fire
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LOGS_THAT_BURN;
+    @NotNull public static final XMaterialUtil<XMaterial> LOGS_THAT_BURN;
     /**
      * Tag representing all possible blocks that can be replaced by lush ground
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LUSH_GROUND_REPLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> LUSH_GROUND_REPLACEABLE;
     /**
      * Tag representing all block types mineable with axe
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MINEABLE_AXE;
+    @NotNull public static final XMaterialUtil<XMaterial> MINEABLE_AXE;
     /**
      * Tag representing all block types mineable with hoe
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MINEABLE_HOE;
+    @NotNull public static final XMaterialUtil<XMaterial> MINEABLE_HOE;
     /**
      * Tag representing all block types mineable with pickaxe
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MINEABLE_PICKAXE;
+    @NotNull public static final XMaterialUtil<XMaterial> MINEABLE_PICKAXE;
     /**
      * Tag representing all block types mineable with shovel
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MINEABLE_SHOVEL;
+    @NotNull public static final XMaterialUtil<XMaterial> MINEABLE_SHOVEL;
     /**
      * Tag representing all possible block types mooshrooms can spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MOOSHROOMS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> MOOSHROOMS_SPAWNABLE_ON;
     /**
      * Tag representing all block types that can be replaced by moss
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MOSS_REPLACEABLE;
-    @NotNull
-    public static final XMaterialUtil<XMaterial> MUSHROOM_GROW_BLOCK;
+    @NotNull public static final XMaterialUtil<XMaterial> MOSS_REPLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> MUSHROOM_GROW_BLOCK;
     /**
      * Tag representing all block types that need minimum of diamond tool to drop items
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NEEDS_DIAMOND_TOOL;
+    @NotNull public static final XMaterialUtil<XMaterial> NEEDS_DIAMOND_TOOL;
     /**
      * Tag representing all block types that need minimum of iron tool to drop items
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NEEDS_IRON_TOOL;
+    @NotNull public static final XMaterialUtil<XMaterial> NEEDS_IRON_TOOL;
     /**
      * Tag representing all block types that need minimum of stone tool to drop items
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NEEDS_STONE_TOOL;
+    @NotNull public static final XMaterialUtil<XMaterial> NEEDS_STONE_TOOL;
     /**
      * Tag representing all non-flammable wood and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NON_FLAMMABLE_WOOD;
+    @NotNull public static final XMaterialUtil<XMaterial> NON_FLAMMABLE_WOOD;
     /**
      * Tag representing all non-wooden stairs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NON_WOODEN_STAIRS;
+    @NotNull public static final XMaterialUtil<XMaterial> NON_WOODEN_STAIRS;
     /**
      * Tag representing all non-wooden slabs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NON_WOODEN_SLABS;
+    @NotNull public static final XMaterialUtil<XMaterial> NON_WOODEN_SLABS;
     /**
      * Tag representing all nylium blocks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NYLIUM;
+    @NotNull public static final XMaterialUtil<XMaterial> NYLIUM;
     /**
      * Tag representing all oak wood and bark variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> OAK_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> OAK_LOGS;
     /**
      * Tag representing all possible blocks that can block vibration signals
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> OCCLUDES_VIBRATION_SIGNALS;
+    @NotNull public static final XMaterialUtil<XMaterial> OCCLUDES_VIBRATION_SIGNALS;
     /**
      * Tag representing all ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> ORES;
     /**
      * Tag representing all possible block types parrots may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PARROTS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> PARROTS_SPAWNABLE_ON;
     /**
      * Tag representing all items that can be used as piglin food
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PIGLIN_FOOD;
+    @NotNull public static final XMaterialUtil<XMaterial> PIGLIN_FOOD;
     /**
      * Tag representing all block types that repel piglins
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PIGLIN_REPELLENTS;
+    @NotNull public static final XMaterialUtil<XMaterial> PIGLIN_REPELLENTS;
     /**
      * Tag representing all types of planks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PLANKS;
+    @NotNull public static final XMaterialUtil<XMaterial> PLANKS;
     /**
      * Tag representing all possible blocks polar bears may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> POLAR_BEARS_SPAWNABLE_ON_IN_FROZEN_OCEAN;
+    @NotNull public static final XMaterialUtil<XMaterial> POLAR_BEARS_SPAWNABLE_ON_IN_FROZEN_OCEAN;
     /**
      * Tag representing all possible block types that be used as portals
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PORTALS;
+    @NotNull public static final XMaterialUtil<XMaterial> PORTALS;
     /**
      * Tag representing all possible variants of pressure plates
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PRESSURE_PLATES;
+    @NotNull public static final XMaterialUtil<XMaterial> PRESSURE_PLATES;
     /**
      * Tag representing all block types that prevent inside mob spawning
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> PREVENT_MOB_SPAWNING_INSIDE;
+    @NotNull public static final XMaterialUtil<XMaterial> PREVENT_MOB_SPAWNING_INSIDE;
     /**
      * Tag representing all possible block types that rabbits may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> RABBITS_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> RABBITS_SPAWNABLE_ON;
     /**
      * Tag representing all possible types of rails
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> RAILS;
+    @NotNull public static final XMaterialUtil<XMaterial> RAILS;
     /**
      * Tag representing all possible variants of redstone ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> REDSTONE_ORES;
+    @NotNull public static final XMaterialUtil<XMaterial> REDSTONE_ORES;
     /**
      * Tag representing all plant blocks that may be replaced
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> REPLACEABLE_PLANTS;
+    @NotNull public static final XMaterialUtil<XMaterial> REPLACEABLE_PLANTS;
     /**
      * Tag representing all possible types of sand
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SAND;
+    @NotNull public static final XMaterialUtil<XMaterial> SAND;
     /**
      * Tag representing all possible types of saplings
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SAPLINGS;
+    @NotNull public static final XMaterialUtil<XMaterial> SAPLINGS;
     /**
      * Tag representing all possible variants of shulker boxes
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SHULKER_BOXES;
+    @NotNull public static final XMaterialUtil<XMaterial> SHULKER_BOXES;
     /**
      * Tag representing all possible variants of signs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SIGNS;
+    @NotNull public static final XMaterialUtil<XMaterial> SIGNS;
     /**
      * Tag representing all possible block types small dripleaf may be placed upon
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SMALL_DRIPLEAF_PLACEABLE;
+    @NotNull public static final XMaterialUtil<XMaterial> SMALL_DRIPLEAF_PLACEABLE;
     /**
      * Tag representing all flowers small in size {1 block tall}
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SMALL_FLOWERS;
+    @NotNull public static final XMaterialUtil<XMaterial> SMALL_FLOWERS;
     /**
      * Tag representing all possible variants of snow
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SNOW;
+    @NotNull public static final XMaterialUtil<XMaterial> SNOW;
     /**
      * Tag representing all possible blocks that can be lit up with sould fire
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SOUL_FIRE_BASE_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> SOUL_FIRE_BASE_BLOCKS;
     /**
      * Tag representing all possible blocks that activate soul speed enchantment
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SOUL_SPEED_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> SOUL_SPEED_BLOCKS;
     /**
      * Tag representing all spruce wood and log variants
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> SPRUCE_LOGS;
+    @NotNull public static final XMaterialUtil<XMaterial> SPRUCE_LOGS;
     /**
      * Tag representing all possible types of stairs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STAIRS;
+    @NotNull public static final XMaterialUtil<XMaterial> STAIRS;
     /**
      * Tag representing all possible types of standing signs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STANDING_SIGNS;
+    @NotNull public static final XMaterialUtil<XMaterial> STANDING_SIGNS;
     /**
      * Tag representing all possible variants of stone bricks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STONE_BRICKS;
+    @NotNull public static final XMaterialUtil<XMaterial> STONE_BRICKS;
     /**
      * Tag representing all possible blocks that can be replaced by regular stone ores
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STONE_ORE_REPLACEABLES;
+    @NotNull public static final XMaterialUtil<XMaterial> STONE_ORE_REPLACEABLES;
     /**
      * Tag representing all pressure plates made of some type of stone
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STONE_PRESSURE_PLATES;
+    @NotNull public static final XMaterialUtil<XMaterial> STONE_PRESSURE_PLATES;
     /**
      * Tag representing all block types that make strider warm
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STRIDER_WARM_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> STRIDER_WARM_BLOCKS;
     /**
      * Tag representing all flowers that are tall {2 blocks}
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> TALL_FLOWERS;
+    @NotNull public static final XMaterialUtil<XMaterial> TALL_FLOWERS;
     /**
      * Tag representing all possible variants of non-glazed terracotta
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> TERRACOTTA;
+    @NotNull public static final XMaterialUtil<XMaterial> TERRACOTTA;
     /**
      * Tag representing all possible types of trapdoors
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> TRAPDOORS;
+    @NotNull public static final XMaterialUtil<XMaterial> TRAPDOORS;
     /**
      * Tag representing all block types that can be bonemealed underwater
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> UNDERWATER_BONEMEALS;
+    @NotNull public static final XMaterialUtil<XMaterial> UNDERWATER_BONEMEALS;
     /**
      * Tag representing all blocks that have unstable bottom when placed in centre of 2 blocks
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> UNSTABLE_BOTTOM_CENTER;
+    @NotNull public static final XMaterialUtil<XMaterial> UNSTABLE_BOTTOM_CENTER;
     /**
      * Tag representing all valid mob spawn positions
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> VALID_SPAWN;
+    @NotNull public static final XMaterialUtil<XMaterial> VALID_SPAWN;
     /**
      * Tag representing all possible block types that can override a wall post creation
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WALL_POST_OVERRIDE;
+    @NotNull public static final XMaterialUtil<XMaterial> WALL_POST_OVERRIDE;
     /**
      * Tag representing all wall signs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WALL_SIGNS;
+    @NotNull public static final XMaterialUtil<XMaterial> WALL_SIGNS;
     /**
      * Tag representing all different types of walls
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WALLS;
+    @NotNull public static final XMaterialUtil<XMaterial> WALLS;
     /**
      * Tag representing all warped stems
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WARPED_STEMS;
+    @NotNull public static final XMaterialUtil<XMaterial> WARPED_STEMS;
     /**
      * Tag representing all block types that can't be destroyed by withers
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WITHER_IMMUNE;
+    @NotNull public static final XMaterialUtil<XMaterial> WITHER_IMMUNE;
     /**
      * Tag representing all possible block types that may be used as wither summon base
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WITHER_SUMMON_BASE_BLOCKS;
+    @NotNull public static final XMaterialUtil<XMaterial> WITHER_SUMMON_BASE_BLOCKS;
     /**
      * Tag representing all possible block types that wolves may spawn on
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOLVES_SPAWNABLE_ON;
+    @NotNull public static final XMaterialUtil<XMaterial> WOLVES_SPAWNABLE_ON;
     /**
      * Tag representing all possible types of wooden buttons
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_BUTTONS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_BUTTONS;
     /**
      * Tag representing all possible types of wooden doors
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_DOORS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_DOORS;
     /**
      * Tag representing all possible types of wooden fence gates
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_FENCE_GATES;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_FENCE_GATES;
     /**
      * Tag representing all possible types of wooden fences
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_FENCES;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_FENCES;
     /**
      * Tag representing all possible types of wooden pressure plates
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_PRESSURE_PLATES;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_PRESSURE_PLATES;
     /**
      * Tag representing all possible types of wooden slabs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_SLABS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_SLABS;
     /**
      * Tag representing all possible types of wooden stairs
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_STAIRS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_STAIRS;
     /**
      * Tag representing all possible types of wooden trapdoors
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_TRAPDOORS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_TRAPDOORS;
     /**
      * Tag representing all possible types of wool
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOOL;
+    @NotNull public static final XMaterialUtil<XMaterial> WOOL;
 
 
     /**
      * Tag representing all armor pieces made of leather
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> LEATHER_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> LEATHER_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces made of iron
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> IRON_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> IRON_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces made of chains
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> CHAINMAIL_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> CHAINMAIL_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces made of gold
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> GOLDEN_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> GOLDEN_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces made of diamond
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DIAMOND_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> DIAMOND_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces made of netherite
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NETHERITE_ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> NETHERITE_ARMOR_PIECES;
     /**
      * Tag representing all armor pieces that add armor bars upon wearing
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> ARMOR_PIECES;
+    @NotNull public static final XMaterialUtil<XMaterial> ARMOR_PIECES;
     /**
      * Tag representing all wooden tools and swords
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> WOODEN_TOOLS;
+    @NotNull public static final XMaterialUtil<XMaterial> WOODEN_TOOLS;
     /**
      * Tag representing all stone tools and swords
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> STONE_TOOLS;
+    @NotNull public static final XMaterialUtil<XMaterial> STONE_TOOLS;
     /**
      * Tag representing all iron tools and swords
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> IRON_TOOLS;
+    @NotNull public static final XMaterialUtil<XMaterial> IRON_TOOLS;
     /**
      * Tag representing all diamond tools and swords
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> DIAMOND_TOOLS;
+    @NotNull public static final XMaterialUtil<XMaterial> DIAMOND_TOOLS;
     /**
      * Tag representing all netherite tools and swords
      */
-    @NotNull
-    public static final XMaterialUtil<XMaterial> NETHERITE_TOOLS;
+    @NotNull public static final XMaterialUtil<XMaterial> NETHERITE_TOOLS;
 
     /**
      * Tag representing all possible enchants that can be applied to all armor pieces (excluding elytras)
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> ARMOR_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> ARMOR_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to helmets/turtle shells
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> HELEMT_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> HELEMT_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to chestplates
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> CHESTPLATE_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> CHESTPLATE_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to leggings
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> LEGGINGS_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> LEGGINGS_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to boots
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> BOOTS_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> BOOTS_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to elytras
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> ELYTRA_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> ELYTRA_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to swords
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> SWORD_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> SWORD_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to axes
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> AXE_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> AXE_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to hoes
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> HOE_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> HOE_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to pickaxes
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> PICKAXE_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> PICKAXE_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to shovels
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> SHOVEL_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> SHOVEL_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to shears
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> SHEARS_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> SHEARS_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to bows
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> BOW_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> BOW_ENCHANTS;
     /**
      * Tag representing all possible enchants that can be applied to crossbows
      */
-    @NotNull
-    public static final XMaterialUtil<XEnchantment> CROSSBOW_ENCHANTS;
+    @NotNull public static final XMaterialUtil<XEnchantment> CROSSBOW_ENCHANTS;
 
     static { // logs
         ACACIA_LOGS = new XMaterialUtil<>(XMaterial.STRIPPED_ACACIA_LOG,
@@ -2143,8 +1955,7 @@ public final class XMaterialUtil<T extends Enum<T>> {
 
     }
 
-    @NotNull
-    private Set<T> values;
+    @NotNull private Set<T> values;
 
     @SafeVarargs
     private XMaterialUtil(@NotNull T... values) {

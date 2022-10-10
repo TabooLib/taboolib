@@ -40,58 +40,52 @@ interface Configuration : ConfigurationSection {
 
     companion object {
 
-        fun empty(type: Type = Type.YAML): ConfigFile {
-            return ConfigFile(type.newFormat().createConcurrentConfig())
+        fun empty(type: Type = Type.YAML, concurrent: Boolean = true): ConfigFile {
+            return ConfigFile(if (concurrent) type.newFormat().createConcurrentConfig() else type.newFormat().createConfig { LinkedHashMap() })
         }
 
-        fun loadFromFile(file: File, type: Type? = null): ConfigFile {
-            val configFile = ConfigFile((type ?: getTypeFromFile(file)).newFormat().createConcurrentConfig())
+        fun loadFromFile(file: File, type: Type? = null, concurrent: Boolean = true): ConfigFile {
+            val format = (type ?: getTypeFromFile(file)).newFormat()
+            val configFile = ConfigFile(if (concurrent) format.createConcurrentConfig() else format.createConfig { LinkedHashMap() })
             configFile.loadFromFile(file)
             return configFile
         }
 
-        fun loadFromReader(reader: Reader, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
+        fun loadFromReader(reader: Reader, type: Type = Type.YAML, concurrent: Boolean = true): ConfigFile {
+            val format = type.newFormat()
+            val configFile = ConfigFile(if (concurrent) format.createConcurrentConfig() else format.createConfig { LinkedHashMap() })
             configFile.loadFromReader(reader)
             return configFile
         }
 
-        fun loadFromString(contents: String, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
+        fun loadFromString(contents: String, type: Type = Type.YAML, concurrent: Boolean = true): ConfigFile {
+            val format = type.newFormat()
+            val configFile = ConfigFile(if (concurrent) format.createConcurrentConfig() else format.createConfig { LinkedHashMap() })
             configFile.loadFromString(contents)
             return configFile
         }
 
-        fun loadFromInputStream(inputStream: InputStream, type: Type = Type.YAML): ConfigFile {
-            val configFile = ConfigFile(type.newFormat().createConcurrentConfig())
+        fun loadFromInputStream(inputStream: InputStream, type: Type = Type.YAML, concurrent: Boolean = true): ConfigFile {
+            val format = type.newFormat()
+            val configFile = ConfigFile(if (concurrent) format.createConcurrentConfig() else format.createConfig { LinkedHashMap() })
             configFile.loadFromInputStream(inputStream)
             return configFile
         }
 
-        fun loadFromOther(otherConfig: Any, type: Type = Type.YAML): ConfigFile {
+        fun loadFromOther(otherConfig: Any, type: Type = Type.YAML, concurrent: Boolean = true): ConfigFile {
             return try {
-                loadFromString(otherConfig.invokeMethod<String>("saveToString")!!, type)
+                loadFromString(otherConfig.invokeMethod<String>("saveToString")!!, type, concurrent)
             } catch (ex: NoSuchMethodException) {
                 try {
-                    loadFromString(otherConfig.toString(), type)
+                    loadFromString(otherConfig.toString(), type, concurrent)
                 } catch (ex: Throwable) {
                     throw IllegalStateException("Could not load configuration from other configuration", ex)
                 }
             }
         }
 
-        fun getTypeFromFile(file: File, def: Type = Type.YAML): Type {
-            return getTypeFromExtension(file.extension, def)
-        }
-
-        fun getTypeFromExtension(extension: String, def: Type = Type.YAML): Type {
-            return when (extension) {
-                "yaml", "yml" -> Type.YAML
-                "toml", "tml" -> Type.TOML
-                "json" -> Type.JSON
-                "conf" -> Type.HOCON
-                else -> def
-            }
+        inline fun <reified T> Configuration.toObject(ignoreConstructor: Boolean = false): T {
+            return deserialize(this, ignoreConstructor)
         }
 
         inline fun <reified T> ConfigurationSection.getObject(key: String, ignoreConstructor: Boolean = false): T {
@@ -106,8 +100,9 @@ interface Configuration : ConfigurationSection {
             set(key, serialize(obj, type))
         }
 
-        fun serialize(obj: Any, type: Type = Type.YAML): ConfigurationSection {
-            val config = type.newFormat().createConcurrentConfig()
+        fun serialize(obj: Any, type: Type = Type.YAML, concurrent: Boolean = true): ConfigurationSection {
+            val format = type.newFormat()
+            val config = if (concurrent) format.createConcurrentConfig() else format.createConfig { LinkedHashMap() }
             ObjectConverter().toConfig(obj, config)
             return ConfigSection(config)
         }
@@ -123,14 +118,24 @@ interface Configuration : ConfigurationSection {
             return obj
         }
 
-        fun fromMap(map: Map<*, *>, type: Type = Type.YAML): ConfigurationSection {
-            val empty = empty(type)
+        fun fromMap(map: Map<*, *>, type: Type = Type.YAML, concurrent: Boolean = true): ConfigurationSection {
+            val empty = empty(type, concurrent)
             map.forEach { (k, v) -> empty[k.toString()] = v }
             return empty
         }
 
-        inline fun <reified T> Configuration.toObject(ignoreConstructor: Boolean = false): T {
-            return deserialize(this, ignoreConstructor)
+        fun getTypeFromFile(file: File, def: Type = Type.YAML): Type {
+            return getTypeFromExtension(file.extension, def)
+        }
+
+        fun getTypeFromExtension(extension: String, def: Type = Type.YAML): Type {
+            return when (extension) {
+                "yaml", "yml" -> Type.YAML
+                "toml", "tml" -> Type.TOML
+                "json" -> Type.JSON
+                "conf" -> Type.HOCON
+                else -> def
+            }
         }
     }
 }

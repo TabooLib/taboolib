@@ -6,9 +6,11 @@ import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.io.ConfigParser;
 import com.electronwill.nightconfig.core.io.ConfigWriter;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 /**
@@ -17,18 +19,6 @@ import java.util.function.Supplier;
 public final class YamlFormat implements ConfigFormat<CommentedConfig> {
 
     public static final YamlFormat INSTANCE = new YamlFormat();
-
-    public static Config newConfig() {
-        return INSTANCE.createConfig();
-    }
-
-    public static Config newConfig(Supplier<Map<String, Object>> mapCreator) {
-        return INSTANCE.createConfig(mapCreator);
-    }
-
-    public static Config newConcurrentConfig() {
-        return INSTANCE.createConcurrentConfig();
-    }
 
     @Override
     public ConfigWriter createWriter() {

@@ -22,23 +22,18 @@
 package taboolib.library.xseries;
 
 import com.google.common.base.Enums;
-import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Enchantment support with multiple aliases.
@@ -55,7 +50,6 @@ import java.util.*;
  */
 @Isolated
 public enum XEnchantment {
-
     ARROW_DAMAGE("POWER", "ARROW_DAMAGE", "ARROW_POWER", "AD"),
     ARROW_FIRE("FLAME", "FLAME_ARROW", "FIRE_ARROW", "AF"),
     ARROW_INFINITE("INFINITY", "INF_ARROWS", "INFINITE_ARROWS", "INFINITE", "UNLIMITED", "UNLIMITED_ARROWS", "AI"),
@@ -240,7 +234,7 @@ public enum XEnchantment {
      */
     @NotNull
     public static Optional<XEnchantment> matchXEnchantment(@NotNull String enchantment) {
-        Validate.notEmpty(enchantment, "Enchantment name cannot be null or empty");
+        if (enchantment == null || enchantment.isEmpty()) throw new IllegalArgumentException("Enchantment name cannot be null or empty");
         return Optional.ofNullable(Data.NAMES.get(format(enchantment)));
     }
 
@@ -249,6 +243,7 @@ public enum XEnchantment {
      * There are also some aliases available.
      *
      * @param enchantment the enchantment.
+     *
      * @return an enchantment.
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
      * @since 1.0.0
@@ -258,47 +253,6 @@ public enum XEnchantment {
     public static XEnchantment matchXEnchantment(@NotNull Enchantment enchantment) {
         Objects.requireNonNull(enchantment, "Cannot parse XEnchantment of a null enchantment");
         return Objects.requireNonNull(Data.NAMES.get(enchantment.getName()), () -> "Unsupported enchantment: " + enchantment.getName());
-    }
-
-    /**
-     * Adds an unsafe enchantment to the given item from a string.
-     * <p>
-     * <blockquote><pre>
-     *    ItemStack item = ...;
-     *    addEnchantFromString(item, "unbreaking, 10");
-     *    addEnchantFromString(item, "mending");
-     * </pre></blockquote>
-     * <p>
-     * Note that if you set your item's meta {@link ItemStack#setItemMeta(ItemMeta)} the enchantment
-     * will be removed.
-     * You need to use {@link ItemMeta#addEnchant(Enchantment, int, boolean)} instead.
-     * You can use the {@link #matchXEnchantment(String)} method in this case.
-     *
-     * @param item        the item to add the enchantment to.
-     * @param enchantment the enchantment string containing the enchantment name and level (optional)
-     *
-     * @return an enchanted {@link ItemStack} or the item itself without enchantment added if enchantment type is null.
-     * @see #matchXEnchantment(String)
-     * @since 1.0.0
-     */
-    @NotNull
-    public static ItemStack addEnchantFromString(@NotNull ItemStack item, @Nullable String enchantment) {
-        Objects.requireNonNull(item, "Cannot add enchantment to null ItemStack");
-        if (Strings.isNullOrEmpty(enchantment) || enchantment.equalsIgnoreCase("none")) return item;
-
-        String[] split = StringUtils.split(StringUtils.deleteWhitespace(enchantment), ',');
-        if (split.length == 0) split = StringUtils.split(enchantment, ' ');
-
-        Optional<XEnchantment> enchantOpt = matchXEnchantment(split[0]);
-        if (!enchantOpt.isPresent()) return item;
-        Enchantment enchant = enchantOpt.get().enchantment;
-        if (enchant == null) return item;
-
-        int lvl = 1;
-        if (split.length > 1) lvl = NumberUtils.toInt(split[1]);
-
-        item.addUnsafeEnchantment(enchant, lvl);
-        return item;
     }
 
     /**
@@ -354,7 +308,9 @@ public enum XEnchantment {
     @Override
     @NotNull
     public String toString() {
-        return WordUtils.capitalize(this.name().replace('_', ' ').toLowerCase(Locale.ENGLISH));
+        return Arrays.stream(name().split("_"))
+                .map(t -> t.charAt(0) + t.substring(1).toLowerCase())
+                .collect(Collectors.joining(" "));
     }
 
     /**

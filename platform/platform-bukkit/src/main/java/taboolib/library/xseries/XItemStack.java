@@ -24,8 +24,6 @@ package taboolib.library.xseries;
 import com.google.common.base.Enums;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -81,11 +79,14 @@ import static taboolib.library.xseries.XMaterial.supports;
  */
 @SuppressWarnings({"ConstantConditions", "NullableProblems"})
 public final class XItemStack {
-
     public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
 
-    private XItemStack() {
-    }
+    /**
+     * Because item metas cannot be applied to AIR apparently.
+     */
+    private static final XMaterial DEFAULT_MATERIAL = XMaterial.NETHER_PORTAL;
+
+    private XItemStack() {}
 
     /**
      * Writes an ItemStack object into a config.
@@ -93,6 +94,7 @@ public final class XItemStack {
      *
      * @param item   the ItemStack to serialize.
      * @param config the config section to write this item to.
+     *
      * @since 1.0.0
      */
     @SuppressWarnings("deprecation")
@@ -124,7 +126,7 @@ public final class XItemStack {
         if (meta.hasLore()) config.set("lore", meta.getLore()); // TODO Add a method to "untranslate" color codes.
 
         if (supports(14)) {
-            if (meta.hasCustomModelData()) config.set("custom-model", meta.getCustomModelData());
+            if (meta.hasCustomModelData()) config.set("custom-model-data", meta.getCustomModelData());
         }
         if (supports(11)) {
             if (meta.isUnbreakable()) config.set("unbreakable", true);
@@ -342,6 +344,10 @@ public final class XItemStack {
         }
     }
 
+    public static boolean isDefaultItem(ItemStack item) {
+        return DEFAULT_MATERIAL.isSimilar(item);
+    }
+
     /**
      * Writes an ItemStack properties into a {@code Map}.
      *
@@ -351,7 +357,7 @@ public final class XItemStack {
      */
     public static Map<String, Object> serialize(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
-        ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
         serialize(item, config);
         return configSectionToMap(config);
     }
@@ -360,12 +366,13 @@ public final class XItemStack {
      * Deserialize an ItemStack from the config.
      *
      * @param config the config section to deserialize the ItemStack object from.
+     *
      * @return a deserialized ItemStack.
      * @since 1.0.0
      */
     @NotNull
     public static ItemStack deserialize(@NotNull ConfigurationSection config) {
-        return edit(new ItemStack(Material.AIR), config, Function.identity(), null);
+        return edit(new ItemStack(DEFAULT_MATERIAL.parseMaterial()), config, Function.identity(), null);
     }
 
     private static List<String> splitNewLine(String str) {
@@ -406,6 +413,7 @@ public final class XItemStack {
      * Deserialize an ItemStack from the config.
      *
      * @param config the config section to deserialize the ItemStack object from.
+     *
      * @return an edited ItemStack.
      * @since 7.2.0
      */
@@ -413,7 +421,7 @@ public final class XItemStack {
     public static ItemStack deserialize(@NotNull ConfigurationSection config,
                                         @NotNull Function<String, String> translator,
                                         @Nullable Consumer<Exception> restart) {
-        return edit(new ItemStack(Material.AIR), config, translator, restart);
+        return edit(new ItemStack(DEFAULT_MATERIAL.parseMaterial()), config, translator, restart);
     }
 
 
@@ -423,6 +431,7 @@ public final class XItemStack {
      * @param serializedItem the map holding the item configurations to deserialize
      *                       the ItemStack object from.
      * @param translator     the translator to use for translating the item's name.
+     *
      * @return a deserialized ItemStack.
      */
     @NotNull
@@ -432,11 +441,48 @@ public final class XItemStack {
         return deserialize(mapToConfigSection(serializedItem), translator);
     }
 
+    private static int toInt(String str, @SuppressWarnings("SameParameterValue") int defaultValue) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException nfe) {
+            return defaultValue;
+        }
+    }
+
+    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+        List<String> list = new ArrayList<>(5);
+        boolean match = false, lastMatch = false;
+        int len = str.length();
+        int start = 0;
+
+        for (int i = 0; i < len; i++) {
+            if (str.charAt(i) == separatorChar) {
+                if (match) {
+                    list.add(str.substring(start, i));
+                    match = false;
+                    lastMatch = true;
+                }
+
+                // This is important, it should not be i++
+                start = i + 1;
+                continue;
+            }
+
+            lastMatch = false;
+            match = true;
+        }
+
+        if (match || lastMatch) {
+            list.add(str.substring(start, len));
+        }
+        return list;
+    }
 
     /**
      * Deserialize an ItemStack from the config.
      *
      * @param config the config section to deserialize the ItemStack object from.
+     *
      * @return an edited ItemStack.
      * @since 1.0.0
      */
@@ -458,6 +504,7 @@ public final class XItemStack {
             if (materialOpt.isPresent()) material = materialOpt.get();
             else {
                 UnknownMaterialCondition unknownMaterialCondition = new UnknownMaterialCondition(materialName);
+                if (restart == null) throw unknownMaterialCondition;
                 restart.accept(unknownMaterialCondition);
 
                 if (unknownMaterialCondition.hasSolution()) material = unknownMaterialCondition.solution;
@@ -466,6 +513,7 @@ public final class XItemStack {
 
             if (!material.isSupported()) {
                 UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.UNSUPPORTED);
+                if (restart == null) throw unsupportedMaterialCondition;
                 restart.accept(unsupportedMaterialCondition);
 
                 if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
@@ -473,6 +521,7 @@ public final class XItemStack {
             }
             if (XMaterialUtil.INVENTORY_NOT_DISPLAYABLE.isTagged(material)) {
                 UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.NOT_DISPLAYABLE);
+                if (restart == null) throw unsupportedMaterialCondition;
                 restart.accept(unsupportedMaterialCondition);
 
                 if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
@@ -486,8 +535,18 @@ public final class XItemStack {
         int amount = config.getInt("amount");
         if (amount > 1) item.setAmount(amount);
 
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
+        ItemMeta meta;
+        { // For Java's stupid closure capture system.
+            ItemMeta tempMeta = item.getItemMeta();
+            if (tempMeta == null) {
+                // When AIR is null. Useful for when you just want to use the meta to save data and
+                // set the type later. A simple CraftMetaItem.
+                meta = Bukkit.getItemFactory().getItemMeta(XMaterial.STONE.parseMaterial());
+            } else {
+                meta = tempMeta;
+            }
+        }
+
 
         // Durability - Damage
         if (supports(13)) {
@@ -534,10 +593,10 @@ public final class XItemStack {
 
                 String baseEffect = config.getString("base-effect");
                 if (!Strings.isNullOrEmpty(baseEffect)) {
-                    String[] split = StringUtils.split(baseEffect, ',');
-                    PotionType type = Enums.getIfPresent(PotionType.class, split[0].trim().toUpperCase(Locale.ENGLISH)).or(PotionType.UNCRAFTABLE);
-                    boolean extended = split.length != 1 && Boolean.parseBoolean(split[1].trim());
-                    boolean upgraded = split.length > 2 && Boolean.parseBoolean(split[2].trim());
+                    List<String> split = split(baseEffect, ',');
+                    PotionType type = Enums.getIfPresent(PotionType.class, split.get(0).trim().toUpperCase(Locale.ENGLISH)).or(PotionType.UNCRAFTABLE);
+                    boolean extended = split.size() != 1 && Boolean.parseBoolean(split.get(1).trim());
+                    boolean upgraded = split.size() > 2 && Boolean.parseBoolean(split.get(2).trim());
                     PotionData potionData = new PotionData(type, extended, upgraded);
                     potion.setBasePotionData(potionData);
                 }
@@ -551,10 +610,10 @@ public final class XItemStack {
                     int level = config.getInt("level");
                     String baseEffect = config.getString("base-effect");
                     if (!Strings.isNullOrEmpty(baseEffect)) {
-                        String[] split = StringUtils.split(baseEffect, ',');
-                        PotionType type = Enums.getIfPresent(PotionType.class, split[0].trim().toUpperCase(Locale.ENGLISH)).or(PotionType.SLOWNESS);
-                        boolean extended = split.length != 1 && Boolean.parseBoolean(split[1].trim());
-                        boolean splash = split.length > 2 && Boolean.parseBoolean(split[2].trim());
+                        List<String> split = split(baseEffect, ',');
+                        PotionType type = Enums.getIfPresent(PotionType.class, split.get(0).trim().toUpperCase(Locale.ENGLISH)).or(PotionType.SLOWNESS);
+                        boolean extended = split.size() != 1 && Boolean.parseBoolean(split.get(1).trim());
+                        boolean splash = split.size() > 2 && Boolean.parseBoolean(split.get(2).trim());
 
                         item = (new Potion(type, level, splash, extended)).toItemStack(1);
                     }
@@ -575,7 +634,7 @@ public final class XItemStack {
                     ShulkerBox box = (ShulkerBox) state;
                     for (String key : shulkerSection.getKeys(false)) {
                         ItemStack boxItem = deserialize(shulkerSection.getConfigurationSection(key));
-                        int slot = NumberUtils.toInt(key, 0);
+                        int slot = toInt(key, 0);
                         box.getInventory().setItem(slot, boxItem);
                     }
                     box.update(true);
@@ -769,35 +828,47 @@ public final class XItemStack {
 
         // Custom Model Data
         if (supports(14)) {
-            int modelData = config.getInt("model-data");
+            int modelData = config.getInt("custom-model-data");
             if (modelData != 0) meta.setCustomModelData(modelData);
         }
 
         // Lore
-        List<String> translatedLore;
-        List<String> lores = config.getStringList("lore");
-        if (!lores.isEmpty()) {
-            translatedLore = new ArrayList<>(lores.size());
+        if (config.contains("lore")) {
+            List<String> translatedLore;
+            List<String> lores = config.getStringList("lore");
+            if (!lores.isEmpty()) {
+                translatedLore = new ArrayList<>(lores.size());
 
-            for (String lore : lores) {
-                if (lore.isEmpty()) {
-                    translatedLore.add(" ");
-                    continue;
-                }
-
-                for (String singleLore : splitNewLine(lore)) {
-                    if (singleLore.isEmpty()) {
+                for (String lore : lores) {
+                    if (lore.isEmpty()) {
                         translatedLore.add(" ");
                         continue;
                     }
-                    translatedLore.add(translator.apply(singleLore));
+
+                    for (String singleLore : splitNewLine(lore)) {
+                        if (singleLore.isEmpty()) {
+                            translatedLore.add(" ");
+                            continue;
+                        }
+                        translatedLore.add(translator.apply(singleLore));
+                    }
+                }
+            } else {
+                String lore = config.getString("lore");
+                translatedLore = new ArrayList<>(10);
+
+                if (!Strings.isNullOrEmpty(lore)) {
+                    for (String singleLore : splitNewLine(lore)) {
+                        if (singleLore.isEmpty()) {
+                            translatedLore.add(" ");
+                            continue;
+                        }
+                        translatedLore.add(translator.apply(singleLore));
+                    }
                 }
             }
 
             meta.setLore(translatedLore);
-        } else {
-            String lore = config.getString("lore");
-            if (!Strings.isNullOrEmpty(lore)) meta.setLore(Collections.singletonList(translator.apply(lore)));
         }
 
         // Enchantments
@@ -827,6 +898,11 @@ public final class XItemStack {
         if (!flags.isEmpty()) {
             for (String flag : flags) {
                 flag = flag.toUpperCase(Locale.ENGLISH);
+                if (flag.equals("ALL")) {
+                    meta.addItemFlags(ITEM_FLAGS);
+                    break;
+                }
+
                 ItemFlag itemFlag = Enums.getIfPresent(ItemFlag.class, flag).orNull();
                 if (itemFlag != null) meta.addItemFlags(itemFlag);
             }
@@ -890,7 +966,7 @@ public final class XItemStack {
      */
     @NotNull
     private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
-        ConfigurationSection config = Configuration.Companion.empty(Type.YAML);
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
@@ -943,9 +1019,9 @@ public final class XItemStack {
     @NotNull
     public static Color parseColor(@Nullable String str) {
         if (Strings.isNullOrEmpty(str)) return Color.BLACK;
-        String[] rgb = StringUtils.split(StringUtils.deleteWhitespace(str), ',');
-        if (rgb.length < 3) return Color.WHITE;
-        return Color.fromRGB(NumberUtils.toInt(rgb[0], 0), NumberUtils.toInt(rgb[1], 0), NumberUtils.toInt(rgb[2], 0));
+        List<String> rgb = split(str.replace(" ", ""), ',');
+        if (rgb.size() < 3) return Color.WHITE;
+        return Color.fromRGB(toInt(rgb.get(0), 0), toInt(rgb.get(1), 0), toInt(rgb.get(2), 0));
     }
 
     /**
@@ -1049,7 +1125,7 @@ public final class XItemStack {
                     if (++lastEmpty == invSize) lastEmpty = -1;
                 } else {
                     ItemStack partialItem = inventory.getItem(firstPartial);
-                    int maxAmount = partialItem.getMaxStackSize();
+                    int maxAmount = split ? partialItem.getMaxStackSize() : inventory.getMaxStackSize();
                     int partialAmount = partialItem.getAmount();
                     int amount = item.getAmount();
                     int sum = amount + partialAmount;
