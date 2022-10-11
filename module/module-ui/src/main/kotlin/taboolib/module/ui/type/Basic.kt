@@ -163,7 +163,7 @@ open class Basic(title: String = "chest") : Menu(title) {
         }
     }
 
-    protected open fun selfClick(lock: Boolean = false, callback: (event: ClickEvent) -> Unit = {}) {
+    protected open fun selfClick(callback: (event: ClickEvent) -> Unit = {}) {
         selfClickCallback = callback
     }
 

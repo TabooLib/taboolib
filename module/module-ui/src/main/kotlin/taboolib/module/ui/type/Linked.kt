@@ -182,7 +182,12 @@ open class Linked<T>(title: String) : Basic(title) {
         // 生成异步回调
         selfBuild(async = true) { p, it -> processBuild(p, it, true) }
         // 生成点击回调
-        selfClick(lock = menuLocked) { elementClickCallback(it, elementMap[it.rawSlot] ?: return@selfClick) }
+        selfClick {
+            if (menuLocked) {
+                it.isCancelled = true
+            }
+            elementClickCallback(it, elementMap[it.rawSlot] ?: return@selfClick)
+        }
         // 构建页面
         return super.build()
     }
