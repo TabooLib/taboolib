@@ -22,6 +22,8 @@ public interface QuestReader {
 
     <T> ParsedAction<T> nextAction();
 
+    <T> ParsedAction<T> nextAction(String namespace);
+
     void expect(@NotNull String value);
 
     default int nextInt() {
@@ -42,5 +44,9 @@ public interface QuestReader {
 
     default ParsedAction<?> nextParsedAction() {
         return next(ArgTypes.ACTION);
+    }
+
+    default ParsedAction<?> nextParsedAction(String namespace) {
+        return next(questReader -> questReader.nextAction(namespace));
     }
 }

@@ -7,7 +7,7 @@ import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.chat.colored
 
 fun ConfigurationSection.getStringColored(node: String): String? {
-    return getString(node)?.colored()
+    return kotlin.runCatching { getString(node)?.colored() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
 }
 
 fun ConfigurationSection.getStringListColored(node: String): List<String> {

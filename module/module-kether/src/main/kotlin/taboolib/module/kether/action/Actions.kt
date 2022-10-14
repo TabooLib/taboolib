@@ -178,8 +178,7 @@ object Actions {
         actionTake {
             val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
             for (i in actions.indices) {
-                val action = actions[i]
-                futures[i] = run(action)
+                futures[i] = run(actions[i])
             }
             CompletableFuture.allOf(*futures)
         }
@@ -191,8 +190,7 @@ object Actions {
         actionTake {
             val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
             for (i in actions.indices) {
-                val action = actions[i]
-                futures[i] = run(action)
+                futures[i] = run(actions[i])
             }
             CompletableFuture.anyOf(*futures)
         }

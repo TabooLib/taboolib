@@ -1,6 +1,7 @@
 package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import taboolib.module.kether.Kether;
 import taboolib.module.kether.action.ActionGet;
 import taboolib.module.kether.action.ActionLiteral;
@@ -76,8 +77,13 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public <T> ParsedAction<T> nextAction() {
+        return nextAction(null);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> ParsedAction<T> nextAction(@Nullable String namespace) {
         skipBlank();
         switch (peek()) {
             case '{': {
@@ -98,7 +104,9 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
             }
             default: {
                 String element = nextToken();
-                Optional<QuestActionParser> optional = service.getRegistry().getParser(element, namespace);
+                List<String> ns = new ArrayList<>(this.namespace);
+                ns.add(namespace);
+                Optional<QuestActionParser> optional = service.getRegistry().getParser(element, ns);
                 if (optional.isPresent()) {
                     beforeParse();
                     return wrap(optional.get().resolve(this));

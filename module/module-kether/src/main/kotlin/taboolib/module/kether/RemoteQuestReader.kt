@@ -46,6 +46,16 @@ class RemoteQuestReader(val remote: OpenContainer, val source: Any) : QuestReade
         return ParsedAction(questAction, action.getProperty<Map<String, Any>>("properties")!!)
     }
 
+    override fun <T : Any?> nextAction(namespace: String?): ParsedAction<T> {
+        return try {
+            val action = source.invokeMethod<T>("nextAction", namespace, remap = false)!!
+            val questAction = RemoteQuestAction<T>(remote, action.getProperty<Any>("action", remap = false)!!)
+            ParsedAction(questAction, action.getProperty<Map<String, Any>>("properties")!!)
+        } catch (_: NoSuchMethodException) {
+            nextAction()
+        }
+    }
+
     override fun expect(value: String) {
         source.invokeMethod<Void>("expect", value, remap = false)
     }

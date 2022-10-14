@@ -15,7 +15,7 @@ import java.util.regex.Pattern
 object ActionMatcher {
 
     @KetherParser(["match"])
-    fun actionMaterial() = scriptParser {
+    fun actionMatch() = scriptParser {
         val str = it.nextParsedAction()
         it.expects("by", "with", "using")
         val regex = it.nextParsedAction()
