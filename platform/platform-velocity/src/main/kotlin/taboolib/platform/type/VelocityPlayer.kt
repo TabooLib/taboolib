@@ -319,4 +319,8 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
     override fun teleport(loc: Location) {
         error("unsupported")
     }
+
+    override fun giveExp(exp: Int) {
+        error("unsupported")
+    }
 }
