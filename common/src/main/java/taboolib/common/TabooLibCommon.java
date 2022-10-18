@@ -84,7 +84,7 @@ public class TabooLibCommon {
      * 推迟任务到指定生命周期下执行
      */
     public static void postpone(LifeCycle lifeCycle, Runnable runnable) {
-        if (lifeCycle.ordinal() >= TabooLibCommon.currentLifeCycle.ordinal()) {
+        if (TabooLibCommon.currentLifeCycle.ordinal() >= lifeCycle.ordinal()) {
             runnable.run();
         } else {
             postponeExecutor.computeIfAbsent(lifeCycle, k -> new ArrayList<>()).add(runnable);
