@@ -135,3 +135,6 @@ There is no need to do so if your plugin is designed to work only on the Bukkit 
 + [TabooLib DOCs](https://docs.tabooproject.org)
 + [TabooLib SDK](https://github.com/taboolib/taboolib-sdk)
 
+## Contributors
+
+![](https://contrib.rocks/image?repo=taboolib/taboolib)
