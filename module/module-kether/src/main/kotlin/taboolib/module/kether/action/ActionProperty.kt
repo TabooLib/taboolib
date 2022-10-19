@@ -18,12 +18,20 @@ import java.util.concurrent.CompletableFuture
  */
 object ActionProperty {
 
-    fun getScriptProperty(obj: Any): Collection<ScriptProperty<*>>? {
-        return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value?.values
+    fun getScriptProperty(obj: Any): Collection<ScriptProperty<*>> {
+//        return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value?.values
+        return Kether.registeredScriptProperty.filterKeys {
+            it.isInstance(obj)
+        }.map {
+            it.key to it.value.values
+        }.sortedWith { c1, c2 ->
+            // 根据类继承关系远近排序，优先选择最近的父类
+            if (c1.first.isAssignableFrom(c2.first)) 1 else -1
+        }.flatMap { it.second }
     }
 
     fun getScriptProperty(obj: Any, key: String): Any? {
-        for (property in getScriptProperty(obj) ?: return null) {
+        for (property in getScriptProperty(obj)) {
             val result = (property as ScriptProperty<Any>).read(obj, key)
             if (result.isSuccessful) {
                 return result.value
@@ -41,7 +49,7 @@ object ActionProperty {
                     error("Property object must be not null.")
                 }
                 frame.newFrame(value).run<Any?>().thenAccept close@{ value ->
-                    val propertyList = getScriptProperty(instance) ?: error("${instance.javaClass.simpleName}[$key] not supported yet.")
+                    val propertyList = getScriptProperty(instance)
                     for (property in propertyList) {
                         val result = (property as ScriptProperty<Any>).write(instance, key, value)
                         if (result.isSuccessful) {
@@ -63,7 +71,7 @@ object ActionProperty {
                 if (it == null) {
                     error("Property object must be not null.")
                 }
-                val propertyList = getScriptProperty(it) ?: error("${it.javaClass.simpleName}[$key] not supported yet.")
+                val propertyList = getScriptProperty(it)
                 for (property in propertyList) {
                     val result = (property as ScriptProperty<Any>).read(it, key)
                     if (result.isSuccessful) {
