@@ -5,6 +5,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 环境配置
       - name: checkout repository
         uses: actions/checkout@v2
       - name: cache gradle packages
@@ -21,15 +22,76 @@ jobs:
         with:
           distribution: adopt
           java-version: 8.0
+
+      # 设置权限
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
+
+      # 构建
       - name: build
+        id: build_1
+        continue-on-error: true
         run: ./gradlew build
+
+      # 构建: 重试-1
+      - name: build (retry 1)
+        id: build_2
+        if: steps.build_1.outcome == 'failure'
+        continue-on-error: true
+        run: ./gradlew build
+
+      # 构建: 重试-2
+      - name: build (retry 2)
+        id: build_3
+        if: steps.build_2.outcome == 'failure'
+        continue-on-error: true
+        run: ./gradlew build
+
+      # 构建: 重试-3
+      - name: build (retry 2)
+        id: build_4
+        if: steps.build_3.outcome == 'failure'
+        run: ./gradlew build
+
+      # 发布到仓库
       - name: publish
+        id: publish_1
+        continue-on-error: true
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+
+      # 发布到仓库: 重试-1
+      - name: publish (retry 1)
+        id: publish_2
+        if: steps.publish_1.outcome == 'failure'
+        continue-on-error: true
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+
+      # 发布到仓库: 重试-2
+      - name: publish (retry 2)
+        id: publish_3
+        if: steps.publish_2.outcome == 'failure'
+        continue-on-error: true
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+
+      # 发布到仓库: 重试-3
+      - name: publish (retry 3)
+        id: publish_4
+        if: steps.publish_3.outcome == 'failure'
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+
+      # 发布到 GitHub
       - name: create release
         uses: actions/create-release@v1
         env:
@@ -37,6 +99,8 @@ jobs:
         with:
           tag_name: 6.0.9-${{ github.run_number }}
           release_name: Release 6.0.9-${{ github.run_number }}
+
+      # 上传构建文件
       - name: capture build artifacts
         uses: actions/upload-artifact@v2
         with:
