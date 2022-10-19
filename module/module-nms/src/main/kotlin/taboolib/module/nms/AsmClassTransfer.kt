@@ -14,7 +14,7 @@ import org.objectweb.asm.commons.ClassRemapper
  */
 class AsmClassTransfer(val source: String) {
 
-    fun run(): Class<*> {
+    fun createNewClass(): Class<*> {
         val inputStream = AsmClassTransfer::class.java.classLoader.getResourceAsStream(source.replace('.', '/') + ".class")
         val classReader = ClassReader(inputStream)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
