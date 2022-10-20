@@ -8,6 +8,7 @@ import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.Quest
 import java.io.File
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.CompletableFuture
 
 /**
  * TabooLibKotlin
@@ -85,12 +86,10 @@ class Workspace(val file: File, val extension: String = ".ks", val namespace: Li
         return ImmutableList.copyOf(runningScripts.values())
     }
 
-    fun runScript(id: String, context: ScriptContext) {
+    fun runScript(id: String, context: ScriptContext): CompletableFuture<Any> {
         context.id = id
         runningScripts.put(id, context)
-        context.runActions().thenRunAsync({
-            runningScripts.remove(id, context)
-        }, ScriptService.executor)
+        return context.runActions().also { it.thenRun{ runningScripts.remove(id, context) } }
     }
 
     fun terminateScript(context: ScriptContext) {
