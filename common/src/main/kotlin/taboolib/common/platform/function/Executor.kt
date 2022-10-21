@@ -17,10 +17,10 @@ fun submit(
     async: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
-    commit: String? = null,
+    comment: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, commit, executor))
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, comment, executor))
 }
 
 @JvmOverloads
@@ -28,8 +28,8 @@ fun submitAsync(
     now: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
-    commit: String? = null,
+    comment: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, true, delay, period, commit, executor))
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, true, delay, period, comment, executor))
 }

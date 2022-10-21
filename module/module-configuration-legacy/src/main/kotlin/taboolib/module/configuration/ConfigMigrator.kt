@@ -76,7 +76,7 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
     fun find(node: String): List<String> {
         val sourceNode = ConfigFinder.findNode(node, contextSource)
         val spaceCount = sourceLines[sourceNode.line].spaceCount()
-        val source = sourceNode.commits.map { c -> "${" ".repeat(spaceCount)}#$c" }.toMutableList()
+        val source = sourceNode.comments.map { c -> "${" ".repeat(spaceCount)}#$c" }.toMutableList()
         sourceLines.each(start = sourceNode.line) { index, s ->
             if (index == sourceNode.line || s.spaceCount() > spaceCount) {
                 source += s
@@ -140,7 +140,7 @@ private fun String.spaceCount(): Int {
 
 object ConfigFinder {
 
-    data class Result(val line: Int, val commits: List<String>)
+    data class Result(val line: Int, val comments: List<String>)
 
     fun findNode(node: String, context: String): Result {
         val nodes = node.split('.')

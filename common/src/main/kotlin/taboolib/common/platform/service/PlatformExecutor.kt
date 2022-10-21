@@ -9,7 +9,7 @@ interface PlatformExecutor {
 
     fun start()
 
-    class PlatformRunnable(val now: Boolean, val async: Boolean, val delay: Long, val period: Long, val commit: String?, val executor: PlatformTask.() -> Unit)
+    class PlatformRunnable(val now: Boolean, val async: Boolean, val delay: Long, val period: Long, val comment: String?, val executor: PlatformTask.() -> Unit)
 
     interface PlatformTask {
 

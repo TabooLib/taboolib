@@ -237,7 +237,7 @@ object CommandBuilder {
 
     class CommandComponentLiteral(vararg val aliases: String, optional: Boolean, permission: String) : CommandComponent(optional, permission)
 
-    class CommandComponentDynamic(val commit: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
+    class CommandComponentDynamic(val comment: String, optional: Boolean, permission: String) : CommandComponent(optional, permission) {
 
         var commandSuggestion: CommandSuggestion<*>? = null
         var commandRestrict: CommandRestrict<*>? = null
@@ -264,13 +264,13 @@ object CommandBuilder {
             children += CommandComponentLiteral(*aliases, optional = optional, permission = permission).also(literal)
         }
 
-        fun dynamic(commit: String = "...", repeat: Int = 1, optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
+        fun dynamic(comment: String = "...", repeat: Int = 1, optional: Boolean = false, permission: String = "", dynamic: CommandComponentDynamic.() -> Unit) {
             when {
                 repeat < 1 -> {
                     error("repeat must > 0")
                 }
                 repeat == 1 -> {
-                    children += CommandComponentDynamic(commit, optional, permission).also(dynamic)
+                    children += CommandComponentDynamic(comment, optional, permission).also(dynamic)
                 }
                 else -> {
                     TODO("unsupported")

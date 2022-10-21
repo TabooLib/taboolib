@@ -54,7 +54,7 @@ fun InputStream.migrateTo(target: InputStream): ByteArray? {
 @Deprecated("已过期")
 object ConfigFinder {
 
-    data class Result(val line: Int, val commits: List<String>)
+    data class Result(val line: Int, val comments: List<String>)
 
     fun findNode(node: String, context: String): Result {
         error("Not supported")
