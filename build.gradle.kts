@@ -4,13 +4,11 @@ plugins {
     `maven-publish`
     java
     id("org.jetbrains.kotlin.jvm") version "1.5.10" apply false
-    id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "maven-publish")
 
     repositories {
@@ -30,8 +28,8 @@ subprojects {
     }
 
     java {
-        // withJavadocJar()
-        // withSourcesJar()
+         withJavadocJar()
+         withSourcesJar()
     }
 
     tasks.withType<JavaCompile> {
@@ -86,7 +84,7 @@ fun PublishingExtension.applyToSub(subProject: Project) {
             } else {
                 "${project.version}"
             })
-            artifact(subProject.tasks["shadowJar"])
+            artifact(subProject.tasks.findByName("shadowJar") ?: subProject.tasks.jar)
             artifact(subProject.tasks["kotlinSourcesJar"])
             println("> Apply \"$groupId:$artifactId:$version\"")
         }

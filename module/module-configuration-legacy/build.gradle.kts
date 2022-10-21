@@ -1,3 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+}
+
 dependencies {
     compileOnly("org.yaml:snakeyaml:1.28")
     compileOnly(project(":common"))
@@ -8,7 +14,7 @@ dependencies {
 }
 
 tasks {
-    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    withType<ShadowJar> {
         archiveClassifier.set("")
 //        archiveBaseName.set("${archiveBaseName.get()}-shaded")
 //        dependencies {

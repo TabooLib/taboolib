@@ -1,5 +1,11 @@
 @file:Suppress("GradlePackageUpdate", "VulnerableLibrariesLocal")
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+}
+
 repositories {
     maven { url = uri("https://jitpack.io") }
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/" )}
@@ -26,7 +32,7 @@ dependencies {
 }
 
 tasks {
-    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    withType<ShadowJar> {
         archiveClassifier.set("")
         relocate("org.tabooproject", "taboolib.library")
     }

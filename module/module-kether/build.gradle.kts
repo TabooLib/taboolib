@@ -1,5 +1,11 @@
 @file:Suppress("VulnerableLibrariesLocal")
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+}
+
 dependencies {
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("com.google.guava:guava:17.0")
@@ -18,7 +24,7 @@ dependencies {
 }
 
 tasks {
-    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    withType<ShadowJar> {
         archiveClassifier.set("")
         relocate("org.tabooproject", "taboolib.library")
         relocate("org.apache.commons.jexl3", "org.apache.commons.jexl3_3_2_1")
