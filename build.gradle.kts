@@ -11,6 +11,7 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "maven-publish")
 
     repositories {
         maven("https://libraries.minecraft.net")
@@ -23,29 +24,35 @@ subprojects {
         mavenLocal()
         mavenCentral()
     }
+
     dependencies {
         compileOnly(kotlin("stdlib"))
     }
-    tasks.withType<Jar> {
-        destinationDirectory.set(file("$rootDir/build/libs"))
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
+
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
     }
+
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
             freeCompilerArgs = listOf("-Xjvm-default=all")
         }
     }
+
     configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
-publishing {
+fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
         maven("http://ptms.ink:8081/repository/releases") {
             isAllowInsecureProtocol = true
@@ -57,23 +64,29 @@ publishing {
                 create<BasicAuthentication>("basic")
             }
         }
+        mavenLocal()
     }
+
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "taboolib"
-            groupId = "io.izzel"
+            artifactId = subProject.name
+            groupId = "io.izzel.taboolib"
             version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
+
             println("> groupId $groupId, artifactId $artifactId, version $version")
-            file("$buildDir/libs").listFiles()?.forEach { file ->
-                // 排除不需要发布的文件
-                if (file.name.startsWith("module-database-core") || file.extension != "jar") {
-                    return@forEach
-                }
-                artifact(file) {
-                    classifier = file.nameWithoutExtension.substring(0, file.nameWithoutExtension.length - project.version.toString().length - 1)
-                    println("> module $classifier (${file.name})")
-                }
-            }
+
+            artifact(subProject.tasks["kotlinSourcesJar"])
+            artifact(subProject.tasks["shadowJar"])
         }
     }
 }
+
+subprojects.filter { it.name != "module-database-core" }
+    .filter { it.name != "module" }
+    .filter { it.name != "platform" }
+    .filter { it.name != "expansion" }
+    .forEach { proj ->
+        proj.publishing {
+            applyToSub(proj)
+        }
+    }
