@@ -11,7 +11,6 @@ import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.nodes.MappingNode
 import org.yaml.snakeyaml.reader.UnicodeReader
-import taboolib.common.platform.function.info
 import taboolib.library.configuration.BukkitYaml
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.library.configuration.YamlConstructor

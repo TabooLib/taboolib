@@ -1,7 +1,7 @@
 package taboolib.module.kether.action.transform
 
-import taboolib.common.platform.function.info
-import taboolib.library.kether.*
+import taboolib.library.kether.ArgTypes
+import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
@@ -21,7 +21,7 @@ object ActionWhen {
         }
     }
 
-    class CaseDefaultAction(action: ParsedAction<*>, ) : CaseAction(CheckType.EQUALS, emptyList(), action)
+    class CaseDefaultAction(action: ParsedAction<*>) : CaseAction(CheckType.EQUALS, emptyList(), action)
 
     @KetherParser(["when"], namespace = "kether_inner:when")
     fun innerActionCase() = scriptParser {

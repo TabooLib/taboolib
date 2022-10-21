@@ -3,6 +3,7 @@ package taboolib.module.configuration
 import taboolib.library.configuration.ConfigurationSection
 import java.io.File
 
+@Suppress("DEPRECATION")
 @Deprecated("Use Configuration")
 class SecuredFile : ConfigFile(Type.YAML.newFormat().createConcurrentConfig()) {
 

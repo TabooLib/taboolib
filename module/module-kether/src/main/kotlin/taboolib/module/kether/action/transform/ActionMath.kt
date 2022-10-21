@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture
  * @author sky
  * @since 2021/3/16 2:56 下午
  */
+@Suppress("DEPRECATION")
 @Deprecated("use calc")
 class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptAction<Number>() {
 

@@ -48,11 +48,9 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
     public String toJsonSimplified(int index) {
         StringBuilder builder = new StringBuilder();
         builder.append("[\n");
-        value.forEach(v -> {
-            builder.append(copy("  ", index + 1))
-                    .append(v.toJsonSimplified(index + 1))
-                    .append("\n");
-        });
+        value.forEach(v -> builder.append(copy("  ", index + 1))
+                .append(v.toJsonSimplified(index + 1))
+                .append("\n"));
         builder.append(copy("  ", index)).append("]");
         return builder.toString();
     }

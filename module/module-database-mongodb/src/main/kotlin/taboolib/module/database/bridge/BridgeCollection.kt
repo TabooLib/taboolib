@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package taboolib.module.database.bridge
 
 import com.google.gson.Gson

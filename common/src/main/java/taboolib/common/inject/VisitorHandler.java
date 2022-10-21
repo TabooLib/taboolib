@@ -32,14 +32,18 @@ public class VisitorHandler {
 
     /**
      * 注册依赖注入接口
+     *
+     * @param classVisitor 接口
      */
-    public static void register(@NotNull ClassVisitor transform) {
-        VisitorGroup injectors = propertyMap.computeIfAbsent(transform.getPriority(), i -> new VisitorGroup(transform.getPriority()));
-        injectors.getAll().add(transform);
+    public static void register(@NotNull ClassVisitor classVisitor) {
+        VisitorGroup injectors = propertyMap.computeIfAbsent(classVisitor.getPriority(), i -> new VisitorGroup(classVisitor.getPriority()));
+        injectors.getAll().add(classVisitor);
     }
 
     /**
      * 对给定类进行依赖注入
+     *
+     * @param clazz 类
      */
     public static void injectAll(@NotNull Class<?> clazz) {
         for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
@@ -49,6 +53,8 @@ public class VisitorHandler {
 
     /**
      * 根据生命周期对所有类进行依赖注入
+     *
+     * @param lifeCycle 生命周期
      */
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
         if (TabooLibCommon.isKotlinEnvironment() && !TabooLibCommon.isStopped()) {
@@ -62,6 +68,10 @@ public class VisitorHandler {
 
     /**
      * 对给定类进行依赖注入
+     *
+     * @param clazz     类
+     * @param group     注入组
+     * @param lifeCycle 生命周期
      */
     public static void inject(@NotNull Class<?> clazz, @NotNull VisitorGroup group, @Nullable LifeCycle lifeCycle) {
         if (TabooLibCommon.isStopped()) {

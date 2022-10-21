@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
  * @author Bkm016
  * @since 2018-04-16
  */
+@SuppressWarnings("DuplicatedCode")
 public class PorticusListener implements Listener {
 
     private static final Plugin plugin = BungeeCord.getInstance().pluginManager.getPlugins().iterator().next();

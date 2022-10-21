@@ -1,4 +1,5 @@
 @file:Isolated
+
 package taboolib.common.io
 
 import taboolib.common.Isolated

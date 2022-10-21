@@ -55,7 +55,6 @@ import java.util.UUID;
  * @version 3.1.1
  * @see XMaterial
  */
-@SuppressWarnings("ConstantConditions")
 public class XSkull {
     protected static final MethodHandle PROFILE_GETTER, PROFILE_SETTER;
     private static final String VALUE_PROPERTY = "{\"textures\":{\"SKIN\":{\"url\":\"";

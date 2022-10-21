@@ -63,7 +63,7 @@ class Demand(val source: String) {
     }
 
     fun get(key: List<String>, def: String? = null): String? {
-        return key.mapNotNull { get(it) }.firstOrNull() ?: def
+        return key.firstNotNullOfOrNull { get(it) } ?: def
     }
 
     fun get(key: String, def: String? = null): String? {

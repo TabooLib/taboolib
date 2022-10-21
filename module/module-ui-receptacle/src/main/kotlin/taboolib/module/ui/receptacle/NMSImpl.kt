@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package taboolib.module.ui.receptacle
 
 import net.minecraft.server.v1_16_R3.*

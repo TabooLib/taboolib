@@ -266,7 +266,7 @@ open class NodeReader(val entity: NodeEntity) {
 
     open fun getNeighbors(nodes: Array<Node?>, node: Node): Int {
         var neighbors = 0
-        var j = 0
+//        var j = 0
 //        val pathType0 = getCachedBlockType(node.x, node.y + 1, node.z)
 //        val pathType1 = getCachedBlockType(node.x, node.y, node.z)
 //        if (entity.getPathfindingMalus(pathType0) >= 0.0f && pathType1 != BlockPathTypes.STICKY_HONEY) {

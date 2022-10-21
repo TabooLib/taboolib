@@ -3,12 +3,10 @@
 package taboolib.platform.util
 
 import org.bukkit.Material
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.platform.function.adaptPlayer
-import taboolib.type.BukkitEquipment
 
 fun Player.giveItem(itemStack: List<ItemStack>) {
     itemStack.forEach { giveItem(it) }

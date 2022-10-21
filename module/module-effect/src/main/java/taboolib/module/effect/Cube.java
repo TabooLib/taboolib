@@ -4,6 +4,8 @@ import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
+import java.util.Objects;
+
 /**
  * 表示一个立方体
  *
@@ -41,7 +43,7 @@ public class Cube extends ParticleObj {
         this.minLoc = minLoc;
         this.maxLoc = maxLoc;
         this.step = step;
-        if (!minLoc.getWorld().equals(maxLoc.getWorld())) {
+        if (!Objects.requireNonNull(minLoc.getWorld()).equals(maxLoc.getWorld())) {
             throw new IllegalArgumentException("这两个坐标的所对应的世界不相同");
         }
     }

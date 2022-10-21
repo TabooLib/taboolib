@@ -1,4 +1,5 @@
 @file:Isolated
+
 package taboolib.common.io
 
 import taboolib.common.Isolated
@@ -10,7 +11,9 @@ import java.security.MessageDigest
 
 /**
  * 取字符串的数字签名
+ *
  * @param algorithm 算法类型（可使用：md5, sha-1, sha-256 等）
+ * @return 数字签名
  */
 fun String.digest(algorithm: String): String {
     val digest = MessageDigest.getInstance(algorithm)
@@ -20,7 +23,9 @@ fun String.digest(algorithm: String): String {
 
 /**
  * 取文件的数字签名
+ *
  * @param algorithm 算法类型（可使用：md5, sha-1, sha-256 等）
+ * @return 数字签名
  */
 fun File.digest(algorithm: String): String {
     return FileInputStream(this).use {

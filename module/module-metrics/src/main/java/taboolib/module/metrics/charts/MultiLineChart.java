@@ -7,6 +7,7 @@ import taboolib.module.metrics.JsonBuilder;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+@SuppressWarnings("DuplicatedCode")
 @Isolated
 public class MultiLineChart extends CustomChart {
 

@@ -81,6 +81,7 @@ public abstract class ItemStacker {
         return false;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public boolean addItemFromChestToPlayer(ItemStack item, Inventory inventory) {
         for (int i = 8; i >= 0; i--) {
             if (ItemModifierKt.isAir(inventory.getItem(i))) {
@@ -125,7 +126,6 @@ public abstract class ItemStacker {
      * @param ignore    忽略位置
      * @return {@link AddResult}
      */
-    @SuppressWarnings("ConstantConditions")
     public AddResult addItemAndMerge(ItemStack item, Inventory inventory, List<Integer> ignore) {
         boolean changed = false;
         int count = item.getAmount();

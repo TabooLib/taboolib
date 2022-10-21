@@ -48,7 +48,7 @@ class DataContainer(val user: String, val database: Database) {
     }
 
     fun checkUpdate() {
-        updateMap.filterValues { it < System.currentTimeMillis() }.forEach { (t, u) ->
+        updateMap.filterValues { it < System.currentTimeMillis() }.forEach { (t, _) ->
             updateMap.remove(t)
             save(t)
         }

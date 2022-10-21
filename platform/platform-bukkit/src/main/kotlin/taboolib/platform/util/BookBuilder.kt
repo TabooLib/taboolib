@@ -1,4 +1,6 @@
 @file:Isolated
+@file:Suppress("DEPRECATION")
+
 package taboolib.platform.util
 
 import org.bukkit.Bukkit

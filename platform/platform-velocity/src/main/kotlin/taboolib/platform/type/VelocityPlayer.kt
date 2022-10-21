@@ -316,7 +316,7 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         return player.hasPermission(permission)
     }
 
-    override fun teleport(loc: Location) {
+    override fun teleport(location: Location) {
         error("unsupported")
     }
 

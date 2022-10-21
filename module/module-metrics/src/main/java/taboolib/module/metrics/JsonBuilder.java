@@ -160,7 +160,8 @@ public class JsonBuilder {
      * Escapes the given string like stated in https://www.ietf.org/rfc/rfc4627.txt.
      *
      * <p>This method escapes only the necessary characters '"', '\'. and '\u0000' - '\u001F'.
-     * Compact escapes are not used (e.g., '\n' is escaped as "\u000a" and not as "\n").
+     * Compact escapes are not used (e.g., '\n' is escaped as "
+" and not as "\n").
      *
      * @param value The value to escape.
      * @return The escaped value.

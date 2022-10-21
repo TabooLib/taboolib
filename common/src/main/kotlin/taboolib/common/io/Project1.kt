@@ -21,22 +21,39 @@ import java.util.jar.JarFile
  */
 val runningClassMap by unsafeLazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }
 
+/**
+ * 当前插件的所有类（排除 TabooLib 第三方库）
+ */
 val runningClassMapWithoutLibrary by unsafeLazy { runningClassMap.filterKeys { !it.contains("$taboolibId.library") } }
 
+/**
+ * 当前插件的所有类的集合
+ */
 val runningClasses by unsafeLazy { LinkedList(runningClassMap.values) }
 
+/**
+ * 当前插件的所有类的集合（排除 TabooLib 第三方库）
+ */
 val runningClassesWithoutLibrary by unsafeLazy { LinkedList(runningClassMapWithoutLibrary.values) }
 
+/**
+ * 当前插件的所有类（排除匿名类、内部类）
+ */
 val runningExactClassMap by unsafeLazy { runningClassMap.filter { !it.key.contains('$') && it.key.substringAfterLast('$').toIntOrNull() == null } }
 
+/**
+ * 当前插件的所有类的集合（排除匿名类、内部类）
+ */
 val runningExactClasses by unsafeLazy { LinkedList(runningExactClassMap.values) }
 
 /**
  * 取该类在当前项目中被加载的任何实例
  * 例如：@Awake 自唤醒类，或是 Kotlin Companion Object、Kotlin Object 对象
+ *
  * @param newInstance 若无任何已加载的实例，是否实例化
  */
 fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
+    // 是否为自唤醒类
     try {
         val awoken = PlatformFactory.awokenMap[name] as? T
         if (awoken != null) {
@@ -52,14 +69,18 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         return null
     }
     return try {
+        // 获取 Kotlin Companion 字段
         val field = if (simpleName == "Companion") {
             val companion = Class.forName(name.substringBeforeLast('$'), false, TabooLibCommon::class.java.classLoader)
             ReflexClass.of(companion).getField("Companion", findToParent = false, remap = false)
-        } else {
+        }
+        // 获取 Kotlin Object 字段
+        else {
             ReflexClass.of(this).getField("INSTANCE", findToParent = false, remap = false)
         }
         lazySupplier { field.get() as T }
     } catch (ex: NoSuchFieldException) {
+        // 是否创建实例
         if (newInstance) lazySupplier { getDeclaredConstructor().newInstance() as T } else null
     } catch (ex: NoClassDefFoundError) {
         null
@@ -83,14 +104,23 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     }
 }
 
+/**
+ * 注入类
+ */
 fun <T> Class<T>.inject() {
     return VisitorHandler.injectAll(this)
 }
 
+/**
+ * 搜索该类的当前平台实现
+ */
 fun <T> Class<T>.findImplementation(): T? {
     return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.getInstance(true)?.get() as? T
 }
 
+/**
+ * 获取 URL 下的所有类
+ */
 fun URL.getClasses(): Map<String, Class<*>> {
     val classes = LinkedHashMap<String, Class<*>>()
     val src = ArrayList<File>()
@@ -101,6 +131,7 @@ fun URL.getClasses(): Map<String, Class<*>> {
     } catch (ex: URISyntaxException) {
         File(path)
     }
+    // 从 Spring Boot 项目中加载类
     val springBootWar = srcFile.parentFile.name == "lib" && srcFile.parentFile.parentFile.name == "WEB-INF"
     if (springBootWar) {
         // include taboolib modules

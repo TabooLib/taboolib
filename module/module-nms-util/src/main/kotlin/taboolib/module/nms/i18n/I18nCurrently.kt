@@ -1,3 +1,4 @@
+@file:Suppress("KDocUnresolvedReference", "DEPRECATION")
 package taboolib.module.nms.i18n
 
 import com.google.gson.JsonObject

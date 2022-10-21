@@ -29,7 +29,6 @@ import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
@@ -59,6 +58,7 @@ import java.util.stream.Collectors;
  * @version 7.0.1
  * @see Sound
  */
+@SuppressWarnings("DuplicatedCode")
 public enum XSound {
     AMBIENT_BASALT_DELTAS_ADDITIONS,
     AMBIENT_BASALT_DELTAS_LOOP,
@@ -1473,7 +1473,7 @@ public enum XSound {
      */
     @NotNull
     public static Optional<XSound> matchXSound(@NotNull String sound) {
-        if (sound == null || sound.isEmpty()) throw new IllegalArgumentException("Cannot match XSound of a null or empty sound name");
+        if (sound.isEmpty()) throw new IllegalArgumentException("Cannot match XSound of a null or empty sound name");
         return Optional.ofNullable(Data.NAMES.get(format(sound)));
     }
 
@@ -1866,7 +1866,7 @@ public enum XSound {
     public static class Record {
         @NotNull public final XSound sound;
         public final float volume, pitch;
-        public boolean playAtLocation;
+        public final boolean playAtLocation;
         @Nullable public Player player;
         @Nullable public Location location;
 

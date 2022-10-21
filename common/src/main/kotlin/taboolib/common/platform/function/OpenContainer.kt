@@ -13,6 +13,8 @@ fun getOpenContainers(): List<OpenContainer> {
 
 /**
  * 获取特定名称的开放接口
+ *
+ * @param name 接口名称
  */
 fun getOpenContainer(name: String): OpenContainer? {
     return PlatformFactory.getService<PlatformOpenContainer>().getOpenContainers().firstOrNull { it.name == name }

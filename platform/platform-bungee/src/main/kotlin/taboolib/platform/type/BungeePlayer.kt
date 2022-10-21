@@ -309,7 +309,7 @@ class BungeePlayer(val player: ProxiedPlayer) : ProxyPlayer {
         return player.hasPermission(permission)
     }
 
-    override fun teleport(loc: Location) {
+    override fun teleport(location: Location) {
         error("unsupported")
     }
 

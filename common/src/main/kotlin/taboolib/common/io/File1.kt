@@ -48,3 +48,26 @@ fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
     }
     return file
 }
+
+/**
+ * 声明一个目录
+ *
+ * @param folder 目录
+ * @param path 所属路径
+ * @param create 若目录不存在是否新建（默认为是）
+ * @return 该目录自身
+ */
+fun newFolder(folder: File, path: String, create: Boolean = true): File {
+    return newFile(folder, path, create, folder = true)
+}
+
+/**
+ * 声明一个目录
+ *
+ * @param path 目录路径
+ * @param create 若目录不存在是否新建（默认为是）
+ * @return 该目录自身
+ */
+fun newFolder(path: String, create: Boolean = true): File {
+    return newFile(path, create, folder = true)
+}

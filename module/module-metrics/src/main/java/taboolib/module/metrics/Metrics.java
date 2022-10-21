@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class Metrics {
 
     private MetricsBase metricsBase;
@@ -45,7 +46,7 @@ public class Metrics {
         boolean logErrors = config.getBoolean("logFailedRequests", false);
         boolean logSentData = config.getBoolean("logSentData", false);
         boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
-        String platform = null;
+        String platform;
         switch (runningPlatform) {
             case UNKNOWN:
             case BUKKIT:

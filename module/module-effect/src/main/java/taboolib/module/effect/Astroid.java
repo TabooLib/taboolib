@@ -10,6 +10,7 @@ import taboolib.common.util.Location;
  *
  * @author Zoyn
  */
+@SuppressWarnings("ALL")
 @Isolated
 public class Astroid extends ParticleObj implements Playable {
 

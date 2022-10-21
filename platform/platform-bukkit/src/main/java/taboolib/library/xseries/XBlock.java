@@ -53,7 +53,7 @@ import java.util.*;
  * @see MaterialData
  * @see XMaterial
  */
-@SuppressWarnings({"deprecation", "ConstantConditions"})
+@SuppressWarnings({"deprecation"})
 @Isolated
 public final class XBlock {
     public static final Set<XMaterial> CROPS = Collections.unmodifiableSet(EnumSet.of(
@@ -784,7 +784,7 @@ public final class XBlock {
             return LOOKUP.get(name);
         }
 
-        private enum Handling {COLORABLE, WOOD_SPECIES;}
+        private enum Handling {COLORABLE, WOOD_SPECIES}
     }
 
     /**

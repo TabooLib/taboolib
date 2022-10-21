@@ -22,10 +22,6 @@
 package taboolib.library.xseries;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -60,6 +56,7 @@ import java.util.stream.Collectors;
  * @see PotionEffectType
  * @see PotionType
  */
+@SuppressWarnings("DuplicatedCode")
 @Isolated
 public enum XPotion {
     ABSORPTION("ABSORB"),
@@ -181,7 +178,7 @@ public enum XPotion {
      */
     @NotNull
     public static Optional<XPotion> matchXPotion(@NotNull String potion) {
-        if (potion == null || potion.isEmpty()) throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
+        if (potion.isEmpty()) throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
         PotionEffectType idType = fromId(potion);
         if (idType != null) {
             XPotion type = Data.NAMES.get(idType.getName());

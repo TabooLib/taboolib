@@ -1,5 +1,8 @@
 name: build
-on: [ push ]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -97,8 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: 6.0.9-${{ github.run_number }}
-          release_name: Release 6.0.9-${{ github.run_number }}
+          tag_name: 6.0.10-${{ github.run_number }}
+          release_name: Release 6.0.10-${{ github.run_number }}
 
       # 上传构建文件
       - name: capture build artifacts

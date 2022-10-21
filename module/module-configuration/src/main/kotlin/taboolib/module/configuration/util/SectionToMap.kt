@@ -11,7 +11,7 @@ fun <K, V> ConfigurationSection.getMap(path: String): Map<K, V> {
     getConfigurationSection(path)?.let { section ->
         section.getKeys(false).forEach { key ->
             try {
-                map[key as K] = section.get(key) as V
+                map[key as K] = section[key] as V
             } catch (ex: Throwable) {
                 ex.printStackTrace()
             }

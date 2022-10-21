@@ -23,18 +23,15 @@ abstract class SimpleAi {
     /**
      * 开始时
      */
-    open fun startTask() {
-    }
+    open fun startTask() = Unit
 
     /**
      * 重置时
      */
-    open fun resetTask() {
-    }
+    open fun resetTask() = Unit
 
     /**
      * 更新时
      */
-    open fun updateTask() {
-    }
+    open fun updateTask() = Unit
 }

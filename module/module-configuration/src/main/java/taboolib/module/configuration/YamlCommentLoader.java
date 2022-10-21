@@ -97,6 +97,7 @@ public class YamlCommentLoader {
         }
     }
 
+    @SuppressWarnings("CommentedOutCode")
     public MappingNode toNodeTree(@NotNull ConfigurationSection section) {
         List<NodeTuple> nodeTuples = new ArrayList<>();
         for (Map.Entry<String, Object> entry : section.getValues(false).entrySet()) {

@@ -7,6 +7,7 @@ import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.Isolated;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static taboolib.module.nms.MinecraftServerUtilKt.nmsClass;
 
@@ -16,7 +17,6 @@ import static taboolib.module.nms.MinecraftServerUtilKt.nmsClass;
  * @author sky
  * @since 2019-12-11 19:31
  */
-@SuppressWarnings("ConstantConditions")
 @Isolated
 public enum BukkitAttribute {
 
@@ -112,7 +112,7 @@ public enum BukkitAttribute {
             ClassMethod method = attributeBaseClass.getMethod("getName", false, false);
             for (ClassField classField : genericAttributesClass.getStructure().getFields()) {
                 Object attribute = classField.get(null);
-                if (method.invoke(attributeBaseClass.getStructure().getOwner().cast(attribute)).equals(this.minecraftKey)) {
+                if (Objects.requireNonNull(Objects.requireNonNull(method.invoke(attributeBaseClass.getStructure().getOwner().cast(attribute)))).equals(this.minecraftKey)) {
                     return attribute;
                 }
             }

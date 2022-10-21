@@ -531,16 +531,16 @@ public class Location implements Cloneable {
 
     /**
      * 源位置参照制坐标
-     *
+     * <p>
      * 偏移量 offset
      * -90 源位置的左边
      * 90  源位置的右边
      * 180 源位置的后面
      * 想要定于前面，可使用负数乘法
      *
-     * @param offset 偏移量
+     * @param offset   偏移量
      * @param multiply 乘 越大越远之类
-     * @param height 高度
+     * @param height   高度
      */
     public Location referTo(float yaw, float offset, double multiply, double height) {
         Location referLoc = clone();

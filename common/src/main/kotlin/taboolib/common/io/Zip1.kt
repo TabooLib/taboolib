@@ -12,6 +12,7 @@ import java.util.zip.ZipOutputStream
 
 /**
  * 压缩文件
+ *
  * @param target 压缩后的文件
  * @param skipParent 是否跳过该文件，从子文件开始压缩
  */
@@ -31,6 +32,7 @@ fun File.zip(target: File, skipParent: Boolean = false) {
 
 /**
  * 解压文件
+ *
  * @param target 解压后的文件
  */
 fun File.unzip(target: File) {
@@ -39,6 +41,7 @@ fun File.unzip(target: File) {
 
 /**
  * 解压文件
+ *
  * @param destDirPath 解压后的文件路径
  */
 fun File.unzip(destDirPath: String) {

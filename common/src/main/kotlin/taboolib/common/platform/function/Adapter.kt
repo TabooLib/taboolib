@@ -49,10 +49,16 @@ fun getProxyPlayer(uuid: UUID): ProxyPlayer? {
     return onlinePlayers().firstOrNull { it.uniqueId == uuid }
 }
 
+/**
+ * 将平台实现转换为跨平台实现
+ */
 fun adaptLocation(any: Any): Location {
     return PlatformFactory.getService<PlatformAdapter>().adaptLocation(any)
 }
 
+/**
+ * 将跨平台实现转换为平台实现
+ */
 @Suppress("UNCHECKED_CAST")
 fun <T> platformLocation(location: Location): T {
     return PlatformFactory.getService<PlatformAdapter>().platformLocation(location) as T

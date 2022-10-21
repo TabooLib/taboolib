@@ -4,7 +4,7 @@ package taboolib.module.database
 
 import taboolib.common.Isolated
 import taboolib.library.configuration.ConfigurationSection
-import taboolib.module.configuration.SecuredFile
+import taboolib.module.configuration.Configuration
 import java.io.File
 
 fun File.getHost(): HostSQLite {
@@ -12,5 +12,5 @@ fun File.getHost(): HostSQLite {
 }
 
 fun ConfigurationSection.getHost(name: String): HostSQL {
-    return HostSQL(getConfigurationSection(name) ?: SecuredFile())
+    return HostSQL(getConfigurationSection(name) ?: Configuration.empty())
 }

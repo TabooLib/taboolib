@@ -37,20 +37,20 @@ fun disablePacketListener() {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", vararg parameter: Any?): T {
-    val key = "${clazz.name}:$bind:${parameter.joinToString(",") { it?.javaClass?.name.toString() }}"
+fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", vararg parameter: Any): T {
+    val key = "${clazz.name}:$bind:${parameter.joinToString(",") { it.javaClass.name.toString() }}"
     // 从缓存中获取
     if (nmsProxyInstanceMap.containsKey(key)) {
         return nmsProxyInstanceMap[key] as T
     }
     // 获取代理类并实例化
-    val newInstance = nmsProxyClass(clazz, bind).invokeConstructor(*parameter)!!
+    val newInstance = nmsProxyClass(clazz, bind).getDeclaredConstructor(*parameter.map { it.javaClass }.toTypedArray()).newInstance(*parameter)
     // 缓存实例
-    nmsProxyInstanceMap[key] = newInstance
+    nmsProxyInstanceMap[key] = newInstance!!
     return newInstance
 }
 
-inline fun <reified T> nmsProxy(bind: String = "{name}Impl", vararg parameter: Any?): T {
+inline fun <reified T> nmsProxy(bind: String = "{name}Impl", vararg parameter: Any): T {
     return nmsProxy(T::class.java, bind, *parameter)
 }
 
