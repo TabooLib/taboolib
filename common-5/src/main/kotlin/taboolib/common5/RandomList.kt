@@ -18,7 +18,7 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
     }
 
     fun random(): T? {
-        val sum = value.sumBy { it.index }
+        val sum = value.sumOf { it.index }
         if (sum > 0) {
             var m = 0
             val n = Random().nextInt(sum)

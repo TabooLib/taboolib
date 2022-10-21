@@ -31,12 +31,12 @@ subprojects {
 
     java {
         // withJavadocJar()
-        withSourcesJar()
+        // withSourcesJar()
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl", "-Xlint:unchecked"))
+        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
     }
 
     tasks.withType<KotlinCompile> {
@@ -86,8 +86,8 @@ fun PublishingExtension.applyToSub(subProject: Project) {
             } else {
                 "${project.version}"
             })
+            artifact(subProject.tasks["shadowJar"])
             artifact(subProject.tasks["kotlinSourcesJar"])
-            artifact(subProject.tasks.build)
             println("> Apply \"$groupId:$artifactId:$version\"")
         }
     }
