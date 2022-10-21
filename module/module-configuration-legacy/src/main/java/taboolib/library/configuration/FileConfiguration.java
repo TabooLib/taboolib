@@ -2,6 +2,7 @@ package taboolib.library.configuration;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 /**
  * This is a base class for all File based implementations of {@link
@@ -44,7 +45,7 @@ public abstract class FileConfiguration extends MemoryConfiguration {
     public void save(File file) throws IOException {
         Utils.createParentDirs(file);
         String data = saveToString();
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+        try (Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8)) {
             writer.write(data);
         }
     }

@@ -6,6 +6,7 @@ import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoDatabase
 import java.util.concurrent.ConcurrentHashMap
 
+@Suppress("CanBeParameter")
 class BridgeDatabase(val client: String, val database: String) {
 
     val mongoClient: MongoClient = MongoClients.create(ConnectionString(client))

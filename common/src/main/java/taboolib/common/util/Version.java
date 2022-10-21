@@ -32,22 +32,49 @@ public class Version implements Comparable<Version> {
         }
     }
 
+    /**
+     * 是否小于该版本
+     *
+     * @param version 版本
+     * @return 是否小于
+     */
     public boolean isBefore(Version version) {
         return compareTo(version) < 0;
     }
 
+    /**
+     * 是否大于该版本
+     *
+     * @param version 版本
+     * @return 是否大于
+     */
     public boolean isAfter(Version version) {
         return compareTo(version) > 0;
     }
 
+    /**
+     * 获取原始内容
+     *
+     * @return 原始内容
+     */
     public String getSource() {
         return source;
     }
 
+    /**
+     * 是否为老版本格式
+     *
+     * @return 是否为老版本格式
+     */
     public boolean isLegacy() {
         return version[0] == -1;
     }
 
+    /**
+     * 获取版本信息
+     *
+     * @return 版本信息
+     */
     public int[] getVersion() {
         return version;
     }

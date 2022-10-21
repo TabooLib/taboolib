@@ -19,8 +19,8 @@ public class VectorUtil {
     public static Item itemDrop(Player player, ItemStack itemStack, double bulletSpread, double radius) {
         Location location = player.getLocation().add(0.0D, 1.5D, 0.0D);
         Item item = player.getWorld().dropItem(location, itemStack);
-        double yaw = Math.toRadians((double)(-player.getLocation().getYaw() - 90.0F));
-        double pitch = Math.toRadians((double)(-player.getLocation().getPitch()));
+        double yaw = Math.toRadians(-player.getLocation().getYaw() - 90.0F);
+        double pitch = Math.toRadians(-player.getLocation().getPitch());
         double x;
         double y;
         double z;
@@ -28,9 +28,7 @@ public class VectorUtil {
         double v1 = -Math.sin(yaw) * Math.cos(pitch);
         if (bulletSpread > 0.0D) {
             double[] spread = new double[]{1.0D, 1.0D, 1.0D};
-            IntStream.range(0, 3).forEach((t) -> {
-                spread[t] = (new Random().nextDouble() - new Random().nextDouble()) * bulletSpread * 0.1D;
-            });
+            IntStream.range(0, 3).forEach((t) -> spread[t] = (new Random().nextDouble() - new Random().nextDouble()) * bulletSpread * 0.1D);
             x = v + spread[0];
             y = Math.sin(pitch) + spread[1];
             z = v1 + spread[2];

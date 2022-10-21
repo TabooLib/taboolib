@@ -21,6 +21,5 @@ abstract class ProxyEvent {
         return !isCancelled
     }
 
-    open fun postCall() {
-    }
+    open fun postCall() = Unit
 }

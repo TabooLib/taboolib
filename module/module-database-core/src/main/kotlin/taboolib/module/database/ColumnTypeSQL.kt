@@ -6,6 +6,7 @@ package taboolib.module.database
  * @author sky
  * @since 2018-05-14 19:13 (recode 2020/10/06 10:00)
  */
+@Suppress("KDocUnresolvedReference")
 enum class ColumnTypeSQL(val isRequired: Boolean = false) {
 
     /**

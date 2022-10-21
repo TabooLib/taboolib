@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package taboolib.module.nms
 
 import com.google.gson.JsonObject

@@ -77,7 +77,7 @@ import static taboolib.library.xseries.XMaterial.supports;
  * @version 6.0.0
  * @see ItemStack
  */
-@SuppressWarnings({"ConstantConditions", "NullableProblems"})
+@SuppressWarnings("ALL")
 public final class XItemStack {
     public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
 

@@ -8,6 +8,7 @@ import taboolib.common.util.Vector;
  *
  * @author Zoyn
  */
+@SuppressWarnings("DuplicatedCode")
 @Isolated
 public class VectorUtils {
 

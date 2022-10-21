@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package taboolib.module.lang
 
 import taboolib.common.platform.function.releaseResourceFile
@@ -5,6 +7,7 @@ import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -29,7 +32,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
             if (resourceAsStream != null) {
                 val nodes = HashMap<String, Type>()
                 val source = resourceAsStream.readBytes().toString(StandardCharsets.UTF_8)
-                val sourceFile = SecuredFile.loadConfiguration(source)
+                val sourceFile = Configuration.loadFromString(source, taboolib.module.configuration.Type.YAML)
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
@@ -40,7 +43,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 }
                 val exists = HashMap<String, Type>()
                 // 加载文件
-                loadNodes(SecuredFile.loadConfiguration(file), exists, code)
+                loadNodes(Configuration.loadFromFile(file), exists, code)
                 // 检查缺失
                 val missingKeys = nodes.keys.filter { !exists.containsKey(it) }
                 if (missingKeys.isNotEmpty() && migrate) {
@@ -55,7 +58,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                         FileWatcher.INSTANCE.addSimpleListener(file) {
                             it.nodes.clear()
                             loadNodes(sourceFile, it.nodes, code)
-                            loadNodes(SecuredFile.loadConfiguration(file), it.nodes, code)
+                            loadNodes(Configuration.loadFromFile(file), it.nodes, code)
                         }
                     }
                 }
@@ -64,7 +67,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     }
 
     @Suppress("SimplifiableCallChain")
-    fun loadNodes(file: SecuredFile, nodesMap: HashMap<String, Type>, code: String) {
+    fun loadNodes(file: Configuration, nodesMap: HashMap<String, Type>, code: String) {
         migrateLegacyVersion(file)
         file.getKeys(false).forEach { node ->
             when (val obj = file[node]) {
@@ -109,7 +112,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
-    private fun migrateFile(missing: List<String>, source: SecuredFile, file: File) {
+    @Suppress("DEPRECATION")
+    private fun migrateFile(missing: List<String>, source: Configuration, file: File) {
         submit(async = true) {
             val append = ArrayList<String>()
             append += "# ------------------------- #"
@@ -126,7 +130,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
-    private fun migrateLegacyVersion(file: SecuredFile) {
+    private fun migrateLegacyVersion(file: Configuration) {
         if (file.file == null) {
             return
         }
@@ -135,20 +139,21 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         values.forEach {
             if (it.key.contains('.')) {
                 fixed = true
-                file.set(it.key.substringBefore('.'), null)
-                file.set(it.key.replace('.', '-'), when (val obj = it.value) {
+                file[it.key.substringBefore('.')] = null
+                file[it.key.replace('.', '-')] = when (val obj = it.value) {
                     is ConfigurationSection -> migrateLegacyJsonType(obj)
                     is List<*> -> {
                         obj.map { element ->
                             when (element) {
-                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }.toSection(SecuredFile()))
+                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }.toSection(Configuration.empty()))
                                 is String -> element.ifEmpty { "&r" }
                                 else -> element
                             }
                         }
                     }
+
                     else -> obj
-                })
+                }
             }
         }
         if (fixed) {

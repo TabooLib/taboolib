@@ -16,7 +16,7 @@ import java.util.function.Function;
  * @author 坏黑
  * @since 2019-05-24 17:44
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked", "deprecation"})
 public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
 
     private final Map<String, ItemTagData> value = Maps.newConcurrentMap();

@@ -48,6 +48,7 @@ import java.util.stream.Collectors;
  * @version 2.1.1
  * @see Enchantment
  */
+@SuppressWarnings("DuplicatedCode")
 @Isolated
 public enum XEnchantment {
     ARROW_DAMAGE("POWER", "ARROW_DAMAGE", "ARROW_POWER", "AD"),
@@ -234,7 +235,7 @@ public enum XEnchantment {
      */
     @NotNull
     public static Optional<XEnchantment> matchXEnchantment(@NotNull String enchantment) {
-        if (enchantment == null || enchantment.isEmpty()) throw new IllegalArgumentException("Enchantment name cannot be null or empty");
+        if (enchantment.isEmpty()) throw new IllegalArgumentException("Enchantment name cannot be null or empty");
         return Optional.ofNullable(Data.NAMES.get(format(enchantment)));
     }
 

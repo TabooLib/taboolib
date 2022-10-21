@@ -56,6 +56,7 @@ class VelocityCommand : PlatformCommand {
         registeredCommands.onEach { VelocityPlugin.getInstance().server.commandManager.unregister(it) }
     }
 
+    @Suppress("DEPRECATION")
     override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
         when (state) {
             1 -> sender.cast<Audience>().sendMessage(Component.translatable("command.unknown.command", TextColor.color(0xFF5555)))

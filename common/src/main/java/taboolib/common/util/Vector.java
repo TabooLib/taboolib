@@ -10,6 +10,7 @@ import java.util.Random;
  * Vector later. If you want to keep around a Vector, it may be wise to call
  * <code>clone()</code> in order to get a copy.
  */
+@SuppressWarnings("DuplicatedCode")
 public class Vector implements Cloneable {
 
     private static final long serialVersionUID = -2657651106777219169L;

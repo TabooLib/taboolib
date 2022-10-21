@@ -92,6 +92,7 @@ fun Block.isOpened(): Boolean {
     }
 }
 
+@Suppress("DEPRECATION")
 fun Material.isAirLegacy(): Boolean {
     return when {
         MinecraftVersion.major >= 7 -> isAir

@@ -11,22 +11,36 @@ import java.io.File
  */
 abstract class Plugin {
 
-    open fun onLoad() {
-    }
+    /**
+     * 当加载插件时调用
+     */
+    open fun onLoad() = Unit
 
-    open fun onEnable() {
-    }
+    /**
+     * 当启用插件时调用
+     */
+    open fun onEnable() = Unit
 
-    open fun onActive() {
-    }
+    /**
+     * 当服务器启动完成时调用
+     */
+    open fun onActive() = Unit
 
-    open fun onDisable() {
-    }
+    /**
+     * 当卸载插件时调用
+     */
+    open fun onDisable() = Unit
 
+    /**
+     * 重定向插件文件（用于改变 TabooLib 逻辑）
+     */
     open fun nativeJarFile(): File? {
         return null
     }
 
+    /**
+     * 重定向插件目录（用于改变 TabooLib 逻辑）
+     */
     open fun nativeDataFolder(): File? {
         return null
     }

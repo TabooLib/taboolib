@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package taboolib.expansion
 
 import taboolib.common.reflect.Reflex.Companion.invokeMethod

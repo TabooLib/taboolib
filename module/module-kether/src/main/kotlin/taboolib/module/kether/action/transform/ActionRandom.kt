@@ -61,7 +61,7 @@ class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val actio
                 it.expect("to")
                 val to = it.nextParsedAction()
                 ActionRandom(from, to)
-            } catch (_: Exception) {
+            } catch (ignored: Exception) {
                 it.reset()
                 ActionRandom(literalAction(0), literalAction(0), from)
             }

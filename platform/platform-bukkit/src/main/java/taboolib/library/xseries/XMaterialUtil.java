@@ -24,10 +24,10 @@ package taboolib.library.xseries;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.Isolated;
 
 import java.util.*;
 
+@SuppressWarnings("CommentedOutCode")
 public final class XMaterialUtil<T extends Enum<T>> {
 
     @NotNull public static final XMaterialUtil<XMaterial> AIR;

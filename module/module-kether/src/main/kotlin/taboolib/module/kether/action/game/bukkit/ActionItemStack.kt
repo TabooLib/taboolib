@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION", "SpellCheckingInspection")
+
 package taboolib.module.kether.action.game.bukkit
 
 import org.bukkit.Material

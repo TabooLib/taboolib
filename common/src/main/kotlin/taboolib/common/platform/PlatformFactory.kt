@@ -93,6 +93,8 @@ object PlatformFactory {
 
     /**
      * 检查指定类是否允许在当前平台运行
+     *
+     * @param clazz 类
      */
     fun checkPlatform(clazz: Class<*>): Boolean {
         val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true

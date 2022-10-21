@@ -80,6 +80,7 @@ public enum BukkitEquipment {
      * @param entity 实体实例
      * @param item   物品
      */
+    @SuppressWarnings("deprecation")
     public void setItem(LivingEntity entity, ItemStack item) {
         EntityEquipment equipment = entity.getEquipment();
         if (equipment == null) {
@@ -117,6 +118,7 @@ public enum BukkitEquipment {
      * @param entity 实体实例
      * @param chance 几率
      */
+    @SuppressWarnings("deprecation")
     public void setItemDropChance(LivingEntity entity, float chance) {
         EntityEquipment equipment = entity.getEquipment();
         if (equipment == null) {
@@ -165,6 +167,7 @@ public enum BukkitEquipment {
      * @param entity 玩家实例
      * @return ItemStack
      */
+    @SuppressWarnings("deprecation")
     @Nullable
     public ItemStack getItem(LivingEntity entity) {
         EntityEquipment equipment = entity.getEquipment();
@@ -199,6 +202,7 @@ public enum BukkitEquipment {
      * @param entity 实体实例
      * @return float
      */
+    @SuppressWarnings("deprecation")
     public float getItemDropChance(LivingEntity entity) {
         EntityEquipment equipment = entity.getEquipment();
         if (equipment == null) {

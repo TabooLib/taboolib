@@ -105,7 +105,7 @@ public abstract class AbstractQuestContext<T extends AbstractQuestContext<T>> im
         protected final VarTable varTable;
         protected final QuestContext questContext;
         protected CompletableFuture<?> future;
-        protected Deque<AutoCloseable> closeables = new LinkedBlockingDeque<>();
+        protected final Deque<AutoCloseable> closeables = new LinkedBlockingDeque<>();
 
         public AbstractFrame(Frame parent, List<Frame> frames, VarTable varTable, QuestContext questContext) {
             this.parent = parent;

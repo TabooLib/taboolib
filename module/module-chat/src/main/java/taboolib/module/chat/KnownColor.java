@@ -282,8 +282,8 @@ public enum KnownColor {
 
     BLACK("纯黑", "000000");
 
-    String display;
-    String hexCode;
+    final String display;
+    final String hexCode;
 
     KnownColor(String display, String hexCode) {
         this.display = display;

@@ -25,7 +25,7 @@ import java.util.Set;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "ConstantConditions"})
+@SuppressWarnings({"Convert2Lambda"})
 @PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
@@ -133,6 +133,7 @@ public class BukkitPlugin extends JavaPlugin {
      * 移除 Spigot 的访问警告：
      * Loaded class {0} from {1} which is not a depend, softdepend or loadbefore of this plugin
      */
+    @SuppressWarnings("DataFlowIssue")
     static void injectAccess() {
         try {
             PluginDescriptionFile description = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "description", false, true, false);

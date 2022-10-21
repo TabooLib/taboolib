@@ -11,6 +11,7 @@ import java.util.Arrays;
  *
  * @author Zoyn
  */
+@SuppressWarnings("DuplicatedCode")
 public class Matrix {
 
     private final double[][] m;

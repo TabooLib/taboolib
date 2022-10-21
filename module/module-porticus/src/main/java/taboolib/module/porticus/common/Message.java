@@ -25,9 +25,7 @@ public class Message {
     public String[] build() {
         StringBuilder builder = new StringBuilder();
         messages.sort(Comparator.comparingInt(MessagePacket::getIndex));
-        messages.forEach(message -> {
-            builder.append(message.getData());
-        });
+        messages.forEach(message -> builder.append(message.getData()));
         JsonArray json = new JsonParser().parse(ByteUtils.deSerialize(builder.toString())).getAsJsonArray();
         String[] args = new String[json.size()];
         for (int i = 0; i < json.size(); i++) {

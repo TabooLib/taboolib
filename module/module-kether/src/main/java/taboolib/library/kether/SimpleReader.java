@@ -119,6 +119,7 @@ public class SimpleReader extends AbstractStringReader implements QuestReader {
         }
     }
 
+    @SuppressWarnings("EmptyMethod")
     protected void beforeParse() {
     }
 

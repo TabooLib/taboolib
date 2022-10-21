@@ -24,14 +24,18 @@ public class VisitorGroup {
     }
 
     /**
-     * 获取所有
+     * 获取所有依赖注入接口
+     *
+     * @return 所有 ClassVisitor
      */
     public List<ClassVisitor> getAll() {
         return list;
     }
 
     /**
-     * 通过生命周期获取
+     * 通过生命周期获取所有依赖注入接口
+     *
+     * @param lifeCycle 生命周期
      */
     public List<ClassVisitor> get(@Nullable LifeCycle lifeCycle) {
         List<ClassVisitor> classList = new LinkedList<>();
@@ -43,6 +47,11 @@ public class VisitorGroup {
         return classList;
     }
 
+    /**
+     * 获取优先级
+     *
+     * @return 优先级
+     */
     public byte getPriority() {
         return priority;
     }

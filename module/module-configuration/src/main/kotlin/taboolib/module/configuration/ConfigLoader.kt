@@ -27,6 +27,7 @@ import java.util.function.Supplier
 @Awake
 class ConfigLoader : ClassVisitor(1) {
 
+    @Suppress("DEPRECATION")
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val configAnno = field.getAnnotation(Config::class.java)

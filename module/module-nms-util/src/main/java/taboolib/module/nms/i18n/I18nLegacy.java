@@ -24,6 +24,7 @@ import java.util.Objects;
  * @author sky
  * @since 2020-04-04 19:44
  */
+@SuppressWarnings("deprecation")
 @RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/i18n_high_zh_CN.yml",
         hash = "3aa002f314ac0768b00daa3563c08da9b5c674c5",

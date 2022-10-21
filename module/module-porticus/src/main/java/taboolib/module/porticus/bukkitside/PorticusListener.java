@@ -20,6 +20,7 @@ import java.io.IOException;
  * @author 坏黑
  * @since 2020-10-15
  */
+@SuppressWarnings("DuplicatedCode")
 public class PorticusListener implements Listener, PluginMessageListener {
 
     public PorticusListener() {
@@ -60,7 +61,7 @@ public class PorticusListener implements Listener, PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] bytes) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] bytes) {
         if (channel.equalsIgnoreCase(Porticus.INSTANCE.getChannelId())) {
             try {
                 Message message = MessageReader.read(bytes);

@@ -6,8 +6,6 @@ import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.events.ExpansionUnregisterEvent
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import org.tabooproject.reflex.ClassField
-import org.tabooproject.reflex.ClassMethod
 import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor

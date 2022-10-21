@@ -5,13 +5,13 @@ package taboolib.common.platform.event
 annotation class SubscribeEvent(
     val priority: EventPriority = EventPriority.NORMAL,
     val ignoreCancelled: Boolean = false,
-    // only bungeecord platform
+    // 仅限 BungeeCord 使用
     val level: Int = -1,
-    // only velocity
+    // 仅限 Velocity 使用
     val postOrder: PostOrder = PostOrder.NORMAL,
-    // only sponge platform
+    // 仅限 Sponge 使用
     val order: EventOrder = EventOrder.DEFAULT,
     val beforeModifications: Boolean = false,
-    // optional event
+    // 用于 OptionalEvent
     val bind: String = ""
 )

@@ -30,13 +30,13 @@ subprojects {
     }
 
     java {
-        withJavadocJar()
+        // withJavadocJar()
         withSourcesJar()
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl"))
+        options.compilerArgs.addAll(listOf("-XDenableSunApiLintControl", "-Xlint:unchecked"))
     }
 
     tasks.withType<KotlinCompile> {
@@ -52,6 +52,13 @@ subprojects {
     }
 }
 
+subprojects
+    .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" }
+    .filter { it.name != "module-database-core" }
+    .forEach { proj ->
+        proj.publishing { applyToSub(proj) }
+    }
+
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
         maven("http://ptms.ink:8081/repository/releases") {
@@ -66,27 +73,22 @@ fun PublishingExtension.applyToSub(subProject: Project) {
         }
         mavenLocal()
     }
-
     publications {
         create<MavenPublication>("maven") {
             artifactId = subProject.name
             groupId = "io.izzel.taboolib"
-            version = (if (project.hasProperty("build")) "${project.version}-${project.findProperty("build")}" else "${project.version}")
-
-            println("> groupId $groupId, artifactId $artifactId, version $version")
-
+            version = (if (project.hasProperty("build")) {
+                var build = project.findProperty("build").toString()
+                if (build.startsWith("task ")) {
+                    build = "local"
+                }
+                "${project.version}-$build"
+            } else {
+                "${project.version}"
+            })
             artifact(subProject.tasks["kotlinSourcesJar"])
-            artifact(subProject.tasks["shadowJar"])
+            artifact(subProject.tasks.build)
+            println("> Apply \"$groupId:$artifactId:$version\"")
         }
     }
 }
-
-subprojects.filter { it.name != "module-database-core" }
-    .filter { it.name != "module" }
-    .filter { it.name != "platform" }
-    .filter { it.name != "expansion" }
-    .forEach { proj ->
-        proj.publishing {
-            applyToSub(proj)
-        }
-    }

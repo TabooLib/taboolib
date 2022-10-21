@@ -46,11 +46,13 @@ class Update(val type: Type, val node: String, val value: Any?) : Comparable<Upd
     }
 }
 
+@Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
 @Deprecated("已过期")
 fun InputStream.migrateTo(target: InputStream): ByteArray? {
     error("Unsupported")
 }
 
+@Suppress("UNUSED_PARAMETER")
 @Deprecated("已过期")
 object ConfigFinder {
 

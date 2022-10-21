@@ -26,25 +26,39 @@ import java.util.logging.Logger;
 @RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public class TabooLibCommon {
 
-    /** 当前插件文件名 **/
+    /**
+     * 当前插件文件名
+     **/
     private static String runningFileName = "TabooLib";
 
-    /** 当前运行环境 **/
+    /**
+     * 当前运行环境
+     **/
     private static Platform runningPlatform = Platform.APPLICATION;
 
-    /** 当前生命周期 **/
+    /**
+     * 当前生命周期
+     **/
     private static LifeCycle currentLifeCycle = LifeCycle.CONST;
 
-    /** 是否停止加载 **/
+    /**
+     * 是否停止加载
+     **/
     private static boolean isStopped = false;
 
-    /** Kotlin 环境是否就绪 **/
+    /**
+     * Kotlin 环境是否就绪
+     **/
     private static boolean isKotlinLoaded = false;
 
-    /** 是否被 Paper 核心拦截控制台打印 **/
+    /**
+     * 是否被 Paper 核心拦截控制台打印
+     **/
     private static boolean isSysoutCatcherFound = false;
 
-    /** 推迟任务 **/
+    /**
+     * 推迟任务
+     **/
     private static final Map<LifeCycle, List<Runnable>> postponeExecutor = new ConcurrentHashMap<>();
 
     static {
@@ -81,7 +95,10 @@ public class TabooLibCommon {
     }
 
     /**
-     * 推迟任务到指定生命周期下执行
+     * 推迟任务到指定生命周期下执行，如果生命周期已经过去则立即执行
+     *
+     * @param lifeCycle 生命周期
+     * @param runnable  任务
      */
     public static void postpone(LifeCycle lifeCycle, Runnable runnable) {
         if (TabooLibCommon.currentLifeCycle.ordinal() >= lifeCycle.ordinal()) {
@@ -93,6 +110,8 @@ public class TabooLibCommon {
 
     /**
      * 触发生命周期
+     *
+     * @param lifeCycle 生命周期
      */
     public static void lifeCycle(LifeCycle lifeCycle) {
         lifeCycle(lifeCycle, null);
@@ -245,6 +264,8 @@ public class TabooLibCommon {
 
     /**
      * 停止 TabooLib 及插件加载流程
+     *
+     * @param value 是否停止
      */
     public static void setStopped(boolean value) {
         isStopped = value;
@@ -252,6 +273,8 @@ public class TabooLibCommon {
 
     /**
      * 控制台输出
+     *
+     * @param message 消息
      */
     public static void print(Object message) {
         if (TabooLibCommon.isSysoutCatcherFound()) {

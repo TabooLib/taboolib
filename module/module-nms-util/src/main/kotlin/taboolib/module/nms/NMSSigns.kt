@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("DEPRECATION")
 
 package taboolib.module.nms
 

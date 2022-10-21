@@ -606,7 +606,8 @@ public final class NoteBlockMusic {
          * A note, has a tone, and a tone is a named <a href="https://en.wikipedia.org/wiki/Pitch_(music)">pitch</a>
          * with a specific (constant) <a href="https://en.wikipedia.org/wiki/Timbre">timbre</a>.
          */
-        public float volume, pitch;
+        public final float volume;
+        public float pitch;
 
         public Sound(Instrument instrument, Note note, float volume, int restatement, int restatementFermata, int fermata) {
             super(restatement, restatementFermata, fermata);
@@ -656,7 +657,9 @@ public final class NoteBlockMusic {
      */
     public abstract static class Instruction {
         @Nullable public Sequence parent;
-        public int restatement, restatementFermata, fermata;
+        public final int restatement;
+        public final int restatementFermata;
+        public final int fermata;
 
         public Instruction(int restatement, int restatementFermata, int fermata) {
             this.restatement = restatement;
@@ -680,7 +683,7 @@ public final class NoteBlockMusic {
      * @since 3.0.0
      */
     public static class Sequence extends Instruction {
-        public Collection<Instruction> instructions = new ArrayList<>(16);
+        public final Collection<Instruction> instructions = new ArrayList<>(16);
 
         public Sequence() {
             super(1, 0, 0);

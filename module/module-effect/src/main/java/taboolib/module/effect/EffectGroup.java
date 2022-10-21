@@ -171,10 +171,6 @@ public class EffectGroup {
         return this;
     }
 
-//    public EffectGroup attachEntity(Entity entity) {
-//        effectList.forEach(effect -> effect.attachEntity(entity));
-//    }
-
     /**
      * 获取特效列表
      *

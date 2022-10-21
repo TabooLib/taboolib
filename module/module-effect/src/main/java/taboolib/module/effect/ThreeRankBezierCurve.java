@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @author Zoyn
  */
+@SuppressWarnings("DuplicatedCode")
 @Isolated
 public class ThreeRankBezierCurve extends ParticleObj {
 

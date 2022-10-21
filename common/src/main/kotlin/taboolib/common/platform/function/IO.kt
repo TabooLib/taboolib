@@ -33,6 +33,8 @@ fun <T> server(): T {
 
 /**
  * 打印日志
+ *
+ * @param message 日志内容
  */
 fun info(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().info(*message)
@@ -40,6 +42,8 @@ fun info(vararg message: Any?) {
 
 /**
  * 打印错误日志
+ *
+ * @param message 日志内容
  */
 fun severe(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().severe(*message)
@@ -47,6 +51,8 @@ fun severe(vararg message: Any?) {
 
 /**
  * 打印警告日志
+ *
+ * @param message 日志内容
  */
 fun warning(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().warning(*message)
@@ -54,6 +60,8 @@ fun warning(vararg message: Any?) {
 
 /**
  * 释放当前插件内的特定资源文件
+ *
+ * @param path 资源文件路径
  * @param replace 是否覆盖文件
  */
 fun releaseResourceFile(path: String, replace: Boolean = false): File {

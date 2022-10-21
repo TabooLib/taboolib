@@ -90,6 +90,7 @@ class TellrawJson {
         return this
     }
 
+    @Suppress("DEPRECATION")
     fun hoverText(text: String): TellrawJson {
         componentsLatest.forEach {
             try {
@@ -103,6 +104,7 @@ class TellrawJson {
         return this
     }
 
+    @Suppress("DEPRECATION")
     fun hoverItem(id: String, tag: String = "{}"): TellrawJson {
         componentsLatest.forEach {
             try {
@@ -169,6 +171,7 @@ class TellrawJson {
 
     companion object {
 
+        @Suppress("SpellCheckingInspection")
         val whitelistTags = arrayOf(
             // 附魔
             "ench",

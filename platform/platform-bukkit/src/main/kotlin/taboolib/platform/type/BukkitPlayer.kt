@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION", "LocalVariableName")
+
 package taboolib.platform.type
 
 import net.md_5.bungee.api.ChatMessageType
@@ -394,7 +396,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     itemMeta.lore = data.lore
                     try {
                         itemMeta.setCustomModelData(data.customModelData)
-                    } catch (ex: NoSuchMethodError) {
+                    } catch (ignored: NoSuchMethodError) {
                     }
                     item.itemMeta = itemMeta
                     if (data.data != 0) {
@@ -435,8 +437,8 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         return player.hasPermission(permission)
     }
 
-    override fun teleport(loc: Location) {
-        player.teleport(Location(Bukkit.getWorld(loc.world!!), loc.x, loc.y, loc.z, loc.yaw, loc.pitch))
+    override fun teleport(location: Location) {
+        player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
     }
 
     override fun giveExp(exp: Int) {

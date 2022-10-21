@@ -25,9 +25,6 @@ package taboolib.library.xseries;
 import com.google.common.base.Enums;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -68,6 +65,7 @@ import java.util.stream.Collectors;
  * @see Material
  * @see ItemStack
  */
+@SuppressWarnings("DuplicatedCode")
 public enum XMaterial {
     ACACIA_BOAT("BOAT_ACACIA"),
     ACACIA_BUTTON("WOOD_BUTTON"),
@@ -1640,7 +1638,7 @@ public enum XMaterial {
      */
     @NotNull
     public static Optional<XMaterial> matchXMaterial(@NotNull String name) {
-        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
+        if (name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
         Optional<XMaterial> oldMatch = matchXMaterialWithData(name);
         return oldMatch.isPresent() ? oldMatch : matchDefinedXMaterial(format(name), UNKNOWN_DATA_VALUE);
     }

@@ -9,12 +9,22 @@ import java.io.Closeable
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
 
-private val listenEvents = CopyOnWriteArraySet<Class<*>>()
-
+/**
+ * 判定一个类是否在当前插件内被监听
+ */
 fun Class<*>.isListened(): Boolean {
     return listenEvents.contains(this)
 }
 
+/**
+ * 注册一个 Bukkit/Nukkit 监听器
+ *
+ * @param event 事件
+ * @param priority 优先级
+ * @param ignoreCancelled 是否忽略取消事件
+ * @param func 事件处理函数
+ * @return 监听器
+ */
 fun <T> registerBukkitListener(
     event: Class<T>,
     priority: EventPriority = EventPriority.NORMAL,
@@ -28,6 +38,15 @@ fun <T> registerBukkitListener(
     }
 }
 
+/**
+ * 注册一个 BungeeCord 监听器
+ *
+ * @param event 事件
+ * @param level 优先级
+ * @param ignoreCancelled 是否忽略取消事件
+ * @param func 事件处理函数
+ * @return 监听器
+ */
 fun <T> registerBungeeListener(
     event: Class<T>,
     level: Int = 0,
@@ -41,6 +60,15 @@ fun <T> registerBungeeListener(
     }
 }
 
+/**
+ * 注册一个 Sponge 监听器
+ *
+ * @param event 事件
+ * @param order 优先级
+ * @param beforeModifications 是否在事件修改前触发
+ * @param func 事件处理函数
+ * @return 监听器
+ */
 fun <T> registerSpongeListener(
     event: Class<T>,
     order: EventOrder = EventOrder.DEFAULT,
@@ -54,6 +82,14 @@ fun <T> registerSpongeListener(
     }
 }
 
+/**
+ * 注册一个 Velocity 监听器
+ *
+ * @param event 事件
+ * @param postOrder 优先级
+ * @param func 事件处理函数
+ * @return 监听器
+ */
 fun <T> registerVelocityListener(
     event: Class<T>,
     postOrder: PostOrder = PostOrder.NORMAL,
@@ -66,24 +102,12 @@ fun <T> registerVelocityListener(
     }
 }
 
+/**
+ * 注销一个监听器
+ */
 fun unregisterListener(proxyListener: ProxyListener) {
     PlatformFactory.getService<PlatformListener>().unregisterListener(proxyListener)
 }
-
-private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"
-
-private val platformEventName = "$taboolibId.platform.type.${runningPlatform.key}ProxyEvent"
-
-private val platformClassCache = ConcurrentHashMap<Class<*>, Boolean>()
-
-private val Class<*>.isProxyEvent: Boolean
-    get() = proxyEvent != null
-
-private val Class<*>.proxyEvent: Class<*>?
-    get() {
-        val superclass = superclass
-        return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.proxyEvent
-    }
 
 /**
  * 是否为跨平台事件的子平台实现
@@ -115,7 +139,24 @@ fun Class<*>.getUsableEvent(): Class<*> {
     }
 }
 
-internal class CloseableListener : Closeable {
+private val listenEvents = CopyOnWriteArraySet<Class<*>>()
+
+private val proxyEventName = "platform.type.${runningPlatform.key}ProxyEvent"
+
+private val platformEventName = "$taboolibId.platform.type.${runningPlatform.key}ProxyEvent"
+
+private val platformClassCache = ConcurrentHashMap<Class<*>, Boolean>()
+
+private val Class<*>.isProxyEvent: Boolean
+    get() = proxyEvent != null
+
+private val Class<*>.proxyEvent: Class<*>?
+    get() {
+        val superclass = superclass
+        return if (superclass != null && superclass.name.endsWith("platform.event.ProxyEvent")) superclass else superclass?.proxyEvent
+    }
+
+private class CloseableListener : Closeable {
 
     var proxyListener: ProxyListener? = null
 
