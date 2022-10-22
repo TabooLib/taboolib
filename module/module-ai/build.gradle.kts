@@ -1,9 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-}
-
 dependencies {
     compileOnly("org.spigotmc:spigot:1.16.5-R0.1-20210611.090701-17")
 //    compileOnly("ink.ptms.core:v11605:11605")
