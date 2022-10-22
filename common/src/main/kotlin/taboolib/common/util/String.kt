@@ -3,6 +3,9 @@ package taboolib.common.util
 
 import taboolib.common.Isolated
 
+/**
+ * 替换字符串中的变量 {0}, {1}
+ */
 fun String.replaceWithOrder(vararg args: Any): String {
     if (args.isEmpty() || isEmpty()) {
         return this
@@ -44,6 +47,9 @@ fun String.replaceWithOrder(vararg args: Any): String {
     return builder.toString()
 }
 
+/**
+ * 解码 Unicode
+ */
 fun String.decodeUnicode(): String {
     var r = this
     fun process() {

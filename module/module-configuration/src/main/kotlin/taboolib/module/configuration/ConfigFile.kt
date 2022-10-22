@@ -11,10 +11,9 @@ import java.io.InputStream
 import java.io.Reader
 import java.text.SimpleDateFormat
 
-
 /**
  * TabooLib
- * taboolib.module.configuration.toml.TomlFileSection
+ * taboolib.module.configuration.ConfigFile
  *
  * @author mac
  * @since 2021/11/22 12:49 上午

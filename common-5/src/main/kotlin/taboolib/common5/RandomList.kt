@@ -17,6 +17,9 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
         element.forEach { add(it.first, it.second) }
     }
 
+    /**
+     * 获取随机元素
+     */
     fun random(): T? {
         val sum = value.sumOf { it.index }
         if (sum > 0) {
@@ -32,18 +35,35 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
         return null
     }
 
+    /**
+     * 添加元素
+     *
+     * @param element 元素
+     * @param index 权重
+     */
     fun add(element: T, index: Int = 1) {
         value.add(Value(element, index))
     }
 
+    /**
+     * 移除元素
+     *
+     * @param element 元素
+     */
     fun remove(element: T) {
         value.removeIf { it.element == element }
     }
 
+    /**
+     * 获取所有元素
+     */
     fun values(): MutableList<Value<T>> {
         return value
     }
 
+    /**
+     * 获取元素数量
+     */
     fun size(): Int {
         return value.size
     }

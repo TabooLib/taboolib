@@ -2,8 +2,20 @@ package taboolib.common.util
 
 import java.util.*
 
+/**
+ * 声明一个线程不安全的延迟加载对象
+ *
+ * @param initializer 初始化函数
+ */
 fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)
 
+/**
+ * 声明一个允许重置的延迟加载对象
+ *
+ * @param group 组
+ * @param synchronized 是否线程安全
+ * @param initializer 初始化函数
+ */
 fun <T> resettableLazy(group: String = "*", synchronized: Boolean = false, initializer: () -> T): ResettableLazy<T> {
     return if (synchronized) {
         ResettableSynchronizedLazyImpl(group, initializer)

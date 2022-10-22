@@ -1,6 +1,5 @@
 package taboolib.module.configuration
 
-import java.io.InputStream
 import java.util.*
 
 @Suppress("UNCHECKED_CAST")
@@ -43,22 +42,5 @@ class Update(val type: Type, val node: String, val value: Any?) : Comparable<Upd
 
     override fun compareTo(other: Update): Int {
         return node.compareTo(other.node)
-    }
-}
-
-@Suppress("UNUSED_PARAMETER", "UnusedReceiverParameter")
-@Deprecated("已过期")
-fun InputStream.migrateTo(target: InputStream): ByteArray? {
-    error("Unsupported")
-}
-
-@Suppress("UNUSED_PARAMETER")
-@Deprecated("已过期")
-object ConfigFinder {
-
-    data class Result(val line: Int, val comments: List<String>)
-
-    fun findNode(node: String, context: String): Result {
-        error("Not supported")
     }
 }

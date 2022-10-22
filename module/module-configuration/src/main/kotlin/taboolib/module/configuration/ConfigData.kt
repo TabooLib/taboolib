@@ -12,17 +12,25 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 private var init = true
-private val files = ConcurrentHashMap<String, Configuration>()
+private val fileMap = ConcurrentHashMap<String, Configuration>()
 
+/**
+ * 创建一个本地数据文件
+ *
+ * @param path 文件路径
+ * @param saveTime 自动保存时间
+ * @param type 文件类型
+ * @return [Configuration]
+ */
 fun createLocal(path: String, saveTime: Long = 1200, type: Type? = null): Configuration {
-    if (files.containsKey(path)) {
-        return files[path]!!
+    if (fileMap.containsKey(path)) {
+        return fileMap[path]!!
     }
     if (init) {
         init = false
         submit(period = saveTime, async = true) { Local.saveAll() }
     }
-    return files.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true), type) }
+    return fileMap.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true), type) }
 }
 
 @Isolated
@@ -30,6 +38,6 @@ object Local {
 
     @Awake(LifeCycle.DISABLE)
     fun saveAll() {
-        files.forEach { it.value.saveToFile(File(getDataFolder(), it.key)) }
+        fileMap.forEach { it.value.saveToFile(File(getDataFolder(), it.key)) }
     }
 }

@@ -31,45 +31,94 @@ class SingleRedisConnector: Closeable {
     internal var pool: JedisPool? = null
     internal var config = JedisPoolConfig()
 
+    /**
+     * 连接到 Redis
+     *
+     * @return [SingleRedisConnector]
+     */
     fun connect(): SingleRedisConnector {
         config.maxTotal = connect
         pool = if (auth != null) JedisPool(config, host, port, timeout, auth) else JedisPool(config, host, port, timeout)
         return this
     }
 
+    /**
+     * 关闭连接
+     */
     override fun close() {
         pool?.destroy()
     }
 
+    /**
+     * 获取 Redis 连接
+     *
+     * @return [SingleRedisConnection]
+     */
     fun connection(): SingleRedisConnection {
         return SingleRedisConnection(pool ?: error("connect first"), this)
     }
 
+    /**
+     * 设置 Redis 地址
+     *
+     * @param host 地址
+     * @return [SingleRedisConnector]
+     */
     fun host(host: String): SingleRedisConnector {
         this.host = host
         return this
     }
 
+    /**
+     * 设置 Redis 端口
+     *
+     * @param port 端口
+     * @return [SingleRedisConnector]
+     */
     fun port(port: Int): SingleRedisConnector {
         this.port = port
         return this
     }
 
+    /**
+     * 设置 Redis 密码
+     *
+     * @param auth 密码
+     * @return [SingleRedisConnector]
+     */
     fun auth(auth: String?): SingleRedisConnector {
         this.auth = auth
         return this
     }
 
+    /**
+     * 设置 Redis 连接池大小
+     *
+     * @param connect 连接池大小
+     * @return [SingleRedisConnector]
+     */
     fun connect(connect: Int): SingleRedisConnector {
         this.connect = connect
         return this
     }
 
+    /**
+     * 设置 Redis 连接超时时间
+     *
+     * @param timeout 超时时间
+     * @return [SingleRedisConnector]
+     */
     fun timeout(timeout: Int): SingleRedisConnector {
         this.timeout = timeout
         return this
     }
 
+    /**
+     * 设置 Redis 重连延迟
+     *
+     * @param reconnectDelay 重连延迟
+     * @return [SingleRedisConnector]
+     */
     fun reconnectDelay(reconnectDelay: Long): SingleRedisConnector {
         this.reconnectDelay = reconnectDelay
         return this

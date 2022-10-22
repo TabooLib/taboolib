@@ -48,10 +48,20 @@ import taboolib.common.env.RuntimeDependency
 )
 object AlkaidRedis {
 
+    /**
+     * 创建 Redis 连接器
+     *
+     * @return [SingleRedisConnector]
+     */
     fun create(): SingleRedisConnector {
         return SingleRedisConnector()
     }
 
+    /**
+     * 创建 Redis 连接
+     *
+     * @return [SingleRedisConnection]
+     */
     fun createDefault(connector: (SingleRedisConnector) -> Unit = { }): SingleRedisConnection {
         return create().also(connector).connect().connection()
     }

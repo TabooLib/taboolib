@@ -76,10 +76,3 @@ jobs:
         with:
           tag_name: 6.0.10-${{ github.run_number }}
           release_name: Release 6.0.10-${{ github.run_number }}
-
-      # 上传构建文件
-      - name: capture build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts
-          path: build/libs/

@@ -5,6 +5,11 @@ package taboolib.common5.util
 import taboolib.common.Isolated
 import java.util.*
 
+/**
+ * 从字符串中获取时间跨度（1d1h、1h30m）
+ *
+ * @return 时间跨度（单位：毫秒）
+ */
 fun String.parseMillis(): Long {
     var time = 0L
     var num = ""
