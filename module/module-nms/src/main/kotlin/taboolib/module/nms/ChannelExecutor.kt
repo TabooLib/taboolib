@@ -60,7 +60,7 @@ object ChannelExecutor {
     }
 
     fun addPlayerChannel(player: Player) {
-        if (isDisabled && !isPacketEventListened()) {
+        if (isDisabled || !isPacketEventListened()) {
             return
         }
         if (!MinecraftVersion.isSupported) {
@@ -77,7 +77,7 @@ object ChannelExecutor {
     }
 
     fun removePlayerChannel(player: Player) {
-        if (isDisabled && !isPacketEventListened()) {
+        if (isDisabled || !isPacketEventListened()) {
             return
         }
         if (!MinecraftVersion.isSupported) {
@@ -97,22 +97,22 @@ object ChannelExecutor {
     }
 
     @SubscribeEvent
-    internal fun onJoin(e: PlayerJoinEvent) {
+    private fun onJoin(e: PlayerJoinEvent) {
         addPlayerChannel(e.player)
     }
 
     @SubscribeEvent
-    internal fun onQuit(e: PlayerQuitEvent) {
+    private fun onQuit(e: PlayerQuitEvent) {
         removePlayerChannel(e.player)
     }
 
     @Awake(LifeCycle.ENABLE)
-    internal fun onEnable() {
+    private fun onEnable() {
         onlinePlayers.forEach { addPlayerChannel(it) }
     }
 
     @Awake(LifeCycle.DISABLE)
-    internal fun onDisable() {
+    private fun onDisable() {
         onlinePlayers.forEach { removePlayerChannel(it) }
     }
 }
