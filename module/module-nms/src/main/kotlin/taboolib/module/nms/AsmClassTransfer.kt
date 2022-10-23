@@ -14,6 +14,7 @@ import org.objectweb.asm.commons.ClassRemapper
  */
 class AsmClassTransfer(val source: String) {
 
+    @Synchronized
     fun createNewClass(): Class<*> {
         val inputStream = AsmClassTransfer::class.java.classLoader.getResourceAsStream(source.replace('.', '/') + ".class")
         val classReader = ClassReader(inputStream)

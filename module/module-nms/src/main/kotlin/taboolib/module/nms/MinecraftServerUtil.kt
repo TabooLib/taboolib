@@ -37,6 +37,7 @@ fun disablePacketListener() {
 }
 
 @Suppress("UNCHECKED_CAST")
+@Synchronized
 fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", vararg parameter: Any): T {
     val key = "${clazz.name}:$bind:${parameter.joinToString(",") { it.javaClass.name.toString() }}"
     // 从缓存中获取
@@ -55,6 +56,7 @@ inline fun <reified T> nmsProxy(bind: String = "{name}Impl", vararg parameter: A
 }
 
 @Suppress("UNCHECKED_CAST")
+@Synchronized
 fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl"): Class<T> {
     val key = "${clazz.name}:$bind"
     // 从缓存中获取

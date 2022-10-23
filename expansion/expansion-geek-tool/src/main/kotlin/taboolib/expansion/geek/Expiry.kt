@@ -8,10 +8,10 @@ import java.text.SimpleDateFormat
  */
 object Expiry {
 
-    private val dRegex = Regex("([dD天])")
+    private val dRegex = Regex("(d|D|天)")
     private val hRegex = Regex("(h|H|小时)")
     private val mRegex = Regex("(m|M|分钟)")
-    private val sRegex = Regex("([sS秒])")
+    private val sRegex = Regex("(s|S|秒)")
 
     private val format = SimpleDateFormat("yyyy年 MM月 dd日 HH:mm:ss")
 
