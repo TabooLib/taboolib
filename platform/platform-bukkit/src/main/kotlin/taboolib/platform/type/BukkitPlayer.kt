@@ -90,12 +90,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
 
     override val location: Location
         get() = Location(
-            world,
-            player.location.x,
-            player.location.y,
-            player.location.z,
-            player.location.yaw,
-            player.location.pitch
+            world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch
         )
 
     override var compassTarget: Location
@@ -327,10 +322,8 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
 
     override fun sendTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
         try {
-            println("Trying Send Title to ${player.name}")
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
-            println("No Function found... try packet ${player.name}")
             val connection = player.getProperty<Any>("entity/playerConnection")!!
             connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
                 it.setProperty("a", rEnumTitleAction[4])
@@ -460,12 +453,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     override fun teleport(location: Location) {
         player.teleport(
             Location(
-                Bukkit.getWorld(location.world!!),
-                location.x,
-                location.y,
-                location.z,
-                location.yaw,
-                location.pitch
+                Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch
             )
         )
     }
