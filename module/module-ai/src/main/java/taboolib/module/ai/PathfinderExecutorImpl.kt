@@ -9,6 +9,7 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.UnsafeAccess.get
 import org.tabooproject.reflex.UnsafeAccess.put
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.MinecraftVersion.major
 import java.lang.reflect.Field
 
@@ -47,7 +48,11 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun getControllerJump(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).controllerJump
+        val e = getEntityInsentient(entity)
+        if (MinecraftVersion.isUniversal) {
+            return (e as net.minecraft.world.entity.EntityInsentient).jumpControl
+        }
+        return (e as EntityInsentient).controllerJump
     }
 
     override fun getControllerMove(entity: LivingEntity): Any {
@@ -55,7 +60,11 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun getControllerLook(entity: LivingEntity): Any {
-        return (getEntityInsentient(entity) as EntityInsentient).controllerLook
+        val e = getEntityInsentient(entity)
+        if (MinecraftVersion.isUniversal) {
+            return (e as net.minecraft.world.entity.EntityInsentient).lookControl
+        }
+        return (e as EntityInsentient).controllerLook
     }
 
     override fun getGoalSelector(entity: LivingEntity): Any {
