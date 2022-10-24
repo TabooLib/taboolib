@@ -14,9 +14,10 @@ import taboolib.platform.util.onlinePlayers
 import taboolib.platform.util.setMeta
 import java.util.*
 
+@Suppress("unused")
 class NMSScoreboardImpl : NMSScoreboard() {
 
-    fun component(text: String): Any {
+    private fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
             IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic = true)!!
         } else {
@@ -113,7 +114,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
      *
      *  If 0 then the team is created.
      *  If 1 then the team is removed.
-     *  If 2 the team team information is updated.
+     *  If 2 the team information is updated.
      *  If 3 then new players are added to the team.
      *  If 4 then players are removed from the team.
      *
@@ -300,8 +301,13 @@ class NMSScoreboardImpl : NMSScoreboard() {
         var suffix = ""
         if (content.length > 16) {
             prefix = content.substring(0 until 16)
-            val color = ChatColor.getLastColors(prefix)
-            suffix = color + content.substring(16 until content.length)
+            if (prefix.endsWith("§")) {
+                prefix = prefix.removeSuffix("§")
+                suffix = "§" + content.substring(16 until content.length)
+            } else {
+                val color = ChatColor.getLastColors(prefix)
+                suffix = color + content.substring(16 until content.length)
+            }
             if (suffix.length > 16) {
                 suffix = suffix.substring(0, 16)
             }
