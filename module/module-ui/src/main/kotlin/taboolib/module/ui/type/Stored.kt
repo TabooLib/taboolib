@@ -165,8 +165,9 @@ open class Stored(title: String) : Basic(title) {
          * 定义判定位置
          * 玩家是否可以将物品放入
          */
-        open fun checkSlot(checkSlot: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) {
-            this.checkSlot = checkSlot
+        open fun checkSlot(callback: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) {
+            val before = checkSlot
+            checkSlot = { inventory, itemStack, slot -> callback(inventory, itemStack, slot) && before(inventory, itemStack, slot) }
         }
 
         /**
