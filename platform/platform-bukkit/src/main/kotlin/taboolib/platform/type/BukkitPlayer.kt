@@ -9,12 +9,12 @@ import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
-import taboolib.common.platform.ProxyGameMode
-import taboolib.common.platform.ProxyParticle
-import taboolib.common.platform.ProxyPlayer
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.platform.ProxyGameMode
+import taboolib.common.platform.ProxyParticle
+import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.common.util.unsafeLazy
@@ -89,7 +89,9 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.world.name
 
     override val location: Location
-        get() = Location(world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch)
+        get() = Location(
+            world, player.location.x, player.location.y, player.location.z, player.location.yaw, player.location.pitch
+        )
 
     override var compassTarget: Location
         get() = player.compassTarget.toProxyLocation()
@@ -323,30 +325,27 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
             val connection = player.getProperty<Any>("entity/playerConnection")!!
+            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                it.setProperty("a", rEnumTitleAction[4])
+            })
+            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
+                it.setProperty("a", rEnumTitleAction[2])
+                it.setProperty("c", fadein)
+                it.setProperty("d", stay)
+                it.setProperty("e", fadeout)
+            })
             if (title != null) {
                 connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
                     it.setProperty("a", rEnumTitleAction[0])
                     it.setProperty("b", rChatCompoundText.newInstance(title))
-                    it.setProperty("c", fadein)
-                    it.setProperty("d", stay)
-                    it.setProperty("e", fadeout)
                 })
             }
             if (subtitle != null) {
                 connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
                     it.setProperty("a", rEnumTitleAction[1])
                     it.setProperty("b", rChatCompoundText.newInstance(subtitle))
-                    it.setProperty("c", fadein)
-                    it.setProperty("d", stay)
-                    it.setProperty("e", fadeout)
                 })
             }
-            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                it.setProperty("a", rEnumTitleAction[3])
-                it.setProperty("c", fadein)
-                it.setProperty("d", stay)
-                it.setProperty("e", fadeout)
-            })
         }
     }
 
@@ -371,7 +370,14 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
-    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
+    override fun sendParticle(
+        particle: ProxyParticle,
+        location: Location,
+        offset: Vector,
+        count: Int,
+        speed: Double,
+        data: ProxyParticle.Data?
+    ) {
         val bukkitParticle = try {
             Particle.valueOf(particle.name)
         } catch (ignored: IllegalArgumentException) {
@@ -386,9 +392,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                         data.size
                     )
                 }
+
                 is ProxyParticle.DustData -> {
                     Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
                 }
+
                 is ProxyParticle.ItemData -> {
                     val item = ItemStack(Material.valueOf(data.material))
                     val itemMeta = item.itemMeta!!
@@ -404,6 +412,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     }
                     item
                 }
+
                 is ProxyParticle.BlockData -> {
                     if (bukkitParticle.dataType == MaterialData::class.java) {
                         MaterialData(Material.valueOf(data.material), data.data.toByte())
@@ -411,19 +420,23 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                         Material.valueOf(data.material).createBlockData()
                     }
                 }
+
                 is ProxyParticle.VibrationData -> {
                     Vibration(
                         data.origin.toBukkitLocation(), when (val destination = data.destination) {
                             is ProxyParticle.VibrationData.LocationDestination -> {
                                 Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
                             }
+
                             is ProxyParticle.VibrationData.EntityDestination -> {
                                 Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
                             }
+
                             else -> error("out of case")
                         }, data.arrivalTime
                     )
                 }
+
                 else -> null
             }
         )
@@ -438,7 +451,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(location: Location) {
-        player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
+        player.teleport(
+            Location(
+                Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch
+            )
+        )
     }
 
     override fun giveExp(exp: Int) {
