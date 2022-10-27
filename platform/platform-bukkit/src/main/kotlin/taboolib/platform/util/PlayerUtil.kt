@@ -3,22 +3,22 @@
 package taboolib.platform.util
 
 import org.bukkit.Material
-import org.bukkit.entity.Player
+import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.platform.function.adaptPlayer
 
-fun Player.giveItem(itemStack: List<ItemStack>) {
+fun HumanEntity.giveItem(itemStack: List<ItemStack>) {
     itemStack.forEach { giveItem(it) }
 }
 
-fun Player.giveItem(itemStack: ItemStack, repeat: Int = 1) {
-    (1..repeat).forEach { _ ->
-        inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) }
+fun HumanEntity.giveItem(itemStack: ItemStack?, repeat: Int = 1) {
+    if (itemStack.isNotAir()) {
+        repeat(repeat) { inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) } }
     }
 }
 
-fun Player.getUsingItem(material: Material): ItemStack? {
+fun HumanEntity.getUsingItem(material: Material): ItemStack? {
     return when {
         inventory.itemInMainHand.type == material -> inventory.itemInMainHand
         inventory.itemInOffHand.type == material -> inventory.itemInOffHand
@@ -26,26 +26,26 @@ fun Player.getUsingItem(material: Material): ItemStack? {
     }
 }
 
-fun Player.sendActionBar(message: String) {
+fun HumanEntity.sendActionBar(message: String) {
     adaptPlayer(this).sendActionBar(message)
 }
 
-fun Player.actionBar(message: String) {
+fun HumanEntity.actionBar(message: String) {
     adaptPlayer(this).sendActionBar(message)
 }
 
-fun Player.title(title: String?, subTitle: String?) {
+fun HumanEntity.title(title: String?, subTitle: String?) {
     adaptPlayer(this).sendTitle(title, subTitle, 10, 60, 10)
 }
 
-fun Player.title(title: String?, subTitle: String?, fadeIn: Int, stay: Int, fadeOut: Int) {
+fun HumanEntity.title(title: String?, subTitle: String?, fadeIn: Int, stay: Int, fadeOut: Int) {
     adaptPlayer(this).sendTitle(title, subTitle, fadeIn, stay, fadeOut)
 }
 
-fun Player.feed() {
+fun HumanEntity.feed() {
     foodLevel = 20
 }
 
-fun Player.saturate() {
+fun HumanEntity.saturate() {
     saturation = 20F
 }

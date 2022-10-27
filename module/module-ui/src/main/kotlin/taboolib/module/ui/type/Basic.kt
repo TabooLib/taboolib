@@ -13,6 +13,7 @@ import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
+import taboolib.platform.util.giveItem
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -274,6 +275,15 @@ open class Basic(title: String = "chest") : Menu(title) {
             row++
         }
         return list
+    }
+
+    /**
+     * 在页面关闭时返还物品
+     *
+     * @param slots 对应格子
+     */
+    fun InventoryCloseEvent.returnItems(slots: List<Int>) {
+        slots.forEach { player.giveItem(inventory.getItem(it)) }
     }
 
     protected open fun createTitle(): String {

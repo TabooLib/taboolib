@@ -86,7 +86,9 @@ open class Stored(title: String) : Basic(title) {
                     it.isCancelled = true
                     // 获取有效位置
                     val firstSlot = rule.firstSlot(it.inventory, currentItem!!)
-                    if (firstSlot >= 0) {
+                    // 目标位置不存在任何物品
+                    // 防止覆盖物品
+                    if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot) == null) {
                         // 设置物品
                         rule.writeItem(it.inventory, currentItem, firstSlot)
                         // 移除物品
