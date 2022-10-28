@@ -4,7 +4,7 @@ DefaultSettings:
   # HikariCP will attempt to resolve a driver through the DriverManager based solely on the jdbcUrl,
   # but for some older drivers the driverClassName must also be specified.
   # Omit this property unless you get an obvious error message indicating that the driver was not found. Default: none
-  DriverClassName: 'com.mysql.jdbc.Driver'
+  DriverClassName: 'com.mysql.cj.jdbc.Driver'
   # This property controls the default auto-commit behavior of connections returned from the pool.
   # It is a boolean value. Default: true
   AutoCommit: true
