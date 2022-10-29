@@ -1,11 +1,13 @@
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.ReflexClass
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -49,7 +51,12 @@ object PacketSender {
     }
 
     @SubscribeEvent
-    fun e(e: PlayerQuitEvent) {
+    fun onJoin(e: PlayerJoinEvent) {
         playerConnectionMap.remove(e.player.name)
+    }
+
+    @SubscribeEvent
+    fun onQuit(e: PlayerQuitEvent) {
+        submit(delay = 20) { playerConnectionMap.remove(e.player.name) }
     }
 }
