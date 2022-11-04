@@ -60,6 +60,14 @@ class ContainerOperatorFlatten(
         error("Not supported in flatten container")
     }
 
+    override fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>> {
+        error("Not supported in flatten container")
+    }
+
+    override fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>> {
+        error("Not supported in flatten container")
+    }
+
     override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {
         error("Not supported in flatten container")
     }

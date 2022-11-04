@@ -33,6 +33,10 @@ abstract class ContainerOperator {
 
     abstract fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?>
 
+    abstract fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>>
+
+    abstract fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>>
+
     abstract fun update(map: Map<String, Any?>, where: Where.() -> Unit)
 
     abstract fun insert(map: Map<String, Any?>)

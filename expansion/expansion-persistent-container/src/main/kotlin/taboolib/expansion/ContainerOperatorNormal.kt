@@ -59,11 +59,7 @@ class ContainerOperatorNormal(
     }
 
     override fun select(where: Where.() -> Unit): Map<String, Any?> {
-        return table.select(dataSource) {
-            rows(*data.map { it.name }.toTypedArray())
-            where(where)
-            limit(1)
-        }.firstOrNull { data.associate { it.name to getObject(it.name) } } ?: emptyMap()
+        return select(*data.map { it.name }.toTypedArray()) { where() }
     }
 
     override fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?> {
@@ -72,6 +68,17 @@ class ContainerOperatorNormal(
             where(where)
             limit(1)
         }.firstOrNull { rows.associateWith { getObject(it) } } ?: emptyMap()
+    }
+
+    override fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>> {
+        return selectAll(*data.map { it.name }.toTypedArray()) { where() }
+    }
+
+    override fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>> {
+        return table.select(dataSource) {
+            rows(*rows)
+            where(where)
+        }.map { rows.associateWith { getObject(it) } }
     }
 
     override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {
