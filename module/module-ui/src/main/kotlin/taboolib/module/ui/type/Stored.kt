@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
+import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
 
 @Isolated
@@ -88,7 +89,7 @@ open class Stored(title: String) : Basic(title) {
                     val firstSlot = rule.firstSlot(it.inventory, currentItem!!)
                     // 目标位置不存在任何物品
                     // 防止覆盖物品
-                    if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot) == null) {
+                    if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot).isAir) {
                         // 设置物品
                         rule.writeItem(it.inventory, currentItem, firstSlot)
                         // 移除物品
