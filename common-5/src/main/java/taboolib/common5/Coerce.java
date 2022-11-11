@@ -62,6 +62,10 @@ public final class Coerce {
         return BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
+    public static double format(double value, int scale) {
+        return BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+    }
+
     /**
      * Coerce the supplied object to a string.
      *

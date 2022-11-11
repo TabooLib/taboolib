@@ -113,6 +113,8 @@ object ActionWhen {
                                 }
                             }
                         }
+                    } else {
+                        f.complete(null)
                     }
                 }
                 process(0)

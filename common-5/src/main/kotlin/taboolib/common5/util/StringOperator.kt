@@ -15,3 +15,15 @@ fun String.substringAfter(vararg morePrefix: String): String {
 fun String.substringBefore(vararg moreSuffix: String): String {
     return substringBefore(moreSuffix.firstOrNull { endsWith(it) } ?: return this)
 }
+
+fun String.replace(vararg pairs: Pair<String, Any>): String {
+    var text = this
+    pairs.forEach { pair ->
+        text = text.replace(pair.first, pair.second.toString())
+    }
+    return text
+}
+
+fun List<String>.replace(vararg pairs: Pair<String, Any>): List<String> {
+    return map { it.replace(*pairs) }
+}

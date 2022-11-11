@@ -1,28 +1,38 @@
 package taboolib.module.kether.action.transform
 
-import taboolib.common5.Coerce
+import taboolib.common5.cdouble
+import taboolib.common5.eqic
 import taboolib.module.kether.KetherError
 import taboolib.module.kether.inferType
 
 enum class CheckType(val multi: Boolean, val check: (left: Any?, right: Any?) -> Boolean) {
 
-    EQUALS(false, { left, right -> left.inferType() == right.inferType() }),
+    EQUALS(false, { left, right ->
+        val lv = left.inferType()
+        val rv = right.inferType()
+        // 转换到相同类型
+        if (lv is Number && rv is Number) {
+            lv.toDouble() == rv.toDouble()
+        } else {
+            lv == rv
+        }
+    }),
 
-    EQUALS_NOT(false, { left, right -> left.inferType() != right.inferType() }),
+    EQUALS_NOT(false, { left, right -> !EQUALS.check(left, right) }),
 
     EQUALS_NO_INFER(false, { left, right -> left == right }),
 
     EQUALS_MEMORY(false, { left, right -> left === right }),
 
-    EQUALS_IGNORE_CASE(false, { left, right -> left.toString().equals(right.toString(), ignoreCase = true) }),
+    EQUALS_IGNORE_CASE(false, { left, right -> left.toString() eqic right.toString() }),
 
-    GT(false, { left, right -> Coerce.toDouble(left) > Coerce.toDouble(right) }),
+    GT(false, { left, right -> left.cdouble > right.cdouble }),
 
-    GTE(false, { left, right -> Coerce.toDouble(left) >= Coerce.toDouble(right) }),
+    GTE(false, { left, right -> left.cdouble >= right.cdouble }),
 
-    LT(false, { left, right -> Coerce.toDouble(left) < Coerce.toDouble(right) }),
+    LT(false, { left, right -> left.cdouble < right.cdouble }),
 
-    LTE(false, { left, right -> Coerce.toDouble(left) <= Coerce.toDouble(right) }),
+    LTE(false, { left, right -> left.cdouble <= right.cdouble }),
 
     CONTAINS(true, { left, right ->
         when (left) {

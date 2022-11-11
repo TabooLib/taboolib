@@ -13,7 +13,9 @@ object Actions {
     @KetherParser(["tell", "send", "message"])
     fun actionTell() = scriptParser {
         val message = it.nextParsedAction()
-        actionTake { run(message).str { s -> script().sender?.sendMessage(s.replace("@sender", script().sender?.name ?: "null")) } }
+        actionTake {
+            run(message).str { s -> script().sender?.sendMessage(s.replace("@sender", script().sender?.name ?: "null")) ?: error("No sender found.") }
+        }
     }
 
     @KetherParser(["actionbar"])
