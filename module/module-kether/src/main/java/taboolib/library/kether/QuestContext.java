@@ -1,6 +1,7 @@
 package taboolib.library.kether;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -48,7 +49,12 @@ public interface QuestContext {
             } else if (depth == 0) {
                 return Stream.of(this);
             } else {
-                return this.children().stream().map(it -> it.walkFrames(depth - 1)).reduce(Stream.of(this), Stream::concat);
+                Stream<Frame> acc = Stream.of(this);
+                for (Frame it : children()) {
+                    Stream<Frame> frameStream = it.walkFrames(depth - 1);
+                    acc = Stream.concat(acc, frameStream);
+                }
+                return acc;
             }
         }
 
@@ -82,6 +88,17 @@ public interface QuestContext {
 
         <T> Optional<T> get(@NotNull String name) throws CompletionException;
 
+        default <T> T getOrDefault(@NotNull String name, T defaultValue) {
+            Optional<T> o = get(name);
+            return o.orElse(defaultValue);
+        }
+
+        @Nullable
+        default <T> T getOrNull(@NotNull String name) {
+            Optional<T> o = get(name);
+            return o.orElse(null);
+        }
+
         <T> Optional<QuestFuture<T>> getFuture(@NotNull String name);
 
         void set(@NotNull String name, Object value);
@@ -95,6 +112,14 @@ public interface QuestContext {
         Set<String> keys();
 
         Collection<Map.Entry<String, Object>> values();
+
+        default Map<String, Object> toMap() {
+            Map<String, Object> map = new HashMap<>();
+            for (Map.Entry<String, Object> entry : values()) {
+                map.put(entry.getKey(), entry.getValue());
+            }
+            return map;
+        }
 
         void initialize(@NotNull Frame frame);
 

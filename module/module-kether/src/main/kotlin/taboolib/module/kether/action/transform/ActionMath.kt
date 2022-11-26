@@ -19,7 +19,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
     enum class Type(val exec: List<Any>.() -> Number) {
 
         ADD({
-            if (allInt()) {
+            if (isAllInt()) {
                 sumOf { Coerce.toInteger(it) }
             } else {
                 sumOf { Coerce.toDouble(it) }
@@ -27,7 +27,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         }),
 
         SUB({
-            if (allInt()) {
+            if (isAllInt()) {
                 subBy { Coerce.toInteger(it) }
             } else {
                 subByDouble { Coerce.toDouble(it) }
@@ -35,7 +35,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         }),
 
         MUL({
-            if (allInt()) {
+            if (isAllInt()) {
                 mulBy { Coerce.toInteger(it) }
             } else {
                 mulByDouble { Coerce.toDouble(it) }
@@ -43,7 +43,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         }),
 
         DIV({
-            if (allInt()) {
+            if (isAllInt()) {
                 divBy { Coerce.toInteger(it) }
             } else {
                 divByDouble { Coerce.toDouble(it) }
@@ -51,8 +51,6 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         });
 
         companion object {
-
-            fun List<Any>.allInt() = all { it is Int || it.isInt() }
 
             fun fromString(value: String): Type? {
                 return when (value) {
