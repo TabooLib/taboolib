@@ -67,7 +67,11 @@ public final class Parser<T> implements App<Parser.Mu, T> {
     }
 
     public static <A> QuestActionParser create(final Function<Instance, ? extends App<Mu, Action<A>>> builder) {
-        Function<QuestReader, Action<Action<A>>> f = unbox(builder.apply(new Instance())).reader;
+        return build(builder.apply(new Instance()));
+    }
+
+    public static <A> QuestActionParser build(App<Mu, Action<A>> fa) {
+        Function<QuestReader, Action<Action<A>>> f = unbox(fa).reader;
         return new QuestActionParser() {
             @Override
             public <T> QuestAction<T> resolve(@NotNull QuestReader resolver) {

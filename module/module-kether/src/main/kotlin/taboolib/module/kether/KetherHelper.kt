@@ -5,6 +5,7 @@ import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.warning
 import taboolib.library.kether.*
 import taboolib.library.kether.Parser.Action
+import taboolib.library.kether.Parser.Instance
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -33,8 +34,7 @@ fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionPars
 }
 
 fun <T> parserCombinator(builder: ParserDSL.(Parser.Instance) -> App<Parser.Mu, Parser.Action<T>>): ScriptActionParser<T> {
-    // TODO 把这个改一下
-    val parser = Parser.create(builder)
+    val parser = Parser.build(ParserDSL.builder(Instance()))
     return ScriptActionParser { parser.resolve<T>(this) }
 }
 
