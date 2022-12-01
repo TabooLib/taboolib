@@ -47,6 +47,13 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         });
     }
 
+    public <R> Parser<R> map(Function<T, R> func) {
+        return new Parser<>(r -> {
+            Action<T> action = this.reader.apply(r);
+            return frame -> action.run(frame).thenApply(func);
+        });
+    }
+
     public static <T> Parser<T> point(T value) {
         return new Parser<>(r -> Action.point(value));
     }
