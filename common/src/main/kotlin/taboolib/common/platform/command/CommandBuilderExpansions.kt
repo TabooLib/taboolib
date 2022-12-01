@@ -89,6 +89,34 @@ fun <T> CommandContext<T>.playerAt(index: Int): ProxyPlayer {
 }
 
 /**
+ * 获取 ProxyPlayer 类型参数
+ *
+ * @param offset 参数偏移量
+ * @param func 参数值
+ */
+fun <T> CommandContext<T>.playerFor(offset: Int, func: (ProxyPlayer) -> Unit) {
+    if (argument(offset) == "*") {
+        onlinePlayers().forEach(func)
+    } else {
+        onlinePlayers().firstOrNull { it.name == argument(offset) }?.also(func)
+    }
+}
+
+/**
+ * 获取 ProxyPlayer 类型参数
+ *
+ * @param index 参数索引
+ * @param func 参数值
+ */
+fun <T> CommandContext<T>.playerAtFor(index: Int, func: (ProxyPlayer) -> Unit) {
+    if (argument(index) == "*") {
+        onlinePlayers().forEach(func)
+    } else {
+        onlinePlayers().firstOrNull { it.name == get(index) }?.also(func)
+    }
+}
+
+/**
  * 获取 Location 类型参数
  *
  * @param offset 参数偏移量
@@ -140,6 +168,15 @@ fun CommandBuilder.CommandComponentDynamic.suggest(suggest: () -> List<String>?)
 }
 
 /**
+ * 创建一个不检查的参数不全
+ *
+ * @param suggest 补全表达式
+ */
+fun CommandBuilder.CommandComponentDynamic.suggestUncheck(suggest: () -> List<String>?) {
+    suggestion<ProxyCommandSender>(uncheck = true) { _, _ -> suggest() }
+}
+
+/**
  * 创建参数补全（仅布尔值）
  */
 fun CommandBuilder.CommandComponentDynamic.suggestBoolean() {
@@ -149,8 +186,14 @@ fun CommandBuilder.CommandComponentDynamic.suggestBoolean() {
 /**
  * 创建参数补全（仅在线玩家名称）
  */
-fun CommandBuilder.CommandComponentDynamic.suggestPlayers() {
-    suggestion<ProxyCommandSender> { _, _ -> onlinePlayers().map { it.name } }
+fun CommandBuilder.CommandComponentDynamic.suggestPlayers(allSymbol: Boolean = false) {
+    suggestion<ProxyCommandSender> { _, _ ->
+        val el = onlinePlayers().map { it.name }.toMutableList()
+        if (allSymbol) {
+            el += "*"
+        }
+        el
+    }
 }
 
 /**
