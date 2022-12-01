@@ -2,6 +2,10 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+repositories {
+    maven("https://repo.spongepowered.org/maven")
+}
+
 dependencies {
     compileOnly("public:PlaceholderAPI:2.10.9")
     compileOnly("com.google.guava:guava:17.0")
@@ -17,6 +21,7 @@ dependencies {
     compileOnly("org.tabooproject.reflex:reflex:1.0.19")
     compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     compileOnly("org.apache.commons:commons-jexl3:3.2.1")
+    compileOnly("com.mojang:datafixerupper:4.0.26")
 }
 
 tasks {

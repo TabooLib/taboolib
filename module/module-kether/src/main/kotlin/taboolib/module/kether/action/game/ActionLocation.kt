@@ -3,8 +3,12 @@ package taboolib.module.kether.action.game
 import taboolib.common.platform.function.platformLocation
 import taboolib.common.util.Location
 import taboolib.library.kether.ParsedAction
+import taboolib.library.kether.Parser
+import taboolib.library.kether.Parser.Action
+import taboolib.library.kether.Parsers
 import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
+import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -59,6 +63,27 @@ class ActionLocation(
                 it.reset()
             }
             ActionLocation(world, x, y, z, yaw, pitch)
+        }
+
+        /**
+         * location 10 20 10 and 0 0
+         */
+        @KetherParser(["loc", "location"])
+        fun parser2() = parserCombinator {
+            it.group(
+                string(),
+                double(),
+                double(),
+                double(),
+                Parsers.command("and", double().and(double())).option()
+            ).apply(it) { world, x, y, z, yawAndPitch ->
+                val (yaw, pitch) = yawAndPitch ?: Pair(0, 0)
+                now {
+                    platformLocation<Location>(
+                        Location(world, x, y, z, yaw.toFloat(), pitch.toFloat())
+                    )
+                }
+            }
         }
     }
 }

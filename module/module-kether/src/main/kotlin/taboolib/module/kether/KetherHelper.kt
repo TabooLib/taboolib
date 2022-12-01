@@ -1,8 +1,10 @@
 package taboolib.module.kether
 
+import com.mojang.datafixers.kinds.App
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.warning
 import taboolib.library.kether.*
+import taboolib.library.kether.Parser.Action
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -28,6 +30,28 @@ fun <T> runKether(func: () -> T): T? {
  */
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionParser<T> {
     return ScriptActionParser(resolve)
+}
+
+fun <T> parserCombinator(builder: ParserDSL.(Parser.Instance) -> App<Parser.Mu, Parser.Action<T>>): ScriptActionParser<T> {
+    // TODO 把这个改一下
+    val parser = Parser.create(builder)
+    return ScriptActionParser { parser.resolve<T>(this) }
+}
+
+object ParserDSL {
+    fun string(): Parser<String> = Parsers.string()
+
+    fun integer(): Parser<Int> = Parsers.integer()
+
+    fun double(): Parser<Double> = TODO("要补上")
+
+    fun <T> now(action: (QuestContext.Frame) -> T): Action<T> = Action { CompletableFuture.completedFuture(action(it)) }
+
+    fun <T> future(action: (QuestContext.Frame) -> CompletableFuture<T>): Action<T> = Action { action(it) }
+
+    fun <A, B> Parser<A>.and(b: Parser<B>): Parser<Pair<A, B>> = TODO()
+
+    fun <A> Parser<A>.option(): Parser<A?> = TODO()
 }
 
 /**
