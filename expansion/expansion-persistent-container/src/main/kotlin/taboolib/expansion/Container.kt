@@ -3,6 +3,7 @@
 package taboolib.expansion
 
 import taboolib.common.reflect.Reflex.Companion.invokeMethod
+import taboolib.common.util.unsafeLazy
 import taboolib.module.database.Host
 import taboolib.module.database.Table
 
@@ -12,7 +13,7 @@ abstract class Container {
 
     val hostTables = HashMap<String, Table<*, *>>()
     val hostTableOperator = HashMap<String, ContainerOperator>()
-    val dataSource by lazy { host.createDataSource(autoRelease = false) }
+    val dataSource by unsafeLazy { host.createDataSource(autoRelease = false) }
 
     abstract fun createTable(name: String, player: Boolean, playerKey: Boolean, data: List<ContainerBuilder.Data>): Table<*, *>
 

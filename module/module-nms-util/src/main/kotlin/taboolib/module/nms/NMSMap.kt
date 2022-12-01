@@ -14,6 +14,7 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Isolated
 import taboolib.common.platform.function.submit
+import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
@@ -38,8 +39,8 @@ class NMSMap(val image: BufferedImage, val hand: Hand = Hand.MAIN, val builder: 
         val classPacketPlayOutSetSlot = nmsClass("PacketPlayOutSetSlot")
         val classPacketPlayOutMap = nmsClass("PacketPlayOutMap")
         val classCraftItemStack = obcClass("inventory.CraftItemStack")
-        val classMapIcon by lazy { nmsClass("MapIcon") }
-        val classMapData: Class<*> by lazy { Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap\$b") }
+        val classMapIcon by unsafeLazy { nmsClass("MapIcon") }
+        val classMapData: Class<*> by unsafeLazy { Class.forName("net.minecraft.world.level.saveddata.maps.WorldMap\$b") }
     }
 
     val mapRenderer = object : MapRenderer() {

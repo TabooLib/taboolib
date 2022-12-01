@@ -11,6 +11,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 
@@ -44,7 +45,7 @@ private object SignsListener {
 
     val inputs = ConcurrentHashMap<String, (Array<String>) -> Unit>()
 
-    val classChatSerializer by lazy {
+    val classChatSerializer by unsafeLazy {
         nmsClass("IChatBaseComponent\$ChatSerializer")
     }
 
