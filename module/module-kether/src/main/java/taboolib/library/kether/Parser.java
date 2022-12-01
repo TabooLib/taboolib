@@ -14,7 +14,8 @@ import java.util.function.Function;
 
 public final class Parser<T> implements App<Parser.Mu, T> {
 
-    public static final class Mu implements K1 {}
+    public static final class Mu implements K1 {
+    }
 
     private static <T> Parser<T> unbox(App<Parser.Mu, T> box) {
         return (Parser<T>) box;
@@ -30,7 +31,7 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         }
     }
 
-    final Function<QuestReader, Action<T>> reader;
+    public final Function<QuestReader, Action<T>> reader;
 
     private Parser(Function<QuestReader, Action<T>> reader) {
         this.reader = reader;
@@ -38,10 +39,12 @@ public final class Parser<T> implements App<Parser.Mu, T> {
 
     public Parser<Optional<T>> optional() {
         return new Parser<>(r -> {
+            r.mark();
             try {
-                Action<T> action = this.reader.apply(r);
+                Action<T> action = reader.apply(r);
                 return frame -> action.run(frame).thenApply(Optional::ofNullable);
             } catch (Exception e) {
+                r.reset();
                 return Action.point(Optional.empty());
             }
         });
@@ -49,16 +52,25 @@ public final class Parser<T> implements App<Parser.Mu, T> {
 
     public <R> Parser<R> map(Function<T, R> func) {
         return new Parser<>(r -> {
-            Action<T> action = this.reader.apply(r);
+            Action<T> action = reader.apply(r);
             return frame -> action.run(frame).thenApply(func);
         });
     }
 
     public <B, R> Parser<R> fold(Parser<B> fb, BiFunction<T, B, R> func) {
         return new Parser<>(r -> {
-            Action<T> aa = this.reader.apply(r);
+            Action<T> aa = reader.apply(r);
             Action<B> ab = fb.reader.apply(r);
             return frame -> aa.run(frame).thenCompose(f1 -> ab.run(frame).thenApply(f2 -> func.apply(f1, f2)));
+        });
+    }
+
+    public <B, C, R> Parser<R> fold(Parser<B> fb, Parser<C> fc, Function3<T, B, C, R> func) {
+        return new Parser<>(r -> {
+            Action<T> aa = reader.apply(r);
+            Action<B> ab = fb.reader.apply(r);
+            Action<C> ac = fc.reader.apply(r);
+            return frame -> aa.run(frame).thenCompose(f1 -> ab.run(frame).thenCompose(f2 -> ac.run(frame).thenApply(f3 -> func.apply(f1, f2, f3))));
         });
     }
 
@@ -85,6 +97,7 @@ public final class Parser<T> implements App<Parser.Mu, T> {
             public <T> QuestAction<T> resolve(@NotNull QuestReader resolver) {
                 Action<Action<A>> action = f.apply(resolver);
                 return new QuestAction<T>() {
+
                     @Override
                     @SuppressWarnings("unchecked")
                     public CompletableFuture<T> process(@NotNull QuestContext.Frame frame) {
@@ -97,7 +110,8 @@ public final class Parser<T> implements App<Parser.Mu, T> {
 
     public static final class Instance implements Applicative<Mu, Instance.Mu> {
 
-        private static final class Mu implements Applicative.Mu {}
+        private static final class Mu implements Applicative.Mu {
+        }
 
         @Override
         public <A> App<Parser.Mu, A> point(A a) {
@@ -138,10 +152,10 @@ public final class Parser<T> implements App<Parser.Mu, T> {
                 Action<A> aa = fa.reader.apply(r);
                 Action<B> ab = fb.reader.apply(r);
                 return frame -> af.run(frame).thenCompose(
-                    f1 -> aa.run(frame).thenCompose(
-                        f2 -> ab.run(frame).thenApply(
-                            f3 -> f1.apply(f2, f3))
-                    )
+                        f1 -> aa.run(frame).thenCompose(
+                                f2 -> ab.run(frame).thenApply(
+                                        f3 -> f1.apply(f2, f3))
+                        )
                 );
             });
         }
@@ -158,13 +172,13 @@ public final class Parser<T> implements App<Parser.Mu, T> {
                 Action<T2> ab = fb.reader.apply(r);
                 Action<T3> ac = fc.reader.apply(r);
                 return frame -> af.run(frame).thenCompose(
-                    f1 -> aa.run(frame).thenCompose(
-                        f2 -> ab.run(frame).thenCompose(
-                            f3 -> ac.run(frame).thenApply(
-                                f4 -> f1.apply(f2, f3, f4)
-                            )
+                        f1 -> aa.run(frame).thenCompose(
+                                f2 -> ab.run(frame).thenCompose(
+                                        f3 -> ac.run(frame).thenApply(
+                                                f4 -> f1.apply(f2, f3, f4)
+                                        )
+                                )
                         )
-                    )
                 );
             });
         }
@@ -184,15 +198,15 @@ public final class Parser<T> implements App<Parser.Mu, T> {
                 Action<T3> ac = fc.reader.apply(r);
                 Action<T4> ad = fd.reader.apply(r);
                 return frame -> af.run(frame).thenCompose(
-                    f1 -> aa.run(frame).thenCompose(
-                        f2 -> ab.run(frame).thenCompose(
-                            f3 -> ac.run(frame).thenCompose(
-                                f4 -> ad.run(frame).thenApply(
-                                    f5 -> f1.apply(f2, f3, f4, f5)
+                        f1 -> aa.run(frame).thenCompose(
+                                f2 -> ab.run(frame).thenCompose(
+                                        f3 -> ac.run(frame).thenCompose(
+                                                f4 -> ad.run(frame).thenApply(
+                                                        f5 -> f1.apply(f2, f3, f4, f5)
+                                                )
+                                        )
                                 )
-                            )
                         )
-                    )
                 );
             });
         }

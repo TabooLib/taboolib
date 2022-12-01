@@ -7,6 +7,7 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestFuture
 import taboolib.module.kether.*
+import taboolib.module.kether.ParserHolder.option
 import java.util.concurrent.CompletableFuture
 
 object Actions {
@@ -25,7 +26,7 @@ object Actions {
 
     @KetherParser(["pause"])
     fun actionPause() = scriptParser {
-        actionFuture {  }
+        actionFuture { }
     }
 
     @KetherParser(["exit", "stop", "terminate"])
@@ -34,21 +35,18 @@ object Actions {
     }
 
     @KetherParser(["log", "print", "info"])
-    fun actionInfo() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> info(s) } }
+    fun actionInfo() = combinationParser {
+        it.group(text()).apply(it) { str -> now { info(str) } }
     }
 
     @KetherParser(["warn", "warning"])
-    fun actionWarning() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> warning(s) } }
+    fun actionWarning() = combinationParser {
+        it.group(text()).apply(it) { str -> now { warning(str) } }
     }
 
     @KetherParser(["error", "severe"])
-    fun actionSevere() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> severe(s) } }
+    fun actionSevere() = combinationParser {
+        it.group(text()).apply(it) { str -> now { severe(str) } }
     }
 
     @KetherParser(["wait", "delay", "sleep"])
@@ -92,6 +90,14 @@ object Actions {
         actionNow { setNext(context().quest.blocks[block] ?: error("block $block not found")) }
     }
 
+//    目前还无法被 combinationParser 替代，因为 t 和 f 中的语句会在条件判断前被执行
+//    @KetherParser(["if"])
+//    fun actionIf() = combinationParser {
+//        it.group(bool(), command("then", then = any()), command("else", then = any()).option()).apply(it) { condition, t, f ->
+//            now { if (condition) t else f }
+//        }
+//    }
+
     @KetherParser(["if"])
     fun actionIf() = scriptParser {
         val condition = it.nextParsedAction()
@@ -120,9 +126,8 @@ object Actions {
     }
 
     @KetherParser(["not"])
-    fun actionNot() = scriptParser {
-        val condition = it.nextParsedAction()
-        actionTake { run(condition).bool { b -> !b } }
+    fun actionNot() = combinationParser {
+        it.group(bool()).apply(it) { b -> now { !b } }
     }
 
     @KetherParser(["repeat"])

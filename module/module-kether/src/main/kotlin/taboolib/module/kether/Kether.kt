@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.library.kether.QuestAction
@@ -8,11 +9,18 @@ import taboolib.library.kether.QuestActionParser
 import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.lang.Language
 
-@RuntimeDependency(
-    "!org.apache.commons:commons-jexl3:3.2.1",
-    test = "!org.apache.commons.jexl3_3_2_1.JexlEngine",
-    relocate = ["!org.apache.commons.jexl3", "!org.apache.commons.jexl3_3_2_1"],
-    transitive = false
+@RuntimeDependencies(
+    RuntimeDependency(
+        "!org.apache.commons:commons-jexl3:3.2.1",
+        test = "!org.apache.commons.jexl3_3_2_1.JexlEngine",
+        relocate = ["!org.apache.commons.jexl3", "!org.apache.commons.jexl3_3_2_1"],
+        transitive = false
+    ),
+    RuntimeDependency(
+        "!com.mojang:datafixerupper:4.0.26",
+        test = "!com.mojang.datafixers.kinds.App",
+        repository = "https://repo.spongepowered.org/maven",
+    )
 )
 object Kether {
 

@@ -5,7 +5,6 @@ import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestContext
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.action.ActionLiteral
-import java.util.HashMap
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -39,7 +38,7 @@ fun QuestReader.switch(func: ExpectDSL.() -> Unit): ScriptAction<*> {
     }
 }
 
-fun actionNow(name: String = "kether-action-dsl", func: QuestContext.Frame.() -> Any?): ScriptAction<Any?> {
+fun actionNow(name: String = "actionNow", func: QuestContext.Frame.() -> Any?): ScriptAction<Any?> {
     return object : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
@@ -53,7 +52,7 @@ fun actionNow(name: String = "kether-action-dsl", func: QuestContext.Frame.() ->
 }
 
 @Suppress("UNCHECKED_CAST")
-fun actionTake(name: String = "kether-action-dsl", func: QuestContext.Frame.() -> CompletableFuture<*>): ScriptAction<Any?> {
+fun actionTake(name: String = "actionTake", func: QuestContext.Frame.() -> CompletableFuture<*>): ScriptAction<Any?> {
     return object : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
@@ -66,7 +65,7 @@ fun actionTake(name: String = "kether-action-dsl", func: QuestContext.Frame.() -
     }
 }
 
-fun actionFuture(name: String = "kether-action-dsl", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): ScriptAction<Any?> {
+fun actionFuture(name: String = "actionFuture", func: QuestContext.Frame.(CompletableFuture<Any?>) -> Any?): ScriptAction<Any?> {
     return object : ScriptAction<Any?>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
