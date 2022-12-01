@@ -18,7 +18,7 @@ object ParserDSL {
 
     fun <T> future(action: (ScriptFrame) -> CompletableFuture<T>): Parser.Action<T> = Parser.Action { action(it) }
 
-    fun <A, B> Parser<A>.and(b: Parser<B>): Parser<Pair<A, B>> = Parsers.and(this, b)
+    fun <A, B> Parser<A>.and(b: Parser<B>): Parser<Pair<A, B>> = this.fold(b) { fa, fb -> Pair(fa, fb) }
 
-    fun <A> Parser<A>.option(): Parser<A?> = TODO()
+    fun <A> Parser<A>.option(): Parser<A?> = this.optional().map { it.orElse(null) }
 }
