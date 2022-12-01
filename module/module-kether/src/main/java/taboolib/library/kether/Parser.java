@@ -54,6 +54,14 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         });
     }
 
+    public <B, R> Parser<R> fold(Parser<B> fb, BiFunction<T, B, R> func) {
+        return new Parser<>(r -> {
+            Action<T> aa = this.reader.apply(r);
+            Action<B> ab = fb.reader.apply(r);
+            return frame -> aa.run(frame).thenCompose(f1 -> ab.run(frame).thenApply(f2 -> func.apply(f1, f2)));
+        });
+    }
+
     public static <T> Parser<T> point(T value) {
         return new Parser<>(r -> Action.point(value));
     }

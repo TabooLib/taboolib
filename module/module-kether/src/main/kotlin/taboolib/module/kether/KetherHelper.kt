@@ -4,8 +4,8 @@ import com.mojang.datafixers.kinds.App
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.warning
 import taboolib.library.kether.*
-import taboolib.library.kether.Parser.Action
-import taboolib.library.kether.Parser.Instance
+import taboolib.library.kether.Parser.*
+import taboolib.module.kether.ParserDSL.and
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
