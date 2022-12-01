@@ -46,7 +46,7 @@ class ActionLocation(
         /**
          * location 10 20 10 and 0 0
          */
-        @KetherParser(["loc", "location"])
+        // @KetherParser(["loc", "location"])
         fun parser() = scriptParser {
             val world = it.nextParsedAction()
             val x = it.nextParsedAction()
@@ -75,14 +75,10 @@ class ActionLocation(
                 double(),
                 double(),
                 double(),
-                Parsers.command("and", double().and(double())).option()
-            ).apply(it) { world, x, y, z, yawAndPitch ->
-                val (yaw, pitch) = yawAndPitch ?: Pair(0, 0)
-                now {
-                    platformLocation<Location>(
-                        Location(world, x, y, z, yaw.toFloat(), pitch.toFloat())
-                    )
-                }
+                Parsers.command("and", float().and(float())).option()
+            ).apply(it) { world, x, y, z, yap ->
+                val (yaw, pitch) = yap ?: (0f to 0f)
+                now { platformLocation<Location>(Location(world, x, y, z, yaw, pitch)) }
             }
         }
     }

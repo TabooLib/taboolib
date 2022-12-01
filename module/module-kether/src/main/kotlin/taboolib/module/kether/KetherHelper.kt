@@ -33,25 +33,9 @@ fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionPars
     return ScriptActionParser(resolve)
 }
 
-fun <T> parserCombinator(builder: ParserDSL.(Parser.Instance) -> App<Parser.Mu, Parser.Action<T>>): ScriptActionParser<T> {
+fun <T> parserCombinator(builder: ParserDSL.(Instance) -> App<Parser.Mu, Action<T>>): ScriptActionParser<T> {
     val parser = Parser.build(ParserDSL.builder(Instance()))
     return ScriptActionParser { parser.resolve<T>(this) }
-}
-
-object ParserDSL {
-    fun string(): Parser<String> = Parsers.string()
-
-    fun integer(): Parser<Int> = Parsers.integer()
-
-    fun double(): Parser<Double> = TODO("要补上")
-
-    fun <T> now(action: (QuestContext.Frame) -> T): Action<T> = Action { CompletableFuture.completedFuture(action(it)) }
-
-    fun <T> future(action: (QuestContext.Frame) -> CompletableFuture<T>): Action<T> = Action { action(it) }
-
-    fun <A, B> Parser<A>.and(b: Parser<B>): Parser<Pair<A, B>> = TODO()
-
-    fun <A> Parser<A>.option(): Parser<A?> = TODO()
 }
 
 /**
