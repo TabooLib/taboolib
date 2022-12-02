@@ -8,6 +8,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
+import taboolib.common.util.unsafeLazy
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -20,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 @PlatformSide([Platform.BUKKIT, Platform.BUNGEE])
 object Porticus {
 
-    val channelId by lazy {
+    val channelId by unsafeLazy {
         "t_${if (pluginId.lowercase().length > 10) pluginId.lowercase().substring(0, 10) else pluginId.lowercase()}:main"
     }
 

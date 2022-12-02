@@ -7,9 +7,10 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestFuture
 import taboolib.module.kether.*
+import taboolib.module.kether.ParserHolder.option
 import java.util.concurrent.CompletableFuture
 
-object Actions {
+internal object Actions {
 
     @KetherParser(["import"])
     fun actionImport() = scriptParser {
@@ -25,7 +26,7 @@ object Actions {
 
     @KetherParser(["pause"])
     fun actionPause() = scriptParser {
-        actionFuture {  }
+        actionFuture { }
     }
 
     @KetherParser(["exit", "stop", "terminate"])
@@ -34,21 +35,18 @@ object Actions {
     }
 
     @KetherParser(["log", "print", "info"])
-    fun actionInfo() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> info(s) } }
+    fun actionInfo() = combinationParser {
+        it.group(text()).apply(it) { str -> now { info(str) } }
     }
 
     @KetherParser(["warn", "warning"])
-    fun actionWarning() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> warning(s) } }
+    fun actionWarning() = combinationParser {
+        it.group(text()).apply(it) { str -> now { warning(str) } }
     }
 
     @KetherParser(["error", "severe"])
-    fun actionSevere() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake { run(action).str { s -> severe(s) } }
+    fun actionSevere() = combinationParser {
+        it.group(text()).apply(it) { str -> now { severe(str) } }
     }
 
     @KetherParser(["wait", "delay", "sleep"])
@@ -93,36 +91,17 @@ object Actions {
     }
 
     @KetherParser(["if"])
-    fun actionIf() = scriptParser {
-        val condition = it.nextParsedAction()
-        it.expect("then")
-        val trueAction = it.nextParsedAction()
-        var falseAction: ParsedAction<*>? = null
-        if (it.hasNext()) {
-            it.mark()
-            if (it.nextToken() == "else") {
-                falseAction = it.nextParsedAction()
-            } else {
-                it.reset()
-            }
-        }
-        actionFuture { f ->
-            run(condition).bool { b ->
-                if (b) {
-                    run(trueAction).thenAccept { r -> f.complete(r) }
-                } else if (falseAction != null) {
-                    run(falseAction).thenAccept { r -> f.complete(r) }
-                } else {
-                    f.complete(null)
-                }
+    fun actionIf() = combinationParser {
+        it.group(bool(), command("then", then = action()), command("else", then = action()).option()).apply(it) { condition, t, f ->
+            future {
+                if (condition) run(t) else if (f != null) run(f) else CompletableFuture.completedFuture(null)
             }
         }
     }
 
     @KetherParser(["not"])
-    fun actionNot() = scriptParser {
-        val condition = it.nextParsedAction()
-        actionTake { run(condition).bool { b -> !b } }
+    fun actionNot() = combinationParser {
+        it.group(bool()).apply(it) { b -> now { !b } }
     }
 
     @KetherParser(["repeat"])

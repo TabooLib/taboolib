@@ -12,19 +12,12 @@ import java.util.regex.Pattern
  * @author 坏黑
  * @since 2022/9/3 17:22
  */
-object ActionMatcher {
+internal object ActionMatcher {
 
     @KetherParser(["match"])
-    fun actionMatch() = scriptParser {
-        val str = it.nextParsedAction()
-        it.expects("by", "with", "using")
-        val regex = it.nextParsedAction()
-        actionFuture { f ->
-            run(str).str { s ->
-                run(regex).str { r ->
-                    f.complete(Pattern.compile(r, Pattern.CASE_INSENSITIVE).matcher(s).also { m -> m.find() })
-                }
-            }
+    fun actionMatch() = combinationParser {
+        it.group(text(), command("by", "with", "using", then = text())).apply(it) { text, pattern ->
+            now { Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(text).also { m -> m.find() } }
         }
     }
 

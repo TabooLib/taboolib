@@ -50,9 +50,7 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
             } ?: throw KetherError.NOT_PLAYER_OPERATOR.create(tokens.joinToString(" "))
             it.reset()
             // 恢复指针位置
-            structure.key.split("_").forEach { _ ->
-                it.nextToken()
-            }
+            structure.key.split("_").forEach { _ -> it.nextToken() }
             it.mark()
             val method = if (it.hasNext()) {
                 when (it.nextToken()) {

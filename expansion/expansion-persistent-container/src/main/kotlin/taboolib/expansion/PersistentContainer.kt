@@ -8,8 +8,14 @@ import java.io.File
 /**
  * 创建持久化储存容器
  */
-fun persistentContainer(type: Any, builder: PersistentContainer.() -> Unit): PersistentContainer {
-    return PersistentContainer(type, builder)
+fun persistentContainer(
+    type: Any,
+    flags: List<String> = emptyList(),
+    clearFlags: Boolean = false,
+    ssl: String? = null,
+    builder: PersistentContainer.() -> Unit
+): PersistentContainer {
+    return PersistentContainer(type, flags, clearFlags, ssl, builder)
 }
 
 /**
@@ -21,9 +27,12 @@ fun persistentContainer(
     user: String,
     password: String,
     database: String,
+    flags: List<String> = emptyList(),
+    clearFlags: Boolean = false,
+    ssl: String? = null,
     builder: PersistentContainer.() -> Unit,
 ): PersistentContainer {
-    return PersistentContainer(host, port, user, password, database, builder)
+    return PersistentContainer(host, port, user, password, database, flags, clearFlags, ssl, builder)
 }
 
 class PersistentContainer {
@@ -35,26 +44,36 @@ class PersistentContainer {
      * - 传入文件类型则为 SQLite 模式
      * - 传入 ConfigurationSection 则读取 SQL 配置
      */
-    constructor(type: Any, builder: PersistentContainer.() -> Unit) {
+    constructor(
+        type: Any,
+        flags: List<String> = emptyList(),
+        clearFlags: Boolean = false,
+        ssl: String? = null,
+        builder: PersistentContainer.() -> Unit
+    ) {
         this.container = when (type) {
+            // SQLite 模式
             is File -> {
                 ContainerSQLite(type)
             }
-
+            // SQLite 模式
             is String -> {
                 ContainerSQLite(newFile(getDataFolder(), type))
             }
-
+            // SQL 模式
             is ConfigurationSection -> {
                 ContainerSQL(
                     type.getString("host", "localhost")!!,
                     type.getInt("port"),
                     type.getString("user", "user")!!,
                     type.getString("password", "user")!!,
-                    type.getString("database", "minecraft")!!
+                    type.getString("database", "minecraft")!!,
+                    flags,
+                    clearFlags,
+                    ssl
                 )
             }
-
+            // 无效类型
             else -> error("Unsupported source type: $type")
         }
         builder(this)
@@ -64,8 +83,18 @@ class PersistentContainer {
     /**
      * 设置 SQL 源
      */
-    constructor(host: String, port: Int, user: String, password: String, database: String, builder: PersistentContainer.() -> Unit) {
-        this.container = ContainerSQL(host, port, user, password, database)
+    constructor(
+        host: String,
+        port: Int,
+        user: String,
+        password: String,
+        database: String,
+        flags: List<String> = emptyList(),
+        clearFlags: Boolean = false,
+        ssl: String? = null,
+        builder: PersistentContainer.() -> Unit
+    ) {
+        this.container = ContainerSQL(host, port, user, password, database, flags, clearFlags, ssl)
         builder(this)
         this.container.init()
     }

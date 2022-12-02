@@ -1,8 +1,10 @@
 package taboolib.module.kether
 
+import com.mojang.datafixers.kinds.App
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.warning
 import taboolib.library.kether.*
+import taboolib.library.kether.Parser.*
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -14,13 +16,13 @@ typealias ScriptFrame = QuestContext.Frame
 /**
  * 运行 Kether 语句并打印错误
  */
-fun <T> runKether(func: () -> T): T? {
+fun <T> runKether(el: T? = null, function: () -> T): T? {
     try {
-        return func()
+        return function()
     } catch (ex: Exception) {
         ex.printKetherErrorMessage()
     }
-    return null
+    return el
 }
 
 /**
@@ -28,6 +30,11 @@ fun <T> runKether(func: () -> T): T? {
  */
 fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionParser<T> {
     return ScriptActionParser(resolve)
+}
+
+fun <T> combinationParser(builder: ParserHolder.(Instance) -> App<Mu, Action<T>>): ScriptActionParser<T> {
+    val parser = build(builder(ParserHolder, instance()))
+    return ScriptActionParser { parser.resolve<T>(this) }
 }
 
 /**

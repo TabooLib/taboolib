@@ -5,9 +5,27 @@ import taboolib.module.database.ColumnTypeSQL
 import taboolib.module.database.HostSQL
 import taboolib.module.database.Table
 
-class ContainerSQL(host: String, port: Int, user: String, password: String, database: String) : Container() {
+class ContainerSQL(
+    host: String,
+    port: Int,
+    user: String,
+    password: String,
+    database: String,
+    flags: List<String> = emptyList(),
+    clearFlags: Boolean = false,
+    ssl: String? = null,
+) : Container() {
 
-    override val host = HostSQL(host, port.toString(), user, password, database)
+    override val host = HostSQL(host, port.toString(), user, password, database).also {
+        if (clearFlags) {
+            it.flags.clear()
+        }
+        it.flags.addAll(flags)
+        if (ssl != null) {
+            it.flags -= "useSSL=false"
+            it.flags += "sslMode=$ssl"
+        }
+    }
 
     override fun createTable(name: String, player: Boolean, playerKey: Boolean, data: List<ContainerBuilder.Data>): Table<*, *> {
         return Table(name, host) {

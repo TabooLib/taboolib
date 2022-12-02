@@ -6,7 +6,7 @@ import taboolib.module.kether.*
 /**
  * @author IzzelAliz
  */
-object Actions {
+internal object Actions {
 
     @KetherParser(["null"])
     fun parser1() = scriptParser {
