@@ -10,7 +10,7 @@ import taboolib.module.kether.*
 import taboolib.module.kether.ParserHolder.option
 import java.util.concurrent.CompletableFuture
 
-object Actions {
+internal object Actions {
 
     @KetherParser(["import"])
     fun actionImport() = scriptParser {

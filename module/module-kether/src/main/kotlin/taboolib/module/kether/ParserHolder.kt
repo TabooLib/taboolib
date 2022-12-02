@@ -8,7 +8,7 @@ import java.util.concurrent.CompletableFuture
 
 object ParserHolder {
 
-    fun any(): Parser<Any> {
+    fun any(): Parser<Any?> {
         return Parser.frame { r ->
             val action = r.nextParsedAction()
             Action { it.run(action) }
@@ -24,6 +24,8 @@ object ParserHolder {
     fun text(): Parser<String> = any().map(Coerce::toString).orElse(symbol())
 
     fun int(): Parser<Int> = Parser.of { it.nextInt() }.orElse(any().map { it.cint })
+
+    fun long(): Parser<Long> = Parser.of { it.nextLong() }.orElse(any().map { it.clong })
 
     fun double(): Parser<Double> = Parser.of { it.nextDouble() }.orElse(any().map { it.cdouble })
 
@@ -51,12 +53,18 @@ object ParserHolder {
         return optional().map { it.orElse(null) }
     }
 
-    fun <A> Parser<A?>.defaultsTo(value: A): Parser<A> = this.map { it ?: value }
+    fun <A> Parser<A?>.defaultsTo(value: A): Parser<A> {
+        return map { it ?: value }
+    }
 
     fun <A> command(vararg s: String, then: Parser<A>): Parser<A> {
         return Parser.frame { r ->
             r.expects(*s)
             then.reader.apply(r)
         }
+    }
+
+    fun <T> completedFuture(value: T): CompletableFuture<T> {
+        return CompletableFuture.completedFuture(value)
     }
 }

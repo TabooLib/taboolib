@@ -74,8 +74,7 @@ public final class Parser<T> implements App<Parser.Mu, T> {
             list.trimToSize();
             return frame -> {
                 CompletableFuture<T>[] futures = (CompletableFuture<T>[]) list.stream().map(it -> it.run(frame)).toArray(CompletableFuture<?>[]::new);
-                return CompletableFuture.allOf(futures)
-                        .thenApply(it -> Arrays.stream(futures).map(CompletableFuture::join).collect(Collectors.toList()));
+                return CompletableFuture.allOf(futures).thenApply(it -> Arrays.stream(futures).map(CompletableFuture::join).collect(Collectors.toList()));
             };
         });
     }

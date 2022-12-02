@@ -15,7 +15,7 @@ import taboolib.module.kether.*
  * @author 坏黑
  * @since 2022/9/3 16:03
  */
-object ActionJexl3 {
+internal object ActionJexl3 {
 
     val jexl: JexlEngine by unsafeLazy { JexlBuilder().create() }
     var autoContext = true

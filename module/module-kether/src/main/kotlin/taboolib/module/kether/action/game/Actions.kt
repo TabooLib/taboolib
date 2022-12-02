@@ -68,6 +68,29 @@ internal object Actions {
         }
     }
 
+    @KetherParser(["title"])
+    fun actionTitle() = combinationParser {
+        it.group(
+            text(),
+            command("subtitle", then = text()).option(),
+            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 0, 0))
+        ).apply(it) { t1, t2, time ->
+            val (i, s, o) = time
+            now { player().sendTitle(t1.replace("@sender", player().name), t2?.replace("@sender", player().name) ?: "§r", i, s, o) }
+        }
+    }
+
+    @KetherParser(["subtitle"])
+    fun actionSubtitle() = combinationParser {
+        it.group(
+            text(),
+            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 0, 0))
+        ).apply(it) { text, time ->
+            val (i, s, o) = time
+            now { player().sendTitle("§r", text.replace("@sender", player().name), i, s, o) }
+        }
+    }
+
     @KetherParser(["loc", "location"])
     fun actionLocation() = combinationParser {
         it.group(
@@ -86,9 +109,9 @@ internal object Actions {
     fun actionSound() = combinationParser {
         it.group(
             text(),
-            command("by", "with", then = float().and(float())).option()
+            command("by", "with", then = float().and(float())).option().defaultsTo(0f to 0f)
         ).apply(it) { sound, vp ->
-            val (v, p) = vp ?: (0f to 0f)
+            val (v, p) = vp
             now {
                 if (sound.startsWith("resource:")) {
                     player().playSoundResource(player().location, sound.substringAfter("resource:"), v, p)
@@ -96,29 +119,6 @@ internal object Actions {
                     player().playSound(player().location, sound.replace('.', '_').uppercase(), v, p)
                 }
             }
-        }
-    }
-
-    @KetherParser(["title"])
-    fun actionTitle() = combinationParser {
-        it.group(
-            text(),
-            command("subtitle", then = text()).option(),
-            command("by", "with", then = int().and(int(), int())).option()
-        ).apply(it) { t1, t2, time ->
-            val (i, s, o) = time ?: Triple(0, 0, 0)
-            now { player().sendTitle(t1.replace("@sender", player().name), t2?.replace("@sender", player().name) ?: "§r", i, s, o) }
-        }
-    }
-
-    @KetherParser(["subtitle"])
-    fun actionSubtitle() = combinationParser {
-        it.group(
-            text(),
-            command("by", "with", then = int().and(int(), int())).option()
-        ).apply(it) { text, time ->
-            val (i, s, o) = time ?: Triple(0, 0, 0)
-            now { player().sendTitle("§r", text.replace("@sender", player().name), i, s, o) }
         }
     }
 }

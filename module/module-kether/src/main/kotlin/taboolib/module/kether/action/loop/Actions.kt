@@ -5,7 +5,7 @@ import taboolib.module.kether.actionNow
 import taboolib.module.kether.script
 import taboolib.module.kether.scriptParser
 
-object Actions {
+internal object Actions {
 
     @KetherParser(["break"])
     fun actionBreak() = scriptParser {

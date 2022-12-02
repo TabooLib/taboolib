@@ -16,13 +16,13 @@ typealias ScriptFrame = QuestContext.Frame
 /**
  * 运行 Kether 语句并打印错误
  */
-fun <T> runKether(func: () -> T): T? {
+fun <T> runKether(el: T? = null, function: () -> T): T? {
     try {
-        return func()
+        return function()
     } catch (ex: Exception) {
         ex.printKetherErrorMessage()
     }
-    return null
+    return el
 }
 
 /**

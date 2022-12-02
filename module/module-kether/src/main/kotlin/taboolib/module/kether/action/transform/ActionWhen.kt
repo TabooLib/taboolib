@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
  * @author 坏黑
  * @since 2022/9/3 17:22
  */
-object ActionWhen {
+internal object ActionWhen {
 
     open class CaseAction(val checkType: CheckType, val condition: List<ParsedAction<*>>, val action: ParsedAction<*>) : ScriptAction<Any?>() {
 
