@@ -39,4 +39,10 @@ object Actions {
             }
         }
     }
+
+    // TODO test this
+    @KetherParser(["array"])
+    fun actionArray() = combinationParser {
+        it.group(any().listOf()).apply(it) { array -> now { array } }
+    }
 }

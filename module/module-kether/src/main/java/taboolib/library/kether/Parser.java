@@ -8,10 +8,14 @@ import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class Parser<T> implements App<Parser.Mu, T> {
 
@@ -56,6 +60,24 @@ public final class Parser<T> implements App<Parser.Mu, T> {
 
     public Parser<Optional<T>> optional() {
         return map(Optional::ofNullable).orElse(point(Optional.empty()));
+    }
+
+    @SuppressWarnings("unchecked")
+    public Parser<List<T>> listOf() {
+        return frame(r -> {
+            r.expect("[");
+            ArrayList<Action<T>> list = new ArrayList<>();
+            while (r.hasNext() && r.peek() != ']') {
+                list.add(reader.apply(r));
+            }
+            r.expect("]");
+            list.trimToSize();
+            return frame -> {
+                CompletableFuture<T>[] futures = (CompletableFuture<T>[]) list.stream().map(it -> it.run(frame)).toArray(CompletableFuture<?>[]::new);
+                return CompletableFuture.allOf(futures)
+                        .thenApply(it -> Arrays.stream(futures).map(CompletableFuture::join).collect(Collectors.toList()));
+            };
+        });
     }
 
     public <R> Parser<R> map(Function<T, R> func) {
