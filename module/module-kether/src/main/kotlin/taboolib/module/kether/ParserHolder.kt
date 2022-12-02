@@ -51,6 +51,8 @@ object ParserHolder {
         return optional().map { it.orElse(null) }
     }
 
+    fun <A> Parser<A?>.defaultsTo(value: A): Parser<A> = this.map { it ?: value }
+
     fun <A> command(vararg s: String, then: Parser<A>): Parser<A> {
         return Parser.frame { r ->
             r.expects(*s)

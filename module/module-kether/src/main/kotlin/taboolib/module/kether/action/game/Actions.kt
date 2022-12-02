@@ -75,9 +75,8 @@ internal object Actions {
             double(),
             double(),
             double(),
-            command("and", then = float().and(float())).option()
-        ).apply(it) { world, x, y, z, yap ->
-            val (yaw, pitch) = yap ?: (0f to 0f)
+            command("and", then = float().and(float())).option().defaultsTo(0f to 0f)
+        ).apply(it) { world, x, y, z, (yaw, pitch) ->
             now { platformLocation<Any>(Location(world, x, y, z, yaw, pitch)) }
         }
     }
