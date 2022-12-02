@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import taboolib.common5.*
+import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.Parser
 import taboolib.library.kether.Parser.Action
 import java.util.concurrent.CompletableFuture
@@ -21,70 +22,19 @@ object ParserHolder {
         }
     }
 
-    fun text(): Parser<String> {
-        return Parser.frame { r ->
-            r.mark()
-            try {
-                val action = r.nextParsedAction()
-                Action { f -> f.run(action).thenApply { obj -> Coerce.toString(obj) } }
-            } catch (e: Exception) {
-                r.reset()
-                Action.point(r.nextToken())
-            }
-        }
-    }
+    fun action(): Parser<ParsedAction<*>> = Parser.of { it.nextParsedAction() }
 
-    fun int(): Parser<Int> {
-        return Parser.frame { r ->
-            r.mark()
-            try {
-                Action.point(r.nextInt())
-            } catch (e: Exception) {
-                r.reset()
-                val action = r.nextParsedAction()
-                Action { f -> f.run(action).thenApply { obj -> obj.cint } }
-            }
-        }
-    }
+    fun symbol(): Parser<String> = Parser.of { it.nextToken() }
 
-    fun double(): Parser<Double> {
-        return Parser.frame { r ->
-            r.mark()
-            try {
-                Action.point(r.nextDouble())
-            } catch (e: Exception) {
-                r.reset()
-                val action = r.nextParsedAction()
-                Action { f -> f.run(action).thenApply { obj -> obj.cdouble } }
-            }
-        }
-    }
+    fun text(): Parser<String> = action().map(Coerce::toString).orElse(symbol())
 
-    fun float(): Parser<Float> {
-        return Parser.frame { r ->
-            r.mark()
-            try {
-                Action.point(r.nextDouble().toFloat())
-            } catch (e: Exception) {
-                r.reset()
-                val action = r.nextParsedAction()
-                Action { f -> f.run(action).thenApply { obj -> obj.cfloat } }
-            }
-        }
-    }
+    fun int(): Parser<Int> = Parser.of { it.nextInt() }.orElse(action().map { it.cint })
 
-    fun bool(): Parser<Boolean> {
-        return Parser.frame { r ->
-            r.mark()
-            try {
-                Action.point(r.nextToken().cbool)
-            } catch (e: Exception) {
-                r.reset()
-                val action = r.nextParsedAction()
-                Action { f -> f.run(action).thenApply { obj -> obj.cbool } }
-            }
-        }
-    }
+    fun double(): Parser<Double> = Parser.of { it.nextDouble() }.orElse(action().map { it.cdouble })
+
+    fun float(): Parser<Float> = double().map { it.toFloat() }
+
+    fun bool(): Parser<Boolean> =  Parser.of { Coerce.asBoolean(it.nextToken()).get() }.orElse(action().map { it.cbool })
 
     fun <T> now(action: ScriptFrame.() -> T): Action<T> {
         return Action { CompletableFuture.completedFuture(action(it)) }

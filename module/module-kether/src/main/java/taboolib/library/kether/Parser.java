@@ -3,6 +3,7 @@ package taboolib.library.kether;
 import com.mojang.datafixers.kinds.App;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.kinds.K1;
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
 import org.jetbrains.annotations.NotNull;
@@ -37,41 +38,36 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         this.reader = reader;
     }
 
-    public Parser<Optional<T>> optional() {
+    public Parser<T> orElse(Parser<T> other) {
         return new Parser<>(r -> {
             r.mark();
             try {
-                Action<T> action = reader.apply(r);
-                return frame -> action.run(frame).thenApply(Optional::ofNullable);
+                return reader.apply(r);
             } catch (Exception e) {
                 r.reset();
-                return Action.point(Optional.empty());
+                return other.reader.apply(r);
             }
         });
     }
 
+    public <B> Parser<Either<T, B>> either(Parser<B> parser) {
+        return map(Either::<T, B>left).orElse(parser.map(Either::right));
+    }
+
+    public Parser<Optional<T>> optional() {
+        return map(Optional::ofNullable).orElse(point(Optional.empty()));
+    }
+
     public <R> Parser<R> map(Function<T, R> func) {
-        return new Parser<>(r -> {
-            Action<T> action = reader.apply(r);
-            return frame -> action.run(frame).thenApply(func);
-        });
+        return unbox(instance().ap(func, this));
     }
 
     public <B, R> Parser<R> fold(Parser<B> fb, BiFunction<T, B, R> func) {
-        return new Parser<>(r -> {
-            Action<T> aa = reader.apply(r);
-            Action<B> ab = fb.reader.apply(r);
-            return frame -> aa.run(frame).thenCompose(f1 -> ab.run(frame).thenApply(f2 -> func.apply(f1, f2)));
-        });
+        return unbox(instance().apply2(func, this, fb));
     }
 
     public <B, C, R> Parser<R> fold(Parser<B> fb, Parser<C> fc, Function3<T, B, C, R> func) {
-        return new Parser<>(r -> {
-            Action<T> aa = reader.apply(r);
-            Action<B> ab = fb.reader.apply(r);
-            Action<C> ac = fc.reader.apply(r);
-            return frame -> aa.run(frame).thenCompose(f1 -> ab.run(frame).thenCompose(f2 -> ac.run(frame).thenApply(f3 -> func.apply(f1, f2, f3))));
-        });
+        return unbox(instance().apply3(func, this, fb, fc));
     }
 
     public static <T> Parser<T> point(T value) {
@@ -87,7 +83,7 @@ public final class Parser<T> implements App<Parser.Mu, T> {
     }
 
     public static <A> QuestActionParser create(final Function<Instance, ? extends App<Mu, Action<A>>> builder) {
-        return build(builder.apply(new Instance()));
+        return build(builder.apply(instance()));
     }
 
     public static <A> QuestActionParser build(App<Mu, Action<A>> fa) {
@@ -108,7 +104,12 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         };
     }
 
-    public static final class Instance implements Applicative<Mu, Instance.Mu> {
+    public static Instance instance() {
+        return Instance.INSTANCE;
+    }
+
+    public enum Instance implements Applicative<Mu, Instance.Mu> {
+        INSTANCE;
 
         private static final class Mu implements Applicative.Mu {
         }

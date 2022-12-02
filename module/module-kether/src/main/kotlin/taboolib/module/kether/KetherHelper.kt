@@ -33,7 +33,7 @@ fun <T> scriptParser(resolve: (QuestReader) -> QuestAction<T>): ScriptActionPars
 }
 
 fun <T> combinationParser(builder: ParserHolder.(Instance) -> App<Mu, Action<T>>): ScriptActionParser<T> {
-    val parser = build(builder(ParserHolder, Instance()))
+    val parser = build(builder(ParserHolder, instance()))
     return ScriptActionParser { parser.resolve<T>(this) }
 }
 

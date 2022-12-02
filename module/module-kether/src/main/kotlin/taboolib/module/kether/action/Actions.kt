@@ -90,37 +90,11 @@ object Actions {
         actionNow { setNext(context().quest.blocks[block] ?: error("block $block not found")) }
     }
 
-//    目前还无法被 combinationParser 替代，因为 t 和 f 中的语句会在条件判断前被执行
-//    @KetherParser(["if"])
-//    fun actionIf() = combinationParser {
-//        it.group(bool(), command("then", then = any()), command("else", then = any()).option()).apply(it) { condition, t, f ->
-//            now { if (condition) t else f }
-//        }
-//    }
-
     @KetherParser(["if"])
-    fun actionIf() = scriptParser {
-        val condition = it.nextParsedAction()
-        it.expect("then")
-        val trueAction = it.nextParsedAction()
-        var falseAction: ParsedAction<*>? = null
-        if (it.hasNext()) {
-            it.mark()
-            if (it.nextToken() == "else") {
-                falseAction = it.nextParsedAction()
-            } else {
-                it.reset()
-            }
-        }
-        actionFuture { f ->
-            run(condition).bool { b ->
-                if (b) {
-                    run(trueAction).thenAccept { r -> f.complete(r) }
-                } else if (falseAction != null) {
-                    run(falseAction).thenAccept { r -> f.complete(r) }
-                } else {
-                    f.complete(null)
-                }
+    fun actionIf() = combinationParser {
+        it.group(bool(), command("then", then = action()), command("else", then = action()).option()).apply(it) { condition, t, f ->
+            future {
+                if (condition) run(t) else if (f != null) run(f) else CompletableFuture.completedFuture(null)
             }
         }
     }
