@@ -8,19 +8,14 @@ import java.util.concurrent.CompletableFuture
 
 object ParserHolder {
 
-    inline fun <reified T> type(): Parser<T> {
-        return Parser.frame { r ->
-            val action = r.nextParsedAction()
-            Action { it.run(action).thenApply { obj -> obj as T } }
-        }
-    }
-
     fun any(): Parser<Any> {
         return Parser.frame { r ->
             val action = r.nextParsedAction()
             Action { it.run(action) }
         }
     }
+
+    inline fun <reified T> type(): Parser<T> = any().map { it as T }
 
     fun action(): Parser<ParsedAction<*>> = Parser.of { it.nextParsedAction() }
 
