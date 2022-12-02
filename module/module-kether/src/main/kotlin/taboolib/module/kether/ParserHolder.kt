@@ -26,15 +26,15 @@ object ParserHolder {
 
     fun symbol(): Parser<String> = Parser.of { it.nextToken() }
 
-    fun text(): Parser<String> = action().map(Coerce::toString).orElse(symbol())
+    fun text(): Parser<String> = any().map(Coerce::toString).orElse(symbol())
 
-    fun int(): Parser<Int> = Parser.of { it.nextInt() }.orElse(action().map { it.cint })
+    fun int(): Parser<Int> = Parser.of { it.nextInt() }.orElse(any().map { it.cint })
 
-    fun double(): Parser<Double> = Parser.of { it.nextDouble() }.orElse(action().map { it.cdouble })
+    fun double(): Parser<Double> = Parser.of { it.nextDouble() }.orElse(any().map { it.cdouble })
 
     fun float(): Parser<Float> = double().map { it.toFloat() }
 
-    fun bool(): Parser<Boolean> =  Parser.of { Coerce.asBoolean(it.nextToken()).get() }.orElse(action().map { it.cbool })
+    fun bool(): Parser<Boolean> = Parser.of { Coerce.asBoolean(it.nextToken()).get() }.orElse(any().map { it.cbool })
 
     fun <T> now(action: ScriptFrame.() -> T): Action<T> {
         return Action { CompletableFuture.completedFuture(action(it)) }
