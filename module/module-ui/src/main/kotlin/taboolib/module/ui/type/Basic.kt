@@ -37,6 +37,9 @@ open class Basic(title: String = "chest") : Menu(title) {
     /** 关闭回调 **/
     internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
 
+    /** 只触发一次关闭回调 **/
+    internal var onceCloseCallback = false
+
     /** 构建回调 **/
     internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
@@ -110,8 +113,9 @@ open class Basic(title: String = "chest") : Menu(title) {
      * 页面关闭时触发回调
      * 只能触发一次（玩家客户端强制关闭时会触发两次原版 InventoryCloseEvent 事件）
      */
-    open fun onClose(callback: (event: InventoryCloseEvent) -> Unit) {
+    open fun onClose(once: Boolean = true, callback: (event: InventoryCloseEvent) -> Unit) {
         closeCallback = callback
+        onceCloseCallback = once
     }
 
     /**

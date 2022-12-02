@@ -102,7 +102,10 @@ internal object ClickListener {
     fun onClose(e: InventoryCloseEvent) {
         val close = MenuHolder.fromInventory(e.inventory)
         close?.closeCallback?.invoke(e)
-        close?.closeCallback = {}
+        // 只触发一次
+        if (close?.onceCloseCallback == true) {
+            close.closeCallback = {}
+        }
     }
 
     @SubscribeEvent
