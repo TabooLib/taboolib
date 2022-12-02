@@ -23,6 +23,8 @@ public class Polygon extends ParticleObj {
     private int side;
     private double step;
 
+    private double radius;
+
     /**
      * 构造一个正多边形
      *
@@ -94,6 +96,27 @@ public class Polygon extends ParticleObj {
         return this;
     }
 
+    /**
+     * 获取正多边形的半径
+     *
+     * @return 正多边形的半径
+     */
+    public double getRadius() {
+        return radius;
+    }
+
+    /**
+     * 设置正多边形的半径
+     *
+     * @param radius 正多边形的半径
+     * @return {@link Polygon}
+     */
+    public Polygon setRadius(double radius) {
+        this.radius = radius;
+        resetLocations();
+        return this;
+    }
+
     @Override
     public void show() {
         if (locations.isEmpty()) {
@@ -115,8 +138,8 @@ public class Polygon extends ParticleObj {
         locations.clear();
         for (double angle = 0; angle <= 360; angle += 360D / side) {
             double radians = Math.toRadians(angle);
-            double x = Math.cos(radians);
-            double z = Math.sin(radians);
+            double x = Math.cos(radians) * radius;
+            double z = Math.sin(radians) * radius;
             locations.add(getOrigin().clone().add(x, 0, z));
         }
     }

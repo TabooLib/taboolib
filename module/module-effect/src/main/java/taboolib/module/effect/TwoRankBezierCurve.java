@@ -28,7 +28,7 @@ public class TwoRankBezierCurve extends ParticleObj {
     }
 
     /**
-     * 构造一个三阶贝塞尔曲线
+     * 构造一个二阶贝塞尔曲线
      *
      * @param p0   连续点
      * @param p1   控制点
