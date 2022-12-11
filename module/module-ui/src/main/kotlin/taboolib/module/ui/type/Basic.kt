@@ -103,9 +103,9 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     protected open fun selfBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
         if (async) {
-            selfBuildCallback = callback
-        } else {
             selfAsyncBuildCallback = callback
+        } else {
+            selfBuildCallback = callback
         }
     }
 

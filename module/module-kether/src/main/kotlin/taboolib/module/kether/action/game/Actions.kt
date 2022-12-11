@@ -73,7 +73,7 @@ internal object Actions {
         it.group(
             text(),
             command("subtitle", then = text()).option(),
-            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 0, 0))
+            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 20, 0))
         ).apply(it) { t1, t2, time ->
             val (i, s, o) = time
             now { player().sendTitle(t1.replace("@sender", player().name), t2?.replace("@sender", player().name) ?: "§r", i, s, o) }
@@ -84,7 +84,7 @@ internal object Actions {
     fun actionSubtitle() = combinationParser {
         it.group(
             text(),
-            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 0, 0))
+            command("by", "with", then = int().and(int(), int())).option().defaultsTo(Triple(0, 20, 0))
         ).apply(it) { text, time ->
             val (i, s, o) = time
             now { player().sendTitle("§r", text.replace("@sender", player().name), i, s, o) }
