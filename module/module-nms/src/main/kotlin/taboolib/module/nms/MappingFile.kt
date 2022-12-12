@@ -106,6 +106,18 @@ import taboolib.common.env.RuntimeResources
         hash = "069e5d3e081c303231ea453ed1e56ac149917c9e",
         zip = true,
         tag = "1.19.2:fields"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19.3-cl.csrg",
+        hash = "496893661f336066292d50ea5ce12acba20cb2c5",
+        zip = true,
+        tag = "1.19.3:combined"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c69e3af0-members.csrg",
+        hash = "65539f95551a967e096f916896c031c5969d2e34",
+        zip = true,
+        tag = "1.19.3:fields"
     )
 )
 class MappingFile(val combined: String, val fields: String) {

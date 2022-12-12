@@ -1473,7 +1473,7 @@ public enum XSound {
      */
     @NotNull
     public static Optional<XSound> matchXSound(@NotNull String sound) {
-        if (sound.isEmpty()) throw new IllegalArgumentException("Cannot match XSound of a null or empty sound name");
+        if (sound == null || sound.isEmpty()) throw new IllegalArgumentException("Cannot match XSound of a null or empty sound name");
         return Optional.ofNullable(Data.NAMES.get(format(sound)));
     }
 
@@ -1610,7 +1610,7 @@ public enum XSound {
 
         if (name.isEmpty()) throw new IllegalArgumentException("No sound name specified: " + sound);
         Optional<XSound> soundType = matchXSound(name);
-        if (!soundType.isPresent()) return null;
+        if (!soundType.isPresent()) throw new IllegalArgumentException("Unknown sound: " + name);
 
         float volume = DEFAULT_VOLUME;
         float pitch = DEFAULT_PITCH;
@@ -1665,6 +1665,7 @@ public enum XSound {
      * Plays an instrument's notes in an ascending form.
      * This method is not really relevant to this utility class, but a nice feature.
      *
+     * @param plugin      the plugin handling schedulers.
      * @param player      the player to play the note from.
      * @param playTo      the entity to play the note to.
      * @param instrument  the instrument.
@@ -1677,6 +1678,7 @@ public enum XSound {
     @NotNull
     public static BukkitTask playAscendingNote(@NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
                                                int ascendLevel, int delay) {
+        Objects.requireNonNull(player, "Cannot play note from null player");
         Objects.requireNonNull(playTo, "Cannot play note to null entity");
 
         if (ascendLevel <= 0) throw new IllegalArgumentException("Note ascend level cannot be lower than 1");
@@ -1736,6 +1738,7 @@ public enum XSound {
     /**
      * Plays a sound repeatedly with the given delay at a moving target's location.
      *
+     * @param plugin the plugin handling schedulers. (You can replace this with a static instance)
      * @param entity the entity to play the sound to. We exactly need an entity to keep the track of location changes.
      * @param volume the volume of the sound.
      * @param pitch  the pitch of the sound.
@@ -1866,7 +1869,7 @@ public enum XSound {
     public static class Record {
         @NotNull public final XSound sound;
         public final float volume, pitch;
-        public final boolean playAtLocation;
+        public boolean playAtLocation;
         @Nullable public Player player;
         @Nullable public Location location;
 

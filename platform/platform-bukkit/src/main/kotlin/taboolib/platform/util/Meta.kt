@@ -30,3 +30,11 @@ fun Metadatable.getMetaFirstOrNull(key: String): MetadataValue? {
 fun Metadatable.removeMeta(key: String) {
     removeMetadata(key, BukkitPlugin.getInstance())
 }
+
+inline fun <reified T> MetadataValue.cast(): T {
+    return value() as T
+}
+
+inline fun <reified T> MetadataValue.castOrNull(): T? {
+    return value() as? T
+}

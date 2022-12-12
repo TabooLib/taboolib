@@ -1638,7 +1638,7 @@ public enum XMaterial {
      */
     @NotNull
     public static Optional<XMaterial> matchXMaterial(@NotNull String name) {
-        if (name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
+        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
         Optional<XMaterial> oldMatch = matchXMaterialWithData(name);
         return oldMatch.isPresent() ? oldMatch : matchDefinedXMaterial(format(name), UNKNOWN_DATA_VALUE);
     }
@@ -2134,6 +2134,7 @@ public enum XMaterial {
      * no matter if it is supported or not.
      *
      * @param alternateMaterial the material to get if this one is not supported.
+     *
      * @return this material or the {@code alternateMaterial} if not supported.
      */
     @Nullable

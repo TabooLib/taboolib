@@ -18,8 +18,8 @@ fun ConfigurationSection.setLocation(path: String, location: Location) {
         "x" to location.x,
         "y" to location.y,
         "z" to location.z,
+        "yaw" to location.yaw,
         "pitch" to location.pitch,
-        "yaw" to location.yaw
     ))
 }
 

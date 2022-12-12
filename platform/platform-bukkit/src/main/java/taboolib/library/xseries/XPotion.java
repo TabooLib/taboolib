@@ -178,7 +178,7 @@ public enum XPotion {
      */
     @NotNull
     public static Optional<XPotion> matchXPotion(@NotNull String potion) {
-        if (potion.isEmpty()) throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
+        if (potion == null || potion.isEmpty()) throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
         PotionEffectType idType = fromId(potion);
         if (idType != null) {
             XPotion type = Data.NAMES.get(idType.getName());
@@ -469,8 +469,8 @@ public enum XPotion {
     /**
      * Builds a potion effect with the given duration and amplifier.
      *
-     * @param duration  the duration of the potion effect.
-     * @param amplifier the amplifier of the potion effect.
+     * @param duration  the duration of the potion effect in ticks.
+     * @param amplifier the amplifier of the potion effect (starting from 1).
      *
      * @return a potion effect.
      * @see #parseEffect(String)
@@ -478,7 +478,7 @@ public enum XPotion {
      */
     @Nullable
     public PotionEffect buildPotionEffect(int duration, int amplifier) {
-        return type == null ? null : new PotionEffect(type, duration, amplifier);
+        return type == null ? null : new PotionEffect(type, duration, amplifier - 1);
     }
 
     /**
