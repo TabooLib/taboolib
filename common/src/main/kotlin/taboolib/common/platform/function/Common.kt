@@ -33,6 +33,21 @@ fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
 /**
  * 获取实现类
  */
+inline fun <reified T> implementation(): T {
+    return PlatformFactory.getAPI()
+}
+
+/**
+ * 获取实现类（可能为空）
+ */
+inline fun <reified T> implementationOrNull(): T? {
+    return PlatformFactory.getAPIOrNull()
+}
+
+/**
+ * 获取实现类
+ */
+@Deprecated("use implementation<T>() instead", ReplaceWith("implementation<T>()"))
 inline fun <reified T> implementations(): T {
     return PlatformFactory.getAPI()
 }

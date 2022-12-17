@@ -109,6 +109,13 @@ object PlatformFactory {
     }
 
     /**
+     * 获取已被唤醒的 API 实例（可能为空）
+     */
+    inline fun <reified T> getAPIOrNull(): T? {
+        return awokenMap[T::class.java.name] as? T
+    }
+
+    /**
      * 获取已注册的跨平台服务
      */
     inline fun <reified T> getService(): T {
@@ -116,16 +123,41 @@ object PlatformFactory {
     }
 
     /**
-     * 注册 API
+     * 获取已注册的跨平台服务（可能为空）
      */
-    inline fun <reified T : Any> registerAPI(instance: Any) {
+    inline fun <reified T> getServiceOrNull(): T? {
+        return serviceMap[T::class.java.name] as? T
+    }
+
+    /**
+     * 注册 API 实例
+     */
+    fun registerAPI(instance: Any) {
+        val superclass = instance::class.java.superclass
+        // 如果不是 object, 则作为 API 注册
+        if (superclass != null && superclass != Any::class.java) {
+            awokenMap[superclass.name] = instance
+        }
+        // 获取第一个接口
+        else {
+            val interfaces = instance::class.java.interfaces
+            if (interfaces.isNotEmpty()) {
+                awokenMap[interfaces[0].name] = instance
+            }
+        }
+    }
+
+    /**
+     * 注册 API 实例
+     */
+    inline fun <reified T : Any> registerAPI(instance: T) {
         awokenMap[T::class.java.name] = instance
     }
 
     /**
      * 注册跨平台服务
      */
-    inline fun <reified T : Any> registerService(instance: Any) {
+    inline fun <reified T : Any> registerService(instance: T) {
         serviceMap[T::class.java.name] = instance
     }
 }
