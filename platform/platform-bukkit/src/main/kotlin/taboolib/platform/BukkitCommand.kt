@@ -144,7 +144,9 @@ class BukkitCommand : PlatformCommand {
             else -> return
         }
         val components = ArrayList<BaseComponent>()
-        components += TextComponent(command)
+        components += TextComponent(command).also {
+            it.color = ChatColor.GRAY
+        }
         components += TranslatableComponent("command.context.here").also {
             it.color = ChatColor.RED
             it.isItalic = true
