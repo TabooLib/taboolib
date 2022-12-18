@@ -3,7 +3,9 @@
 package taboolib.platform.util
 
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.platform.function.adaptPlayer
@@ -48,4 +50,13 @@ fun HumanEntity.feed() {
 
 fun HumanEntity.saturate() {
     saturation = 20F
+}
+
+fun Player.sound(type: Sound, volume: Float = 1f, pitch: Float = 1f) {
+    playSound(location, type, volume, pitch)
+}
+
+fun Player.takeOneFromHand() {
+    val item = inventory.itemInHand ?: return
+    item.amount -= 1
 }
