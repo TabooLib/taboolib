@@ -36,7 +36,7 @@ abstract class ResettableLazy<T>(vararg val groups: String) : Lazy<T> {
 
         fun reset(vararg groups: String) {
             synchronized(defined) {
-                if (groups.isEmpty()) {
+                if (groups.isEmpty() || groups.contains("*")) {
                     defined.forEach { it.reset() }
                 } else {
                     defined.filter { lazy ->
