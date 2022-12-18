@@ -132,24 +132,6 @@ object PlatformFactory {
     /**
      * 注册 API 实例
      */
-    fun registerAPI(instance: Any) {
-        val superclass = instance::class.java.superclass
-        // 如果不是 object, 则作为 API 注册
-        if (superclass != null && superclass != Any::class.java) {
-            awokenMap[superclass.name] = instance
-        }
-        // 获取第一个接口
-        else {
-            val interfaces = instance::class.java.interfaces
-            if (interfaces.isNotEmpty()) {
-                awokenMap[interfaces[0].name] = instance
-            }
-        }
-    }
-
-    /**
-     * 注册 API 实例
-     */
     inline fun <reified T : Any> registerAPI(instance: T) {
         awokenMap[T::class.java.name] = instance
     }

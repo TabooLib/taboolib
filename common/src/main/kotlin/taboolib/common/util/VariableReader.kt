@@ -48,7 +48,7 @@ class VariableReader(val start: String = "{{", val end: String = "}}") {
             if (startPos > 0) {
                 parts += Part(format(str.substring(0, startPos)), false)
             }
-            parts += Part(str.substring(startPos + start.length, endPos), true)
+            parts += Part(format(str.substring(startPos + start.length, endPos)), true)
             str = str.substring(endPos + end.length)
         }
         if (str.isNotEmpty()) {
