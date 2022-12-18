@@ -16,17 +16,17 @@ fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NO
  * @param synchronized 是否线程安全
  * @param initializer 初始化函数
  */
-fun <T> resettableLazy(group: String = "*", synchronized: Boolean = false, initializer: () -> T): ResettableLazy<T> {
+fun <T> resettableLazy(vararg groups: String, synchronized: Boolean = false, initializer: () -> T): ResettableLazy<T> {
     return if (synchronized) {
-        ResettableSynchronizedLazyImpl(group, initializer)
+        ResettableSynchronizedLazyImpl(*groups, initializer = initializer)
     } else {
-        ResettableLazyImpl(group, initializer)
+        ResettableLazyImpl(*groups, initializer = initializer)
     }.also {
         ResettableLazy.defined += it
     }
 }
 
-abstract class ResettableLazy<T>(val group: String) : Lazy<T> {
+abstract class ResettableLazy<T>(vararg val groups: String) : Lazy<T> {
 
     abstract fun reset()
 
@@ -34,13 +34,21 @@ abstract class ResettableLazy<T>(val group: String) : Lazy<T> {
 
         val defined = LinkedList<ResettableLazy<*>>()
 
-        fun reset(group: String = "*") {
-            synchronized(defined) { defined.filter { it.group == group }.forEach { it.reset() } }
+        fun reset(vararg groups: String) {
+            synchronized(defined) {
+                if (groups.isEmpty()) {
+                    defined.forEach { it.reset() }
+                } else {
+                    defined.filter { lazy ->
+                        groups.any { lazy.groups.contains(it) }
+                    }.forEach { it.reset() }
+                }
+            }
         }
     }
 }
 
-private class ResettableLazyImpl<T>(group: String, initializer: () -> T) : ResettableLazy<T>(group) {
+private class ResettableLazyImpl<T>(vararg groups: String, initializer: () -> T) : ResettableLazy<T>(*groups) {
 
     private var initializer: (() -> T)? = initializer
 
@@ -61,10 +69,10 @@ private class ResettableLazyImpl<T>(group: String, initializer: () -> T) : Reset
 
     override fun isInitialized() = localValue !== UninitializedValue
 
-    override fun toString() = if (isInitialized()) value.toString() else "Lazy($group) value not initialized yet."
+    override fun toString() = if (isInitialized()) value.toString() else "Lazy(${groups.joinToString()}) value not initialized yet."
 }
 
-private class ResettableSynchronizedLazyImpl<T>(group: String, initializer: () -> T) : ResettableLazy<T>(group) {
+private class ResettableSynchronizedLazyImpl<T>(vararg groups: String, initializer: () -> T) : ResettableLazy<T>(*groups) {
 
     private var initializer: (() -> T)? = initializer
 
@@ -98,7 +106,7 @@ private class ResettableSynchronizedLazyImpl<T>(group: String, initializer: () -
 
     override fun isInitialized() = localValue !== UninitializedValue
 
-    override fun toString() = if (isInitialized()) value.toString() else "Lazy($group) value not initialized yet."
+    override fun toString() = if (isInitialized()) value.toString() else "Lazy(${groups.joinToString()}) value not initialized yet."
 }
 
 internal object UninitializedValue
