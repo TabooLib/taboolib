@@ -3,7 +3,7 @@
     RuntimeDependency(
         value = "!com.mongodb:MongoDB:3.12.2",
         test = "!com.mongodb.client.MongoClient",
-        repository = "https://repo.tabooproject.org/repository/releases"
+        repository = "http://ptms.ink:8081/repository/releases"
     )
 )
 
