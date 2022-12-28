@@ -11,7 +11,7 @@ import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-private var playerDatabase: Database? = null
+var playerDatabase: Database? = null
 
 val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
 
