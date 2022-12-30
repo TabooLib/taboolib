@@ -17,9 +17,9 @@ import java.nio.file.Path;
  * @since 2020-04-12 22:39
  */
 public class ClassAppender {
-
     static MethodHandles.Lookup lookup;
     static Unsafe unsafe;
+    
 
     static {
         try {
@@ -37,10 +37,23 @@ public class ClassAppender {
     ClassAppender() {
     }
 
-    public static void addPath(Path path) {
+    public static void addPath(Path path, boolean isIsolated, boolean isInitiative) {
         try {
             File file = new File(path.toUri().getPath());
+
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
+            if (IsolatedClassLoader.isEnabled() && (isIsolated || isInitiative)) {
+                Field ucpField;
+                try {
+                    ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                } catch (NoSuchFieldError | NoSuchFieldException ignored) {
+                    ucpField = ucp(loader.getClass());
+                }
+                addURL(loader, ucpField, file);
+                
+                return;
+            }
+
             // Application
             if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
                 addURL(loader, ucp(loader.getClass()), file);
@@ -55,7 +68,7 @@ public class ClassAppender {
                 Field ucpField;
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
-                } catch (NoSuchFieldError | NoSuchFieldException e1) {
+                } catch (NoSuchFieldError | NoSuchFieldException ignored) {
                     ucpField = ucp(loader.getClass());
                 }
                 addURL(loader, ucpField, file);

@@ -160,7 +160,7 @@ public class RuntimeEnv {
                 }
                 try {
                     String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
-                    loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
+                    loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.isolated(), dependency.initiative(), dependency.scopes());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -185,10 +185,10 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir, @Nullable String repository) throws IOException {
-        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, false, false, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
-    public void loadDependency(@NotNull String url, @NotNull File baseDir, @NotNull List<JarRelocation> relocation, @Nullable String repository, boolean ignoreOptional, boolean ignoreException, boolean transitive, @NotNull DependencyScope[] dependencyScopes) throws IOException {
+    public void loadDependency(@NotNull String url, @NotNull File baseDir, @NotNull List<JarRelocation> relocation, @Nullable String repository, boolean ignoreOptional, boolean ignoreException, boolean transitive, boolean isolated, boolean initiative, @NotNull DependencyScope[] dependencyScopes) throws IOException {
         String[] args = url.split(":");
         DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
         // 支持用户对源进行替换
@@ -202,6 +202,8 @@ public class RuntimeEnv {
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(dependencyScopes);
         downloader.setTransitive(transitive);
+        downloader.setIsolated(isolated);
+        downloader.setInitiative(initiative);
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
         File pomShaFile = new File(pomFile.getPath() + ".sha1");

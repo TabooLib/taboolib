@@ -65,16 +65,16 @@ subprojects
 
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
-        maven("http://ptms.ink:8081/repository/releases") {
-            isAllowInsecureProtocol = true
-            credentials {
-                username = project.findProperty("taboolibUsername").toString()
-                password = project.findProperty("taboolibPassword").toString()
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
-        }
+//        maven("http://ptms.ink:8081/repository/releases") {
+//            isAllowInsecureProtocol = true
+//            credentials {
+//                username = project.findProperty("taboolibUsername").toString()
+//                password = project.findProperty("taboolibPassword").toString()
+//            }
+//            authentication {
+//                create<BasicAuthentication>("basic")
+//            }
+//        }
         mavenLocal()
     }
     publications {

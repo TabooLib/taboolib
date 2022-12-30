@@ -6,16 +6,18 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tabooproject.reflex.Reflex;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
+import taboolib.common.env.IsolatedClassLoader;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
-import org.tabooproject.reflex.Reflex;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Set;
 
 /**
@@ -32,73 +34,122 @@ public class BukkitPlugin extends JavaPlugin {
     @Nullable
     private static Plugin pluginInstance;
     private static BukkitPlugin instance;
+    private static Class<?> delegateClass;
+    private static Object delegateObject;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
-        // 搜索 Plugin 实现
-        if (TabooLibCommon.isKotlinEnvironment()) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
+            // 搜索 Plugin 实现
+            if (TabooLibCommon.isKotlinEnvironment()) {
+                pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            }
+        } else {
+            ClassLoader pluginClassLoader = BukkitPlugin.class.getClassLoader();
+            try (IsolatedClassLoader loader = new IsolatedClassLoader(
+                    new URL[]{BukkitPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
+                    pluginClassLoader
+            )) {
+                delegateClass = Class.forName("taboolib.platform.BukkitPluginDelegate", true, loader);
+                delegateObject = delegateClass.getConstructor(ClassLoader.class).newInstance(pluginClassLoader);
+                delegateClass.getMethod("onConst").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
     public BukkitPlugin() {
         instance = this;
-        // 修改访问提示（似乎有用）
-        injectAccess();
-        // 生命周期
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        
+        if (!IsolatedClassLoader.isEnabled()) {
+            // 修改访问提示（似乎有用）
+            injectAccess();
+            // 生命周期
+            TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        } else {
+            try {
+                delegateClass.getMethod("onInit").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     @Override
     public void onLoad() {
-        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-        // 再次尝试搜索 Plugin 实现
-        if (pluginInstance == null) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
-        }
-        // 调用 Plugin 实现的 onLoad() 方法
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onLoad();
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+            // 再次尝试搜索 Plugin 实现
+            if (pluginInstance == null) {
+                pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            }
+            // 调用 Plugin 实现的 onLoad() 方法
+            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+                pluginInstance.onLoad();
+            }
+        } else {
+            try {
+                delegateClass.getMethod("onLoad").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
     @Override
     public void onEnable() {
-        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-        // 判断插件是否关闭
-        if (!TabooLibCommon.isStopped()) {
-            // 调用 onEnable() 方法
-            if (pluginInstance != null) {
-                pluginInstance.onEnable();
-            }
-            // 启动调度器
-            try {
-                ExecutorKt.startExecutor();
-            } catch (NoClassDefFoundError ignored) {
-            }
-        }
-        // 再次判断插件是否关闭
-        // 因为插件可能在 onEnable() 下关闭
-        if (!TabooLibCommon.isStopped()) {
-            // 创建调度器，执行 onActive() 方法
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                    if (pluginInstance != null) {
-                        pluginInstance.onActive();
-                    }
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+            // 判断插件是否关闭
+            if (!TabooLibCommon.isStopped()) {
+                // 调用 onEnable() 方法
+                if (pluginInstance != null) {
+                    pluginInstance.onEnable();
                 }
-            });
+                // 启动调度器
+                try {
+                    ExecutorKt.startExecutor();
+                } catch (NoClassDefFoundError ignored) {
+                }
+            }
+            // 再次判断插件是否关闭
+            // 因为插件可能在 onEnable() 下关闭
+            if (!TabooLibCommon.isStopped()) {
+                // 创建调度器，执行 onActive() 方法
+                Bukkit.getScheduler().runTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        if (pluginInstance != null) {
+                            pluginInstance.onActive();
+                        }
+                    }
+                });
+            }
+        } else {
+            try {
+                delegateClass.getMethod("onEnable").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
     @Override
     public void onDisable() {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        // 在插件未关闭的前提下，执行 onDisable() 方法
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onDisable();
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+            // 在插件未关闭的前提下，执行 onDisable() 方法
+            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+                pluginInstance.onDisable();
+            }
+        } else {
+            try {
+                delegateClass.getMethod("onDisable").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

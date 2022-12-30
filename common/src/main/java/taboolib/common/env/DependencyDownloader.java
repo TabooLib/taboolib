@@ -75,6 +75,11 @@ public class DependencyDownloader extends AbstractXmlParser {
     private boolean ignoreException = false;
 
     private boolean isTransitive = true;
+    
+    private boolean isIsolated = false;
+    
+    private boolean isInitiative = false;
+    
 
     public DependencyDownloader() {
     }
@@ -118,7 +123,7 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (file.exists()) {
                 TabooLibCommon.print(String.format("Loading library %s:%s:%s", dep.getGroupId(), dep.getArtifactId(), dep.getVersion()));
                 if (relocation.isEmpty()) {
-                    ClassAppender.addPath(file.toPath());
+                    ClassAppender.addPath(file.toPath(), isIsolated, isInitiative);
                 } else {
                     File rel = new File(file.getPath() + "-" + relocation.hashCode() + ".jar");
                     if (!rel.exists() || rel.length() == 0) {
@@ -130,7 +135,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                             throw new IllegalStateException(String.format("Unable to relocate %s%n", dep), e);
                         }
                     }
-                    ClassAppender.addPath(rel.toPath());
+                    ClassAppender.addPath(rel.toPath(), isIsolated, isInitiative);
                 }
                 injectedDependencies.add(dep);
             } else {
@@ -441,6 +446,22 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public void setTransitive(boolean transitive) {
         isTransitive = transitive;
+    }
+
+    public boolean isIsolated() {
+        return isIsolated;
+    }
+
+    public void setIsolated(boolean isolated) {
+        isIsolated = isolated;
+    }
+
+    public boolean isInitiative() {
+        return isInitiative;
+    }
+
+    public void setInitiative(boolean initiative) {
+        isInitiative = initiative;
     }
 
     @NotNull
