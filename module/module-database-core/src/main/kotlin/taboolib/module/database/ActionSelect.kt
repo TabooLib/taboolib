@@ -25,7 +25,7 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
             var query = "SELECT "
             query += when {
                 rows.isNotEmpty() -> {
-                    rows.joinToString { it.formatColumn() }
+                    rows.joinToString { if (it.contains('(') && it.endsWith(')')) it else it.formatColumn() }
                 }
                 distinct != null -> {
                     "DISTINCT ${distinct!!.formatColumn()}"
