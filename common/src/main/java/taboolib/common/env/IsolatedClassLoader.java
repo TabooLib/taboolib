@@ -13,7 +13,8 @@ public class IsolatedClassLoader extends URLClassLoader {
 
 	static {
 		try {
-			Class<EnableIsolatedClassLoader> clazz = EnableIsolatedClassLoader.class;
+			Class<SkipIsolatedClassLoader> clazz = SkipIsolatedClassLoader.class;
+		} catch (NoClassDefFoundError ignored) {
 			isEnabled = true;
 			excludeClasses.addAll(Arrays.asList(
 					"taboolib.common.env.IsolatedClassLoader",
@@ -27,7 +28,6 @@ public class IsolatedClassLoader extends URLClassLoader {
 					"taboolib.platform.Sponge8Plugin",
 					"taboolib.platform.Sponge9Plugin"
 			));
-		} catch (NoClassDefFoundError ignored) {
 		}
 	}
 
