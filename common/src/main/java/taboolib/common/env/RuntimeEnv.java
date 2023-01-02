@@ -177,7 +177,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws IOException {
-        loadDependency(url, new File(defaultLibrary));
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws IOException {
@@ -197,7 +197,6 @@ public class RuntimeEnv {
         } else if (ENV_PROPERTIES.contains("repository-" + repository)) {
             repository = ENV_PROPERTIES.getProperty("repository-" + repository);
         }
-        downloader.addRepository(new Repository(repository));
         downloader.setIgnoreOptional(ignoreOptional);
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(dependencyScopes);
