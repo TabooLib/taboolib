@@ -28,7 +28,7 @@ import java.nio.file.Path;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings("Convert2Lambda")
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
 @com.velocitypowered.api.plugin.Plugin(
         id = "@plugin_id@",
         name = "@plugin_name@",
@@ -44,12 +44,7 @@ public class VelocityPlugin {
     private static Object delegateObject;
 
     static {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-            if (TabooLibCommon.isKotlinEnvironment()) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
-            }
-        } else {
+        if (IsolatedClassLoader.isEnabled()) {
             try {
                 IsolatedClassLoader loader = new IsolatedClassLoader(
                         new URL[]{VelocityPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
@@ -60,6 +55,11 @@ public class VelocityPlugin {
                 delegateClass.getMethod("onConst").invoke(delegateObject);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
+            }
+        } else {
+            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
+            if (TabooLibCommon.isKotlinEnvironment()) {
+                pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
         }
     }
@@ -74,21 +74,27 @@ public class VelocityPlugin {
         this.server = server;
         this.configDirectory = configDirectory;
         instance = this;
-        
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.INIT);
-        } else {
+
+        if (IsolatedClassLoader.isEnabled()) {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
+        } else {
+            TabooLibCommon.lifeCycle(LifeCycle.INIT);
         }
     }
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (!IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.isEnabled()) {
+            try {
+                delegateClass.getMethod("onLoad").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        } else {
             if (!TabooLibCommon.isStopped()) {
                 TabooLibCommon.lifeCycle(LifeCycle.LOAD);
                 if (pluginInstance == null) {
@@ -119,27 +125,21 @@ public class VelocityPlugin {
                     }
                 }).schedule();
             }
-        } else {
-            try {
-                delegateClass.getMethod("onLoad").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
         }
     }
 
     @Subscribe
     public void e(ProxyShutdownEvent e) {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-                pluginInstance.onDisable();
-            }
-        } else {
+        if (IsolatedClassLoader.isEnabled()) {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
+            }
+        } else {
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+                pluginInstance.onDisable();
             }
         }
     }

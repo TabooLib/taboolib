@@ -13,20 +13,16 @@ import java.util.concurrent.TimeUnit;
 
 import static taboolib.platform.BungeePlugin.getPluginInstance;
 
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
 public class BungeePluginDelegate {
 
-	private final Class<?> pluginClass;
 	private final Field pluginInstance;
 
-
 	public BungeePluginDelegate() throws ClassNotFoundException, NoSuchFieldException {
-		this.pluginClass = Class.forName("taboolib.platform.BungeePlugin");
-		this.pluginInstance = pluginClass.getDeclaredField("pluginInstance");
-
-		pluginInstance.setAccessible(true);
+		this.pluginInstance = Class.forName("taboolib.platform.BungeePlugin").getDeclaredField("pluginInstance");
+		this.pluginInstance.setAccessible(true);
 	}
-	
-	
+
 	public void onConst() throws IllegalAccessException {
 		TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
 		// 搜索 Plugin 实现
@@ -88,5 +84,4 @@ public class BungeePluginDelegate {
 			getPluginInstance().onDisable();
 		}
 	}
-	
 }

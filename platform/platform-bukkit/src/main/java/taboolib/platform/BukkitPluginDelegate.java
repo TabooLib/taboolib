@@ -15,17 +15,14 @@ import java.util.Set;
 
 import static taboolib.platform.BukkitPlugin.getPluginInstance;
 
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
 public class BukkitPluginDelegate {
-	
-	private final Class<?> pluginClass;
+
 	private final Field pluginInstance;
 	
-
 	public BukkitPluginDelegate() throws ClassNotFoundException, NoSuchFieldException {
-		this.pluginClass = Class.forName("taboolib.platform.BukkitPlugin");
-		this.pluginInstance = pluginClass.getDeclaredField("pluginInstance");
-		
-		pluginInstance.setAccessible(true);
+		this.pluginInstance = Class.forName("taboolib.platform.BukkitPlugin").getDeclaredField("pluginInstance");
+		this.pluginInstance.setAccessible(true);
 	}
 
 
@@ -93,7 +90,6 @@ public class BukkitPluginDelegate {
 			getPluginInstance().onDisable();
 		}
 	}
-
 
 	/**
 	 * 移除 Spigot 的访问警告：

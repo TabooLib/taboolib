@@ -11,17 +11,14 @@ import java.lang.reflect.Field;
 
 import static taboolib.platform.VelocityPlugin.getPluginInstance;
 
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
 public class VelocityPluginDelegate {
 
-	private final Class<?> pluginClass;
 	private final Field pluginInstance;
 
-
 	public VelocityPluginDelegate() throws ClassNotFoundException, NoSuchFieldException {
-		this.pluginClass = Class.forName("taboolib.platform.VelocityPlugin");
-		this.pluginInstance = pluginClass.getDeclaredField("pluginInstance");
-
-		pluginInstance.setAccessible(true);
+		this.pluginInstance = Class.forName("taboolib.platform.VelocityPlugin").getDeclaredField("pluginInstance");
+		this.pluginInstance.setAccessible(true);
 	}
 
 
@@ -77,5 +74,4 @@ public class VelocityPluginDelegate {
 			getPluginInstance().onDisable();
 		}
 	}
-	
 }

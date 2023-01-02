@@ -120,7 +120,6 @@ public class DependencyDownloader extends AbstractXmlParser {
             if (injectedDependencyClassLoaders != null && injectedDependencyClassLoaders.contains(ClassAppender.judgeAddPathClassLoader(isIsolated, isInitiative))) {
                 continue;
             }
-            
             File file = dep.getFile(baseDir, "jar");
             if (file.exists()) {
                 TabooLibCommon.print(String.format("Loading library %s:%s:%s", dep.getGroupId(), dep.getArtifactId(), dep.getVersion()));

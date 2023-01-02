@@ -7,15 +7,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IsolatedClassLoader extends URLClassLoader {
+
 	private static final Set<String> excludeClasses = new HashSet<>();
 	private static boolean isEnabled = false;
-	
-	
+
 	static {
 		try {
 			Class<EnableIsolatedClassLoader> clazz = EnableIsolatedClassLoader.class;
 			isEnabled = true;
-			
 			excludeClasses.addAll(Arrays.asList(
 					"taboolib.common.env.IsolatedClassLoader",
 					"taboolib.common.platform.Plugin",
@@ -31,47 +30,42 @@ public class IsolatedClassLoader extends URLClassLoader {
 		} catch (NoClassDefFoundError ignored) {
 		}
 	}
-	
-	
+
 	public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 	}
 	
-
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		synchronized (getClassLoadingLock(name)) {
 			// First, check if the class has already been loaded
-			Class<?> c = findLoadedClass(name);
-			
-			if (c == null) {
+			Class<?> loadedClass = findLoadedClass(name);
+
+			if (loadedClass == null) {
 				// check isolated classes
 				if (!excludeClasses.contains(name)) {
 					try {
-						c = findClass(name);
+						loadedClass = findClass(name);
 					} catch (ClassNotFoundException ignored) {
 					}
 				}
-
 				// check the parent class loader
-				if (c == null) {
+				if (loadedClass == null) {
 					ClassLoader parent = getParent();
 					if (parent != null) {
-						c = parent.loadClass(name);
+						loadedClass = parent.loadClass(name);
 					}
 				}
 			}
 
 			if (resolve) {
-				resolveClass(c);
+				resolveClass(loadedClass);
 			}
-			return c;
+			return loadedClass;
 		}
 	}
-	
-	
+
 	public static boolean isEnabled() {
 		return isEnabled;
 	}
-	
 }

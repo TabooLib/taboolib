@@ -41,6 +41,7 @@ public class ClassAppender {
         try {
             File file = new File(path.toUri().getPath());
 
+            // IsolatedClassLoader
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
             if (loader instanceof IsolatedClassLoader && IsolatedClassLoader.isEnabled()) {
                 if (isIsolated || isInitiative) {
@@ -51,10 +52,8 @@ public class ClassAppender {
                         ucpField = ucp(loader.getClass());
                     }
                     addURL(loader, ucpField, file);
-
                     return loader;
                 }
-                
                 loader = loader.getParent();
             }
 

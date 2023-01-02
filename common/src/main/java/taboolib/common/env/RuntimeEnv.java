@@ -177,7 +177,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws IOException {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, false, false, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws IOException {
