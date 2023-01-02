@@ -17,8 +17,16 @@ public class IsolatedClassLoader extends URLClassLoader {
 			isEnabled = true;
 			
 			excludeClasses.addAll(Arrays.asList(
+					"taboolib.common.env.IsolatedClassLoader",
 					"taboolib.common.platform.Plugin",
-					"taboolib.platform.BukkitPlugin"
+					"taboolib.platform.BukkitPlugin",
+					"taboolib.platform.BungeePlugin",
+					"taboolib.platform.VelocityPlugin",
+					"taboolib.platform.CloudNetV3Plugin",
+					"taboolib.platform.NukkitPlugin",
+					"taboolib.platform.Sponge7Plugin",
+					"taboolib.platform.Sponge8Plugin",
+					"taboolib.platform.Sponge9Plugin"
 			));
 		} catch (NoClassDefFoundError ignored) {
 		}

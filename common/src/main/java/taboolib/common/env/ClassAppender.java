@@ -37,21 +37,25 @@ public class ClassAppender {
     ClassAppender() {
     }
 
-    public static void addPath(Path path, boolean isIsolated, boolean isInitiative) {
+    public static ClassLoader addPath(Path path, boolean isIsolated, boolean isInitiative) {
         try {
             File file = new File(path.toUri().getPath());
 
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
-            if (IsolatedClassLoader.isEnabled() && (isIsolated || isInitiative)) {
-                Field ucpField;
-                try {
-                    ucpField = URLClassLoader.class.getDeclaredField("ucp");
-                } catch (NoSuchFieldError | NoSuchFieldException ignored) {
-                    ucpField = ucp(loader.getClass());
+            if (loader instanceof IsolatedClassLoader && IsolatedClassLoader.isEnabled()) {
+                if (isIsolated || isInitiative) {
+                    Field ucpField;
+                    try {
+                        ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                    } catch (NoSuchFieldError | NoSuchFieldException ignored) {
+                        ucpField = ucp(loader.getClass());
+                    }
+                    addURL(loader, ucpField, file);
+
+                    return loader;
                 }
-                addURL(loader, ucpField, file);
                 
-                return;
+                loader = loader.getParent();
             }
 
             // Application
@@ -73,9 +77,23 @@ public class ClassAppender {
                 }
                 addURL(loader, ucpField, file);
             }
+            return loader;
         } catch (Throwable t) {
             t.printStackTrace();
         }
+        
+        return null;
+    }
+
+    public static ClassLoader judgeAddPathClassLoader(boolean isIsolated, boolean isInitiative) {
+        ClassLoader loader = TabooLibCommon.class.getClassLoader();
+        if (loader instanceof IsolatedClassLoader && IsolatedClassLoader.isEnabled()) {
+            if (isIsolated || isInitiative) {
+                return loader;
+            }
+            return loader.getParent();
+        }
+        return loader;
     }
 
     public static boolean isExists(String path) {

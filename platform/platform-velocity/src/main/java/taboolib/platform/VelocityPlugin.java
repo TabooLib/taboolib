@@ -11,12 +11,14 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
+import taboolib.common.env.IsolatedClassLoader;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
 
+import java.net.URL;
 import java.nio.file.Path;
 
 /**
@@ -38,11 +40,27 @@ public class VelocityPlugin {
     @Nullable
     private static Plugin pluginInstance;
     private static VelocityPlugin instance;
+    private static Class<?> delegateClass;
+    private static Object delegateObject;
 
     static {
-        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-        if (TabooLibCommon.isKotlinEnvironment()) {
-            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
+            if (TabooLibCommon.isKotlinEnvironment()) {
+                pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            }
+        } else {
+            try {
+                IsolatedClassLoader loader = new IsolatedClassLoader(
+                        new URL[]{VelocityPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
+                        VelocityPlugin.class.getClassLoader()
+                );
+                delegateClass = Class.forName("taboolib.platform.VelocityPluginDelegate", true, loader);
+                delegateObject = delegateClass.getConstructor().newInstance();
+                delegateClass.getMethod("onConst").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
@@ -56,48 +74,73 @@ public class VelocityPlugin {
         this.server = server;
         this.configDirectory = configDirectory;
         instance = this;
-        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.INIT);
+        } else {
+            try {
+                delegateClass.getMethod("onInit").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (!TabooLibCommon.isStopped()) {
-            TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-            if (pluginInstance == null) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
-            }
-            if (pluginInstance != null) {
-                pluginInstance.onLoad();
-            }
-        }
-        if (!TabooLibCommon.isStopped()) {
-            TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-            if (pluginInstance != null) {
-                pluginInstance.onEnable();
-            }
-            try {
-                ExecutorKt.startExecutor();
-            } catch (NoClassDefFoundError ignored) {
-            }
-        }
-        if (!TabooLibCommon.isStopped()) {
-            server.getScheduler().buildTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                    if (pluginInstance != null) {
-                        pluginInstance.onActive();
-                    }
+        if (!IsolatedClassLoader.isEnabled()) {
+            if (!TabooLibCommon.isStopped()) {
+                TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+                if (pluginInstance == null) {
+                    pluginInstance = Project1Kt.findImplementation(Plugin.class);
                 }
-            }).schedule();
+                if (pluginInstance != null) {
+                    pluginInstance.onLoad();
+                }
+            }
+            if (!TabooLibCommon.isStopped()) {
+                TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+                if (pluginInstance != null) {
+                    pluginInstance.onEnable();
+                }
+                try {
+                    ExecutorKt.startExecutor();
+                } catch (NoClassDefFoundError ignored) {
+                }
+            }
+            if (!TabooLibCommon.isStopped()) {
+                server.getScheduler().buildTask(this, new Runnable() {
+                    @Override
+                    public void run() {
+                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        if (pluginInstance != null) {
+                            pluginInstance.onActive();
+                        }
+                    }
+                }).schedule();
+            }
+        } else {
+            try {
+                delegateClass.getMethod("onLoad").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 
     @Subscribe
     public void e(ProxyShutdownEvent e) {
-        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-            pluginInstance.onDisable();
+        if (!IsolatedClassLoader.isEnabled()) {
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+                pluginInstance.onDisable();
+            }
+        } else {
+            try {
+                delegateClass.getMethod("onDisable").invoke(delegateObject);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 

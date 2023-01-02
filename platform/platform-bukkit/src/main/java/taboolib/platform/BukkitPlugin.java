@@ -45,14 +45,13 @@ public class BukkitPlugin extends JavaPlugin {
                 pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
         } else {
-            ClassLoader pluginClassLoader = BukkitPlugin.class.getClassLoader();
             try {
                 IsolatedClassLoader loader = new IsolatedClassLoader(
                         new URL[]{BukkitPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
-                        pluginClassLoader
+                        BukkitPlugin.class.getClassLoader()
                 );
                 delegateClass = Class.forName("taboolib.platform.BukkitPluginDelegate", true, loader);
-                delegateObject = delegateClass.getConstructor(ClassLoader.class).newInstance(pluginClassLoader);
+                delegateObject = delegateClass.getConstructor().newInstance();
                 delegateClass.getMethod("onConst").invoke(delegateObject);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
