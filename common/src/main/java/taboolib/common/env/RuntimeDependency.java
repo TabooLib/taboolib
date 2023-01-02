@@ -27,4 +27,7 @@ public @interface RuntimeDependency {
     String[] relocate() default {};
 
     boolean initiative() default false;
+    
+    boolean isolated() default false;
+    
 }

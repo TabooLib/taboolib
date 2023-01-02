@@ -17,9 +17,9 @@ import java.nio.file.Path;
  * @since 2020-04-12 22:39
  */
 public class ClassAppender {
-
     static MethodHandles.Lookup lookup;
     static Unsafe unsafe;
+    
 
     static {
         try {
@@ -37,10 +37,26 @@ public class ClassAppender {
     ClassAppender() {
     }
 
-    public static void addPath(Path path) {
+    public static ClassLoader addPath(Path path, boolean isIsolated, boolean isInitiative) {
         try {
             File file = new File(path.toUri().getPath());
+
+            // IsolatedClassLoader
             ClassLoader loader = TabooLibCommon.class.getClassLoader();
+            if (loader instanceof IsolatedClassLoader && IsolatedClassLoader.isEnabled()) {
+                if (isIsolated || isInitiative) {
+                    Field ucpField;
+                    try {
+                        ucpField = URLClassLoader.class.getDeclaredField("ucp");
+                    } catch (NoSuchFieldError | NoSuchFieldException ignored) {
+                        ucpField = ucp(loader.getClass());
+                    }
+                    addURL(loader, ucpField, file);
+                    return loader;
+                }
+                loader = loader.getParent();
+            }
+
             // Application
             if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
                 addURL(loader, ucp(loader.getClass()), file);
@@ -55,14 +71,28 @@ public class ClassAppender {
                 Field ucpField;
                 try {
                     ucpField = URLClassLoader.class.getDeclaredField("ucp");
-                } catch (NoSuchFieldError | NoSuchFieldException e1) {
+                } catch (NoSuchFieldError | NoSuchFieldException ignored) {
                     ucpField = ucp(loader.getClass());
                 }
                 addURL(loader, ucpField, file);
             }
+            return loader;
         } catch (Throwable t) {
             t.printStackTrace();
         }
+        
+        return null;
+    }
+
+    public static ClassLoader judgeAddPathClassLoader(boolean isIsolated, boolean isInitiative) {
+        ClassLoader loader = TabooLibCommon.class.getClassLoader();
+        if (loader instanceof IsolatedClassLoader && IsolatedClassLoader.isEnabled()) {
+            if (isIsolated || isInitiative) {
+                return loader;
+            }
+            return loader.getParent();
+        }
+        return loader;
     }
 
     public static boolean isExists(String path) {
