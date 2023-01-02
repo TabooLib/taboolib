@@ -167,6 +167,9 @@ public class DependencyDownloader extends AbstractXmlParser {
      * @since 1.0.0
      */
     public Set<Dependency> loadDependency(Collection<Repository> repositories, Dependency dependency) throws IOException {
+        if (repositories.isEmpty()) {
+            throw new IllegalArgumentException("No repositories specified");
+        }
         if (dependency.getVersion() == null) {
             IOException e = null;
             for (Repository repo : repositories) {

@@ -197,6 +197,7 @@ public class RuntimeEnv {
         } else if (ENV_PROPERTIES.contains("repository-" + repository)) {
             repository = ENV_PROPERTIES.getProperty("repository-" + repository);
         }
+        downloader.addRepository(new Repository(repository));
         downloader.setIgnoreOptional(ignoreOptional);
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(dependencyScopes);
