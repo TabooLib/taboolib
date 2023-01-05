@@ -26,22 +26,12 @@ class KetherLoader : ClassVisitor(0) {
             val annotation = method.getAnnotation(KetherParser::class.java)
             val value = annotation.property<Any>("value")?.asList()?.toTypedArray() ?: arrayOf()
             val namespace = annotation.property("namespace", "kether")
-            if (annotation.property("shared", false)) {
-                sharedParser += value to namespace
-                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, value, namespace)) }
-            }
-            value.forEach { Kether.addAction(it, parser, namespace) }
+            registerParser(parser, value, namespace, annotation.property("shared", false))
         } else if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
             val property = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptProperty<*>
             val annotation = method.getAnnotation(KetherProperty::class.java)
             val bind = annotation.property<Class<*>>("bind") ?: error("KetherProperty bind is null")
-            if (annotation.property("shared", false)) {
-                var name = bind.name
-                name = if (name.startsWith(taboolibPath)) "@${name.substring(taboolibPath.length)}" else name
-                sharedScriptProperty += name to property.id
-                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_PROPERTY, arrayOf(pluginId, name, property)) }
-            }
-            Kether.addScriptProperty(bind, property)
+            registerProperty(property, bind, annotation.property("shared", false))
         }
     }
 
@@ -55,7 +45,7 @@ class KetherLoader : ClassVisitor(0) {
         val sharedScriptProperty = ArrayList<Pair<String, String>>()
 
         @Awake(LifeCycle.DISABLE)
-        fun cancel() {
+        private fun cancel() {
             getOpenContainers().forEach { remote ->
                 sharedParser.forEach {
                     remote.call(StandardChannel.REMOTE_REMOVE_ACTION, arrayOf(it.first, it.second))
@@ -64,6 +54,26 @@ class KetherLoader : ClassVisitor(0) {
                     remote.call(StandardChannel.REMOTE_REMOVE_PROPERTY, arrayOf(it.first, it.second))
                 }
             }
+        }
+
+        /** 注册 Parser */
+        fun registerParser(parser: ScriptActionParser<*>, name: Array<String>, namespace: String = "kether", shared: Boolean = false) {
+            if (shared) {
+                sharedParser += name to namespace
+                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, name, namespace)) }
+            }
+            name.forEach { Kether.addAction(it, parser, namespace) }
+        }
+
+        /** 注册 Property */
+        fun registerProperty(property: ScriptProperty<*>, bind: Class<*>, shared: Boolean = false) {
+            if (shared) {
+                var name = bind.name
+                name = if (name.startsWith(taboolibPath)) "@${name.substring(taboolibPath.length)}" else name
+                sharedScriptProperty += name to property.id
+                getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_PROPERTY, arrayOf(pluginId, name, property)) }
+            }
+            Kether.addScriptProperty(bind, property)
         }
     }
 }
