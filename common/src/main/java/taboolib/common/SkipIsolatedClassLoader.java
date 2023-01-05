@@ -1,3 +1,3 @@
-package taboolib.common.env;
+package taboolib.common;
 
 public class SkipIsolatedClassLoader { }
