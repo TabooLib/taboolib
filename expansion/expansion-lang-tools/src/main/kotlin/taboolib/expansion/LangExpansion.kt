@@ -46,7 +46,7 @@ fun warningAsLang(node: String) {
 
 /**
  * Warning as lang
- * 国家化警告消息
+ * 国际化警告消息
  *
  * @param node 节点
  * @param args 参数

@@ -1,4 +1,4 @@
-package taboolib.common.env;
+package taboolib.common;
 
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -17,7 +17,7 @@ public class IsolatedClassLoader extends URLClassLoader {
 		} catch (NoClassDefFoundError ignored) {
 			isEnabled = true;
 			excludeClasses.addAll(Arrays.asList(
-					"taboolib.common.env.IsolatedClassLoader",
+					"taboolib.common.IsolatedClassLoader",
 					"taboolib.common.platform.Plugin",
 					"taboolib.platform.BukkitPlugin",
 					"taboolib.platform.BungeePlugin",

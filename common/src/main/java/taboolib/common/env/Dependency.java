@@ -35,7 +35,12 @@ public class Dependency extends AbstractXmlParser {
      * @since 1.0.0
      */
     private final String artifactId;
-
+    /**
+     * The scope of the dependency
+     *
+     * @since 1.0.0
+     */
+    private final DependencyScope scope;
     /**
      * The version of the artifact to download, or
      * {@link Dependency#LATEST_VERSION} if it is not specified in the pom
@@ -45,11 +50,31 @@ public class Dependency extends AbstractXmlParser {
     private String version;
 
     /**
-     * The scope of the dependency
+     * Creates a new dependency
      *
+     * @param groupId    The group ID
+     * @param artifactId The artifact ID
+     * @param version    The version to download
+     * @param scope      The scope
      * @since 1.0.0
      */
-    private final DependencyScope scope;
+    public Dependency(String groupId, String artifactId, String version, DependencyScope scope) {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version.contains("$") || version.contains("[") || version.contains("(") ? LATEST_VERSION : version;
+        this.scope = scope;
+    }
+
+    /**
+     * Creates a new dependency from the specified element in the pom
+     *
+     * @param node The element to create the dependency from
+     * @throws ParseException If the xml could not be parsed
+     * @since 1.0.0
+     */
+    public Dependency(Element node) throws ParseException {
+        this(find("groupId", node), find("artifactId", node), find("version", node, LATEST_VERSION), DependencyScope.valueOf(find("scope", node, "runtime").toUpperCase()));
+    }
 
     /**
      * Gets the ID of the group for this dependency
@@ -162,38 +187,11 @@ public class Dependency extends AbstractXmlParser {
         if (this == o) return true;
         if (!(o instanceof Dependency)) return false;
         Dependency that = (Dependency) o;
-        return Objects.equals(getGroupId(), that.getGroupId()) && Objects.equals(getArtifactId(), that.getArtifactId());
+        return Objects.equals(getGroupId(), that.getGroupId()) && Objects.equals(getArtifactId(), that.getArtifactId()) && Objects.equals(getVersion(), that.getVersion());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(getGroupId(), getArtifactId());
-    }
-
-    /**
-     * Creates a new dependency
-     *
-     * @param groupId    The group ID
-     * @param artifactId The artifact ID
-     * @param version    The version to download
-     * @param scope      The scope
-     * @since 1.0.0
-     */
-    public Dependency(String groupId, String artifactId, String version, DependencyScope scope) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version.contains("$") || version.contains("[") || version.contains("(") ? LATEST_VERSION : version;
-        this.scope = scope;
-    }
-
-    /**
-     * Creates a new dependency from the specified element in the pom
-     *
-     * @param node The element to create the dependency from
-     * @throws ParseException If the xml could not be parsed
-     * @since 1.0.0
-     */
-    public Dependency(Element node) throws ParseException {
-        this(find("groupId", node), find("artifactId", node), find("version", node, LATEST_VERSION), DependencyScope.valueOf(find("scope", node, "runtime").toUpperCase()));
     }
 }
