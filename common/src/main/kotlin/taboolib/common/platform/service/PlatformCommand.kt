@@ -2,10 +2,10 @@ package taboolib.common.platform.service
 
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBuilder
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
+import taboolib.common.platform.command.component.CommandBase
 
 /**
  * TabooLib
@@ -25,7 +25,7 @@ interface PlatformCommand {
      *  @param completer 补全器
      *  @param commandBuilder 命令构建器
      */
-    fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit)
+    fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBase.() -> Unit)
 
     /**
      * 注销一个命令

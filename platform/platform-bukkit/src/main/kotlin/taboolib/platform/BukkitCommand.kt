@@ -23,6 +23,7 @@ import taboolib.common.platform.service.PlatformCommand
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Constructor
 
@@ -62,7 +63,7 @@ class BukkitCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
+        commandBuilder: CommandBase.() -> Unit,
     ) {
         submit(now = true) {
             val pluginCommand = constructor.newInstance(command.name, plugin)

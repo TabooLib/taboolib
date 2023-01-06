@@ -1,10 +1,12 @@
 package taboolib.expansion
 
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBuilder
+import taboolib.common.platform.command.component.CommandComponent
+import taboolib.common.platform.command.component.CommandComponentDynamic
+import taboolib.common.platform.command.component.CommandComponentLiteral
 import taboolib.module.lang.asLangText
 
-fun CommandBuilder.CommandComponent.createHelper() {
+fun CommandComponent.createHelper() {
     execute<ProxyCommandSender> { sender, context, _ ->
         val command = context.command
         val builder = StringBuilder("§cUsage: /${command.name}")
@@ -12,10 +14,11 @@ fun CommandBuilder.CommandComponent.createHelper() {
         fun space(space: Int): String {
             return (1..space).joinToString("") { " " }
         }
-        fun print(compound: CommandBuilder.CommandComponent, index: Int, size: Int, offset: Int = 8, level: Int = 0, end: Boolean = false) {
+        fun print(compound: CommandComponent, index: Int, size: Int, offset: Int = 8, level: Int = 0, end: Boolean = false, optional: Boolean = false) {
+            var option = optional
             var comment = 0
             when (compound) {
-                is CommandBuilder.CommandComponentLiteral -> {
+                is CommandComponentLiteral -> {
                     if (size == 1) {
                         builder.append(" ").append("§c${compound.aliases[0]}")
                     } else {
@@ -35,15 +38,16 @@ fun CommandBuilder.CommandComponent.createHelper() {
                     }
                     comment = compound.aliases[0].length
                 }
-                is CommandBuilder.CommandComponentDynamic -> {
+                is CommandComponentDynamic -> {
                     val value = if (compound.comment.startsWith("@")) {
                         sender.asLangText(compound.comment.substring(1))
                     } else {
                         compound.comment
                     }
-                    comment = if (compound.optional) {
-                        builder.append(" ").append("§7<$value§c?§7>")
-                        compound.comment.length + 3
+                    comment = if (compound.optional || option) {
+                        option = true
+                        builder.append(" ").append("§8[<$value>]")
+                        compound.comment.length + 4
                     } else {
                         builder.append(" ").append("§7<$value>")
                         compound.comment.length + 2
@@ -56,10 +60,10 @@ fun CommandBuilder.CommandComponent.createHelper() {
             compound.children.forEachIndexed { i, children ->
                 // 因 literal 产生新的行
                 if (newline) {
-                    print(children, i, compound.children.size, offset, level + comment, end = end)
+                    print(children, i, compound.children.size, offset, level + comment, end = end, optional = option)
                 } else {
                     val length = if (offset == 8) command.name.length + 1 else comment + 1
-                    print(children, i, compound.children.size, offset + length, level, end = end)
+                    print(children, i, compound.children.size, offset + length, level, end = end, optional = option)
                 }
             }
         }

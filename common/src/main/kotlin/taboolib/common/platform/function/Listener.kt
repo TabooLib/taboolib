@@ -3,7 +3,10 @@ package taboolib.common.platform.function
 import taboolib.common.io.groupId
 import taboolib.common.io.taboolibId
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.event.*
+import taboolib.common.platform.event.EventOrder
+import taboolib.common.platform.event.EventPriority
+import taboolib.common.platform.event.PostOrder
+import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.service.PlatformListener
 import java.io.Closeable
 import java.util.concurrent.ConcurrentHashMap

@@ -1,6 +1,7 @@
 package taboolib.common.platform.command
 
 import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.function.registerCommand
 
 /**
@@ -25,7 +26,7 @@ fun command(
     permissionMessage: String = "",
     permissionDefault: PermissionDefault = PermissionDefault.OP,
     permissionChildren: Map<String, PermissionDefault> = emptyMap(),
-    commandBuilder: CommandBuilder.CommandBase.() -> Unit,
+    commandBuilder: CommandBase.() -> Unit,
 ) {
     registerCommand(
         // 创建命令结构
@@ -34,7 +35,7 @@ fun command(
         object : CommandExecutor {
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
-                val commandBase = CommandBuilder.CommandBase().also(commandBuilder)
+                val commandBase = CommandBase().also(commandBuilder)
                 return commandBase.execute(CommandContext(sender, command, name, commandBase, args))
             }
         },
@@ -42,7 +43,7 @@ fun command(
         object : CommandCompleter {
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
-                val commandBase = CommandBuilder.CommandBase().also(commandBuilder)
+                val commandBase = CommandBase().also(commandBuilder)
                 return commandBase.suggest(CommandContext(sender, command, name, commandBase, args))
             }
         },

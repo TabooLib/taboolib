@@ -7,35 +7,36 @@
 ![](https://img.shields.io/github/contributors/taboolib/taboolib)
 ![](https://img.shields.io/github/languages/code-size/taboolib/taboolib)
 
-TabooLib 是为 Minecraft（Java 版）提供一个跨平台的插件开发框架。但是 TabooLib 不是一个平台，也不提供插件的运行环境，而是帮助开发者在各个平台上快速开发，代替一些频繁使用或是相对复杂的操作，以及解决一些令人头疼的问题。
+TabooLib 是为 Minecraft（Java 版）提供一个跨平台的插件开发框架。但是 TabooLib
+不是一个平台，也不提供插件的运行环境，而是帮助开发者在各个平台上快速开发，代替一些频繁使用或是相对复杂的操作，以及解决一些令人头疼的问题。
 
 + TabooLib 起初是针对 Bukkit 的解决方案，不过现在正在横向发展。
 + 我们使用 MIT 协议，这个协议非常的宽松。
 + 开发速度至上。
 
-随着 6.0 版本的更新，我们更加注重安全性和稳定性。抛弃了上个版本问题频发的热加载机制，虽然那样能够显著的减少插件体积，以及带来一个中心化的插件管理器。但是随着 Minecraft 的版本更新，以及大量的第三方 Spigot 分支出现，这样的设计出现了不少问题。所以迎来 6.0 版本的巨大更新是铁板钉钉的事情，也是在这个版本我们重新精心设计了 TabooLib 的每一个工具。
+随着 6.0 版本的更新，我们更加注重安全性和稳定性。抛弃了上个版本问题频发的热加载机制，虽然那样能够显著的减少插件体积，以及带来一个中心化的插件管理器。但是随着
+Minecraft 的版本更新，以及大量的第三方 Spigot 分支出现，这样的设计出现了不少问题。所以迎来 6.0
+版本的巨大更新是铁板钉钉的事情，也是在这个版本我们重新精心设计了 TabooLib 的每一个工具。
 
-大多数基于 TabooLib 的插件应能跨多个 Minecraft 版本使用而不用特别更新。即在大部分情况下，服主不需要担心插件不兼容的问题。甚至是大面积使用 nms 代码也不例外，TabooLib 提供了数个堪比魔法的工具。
+大多数基于 TabooLib 的插件应能跨多个 Minecraft 版本使用而不用特别更新。即在大部分情况下，服主不需要担心插件不兼容的问题。甚至是大面积使用
+nms 代码也不例外，TabooLib 提供了数个堪比魔法的工具。
 
 **简单一点的，例如你可以按照 TabooLib 提供的方法快速注册命令。**
 
 ```kotlin
-command("tpuuid") {
+command("tp") {
     literal("random") {
-        execute<ProxyPlayer> { player, _, _ ->
-            player.teleport(player.entities().randomOrNull() ?: return@execute)
+        execute<ProxyPlayer> { sender, _, _ ->
+            sender.teleport(sender.entities().randomOrNull() ?: return@execute)
         }
     }
-    dynamic(optional = true) {
-        suggestion<ProxyPlayer> { player, _ ->
-            player.entities().map { it.toString() }
-        }
-        execute<ProxyPlayer> { player, _, argument ->
-            player.teleport(UUID.fromString(argument))
+    player {
+        execute<ProxyPlayer> { sender, ctx, _ ->
+            sender.teleport(ctx.player())
         }
     }
-    execute<ProxyPlayer> { player, _, _ ->
-        player.teleport(player.entityNearly() ?: return@execute)
+    execute<ProxyPlayer> { sender, _, _ ->
+        sender.teleport(sender.entityNearly() ?: return@execute)
     }
 }
 ```
@@ -93,8 +94,8 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 
 ## 版本
 
-| 构建版本 | 发行时间 | 发行者 | 插件版本 |
-| --- | --- | --- | --- |
+| 构建版本                                                                                                                                                               | 发行时间                                                                                                                                                              | 发行者                                                                                                                                                                   | 插件版本                                                                                                                                                                            |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ![](https://img.shields.io/badge/dynamic/json?label=Version&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Date&query=%24.created_at&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Author&query=%24.author.login&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2FTabooLib%2Freleases%2Flatest) | ![](https://img.shields.io/badge/dynamic/json?label=Plugin&query=%24.tag_name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FTabooLib%2Ftaboolib-gradle-plugin%2Freleases%2Flatest) |
 
 ## 模块

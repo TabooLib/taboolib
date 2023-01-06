@@ -1,10 +1,10 @@
 package taboolib.common.platform.function
 
 import taboolib.common.platform.PlatformFactory
-import taboolib.common.platform.command.CommandBuilder
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
+import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.service.PlatformCommand
 
 /**
@@ -15,7 +15,7 @@ import taboolib.common.platform.service.PlatformCommand
  *  @param completer 补全器
  *  @param commandBuilder 命令构建器
  */
-fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBuilder.CommandBase.() -> Unit) {
+fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBase.() -> Unit) {
     PlatformFactory.getService<PlatformCommand>().registerCommand(command, executor, completer, commandBuilder)
 }
 

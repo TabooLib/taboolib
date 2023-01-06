@@ -12,13 +12,13 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.CommandBuilder
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.service.PlatformCommand
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.platform.command.component.CommandBase
 
 /**
  * TabooLib
@@ -38,7 +38,7 @@ class BungeeCommand : PlatformCommand {
         command: CommandStructure,
         executor: CommandExecutor,
         completer: CommandCompleter,
-        commandBuilder: CommandBuilder.CommandBase.() -> Unit,
+        commandBuilder: CommandBase.() -> Unit,
     ) {
         val permission = command.permission.ifEmpty { "${plugin.description.name}.command.use" }
         BungeeCord.getInstance().pluginManager.registerCommand(BungeePlugin.getInstance(), object : Command(command.name, permission), TabExecutor {
