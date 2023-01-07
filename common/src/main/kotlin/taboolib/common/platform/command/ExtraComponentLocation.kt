@@ -13,12 +13,12 @@ import taboolib.common.platform.command.component.CommandComponentDynamic
  */
 fun CommandComponent.world(
     comment: String = "world",
-    suggest: List<String> = emptyList(),
+    suggest: List<String> = listOf("~"),
     optional: Boolean = false,
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).suggestWorlds(suggest = suggest)
+    return dynamic(comment, optional, permission, dynamic).suggestWorlds(suggest)
 }
 
 /**

@@ -5,6 +5,28 @@ import taboolib.common.Isolated
 import taboolib.common.util.Location
 
 /**
+ * 获取坐标中的世界
+ *
+ * @param origin 原点（默认为玩家位置）
+ * @return 指定位置的输入参数
+ * @throws IllegalStateException 参数不存在，或者原点世界不存在
+ */
+fun <T> CommandContext<T>.world(id: String = "world", origin: Location? = null): String {
+    return if (get(id) == "~") (origin ?: player().location).world!! else get(id)
+}
+
+/**
+ * 获取坐标中的世界
+ *
+ * @param origin 原点（默认为玩家位置）
+ * @return 指定位置的输入参数
+ */
+fun <T> CommandContext<T>.worldOrNull(id: String = "world", origin: Location? = null): String? {
+    val world = getOrNull(id) ?: return null
+    return if (world == "~") (origin ?: player().location).world else world
+}
+
+/**
  * 获取坐标中的 X
  *
  * @param origin 原点（默认为玩家位置）
@@ -94,8 +116,7 @@ fun <T> CommandContext<T>.location(
     pitch: String = "pitch",
     origin: Location? = null
 ): Location {
-    val pw = if (get(world) == "~") (origin ?: player().location).world else get(world)
-    return Location(pw, x(x, origin), y(y, origin), z(z, origin), yawOrNull(yaw, origin) ?: 0f, pitchOrNull(pitch, origin) ?: 0f)
+    return Location(world(world, origin), x(x, origin), y(y, origin), z(z, origin), yawOrNull(yaw, origin) ?: 0f, pitchOrNull(pitch, origin) ?: 0f)
 }
 
 /**

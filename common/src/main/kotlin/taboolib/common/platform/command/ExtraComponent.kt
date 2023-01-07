@@ -73,5 +73,5 @@ fun CommandComponent.player(
     permission: String = "",
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
-    return dynamic(comment, optional, permission, dynamic).suggestPlayers(suggest = suggest)
+    return dynamic(comment, optional, permission, dynamic).suggestPlayers(suggest)
 }

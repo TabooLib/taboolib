@@ -36,6 +36,7 @@ fun CommandComponent.createHelper() {
                         }
                         builder.append("§c${compound.aliases[0]}")
                     }
+                    option = false
                     comment = compound.aliases[0].length
                 }
                 is CommandComponentDynamic -> {
@@ -60,10 +61,10 @@ fun CommandComponent.createHelper() {
             compound.children.forEachIndexed { i, children ->
                 // 因 literal 产生新的行
                 if (newline) {
-                    print(children, i, compound.children.size, offset, level + comment, end = end, optional = option)
+                    print(children, i, compound.children.size, offset, level + comment, end, option)
                 } else {
                     val length = if (offset == 8) command.name.length + 1 else comment + 1
-                    print(children, i, compound.children.size, offset + length, level, end = end, optional = option)
+                    print(children, i, compound.children.size, offset + length, level, end, option)
                 }
             }
         }
