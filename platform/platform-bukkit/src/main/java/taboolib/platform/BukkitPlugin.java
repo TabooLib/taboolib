@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import org.tabooproject.reflex.Reflex;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
-import taboolib.common.IsolatedClassLoader;
+import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
