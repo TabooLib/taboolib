@@ -24,7 +24,7 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
     ): CommandComponentLiteral {
         val component = CommandComponentLiteral(index + 1, arrayOf(*aliases), optional, permission).also(literal).also { it.parent = this }
         // 自动可选
-        if (children.isNotEmpty() || commandExecutor != null) {
+        if (commandExecutor != null) {
             component.optional = true
         }
         children += component
@@ -42,7 +42,7 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
     ): CommandComponentDynamic {
         val component = CommandComponentDynamic(index + 1, comment, optional, permission).also(dynamic).also { it.parent = this }
         // 自动可选
-        if (children.isNotEmpty() || commandExecutor != null) {
+        if (commandExecutor != null) {
             component.optional = true
         }
         children += component
