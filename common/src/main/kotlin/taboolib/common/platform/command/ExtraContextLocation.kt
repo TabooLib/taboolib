@@ -11,7 +11,7 @@ import taboolib.common.util.Location
  * @return 指定位置的输入参数
  * @throws IllegalStateException 参数不存在，或者类型不匹配
  */
-fun <T> CommandContext<T>.x(id: String, origin: Location? = null): Double {
+fun <T> CommandContext<T>.x(id: String = "x", origin: Location? = null): Double {
     return if (get(id).startsWith('~')) (origin ?: player().location).x + get(id).substring(1).double() else get(id).double()
 }
 
@@ -22,7 +22,7 @@ fun <T> CommandContext<T>.x(id: String, origin: Location? = null): Double {
  * @return 指定位置的输入参数
  * @throws IllegalStateException 参数不存在，或者类型不匹配
  */
-fun <T> CommandContext<T>.y(id: String, origin: Location? = null): Double {
+fun <T> CommandContext<T>.y(id: String = "y", origin: Location? = null): Double {
     return if (get(id).startsWith('~')) (origin ?: player().location).y + get(id).substring(1).double() else get(id).double()
 }
 
@@ -33,7 +33,7 @@ fun <T> CommandContext<T>.y(id: String, origin: Location? = null): Double {
  * @return 指定位置的输入参数
  * @throws IllegalStateException 参数不存在，或者类型不匹配
  */
-fun <T> CommandContext<T>.z(id: String, origin: Location? = null): Double {
+fun <T> CommandContext<T>.z(id: String = "z", origin: Location? = null): Double {
     return if (get(id).startsWith('~')) (origin ?: player().location).z + get(id).substring(1).double() else get(id).double()
 }
 
@@ -44,7 +44,7 @@ fun <T> CommandContext<T>.z(id: String, origin: Location? = null): Double {
  * @return 指定位置的输入参数
  * @throws IllegalStateException 参数不存在，或者类型不匹配
  */
-fun <T> CommandContext<T>.yaw(id: String, origin: Location? = null): Float {
+fun <T> CommandContext<T>.yaw(id: String = "yaw", origin: Location? = null): Float {
     return if (get(id).startsWith('~')) (origin ?: player().location).yaw + get(id).substring(1).float() else get(id).float()
 }
 
@@ -54,7 +54,7 @@ fun <T> CommandContext<T>.yaw(id: String, origin: Location? = null): Float {
  * @param origin 原点（默认为玩家位置）
  * @return 指定位置的输入参数
  */
-fun <T> CommandContext<T>.yawOrNull(id: String, origin: Location? = null): Float? {
+fun <T> CommandContext<T>.yawOrNull(id: String = "yaw", origin: Location? = null): Float? {
     val yaw = getOrNull(id) ?: return null
     return if (yaw.startsWith('~')) (origin ?: player().location).yaw + yaw.substring(1).float() else yaw.float()
 }
@@ -65,7 +65,7 @@ fun <T> CommandContext<T>.yawOrNull(id: String, origin: Location? = null): Float
  * @return 指定位置的输入参数
  * @throws IllegalStateException 参数不存在，或者类型不匹配
  */
-fun <T> CommandContext<T>.pitch(id: String, origin: Location? = null): Float {
+fun <T> CommandContext<T>.pitch(id: String = "pitch", origin: Location? = null): Float {
     return if (get(id).startsWith('~')) (origin ?: player().location).pitch + get(id).substring(1).float() else get(id).float()
 }
 
@@ -74,7 +74,7 @@ fun <T> CommandContext<T>.pitch(id: String, origin: Location? = null): Float {
  *
  * @return 指定位置的输入参数
  */
-fun <T> CommandContext<T>.pitchOrNull(id: String, origin: Location? = null): Float? {
+fun <T> CommandContext<T>.pitchOrNull(id: String = "pitch", origin: Location? = null): Float? {
     val pitch = getOrNull(id) ?: return null
     return if (pitch.startsWith('~')) (origin ?: player().location).pitch + pitch.substring(1).float() else pitch.float()
 }
