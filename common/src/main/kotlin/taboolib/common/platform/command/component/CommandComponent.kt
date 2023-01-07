@@ -23,7 +23,8 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
         literal: CommandComponentLiteral.() -> Unit = {}
     ): CommandComponentLiteral {
         val component = CommandComponentLiteral(index + 1, arrayOf(*aliases), optional, permission).also(literal).also { it.parent = this }
-        // 自动可选
+        // 如果当前节点已存在命令执行器
+        // 则自动视为可选节点
         if (commandExecutor != null) {
             component.optional = true
         }
@@ -41,7 +42,8 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
         dynamic: CommandComponentDynamic.() -> Unit = {}
     ): CommandComponentDynamic {
         val component = CommandComponentDynamic(index + 1, comment, optional, permission).also(dynamic).also { it.parent = this }
-        // 自动可选
+        // 如果当前节点已存在命令执行器
+        // 则自动视为可选节点
         if (commandExecutor != null) {
             component.optional = true
         }
