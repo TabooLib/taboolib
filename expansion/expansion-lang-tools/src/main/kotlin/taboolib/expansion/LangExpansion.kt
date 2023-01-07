@@ -18,7 +18,7 @@ private val consoleSender = bukkitPlugin.server.consoleSender
  * @author Bingzi
  */
 fun infoAsLang(node: String) {
-    info(MessageUtil.consoleSender.asLangText(node).colored())
+    info(consoleSender.asLangText(node).colored())
 }
 
 /**
@@ -30,7 +30,7 @@ fun infoAsLang(node: String) {
  * @author Bingzi
  */
 fun infoAsLang(node: String, vararg args: Any) {
-    info(MessageUtil.consoleSender.asLangText(node, *args).colored())
+    info(consoleSender.asLangText(node, *args).colored())
 }
 
 /**
@@ -41,7 +41,7 @@ fun infoAsLang(node: String, vararg args: Any) {
  * @author Bingzi
  */
 fun warningAsLang(node: String) {
-    warning(MessageUtil.consoleSender.asLangText(node).colored())
+    warning(consoleSender.asLangText(node).colored())
 }
 
 /**
@@ -53,7 +53,7 @@ fun warningAsLang(node: String) {
  * @author Bingzi
  */
 fun warningAsLang(node: String, vararg args: Any) {
-    warning(MessageUtil.consoleSender.asLangText(node, *args).colored())
+    warning(consoleSender.asLangText(node, *args).colored())
 }
 
 /**
