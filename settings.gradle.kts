@@ -38,7 +38,7 @@ fun importExtensions() {
     include("expansion:expansion-persistent-container")
     include("expansion:expansion-alkaid-redis")
     include("expansion:expansion-geek-tool")
-    include("expansion:expansion-lang-tools")
+    // include("expansion:expansion-lang-tools")
 
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
