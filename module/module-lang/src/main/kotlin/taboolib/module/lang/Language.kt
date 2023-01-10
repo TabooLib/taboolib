@@ -24,16 +24,22 @@ object Language {
 
     private var firstLoaded = false
 
+    /** 语言文件路径 */
     var path = "lang"
 
+    /** 默认语言文件 */
     var default = "zh_CN"
 
+    /** 文本转换 */
     val textTransfer = ArrayList<TextTransfer>()
 
+    /** 语言文件缓存 */
     val languageFile = HashMap<String, LanguageFile>()
 
+    /** 语言文件代码 */
     val languageCode = HashSet<String>()
 
+    /** 语言文件代码转换 */
     val languageCodeTransfer = hashMapOf(
         "zh_hans_cn" to "zh_CN",
         "zh_hant_cn" to "zh_TW",
@@ -43,6 +49,7 @@ object Language {
         "en_nz" to "en_US"
     )
 
+    /** 语言文件类型 */
     val languageType = hashMapOf(
         "text" to TypeText::class.java,
         "json" to TypeJson::class.java,
@@ -52,8 +59,33 @@ object Language {
         "actionbar" to TypeActionBar::class.java
     )
 
+    /** 添加新的语言文件 */
+    fun addLanguage(vararg code: String) {
+        languageCode += code
+        if (firstLoaded) {
+            reload()
+        }
+    }
+
+    /** 获取玩家语言 */
+    fun getLocale(player: ProxyPlayer): String {
+        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale.lowercase()] ?: player.locale).run {
+            call()
+            locale
+        }
+    }
+
+    /** 获取控制台语言 */
+    fun getLocale(): String {
+        val code = Locale.getDefault().toLanguageTag().replace("-", "_").lowercase()
+        return SystemSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
+            call()
+            locale
+        }
+    }
+
     @Awake(LifeCycle.INIT)
-    fun init() {
+    fun reload() {
         // 加载语言文件类型
         JarFile(getJarFile()).use { jar ->
             jar.entries().iterator().forEachRemaining {
@@ -72,32 +104,6 @@ object Language {
             }
         } catch (_: NoClassDefFoundError) {
         }
-    }
-
-    fun addLanguage(vararg code: String) {
-        languageCode += code
-        if (firstLoaded) {
-            reload()
-        }
-    }
-
-    fun getLocale(player: ProxyPlayer): String {
-        return PlayerSelectLocaleEvent(player, languageCodeTransfer[player.locale.lowercase()] ?: player.locale).run {
-            call()
-            locale
-        }
-    }
-
-    fun getLocale(): String {
-        val code = Locale.getDefault().toLanguageTag().replace("-", "_").lowercase()
-        return SystemSelectLocaleEvent(languageCodeTransfer[code] ?: code).run {
-            call()
-            locale
-        }
-    }
-
-    @Awake(LifeCycle.INIT)
-    fun reload() {
         // 加载语言文件
         firstLoaded = true
         languageFile.clear()
