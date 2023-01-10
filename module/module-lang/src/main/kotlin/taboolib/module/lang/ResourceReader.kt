@@ -28,7 +28,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     init {
         Language.languageCode.forEach { code ->
-            val resourceAsStream = clazz.classLoader.getResourceAsStream("lang/$code.yml")
+            val resourceAsStream = clazz.classLoader.getResourceAsStream("${Language.path}/$code.yml")
             if (resourceAsStream != null) {
                 val nodes = HashMap<String, Type>()
                 val source = resourceAsStream.readBytes().toString(StandardCharsets.UTF_8)

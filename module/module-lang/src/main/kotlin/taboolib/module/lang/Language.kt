@@ -20,10 +20,11 @@ import java.util.jar.JarFile
  * @author sky
  * @since 2021/6/18 10:43 下午
  */
-@SkipTo(LifeCycle.INIT)
 object Language {
 
     private var firstLoaded = false
+
+    var path = "lang"
 
     var default = "zh_CN"
 
@@ -51,11 +52,12 @@ object Language {
         "actionbar" to TypeActionBar::class.java
     )
 
-    init {
+    @Awake(LifeCycle.INIT)
+    fun init() {
         // 加载语言文件类型
         JarFile(getJarFile()).use { jar ->
             jar.entries().iterator().forEachRemaining {
-                if (it.name.startsWith("lang/") && it.name.endsWith(".yml")) {
+                if (it.name.startsWith("$path/") && it.name.endsWith(".yml")) {
                     languageCode += it.name.substringAfter('/').substringBeforeLast('.')
                 }
             }
