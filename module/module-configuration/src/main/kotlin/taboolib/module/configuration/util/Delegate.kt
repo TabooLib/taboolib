@@ -19,6 +19,7 @@ import kotlin.reflect.KProperty0
 fun config(config: KProperty0<Configuration>, path: String? = null) = Delegate(config , path)
 
 class Delegate(val config: KProperty0<Configuration>, val path: String?) {
+
     inline operator fun <R, reified T> getValue(thisRef: R, property: KProperty<*>): T {
         val value = config.get()[path ?: property.name]
         if (value is ConfigurationSection) {
@@ -34,7 +35,6 @@ class Delegate(val config: KProperty0<Configuration>, val path: String?) {
             is Double, is Float,
             is Boolean, is Collection<*>,
             is ConfigurationSection, is Map<*, *> -> config.get()[path ?: property.name] = value
-
             else -> config.get().setObject(path ?: property.name, value)
         }
     }
