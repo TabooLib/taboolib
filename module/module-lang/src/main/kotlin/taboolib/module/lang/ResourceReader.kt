@@ -36,7 +36,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = releaseResourceFile("lang/$code.yml")
+                val file = releaseResourceFile("${Language.path}/$code.yml")
                 // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
