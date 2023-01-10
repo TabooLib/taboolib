@@ -90,7 +90,7 @@ object Language {
         JarFile(getJarFile()).use { jar ->
             jar.entries().iterator().forEachRemaining {
                 if (it.name.startsWith("$path/") && it.name.endsWith(".yml")) {
-                    languageCode += it.name.substringAfter('/').substringBeforeLast('.')
+                    languageCode += it.name.substringAfterLast('/').substringBeforeLast('.')
                 }
             }
         }

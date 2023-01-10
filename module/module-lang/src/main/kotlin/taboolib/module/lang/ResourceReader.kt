@@ -62,6 +62,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                         }
                     }
                 }
+            } else {
+                warning("Missing language file: $code.yml")
             }
         }
     }
