@@ -52,7 +52,7 @@ class BungeeExecutor : PlatformExecutor {
                                 runnable.executor(task)
                             }
                         }
-                    }, runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
+                    }, runnable.delay * 50, runnable.period * 50, TimeUnit.MILLISECONDS)
                 } else {
                     scheduler.schedule(plugin, object : Runnable {
                         init {
@@ -61,7 +61,7 @@ class BungeeExecutor : PlatformExecutor {
                         override fun run() {
                             runnable.executor(task)
                         }
-                    }, runnable.delay, runnable.period * 50, TimeUnit.MILLISECONDS)
+                    }, runnable.delay * 50, runnable.period * 50, TimeUnit.MILLISECONDS)
                 }
                 runnable.delay > 0 -> if (runnable.async) {
                     scheduler.schedule(plugin, object : Runnable {
@@ -73,7 +73,7 @@ class BungeeExecutor : PlatformExecutor {
                                 runnable.executor(task)
                             }
                         }
-                    }, runnable.delay, 0, TimeUnit.MILLISECONDS)
+                    }, runnable.delay * 50, 0, TimeUnit.MILLISECONDS)
                 } else {
                     scheduler.schedule(plugin, object : Runnable {
                         init {
@@ -82,7 +82,7 @@ class BungeeExecutor : PlatformExecutor {
                         override fun run() {
                             runnable.executor(task)
                         }
-                    }, runnable.delay, 0, TimeUnit.MILLISECONDS)
+                    }, runnable.delay * 50, 0, TimeUnit.MILLISECONDS)
                 }
                 else -> if (runnable.async) {
                     scheduler.runAsync(plugin, object : Runnable {
