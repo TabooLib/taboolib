@@ -81,6 +81,11 @@ open class Stored(title: String) : Basic(title) {
             }
             // 处理点击事件
             else if (it.clickType === ClickType.CLICK) {
+                // 阻止无法处理的合并行为
+                if (it.clickEvent().action == InventoryAction.COLLECT_TO_CURSOR) {
+                    it.isCancelled = true
+                    return@selfClick
+                }
                 val currentItem = it.currentItem
                 // 自动装填
                 if (it.clickEvent().click.isShiftClick && it.rawSlot >= it.inventory.size && currentItem.isNotAir()) {
@@ -95,12 +100,7 @@ open class Stored(title: String) : Basic(title) {
                         // 移除物品
                         it.currentItem = null
                     }
-                } else {
-                    // 阻止无法处理的合并行为
-                    if (it.clickEvent().action == InventoryAction.COLLECT_TO_CURSOR) {
-                        it.isCancelled = true
-                        return@selfClick
-                    }
+                } else if (it.rawSlot < it.inventory.size) {
                     // 获取行为
                     val action = when {
                         it.clickEvent().click.isShiftClick && it.rawSlot >= 0 && it.rawSlot < it.inventory.size -> ActionQuickTake()

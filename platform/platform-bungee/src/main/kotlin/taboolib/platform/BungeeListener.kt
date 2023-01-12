@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import net.md_5.bungee.BungeeCord
+import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
 import taboolib.common.platform.Awake
@@ -65,7 +66,7 @@ class BungeeListener : PlatformListener {
         eventBus.invokeMethod<Void>("bakeHandlers", eventClass)
     }
 
-    class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : ProxyListener {
+    class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : Listener, ProxyListener {
 
         fun handle(event: Any) {
             val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
