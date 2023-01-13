@@ -1,5 +1,6 @@
 package taboolib.platform.util
 
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
@@ -31,4 +32,11 @@ fun LivingEntity.getEquipment(slot: BukkitEquipment): ItemStack? {
  */
 fun LivingEntity.setEquipment(slot: BukkitEquipment, item: ItemStack) {
     slot.setItem(this, item)
+}
+
+/**
+ * 掉落物品在坐标
+ */
+fun Location.dropItemNaturally(item: ItemStack) {
+    world?.dropItemNaturally(this, item)
 }
