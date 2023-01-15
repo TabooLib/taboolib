@@ -24,6 +24,7 @@ class SingleRedisConnector: Closeable {
     var host = "127.0.0.1"
     var port = 6379
     var auth: String? = null
+    var pass: String? = null
     var connect = 32
     var timeout = 1000
     var reconnectDelay = 1000L
@@ -38,7 +39,11 @@ class SingleRedisConnector: Closeable {
      */
     fun connect(): SingleRedisConnector {
         config.maxTotal = connect
-        pool = if (auth != null) JedisPool(config, host, port, timeout, auth) else JedisPool(config, host, port, timeout)
+        pool = when {
+            auth != null && pass != null -> JedisPool(config, host, port, timeout, auth, pass)
+            auth != null -> JedisPool(config, host, port, timeout, auth)
+            else -> JedisPool(config, host, port, timeout)
+        }
         return this
     }
 
@@ -81,13 +86,24 @@ class SingleRedisConnector: Closeable {
     }
 
     /**
-     * 设置 Redis 密码
+     * 设置 Redis 账户
      *
-     * @param auth 密码
+     * @param auth 账户
      * @return [SingleRedisConnector]
      */
     fun auth(auth: String?): SingleRedisConnector {
         this.auth = auth
+        return this
+    }
+
+    /**
+     * 设置 Redis 密码
+     *
+     * @param pass 密码
+     * @return [SingleRedisConnector]
+     */
+    fun pass(pass: String?): SingleRedisConnector {
+        this.pass = pass
         return this
     }
 

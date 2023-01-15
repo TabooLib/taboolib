@@ -21,7 +21,6 @@ public class VelocityPluginDelegate {
 		this.pluginInstance.setAccessible(true);
 	}
 
-
 	public void onConst() throws IllegalAccessException {
 		TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
 		if (TabooLibCommon.isKotlinEnvironment()) {

@@ -11,7 +11,8 @@ import taboolib.library.configuration.ConfigurationSection
 fun SingleRedisConnector.fromConfig(config: ConfigurationSection): SingleRedisConnector {
     host(config.getString("host", "localhost")!!)
     port(config.getInt("port", 6379))
-    auth(config.getString("auth"))
+    auth(config.getString("user", config.getString("auth")))
+    pass(config.getString("password", config.getString("pass")))
     connect(config.getInt("connect", 32))
     timeout(config.getInt("timeout", 1000))
     return this
