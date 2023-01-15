@@ -2,5 +2,5 @@ package taboolib.module.ui
 
 enum class ClickType {
 
-    CLICK, DRAG
+    CLICK, DRAG, VIRTUAL
 }

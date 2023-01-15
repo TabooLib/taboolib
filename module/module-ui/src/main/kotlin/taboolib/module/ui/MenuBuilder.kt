@@ -5,6 +5,9 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.module.ui.virtual.VirtualInventory
+import taboolib.module.ui.virtual.inject
+import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
 
 inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -> Unit): Inventory {
@@ -13,7 +16,16 @@ inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -
 
 inline fun <reified T : Menu> Player.openMenu(title: String = "chest", builder: T.() -> Unit) {
     try {
-        openInventory(buildMenu(title, builder))
+        val buildMenu = buildMenu(title, builder)
+        if (buildMenu is VirtualInventory) {
+            val remoteInventory = openVirtualInventory(buildMenu)
+            val basic = MenuHolder.fromInventory(buildMenu)
+            if (basic != null) {
+                remoteInventory.inject(basic)
+            }
+        } else {
+            openInventory(buildMenu)
+        }
     } catch (ex: Throwable) {
         ex.printStackTrace()
     }

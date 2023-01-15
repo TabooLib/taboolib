@@ -16,6 +16,11 @@ open class Stored(title: String) : Basic(title) {
     /** 页面规则 **/
     internal val rule = Rule()
 
+    /** Stored 不支持虚拟页面 */
+    override fun virtualize() {
+        throw UnsupportedOperationException("Stored does not support virtual pages.")
+    }
+
     /**
      * 定义页面规则
      */

@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService

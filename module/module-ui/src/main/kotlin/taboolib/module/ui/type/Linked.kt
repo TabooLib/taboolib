@@ -6,6 +6,9 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
+import taboolib.module.ui.virtual.VirtualInventory
+import taboolib.module.ui.virtual.inject
+import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -111,7 +114,12 @@ open class Linked<T>(title: String) : Basic(title) {
         onClick(slot) {
             if (hasNextPage()) {
                 page++
-                player.openInventory(build())
+                // 刷新页面
+                if (virtual) {
+                    player.openVirtualInventory(build() as VirtualInventory).inject(this)
+                } else {
+                    player.openInventory(build())
+                }
             }
         }
     }
@@ -126,7 +134,12 @@ open class Linked<T>(title: String) : Basic(title) {
         onClick(slot) {
             if (hasPreviousPage()) {
                 page--
-                player.openInventory(build())
+                // 刷新页面
+                if (virtual) {
+                    player.openVirtualInventory(build() as VirtualInventory).inject(this)
+                } else {
+                    player.openInventory(build())
+                }
             }
         }
     }

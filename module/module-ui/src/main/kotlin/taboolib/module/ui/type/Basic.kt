@@ -11,6 +11,7 @@ import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.module.ui.Menu
 import taboolib.module.ui.MenuHolder
+import taboolib.module.ui.virtual.virtualize
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 import taboolib.platform.util.giveItem
@@ -18,6 +19,9 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 open class Basic(title: String = "chest") : Menu(title) {
+
+    /** 虚拟化 */
+    internal var virtual = false
 
     /** 行数 **/
     internal var rows = -1
@@ -57,6 +61,13 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     /** 抽象字符布局 **/
     var slots = CopyOnWriteArrayList<List<Char>>()
+
+    /**
+     * 使用虚拟页面（将自动阻止所有点击行为）
+     */
+    open fun virtualize() {
+        this.virtual = true
+    }
 
     /**
      * 行数
@@ -298,7 +309,10 @@ open class Basic(title: String = "chest") : Menu(title) {
      * 构建页面
      */
     override fun build(): Inventory {
-        val inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
+        var inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
+        if (virtual) {
+            inventory = inventory.virtualize()
+        }
         var row = 0
         while (row < slots.size) {
             val line = slots[row]
