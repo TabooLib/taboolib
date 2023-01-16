@@ -3,11 +3,11 @@
 ```kotlin
 @Awake(LifeCycle.INIT)
 fun init() {
-    //注册你的插件的包 这里是要扫描的包
-    //也可以用runningClassesWithoutLibrary
-    //看需求选用
+    // 注册你的插件的包 这里是要扫描的包
+    // 也可以用runningClassesWithoutLibrary
+    // 看需求选用
     IOCReader.readRegister(runningClasses)
-    //你可以选择使用你的Database
+    // 你可以选择使用你的Database
     IOCReader.readRegister(runningClasses, 自定义的Database())
 }
 ```
@@ -18,7 +18,7 @@ fun init() {
 @SubscribeEvent
 fun onBeanReadEvent(event: FieldReadEvent) {
     if (event.field.name == "PlayerData") {
-        event.iocDao = IOCDatabaseSQL()
+        event.iocDatabase = IOCDatabaseSQL()
     }
 }
 ```
@@ -60,11 +60,11 @@ data class RegionData(
 
 ```kotlin
 
-//里面指定一下你要用的方式
+// 里面指定一下你要用的方式
 @Component("Kotlinx")
 data class RegionData(
     var id: String? = null,
-    //...
+    // ...
 )
 
 ```
@@ -88,7 +88,7 @@ class SerializationGetFunctionEvent(
 ```kotlin
 interface SerializeFunction {
 
-    val name: String //Kotlinx 上文写的
+    val name: String // Kotlinx 上文写的
 
     fun serialize(data: Any): String
     fun deserialize(data: Any, target: Class<*>, type: Type): Any?
