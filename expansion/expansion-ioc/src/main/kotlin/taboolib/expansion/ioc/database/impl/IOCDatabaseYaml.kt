@@ -1,4 +1,4 @@
-package taboolib.ioc.database.impl
+package taboolib.expansion.ioc.database.impl
 
 import taboolib.ioc.database.IOCDatabase
 import taboolib.module.configuration.*

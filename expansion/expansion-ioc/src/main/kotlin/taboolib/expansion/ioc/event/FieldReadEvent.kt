@@ -1,4 +1,4 @@
-package taboolib.ioc.event
+package taboolib.expansion.ioc.event
 
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.ioc.database.IOCDatabase

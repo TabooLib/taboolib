@@ -1,4 +1,4 @@
-package taboolib.ioc.database
+package taboolib.expansion.ioc.database
 
 interface IOCDatabase {
 

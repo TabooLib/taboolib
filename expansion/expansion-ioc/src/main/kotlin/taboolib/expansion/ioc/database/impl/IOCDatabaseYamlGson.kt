@@ -1,4 +1,4 @@
-package taboolib.ioc.database.impl
+package taboolib.expansion.ioc.database.impl
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer

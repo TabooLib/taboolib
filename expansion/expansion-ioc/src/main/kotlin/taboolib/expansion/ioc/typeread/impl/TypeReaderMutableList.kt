@@ -1,4 +1,4 @@
-package taboolib.ioc.typeread.impl
+package taboolib.expansion.ioc.typeread.impl
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
@@ -9,28 +9,29 @@ import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.util.*
 
-//暂时只支持<String,Data>这种结构 其他的暂且不支持 等待大佬帮忙
-class TypeReaderHashMap : TypeRead {
+class TypeReaderMutableList : TypeRead {
 
-    override val type: Class<*> = HashMap::class.java
+    override val type: Class<*> = MutableList::class.java
 
     override fun readAll(field: Field, database: IOCDatabase) {
-        val method = type.getDeclaredMethod("put", Any::class.java, Any::class.java)
+        val method = type.getDeclaredMethod("add", Any::class.java)
         val genotype = field.genericType
         if (genotype is ParameterizedType) {
             val pt = genotype.actualTypeArguments
             database.getDataAll().forEach { (t, u) ->
                 if (u != null) {
-                    method.invoke(field, t, database.deserialize(t, pt[1].javaClass), pt[1])
+                    //把对象反序列化然后注入到变量里
+                    //这里走的是IODatabase里的反序列化 也就是从Dao层获取数据然后存入
+                    method.invoke(field, database.deserialize(t, pt[0].javaClass), pt[0])
                 }
             }
         }
     }
 
     override fun writeAll(field: Field, source: Class<*>, database: IOCDatabase) {
-        field.get(source).let { it as? HashMap<*, *> }?.forEach { element ->
-            if (element.key != null && element.value != null) {
-                database.saveData(element.key.toString(), element.value)
+        field.get(source).let { it as? MutableList<*> }?.forEach { element ->
+            if (element != null) {
+                database.saveData(UUID.randomUUID().toString(), element)
             }
         }
         database.saveDao()
@@ -39,7 +40,7 @@ class TypeReaderHashMap : TypeRead {
     companion object {
         @Awake(LifeCycle.INIT)
         fun init() {
-            val list = TypeReaderHashMap()
+            val list = TypeReaderMutableList()
             TypeReadManager.typeReader[list.type.name] = list
         }
     }

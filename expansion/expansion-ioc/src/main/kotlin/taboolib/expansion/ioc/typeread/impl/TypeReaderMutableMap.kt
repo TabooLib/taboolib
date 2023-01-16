@@ -1,4 +1,4 @@
-package taboolib.ioc.typeread.impl
+package taboolib.expansion.ioc.typeread.impl
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

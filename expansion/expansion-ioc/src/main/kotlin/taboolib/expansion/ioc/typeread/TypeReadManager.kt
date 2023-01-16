@@ -1,4 +1,4 @@
-package taboolib.ioc.typeread
+package taboolib.expansion.ioc.typeread
 
 import taboolib.ioc.event.GetTypeReaderEvent
 

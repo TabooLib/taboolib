@@ -1,4 +1,4 @@
-package taboolib.ioc
+package taboolib.expansion.ioc
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake

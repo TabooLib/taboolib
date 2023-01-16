@@ -1,4 +1,4 @@
-package taboolib.ioc
+package taboolib.expansion.ioc
 
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
@@ -8,6 +8,5 @@ import taboolib.common.env.RuntimeDependency
 )
 object IOCManager {
 
-    val types = HashMap<String, Class<*>>()
 
 }
