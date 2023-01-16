@@ -81,6 +81,7 @@ class InventoryHandlerImpl : InventoryHandler() {
             refresh(inventory.contents.map { it ?: air }, inventory.storageContents, cursorItem)
         }
 
+        @Suppress("CAST_NEVER_SUCCEEDS")
         fun sendInitialData(windowItems: List<ItemStack>, cursorItem: ItemStack) {
             if (isClosed) {
                 return
@@ -101,7 +102,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 // 1.17, 1.18, 1.19
                 // public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
                 in 9..11 -> {
-                    val nmsWindowItems = NonNullList.create<NMSItemStack>()
+                    val nmsWindowItems = NMS16NonNullList.a<NMSItemStack>() as NonNullList<NMSItemStack>
                     nmsWindowItems.addAll(windowItems.map { Craft19ItemStack.asNMSCopy(it) })
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
                     viewer.sendPacket(NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem))
