@@ -82,6 +82,9 @@ class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType:
 
     /** 转换为点击事件 */
     fun clickEvent(): InventoryClickEvent {
+        if (clickType != ClickType.CLICK) {
+            error("clickEvent() is not available in \"$clickType\" action")
+        }
         return bukkitEvent as InventoryClickEvent
     }
 
@@ -92,6 +95,9 @@ class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType:
 
     /** 转换为拖拽事件 */
     fun dragEvent(): InventoryDragEvent {
+        if (clickType != ClickType.DRAG) {
+            error("dragEvent() is not available in \"$clickType\" action.")
+        }
         return bukkitEvent as InventoryDragEvent
     }
 
@@ -102,6 +108,9 @@ class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType:
 
     /** 转换为虚拟点击事件 */
     fun virtualEvent(): RemoteInventory.ClickEvent {
+        if (clickType != ClickType.VIRTUAL) {
+            error("virtualEvent() is not available in \"$clickType\" action.")
+        }
         return (bukkitEvent as VirtualInventoryInteractEvent).clickEvent
     }
 

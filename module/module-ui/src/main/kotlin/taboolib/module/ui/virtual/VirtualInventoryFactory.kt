@@ -8,14 +8,11 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
-import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.Basic
-import taboolib.platform.util.broadcast
 
 /**
  * 将背包转换为 VirtualInventory 实例

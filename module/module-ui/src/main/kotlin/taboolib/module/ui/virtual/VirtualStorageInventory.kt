@@ -8,7 +8,6 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import java.util.HashMap
 
 /**
  * TabooLib

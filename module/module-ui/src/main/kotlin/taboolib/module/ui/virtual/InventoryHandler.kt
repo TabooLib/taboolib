@@ -8,12 +8,10 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.info
 import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
-import taboolib.module.ui.MenuHolder
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -99,29 +97,29 @@ typealias Craft19Player = org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
 
 // 1.16
 
-typealias NMS16PacketPlayOutOpenWindow = net.minecraft.server.v1_16_R3.PacketPlayOutOpenWindow
+typealias NMS16PacketPlayOutOpenWindow = net.minecraft.server.v1_16_R1.PacketPlayOutOpenWindow
 
-typealias NMS16PacketPlayOutWindowItems = net.minecraft.server.v1_16_R3.PacketPlayOutWindowItems
+typealias NMS16PacketPlayOutWindowItems = net.minecraft.server.v1_16_R1.PacketPlayOutWindowItems
 
-typealias NMS16PacketPlayOutSetSlot = net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot
+typealias NMS16PacketPlayOutSetSlot = net.minecraft.server.v1_16_R1.PacketPlayOutSetSlot
 
-typealias NMS16PacketPlayOutWindowData = net.minecraft.server.v1_16_R3.PacketPlayOutWindowData
+typealias NMS16PacketPlayOutWindowData = net.minecraft.server.v1_16_R1.PacketPlayOutWindowData
 
-typealias NMS16PacketPlayOutCloseWindow = net.minecraft.server.v1_16_R3.PacketPlayOutCloseWindow
+typealias NMS16PacketPlayOutCloseWindow = net.minecraft.server.v1_16_R1.PacketPlayOutCloseWindow
 
-typealias NMS16EntityHuman = net.minecraft.server.v1_16_R3.EntityHuman
+typealias NMS16EntityHuman = net.minecraft.server.v1_16_R1.EntityHuman
 
-typealias NMS16NonNullList<T> = net.minecraft.server.v1_16_R3.NonNullList<T>
+typealias NMS16NonNullList<T> = net.minecraft.server.v1_16_R1.NonNullList<T>
 
-typealias NMS16ItemStack = net.minecraft.server.v1_16_R3.ItemStack
+typealias NMS16ItemStack = net.minecraft.server.v1_16_R1.ItemStack
 
-typealias Craft16ChatMessage = org.bukkit.craftbukkit.v1_16_R3.util.CraftChatMessage
+typealias Craft16ChatMessage = org.bukkit.craftbukkit.v1_16_R1.util.CraftChatMessage
 
-typealias Craft16Container = org.bukkit.craftbukkit.v1_16_R3.inventory.CraftContainer
+typealias Craft16Container = org.bukkit.craftbukkit.v1_16_R1.inventory.CraftContainer
 
-typealias Craft16Player = org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer
+typealias Craft16Player = org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer
 
-typealias Craft16ItemStack = org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack
+typealias Craft16ItemStack = org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack
 
 // 1.9
 
