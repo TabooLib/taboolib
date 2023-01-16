@@ -1,6 +1,6 @@
 package taboolib.expansion.ioc
 
-import taboolib.common.LifeCycle
+import taboolib.common.LifeCycleimport taboolib.common.env.RuntimeDependenciesimport taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
 import taboolib.expansion.ioc.annotation.Autowired
@@ -11,6 +11,9 @@ import taboolib.expansion.ioc.typeread.TypeReadManager
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentHashMap
 
+@RuntimeDependencies(
+    RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
+)
 object IOCReader {
 
     private val database = ConcurrentHashMap<String, IOCDatabase>()
@@ -29,7 +32,8 @@ object IOCReader {
                     return@forEach
                 }
                 val database = this.database.getOrPut(field.toString()) { event.iocDatabase.init(classze, field.name) }
-                TypeReadManager.getReader(field.type).readAll(field, database)
+                println(classze)
+                TypeReadManager.getReader(field.type).readAll(classze, field, database)
                 fields[field] = database to classze
             }
         }

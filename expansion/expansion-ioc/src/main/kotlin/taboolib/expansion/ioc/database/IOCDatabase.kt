@@ -1,5 +1,7 @@
 package taboolib.expansion.ioc.database
 
+import java.lang.reflect.Type
+
 interface IOCDatabase {
 
     fun init(clazz: Class<*>, source: String): IOCDatabase
@@ -9,7 +11,8 @@ interface IOCDatabase {
 
     fun saveData(key: String, data: Any): Boolean
 
-    fun saveDao()
-    fun serialize(data: Any): String
-    fun deserialize(key: String, target: Class<*>): Any
+    fun saveDatabase()
+
+    fun resetDatabase()
+
 }

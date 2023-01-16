@@ -1,4 +1,4 @@
-package taboolib.expansion.ioc.database.impl
+package taboolib.expansion.ioc.serialization.impl
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
@@ -6,11 +6,16 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializer
 import org.bukkit.Material
 import org.bukkit.util.Vector
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
+import taboolib.expansion.ioc.serialization.SerializationManager
+import taboolib.expansion.ioc.serialization.SerializeFunction
 import taboolib.library.xseries.parseToMaterial
+import java.lang.reflect.Type
 
-open class IOCDatabaseYamlGson : IOCDatabaseYaml() {
+open class SerializationFunctionGson : SerializeFunction {
 
-    open var gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().apply {
+    open var gson = GsonBuilder().apply {
         registerTypeAdapter(
             Vector::class.java,
             JsonSerializer<Vector> { a, _, _ ->
@@ -37,11 +42,24 @@ open class IOCDatabaseYamlGson : IOCDatabaseYaml() {
         )
     }.create()!!
 
+    override val name: String = "Gson"
+
     override fun serialize(data: Any): String {
         return gson.toJson(data)
     }
 
-    override fun deserialize(key: String, target: Class<*>): Class<*> {
-        return gson.fromJson(config?.getString(key), target::class.java)
+    override fun deserialize(data: Any, target: Class<*>, type: Type): Any? {
+        return gson.fromJson(data.toString(), type)
     }
+
+    companion object {
+
+        @Awake(LifeCycle.CONST)
+        fun init() {
+            val data = SerializationFunctionGson()
+            SerializationManager.function[data.name] = data
+        }
+
+    }
+
 }
