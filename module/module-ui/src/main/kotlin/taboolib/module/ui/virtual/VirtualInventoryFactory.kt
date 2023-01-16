@@ -1,21 +1,27 @@
 package taboolib.module.ui.virtual
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.isPrimaryThread
+import taboolib.common.platform.function.submit
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.Basic
+import taboolib.platform.util.broadcast
 
 /**
  * 将背包转换为 VirtualInventory 实例
  */
-fun Inventory.virtualize(): VirtualInventory {
-    return VirtualInventory(this)
+fun Inventory.virtualize(storageContents: List<ItemStack>? = null): VirtualInventory {
+    return VirtualInventory(this, storageContents)
 }
 
 /**
@@ -25,6 +31,12 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory): RemoteInvento
     val remoteInventory = InventoryHandler.instance.openInventory(this as Player, inventory, ItemStack(Material.AIR))
     inventory.remoteInventory = remoteInventory
     InventoryHandler.playerRemoteInventoryMap[name] = remoteInventory
+    // 唤起事件
+    if (isPrimaryThread) {
+        Bukkit.getPluginManager().callEvent(InventoryOpenEvent(VirtualInventoryView(remoteInventory)))
+    } else {
+        submit { Bukkit.getPluginManager().callEvent(InventoryOpenEvent(VirtualInventoryView(remoteInventory))) }
+    }
     return remoteInventory
 }
 
@@ -35,7 +47,7 @@ fun RemoteInventory.inject(basic: Basic) {
     onClick {
         // 处理事件
         try {
-            val e = VirtualInventoryInteractEvent(VirtualInventoryView(this@inject))
+            val e = VirtualInventoryInteractEvent(this, VirtualInventoryView(this@inject))
             val event = ClickEvent(e, ClickType.VIRTUAL, basic.getSlot(clickSlot), basic)
             basic.clickCallback.forEach { it(event) }
             basic.selfClickCallback(event)
@@ -44,10 +56,14 @@ fun RemoteInventory.inject(basic: Basic) {
         }
     }
     onClose {
-        basic.closeCallback.invoke(InventoryCloseEvent(VirtualInventoryView(this)))
-        // 只触发一次
-        if (basic.onceCloseCallback) {
-            basic.closeCallback = {}
+        try {
+            basic.closeCallback.invoke(InventoryCloseEvent(VirtualInventoryView(this)))
+            // 只触发一次
+            if (basic.onceCloseCallback) {
+                basic.closeCallback = {}
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
         }
     }
 }

@@ -138,7 +138,7 @@ open class Basic(title: String = "chest") : Menu(title) {
             if (it.rawSlot == bind) {
                 it.isCancelled = true
                 // 只处理 CLICK 类型
-                if (it.clickType == ClickType.CLICK) {
+                if (it.clickType != ClickType.DRAG) {
                     callback(it)
                 }
             }
@@ -154,7 +154,7 @@ open class Basic(title: String = "chest") : Menu(title) {
             if (it.slot == bind) {
                 it.isCancelled = true
                 // 只处理 CLICK 类型
-                if (it.clickType == ClickType.CLICK) {
+                if (it.clickType != ClickType.DRAG ) {
                     callback(it)
                 }
             }
@@ -170,7 +170,7 @@ open class Basic(title: String = "chest") : Menu(title) {
             clickCallback += {
                 it.isCancelled = true
                 // 只处理 CLICK 类型
-                if (it.clickType == ClickType.CLICK) {
+                if (it.clickType != ClickType.DRAG) {
                     callback(it)
                 }
             }
@@ -290,6 +290,14 @@ open class Basic(title: String = "chest") : Menu(title) {
             row++
         }
         return list
+    }
+
+    /**
+     * 获取抽象字符对应的首个位置
+     */
+    open fun getFirstSlot(slot: Char): Int {
+        val slots = getSlots(slot)
+        return if (slots.isEmpty()) -1 else slots[0]
     }
 
     /**

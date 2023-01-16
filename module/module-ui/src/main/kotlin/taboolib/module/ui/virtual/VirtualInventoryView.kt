@@ -20,7 +20,7 @@ class VirtualInventoryView(val remoteInventory: RemoteInventory) : InventoryView
     }
 
     override fun getBottomInventory(): Inventory {
-        return remoteInventory.viewer.inventory
+        return VirtualStorageInventory(remoteInventory.inventory)
     }
 
     override fun getPlayer(): HumanEntity {

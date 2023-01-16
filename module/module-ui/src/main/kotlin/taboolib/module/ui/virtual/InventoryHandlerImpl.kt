@@ -1,13 +1,19 @@
 package taboolib.module.ui.virtual
 
 import net.minecraft.core.NonNullList
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.isPrimaryThread
+import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.Packet
-import taboolib.module.nms.sendPacketBlocking
+import taboolib.module.nms.sendPacket
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
 
@@ -36,7 +42,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 }
                 val title = container.bukkitView.title
                 val packet = NMS9PacketPlayOutOpenWindow(container.windowId, windowType, Craft9ChatComponentText(title), size)
-                player.sendPacketBlocking(packet)
+                player.sendPacket(packet)
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
             // 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19
@@ -46,7 +52,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 val container = Craft16Container(inventory.bukkitInventory, (player as Craft16Player).handle, id)
                 val title = container.bukkitView.title
                 val packet = NMS16PacketPlayOutOpenWindow(id, windowType, Craft16ChatMessage.fromString(title)[0])
-                player.sendPacketBlocking(packet)
+                player.sendPacket(packet)
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
             // 不支持
@@ -83,14 +89,14 @@ class InventoryHandlerImpl : InventoryHandler() {
                 // 1.9, 1.10
                 // public PacketPlayOutWindowItems(int var1, List<ItemStack> var2)
                 in 1..2 -> {
-                    viewer.sendPacketBlocking(NMS9PacketPlayOutWindowItems(id, windowItems.map { Craft9ItemStack.asNMSCopy(it) }))
+                    viewer.sendPacket(NMS9PacketPlayOutWindowItems(id, windowItems.map { Craft9ItemStack.asNMSCopy(it) }))
                 }
                 // 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
                 // public PacketPlayOutWindowItems(int var1, NonNullList<ItemStack> var2)
                 in 3..8 -> {
                     val nmsWindowItems = NMS16NonNullList.a<NMS16ItemStack>()
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
-                    viewer.sendPacketBlocking(NMS16PacketPlayOutWindowItems(id, nmsWindowItems))
+                    viewer.sendPacket(NMS16PacketPlayOutWindowItems(id, nmsWindowItems))
                 }
                 // 1.17, 1.18, 1.19
                 // public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
@@ -98,7 +104,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                     val nmsWindowItems = NonNullList.create<NMSItemStack>()
                     nmsWindowItems.addAll(windowItems.map { Craft19ItemStack.asNMSCopy(it) })
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
-                    viewer.sendPacketBlocking(NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem))
+                    viewer.sendPacket(NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem))
                 }
                 // 不支持
                 else -> error("Unsupported version")
@@ -132,12 +138,12 @@ class InventoryHandlerImpl : InventoryHandler() {
                 // 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
                 // public PacketPlayOutSetSlot(int var1, int var2, ItemStack var3)
                 in 1..8 -> {
-                    viewer.sendPacketBlocking(NMS16PacketPlayOutSetSlot(id, slot, Craft16ItemStack.asNMSCopy(itemStack)))
+                    viewer.sendPacket(NMS16PacketPlayOutSetSlot(id, slot, Craft16ItemStack.asNMSCopy(itemStack)))
                 }
                 // 1.17, 1.18, 1.19
                 // public PacketPlayOutSetSlot(int var0, int var1, int var2, ItemStack var3)
                 in 9..11 -> {
-                    viewer.sendPacketBlocking(NMSPacketPlayOutSetSlot(id, incrementStateId(), slot, Craft19ItemStack.asNMSCopy(itemStack)))
+                    viewer.sendPacket(NMSPacketPlayOutSetSlot(id, incrementStateId(), slot, Craft19ItemStack.asNMSCopy(itemStack)))
                 }
                 // 不支持
                 else -> error("Unsupported version")
@@ -153,7 +159,7 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
 
         fun broadcastDataValue(slot: Int, state: Int) {
-            viewer.sendPacketBlocking(NMS16PacketPlayOutWindowData(id, slot, state))
+            viewer.sendPacket(NMS16PacketPlayOutWindowData(id, slot, state))
         }
 
         fun incrementStateId(): Int {
@@ -170,11 +176,25 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
 
         override fun close(sendPacket: Boolean) {
+            if (isClosed) {
+                return
+            }
             isClosed = true
-            onCloseCallback?.invoke()
-            // 是否发送关闭包
+            // 关闭页面
             if (sendPacket) {
-                viewer.sendPacketBlocking(NMS16PacketPlayOutCloseWindow(id))
+                viewer.sendPacket(NMS16PacketPlayOutCloseWindow(id))
+            }
+            // 处理回调
+            if (isPrimaryThread) {
+                onCloseCallback?.invoke()
+            } else {
+                submit { onCloseCallback?.invoke() }
+            }
+            // 唤起事件
+            if (isPrimaryThread) {
+                Bukkit.getPluginManager().callEvent(InventoryCloseEvent(VirtualInventoryView(this@VInventory)))
+            } else {
+                submit { Bukkit.getPluginManager().callEvent(InventoryCloseEvent(VirtualInventoryView(this@VInventory))) }
             }
         }
 
@@ -247,7 +267,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 else -> inventory.getStorageItem(slotNum - inventory.size)
             }
             // 处理回调
-            onClickCallback?.invoke(RemoteInventory.ClickEvent(bukkitClickType, slotNum, buttonNum, clickItem ?: air))
+            submit { onClickCallback?.invoke(RemoteInventory.ClickEvent(bukkitClickType, slotNum, buttonNum, clickItem ?: air)) }
             // 处理页面
             if (clickItem.isNotAir()) {
                 // 一般点击方式

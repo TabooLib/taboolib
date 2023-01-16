@@ -5,6 +5,8 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.warning
 import taboolib.module.ui.virtual.VirtualInventory
 import taboolib.module.ui.virtual.inject
 import taboolib.module.ui.virtual.openVirtualInventory

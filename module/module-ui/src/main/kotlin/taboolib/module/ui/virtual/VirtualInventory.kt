@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack
  * @author 坏黑
  * @since 2023/1/16 01:16
  */
-class VirtualInventory(val bukkitInventory: Inventory) : Inventory {
+class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<ItemStack>? = null) : Inventory {
 
     var remoteInventory: RemoteInventory? = null
-    var storageContents: List<ItemStack>? = null
+    var storageContents: List<ItemStack>? = storageContents
         private set
 
     init {
@@ -28,27 +28,8 @@ class VirtualInventory(val bukkitInventory: Inventory) : Inventory {
         }
     }
 
-    /**
-     * 设置玩家背包内容
-     */
-    fun setStorageItem(slot: Int, item: ItemStack?) {
-        var newStorageContents = storageContents?.toMutableList()
-        if (newStorageContents == null) {
-            // 初始化玩家玩家部分
-            if (remoteInventory == null) {
-                error("VirtualInventory is not opened or storageContents is not set.")
-            }
-            newStorageContents = remoteInventory!!.viewer.getStorageItems().map { it ?: ItemStack(Material.AIR) }.toMutableList()
-        }
-        newStorageContents[slot] = item ?: ItemStack(Material.AIR)
-        storageContents = newStorageContents
-        remoteInventory?.sendSlotChange(size + slot, item ?: ItemStack(Material.AIR))
-    }
-
-    /**
-     * 获取玩家背包内容
-     */
-    fun getStorageItem(slot: Int): ItemStack {
+    /** 初始化玩家背包内容 */
+    fun initStorageItems() {
         if (storageContents == null) {
             // 初始化玩家玩家部分
             if (remoteInventory == null) {
@@ -56,13 +37,37 @@ class VirtualInventory(val bukkitInventory: Inventory) : Inventory {
             }
             storageContents = remoteInventory!!.viewer.getStorageItems().map { it ?: ItemStack(Material.AIR) }
         }
+    }
+
+    /** 获取玩家背包内容 */
+    fun getStorageItem(slot: Int): ItemStack {
+        if (storageContents == null) {
+            initStorageItems()
+        }
         return storageContents!![slot]
     }
 
-    /**
-     * 设置玩家背包内容
-     */
-    fun setStorageContents(items: List<ItemStack>) {
+    /** 获取玩家背包内容 */
+    fun getStorageItems(): List<ItemStack> {
+        if (storageContents == null) {
+            initStorageItems()
+        }
+        return storageContents!!
+    }
+
+    /** 设置玩家背包内容 */
+    fun setStorageItem(slot: Int, item: ItemStack?) {
+        if (storageContents == null) {
+            initStorageItems()
+        }
+        val newStorageContents = storageContents!!.toMutableList()
+        newStorageContents[slot] = item ?: ItemStack(Material.AIR)
+        storageContents = newStorageContents
+        remoteInventory?.sendSlotChange(size + slot, item ?: ItemStack(Material.AIR))
+    }
+
+    /** 设置玩家背包内容 */
+    fun setStorageItems(items: List<ItemStack>) {
         storageContents = items
         remoteInventory?.refresh(bukkitInventory.contents.map { it ?: ItemStack(Material.AIR) }, storageContents)
     }
@@ -114,11 +119,11 @@ class VirtualInventory(val bukkitInventory: Inventory) : Inventory {
     }
 
     override fun getStorageContents(): Array<ItemStack> {
-        return bukkitInventory.storageContents
+        return getStorageItems().toTypedArray()
     }
 
     override fun setStorageContents(p0: Array<ItemStack>) {
-        bukkitInventory.storageContents = p0
+        setStorageItems(p0.toList())
     }
 
     override fun contains(p0: Material): Boolean {

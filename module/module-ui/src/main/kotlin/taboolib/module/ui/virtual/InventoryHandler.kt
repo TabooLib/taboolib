@@ -1,14 +1,19 @@
 package taboolib.module.ui.virtual
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
+import taboolib.module.ui.MenuHolder
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -41,6 +46,15 @@ abstract class InventoryHandler {
         private fun onQuit(e: PlayerQuitEvent) {
             playerContainerCounterMap.remove(e.player.name)
             playerRemoteInventoryMap.remove(e.player.name)
+        }
+
+        @Awake(LifeCycle.DISABLE)
+        private fun onDisable() {
+            Bukkit.getOnlinePlayers().forEach {
+                if (playerRemoteInventoryMap.containsKey(it.name)) {
+                    playerRemoteInventoryMap[it.name]?.close()
+                }
+            }
         }
 
         @Ghost

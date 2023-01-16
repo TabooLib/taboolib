@@ -10,4 +10,4 @@ import org.bukkit.inventory.InventoryView
  * @author 坏黑
  * @since 2023/1/16 04:15
  */
-class VirtualInventoryInteractEvent(inventoryView: InventoryView) : InventoryInteractEvent(inventoryView)
+class VirtualInventoryInteractEvent(val clickEvent: RemoteInventory.ClickEvent, inventoryView: InventoryView) : InventoryInteractEvent(inventoryView)
