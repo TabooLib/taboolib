@@ -2,9 +2,9 @@ package taboolib.expansion.ioc.typeread.impl
 
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
-import taboolib.ioc.database.IOCDatabase
-import taboolib.ioc.typeread.TypeRead
-import taboolib.ioc.typeread.TypeReadManager
+import taboolib.expansion.ioc.database.IOCDatabase
+import taboolib.expansion.ioc.typeread.TypeRead
+import taboolib.expansion.ioc.typeread.TypeReadManager
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.util.*

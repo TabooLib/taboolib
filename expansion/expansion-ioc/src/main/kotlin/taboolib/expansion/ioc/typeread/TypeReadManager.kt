@@ -1,6 +1,6 @@
 package taboolib.expansion.ioc.typeread
 
-import taboolib.ioc.event.GetTypeReaderEvent
+import taboolib.expansion.ioc.event.GetTypeReaderEvent
 
 object TypeReadManager {
 

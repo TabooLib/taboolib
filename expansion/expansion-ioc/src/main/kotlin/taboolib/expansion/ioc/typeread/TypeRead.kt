@@ -1,6 +1,6 @@
 package taboolib.expansion.ioc.typeread
 
-import taboolib.ioc.database.IOCDatabase
+import taboolib.expansion.ioc.database.IOCDatabase
 import java.lang.reflect.Field
 
 interface TypeRead {

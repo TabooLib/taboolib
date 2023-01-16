@@ -3,11 +3,11 @@ package taboolib.expansion.ioc
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
-import taboolib.ioc.annotation.Autowired
-import taboolib.ioc.database.IOCDatabase
-import taboolib.ioc.database.impl.IOCDatabaseYaml
-import taboolib.ioc.event.FieldReadEvent
-import taboolib.ioc.typeread.TypeReadManager
+import taboolib.expansion.ioc.annotation.Autowired
+import taboolib.expansion.ioc.database.IOCDatabase
+import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
+import taboolib.expansion.ioc.event.FieldReadEvent
+import taboolib.expansion.ioc.typeread.TypeReadManager
 import java.lang.reflect.Field
 import java.util.concurrent.ConcurrentHashMap
 
