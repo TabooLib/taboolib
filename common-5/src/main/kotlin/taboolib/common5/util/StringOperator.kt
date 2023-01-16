@@ -1,6 +1,6 @@
 package taboolib.common5.util
 
-fun String.startsWitAny(vararg prefix: String): Boolean {
+fun String.startsWithAny(vararg prefix: String): Boolean {
     return prefix.any { startsWith(it) }
 }
 
