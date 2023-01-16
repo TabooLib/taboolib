@@ -10,7 +10,7 @@ import taboolib.library.xseries.parseToMaterial
 
 open class IOCDatabaseYamlGson : IOCDatabaseYaml() {
 
-    var gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().apply {
+    open var gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().apply {
         registerTypeAdapter(
             Vector::class.java,
             JsonSerializer<Vector> { a, _, _ ->
