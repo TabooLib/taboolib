@@ -38,7 +38,7 @@ class TypeReaderCollection : TypeRead {
         database.resetDatabase()
         field.get(source).let { it as? Collection<*> }?.forEach { element ->
             if (element != null) {
-                database.saveData(UUID.randomUUID().toString(), element)
+                database.saveData(TypeReadManager.getIndexId(element), element)
             }
         }
         database.saveDatabase()

@@ -38,7 +38,7 @@ class TypeReaderMutableList : TypeRead {
         database.resetDatabase()
         field.get(source).let { it as? MutableList<*> }?.forEach { element ->
             if (element != null) {
-                database.saveData(UUID.randomUUID().toString(), element)
+                database.saveData(TypeReadManager.getIndexId(element), element)
             }
         }
         database.saveDatabase()

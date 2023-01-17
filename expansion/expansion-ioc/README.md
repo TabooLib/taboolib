@@ -27,7 +27,7 @@ fun onBeanReadEvent(event: FieldReadEvent) {
 
 ```kotlin
 
-@Autowried
+@Autowired
 val data = ArrayList<YourData>()
 
 ```
@@ -155,7 +155,7 @@ class FieldReadEvent(
 
 目前支持了几个常用的容器
 
-```kotlin
+```
 ArrayList
 Collection
 CopyOnWriteArrayList
@@ -164,7 +164,18 @@ MutableList
 HashMap
 MutableMap
 ConcurrentHashMap
+
+如果都不满足则使用 SingletonObject (单例模式)
 ```
+你也可以主动选择使用单例模式
+```kotlin
+
+@Autowired
+var testDataIOCMap: IOCData? = null
+
+```
+一定要var 不然没法注入
+
 
 如果使用这几种容器就直接使用即可 
 

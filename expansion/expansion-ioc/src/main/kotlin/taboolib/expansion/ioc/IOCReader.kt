@@ -1,6 +1,8 @@
 package taboolib.expansion.ioc
 
-import taboolib.common.LifeCycleimport taboolib.common.env.RuntimeDependenciesimport taboolib.common.env.RuntimeDependency
+import taboolib.common.LifeCycle
+import taboolib.common.env.RuntimeDependencies
+import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
 import taboolib.expansion.ioc.annotation.Autowired
@@ -32,7 +34,6 @@ object IOCReader {
                     return@forEach
                 }
                 val database = this.database.getOrPut(field.toString()) { event.iocDatabase.init(classze, field.name) }
-                println(classze)
                 TypeReadManager.getReader(field.type).readAll(classze, field, database)
                 fields[field] = database to classze
             }
