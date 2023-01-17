@@ -7,7 +7,13 @@
 
 Database: 负责数据实际存储 默认工具是IOCDatabaseYaml
 
+IOCDataMap: 实际存储数据对象的位置 位于IOCReader.dataMap
 
+Linker: 用于连接IOCDataMap的工具
+
+Index：数据类的唯一键 确定了数据的唯一性
+
+Serialization: 序列化反序列化的工具
 
 ### 初始化IOC管理器
 
