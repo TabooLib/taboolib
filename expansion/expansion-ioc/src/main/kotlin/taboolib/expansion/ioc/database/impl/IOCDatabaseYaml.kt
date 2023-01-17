@@ -15,8 +15,8 @@ open class IOCDatabaseYaml : IOCDatabase {
 
     var config: Configuration? = null
 
-    override fun init(clazz: Class<*>, source: String): IOCDatabase {
-        config = createLocal("data-ioc/${clazz.name}/${source}.yml", type = Type.YAML)
+    override fun init(clazz: Class<*>): IOCDatabase {
+        config = createLocal("data-ioc/${clazz.name}/data.yml", type = Type.YAML)
         return this
     }
 

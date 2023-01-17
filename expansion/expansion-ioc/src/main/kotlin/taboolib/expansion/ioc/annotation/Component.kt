@@ -4,4 +4,5 @@ package taboolib.expansion.ioc.annotation
 annotation class Component(
     val function: String = "Gson",
     val index: String = "null",
+    val singleton: Boolean = false,
 )

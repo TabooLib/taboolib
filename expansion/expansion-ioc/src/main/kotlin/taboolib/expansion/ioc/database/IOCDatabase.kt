@@ -4,7 +4,7 @@ import java.lang.reflect.Type
 
 interface IOCDatabase {
 
-    fun init(clazz: Class<*>, source: String): IOCDatabase
+    fun init(clazz: Class<*>): IOCDatabase
     fun getDataAll(): Map<String, Any?>
 
     fun getData(key: String): Any?

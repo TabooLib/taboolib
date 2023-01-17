@@ -1,4 +1,15 @@
-### 初始化IOC容器
+# TabooIOC
+#### Input and Output Container
+
+帮助你管理数据类的工具
+
+### 术语解释
+
+Database: 负责数据实际存储 默认工具是IOCDatabaseYaml
+
+
+
+### 初始化IOC管理器
 
 ```kotlin
 @Awake(LifeCycle.INIT)
@@ -25,16 +36,28 @@ fun onBeanReadEvent(event: FieldReadEvent) {
 
 ### 如何使用？
 
+可以使用以下三种方法声明你的数据Linker工具
+
+三种方法都是连接IOC容器的数据
+
+可以多次声明 同类型的Linker 同增减同修改
+
+接下来你就可以放心的进行你的操作了 对象IO的事情就交给IOC进行管理吧
+
+注: 这三个方法都是线程安全的底层实现是 ConcurrentHashMap
+
+所以即使是List也没法get(index:Int) 但是提供了替代方法
 ```kotlin
 
-@Autowired
-val data = ArrayList<YourData>()
+var dataManager = linkedIOCMap<IOCData>()
+var dataManager = linkedIOCList<IOCData>()
+var dataManager = linkedIOCSingleton<IOCData>()
 
 ```
 
-### 自定义IOC
+### 创建数据类
 
-注意: 你的数据类里要按照序列化规则进行书写
+注意: 你的数据类里要按照序列化选择器规则进行书写
 
 例如：IOCDatabaseYaml用的是 Gson的序列化规范
 
@@ -52,6 +75,15 @@ data class RegionData(
     var weight: Int = 0
 )
 
+```
+```kotlin
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Component(
+    // 序列化工具选择器
+    val function: String = "Gson",
+    val index: String = "null",
+    val singleton: Boolean = false,
+)
 ```
 
 ### 自定义序列化反序列化
@@ -108,7 +140,7 @@ fun init() {
 }
 ```
 
-### 注册一个IOC容器存储方式
+### 注册一个自定义Database
 
 ```kotlin
 interface IOCDatabase {
@@ -150,66 +182,3 @@ class FieldReadEvent(
 要满足个性化需求又不改库就只能把这样的功能写紧凑
 
 这样虽然不符合单一职责的原则但是方便了其他开发者进行拓展
-
-### 容器选择器
-
-目前支持了几个常用的容器
-
-```
-ArrayList
-Collection
-CopyOnWriteArrayList
-MutableList
-
-HashMap
-MutableMap
-ConcurrentHashMap
-
-如果都不满足则使用 SingletonObject (单例模式)
-```
-你也可以主动选择使用单例模式
-```kotlin
-
-@Autowired
-var testDataIOCMap: IOCData? = null
-
-```
-一定要var 不然没法注入
-
-
-如果使用这几种容器就直接使用即可 
-
-如果有其他选择就要注册自定义的容器
-
-```kotlin
-interface TypeRead {
-
-    val type: Class<*>
-
-    fun readAll(clazz: Class<*>, field: Field, database: IOCDatabase): Any
-
-    fun writeAll(field: Field, source: Class<*>, database: IOCDatabase)
-
-}
-```
-
-然后注册
-
-一定要在*CONST*的时候注册
-```kotlin
-
-@Awake(LifeCycle.CONST)
-fun init() {
-   val list = TypeReaderArrayList()
-   TypeReadManager.typeReader[list.type.name] = list
-}
-```
-
-同时也提供了Event的方式进行选择
-
-```kotlin
-class GetTypeReaderEvent(
-    val clazz: Class<*>,
-    var reader: TypeRead? = null
-) : ProxyEvent()
-```
