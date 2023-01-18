@@ -15,6 +15,15 @@ Index：数据类的唯一键 确定了数据的唯一性
 
 Serialization: 序列化反序列化的工具
 
+
+### 运行流程
+
+![img.png](img.png)
+
+### Linker设计思路
+
+![img_1.png](img_1.png)
+
 ### 初始化IOC管理器
 
 ```kotlin
