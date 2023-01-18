@@ -17,9 +17,19 @@ import org.bukkit.inventory.ItemStack
  */
 class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<ItemStack>? = null) : Inventory {
 
+    /** 远程背包实例 */
     var remoteInventory: RemoteInventory? = null
+
+    /** 玩家背包内容 */
     var storageContents: List<ItemStack>? = storageContents
-        private set
+        private set(value) {
+            // 如果不满 36 则补齐
+            field = if (value != null && value.size < 36) {
+                value + List(36 - value.size) { ItemStack(Material.AIR) }
+            } else {
+                value
+            }
+        }
 
     init {
         // 重复包装检查
