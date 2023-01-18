@@ -78,9 +78,16 @@ var dataManager = linkedIOCSingleton<IOCData>()
 
 你的特殊类就要自定义处理
 
+#### 注意
+按照规范请必须声明你的index索引 保证数据唯一性
+
+下面的示例代码中 id就是数据ID 且为string类型（支持基础类型）
+
+推荐使用String作为数据ID
+
 ```kotlin
 
-@Component
+@Component(index = "id")
 data class RegionData(
     var id: String? = null,
     var one: Location? = null,
@@ -91,12 +98,30 @@ data class RegionData(
 )
 
 ```
+#### 单例模式
+
+单例模式的ID将由IOC容器进行分配
+```kotlin
+@Component(singleton = true)
+data class RegionData(
+    var id: String? = null,
+    var one: Location? = null,
+    var two: Location? = null,
+    var join: List<String>? = null,
+    var leave: List<String>? = null,
+    var weight: Int = 0,
+)
+```
+
+#### 注释
 ```kotlin
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Component(
     // 序列化工具选择器
     val function: String = "Gson",
+    // 数据索引ID
     val index: String = "null",
+    // 单例模式
     val singleton: Boolean = false,
 )
 ```
@@ -108,7 +133,7 @@ annotation class Component(
 ```kotlin
 
 // 里面指定一下你要用的方式
-@Component("Kotlinx")
+@Component("Kotlinx",index = "id")
 data class RegionData(
     var id: String? = null,
     // ...
