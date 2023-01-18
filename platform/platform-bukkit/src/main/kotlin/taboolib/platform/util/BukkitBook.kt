@@ -9,6 +9,7 @@ import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import taboolib.library.xseries.XMaterial
 import java.util.concurrent.ConcurrentHashMap
 
@@ -58,7 +59,9 @@ internal object BookListener {
             consumer(pages)
             if (lore.getOrNull(1) == regex[1]) {
                 inputs.remove(event.player.name)
-                event.player.inventory.takeItem(99) { i -> i.hasLore(regex[0]) }
+                submit(delay = 1) {
+                    event.player.inventory.takeItem(99) { i -> i.hasLore(regex[0]) }
+                }
             }
         }
     }
