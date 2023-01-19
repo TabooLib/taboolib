@@ -2,6 +2,7 @@ package taboolib.expansion.ioc.linker
 
 import taboolib.expansion.ioc.IOCReader
 import taboolib.expansion.ioc.annotation.Component
+import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.concurrent.ConcurrentHashMap
 
 inline fun <reified T : Any?> linkedIOCSingleton(): IOCSingleton {
@@ -16,6 +17,10 @@ class IOCSingleton(
 ) {
     val IOC by lazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
+    }
+
+    val DATABASE by lazy{
+        IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
     fun getId(): String {

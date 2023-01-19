@@ -24,16 +24,20 @@ open class IOCDatabaseYaml : IOCDatabase {
         if (config?.getKeys(false)?.size == 0) {
             return mapOf()
         }
-        return config?.getKeys(false)?.associate { it to config!![it] } ?: mapOf()
+        return config?.getKeys(false)?.associate { it to getData(it) } ?: mapOf()
     }
 
     override fun getData(key: String): String? {
         return config?.getString(key)
     }
 
-    override fun saveData(key: String, data: Any): Boolean {
+    override fun writeData(key: String, data: Any): Boolean {
         config?.set(key, SerializationManager.serialize(data))
         return true
+    }
+
+    override fun saveData(key: String) {
+        config?.saveToFile()
     }
 
     override fun saveDatabase() {

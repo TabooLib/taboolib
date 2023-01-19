@@ -1,12 +1,13 @@
 package taboolib.expansion.ioc.linker
 
 import taboolib.expansion.ioc.IOCReader
+import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.*
 import java.util.function.Function
 
-inline fun <reified V : Any?> linkedIOCMap(): ConcurrentHashMap<String, Any> {
+inline fun <reified V : Any?> linkedIOCMap(): IOCMap {
     return IOCMap(V::class.java)
 }
 
@@ -15,6 +16,10 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
 
     val IOC by lazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
+    }
+
+    val DATABASE by lazy{
+        IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
     override fun clear() {

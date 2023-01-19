@@ -222,3 +222,59 @@ class FieldReadEvent(
 要满足个性化需求又不改库就只能把这样的功能写紧凑
 
 这样虽然不符合单一职责的原则但是方便了其他开发者进行拓展
+
+### 玩家数据
+
+IOC工具提供了一个默认的依赖于多Yaml的Database
+
+专门用来处理玩家上线加载数据，玩家下线保存数据的工具
+
+    `IOCDatabaseYamlBindPlayer`
+
+具体用法如下
+
+1. 声明你的数据类的Database
+```kotlin
+@SubscribeEvent
+fun dataLoad(event: DataReadEvent) {
+    if (event.data.name == IOCData::class.java.name) {
+        event.iocDatabase = IOCDatabaseYamlBindPlayer()
+    }
+}
+```
+
+2. 设定一个Linker
+```kotlin
+var iocData = linkedIOCMap<IOCData>()
+```
+
+3. 设定加载与保存的时机
+```kotlin
+    @SubscribeEvent
+    fun onPlayerJoin(event: AsyncPlayerPreLoginEvent) {
+        val database = iocData.DATABASE as? IOCDatabaseYamlBindPlayer ?: return
+        database.onJoinLoadData(event.uniqueId)
+    }
+
+    @SubscribeEvent
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        val database = iocData.DATABASE as? IOCDatabaseYamlBindPlayer ?: return
+        database.onLeaveSaveData(event.player.uniqueId)
+    }
+
+    @SubscribeEvent
+    fun onPlayerQuit(event: PlayerKickEvent) {
+        val database = iocData.DATABASE as? IOCDatabaseYamlBindPlayer ?: return
+        database.onLeaveSaveData(event.player.uniqueId)
+    }
+```
+完成了 可以开始你的IOC使用了
+
+
+
+
+
+
+
+
+

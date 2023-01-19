@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 )
 object IOCReader {
 
-    private val databaseMap = ConcurrentHashMap<String, IOCDatabase>()
+    val databaseMap = ConcurrentHashMap<String, IOCDatabase>()
 
     val dataMap = ConcurrentHashMap<String, ConcurrentHashMap<String, Any>>()
 
@@ -53,7 +53,7 @@ object IOCReader {
             val database = databaseMap[t] ?: return@forEach
             database.resetDatabase()
             u.forEach { (k, v) ->
-                database.saveData(k, v)
+                database.writeData(k, v)
             }
             database.saveDatabase()
         }

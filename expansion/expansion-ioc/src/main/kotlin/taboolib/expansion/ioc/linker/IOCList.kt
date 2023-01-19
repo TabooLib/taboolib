@@ -2,6 +2,8 @@ package taboolib.expansion.ioc.linker
 
 import taboolib.expansion.ioc.IOCReader
 import taboolib.expansion.ioc.IndexReader
+import taboolib.expansion.ioc.database.IOCDatabase
+import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
@@ -20,6 +22,10 @@ class IOCList<E : Any?>(
 
     val IOC by lazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
+    }
+
+    val DATABASE by lazy{
+        IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
     /**
