@@ -20,7 +20,6 @@ public class Ray extends ParticleObj implements Playable {
     private double step;
     private double range;
     private RayStopType stopType;
-    private double length;
     private double currentStep = 0D;
 
     public Ray(Location origin, Vector direction, double maxLength , ParticleSpawner spawner) {

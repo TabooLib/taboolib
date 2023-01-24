@@ -29,33 +29,6 @@ fun createLotus(
     }
 }
 
-/*
-* 创建一个方格
-*
-* @param minimumLocation 最小位置
-* @param maximumLocation 最大位置
-* @param girdLength 方格长度
-* @param period 特效周期(如果需要可以使用)
-*/
-fun createGrid(
-    minimumLocation: Location,
-    maximumLocation: Location,
-    gridLength: Double = 1.2,
-    period: Long = 20,
-    spawner: (p: Location) -> Unit
-): Grid{
-    return Grid(
-        minimumLocation,
-        maximumLocation,
-        gridLength ,
-        period ,
-        object : ParticleSpawner{
-            override fun spawn(location: Location) {
-                spawn(location)
-            }
-        })
-}
-
 fun createRay(
     origin: Location,
     direction: Vector,
