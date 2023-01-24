@@ -1,7 +1,8 @@
-package taboolib.module.effect;
+package taboolib.module.effect.shape;
 
 import taboolib.common.Isolated;
 import taboolib.common.util.Location;
+import taboolib.module.effect.ParticleSpawner;
 
 /**
  * 表示一个圆

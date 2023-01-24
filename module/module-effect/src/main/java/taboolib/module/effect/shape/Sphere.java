@@ -1,7 +1,9 @@
-package taboolib.module.effect;
+package taboolib.module.effect.shape;
 
 import taboolib.common.Isolated;
 import taboolib.common.util.Location;
+import taboolib.module.effect.ParticleObj;
+import taboolib.module.effect.ParticleSpawner;
 
 import java.util.ArrayList;
 import java.util.List;

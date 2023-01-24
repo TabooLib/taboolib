@@ -1,10 +1,13 @@
-package taboolib.module.effect;
+package taboolib.module.effect.shape;
 
 import kotlin.Unit;
 import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
+import taboolib.module.effect.ParticleObj;
+import taboolib.module.effect.ParticleSpawner;
+import taboolib.module.effect.Playable;
 
 /**
  * 表示一条线

@@ -3,6 +3,9 @@ package taboolib.module.effect
 
 import taboolib.common.Isolated
 import taboolib.common.util.Location
+import taboolib.module.effect.renderer.GeneralEquationRenderer
+import taboolib.module.effect.renderer.ParametricEquationRenderer
+import taboolib.module.effect.renderer.PolarEquationRenderer
 
 /**
  * 创建一个普通方程渲染器
@@ -23,12 +26,18 @@ fun createGeneralEquationRenderer(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): GeneralEquationRenderer {
-    return GeneralEquationRenderer(origin, function, minX, maxX, dx, object : ParticleSpawner {
+    return GeneralEquationRenderer(
+        origin,
+        function,
+        minX,
+        maxX,
+        dx,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
 
 /**
@@ -54,12 +63,20 @@ fun createParametricEquationRenderer(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): ParametricEquationRenderer {
-    return ParametricEquationRenderer(origin, xFunction, yFunction, zFunction, minT, maxT, dt, object : ParticleSpawner {
+    return ParametricEquationRenderer(
+        origin,
+        xFunction,
+        yFunction,
+        zFunction,
+        minT,
+        maxT,
+        dt,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
 
 /**
@@ -81,10 +98,16 @@ fun createPolarEquationRenderer(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): PolarEquationRenderer {
-    return PolarEquationRenderer(origin, rFunction, minT, maxT, dt, object : ParticleSpawner {
+    return PolarEquationRenderer(
+        origin,
+        rFunction,
+        minT,
+        maxT,
+        dt,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }

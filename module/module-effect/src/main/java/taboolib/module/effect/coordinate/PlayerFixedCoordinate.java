@@ -1,28 +1,37 @@
-package taboolib.module.effect;
+package taboolib.module.effect.coordinate;
 
 import taboolib.common.Isolated;
 import taboolib.common.util.Location;
+import taboolib.module.effect.utils.LocationUtils;
 
 /**
- * 表示一个玩家后背坐标系
- * <p>将玩家背后转换为一个直角坐标系</p>
+ * 表示一个将X轴显示在玩家面前的坐标器
+ * <p>自动修正在XZ平面上的粒子朝向</p>
  *
  * @author Zoyn
  */
 @Isolated
-public class PlayerBackCoordinate {
+public class PlayerFixedCoordinate {
 
+    /**
+     * 原点
+     */
     private final Location originDot;
+    /**
+     * 旋转角度
+     */
     private final double rotateAngle;
 
-    public PlayerBackCoordinate(Location playerLocation) {
+    public PlayerFixedCoordinate(Location playerLocation) {
         // 旋转的角度
         rotateAngle = playerLocation.getYaw();
         originDot = playerLocation.clone();
-        // 重设仰俯角
+        // 重设仰俯角, 防止出现仰头后旋转角度不正确的问题
         originDot.setPitch(0);
-        // 使原点与玩家有一点点距离
-        originDot.add(originDot.getDirection().multiply(-0.3));
+    }
+
+    public Location getOriginDot() {
+        return originDot;
     }
 
     public Location newLocation(double x, double y, double z) {

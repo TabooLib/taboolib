@@ -1,4 +1,4 @@
-package taboolib.module.effect;
+package taboolib.module.effect.math;
 
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;

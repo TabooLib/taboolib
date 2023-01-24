@@ -3,6 +3,7 @@ package taboolib.module.effect
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.service.PlatformExecutor.PlatformTask
 import taboolib.common.util.Location
+import taboolib.module.effect.math.Matrix
 
 /**
  * 表示一个特效对象

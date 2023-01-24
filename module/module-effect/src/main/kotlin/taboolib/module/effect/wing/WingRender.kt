@@ -3,7 +3,7 @@ package taboolib.module.effect.wing
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.module.effect.ParticleSpawner
-import taboolib.module.effect.PlayerBackCoordinate
+import taboolib.module.effect.coordinate.PlayerBackCoordinate
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -78,7 +78,8 @@ open class WingRender(var height: Int, var width: Int) {
      * 设置一个task 从0-10渲染 即可形成一个完整的翅膀粒子动画
      */
     open fun render(player: ProxyPlayer, frame: Int, x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) {
-        val coordinate = PlayerBackCoordinate(player.location.add(x, y, z))
+        val coordinate =
+            PlayerBackCoordinate(player.location.add(x, y, z))
         if (frame % 5 == 0) {
             angle += offset
             if (angle % 30 == 0) {

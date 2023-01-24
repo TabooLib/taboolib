@@ -1,7 +1,8 @@
-package taboolib.module.effect;
+package taboolib.module.effect.coordinate;
 
 import taboolib.common.Isolated;
 import taboolib.common.util.Location;
+import taboolib.module.effect.utils.LocationUtils;
 
 /**
  * 表示一个玩家面前的坐标系

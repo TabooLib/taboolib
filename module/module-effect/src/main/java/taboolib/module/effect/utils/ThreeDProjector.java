@@ -1,4 +1,4 @@
-package taboolib.module.effect;
+package taboolib.module.effect.utils;
 
 import taboolib.common.Isolated;
 import taboolib.common.util.Location;
