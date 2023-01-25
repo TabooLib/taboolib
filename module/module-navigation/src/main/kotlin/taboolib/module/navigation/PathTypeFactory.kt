@@ -27,12 +27,15 @@ open class PathTypeFactory(val entity: NodeEntity) {
             pathType == PathType.DOOR_WOOD_CLOSED && entity.canOpenDoors && entity.canPassDoors -> {
                 PathType.WALKABLE_DOOR
             }
+
             pathType == PathType.DOOR_OPEN && !entity.canPassDoors -> {
                 PathType.BLOCKED
             }
+
             pathType == PathType.LEAVES -> {
                 PathType.BLOCKED
             }
+
             else -> pathType
         }
     }
@@ -136,6 +139,8 @@ open class PathTypeFactory(val entity: NodeEntity) {
 
     companion object {
 
+        val fireTypes = arrayOf("FIRE", "MAGMA_BLOCK", "CAMPFIRE", "SOUL_CAMPFIRE")
+
         /**
          * 获取方块类型
          * 主要目的是获取其临近的危险方块
@@ -145,28 +150,18 @@ open class PathTypeFactory(val entity: NodeEntity) {
                 (-1..1).forEach { oy ->
                     (-1..1).forEach { oz ->
                         if (ox != 0 || oz != 0) {
-                            val block =
-                                world.getBlockAtIfLoaded(Vector(position.x + ox, position.y + oy, position.z + oz))
+                            val block = world.getBlockAtIfLoaded(Vector(position.x + ox, position.y + oy, position.z + oz))
                             if (block != null) {
                                 val name = block.type.name
                                 when {
-                                    name == "CACTUS" -> {
-                                        return PathType.DANGER_CACTUS
-                                    }
-                                    name == "SWEET_BERRY_BUSH" -> {
-                                        return PathType.DANGER_OTHER
-                                    }
-                                    name.getFluid().isLava() || name in arrayOf(
-                                        "FIRE",
-                                        "MAGMA_BLOCK",
-                                        "CAMPFIRE",
-                                        "SOUL_CAMPFIRE"
-                                    ) -> {
-                                        return PathType.DANGER_FIRE
-                                    }
-                                    name.getFluid().isWater() -> {
-                                        return PathType.WATER_BORDER
-                                    }
+                                    // 仙人掌
+                                    name == "CACTUS" -> return PathType.DANGER_CACTUS
+                                    // 浆果丛
+                                    name == "SWEET_BERRY_BUSH" -> return PathType.DANGER_OTHER
+                                    // 火
+                                    name.getFluid().isLava() || name in fireTypes -> return PathType.DANGER_FIRE
+                                    // 水
+                                    name.getFluid().isWater() -> return PathType.WATER_BORDER
                                 }
                             }
                         }
@@ -186,14 +181,24 @@ open class PathTypeFactory(val entity: NodeEntity) {
             val blockTypeName = blockType.name
             return when {
                 // 空气
-                blockType.isAirLegacy() -> {
-                    PathType.OPEN
-                }
+                blockType.isAirLegacy() -> PathType.OPEN
                 // 活板门、睡莲、地毯 可穿过的物品
-                blockTypeName.endsWith("TRAPDOOR") || blockTypeName.endsWith("TRAP_DOOR") || blockTypeName == "LILY_PAD" || blockTypeName == "CARPET" ||
-                        blockTypeName.endsWith("SAPLING") || blockTypeName == ("REDSTONE_WIRE") || blockTypeName.endsWith("GRASS") || blockTypeName == "NETHER_WARTS" ||
-                        blockTypeName == "NETHER_STALK" || blockTypeName == "DOUBLE_PLANT" || blockTypeName.startsWith("FLOWER_POT") || blockTypeName == "RED_ROSE" ||
-                        blockTypeName == "YELLOW_FLOWER" || blockTypeName == "BEETROOT_BLOCK" || blockTypeName.startsWith("DIODE_BLOCK") || blockTypeName == "SUGAR_CANE_BLOCK" -> {
+                blockTypeName.endsWith("TRAPDOOR")
+                        || blockTypeName.endsWith("TRAP_DOOR")
+                        || blockTypeName == "LILY_PAD"
+                        || blockTypeName == "CARPET"
+                        || blockTypeName.endsWith("SAPLING")
+                        || blockTypeName == ("REDSTONE_WIRE")
+                        || blockTypeName.endsWith("GRASS")
+                        || blockTypeName == "NETHER_WARTS"
+                        || blockTypeName == "NETHER_STALK"
+                        || blockTypeName == "DOUBLE_PLANT"
+                        || blockTypeName.startsWith("FLOWER_POT")
+                        || blockTypeName == "RED_ROSE"
+                        || blockTypeName == "YELLOW_FLOWER"
+                        || blockTypeName == "BEETROOT_BLOCK"
+                        || blockTypeName.startsWith("DIODE_BLOCK")
+                        || blockTypeName == "SUGAR_CANE_BLOCK" -> {
                     // 能够行走，能够穿过。
                     PathType.TRAPDOOR
                 }
@@ -224,7 +229,7 @@ open class PathTypeFactory(val entity: NodeEntity) {
                     PathType.COCOA
                 }
                 // 燃烧物
-                blockTypeName in arrayOf("FIRE", "MAGMA_BLOCK", "CAMPFIRE", "SOUL_CAMPFIRE") -> {
+                blockTypeName in fireTypes -> {
                     // 可以穿过，但会受伤
                     PathType.DAMAGE_FIRE
                 }
@@ -251,6 +256,7 @@ open class PathTypeFactory(val entity: NodeEntity) {
                     // 不可通过，允许越过
                     PathType.BLOCKED
                 }
+
                 else -> {
                     PathType.OPEN
                 }

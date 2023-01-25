@@ -111,7 +111,7 @@ open class NodeReader(val entity: NodeEntity) {
      */
     fun getLandHeight(position: Vector): Double {
         val block = position.toBlock(world)
-        val blockHeight = NMS.INSTANCE.getBlockHeight(block)
+        val blockHeight = NMS.instance.getBlockHeight(block)
         return if (blockHeight == 0.0) 0.0 else blockHeight + block.y
     }
 
@@ -239,8 +239,8 @@ open class NodeReader(val entity: NodeEntity) {
      */
     open fun isNeighborValid(neighbor: Node?, node: Node): Boolean {
         if (neighbor != null && !neighbor.closed && (neighbor.costMalus >= 0.0f || node.costMalus < 0.0f)) {
-            val blockHeight = NMS.INSTANCE.getBlockHeight(node.asBlockPos().down().toBlock(world)) + node.y - 1
-            val neighborHeight = NMS.INSTANCE.getBlockHeight(neighbor.asBlockPos().down().toBlock(world)) + neighbor.y - 1
+            val blockHeight = NMS.instance.getBlockHeight(node.asBlockPos().down().toBlock(world)) + node.y - 1
+            val neighborHeight = NMS.instance.getBlockHeight(neighbor.asBlockPos().down().toBlock(world)) + neighbor.y - 1
             return abs(blockHeight - neighborHeight) < 1.25
         }
         return false

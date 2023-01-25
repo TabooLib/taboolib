@@ -23,6 +23,10 @@ abstract class NMS {
 
     companion object {
 
-        val INSTANCE = nmsProxy(NMS::class.java)
+        var instance = nmsProxy(NMS::class.java)
+
+        @Deprecated("命名不规范", ReplaceWith("instance", "taboolib.module.navigation.NMS.Companion.instance"))
+        val INSTANCE: NMS
+            get() = instance
     }
 }

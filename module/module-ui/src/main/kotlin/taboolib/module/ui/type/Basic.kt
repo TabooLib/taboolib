@@ -23,6 +23,9 @@ open class Basic(title: String = "chest") : Menu(title) {
     /** 虚拟化 */
     internal var virtual = false
 
+    /** 虚拟化时玩家背包内容 */
+    internal var storageContents: List<ItemStack>? = null
+
     /** 行数 **/
     internal var rows = -1
 
@@ -65,8 +68,9 @@ open class Basic(title: String = "chest") : Menu(title) {
     /**
      * 使用虚拟页面（将自动阻止所有点击行为）
      */
-    open fun virtualize() {
+    open fun virtualize(storageContents: List<ItemStack>? = null) {
         this.virtual = true
+        this.storageContents = storageContents
     }
 
     /**
@@ -319,7 +323,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     override fun build(): Inventory {
         var inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
         if (virtual) {
-            inventory = inventory.virtualize()
+            inventory = inventory.virtualize(storageContents)
         }
         var row = 0
         while (row < slots.size) {

@@ -12,10 +12,12 @@ fun createPathfinder(nodeEntity: NodeEntity): PathFinder {
     return PathFinder(NodeReader(nodeEntity))
 }
 
-fun World.getBlockAt(position: Vector) = getBlockAt(position.blockX, position.blockY, position.blockZ)
+fun World.getBlockAt(position: Vector): Block {
+    return getBlockAt(position.blockX, position.blockY, position.blockZ)
+}
 
 fun World.getBlockAtIfLoaded(position: Vector): Block? {
-    return if (position.toLocation(this).chunk.isLoaded) {
+    return if (ChunkAccess.instance.isChunkLoaded(this, position.blockX shr 4, position.blockZ shr 4)) {
         getBlockAt(position.blockX, position.blockY, position.blockZ)
     } else {
         null
@@ -88,7 +90,7 @@ fun Block.isOpened(): Boolean {
     return if (MinecraftVersion.major >= 5) {
         (blockData as org.bukkit.block.data.Openable).isOpen
     } else {
-        NMS.INSTANCE.isDoorOpened(this)
+        NMS.instance.isDoorOpened(this)
     }
 }
 
