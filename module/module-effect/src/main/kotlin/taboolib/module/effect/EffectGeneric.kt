@@ -5,7 +5,104 @@ package taboolib.module.effect
 
 import taboolib.common.Isolated
 import taboolib.common.util.Location
+import taboolib.common.util.Vector
+import taboolib.module.effect.shape.*
+import taboolib.module.effect.shape.Ray.RayStopType
 
+/*
+* 创建一个莲花
+*
+* @param origin 莲心
+* @param period 特效周期(如果需要可以使用)
+*/
+fun createLotus(
+    origin: Location,
+    period: Long = 20,
+    spawner: (p: Location) -> Unit
+): Lotus {
+    return Lotus(origin , period , object:ParticleSpawner{
+        override fun spawn(location: Location) {
+           spawn(origin)
+        }
+    }).also {
+        it.period = period
+    }
+}
+
+fun createRay(
+    origin: Location,
+    direction: Vector,
+    maxLength: Double,
+    step: Double,
+    range: Double = 0.5,
+    stopType: RayStopType,
+    period: Long = 20L,
+    spawner: (p: Location) -> Unit
+): Ray{
+    return Ray(
+        origin,
+        direction,
+        maxLength,
+        step,
+        range,
+        stopType,
+        period,
+        object : ParticleSpawner{
+            override fun spawn(location: Location) {
+                spawn(location)
+            }
+
+        }
+    )
+}
+
+fun createStar(
+    origin: Location,
+    radius: Double,
+    step: Double,
+    period: Long = 20L,
+    spawner: (p: Location) -> Unit
+): Star{
+    return Star(
+        origin,
+        radius,
+        step,
+        period,
+        object : ParticleSpawner{
+            override fun spawn(location: Location) {
+                spawn(location)
+            }
+        }
+    )
+}
+
+/*
+* 创建一个心
+*
+* @param xScaleRate X轴缩放比率
+* @param yScaleRate Y轴缩放比率
+* @param origin     原点
+*
+* */
+fun createHeart(
+    xScaleRate: Double,
+    yScaleRate: Double,
+    origin: Location,
+    period: Long,
+    spawner: (p: Location) -> Unit
+): Heart {
+    return Heart(
+        xScaleRate,
+        yScaleRate,
+        origin,
+        period,
+        object :ParticleSpawner{
+            override fun spawn(location: Location) {
+                spawn(location)
+            }
+        }
+    )
+}
 /**
  * 创建一个弧
  *
@@ -25,12 +122,19 @@ fun createArc(
     period: Long = 20,
     spawner: (p: Location) -> Unit
 ): Arc {
-    return Arc(origin, startAngle, angle, radius, step, period, object : ParticleSpawner {
+    return Arc(
+        origin,
+        startAngle,
+        angle,
+        radius,
+        step,
+        period,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    })
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        })
 }
 
 /**
@@ -74,12 +178,17 @@ fun createCircle(
     period: Long = 20,
     spawner: (p: Location) -> Unit
 ): Circle {
-    return Circle(origin, radius, step, period, object : ParticleSpawner {
+    return Circle(
+        origin,
+        radius,
+        step,
+        period,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    })
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        })
 }
 
 /**
@@ -97,12 +206,16 @@ fun createFilledCircle(
     period: Long = 20,
     spawner: (p: Location) -> Unit
 ): FilledCircle {
-    return FilledCircle(origin, radius, sample, object : ParticleSpawner {
+    return FilledCircle(
+        origin,
+        radius,
+        sample,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
 
 /**
@@ -199,4 +312,5 @@ fun createSphere(
             spawner(location)
         }
     }).also { it.period = period }
+
 }

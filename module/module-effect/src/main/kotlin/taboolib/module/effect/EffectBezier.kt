@@ -3,6 +3,9 @@ package taboolib.module.effect
 
 import taboolib.common.Isolated
 import taboolib.common.util.Location
+import taboolib.module.effect.shape.NRankBezierCurve
+import taboolib.module.effect.shape.ThreeRankBezierCurve
+import taboolib.module.effect.shape.TwoRankBezierCurve
 
 /**
  * 创建一条二阶贝塞尔曲线
@@ -21,12 +24,17 @@ fun createTwoRankBezierCurve(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): TwoRankBezierCurve {
-    return TwoRankBezierCurve(p0, p1, p2, step, object : ParticleSpawner {
+    return TwoRankBezierCurve(
+        p0,
+        p1,
+        p2,
+        step,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
 
 /**
@@ -48,12 +56,18 @@ fun createThreeRankBezierCurve(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): ThreeRankBezierCurve {
-    return ThreeRankBezierCurve(p0, p1, p2, p3, step, object : ParticleSpawner {
+    return ThreeRankBezierCurve(
+        p0,
+        p1,
+        p2,
+        p3,
+        step,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
 
 /**
@@ -90,10 +104,13 @@ fun createNRankBezierCurve(
     period: Long = 20,
     spawner: (Location) -> Unit
 ): NRankBezierCurve {
-    return NRankBezierCurve(points.toList(), step, object : ParticleSpawner {
+    return NRankBezierCurve(
+        points.toList(),
+        step,
+        object : ParticleSpawner {
 
-        override fun spawn(location: Location) {
-            spawner(location)
-        }
-    }).also { it.period = period }
+            override fun spawn(location: Location) {
+                spawner(location)
+            }
+        }).also { it.period = period }
 }
