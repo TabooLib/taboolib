@@ -1,10 +1,13 @@
 package taboolib.module.nms
 
 import io.netty.channel.Channel
+import net.minecraft.network.NetworkManager
 import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.platform.function.warning
+import java.lang.IllegalStateException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 
@@ -19,7 +22,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
 
     val major = MinecraftVersion.major
 
-    override fun getConnection(address: InetAddress): Any? {
+    override fun getConnection(address: InetAddress): Any {
         val connections = when (major) {
             // 1.8, 1.9, 1.10, 1.11, 1.12 -> List<NetworkManager> h
             0, 1, 2, 3, 4 -> {
@@ -46,7 +49,17 @@ class ConnectionGetterImpl : ConnectionGetter() {
             // 不支持
             else -> error("Unsupported Minecraft version: $major")
         } ?: error("Unable to get connections from ${Bukkit.getServer()}")
-        return connections.firstOrNull { getAddress(it) == address }
+        // 获取连接
+        val connection = connections.firstOrNull { getAddress(it) == address }
+        if (connection == null) {
+            warning("Unable to get player connection (${address})")
+            warning("Server connections:")
+            connections.forEach { conn ->
+                warning("- ${getAddress(conn)}")
+            }
+            throw IllegalStateException()
+        }
+        return connection
     }
 
     override fun getChannel(connection: Any): Channel {
@@ -54,7 +67,22 @@ class ConnectionGetterImpl : ConnectionGetter() {
     }
 
     private fun getAddress(connection: Any): InetAddress? {
-        return (getChannel(connection).remoteAddress() as? InetSocketAddress)?.address
+        // 这种方式无法在 BungeeCord 中获取到正确的地址：
+        // return (getChannel(connection).remoteAddress() as? InetSocketAddress)?.address
+        // 因此要根据不同的版本获取不同的 SocketAddress 字段：
+        return when (major) {
+            // 1.8, 1.9, 1.10, 1.11, 1.12
+            // public SocketAddress l;
+            0, 1, 2, 3, 4 -> ((connection as NMS8NetworkManager).l as InetSocketAddress).address
+            // 1.13, 1.14, 1.15, 1.16
+            // public SocketAddress socketAddress;
+            5, 6, 7, 8 -> ((connection as NMS13NetworkManager).socketAddress as InetSocketAddress).address
+            // 1.17, 1.18, 1.19
+            // public SocketAddress address;
+            9, 10, 11 -> ((connection as NetworkManager).address as InetSocketAddress).address
+            // 不支持
+            else -> error("Unsupported Minecraft version: $major")
+        }
     }
 }
 
@@ -67,3 +95,5 @@ typealias NMS8MinecraftServer = net.minecraft.server.v1_8_R3.MinecraftServer
 typealias NMSMinecraftServer = net.minecraft.server.MinecraftServer
 
 typealias NMS8NetworkManager = net.minecraft.server.v1_8_R3.NetworkManager
+
+typealias NMS13NetworkManager = net.minecraft.server.v1_13_R2.NetworkManager

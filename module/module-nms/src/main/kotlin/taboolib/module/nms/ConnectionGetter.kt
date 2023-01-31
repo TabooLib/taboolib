@@ -13,7 +13,7 @@ import java.net.InetAddress
  */
 abstract class ConnectionGetter {
 
-    abstract fun getConnection(address: InetAddress): Any?
+    abstract fun getConnection(address: InetAddress): Any
 
     abstract fun getChannel(connection: Any): Channel
 

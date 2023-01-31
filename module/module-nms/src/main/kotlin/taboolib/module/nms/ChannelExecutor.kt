@@ -40,7 +40,7 @@ object ChannelExecutor {
     }
 
     fun getPlayerChannel(address: InetAddress): Channel {
-        val connection = ConnectionGetter.instance.getConnection(address) ?: error("Unable to get player connection (${address})")
+        val connection = ConnectionGetter.instance.getConnection(address)
         return ConnectionGetter.instance.getChannel(connection)
     }
 
