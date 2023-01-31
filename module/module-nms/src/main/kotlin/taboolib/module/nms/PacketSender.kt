@@ -23,9 +23,9 @@ object PacketSender {
     private var sendPacketMethod: ClassMethod? = null
 
     fun sendPacket(player: Player, packet: Any) {
-        val playerConnection = getConnection(player)
+        val connection = getConnection(player)
         if (sendPacketMethod == null) {
-            val reflexClass = ReflexClass.of(playerConnection.javaClass)
+            val reflexClass = ReflexClass.of(connection.javaClass)
             // 1.19 更名为 send 方法
             sendPacketMethod = if (MinecraftVersion.major >= 10) {
                 reflexClass.getMethod("send", true, true, packet)
@@ -33,7 +33,7 @@ object PacketSender {
                 reflexClass.getMethod("sendPacket", true, true, packet)
             }
         }
-        sendPacketMethod!!.invoke(playerConnection, packet)
+        sendPacketMethod!!.invoke(connection, packet)
     }
 
     fun getConnection(player: Player): Any {

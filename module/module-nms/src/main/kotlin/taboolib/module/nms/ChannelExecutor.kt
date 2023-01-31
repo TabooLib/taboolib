@@ -2,9 +2,7 @@ package taboolib.module.nms
 
 import io.netty.channel.Channel
 import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.bukkit.event.player.PlayerLoginEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -14,6 +12,7 @@ import taboolib.common.platform.function.isListened
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.warning
 import taboolib.platform.util.onlinePlayers
+import java.net.InetAddress
 import java.util.concurrent.Executors
 
 /**
@@ -24,8 +23,7 @@ import java.util.concurrent.Executors
 object ChannelExecutor {
 
     private val id = "taboolib_${pluginId}_packet_handler"
-    private val addChannelService = Executors.newSingleThreadExecutor()
-    private val removeChannelService = Executors.newSingleThreadExecutor()
+    private val pool = Executors.newSingleThreadExecutor()
 
     /** 是否强制禁用 **/
     private var isDisabled = false
@@ -41,25 +39,12 @@ object ChannelExecutor {
         return PacketSendEvent::class.java.isListened() || PacketReceiveEvent::class.java.isListened()
     }
 
-    fun getPlayerChannel(player: Player): Channel {
-        val playerConnection = if (MinecraftVersion.isUniversal) {
-            player.getProperty<Any>("entity/connection")!!
-        } else {
-            player.getProperty<Any>("entity/playerConnection")!!
-        }
-        // playerConnection 被异常注入
-        return try {
-            if (MinecraftVersion.isUniversal) {
-                playerConnection.getProperty<Channel>("connection/channel")!!
-            } else {
-                playerConnection.getProperty<Channel>("networkManager/channel")!!
-            }
-        } catch (ex: Throwable) {
-            throw IllegalStateException("Unable to get player Channel from ${playerConnection.javaClass}", ex)
-        }
+    fun getPlayerChannel(address: InetAddress): Channel {
+        val connection = ConnectionGetter.instance.getConnection(address) ?: error("Unable to get player connection (${address})")
+        return ConnectionGetter.instance.getChannel(connection)
     }
 
-    fun addPlayerChannel(player: Player) {
+    fun addPlayerChannel(player: Player, address: InetAddress) {
         if (isDisabled || !isPacketEventListened()) {
             return
         }
@@ -67,12 +52,19 @@ object ChannelExecutor {
             warning("Unsupported Minecraft version, packet handler will not be added.")
             return
         }
-        addChannelService.submit {
+        try {
+            val pipeline = getPlayerChannel(address).pipeline()
             try {
-                getPlayerChannel(player).pipeline().addBefore("packet_handler", id, ChannelHandler(player))
-            } catch (ex: Throwable) {
-                ex.printStackTrace()
+                pipeline.remove(id)
+            } catch (_: NoSuchElementException) {
             }
+            if (pipeline["packet_handler"] == null) {
+                pipeline.addLast(id, ChannelHandler(player))
+            } else {
+                pipeline.addBefore("packet_handler", id, ChannelHandler(player))
+            }
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
         }
     }
 
@@ -84,11 +76,12 @@ object ChannelExecutor {
             warning("Unsupported Minecraft version, packet handler will not be added.")
             return
         }
-        removeChannelService.submit {
+        val address = player.address?.address ?: return
+        pool.submit {
             try {
-                val playerChannel = getPlayerChannel(player)
-                if (playerChannel.pipeline()[id] != null) {
-                    playerChannel.pipeline().remove(id)
+                val pipeline = getPlayerChannel(address).pipeline()
+                if (pipeline[id] != null) {
+                    pipeline.remove(id)
                 }
             } catch (ex: Throwable) {
                 ex.printStackTrace()
@@ -97,18 +90,18 @@ object ChannelExecutor {
     }
 
     @SubscribeEvent
-    private fun onJoin(e: PlayerJoinEvent) {
-        addPlayerChannel(e.player)
+    private fun onJoin(e: PlayerLoginEvent) {
+        addPlayerChannel(e.player, e.address)
     }
 
-    @SubscribeEvent
-    private fun onQuit(e: PlayerQuitEvent) {
-        removePlayerChannel(e.player)
-    }
+//    @SubscribeEvent
+//    private fun onQuit(e: PlayerQuitEvent) {
+//        removePlayerChannel(e.player)
+//    }
 
     @Awake(LifeCycle.ENABLE)
     private fun onEnable() {
-        onlinePlayers.forEach { addPlayerChannel(it) }
+        onlinePlayers.forEach { addPlayerChannel(it, it.address?.address ?: return@forEach) }
     }
 
     @Awake(LifeCycle.DISABLE)
