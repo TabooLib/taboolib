@@ -2,17 +2,22 @@ package taboolib.module.nms
 
 import io.netty.channel.Channel
 import org.bukkit.entity.Player
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isListened
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.warning
 import taboolib.platform.util.onlinePlayers
+import java.net.Inet4Address
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.util.concurrent.Executors
 
 /**
@@ -94,10 +99,10 @@ object ChannelExecutor {
         addPlayerChannel(e.player, e.address)
     }
 
-//    @SubscribeEvent
-//    private fun onQuit(e: PlayerQuitEvent) {
-//        removePlayerChannel(e.player)
-//    }
+    @SubscribeEvent
+    private fun onQuit(e: PlayerQuitEvent) {
+        ConnectionGetter.instance.release(e.player.address ?: return)
+    }
 
     @Awake(LifeCycle.ENABLE)
     private fun onEnable() {
