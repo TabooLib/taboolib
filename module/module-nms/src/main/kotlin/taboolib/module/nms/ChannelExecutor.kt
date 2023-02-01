@@ -6,6 +6,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.LifeCycle
+import taboolib.common.TabooLibCommon
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -101,6 +102,9 @@ object ChannelExecutor {
 
     @SubscribeEvent
     private fun onQuit(e: PlayerQuitEvent) {
+        if (TabooLibCommon.isStopped()) {
+            return
+        }
         ConnectionGetter.instance.release(e.player.address ?: return)
     }
 
@@ -111,6 +115,9 @@ object ChannelExecutor {
 
     @Awake(LifeCycle.DISABLE)
     private fun onDisable() {
+        if (TabooLibCommon.isStopped()) {
+            return
+        }
         onlinePlayers.forEach { removePlayerChannel(it) }
     }
 }
