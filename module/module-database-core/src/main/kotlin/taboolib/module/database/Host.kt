@@ -30,9 +30,11 @@ abstract class Host<T : ColumnBuilder> {
     companion object {
 
         internal val dataSources = CopyOnWriteArrayList<HikariDataSource>()
+        internal val callbackClose = CopyOnWriteArrayList<Runnable>()
 
         @Awake(LifeCycle.DISABLE)
         internal fun release() {
+            callbackClose.forEach { it.run() }
             dataSources.forEach { it.close() }
         }
     }

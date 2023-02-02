@@ -1,8 +1,5 @@
 package taboolib.module.nms
 
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.setProperty
-
 /**
  * TabooLib
  * taboolib.module.nms.Packet
@@ -10,17 +7,23 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
  * @author sky
  * @since 2021/6/24 5:39 下午
  */
-class Packet(val source: Any) {
+abstract class Packet {
 
-    val name = source.javaClass.simpleName.toString()
+    /** 原始数据包 */
+    abstract val source: Any
 
-    val fullyName = source.javaClass.name.toString()
+    /** 数据包名称 */
+    abstract val name: String
 
-    fun <T> read(name: String): T? {
-        return source.getProperty<T>(name)
-    }
+    /** 数据包完整名称 */
+    abstract val fullyName: String
 
-    fun write(name: String, value: Any?) {
-        source.setProperty(name, value)
-    }
+    /** 读取字段 */
+    abstract fun <T> read(name: String): T?
+
+    /** 写入字段 */
+    abstract fun write(name: String, value: Any?)
+
+    /** 覆盖原始数据包 */
+    abstract fun overwrite(newPacket: Any)
 }

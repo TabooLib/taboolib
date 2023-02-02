@@ -18,6 +18,10 @@ object Database {
     lateinit var settingsFile: Configuration
         private set
 
+    fun prepareClose(func: Runnable) {
+        Host.callbackClose += func
+    }
+
     fun createDataSource(host: Host<*>, hikariConfig: HikariConfig? = null): DataSource {
         return HikariDataSource(hikariConfig ?: createHikariConfig(host))
     }

@@ -17,14 +17,16 @@ import org.bukkit.entity.Player
 class ChannelHandler(val player: Player) : ChannelDuplexHandler() {
 
     override fun write(channelHandlerContext: ChannelHandlerContext, packet: Any, channelPromise: ChannelPromise) {
-        if (PacketSendEvent(player, Packet(packet)).call()) {
-            super.write(channelHandlerContext, packet, channelPromise)
+        val event = PacketSendEvent(player, PacketImpl(packet))
+        if (event.call()) {
+            super.write(channelHandlerContext, event.packet.source, channelPromise)
         }
     }
 
     override fun channelRead(channelHandlerContext: ChannelHandlerContext, packet: Any) {
-        if (PacketReceiveEvent(player, Packet(packet)).call()) {
-            super.channelRead(channelHandlerContext, packet)
+        val event = PacketReceiveEvent(player, PacketImpl(packet))
+        if (event.call()) {
+            super.channelRead(channelHandlerContext, event.packet.source)
         }
     }
 }
