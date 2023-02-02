@@ -3,6 +3,7 @@ package taboolib.module.kether.action.game
 import taboolib.common.platform.function.console
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
+import taboolib.module.kether.action.game.bukkit.OperatorCommandSender
 import java.util.concurrent.CompletableFuture
 
 /**

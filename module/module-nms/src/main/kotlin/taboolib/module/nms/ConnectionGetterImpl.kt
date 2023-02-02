@@ -6,12 +6,11 @@ import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
 import java.lang.IllegalStateException
 import java.net.InetAddress
 import java.net.InetSocketAddress
-import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -23,10 +22,11 @@ import java.util.Collections
 class ConnectionGetterImpl : ConnectionGetter() {
 
     val major = MinecraftVersion.major
-    val addressUsed: MutableSet<InetSocketAddress> = Collections.synchronizedSet(hashSetOf())
+    val addressUsed = ConcurrentHashMap<InetSocketAddress, Any>()
 
     override fun getConnection(address: InetAddress): Any {
-        val connections = when (major) {
+        // 获取服务器中的所有连接
+        val serverConnections = when (major) {
             // 1.8, 1.9, 1.10, 1.11, 1.12 -> List<NetworkManager> h
             0, 1, 2, 3, 4 -> {
                 ((Bukkit.getServer() as CraftServer8).server as NMS8MinecraftServer).serverConnection.getProperty<List<Any>>("h")
@@ -52,15 +52,20 @@ class ConnectionGetterImpl : ConnectionGetter() {
             // 不支持
             else -> error("Unsupported Minecraft version: $major")
         } ?: error("Unable to get connections from ${Bukkit.getServer()}")
-        // 获取连接
-        val connection = connections.firstOrNull { getAddress(it).address == address && getAddress(it) !in addressUsed }
-        if (connection == null) {
+        // 获取相同 IP 的连接
+        val connections = serverConnections.filter { getAddress(it).address == address }
+        // 没有相同 IP 的连接
+        if (connections.isEmpty()) {
             warning("Unable to get player connection (${address})")
             warning("Server connections:")
-            connections.forEach { conn -> warning("- ${getAddress(conn)}") }
+            serverConnections.forEach { conn -> warning("- ${getAddress(conn)}") }
             throw IllegalStateException()
         }
-        addressUsed += getAddress(connection)
+        // 返回绑定的连接
+        connections.firstOrNull { conn -> addressUsed[getAddress(conn)] == conn }?.let { return it }
+        // 绑定连接
+        val connection = connections.first()
+        addressUsed[getAddress(connection)] = connection
         return connection
     }
 
@@ -69,7 +74,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
     }
 
     override fun release(address: InetSocketAddress) {
-        addressUsed -= address
+        addressUsed.remove(address)
     }
 
     private fun getAddress(connection: Any): InetSocketAddress {
