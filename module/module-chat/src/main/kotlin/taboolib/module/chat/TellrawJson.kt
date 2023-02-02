@@ -10,6 +10,8 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
 
+typealias RawMessage = TellrawJson
+
 /**
  * @author sky
  * @since 2018-05-26 14:42json
@@ -20,8 +22,19 @@ import taboolib.common.platform.function.onlinePlayers
 @Isolated
 class TellrawJson {
 
+    /** 组件列表 */
     var components = ArrayList<BaseComponent>()
+
+    /** 最后一次添加的组件 */
     val componentsLatest = ArrayList<BaseComponent>()
+
+    /** 所有组件 */
+    val componentsAll: List<BaseComponent>
+        get() {
+            val components = components.filter { it !is TextComponent || it.text.isNotEmpty() }.toMutableList()
+            components.addAll(componentsLatest.filter { it !is TextComponent || it.text.isNotEmpty() })
+            return components
+        }
 
     /**
      * 发送信息
@@ -258,12 +271,13 @@ class TellrawJson {
         return this
     }
 
-    val componentsAll: List<BaseComponent>
-        get() {
-            val components = components.filter { it !is TextComponent || it.text.isNotEmpty() }.toMutableList()
-            components.addAll(componentsLatest.filter { it !is TextComponent || it.text.isNotEmpty() })
-            return components
-        }
+    /**
+     * 变更字体
+     */
+    fun font(font: String): TellrawJson {
+        componentsLatest.forEach { it.font = font }
+        return this
+    }
 
     private fun new() {
         components.addAll(componentsLatest)

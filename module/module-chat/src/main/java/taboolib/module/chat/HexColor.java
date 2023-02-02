@@ -77,6 +77,10 @@ public class HexColor {
         return ChatColor.translateAlternateColorCodes('&', builder.toString());
     }
 
+    public static String getColorCode(int color) {
+        return ChatColor.of(new Color(color)).toString();
+    }
+
     private static char[] arrayAppend(char[] chars, char in) {
         char[] newChars = new char[chars.length + 1];
         System.arraycopy(chars, 0, newChars, 0, chars.length);

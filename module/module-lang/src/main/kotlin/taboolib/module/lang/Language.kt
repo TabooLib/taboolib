@@ -52,6 +52,7 @@ object Language {
     /** 语言文件类型 */
     val languageType = hashMapOf(
         "text" to TypeText::class.java,
+        "raw" to TypeJson::class.java,
         "json" to TypeJson::class.java,
         "title" to TypeTitle::class.java,
         "sound" to TypeSound::class.java,

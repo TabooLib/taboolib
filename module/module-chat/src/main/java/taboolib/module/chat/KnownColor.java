@@ -64,7 +64,7 @@ public enum KnownColor {
 
     GHOST_WHITE("幽灵的白", "F8F8FF"),
 
-    BLUE("纯蓝", "0000FF"),
+    BLUE("蓝", "0000FF"),
 
     MEDIUM_BLUE("适中的蓝", "0000CD"),
 
@@ -152,7 +152,7 @@ public enum KnownColor {
 
     FOREST_GREEN("森林绿", "228B22"),
 
-    GREEN("纯绿", "008000"),
+    GREEN("绿", "008000"),
 
     DARK_GREEN("深绿", "006400"),
 
@@ -172,7 +172,7 @@ public enum KnownColor {
 
     LIGHT_YELLOW("浅黄", "FFFFE0"),
 
-    YELLOW("纯黄", "FFFF00"),
+    YELLOW("黄", "FFFF00"),
 
     OLIVE("橄榄", "808000"),
 
@@ -254,7 +254,7 @@ public enum KnownColor {
 
     INDIAN_RED("印度红", "CD5C5C"),
 
-    RED("纯红", "FF0000"),
+    RED("红", "FF0000"),
 
     BROWN("棕", "A52A2A"),
 
@@ -264,7 +264,7 @@ public enum KnownColor {
 
     MAROON("栗", "800000"),
 
-    WHITE("纯白", "FFFFFF"),
+    WHITE("白", "FFFFFF"),
 
     WHITE_SMOKE("白烟", "F5F5F5"),
 
@@ -280,7 +280,7 @@ public enum KnownColor {
 
     DIM_GRAY("暗淡的灰", "696969"),
 
-    BLACK("纯黑", "000000");
+    BLACK("黑", "000000");
 
     final String display;
     final String hexCode;
