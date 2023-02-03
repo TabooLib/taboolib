@@ -120,24 +120,42 @@ internal object Actions {
     @KetherParser(["all"])
     fun actionAll() = scriptParser {
         val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
-        actionTake {
-            var future = CompletableFuture.completedFuture(true)
-            actions.forEach { action ->
-                future = future.thenCombine(run(action)) { b, o -> b && Coerce.toBoolean(o) }
+        actionFuture { f ->
+            fun process(cur: Int) {
+                if (cur < actions.size) {
+                    run(actions[cur]).bool { b ->
+                        if (b) {
+                            process(cur + 1)
+                        } else {
+                            f.complete(false)
+                        }
+                    }
+                } else {
+                    f.complete(true)
+                }
             }
-            future
+            process(0)
         }
     }
 
     @KetherParser(["any"])
     fun actionAny() = scriptParser {
         val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
-        actionTake {
-            var future = CompletableFuture.completedFuture(false)
-            actions.forEach { action ->
-                future = future.thenCombine(run(action)) { b, o -> b || Coerce.toBoolean(o) }
+        actionFuture { f ->
+            fun process(cur: Int) {
+                if (cur < actions.size) {
+                    run(actions[cur]).bool { b ->
+                        if (b) {
+                            f.complete(true)
+                        } else {
+                            process(cur + 1)
+                        }
+                    }
+                } else {
+                    f.complete(false)
+                }
             }
-            future
+            process(0)
         }
     }
 
