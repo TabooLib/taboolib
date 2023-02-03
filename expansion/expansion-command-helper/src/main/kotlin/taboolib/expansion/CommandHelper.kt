@@ -5,8 +5,7 @@ import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic
 import taboolib.common.platform.command.component.CommandComponentLiteral
 import taboolib.module.lang.asLangText
-
-fun CommandComponent.createHelper() {
+fun CommandComponent.createHelper(isFilterByPermissions:Boolean) {
     execute<ProxyCommandSender> { sender, context, _ ->
         val command = context.command
         val builder = StringBuilder("§cUsage: /${command.name}")
@@ -19,6 +18,7 @@ fun CommandComponent.createHelper() {
             var comment = 0
             when (compound) {
                 is CommandComponentLiteral -> {
+                    if(isFilterByPermissions&&!sender.hasPermission(command.permission))return
                     if (size == 1) {
                         builder.append(" ").append("§c${compound.aliases[0]}")
                     } else {
