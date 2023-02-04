@@ -1,3 +1,4 @@
+@file:Isolated
 package taboolib.platform.util
 
 import org.bukkit.Material
@@ -5,6 +6,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
 import taboolib.type.BukkitEquipment
 
 /**

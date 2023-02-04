@@ -12,9 +12,9 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
  */
 class PacketImpl(override var source: Any) : Packet() {
 
-    override val name = source.javaClass.simpleName.toString()
+    override var name = source.javaClass.simpleName.toString()
 
-    override val fullyName = source.javaClass.name.toString()
+    override var fullyName = source.javaClass.name.toString()
 
     override fun <T> read(name: String): T? {
         return source.getProperty<T>(name)
@@ -25,10 +25,8 @@ class PacketImpl(override var source: Any) : Packet() {
     }
 
     override fun overwrite(newPacket: Any) {
-        // 类型判断
-        if (newPacket.javaClass != source.javaClass) {
-            error("Packet type mismatch (${newPacket.javaClass.simpleName} != ${source.javaClass.simpleName})}")
-        }
         source = newPacket
+        name = newPacket.javaClass.simpleName.toString()
+        fullyName = newPacket.javaClass.name.toString()
     }
 }
