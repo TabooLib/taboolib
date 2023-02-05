@@ -19,10 +19,13 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import redis.clients.jedis.exceptions.JedisConnectionException
+import taboolib.common.LifeCycle
+import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.Closeable
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -129,16 +132,16 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      *
      * @param channel 频道
      * @param patternMode 频道名称是否为正则模式
-     * @param message 信息处理函数
+     * @param func 信息处理函数
      */
-    fun subscribe(vararg channel: String, patternMode: Boolean = false, message: RedisMessage.() -> Unit) {
+    fun subscribe(vararg channel: String, patternMode: Boolean = false, func: RedisMessage.() -> Unit) {
         service.submit {
             try {
-                exec(true) {
-                    if (!patternMode) {
-                        it.subscribe(createPubSub(message), *channel)
+                exec(true) { jedis ->
+                    if (patternMode) {
+                        jedis.psubscribe(createPubSub(true, func), *channel)
                     } else {
-                        it.psubscribe(createPubSub(message), *channel)
+                        jedis.subscribe(createPubSub(false, func), *channel)
                     }
                 }
             } catch (ex: Throwable) {
@@ -147,16 +150,36 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    internal fun createPubSub(message: RedisMessage.() -> Unit): JedisPubSub {
+    internal fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub {
         return object : JedisPubSub() {
+
+            init {
+                resources.add(Closeable {
+                    if (patternMode) {
+                        punsubscribe()
+                    } else {
+                        unsubscribe()
+                    }
+                })
+            }
 
             override fun onMessage(ch: String, msg: String) {
                 try {
-                    message(RedisMessage(ch, msg, this))
+                    func(RedisMessage(ch, msg, this, patternMode))
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
                 }
             }
+        }
+    }
+
+    companion object {
+
+        val resources = CopyOnWriteArrayList<Closeable>()
+
+        @Awake(LifeCycle.DISABLE)
+        private fun onDisable() {
+            resources.forEach { kotlin.runCatching { it.close() } }
         }
     }
 }

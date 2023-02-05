@@ -12,7 +12,7 @@ import java.io.Closeable
  * @author 坏黑
  * @since 2022/8/30 12:11
  */
-class RedisMessage(val channel: String, val message: String, internal val pubSub: JedisPubSub): Closeable {
+class RedisMessage(val channel: String, val message: String, internal val pubSub: JedisPubSub, internal val patternMode: Boolean) : Closeable {
 
     /**
      * 获取并借助 [Configuration] 反序列化
@@ -37,6 +37,10 @@ class RedisMessage(val channel: String, val message: String, internal val pubSub
      * 取消订阅
      */
     override fun close() {
-        pubSub.unsubscribe()
+        if (patternMode) {
+            pubSub.punsubscribe()
+        } else {
+            pubSub.unsubscribe()
+        }
     }
 }

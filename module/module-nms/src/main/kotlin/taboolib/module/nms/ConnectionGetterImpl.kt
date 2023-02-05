@@ -31,13 +31,18 @@ class ConnectionGetterImpl : ConnectionGetter() {
             0, 1, 2, 3, 4 -> {
                 ((Bukkit.getServer() as CraftServer8).server as NMS8MinecraftServer).serverConnection.getProperty<List<Any>>("h")
             }
-            // 1.13, 1.14 -> List<NetworkManager> g
-            5, 6 -> {
+            // 1.13 -> List<NetworkManager> g
+            5 -> {
                 ((Bukkit.getServer() as CraftServer8).server as NMS8MinecraftServer).serverConnection.getProperty<List<Any>>("g")
+            }
+            // 1.14 -> List<NetworkManager> g
+            // java.lang.NoSuchMethodError: 'net.minecraft.server.v1_16_R3.MinecraftServer org.bukkit.craftbukkit.v1_16_R3.CraftServer.getServer()'
+            6 -> {
+                ((Bukkit.getServer() as CraftServer16).server as NMS16MinecraftServer).serverConnection?.getProperty<List<Any>>("g")
             }
             // 1.15, 1.16 -> List<NetworkManager> connectedChannels
             7, 8 -> {
-                ((Bukkit.getServer() as CraftServer8).server as NMS8MinecraftServer).serverConnection.getProperty<List<Any>>("connectedChannels")
+                ((Bukkit.getServer() as CraftServer16).server as NMS16MinecraftServer).serverConnection?.getProperty<List<Any>>("connectedChannels")
             }
             // 1.17 -> List<NetworkManager> getConnections()
             // 傻逼项目引入依赖天天出问题，滚去反射吧
@@ -99,7 +104,11 @@ class ConnectionGetterImpl : ConnectionGetter() {
 
 typealias CraftServer8 = org.bukkit.craftbukkit.v1_8_R3.CraftServer
 
+typealias CraftServer16 = org.bukkit.craftbukkit.v1_16_R2.CraftServer
+
 typealias CraftServer19 = org.bukkit.craftbukkit.v1_19_R2.CraftServer
+
+typealias NMS16MinecraftServer = net.minecraft.server.v1_16_R2.MinecraftServer
 
 typealias NMS8MinecraftServer = net.minecraft.server.v1_8_R3.MinecraftServer
 
