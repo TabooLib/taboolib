@@ -1,9 +1,9 @@
 package taboolib.platform.type
 
 import com.velocitypowered.api.plugin.PluginContainer
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib

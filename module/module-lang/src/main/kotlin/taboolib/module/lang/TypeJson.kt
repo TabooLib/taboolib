@@ -4,12 +4,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.chat.HexColor
-import taboolib.module.chat.TellrawJson
-import taboolib.module.chat.parseToHexColor
-import taboolib.module.chat.toGradientColor
-import java.lang.StringBuilder
-import kotlin.math.ceil
+import taboolib.module.chat.*
 
 /**
  * TabooLib
@@ -38,7 +33,7 @@ class TypeJson : Type {
             return translate(sender).replaceWithOrder(*args)
         }
         /** 构建信息 */
-        TellrawJson().sendTo(sender) {
+        RawMessage().sendTo(sender) {
             var i = 0
             text?.forEachIndexed { index, line ->
                 // 加载变量

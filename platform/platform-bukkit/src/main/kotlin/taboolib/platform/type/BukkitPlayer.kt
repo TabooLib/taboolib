@@ -353,13 +353,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
         } catch (ex: NoSuchMethodError) {
-            player.getProperty<Any>("entity/playerConnection")!!
-                .invokeMethod<Void>("sendPacket", rPacketPlayOutChat.newInstance().also {
-                    it.setProperty("b", 2.toByte())
-                    it.setProperty("components", TextComponent.fromLegacyText(message))
-                })
+            player.getProperty<Any>("entity/playerConnection")!!.invokeMethod<Void>("sendPacket", rPacketPlayOutChat.newInstance().also {
+                it.setProperty("b", 2.toByte())
+                it.setProperty("components", TextComponent.fromLegacyText(message))
+            })
         }
-
     }
 
     override fun sendRawMessage(message: String) {
@@ -370,14 +368,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         player.sendMessage(message)
     }
 
-    override fun sendParticle(
-        particle: ProxyParticle,
-        location: Location,
-        offset: Vector,
-        count: Int,
-        speed: Double,
-        data: ProxyParticle.Data?
-    ) {
+    override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
         val bukkitParticle = try {
             Particle.valueOf(particle.name)
         } catch (ignored: IllegalArgumentException) {
@@ -392,11 +383,9 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                         data.size
                     )
                 }
-
                 is ProxyParticle.DustData -> {
                     Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
                 }
-
                 is ProxyParticle.ItemData -> {
                     val item = ItemStack(Material.valueOf(data.material))
                     val itemMeta = item.itemMeta!!
@@ -412,7 +401,6 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     }
                     item
                 }
-
                 is ProxyParticle.BlockData -> {
                     if (bukkitParticle.dataType == MaterialData::class.java) {
                         MaterialData(Material.valueOf(data.material), data.data.toByte())
@@ -420,23 +408,19 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                         Material.valueOf(data.material).createBlockData()
                     }
                 }
-
                 is ProxyParticle.VibrationData -> {
                     Vibration(
                         data.origin.toBukkitLocation(), when (val destination = data.destination) {
                             is ProxyParticle.VibrationData.LocationDestination -> {
                                 Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
                             }
-
                             is ProxyParticle.VibrationData.EntityDestination -> {
                                 Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
                             }
-
                             else -> error("out of case")
                         }, data.arrivalTime
                     )
                 }
-
                 else -> null
             }
         )
@@ -451,11 +435,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
     }
 
     override fun teleport(location: Location) {
-        player.teleport(
-            Location(
-                Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch
-            )
-        )
+        player.teleport(Location(Bukkit.getWorld(location.world!!), location.x, location.y, location.z, location.yaw, location.pitch))
     }
 
     override fun giveExp(exp: Int) {

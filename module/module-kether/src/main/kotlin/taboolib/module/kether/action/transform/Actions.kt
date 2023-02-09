@@ -4,7 +4,6 @@ import org.apache.commons.lang3.time.DateFormatUtils
 import taboolib.common5.Coerce
 import taboolib.common5.util.printed
 import taboolib.module.kether.*
-import taboolib.module.kether.ParserHolder.option
 import kotlin.math.roundToInt
 
 internal object Actions {

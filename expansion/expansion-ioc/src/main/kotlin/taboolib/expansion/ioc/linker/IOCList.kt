@@ -2,7 +2,6 @@ package taboolib.expansion.ioc.linker
 
 import taboolib.expansion.ioc.IOCReader
 import taboolib.expansion.ioc.IndexReader
-import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap

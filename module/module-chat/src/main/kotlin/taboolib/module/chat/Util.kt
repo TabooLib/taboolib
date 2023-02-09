@@ -5,7 +5,6 @@ package taboolib.module.chat
 import net.md_5.bungee.api.ChatColor
 import taboolib.common.Isolated
 import taboolib.common.platform.function.warning
-import java.lang.StringBuilder
 import kotlin.math.ceil
 
 val Int.red: Int
@@ -22,6 +21,13 @@ fun Int.mix(next: Int, d: Double): Int {
     val g = (this.green * (1 - d) + next.green * d).toInt()
     val b = (this.blue * (1 - d) + next.blue * d).toInt()
     return (r shl 16) or (g shl 8) or b
+}
+
+/**
+ * String 快速转 SimpleComponent
+ */
+fun String.component(): SimpleComponent {
+    return Components.parse(this)
 }
 
 /**
@@ -61,9 +67,9 @@ fun String.parseToHexColor(): Int {
         return split('-').map { it.toIntOrNull() ?: 0 }.let { (r, g, b) -> (r shl 16) or (g shl 8) or b }
     }
     // NAMED: white
-    val knownColor = KnownColor.matchKnownColor(this)
+    val knownColor = StandardColors.match(this)
     if (knownColor.isPresent) {
-        return knownColor.get().hexCode.toInt(16)
+        return knownColor.get().chatColor.color.rgb
     }
     warning("Unknown color $this")
     return 0

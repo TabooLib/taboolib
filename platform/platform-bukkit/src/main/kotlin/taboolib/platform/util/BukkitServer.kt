@@ -4,8 +4,8 @@ package taboolib.platform.util
 
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import taboolib.common.Isolated
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Isolated
 
 val isBukkitServerRunning: Boolean
     get() {

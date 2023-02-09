@@ -1,9 +1,9 @@
 package taboolib.platform.type
 
 import net.md_5.bungee.api.plugin.Plugin
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * TabooLib

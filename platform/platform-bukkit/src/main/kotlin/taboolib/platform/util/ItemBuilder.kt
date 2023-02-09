@@ -16,10 +16,10 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.*
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
-import taboolib.common.Isolated
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.Isolated
 import taboolib.library.xseries.XMaterial
 import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored

@@ -5,6 +5,7 @@ dependencies {
     compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     compileOnly("com.google.guava:guava:21.0")
     compileOnly("com.google.code.gson:gson:2.8.7")
+    compileOnly("net.md-5:bungeecord-chat:1.17")
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11903:11903-minimize:mapped")
     compileOnly("ink.ptms.core:v11903:11903-minimize:universal")

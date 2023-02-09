@@ -1,8 +1,8 @@
 package taboolib.common.env;
 
 import sun.misc.Unsafe;
-import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.TabooLibCommon;
+import taboolib.common.classloader.IsolatedClassLoader;
 
 import java.io.File;
 import java.lang.invoke.MethodHandle;

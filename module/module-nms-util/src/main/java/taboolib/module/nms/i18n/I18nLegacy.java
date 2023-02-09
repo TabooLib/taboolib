@@ -14,7 +14,10 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.env.RuntimeResource;
-import taboolib.module.nms.*;
+import taboolib.module.nms.ItemTag;
+import taboolib.module.nms.MinecraftVersion;
+import taboolib.module.nms.NMSI18nKt;
+import taboolib.module.nms.NMSItemTagKt;
 
 import java.io.File;
 import java.util.Locale;

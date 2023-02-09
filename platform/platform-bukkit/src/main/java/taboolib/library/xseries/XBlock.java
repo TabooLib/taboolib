@@ -32,8 +32,8 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.Isolated;
 import org.tabooproject.reflex.Reflex;
+import taboolib.common.Isolated;
 
 import java.util.*;
 

@@ -3,7 +3,9 @@ package taboolib.expansion.ioc.database.impl
 import taboolib.common.platform.function.getDataFolder
 import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.serialization.SerializationManager
-import taboolib.module.configuration.*
+import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
+import taboolib.module.configuration.createLocal
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 

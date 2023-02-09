@@ -4,10 +4,10 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformExecutor
+import taboolib.common.util.unsafeLazy
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
-import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib

@@ -5,9 +5,9 @@ import com.velocitypowered.api.proxy.Player
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
+import taboolib.common.util.unsafeLazy
 import taboolib.platform.type.VelocityCommandSender
 import taboolib.platform.type.VelocityPlayer
-import taboolib.common.util.unsafeLazy
 
 /**
  * TabooLib

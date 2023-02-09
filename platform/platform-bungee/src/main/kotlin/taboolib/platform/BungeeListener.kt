@@ -4,6 +4,8 @@ import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventBus
 import net.md_5.bungee.event.EventHandlerMethod
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -12,8 +14,6 @@ import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.getUsableEvent
 import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
-import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Method
 

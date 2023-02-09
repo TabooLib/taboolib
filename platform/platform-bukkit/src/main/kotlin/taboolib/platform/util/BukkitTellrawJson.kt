@@ -3,9 +3,9 @@ package taboolib.platform.util
 
 import org.bukkit.Bukkit
 import org.bukkit.inventory.ItemStack
-import taboolib.common.Isolated
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.Isolated
 import taboolib.common.util.unsafeLazy
 import taboolib.module.chat.TellrawJson
 

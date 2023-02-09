@@ -61,7 +61,7 @@ public class HexColor {
                     } catch (IllegalArgumentException ignored) {
                     }
                 } else {
-                    Optional<KnownColor> knownColor = KnownColor.matchKnownColor(toString(match));
+                    Optional<StandardColors> knownColor = StandardColors.match(toString(match));
                     if (knownColor.isPresent()) {
                         chatColor = knownColor.get().toChatColor();
                     }

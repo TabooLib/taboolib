@@ -5,8 +5,8 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.service.PlatformEvent
-import taboolib.platform.type.VelocityProxyEvent
 import taboolib.common.util.unsafeLazy
+import taboolib.platform.type.VelocityProxyEvent
 
 /**
  * TabooLib

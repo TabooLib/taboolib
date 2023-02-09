@@ -8,8 +8,8 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.service.PlatformIO
-import java.io.File
 import taboolib.common.util.unsafeLazy
+import java.io.File
 
 /**
  * TabooLib

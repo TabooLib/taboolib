@@ -1,15 +1,10 @@
 package taboolib.expansion.ioc.database.impl
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonPrimitive
-import com.google.gson.JsonSerializer
-import org.bukkit.Material
-import org.bukkit.util.Vector
 import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.serialization.SerializationManager
-import taboolib.library.xseries.parseToMaterial
-import taboolib.module.configuration.*
+import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
+import taboolib.module.configuration.createLocal
 
 open class IOCDatabaseYaml : IOCDatabase {
 

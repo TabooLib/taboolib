@@ -58,7 +58,28 @@ class VariableReader(val start: String = "{{", val end: String = "}}") {
     }
 
     private fun format(str: String): String {
-        return str.replace("\\$start", start).replace("\\$end", end)
+        // 不使用 replace 将 "\" + start 和 "\" + end 替换为 start" 和 end
+        return buildString {
+            var i = 0
+            while (i < str.length) {
+                if (str[i] == '\\') {
+                    // 完整匹配 start 和 end
+                    if (i + start.length < str.length && str.substring(i + 1, i + start.length + 1) == start) {
+                        append(start)
+                        i += start.length + 1
+                    } else if (i + end.length < str.length && str.substring(i + 1, i + end.length + 1) == end) {
+                        append(end)
+                        i += end.length + 1
+                    } else {
+                        append(str[i])
+                        i++
+                    }
+                } else {
+                    append(str[i])
+                    i++
+                }
+            }
+        }
     }
 
     private fun indexOf(source: String, str: String, start: Int = 0): Int {
