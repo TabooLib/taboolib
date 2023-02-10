@@ -107,8 +107,7 @@ class DefaultComponent : ComponentText {
     }
 
     override fun hoverText(text: String): ComponentText {
-        latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text)) }
-        return this
+        return hoverText(ComponentText.of(text))
     }
 
     override fun hoverText(text: ComponentText): ComponentText {
