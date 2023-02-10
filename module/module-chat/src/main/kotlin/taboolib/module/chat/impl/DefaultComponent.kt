@@ -26,19 +26,19 @@ class DefaultComponent : ComponentText {
 
     private val left = arrayListOf<BaseComponent>()
     private val latest = arrayListOf<BaseComponent>()
-    private val components: List<BaseComponent>
-        get() = left + latest
+    private val components: BaseComponent
+        get() = TextComponent(*(left + latest).toTypedArray())
 
     override fun toRawMessage(): String {
-        return ComponentSerializer.toString(*components.toTypedArray())
+        return ComponentSerializer.toString(components)
     }
 
     override fun toLegacyText(): String {
-        return TextComponent.toLegacyText(*components.toTypedArray())
+        return TextComponent.toLegacyText(components)
     }
 
     override fun toPlainText(): String {
-        return TextComponent.toPlainText(*components.toTypedArray())
+        return TextComponent.toPlainText(components)
     }
 
     override fun broadcast() {
@@ -84,7 +84,7 @@ class DefaultComponent : ComponentText {
 
     override fun appendTranslation(text: String, obj: List<Any>): ComponentText {
         flush()
-        latest += TranslatableComponent(text, obj.map { if (it is DefaultComponent) TextComponent(*it.components.toTypedArray()) else it })
+        latest += TranslatableComponent(text, obj.map { if (it is DefaultComponent) it.components else it })
         return this
     }
 
@@ -113,23 +113,40 @@ class DefaultComponent : ComponentText {
 
     override fun hoverText(text: ComponentText): ComponentText {
         text as? DefaultComponent ?: error("Unsupported component type.")
-        latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(text.components.toTypedArray())) }
+        try {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.components))) }
+        } catch (ex: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.components)) }
+        }
         return this
     }
 
     override fun hoverItem(id: String, nbt: String): ComponentText {
-        latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(nbt))) }
+        try {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(nbt))) }
+        } catch (_: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
+        }
         return this
     }
 
     override fun hoverEntity(id: String, type: String?, name: String?): ComponentText {
-        latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, TextComponent(name))) }
+        try {
+            val component = if (name != null) TextComponent(name) else null
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, component)) }
+        } catch (_: NoClassDefFoundError) {
+            TODO("Unsupported hover entity for this version.")
+        }
         return this
     }
 
     override fun hoverEntity(id: String, type: String?, name: ComponentText?): ComponentText {
-        name as? DefaultComponent ?: error("Unsupported component type.")
-        latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, TextComponent(*name.components.toTypedArray()))) }
+        try {
+            val component = if (name is DefaultComponent) name.components else null
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, component)) }
+        } catch (_: NoClassDefFoundError) {
+            TODO("Unsupported hover entity for this version.")
+        }
         return this
     }
 

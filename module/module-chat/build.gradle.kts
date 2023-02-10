@@ -6,12 +6,12 @@ dependencies {
     compileOnly(project(":common"))
 }
 
-tasks {
-    withType<ShadowJar> {
-        archiveClassifier.set("")
-        relocate("net.md_5.bungee", "net.md_5.bungee117")
-    }
-    build {
-        dependsOn(shadowJar)
-    }
-}
+//tasks {
+//    withType<ShadowJar> {
+//        archiveClassifier.set("")
+//        relocate("net.md_5.bungee", "net.md_5.bungee117")
+//    }
+//    build {
+//        dependsOn(shadowJar)
+//    }
+//}

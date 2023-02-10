@@ -14,8 +14,8 @@ import taboolib.module.chat.impl.ErrorSimpleComponent
  */
 @RuntimeDependency(
     value = "!net.md-5:bungeecord-chat:1.17",
-    test = "!net.md_5.bungee117.api.chat.TextComponent",
-    relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
+    test = "!net.md_5.bungee.api.chat.TextComponent",
+    // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
     repository = "https://repo2s.ptms.ink/repository/releases"
 )
 @Suppress("SpellCheckingInspection")
