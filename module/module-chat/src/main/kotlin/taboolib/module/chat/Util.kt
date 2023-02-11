@@ -27,7 +27,7 @@ fun Int.mix(next: Int, d: Double): Int {
  * String 快速转 SimpleComponent
  */
 fun String.component(): SimpleComponent {
-    return Components.parse(this)
+    return Components.parseSimple(this)
 }
 
 /**

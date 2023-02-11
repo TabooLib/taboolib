@@ -144,5 +144,9 @@ interface ComponentText : Source {
         fun of(text: String): ComponentText {
             return Components.text(text)
         }
+
+        fun raw(raw: String): ComponentText {
+            return Components.parseRaw(raw)
+        }
     }
 }

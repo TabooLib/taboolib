@@ -22,7 +22,11 @@ import java.awt.Color
  * @author 坏黑
  * @since 2023/2/9 20:36
  */
-class DefaultComponent : ComponentText {
+class DefaultComponent() : ComponentText {
+
+    constructor(from: List<BaseComponent>) : this() {
+        left.addAll(from)
+    }
 
     private val left = arrayListOf<BaseComponent>()
     private val latest = arrayListOf<BaseComponent>()

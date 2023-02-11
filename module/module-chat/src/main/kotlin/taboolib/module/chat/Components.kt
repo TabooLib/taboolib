@@ -1,5 +1,6 @@
 package taboolib.module.chat
 
+import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.chat.impl.DefaultComponent
 import taboolib.module.chat.impl.DefaultSimpleComponent
@@ -42,13 +43,16 @@ object Components {
     /** 创建翻译文本块 */
     fun translation(text: String, obj: List<Any>): ComponentText = DefaultComponent().appendTranslation(text, obj)
 
+    /** 从原始信息中读取 */
+    fun parseRaw(text: String): ComponentText = DefaultComponent(ComponentSerializer.parse(text).toList())
+
     /**
      * 解析一种文本格式：
      * 文本1[特殊文本2](属性=属性值)文本3
      * 例如：
      * 这是一条[红色的[\[可点击\]](command=sb;hover=我是脑瘫)的]测试信息。
      */
-    fun parse(text: String): SimpleComponent {
+    fun parseSimple(text: String): SimpleComponent {
         return try {
             DefaultSimpleComponent(text)
         } catch (ex: Throwable) {
