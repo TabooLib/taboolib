@@ -17,6 +17,11 @@ import java.util.function.Supplier
 import java.util.jar.JarFile
 
 /**
+ * 是否为开发模式
+ */
+val isDevelopmentMode by unsafeLazy { TabooLibCommon.isDevelopmentMode() }
+
+/**
  * 当前插件的所有类
  */
 val runningClassMap by unsafeLazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getClasses() }

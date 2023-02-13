@@ -1,5 +1,6 @@
 package taboolib.common.platform.function
 
+import taboolib.common.io.isDevelopmentMode
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformIO
 import java.io.File
@@ -29,6 +30,17 @@ val isPrimaryThread: Boolean
  */
 fun <T> server(): T {
     return PlatformFactory.getService<PlatformIO>().server()
+}
+
+/**
+ * 打印开发者日志
+ *
+ * @param message 日志内容
+ */
+fun dev(vararg message: Any?) {
+    if (isDevelopmentMode) {
+        info(*message)
+    }
 }
 
 /**

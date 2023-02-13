@@ -42,6 +42,11 @@ public class TabooLibCommon {
     private static LifeCycle currentLifeCycle = LifeCycle.CONST;
 
     /**
+     * 是否开发者模式
+     */
+    private static boolean isDevelopmentMode = false;
+
+    /**
      * 是否停止加载
      **/
     private static boolean isStopped = false;
@@ -153,6 +158,8 @@ public class TabooLibCommon {
         // 检查生命周期
         switch (lifeCycle) {
             case CONST: {
+                // 检查开发者模式
+                isDevelopmentMode = new File("dev").exists() || new File(runningFileName + ".dev").exists();
                 // 加载运行环境
                 // 初始化 RuntimeEnv 模块
                 try {
@@ -229,7 +236,7 @@ public class TabooLibCommon {
      * 检查当前是否处于开发者模式
      */
     public static boolean isDevelopmentMode() {
-        return new File("dev").exists();
+        return isDevelopmentMode;
     }
 
     /**

@@ -41,8 +41,8 @@ object ChannelExecutor {
         return PacketSendEvent::class.java.isListened() || PacketReceiveEvent::class.java.isListened()
     }
 
-    fun getPlayerChannel(address: InetAddress): Channel {
-        val connection = ConnectionGetter.instance.getConnection(address)
+    fun getPlayerChannel(address: InetAddress, first: Boolean): Channel {
+        val connection = ConnectionGetter.instance.getConnection(address, first)
         return ConnectionGetter.instance.getChannel(connection)
     }
 
@@ -55,7 +55,7 @@ object ChannelExecutor {
             return
         }
         try {
-            val pipeline = getPlayerChannel(address).pipeline()
+            val pipeline = getPlayerChannel(address, true).pipeline()
             try {
                 pipeline.remove(id)
             } catch (_: NoSuchElementException) {
@@ -81,7 +81,7 @@ object ChannelExecutor {
         val address = player.address?.address ?: return
         pool.submit {
             try {
-                val pipeline = getPlayerChannel(address).pipeline()
+                val pipeline = getPlayerChannel(address, false).pipeline()
                 if (pipeline[id] != null) {
                     pipeline.remove(id)
                 }

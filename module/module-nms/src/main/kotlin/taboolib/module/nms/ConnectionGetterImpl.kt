@@ -6,6 +6,9 @@ import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.io.isDevelopmentMode
+import taboolib.common.platform.function.dev
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
 import java.net.InetAddress
 import java.net.InetSocketAddress
@@ -23,7 +26,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
     val major = MinecraftVersion.major
     val addressUsed = ConcurrentHashMap<InetSocketAddress, Any>()
 
-    override fun getConnection(address: InetAddress): Any {
+    override fun getConnection(address: InetAddress, first: Boolean): Any {
         // 获取服务器中的所有连接
         val serverConnections = when (major) {
             // 1.8, 1.9, 1.10, 1.11, 1.12 -> List<NetworkManager> h
@@ -65,11 +68,21 @@ class ConnectionGetterImpl : ConnectionGetter() {
             serverConnections.forEach { conn -> warning("- ${getAddress(conn)}") }
             throw IllegalStateException()
         }
-        // 返回绑定的连接
-        connections.firstOrNull { conn -> addressUsed[getAddress(conn)] == conn }?.let { return it }
-        // 绑定连接
-        val connection = connections.first()
-        addressUsed[getAddress(connection)] = connection
+        // 打印信息
+        if (isDevelopmentMode) {
+            info("Player connection ($address)")
+            info("Server connections:")
+            serverConnections.forEach { conn -> info("- ${getAddress(conn)}") }
+        }
+        // 首次进入服务器
+        val connection = if (first) {
+            // 获取未被使用的连接
+            connections.first { !addressUsed.containsKey(getAddress(it)) }.also { addressUsed[getAddress(it)] = it }
+        } else {
+            // 获取已使用的连接
+            connections.first { conn -> addressUsed[getAddress(conn)] == conn }
+        }
+        dev("Player connection ($address) -> ${getAddress(connection)} (first=$first)")
         return connection
     }
 
