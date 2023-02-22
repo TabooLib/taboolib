@@ -40,7 +40,9 @@ public enum StandardColors {
 
     YELLOW("黄", ChatColor.YELLOW),
 
-    WHITE("白", ChatColor.WHITE);
+    WHITE("白", ChatColor.WHITE),
+
+    RESET("重置", ChatColor.RESET);
 
     final String display;
     final ChatColor chatColor;

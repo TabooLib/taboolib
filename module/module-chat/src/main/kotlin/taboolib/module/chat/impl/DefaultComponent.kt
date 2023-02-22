@@ -33,6 +33,10 @@ class DefaultComponent() : ComponentText {
     private val components: BaseComponent
         get() = TextComponent(*(left + latest).toTypedArray())
 
+    init {
+        color(StandardColors.RESET)
+    }
+
     override fun toRawMessage(): String {
         return ComponentSerializer.toString(components)
     }
@@ -71,7 +75,11 @@ class DefaultComponent() : ComponentText {
 
     override fun append(text: String): ComponentText {
         flush()
-        latest += TextComponent.fromLegacyText(text)
+        latest += try {
+            TextComponent.fromLegacyText(text, ChatColor.RESET)
+        } catch (_: NoSuchMethodError) {
+            TextComponent.fromLegacyText("${ChatColor.RESET}$text")
+        }
         return this
     }
 
