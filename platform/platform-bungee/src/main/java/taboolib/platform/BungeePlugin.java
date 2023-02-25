@@ -136,11 +136,11 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                 throw new RuntimeException(ex);
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
             // 在插件未关闭的前提下，执行 onDisable() 方法
             if (pluginInstance != null && !TabooLibCommon.isStopped()) {
                 pluginInstance.onDisable();
             }
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         }
     }
 

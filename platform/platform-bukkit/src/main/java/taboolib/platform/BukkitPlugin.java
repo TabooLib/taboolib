@@ -144,11 +144,11 @@ public class BukkitPlugin extends JavaPlugin {
                 throw new RuntimeException(ex);
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
             // 在插件未关闭的前提下，执行 onDisable() 方法
             if (pluginInstance != null && !TabooLibCommon.isStopped()) {
                 pluginInstance.onDisable();
             }
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         }
     }
 

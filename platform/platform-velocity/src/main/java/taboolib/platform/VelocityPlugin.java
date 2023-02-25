@@ -137,10 +137,10 @@ public class VelocityPlugin {
                 throw new RuntimeException(ex);
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
             if (pluginInstance != null && !TabooLibCommon.isStopped()) {
                 pluginInstance.onDisable();
             }
+            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
         }
     }
 
