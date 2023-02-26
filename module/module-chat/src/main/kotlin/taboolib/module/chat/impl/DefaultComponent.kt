@@ -9,10 +9,7 @@ import net.md_5.bungee.chat.ComponentSerializer
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
-import taboolib.module.chat.ClickAction
-import taboolib.module.chat.ComponentText
-import taboolib.module.chat.Decoration
-import taboolib.module.chat.StandardColors
+import taboolib.module.chat.*
 import java.awt.Color
 
 /**
@@ -30,23 +27,27 @@ class DefaultComponent() : ComponentText {
 
     private val left = arrayListOf<BaseComponent>()
     private val latest = arrayListOf<BaseComponent>()
-    private val components: BaseComponent
-        get() = TextComponent(*(left + latest).toTypedArray())
+    private val component: BaseComponent
+        get() = when {
+            left.isEmpty() && latest.size == 1 -> latest[0]
+            latest.isEmpty() && left.size == 1 -> left[0]
+            else -> TextComponent(*(left + latest).toTypedArray())
+        }
 
     init {
         color(StandardColors.RESET)
     }
 
     override fun toRawMessage(): String {
-        return ComponentSerializer.toString(components)
+        return ComponentSerializer.toString(component)
     }
 
     override fun toLegacyText(): String {
-        return TextComponent.toLegacyText(components)
+        return ComponentToString.toLegacyString(*(left + latest).toTypedArray())
     }
 
     override fun toPlainText(): String {
-        return TextComponent.toPlainText(components)
+        return TextComponent.toPlainText(*(left + latest).toTypedArray())
     }
 
     override fun broadcast() {
@@ -86,7 +87,7 @@ class DefaultComponent() : ComponentText {
     override fun append(other: ComponentText): ComponentText {
         other as? DefaultComponent ?: error("Unsupported component type.")
         flush()
-        latest += other.components
+        latest += other.component
         return this
     }
 
@@ -96,7 +97,7 @@ class DefaultComponent() : ComponentText {
 
     override fun appendTranslation(text: String, obj: List<Any>): ComponentText {
         flush()
-        latest += TranslatableComponent(text, obj.map { if (it is DefaultComponent) it.components else it })
+        latest += TranslatableComponent(text, obj.map { if (it is DefaultComponent) it.component else it })
         return this
     }
 
@@ -125,9 +126,9 @@ class DefaultComponent() : ComponentText {
     override fun hoverText(text: ComponentText): ComponentText {
         text as? DefaultComponent ?: error("Unsupported component type.")
         try {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.components))) }
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.component))) }
         } catch (ex: NoClassDefFoundError) {
-            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.components)) }
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
         }
         return this
     }
@@ -153,7 +154,7 @@ class DefaultComponent() : ComponentText {
 
     override fun hoverEntity(id: String, type: String?, name: ComponentText?): ComponentText {
         try {
-            val component = if (name is DefaultComponent) name.components else null
+            val component = if (name is DefaultComponent) name.component else null
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ENTITY, Entity(type, id, component)) }
         } catch (_: NoClassDefFoundError) {
             TODO("Unsupported hover entity for this version.")
