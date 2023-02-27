@@ -26,6 +26,7 @@ fun command(
     permissionMessage: String = "",
     permissionDefault: PermissionDefault = PermissionDefault.OP,
     permissionChildren: Map<String, PermissionDefault> = emptyMap(),
+    newParser: Boolean = false,
     commandBuilder: CommandBase.() -> Unit,
 ) {
     registerCommand(
@@ -36,7 +37,7 @@ fun command(
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): Boolean {
                 val commandBase = CommandBase().also(commandBuilder)
-                return commandBase.execute(CommandContext(sender, command, name, commandBase, args))
+                return commandBase.execute(CommandContext(sender, command, name, commandBase, newParser, args))
             }
         },
         // 创建补全器
@@ -44,7 +45,7 @@ fun command(
 
             override fun execute(sender: ProxyCommandSender, command: CommandStructure, name: String, args: Array<String>): List<String>? {
                 val commandBase = CommandBase().also(commandBuilder)
-                return commandBase.suggest(CommandContext(sender, command, name, commandBase, args))
+                return commandBase.suggest(CommandContext(sender, command, name, commandBase, newParser, args))
             }
         },
         // 传入原始命令构建器

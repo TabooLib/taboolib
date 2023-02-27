@@ -53,3 +53,13 @@ fun <T, C : Iterable<T>, R> C.each(start: Int = -1, end: Int = -1, reversed: Boo
     }
     return null
 }
+
+inline fun <K, V> Array<out K>.getFirst(get: (K) -> V?): V? {
+    for (t in this) {
+        val v = get(t)
+        if (v != null) {
+            return v
+        }
+    }
+    return null
+}

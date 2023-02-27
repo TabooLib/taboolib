@@ -19,7 +19,7 @@ annotation class CommandHeader(
     val permission: String = "",
     val permissionMessage: String = "",
     val permissionDefault: PermissionDefault = PermissionDefault.OP,
-    val helper: Boolean = false,
+    val newParser: Boolean = false,
 )
 
 @Target(AnnotationTarget.FIELD)
@@ -114,7 +114,8 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 annotation.permission,
                 annotation.permissionMessage,
                 annotation.permissionDefault,
-                body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap()
+                body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap(),
+                annotation.newParser,
             ) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->

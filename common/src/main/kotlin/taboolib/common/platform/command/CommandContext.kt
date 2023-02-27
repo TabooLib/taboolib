@@ -7,6 +7,7 @@ import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic
 import taboolib.common.platform.command.component.CommandComponentLiteral
 import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.util.getFirst
 
 /**
  * TabooLib
@@ -20,14 +21,22 @@ data class CommandContext<T>(
     val command: CommandStructure,
     val name: String,
     val commandCompound: CommandBase,
-    internal val rawArgs: Array<String>,
+    val newParser: Boolean,
+    internal var rawArgs: Array<String>,
     internal var index: Int = 0,
-    internal var currentComponent: CommandComponent? = null
+    internal var currentComponent: CommandComponent? = null,
 ) {
 
+    /** 命令行解析器 */
+    internal val lineParser = if (newParser) CommandLineParser(rawArgs.joinToString(" ")).parse() else null
+
     /**
-     * 获取命令发送者
+     * 实际参数
+     * 用于进行命令逻辑判断，与 rawArgs 不同，rawArgs 表示用户输入参数
      */
+    internal val realArgs = lineParser?.args?.toTypedArray() ?: rawArgs
+
+    /** 获取命令发送者 */
     fun sender(): ProxyCommandSender {
         return if (sender is ProxyCommandSender) sender else adaptCommandSender(sender as Any)
     }
@@ -42,20 +51,63 @@ data class CommandContext<T>(
 
     /**
      * 检查命令发送者是否持有权限
+     * @param permission 权限
+     * @return 是否持有权限
      */
     fun checkPermission(permission: String): Boolean {
         return sender().hasPermission(permission)
     }
 
     /**
+     * 是否持有选项
+     * @param id 选项名称
+     * @return 是否持有选项
+     * @throws IllegalStateException 如果当前命令不支持新的命令解析器
+     */
+    fun hasOption(id: String): Boolean {
+        lineParser ?: error("This command does not support the new parser.")
+        return lineParser.options.containsKey(id)
+    }
+
+    /**
+     * 获取选项
+     * @param id 选项名称
+     * @return 选项值
+     * @throws IllegalStateException 如果当前命令不支持新的命令解析器
+     */
+    fun option(vararg id: String): String? {
+        lineParser ?: error("This command does not support the new parser.")
+        return id.getFirst { lineParser.options[it] }
+    }
+
+    /**
+     * 获取所有选项
+     * @return 选项列表
+     * @throws IllegalStateException 如果当前命令不支持新的命令解析器
+     */
+    fun options(): Map<String, String> {
+        lineParser ?: error("This command does not support the new parser.")
+        return lineParser.options
+    }
+
+    /**
      * 取全部参数，对当前位置之后的参数进行拼接
+     * @return 全部参数
      */
     fun args(): Array<String> {
-        return rawArgs.filterIndexed { i, _ -> i <= index }.toTypedArray().also { it[index] = "${it[index]} ${rawArgs.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim() }
+        // 新的命令解析器
+        if (lineParser != null) {
+            return lineParser.args.toTypedArray()
+        }
+        // 原版命令解析器
+        val arr = rawArgs.filterIndexed { i, _ -> i <= index }.toTypedArray()
+        arr[index] = "${arr[index]} ${rawArgs.filterIndexed { i, _ -> i > index }.joinToString(" ")}".trim()
+        return arr
     }
 
     /**
      * 取当前位置参数，对当前位置之后的参数进行拼接
+     * @return 当前位置参数
      */
     fun self(): String {
         return args()[index]
@@ -121,9 +173,11 @@ data class CommandContext<T>(
         if (command != other.command) return false
         if (name != other.name) return false
         if (commandCompound != other.commandCompound) return false
+        if (newParser != other.newParser) return false
         if (!rawArgs.contentEquals(other.rawArgs)) return false
         if (index != other.index) return false
         if (currentComponent != other.currentComponent) return false
+        if (lineParser != other.lineParser) return false
         return true
     }
 
@@ -132,9 +186,11 @@ data class CommandContext<T>(
         result = 31 * result + command.hashCode()
         result = 31 * result + name.hashCode()
         result = 31 * result + commandCompound.hashCode()
+        result = 31 * result + newParser.hashCode()
         result = 31 * result + rawArgs.contentHashCode()
         result = 31 * result + index
         result = 31 * result + (currentComponent?.hashCode() ?: 0)
+        result = 31 * result + (lineParser?.hashCode() ?: 0)
         return result
     }
 }

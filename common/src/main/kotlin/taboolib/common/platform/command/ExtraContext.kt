@@ -74,7 +74,8 @@ fun <T> CommandContext<T>.floatOrNull(id: String): Float? {
  * @throws IllegalStateException 参数不存在，或者参数不是整型
  */
 fun <T> CommandContext<T>.bool(id: String): Boolean {
-    return get(id).equals("true", true)
+    val value = get(id)
+    return value.equals("true", true) || value.equals("1", true)
 }
 
 /**
@@ -84,5 +85,6 @@ fun <T> CommandContext<T>.bool(id: String): Boolean {
  * @return 指定位置的输入参数
  */
 fun <T> CommandContext<T>.boolOrNull(id: String): Boolean? {
-    return getOrNull(id)?.equals("true", true)
+    val value = getOrNull(id) ?: return null
+    return value.equals("true", true) || value.equals("1", true)
 }

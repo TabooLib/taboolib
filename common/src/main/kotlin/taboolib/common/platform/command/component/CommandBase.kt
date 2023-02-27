@@ -18,7 +18,7 @@ class CommandBase : CommandComponent(-1, false) {
 
     internal var commandIncorrectCommand: CommandUnknownNotify<*> =
         CommandUnknownNotify(ProxyCommandSender::class.java) { _, context, index, state ->
-            val args = subList(context.rawArgs.toList(), 0, index)
+            val args = subList(context.realArgs.toList(), 0, index)
             var str = context.name
             if (args.size > 1) {
                 str += " "
@@ -46,7 +46,7 @@ class CommandBase : CommandComponent(-1, false) {
     fun execute(context: CommandContext<*>): Boolean {
         result = true
         // 空参数是一种特殊的状态，指的是玩家输入根命令且不附带任何参数，例如 [/test] 而不是 [/test ]
-        if (context.rawArgs.isEmpty()) {
+        if (context.realArgs.isEmpty()) {
             // 获取下级节点
             val children = findChildren(context)
             // 下级节点为空 || 下级节点存在可选（optional）|| 当前节点存在执行器
@@ -69,12 +69,12 @@ class CommandBase : CommandComponent(-1, false) {
             context.index = cur
             context.currentComponent = component
             // 检索节点
-            val find = component.findChildren(context, context.rawArgs[cur])
+            val find = component.findChildren(context, context.realArgs[cur])
             return if (find != null) {
                 // 获取下级节点
                 val children = find.findChildren(context)
                 // 存在下级输入参数 && 下级节点有效
-                if (cur + 1 < context.rawArgs.size && children.isNotEmpty()) {
+                if (cur + 1 < context.realArgs.size && children.isNotEmpty()) {
                     process(cur + 1, find)
                 } else {
                     // 下级节点为空 || 下级节点存在可选（optional）|| 当前节点存在执行器
@@ -102,24 +102,24 @@ class CommandBase : CommandComponent(-1, false) {
 
     fun suggest(context: CommandContext<*>): List<String>? {
         // 空参数不需要触发补全机制
-        if (context.rawArgs.isEmpty()) {
+        if (context.realArgs.isEmpty()) {
             return null
         }
         fun process(cur: Int, component: CommandComponent): List<String>? {
             context.index = cur
             context.currentComponent = component
             // 获取当前输入参数
-            val args = context.rawArgs[cur]
+            val args = context.realArgs[cur]
             // 检索节点
             val find = component.findChildren(context, args)
             if (find != null) {
                 context.currentComponent = find
             }
             return when {
-                find != null && cur + 1 < context.rawArgs.size -> {
+                find != null && cur + 1 < context.realArgs.size -> {
                     process(cur + 1, find)
                 }
-                cur + 1 == context.rawArgs.size -> {
+                cur + 1 == context.realArgs.size -> {
                     val suggest = component.findChildren(context).flatMap {
                         when (it) {
                             is CommandComponentLiteral -> it.aliases.toList()
