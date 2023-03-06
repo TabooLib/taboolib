@@ -87,7 +87,7 @@ class DefaultSimpleComponent(val source: String): SimpleComponent {
                 if (i + 1 < source.length && source[i + 1] == '(') {
                     val end = findToRight(source, ')', i + 2)
                     if (end == -1) {
-                        error("Property not closed.")
+                        error("Property not closed: $source (i: ${i + 2})")
                     }
                     // 解析属性
                     val props = split(';', source.substring(i + 2, end)).map { split('=', it) }.associate { args ->

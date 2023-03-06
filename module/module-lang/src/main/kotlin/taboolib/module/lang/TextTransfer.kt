@@ -11,5 +11,5 @@ import taboolib.common.platform.ProxyCommandSender
  */
 interface TextTransfer {
 
-    fun translate(sender: ProxyCommandSender, source: String): String
+    fun translate(sender: ProxyCommandSender, source: String, vararg args: Any): String
 }

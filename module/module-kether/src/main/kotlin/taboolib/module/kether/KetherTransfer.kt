@@ -15,9 +15,11 @@ object KetherTransfer : TextTransfer {
     val cacheMap = KetherShell.Cache()
     val namespace = ArrayList<String>()
 
-    override fun translate(sender: ProxyCommandSender, source: String): String {
+    override fun translate(sender: ProxyCommandSender, source: String, vararg args: Any): String {
         if (source.contains("{{")) {
-            return KetherFunction.parse(source, cache = cacheMap, sender = sender, namespace = namespace)
+            return KetherFunction.parse(source, cache = cacheMap, sender = sender, namespace = namespace) {
+                args.forEachIndexed { index, any -> set("arg$index", any) }
+            }
         }
         return source
     }

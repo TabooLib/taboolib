@@ -1,5 +1,6 @@
 package taboolib.module.chat.impl
 
+import taboolib.common.io.groupId
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.SimpleComponent
 import taboolib.module.chat.StandardColors
@@ -21,7 +22,29 @@ class ErrorSimpleComponent(val e: Throwable) : SimpleComponent {
     init {
         val sw = StringWriter()
         e.printStackTrace(PrintWriter(sw))
-        error = sw.toString().lines().joinToString("\n") { "§c$it" }
+        error = sw.toString().lines().filter {
+            if (it.contains("at ")) {
+                it.contains(groupId)
+            } else {
+                true
+            }
+        }.joinToString("\n") {
+            if (it.contains("at ")) {
+                val source = it.substringAfter("at $groupId.")
+                val path = source.substringBeforeLast('(')
+                val classPath = path.substringBeforeLast('.').substringBeforeLast('.')
+                val className = path.substringBeforeLast('.').substringAfterLast('.')
+                val methodName = path.substringAfterLast('.')
+                val fileLine = source.substringAfterLast('(').substringBeforeLast(')').substringAfter(':')
+                if (classPath == className) {
+                    "  §8... §f§n$className§8 # §f$methodName() §8··· §7$fileLine"
+                } else {
+                    "  §8... §7$classPath.§f§n$className§8 # §f$methodName() §8··· §7$fileLine"
+                }
+            } else {
+                "§c$it"
+            }
+        }
     }
 
     /**

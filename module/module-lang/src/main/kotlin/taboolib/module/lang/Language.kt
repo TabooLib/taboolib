@@ -98,7 +98,7 @@ object Language {
         try {
             HexColor.translate("")
             textTransfer += object : TextTransfer {
-                override fun translate(sender: ProxyCommandSender, source: String): String {
+                override fun translate(sender: ProxyCommandSender, source: String, vararg args: Any): String {
                     return source.colored()
                 }
             }

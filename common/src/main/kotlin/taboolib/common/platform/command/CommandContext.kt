@@ -34,7 +34,16 @@ data class CommandContext<T>(
      * 实际参数
      * 用于进行命令逻辑判断，与 rawArgs 不同，rawArgs 表示用户输入参数
      */
-    internal val realArgs = lineParser?.args?.toTypedArray() ?: rawArgs
+    internal val realArgs = if (lineParser != null) {
+        var lineArgs = lineParser.args.toTypedArray()
+        // 若最后一个参数为空，则添加一个空字符串
+        if (rawArgs.lastOrNull()?.isBlank() == true) {
+            lineArgs += ""
+        }
+        lineArgs
+    } else {
+        rawArgs
+    }
 
     /** 获取命令发送者 */
     fun sender(): ProxyCommandSender {
@@ -97,7 +106,7 @@ data class CommandContext<T>(
     fun args(): Array<String> {
         // 新的命令解析器
         if (lineParser != null) {
-            return lineParser.args.toTypedArray()
+            return realArgs
         }
         // 原版命令解析器
         val arr = rawArgs.filterIndexed { i, _ -> i <= index }.toTypedArray()

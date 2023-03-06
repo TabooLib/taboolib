@@ -30,7 +30,7 @@ class TypeJson : Type {
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         /** 转换文本 */
         fun String.formatted(): String {
-            return translate(sender).replaceWithOrder(*args)
+            return translate(sender, *args).replaceWithOrder(*args)
         }
         /** 构建信息 */
         RawMessage().sendTo(sender) {

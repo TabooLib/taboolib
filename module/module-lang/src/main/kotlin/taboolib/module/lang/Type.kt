@@ -37,9 +37,9 @@ interface Type {
 
     fun send(sender: ProxyCommandSender, vararg args: Any)
 
-    fun String.translate(sender: ProxyCommandSender): String {
+    fun String.translate(sender: ProxyCommandSender, vararg args: Any): String {
         var s = this
-        Language.textTransfer.forEach { s = it.translate(sender, s) }
+        Language.textTransfer.forEach { s = it.translate(sender, s, *args) }
         return s
     }
 }
