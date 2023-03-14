@@ -7,12 +7,18 @@ import java.util.stream.Stream;
 
 public class LocalizedException extends RuntimeException {
 
+    private final LoadError error;
     private final String node;
     private final Object[] params;
 
-    public LocalizedException(String node, Object[] params) {
+    public LocalizedException(LoadError error, String node, Object[] params) {
+        this.error = error;
         this.node = node;
         this.params = params;
+    }
+
+    public LoadError getError() {
+        return error;
     }
 
     public String getNode() {
@@ -36,8 +42,12 @@ public class LocalizedException extends RuntimeException {
         return batch(this, e);
     }
 
+    public static LocalizedException of(LoadError error, String node, Object... params) {
+        return new LocalizedException(error, node, params);
+    }
+
     public static LocalizedException of(String node, Object... params) {
-        return new LocalizedException(node, params);
+        return new LocalizedException(LoadError.UNKNOWN_ACTION, node, params);
     }
 
     public static Supplier<LocalizedException> supply(String node, Object... params) {
@@ -53,7 +63,7 @@ public class LocalizedException extends RuntimeException {
         private final LocalizedException[] exceptions;
 
         public Concat(LocalizedException... exceptions) {
-            super(exceptions[0].node, exceptions[0].params);
+            super(LoadError.UNKNOWN_ACTION, exceptions[0].node, exceptions[0].params);
             this.exceptions = exceptions;
         }
 

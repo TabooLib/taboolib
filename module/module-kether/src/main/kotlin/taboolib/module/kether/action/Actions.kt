@@ -115,6 +115,40 @@ internal object Actions {
         }
     }
 
+    @KetherParser(["await"])
+    fun actionAwait() = scriptParser {
+        val action = it.nextParsedAction()
+        actionTake {
+            val future = CompletableFuture<Any>()
+            run(action).thenAccept(QuestFuture.complete(future))
+            future
+        }
+    }
+
+    @KetherParser(["await_all"])
+    fun actionAwaitAll() = scriptParser {
+        val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
+        actionTake {
+            val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
+            for (i in actions.indices) {
+                futures[i] = run(actions[i])
+            }
+            CompletableFuture.allOf(*futures)
+        }
+    }
+
+    @KetherParser(["await_any"])
+    fun actionAwaitAny() = scriptParser {
+        val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
+        actionTake {
+            val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
+            for (i in actions.indices) {
+                futures[i] = run(actions[i])
+            }
+            CompletableFuture.anyOf(*futures)
+        }
+    }
+
     @KetherParser(["all"])
     fun actionAll() = scriptParser {
         val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
@@ -154,40 +188,6 @@ internal object Actions {
                 }
             }
             process(0)
-        }
-    }
-
-    @KetherParser(["await"])
-    fun actionAwait() = scriptParser {
-        val action = it.nextParsedAction()
-        actionTake {
-            val future = CompletableFuture<Any>()
-            run(action).thenAccept(QuestFuture.complete(future))
-            future
-        }
-    }
-
-    @KetherParser(["await_all"])
-    fun actionAwaitAll() = scriptParser {
-        val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
-        actionTake {
-            val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
-            for (i in actions.indices) {
-                futures[i] = run(actions[i])
-            }
-            CompletableFuture.allOf(*futures)
-        }
-    }
-
-    @KetherParser(["await_any"])
-    fun actionAwaitAny() = scriptParser {
-        val actions = it.next(ArgTypes.listOf(ArgTypes.ACTION))
-        actionTake {
-            val futures = arrayOfNulls<CompletableFuture<*>>(actions.size)
-            for (i in actions.indices) {
-                futures[i] = run(actions[i])
-            }
-            CompletableFuture.anyOf(*futures)
         }
     }
 }

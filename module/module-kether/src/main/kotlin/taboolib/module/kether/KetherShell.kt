@@ -16,9 +16,15 @@ object KetherShell {
 
     fun eval(source: String, options: ScriptOptions = ScriptOptions()): CompletableFuture<Any?> {
         fun process() = eval(source, options.useCache, options.namespace, options.cache, options.sender, options.vars, options.context)
-        return if (options.exception) process() else runKether { process() } ?: CompletableFuture.completedFuture(null)
+        return if (options.sandbox) runKether(detailError = options.detailError) { process() } ?: CompletableFuture.completedFuture(null) else process()
     }
 
+    @Deprecated(
+        "use eval(source: String, options: ScriptOptions = ScriptOptions()) instead", ReplaceWith(
+            "eval(source, ScriptOptions.builder().namespace(namespace).sender(sender).build())",
+            "taboolib.module.kether.KetherShell.eval"
+        )
+    )
     fun eval(
         source: List<String>,
         cacheScript: Boolean = true,
@@ -31,6 +37,12 @@ object KetherShell {
         return eval(source.joinToString("\n"), cacheScript, namespace, cache, sender, vars, context)
     }
 
+    @Deprecated(
+        "use eval(source: String, options: ScriptOptions = ScriptOptions()) instead", ReplaceWith(
+            "eval(source, ScriptOptions.builder().namespace(namespace).sender(sender).build())",
+            "taboolib.module.kether.KetherShell.eval"
+        )
+    )
     fun eval(
         source: String,
         cacheScript: Boolean = true,
@@ -55,11 +67,15 @@ object KetherShell {
         }.runActions()
     }
 
-    class VariableMap(val map: Map<String, Any?>) {
+    /** 临时变量容器 */
+    class VariableMap(map: Map<String, Any?>) {
+
+        val map = map.toMutableMap()
 
         constructor(vararg map: Pair<String, Any?>) : this(map.toMap())
     }
 
+    /** 脚本缓存容器 */
     class Cache {
 
         val scriptMap = ConcurrentHashMap<String, Script>()

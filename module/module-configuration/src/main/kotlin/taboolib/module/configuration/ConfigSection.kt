@@ -7,6 +7,8 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.util.decodeUnicode
 import taboolib.common5.Coerce
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.util.Commented
+import taboolib.module.configuration.util.CommentedList
 
 /**
  * TabooLib
@@ -81,6 +83,14 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
             value is ConfigurationSection -> set(path, value.getConfig())
             value is Map<*, *> -> set(path, value.toConfig(this))
+            value is Commented -> {
+                set(path, value.value)
+                setComment(path, value.comment)
+            }
+            value is CommentedList -> {
+                set(path, value.value)
+                setComments(path, value.comment)
+            }
             else -> root.set<Any>(path, value)
         }
     }

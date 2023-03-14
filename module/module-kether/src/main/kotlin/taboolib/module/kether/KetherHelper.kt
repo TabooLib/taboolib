@@ -16,11 +16,11 @@ typealias ScriptFrame = QuestContext.Frame
 /**
  * 运行 Kether 语句并打印错误
  */
-fun <T> runKether(el: T? = null, function: () -> T): T? {
+fun <T> runKether(el: T? = null, detailError: Boolean = false, function: () -> T): T? {
     try {
         return function()
     } catch (ex: Exception) {
-        ex.printKetherErrorMessage()
+        ex.printKetherErrorMessage(detailError)
     }
     return el
 }
@@ -96,13 +96,17 @@ fun ScriptFrame.deepVars(): HashMap<String, Any?> {
 /**
  * 打印 Kether 错误信息
  */
-fun Throwable.printKetherErrorMessage() {
-    if (javaClass.name.endsWith("kether.LocalizedException")) {
-        warning("Unexpected exception while parsing kether script:")
-        localizedMessage.split('\n').forEach { warning(it) }
-    } else {
+fun Throwable.printKetherErrorMessage(detailError: Boolean = false) {
+    if (localizedMessage == null || detailError) {
         printStackTrace()
+        return
     }
+    if (javaClass.name.endsWith("kether.LocalizedException") || javaClass.name.endsWith("kether.LocalizedException\$Concat")) {
+        warning("Unexpected exception while parsing kether script:")
+    } else {
+        warning("Unexpected exception while running the kether script.")
+    }
+    localizedMessage.split('\n').forEach { warning(it) }
 }
 
 /**

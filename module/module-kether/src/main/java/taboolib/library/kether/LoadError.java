@@ -11,6 +11,6 @@ public enum LoadError {
     UNHANDLED;
 
     public LocalizedException create(Object... args) {
-        return LocalizedException.of("load-error." + name().toLowerCase().replace("_", "-"), args);
+        return LocalizedException.of(this, "load-error." + name().toLowerCase().replace("_", "-"), args);
     }
 }

@@ -6,6 +6,7 @@ import com.mojang.datafixers.kinds.K1;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Function3;
 import com.mojang.datafixers.util.Function4;
+import com.mojang.datafixers.util.Function5;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -129,7 +130,9 @@ public final class Parser<T> implements App<Parser.Mu, T> {
         return Instance.INSTANCE;
     }
 
+    @SuppressWarnings("DuplicatedCode")
     public enum Instance implements Applicative<Mu, Instance.Mu> {
+
         INSTANCE;
 
         private static final class Mu implements Applicative.Mu {
@@ -176,7 +179,8 @@ public final class Parser<T> implements App<Parser.Mu, T> {
                 return frame -> af.run(frame).thenCompose(
                         f1 -> aa.run(frame).thenCompose(
                                 f2 -> ab.run(frame).thenApply(
-                                        f3 -> f1.apply(f2, f3))
+                                        f3 -> f1.apply(f2, f3)
+                                )
                         )
                 );
             });
@@ -225,6 +229,37 @@ public final class Parser<T> implements App<Parser.Mu, T> {
                                         f3 -> ac.run(frame).thenCompose(
                                                 f4 -> ad.run(frame).thenApply(
                                                         f5 -> f1.apply(f2, f3, f4, f5)
+                                                )
+                                        )
+                                )
+                        )
+                );
+            });
+        }
+
+        @Override
+        public <T1, T2, T3, T4, T5, R> App<Parser.Mu, R> ap5(App<Parser.Mu, Function5<T1, T2, T3, T4, T5, R>> func, App<Parser.Mu, T1> t1, App<Parser.Mu, T2> t2, App<Parser.Mu, T3> t3, App<Parser.Mu, T4> t4, App<Parser.Mu, T5> t5) {
+            Parser<Function5<T1, T2, T3, T4, T5, R>> f = unbox(func);
+            Parser<T1> fa = unbox(t1);
+            Parser<T2> fb = unbox(t2);
+            Parser<T3> fc = unbox(t3);
+            Parser<T4> fd = unbox(t4);
+            Parser<T5> fe = unbox(t5);
+            return new Parser<>(r -> {
+                Action<Function5<T1, T2, T3, T4, T5, R>> af = f.reader.apply(r);
+                Action<T1> aa = fa.reader.apply(r);
+                Action<T2> ab = fb.reader.apply(r);
+                Action<T3> ac = fc.reader.apply(r);
+                Action<T4> ad = fd.reader.apply(r);
+                Action<T5> ae = fe.reader.apply(r);
+                return frame -> af.run(frame).thenCompose(
+                        f1 -> aa.run(frame).thenCompose(
+                                f2 -> ab.run(frame).thenCompose(
+                                        f3 -> ac.run(frame).thenCompose(
+                                                f4 -> ad.run(frame).thenCompose(
+                                                        f5 -> ae.run(frame).thenApply(
+                                                                f6 -> f1.apply(f2, f3, f4, f5, f6)
+                                                        )
                                                 )
                                         )
                                 )

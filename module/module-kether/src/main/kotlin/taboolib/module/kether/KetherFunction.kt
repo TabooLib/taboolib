@@ -16,9 +16,15 @@ object KetherFunction {
 
     fun parse(input: String, options: ScriptOptions = ScriptOptions()): String {
         fun process() = parse(input, options.useCache, options.namespace, options.cache, options.sender, options.vars, options.context)
-        return if (options.exception) process() else runKether { process() } ?: "ERROR"
+        return if (options.sandbox) runKether(detailError = options.detailError) { process() } ?: "ERROR" else process()
     }
 
+    @Deprecated(
+        "use parse(input: String, options: ScriptOptions = ScriptOptions()) instead", ReplaceWith(
+            "parse(input, ScriptOptions.builder().namespace(namespace).sender(sender).build())",
+            "taboolib.module.kether.KetherFunction.parse"
+        )
+    )
     fun parse(
         input: List<String>,
         cacheScript: Boolean = true,
@@ -31,6 +37,12 @@ object KetherFunction {
         return input.map { parse(it, cacheScript, namespace, cache, sender, vars, context) }
     }
 
+    @Deprecated(
+        "use parse(input: String, options: ScriptOptions = ScriptOptions()) instead", ReplaceWith(
+            "parse(input, ScriptOptions.builder().namespace(namespace).sender(sender).build())",
+            "taboolib.module.kether.KetherFunction.parse"
+        )
+    )
     fun parse(
         input: String,
         cacheScript: Boolean = true,

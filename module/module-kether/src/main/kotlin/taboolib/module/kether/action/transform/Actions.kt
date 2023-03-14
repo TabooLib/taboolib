@@ -10,7 +10,7 @@ internal object Actions {
 
     @KetherParser(["array"])
     fun actionArray() = combinationParser {
-        it.group(any().listOf()).apply(it) { array -> now { array } }
+        it.group(anyList()).apply(it) { array -> now { array } }
     }
 
     @KetherParser(["scale", "scaled"])

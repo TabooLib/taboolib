@@ -19,15 +19,16 @@ import java.util.concurrent.CompletableFuture
 object ActionProperty {
 
     fun getScriptProperty(obj: Any): Collection<ScriptProperty<*>> {
-//        return Kether.registeredScriptProperty.entries.firstOrNull { it.key.isInstance(obj) }?.value?.values
+        // 根据类继承关系远近排序，优先选择最近的父类
         return Kether.registeredScriptProperty.filterKeys {
             it.isInstance(obj)
         }.map {
             it.key to it.value.values
         }.sortedWith { c1, c2 ->
-            // 根据类继承关系远近排序，优先选择最近的父类
             if (c1.first.isAssignableFrom(c2.first)) 1 else -1
-        }.flatMap { it.second }
+        }.flatMap {
+            it.second
+        }
     }
 
     fun getScriptProperty(obj: Any, key: String): Any? {

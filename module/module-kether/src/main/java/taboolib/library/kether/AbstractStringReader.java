@@ -96,4 +96,8 @@ public abstract class AbstractStringReader {
     public int getMark() {
         return mark;
     }
+
+    public String getRemain() {
+        return new String(content, index, content.length - index);
+    }
 }

@@ -30,3 +30,7 @@ fun <T> CompletableFuture<Any?>.double(then: (Double) -> T): CompletableFuture<T
 fun <T> CompletableFuture<Any?>.float(then: (Float) -> T): CompletableFuture<T> {
     return thenApply { then(Coerce.toFloat(it)) }
 }
+
+fun <T> CompletableFuture<T>.orNull(): T? {
+    return getNow(null)
+}

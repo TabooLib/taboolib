@@ -85,6 +85,10 @@ public class BlockReader extends AbstractStringReader {
         } catch (Exception e) {
             if (e instanceof LocalizedException) {
                 String source = new String(this.content, reader.getMark(), Math.min(this.content.length, reader.getIndex()) - reader.getMark()).trim();
+                // 优化 EOF 错误提示
+                if (batch && ((LocalizedException) e).getError() == LoadError.EOF) {
+                    source = source.substring(0, source.lastIndexOf('}') - 1);
+                }
                 throw LoadError.BLOCK_ERROR.create(this.currentBlock, lineOf(this.content, reader.getMark()), source).then((LocalizedException) e);
             } else {
                 e.printStackTrace();
