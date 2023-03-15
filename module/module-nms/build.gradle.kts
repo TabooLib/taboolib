@@ -9,7 +9,7 @@ dependencies {
     compileOnly("org.ow2.asm:asm-commons:9.1")
     compileOnly("io.netty:netty-all:5.0.0.Alpha2")
     compileOnly("ink.ptms:nms-all:1.0.0")
-    compileOnly("ink.ptms.core:v11903:11903-minimize:mapped")
+    compileOnly("ink.ptms.core:v11904:11904-minimize:mapped")
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
     compileOnly(project(":common"))

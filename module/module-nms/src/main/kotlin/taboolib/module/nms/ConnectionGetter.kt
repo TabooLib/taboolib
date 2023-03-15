@@ -20,6 +20,8 @@ abstract class ConnectionGetter {
 
     abstract fun release(address: InetSocketAddress)
 
+    abstract fun newBundlePacket(iterator: List<Any>): Any
+
     companion object {
 
         @JvmStatic

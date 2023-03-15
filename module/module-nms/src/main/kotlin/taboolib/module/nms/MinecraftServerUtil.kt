@@ -5,6 +5,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.disablePlugin
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
@@ -77,20 +78,57 @@ inline fun <reified T> nmsProxyClass(bind: String = "{name}Impl"): Class<T> {
 }
 
 /**
+ * 向玩家发送打包数据包（异步，1.19.4+）
+ */
+fun Player.sendBundlePacket(vararg packet: Any): CompletableFuture<Void> {
+    return sendBundlePacket(packet.toList())
+}
+
+/**
+ * 向玩家发送打包数据包（异步，1.19.4+）
+ */
+fun Player.sendBundlePacket(packet: List<Any>): CompletableFuture<Void> {
+    return if (MinecraftVersion.isBundlePacketSupported) {
+        sendPacket(ConnectionGetter.instance.newBundlePacket(packet))
+    } else {
+        CompletableFuture.allOf(*packet.map { sendPacket(it) }.toTypedArray())
+    }
+}
+
+/**
  * 向玩家发送数据包（异步）
  */
-fun Player.sendPacket(packet: Any): CompletableFuture<Unit> {
-    val future = CompletableFuture<Unit>()
+fun Player.sendPacket(packet: Any): CompletableFuture<Void> {
+    val future = CompletableFuture<Void>()
     val pool = packetPool.computeIfAbsent(name) { Executors.newSingleThreadExecutor() }
     pool.submit {
         try {
-            future.complete(sendPacketBlocking(packet))
+            sendPacketBlocking(packet)
+            future.complete(null)
         } catch (e: Throwable) {
             future.completeExceptionally(e)
             e.printStackTrace()
         }
     }
     return future
+}
+
+/**
+ * 向玩家发送打包数据包（1.19.4+）
+ */
+fun Player.sendBundlePacketBlocking(vararg packet: Any) {
+    sendBundlePacketBlocking(packet.toList())
+}
+
+/**
+ * 向玩家发送打包数据包（1.19.4+）
+ */
+fun Player.sendBundlePacketBlocking(packet: List<Any>) {
+    if (MinecraftVersion.isBundlePacketSupported) {
+        sendPacketBlocking(ConnectionGetter.instance.newBundlePacket(packet))
+    } else {
+        packet.forEach { sendPacketBlocking(it) }
+    }
 }
 
 /**

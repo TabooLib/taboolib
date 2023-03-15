@@ -16,6 +16,10 @@ object MinecraftVersion {
 
     @Awake(LifeCycle.LOAD)
     fun init() {
+        if (!isSupported) {
+            disablePlugin()
+            error("Unsupported Minecraft version, plugin disabled")
+        }
         if (runningPlatform == Platform.BUKKIT) {
             Reflex.remapper.add(RefRemapper)
         }
@@ -50,7 +54,7 @@ object MinecraftVersion {
         // universal >= 9
         arrayOf("1.17", "1.17.1"),
         arrayOf("1.18", "1.18.1", "1.18.2"), // 10
-        arrayOf("1.19", "1.19.1", "1.19.2", "1.19.3") // 11
+        arrayOf("1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4") // 11
     )
 
     /**
@@ -104,6 +108,13 @@ object MinecraftVersion {
      */
     val isUniversal by unsafeLazy {
         major >= 9
+    }
+
+    /**
+     * 是否支持打包数据包（1.19.4+）
+     */
+    val isBundlePacketSupported by unsafeLazy {
+        majorLegacy >= 11904
     }
 
     val mapping by unsafeLazy {

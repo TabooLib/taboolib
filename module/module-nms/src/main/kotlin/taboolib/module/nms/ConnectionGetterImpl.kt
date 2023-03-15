@@ -2,6 +2,9 @@ package taboolib.module.nms
 
 import io.netty.channel.Channel
 import net.minecraft.network.NetworkManager
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientboundBundlePacket
+import net.minecraft.network.protocol.game.PacketListenerPlayOut
 import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
@@ -94,6 +97,11 @@ class ConnectionGetterImpl : ConnectionGetter() {
         addressUsed.remove(address)
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun newBundlePacket(iterator: List<Any>): Any {
+        return ClientboundBundlePacket(iterator.asIterable() as Iterable<Packet<PacketListenerPlayOut>>)
+    }
+
     private fun getAddress(connection: Any): InetSocketAddress {
         // 这种方式无法在 BungeeCord 中获取到正确的地址：
         // return (getChannel(connection).remoteAddress() as? InetSocketAddress)?.address
@@ -118,7 +126,7 @@ typealias CraftServer8 = org.bukkit.craftbukkit.v1_8_R3.CraftServer
 
 typealias CraftServer16 = org.bukkit.craftbukkit.v1_16_R2.CraftServer
 
-typealias CraftServer19 = org.bukkit.craftbukkit.v1_19_R2.CraftServer
+typealias CraftServer19 = org.bukkit.craftbukkit.v1_19_R3.CraftServer
 
 typealias NMS16MinecraftServer = net.minecraft.server.v1_16_R2.MinecraftServer
 

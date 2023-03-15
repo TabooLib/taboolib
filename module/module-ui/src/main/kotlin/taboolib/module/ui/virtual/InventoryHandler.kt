@@ -93,11 +93,11 @@ typealias NMSPacketPlayOutSetSlot = net.minecraft.network.protocol.game.PacketPl
 
 typealias NMSItemStack = net.minecraft.world.item.ItemStack
 
-typealias Craft19Container = org.bukkit.craftbukkit.v1_19_R2.inventory.CraftContainer
+typealias Craft19Container = org.bukkit.craftbukkit.v1_19_R3.inventory.CraftContainer
 
-typealias Craft19ItemStack = org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack
+typealias Craft19ItemStack = org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
 
-typealias Craft19Player = org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer
+typealias Craft19Player = org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
 
 // 1.16
 

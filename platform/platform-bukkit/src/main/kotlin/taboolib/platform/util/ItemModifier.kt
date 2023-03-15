@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
 
 package taboolib.platform.util
 
@@ -7,20 +8,30 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import taboolib.common.Isolated
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
+@OptIn(ExperimentalContracts::class)
 fun Material?.isAir(): Boolean {
-    return this == null || this == Material.AIR || this.name.endsWith("_AIR")
+    contract { returns(false) implies (this@isAir != null) }
+    return this == null || this == Material.AIR || name.endsWith("_AIR")
 }
 
+@OptIn(ExperimentalContracts::class)
 fun Material?.isNotAir(): Boolean {
+    contract { returns(true) implies (this@isNotAir != null) }
     return !isAir()
 }
 
+@OptIn(ExperimentalContracts::class)
 fun ItemStack?.isAir(): Boolean {
+    contract { returns(false) implies (this@isAir != null) }
     return this == null || type == Material.AIR || type.name.endsWith("_AIR")
 }
 
+@OptIn(ExperimentalContracts::class)
 fun ItemStack?.isNotAir(): Boolean {
+    contract { returns(true) implies (this@isNotAir != null) }
     return !isAir()
 }
 

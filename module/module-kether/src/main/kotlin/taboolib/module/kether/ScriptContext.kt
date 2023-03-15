@@ -17,7 +17,7 @@ open class ScriptContext(service: ScriptService, script: Script) : AbstractQuest
 
     /** 脚本执行者 */
     var sender: ProxyCommandSender?
-        get() = get<ProxyCommandSender?>("@Sender")?.let { adaptCommandSender(it) }
+        get() = get<Any?>("@Sender")?.let { adaptCommandSender(it) }
         set(value) {
             this["@Sender"] = value?.origin
         }
