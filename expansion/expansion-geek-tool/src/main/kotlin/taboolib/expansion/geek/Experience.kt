@@ -4,6 +4,7 @@ import org.bukkit.entity.Player
 import taboolib.common.platform.function.adaptPlayer
 import taboolib.common5.Level
 
+
 /**
  * 扣除玩家指定的经验值
  * @param exp 要扣除的值

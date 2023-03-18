@@ -8,6 +8,21 @@ import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.common.platform.function.adaptPlayer
 
+fun HumanEntity.getEmptySlot(hasEquipment: Boolean = false, isItemAmount: Boolean = false): Int {
+    var air = 0
+    for (itemStack in inventory.contents) {
+        if (itemStack == null || itemStack.type == Material.AIR) { air++ }
+    }
+    if (hasEquipment) {
+        if (inventory.itemInOffHand.type == Material.AIR) air--
+        if (inventory.helmet == null) air--
+        if (inventory.chestplate == null) air--
+        if (inventory.leggings == null) air--
+        if (inventory.boots == null) air--
+    }
+    return if (isItemAmount) air * 64 else air
+}
+
 fun HumanEntity.giveItem(itemStack: List<ItemStack>) {
     itemStack.forEach { giveItem(it) }
 }

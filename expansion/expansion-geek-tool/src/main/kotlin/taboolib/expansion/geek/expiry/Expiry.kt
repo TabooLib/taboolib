@@ -1,4 +1,4 @@
-package taboolib.expansion.geek
+package taboolib.expansion.geek.expiry
 
 import java.text.SimpleDateFormat
 
@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat
  * 作者: 老廖
  * 时间: 2022/10/2
  */
+@Deprecated("use ExpiryBuilder")
 object Expiry {
 
     private val dRegex = Regex("(d|D|天)")
@@ -22,6 +23,7 @@ object Expiry {
      * 传入格式 - 1652346294738
      * 获得格式 - 00d 00h 00m 00s
      */
+    @Deprecated("use ExpiryBuilder")
     fun getExpiryDate(millis: Long, reverse: Boolean = false): String {
         val times = if (reverse) millis else (millis - System.currentTimeMillis()) / 1000
         val dd = times / 60 / 60 / 24
@@ -50,6 +52,7 @@ object Expiry {
      * 返回当前时间 + 传入时间的时间戳
      * 获得格式 - 1652346294738
      */
+    @Deprecated("use ExpiryBuilder")
     fun getExpiryMillis(timeData: String, expire: Boolean = true): Long {
         val var200 = timeData.replace(dRegex, "d ").replace(hRegex, "h ").replace(mRegex, "m ").replace(sRegex, "s ")
         var dd: Long = 0
