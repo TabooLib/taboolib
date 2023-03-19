@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName
 import java.text.SimpleDateFormat
 
 class ExpIryBuilder(
+
     /**
      * 入参
      * 1d1h30m42s
@@ -15,23 +16,29 @@ class ExpIryBuilder(
      */
     @SerializedName("t")
     private val time: String,
+    
     /**
      * 时间戳计时方法，默认倒计时
      */
     @SerializedName("t2")
     private val type: ExpIryType = ExpIryType.C
 ) {
+
     @SerializedName("m")
     private var millis: Long = -0L
 
     @Expose
     private val ds = if (time.contains("天")) "天" else "d"
+    
     @Expose
     private val hs = if (time.contains("时")) "时" else "h"
+    
     @Expose
     private val ms = if (time.contains("分")) "分" else "m"
+    
     @Expose
     private val ss = if (time.contains("秒")) "秒" else "s"
+    
     @Expose
     private val cache: MutableMap<String, Long> = mutableMapOf<String, Long>().apply {
         if (time.isEmpty()) return@apply
@@ -40,6 +47,7 @@ class ExpIryBuilder(
             this[it.groupValues[1]] = it.groupValues[0].substringBefore(it.groupValues[1]).toLong()
         }
     }
+    
     /**
      * 防止首次初始化 millis 序列化值未更新
      */
@@ -82,6 +90,7 @@ class ExpIryBuilder(
         } else this.millis+=time
         return this.millis > 0
     }
+    
     /**
      * 追加时间值
      */
@@ -89,6 +98,7 @@ class ExpIryBuilder(
         this.millis+=time
         return millis
     }
+    
     /**
      * 减少时间值
      */
@@ -96,10 +106,12 @@ class ExpIryBuilder(
         if (this.millis > 0) this.millis-=time
         return millis
     }
+    
     fun setMillis(time: Long): ExpIryBuilder {
         this.millis = time
         return this
     }
+    
     /**
      * 获取 timeData 的时间
      */
@@ -132,6 +144,7 @@ class ExpIryBuilder(
     }
 
     companion object {
+    
         /**
          * 格式化时间戳
          */
@@ -140,6 +153,7 @@ class ExpIryBuilder(
         fun getFormat(time: Long): String {
             return formats.format(time)
         }
+        
         fun getExpiryFormat(time: Long): String {
             var text = ""
             val dd = time / 60 / 60 / 24
@@ -152,6 +166,5 @@ class ExpIryBuilder(
             if (ss > 0) text += "${ss}秒 "
             return text
         }
-
     }
 }
