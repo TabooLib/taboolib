@@ -3,18 +3,11 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build:
+    if: "contains(github.event.head_commit.message, 'publish')"
     runs-on: ubuntu-latest
     steps:
-      # 检测 commit message 是否包含 [publish]
-      - name: check commit message
-        uses: actions-ecosystem/action-regex-match@v2
-        with:
-          text: ${{ github.event.head_commit.message }}
-          regex: '\[publish\]'
-          flags: 'g'
       # 环境配置
       - name: checkout repository
         uses: actions/checkout@v2
