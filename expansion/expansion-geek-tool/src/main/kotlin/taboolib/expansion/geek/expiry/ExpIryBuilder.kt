@@ -10,18 +10,18 @@ import java.text.SimpleDateFormat
 class ExpIryBuilder(
 
     /**
-     * 入参
      * 1d1h30m42s
      * 1天4时30秒10m
      */
     @SerializedName("t")
     private val time: String,
-    
+
     /**
      * 时间戳计时方法，默认倒计时
      */
     @SerializedName("t2")
-    private val type: ExpIryType = ExpIryType.C
+    private val type: TimingType = TimingType.C
+
 ) {
 
     @SerializedName("m")
@@ -29,16 +29,16 @@ class ExpIryBuilder(
 
     @Expose
     private val ds = if (time.contains("天")) "天" else "d"
-    
+
     @Expose
     private val hs = if (time.contains("时")) "时" else "h"
-    
+
     @Expose
     private val ms = if (time.contains("分")) "分" else "m"
-    
+
     @Expose
     private val ss = if (time.contains("秒")) "秒" else "s"
-    
+
     @Expose
     private val cache: MutableMap<String, Long> = mutableMapOf<String, Long>().apply {
         if (time.isEmpty()) return@apply
@@ -47,7 +47,7 @@ class ExpIryBuilder(
             this[it.groupValues[1]] = it.groupValues[0].substringBefore(it.groupValues[1]).toLong()
         }
     }
-    
+
     /**
      * 防止首次初始化 millis 序列化值未更新
      */
@@ -60,7 +60,7 @@ class ExpIryBuilder(
      * @param format 可自定义的返回格式 默认 yyyy年 MM月 dd日 HH:mm:ss
      * @return 格式化的显示时间
      */
-    fun getFormat(format: SimpleDateFormat = formats): String {
+    fun getFormat(format: SimpleDateFormat = formatsTime): String {
         return format.format(getMilli())
     }
 
@@ -85,12 +85,12 @@ class ExpIryBuilder(
      * 根据计时种类更新时间戳
      */
     fun autoUpdate(time: Long = 1): Boolean {
-        if (type == ExpIryType.C) {
+        if (type == TimingType.C) {
             if (this.millis > 0) this.millis-=time
         } else this.millis+=time
         return this.millis > 0
     }
-    
+
     /**
      * 追加时间值
      */
@@ -98,7 +98,7 @@ class ExpIryBuilder(
         this.millis+=time
         return millis
     }
-    
+
     /**
      * 减少时间值
      */
@@ -106,12 +106,12 @@ class ExpIryBuilder(
         if (this.millis > 0) this.millis-=time
         return millis
     }
-    
+
     fun setMillis(time: Long): ExpIryBuilder {
         this.millis = time
         return this
     }
-    
+
     /**
      * 获取 timeData 的时间
      */
@@ -144,16 +144,16 @@ class ExpIryBuilder(
     }
 
     companion object {
-    
+
         /**
          * 格式化时间戳
          */
-        private val formats by lazy { SimpleDateFormat("yyyy年 MM月 dd日 HH:mm:ss") }
+        private val formatsTime by lazy { SimpleDateFormat("yyyy年 MM月 dd日 HH:mm:ss") }
 
         fun getFormat(time: Long): String {
-            return formats.format(time)
+            return formatsTime.format(time)
         }
-        
+
         fun getExpiryFormat(time: Long): String {
             var text = ""
             val dd = time / 60 / 60 / 24
@@ -166,5 +166,7 @@ class ExpIryBuilder(
             if (ss > 0) text += "${ss}秒 "
             return text
         }
+
     }
+
 }

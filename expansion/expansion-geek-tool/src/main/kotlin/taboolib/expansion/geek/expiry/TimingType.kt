@@ -1,6 +1,6 @@
 package taboolib.expansion.geek.expiry
 
-enum class ExpIryType {
+enum class TimingType {
 
     /**
      * 倒计时
