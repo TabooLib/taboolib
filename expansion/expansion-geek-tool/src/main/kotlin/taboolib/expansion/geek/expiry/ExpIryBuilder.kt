@@ -78,7 +78,7 @@ class ExpIryBuilder(
      * @return timeData*1000 + 系统时间戳
      */
     fun getExpiryMillis(): Long {
-        return (getMilli()*1000) + System.currentTimeMillis()
+        return getMilli()*1000 + System.currentTimeMillis()
     }
 
     /**
