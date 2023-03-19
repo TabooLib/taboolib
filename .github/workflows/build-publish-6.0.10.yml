@@ -3,9 +3,9 @@ on:
   push:
     branches:
       - master
-
 jobs:
   build:
+    if: "contains(github.event.head_commit.message, 'publish')"
     runs-on: ubuntu-latest
     steps:
       # 环境配置
