@@ -42,13 +42,13 @@ open class Basic(title: String = "chest") : Menu(title) {
     internal var selfClickCallback: (event: ClickEvent) -> Unit = {}
 
     /** 关闭回调 **/
-    internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = {}
+    internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = { isOpened = false }
 
     /** 只触发一次关闭回调 **/
     internal var onceCloseCallback = false
 
     /** 构建回调 **/
-    internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> isOpened = true }
 
     /** 异步构建回调 **/
     internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
@@ -64,6 +64,9 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     /** 抽象字符布局 **/
     var slots = CopyOnWriteArrayList<List<Char>>()
+
+    /** 是否打开过 **/
+    var isOpened = false
 
     /**
      * 使用虚拟页面（将自动阻止所有点击行为）
@@ -101,6 +104,7 @@ open class Basic(title: String = "chest") : Menu(title) {
      * 可选是否异步执行
      */
     open fun onBuild(async: Boolean = false, callback: (player: Player, inventory: Inventory) -> Unit) {
+        if (isOpened) error("Menu has been opened, cannot set build callback.")
         if (async) {
             val before = asyncBuildCallback
             asyncBuildCallback = { player, inventory ->
@@ -203,6 +207,7 @@ open class Basic(title: String = "chest") : Menu(title) {
      * 根据抽象符号设置物品
      */
     open fun set(slot: Char, itemStack: ItemStack) {
+        if (isOpened) error("Menu has been opened, cannot preset item.")
         items[slot] = itemStack
     }
 
