@@ -7,32 +7,26 @@ import org.bukkit.inventory.InventoryView
 
 /**
  * TabooLib
- * taboolib.module.ui.virtual.VirtualInventoryView
+ * taboolib.module.ui.virtual.VirtualInventoryViewLegacy
  *
  * @author 坏黑
  * @since 2023/1/16 04:11
  */
-class VirtualInventoryView(val remoteInventory: RemoteInventory) : InventoryView() {
-
-    val bottomInventory = VirtualStorageInventory(remoteInventory.inventory)
+class VirtualInventoryViewLegacy(val remoteInventory: RemoteInventoryLegacy) : InventoryView() {
 
     override fun getTopInventory(): Inventory {
-        return remoteInventory.inventory
+        return remoteInventory.inventory()
     }
 
     override fun getBottomInventory(): Inventory {
-        return bottomInventory
+        return remoteInventory.bottomInventory()
     }
 
     override fun getPlayer(): HumanEntity {
-        return remoteInventory.viewer
+        return remoteInventory.viewer()
     }
 
     override fun getType(): InventoryType {
-        return remoteInventory.inventory.type
-    }
-
-    override fun getTitle(): String {
-        return remoteInventory.title
+        return remoteInventory.inventory().type
     }
 }

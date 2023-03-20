@@ -16,7 +16,7 @@ fun importModules() {
     include("module:module-database-mongodb")
     include("module:module-porticus")
     include("module:module-navigation")
-    include("module:module-ui")
+    include("module:module-ui", "module:module-ui-legacy")
     include("module:module-ui-receptacle")
     include("module:module-configuration", "module:module-configuration-shaded", "module:module-configuration-legacy")
 }
@@ -40,7 +40,6 @@ fun importExtensions() {
     include("expansion:expansion-geek-tool")
     include("expansion:expansion-lang-tools")
     include("expansion:expansion-ioc")
-
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
 }

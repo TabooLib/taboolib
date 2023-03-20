@@ -3,13 +3,9 @@ package taboolib.module.ui.virtual
 import net.minecraft.core.NonNullList
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.event.inventory.InventoryType
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
@@ -31,7 +27,6 @@ class InventoryHandlerImpl : InventoryHandler() {
     val major = MinecraftVersion.major
 
     override fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack): RemoteInventory {
-
         val id = getContainerCounter(player)
         when (major) {
             // 1.9, 1.10, 1.11, 1.12
@@ -201,9 +196,9 @@ class InventoryHandlerImpl : InventoryHandler() {
             }
             // 唤起事件
             if (isPrimaryThread) {
-                Bukkit.getPluginManager().callEvent(InventoryCloseEvent(VirtualInventoryView(this@VInventory)))
+                Bukkit.getPluginManager().callEvent(InventoryCloseEvent(createInventoryView()))
             } else {
-                submit { Bukkit.getPluginManager().callEvent(InventoryCloseEvent(VirtualInventoryView(this@VInventory))) }
+                submit { Bukkit.getPluginManager().callEvent(InventoryCloseEvent(createInventoryView())) }
             }
         }
 

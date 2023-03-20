@@ -1,4 +1,5 @@
 dependencies {
+    implementation(project(":module:module-ui-legacy"))
     compileOnly("ink.ptms.core:v11904:11904-minimize:mapped")
     compileOnly("ink.ptms.core:v11600:11600-minimize")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
