@@ -31,6 +31,7 @@ class InventoryHandlerImpl : InventoryHandler() {
     val major = MinecraftVersion.major
 
     override fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack): RemoteInventory {
+
         val id = getContainerCounter(player)
         when (major) {
             // 1.9, 1.10, 1.11, 1.12
@@ -40,28 +41,8 @@ class InventoryHandlerImpl : InventoryHandler() {
                 val container = try {
                     Craft9Container(inventory.bukkitInventory, player, id)
                 } catch (_: NoSuchMethodError) {
-                    Craft9Container(object : InventoryView() {
-
-                        override fun getTopInventory(): Inventory {
-                            return inventory
-                        }
-
-                        override fun getBottomInventory(): Inventory {
-                            return player.inventory
-                        }
-
-                        override fun getPlayer(): HumanEntity {
-                            return player
-                        }
-
-                        override fun getType(): InventoryType {
-                            return inventory.type
-                        }
-
-                        override fun getTitle(): String {
-                            return ""
-                        }
-                    }, id)
+                    // fuck you spigot
+                    Craft16Container(inventory.bukkitInventory, (player as Craft16Player).handle, id) as Craft9Container
                 }
                 var size = container.bukkitView.topInventory.size
                 if (windowType == "minecraft:crafting_table" || windowType == "minecraft:anvil" || windowType == "minecraft:enchanting_table") {
@@ -300,7 +281,7 @@ class InventoryHandlerImpl : InventoryHandler() {
             if (clickItem.isNotAir()) {
                 // 一般点击方式
                 sendCarriedChange(cursorItem)
-                sendSlotChange(slotNum, clickItem!!)
+                sendSlotChange(slotNum, clickItem)
                 when (bukkitClickType) {
                     // 数字键（0..8）
                     ClickType.NUMBER_KEY -> {
