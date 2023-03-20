@@ -3,9 +3,13 @@ package taboolib.module.ui.virtual
 import net.minecraft.core.NonNullList
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
@@ -33,7 +37,32 @@ class InventoryHandlerImpl : InventoryHandler() {
             // public static String getNotchInventoryType(InventoryType type)
             in 1..4 -> {
                 val windowType = Craft9Container.getNotchInventoryType(inventory.type)
-                val container = Craft9Container(inventory.bukkitInventory, player, id)
+                val container = try {
+                    Craft9Container(inventory.bukkitInventory, player, id)
+                } catch (_: NoSuchMethodError) {
+                    Craft9Container(object : InventoryView() {
+
+                        override fun getTopInventory(): Inventory {
+                            return inventory
+                        }
+
+                        override fun getBottomInventory(): Inventory {
+                            return player.inventory
+                        }
+
+                        override fun getPlayer(): HumanEntity {
+                            return player
+                        }
+
+                        override fun getType(): InventoryType {
+                            return inventory.type
+                        }
+
+                        override fun getTitle(): String {
+                            return ""
+                        }
+                    }, id)
+                }
                 var size = container.bukkitView.topInventory.size
                 if (windowType == "minecraft:crafting_table" || windowType == "minecraft:anvil" || windowType == "minecraft:enchanting_table") {
                     size = 0
