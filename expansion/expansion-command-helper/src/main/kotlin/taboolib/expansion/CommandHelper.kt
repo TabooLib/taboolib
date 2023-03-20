@@ -6,7 +6,7 @@ import taboolib.common.platform.command.component.CommandComponentDynamic
 import taboolib.common.platform.command.component.CommandComponentLiteral
 import taboolib.module.lang.asLangText
 
-fun CommandComponent.createHelper() {
+fun CommandComponent.createHelper(checkPermissions: Boolean = true) {
     execute<ProxyCommandSender> { sender, context, _ ->
         val command = context.command
         val builder = StringBuilder("§cUsage: /${command.name}")
@@ -68,8 +68,14 @@ fun CommandComponent.createHelper() {
                 }
             }
         }
-        val size = context.commandCompound.children.size
-        context.commandCompound.children.forEachIndexed { index, children ->
+        // 检查权限
+        val filterChildren = if (checkPermissions) {
+            context.commandCompound.children.filter { sender.hasPermission(it.permission) } 
+        } else {
+            context.commandCompound.children
+        }
+        val size = filterChildren.size
+        filterChildren.forEachIndexed { index, children ->
             print(children, index, size, end = index + 1 == size)
         }
         builder.lines().forEach {
