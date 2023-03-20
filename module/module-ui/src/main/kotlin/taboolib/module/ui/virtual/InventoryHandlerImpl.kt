@@ -4,7 +4,6 @@ import net.minecraft.core.NonNullList
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.isPrimaryThread
@@ -234,35 +233,35 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
 
         fun handle(slotNum: Int, buttonNum: Int, clickType: String) {
-            val bukkitClickType = when (clickType) {
+            val vClickType = when (clickType) {
                 // 左右键
                 "PICKUP" -> {
-                    if (buttonNum == 0) ClickType.LEFT else ClickType.RIGHT
+                    if (buttonNum == 0) VirtualClickType.LEFT else VirtualClickType.RIGHT
                 }
                 // SHIFT + 左右键
                 "QUICK_MOVE" -> {
-                    if (buttonNum == 0) ClickType.SHIFT_LEFT else ClickType.SHIFT_RIGHT
+                    if (buttonNum == 0) VirtualClickType.SHIFT_LEFT else VirtualClickType.SHIFT_RIGHT
                 }
                 // 数字键
                 "SWAP" -> {
-                    if (buttonNum == 40) ClickType.SWAP_OFFHAND else ClickType.NUMBER_KEY
+                    if (buttonNum == 40) VirtualClickType.SWAP_OFFHAND else VirtualClickType.NUMBER_KEY
                 }
                 // 中键
                 "CLONE" -> {
-                    ClickType.MIDDLE
+                    VirtualClickType.MIDDLE
                 }
                 // 丢弃
                 "THROW" -> {
                     if (slotNum == -999) {
-                        if (buttonNum == 0) ClickType.WINDOW_BORDER_LEFT else ClickType.WINDOW_BORDER_RIGHT
+                        if (buttonNum == 0) VirtualClickType.WINDOW_BORDER_LEFT else VirtualClickType.WINDOW_BORDER_RIGHT
                     } else {
-                        if (buttonNum == 0) ClickType.DROP else ClickType.CONTROL_DROP
+                        if (buttonNum == 0) VirtualClickType.DROP else VirtualClickType.CONTROL_DROP
                     }
                 }
                 // 双击
-                "PICKUP_ALL" -> ClickType.DOUBLE_CLICK
+                "PICKUP_ALL" -> VirtualClickType.DOUBLE_CLICK
                 // 拖拽
-                else -> ClickType.UNKNOWN
+                else -> VirtualClickType.UNKNOWN
             }
             // 获取点击物品
             val clickItem = when {
@@ -271,25 +270,25 @@ class InventoryHandlerImpl : InventoryHandler() {
                 else -> inventory.getStorageItem(slotNum - inventory.size)
             }
             // 处理回调
-            submit { onClickCallback?.invoke(RemoteInventory.ClickEvent(bukkitClickType, slotNum, buttonNum, clickItem ?: air)) }
+            submit { onClickCallback?.invoke(RemoteInventory.ClickEvent(vClickType.toBukkit(), slotNum, buttonNum, clickItem ?: air)) }
             // 处理页面
             if (clickItem.isNotAir()) {
                 // 一般点击方式
                 sendCarriedChange(cursorItem)
                 sendSlotChange(slotNum, clickItem)
-                when (bukkitClickType) {
+                when (vClickType) {
                     // 数字键（0..8）
-                    ClickType.NUMBER_KEY -> {
+                    VirtualClickType.NUMBER_KEY -> {
                         // 刷新背包物品
                         sendSlotChange(inventory.size + 27 + buttonNum, inventory.getStorageItem(27 + buttonNum))
                     }
                     // F 键
-                    ClickType.SWAP_OFFHAND -> {
+                    VirtualClickType.SWAP_OFFHAND -> {
                         // 刷新副手物品
                         viewer.inventory.setItemInOffHand(viewer.inventory.itemInOffHand)
                     }
                     // SHIFT 键
-                    ClickType.SHIFT_LEFT, ClickType.SHIFT_RIGHT -> {
+                    VirtualClickType.SHIFT_LEFT, VirtualClickType.SHIFT_RIGHT -> {
                         // 获取点击物品数量
                         var amount = clickItem.amount
                         // 从页面移动到背包
