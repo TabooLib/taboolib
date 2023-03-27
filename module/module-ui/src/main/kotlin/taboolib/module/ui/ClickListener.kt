@@ -72,6 +72,7 @@ internal object ClickListener {
             item.pickupDelay = 20
             item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
+            Bukkit.getPluginManager().callEvent(event)
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
@@ -82,6 +83,7 @@ internal object ClickListener {
             item.pickupDelay = 20
             item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
+            Bukkit.getPluginManager().callEvent(event)
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
