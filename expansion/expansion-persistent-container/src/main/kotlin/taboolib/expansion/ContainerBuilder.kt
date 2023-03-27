@@ -29,7 +29,6 @@ open class ContainerBuilder(val name: String) {
                     key("key")
                     value("value")
                 }
-
                 dataList.size != 2 -> {
                     error("Invalid container length")
                 }

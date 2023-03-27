@@ -53,19 +53,26 @@ class ContainerOperatorFlatten(
     }
 
     override fun select(where: Where.() -> Unit): Map<String, Any?> {
-        error("Not supported in flatten container")
+        return select(key, value) { where() }
     }
 
     override fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?> {
-        error("Not supported in flatten container")
+        return table.select(dataSource) {
+            rows(*rows)
+            where(where)
+            limit(1)
+        }.firstOrNull { rows.associateWith { getObject(it) } } ?: emptyMap()
     }
 
     override fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>> {
-        error("Not supported in flatten container")
+        return selectAll(key, value) { where() }
     }
 
     override fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>> {
-        error("Not supported in flatten container")
+        return table.select(dataSource) {
+            rows(*rows)
+            where(where)
+        }.map { rows.associateWith { getObject(it) } }
     }
 
     override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {

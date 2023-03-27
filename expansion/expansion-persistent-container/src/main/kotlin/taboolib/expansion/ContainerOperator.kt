@@ -26,9 +26,6 @@ abstract class ContainerOperator {
 
     abstract operator fun set(uniqueId: UUID, map: Map<String, Any?>)
 
-    /**
-     * 统一容器
-     */
     abstract fun select(where: Where.() -> Unit): Map<String, Any?>
 
     abstract fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?>
@@ -37,8 +34,10 @@ abstract class ContainerOperator {
 
     abstract fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>>
 
+    /** 仅限标准容器 */
     abstract fun update(map: Map<String, Any?>, where: Where.() -> Unit)
 
+    /** 仅限标准容器 */
     abstract fun insert(map: Map<String, Any?>)
 }
 
