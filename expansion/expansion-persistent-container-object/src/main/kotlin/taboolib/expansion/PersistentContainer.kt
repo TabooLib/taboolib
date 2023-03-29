@@ -3,13 +3,37 @@ package taboolib.expansion
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.ConfigLoader
+import taboolib.module.configuration.Configuration
 import java.io.File
+
+fun dbFile(file: String = "data.db"): File {
+    return newFile(getDataFolder(), file)
+}
+
+fun dbSection(file: String = "config.yml", node: String = "database"): ConfigurationSection {
+    val conf = ConfigLoader.files[file] ?: return Configuration.empty()
+    return conf.configuration.getConfigurationSection(node) ?: Configuration.empty()
+}
+
+fun dbSection(section: ConfigurationSection, node: String = "database"): ConfigurationSection {
+    return section.getConfigurationSection(node) ?: Configuration.empty()
+}
+
+fun db(name: String = "config.yml", node: String = "database", file: String = "data.db"): Any {
+    val conf = ConfigLoader.files[name] ?: return dbFile(file)
+    return if (conf.configuration.getBoolean("$node.enable")) {
+        conf.configuration.getConfigurationSection(node) ?: Configuration.empty()
+    } else {
+        newFile(getDataFolder(), file)
+    }
+}
 
 /**
  * 创建持久化储存容器
  */
 fun persistentContainer(
-    type: Any,
+    type: Any = db(),
     flags: List<String> = emptyList(),
     clearFlags: Boolean = false,
     ssl: String? = null,
@@ -37,7 +61,7 @@ fun persistentContainer(
 
 class PersistentContainer {
 
-    val container: Container
+    val container: Container<*>
 
     /**
      * 设置源
@@ -51,7 +75,7 @@ class PersistentContainer {
         ssl: String? = null,
         builder: PersistentContainer.() -> Unit
     ) {
-        this.container = when (type) {
+        container = when (type) {
             // SQLite 模式
             is File -> {
                 ContainerSQLite(type)
@@ -77,7 +101,7 @@ class PersistentContainer {
             else -> error("Unsupported source type: $type")
         }
         builder(this)
-        this.container.init()
+        container.init()
     }
 
     /**
@@ -94,23 +118,21 @@ class PersistentContainer {
         ssl: String? = null,
         builder: PersistentContainer.() -> Unit
     ) {
-        this.container = ContainerSQL(host, port, user, password, database, flags, clearFlags, ssl)
+        container = ContainerSQL(host, port, user, password, database, flags, clearFlags, ssl)
         builder(this)
-        this.container.init()
+        container.init()
     }
 
     /**
-     * 注册标准容器
+     * 从数据类创建容器
      */
-    fun container(name: String, server: Boolean = false, builder: ContainerBuilder.() -> Unit) {
-        container.addTable(name, player = !server, playerKey = true, data = ContainerBuilder(name).also(builder).dataList)
-    }
+    inline fun <reified T> new(name: String) = new(T::class.java, name)
 
     /**
-     * 注册扁平容器
+     * 从数据类创建容器
      */
-    fun flatContainer(name: String, builder: ContainerBuilder.Flatten.() -> Unit = {}) {
-        container.addTable(name, player = true, playerKey = false, data = ContainerBuilder.Flatten(name).also(builder).fixed().dataList)
+    fun <T> new(type: Class<T>, name: String) {
+        container.createTable(AnalyzedClass.of(type), name)
     }
 
     /**

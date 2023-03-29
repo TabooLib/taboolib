@@ -47,6 +47,14 @@ class ActionInsert(val table: String, val keys: Array<String>) : Action {
         values.add(arrayOf(*args))
     }
 
+    fun values(args: Array<Any>) {
+        values.add(args)
+    }
+
+    fun values(args: List<Any>) {
+        values.add(args.toTypedArray())
+    }
+
     fun onDuplicateKeyUpdate(func: DuplicateKey.() -> Unit) {
         update = DuplicateKey().also(func).update
     }

@@ -16,7 +16,6 @@ object Database {
 
     @Config("datasource.yml")
     lateinit var settingsFile: Configuration
-        private set
 
     fun prepareClose(func: Runnable) {
         Host.callbackClose += func

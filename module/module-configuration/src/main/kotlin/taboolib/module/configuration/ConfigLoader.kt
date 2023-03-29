@@ -27,13 +27,13 @@ import java.util.function.Supplier
 @Awake
 class ConfigLoader : ClassVisitor(1) {
 
-    @Suppress("DEPRECATION")
+    @Suppress("DEPRECATION", "KotlinConstantConditions")
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val configAnno = field.getAnnotation(Config::class.java)
             val name = configAnno.property("value", "config.yml")
             if (files.containsKey(name)) {
-                field.set(instance?.get(), files[name]!!.conf)
+                field.set(instance?.get(), files[name]!!.configuration)
             } else {
                 val file = releaseResourceFile(name)
                 // 兼容模式加载

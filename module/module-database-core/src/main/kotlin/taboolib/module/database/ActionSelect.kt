@@ -36,7 +36,7 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
             if (join.isNotEmpty()) {
                 query += " ${join.joinToString(" ") { it.query }}"
             }
-            if (where != null) {
+            if (where != null && !where!!.isEmpty()) {
                 query += " WHERE ${where!!.query}"
             }
             if (order.isNotEmpty()) {
@@ -57,7 +57,9 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         }
 
     fun rows(vararg row: String) {
-        rows += row
+        if (row.isNotEmpty()) {
+            rows += row
+        }
     }
 
     fun where(whereData: WhereData) {

@@ -12,15 +12,15 @@ object EmptyTask : QueryTask(EmptyFuture) {
         TODO("Not yet implemented")
     }
 
-    override fun <T> first(resultSet: ResultSet.() -> T): T {
+    override fun <T> first(call: ResultSet.() -> T): T {
         TODO("Not yet implemented")
     }
 
-    override fun <T> map(resultSet: ResultSet.() -> T): List<T> {
+    override fun <T> map(call: ResultSet.() -> T): List<T> {
         TODO("Not yet implemented")
     }
 
-    override fun forEach(resultSet: ResultSet.() -> Unit) {
+    override fun forEach(call: ResultSet.() -> Unit) {
         TODO("Not yet implemented")
     }
 }

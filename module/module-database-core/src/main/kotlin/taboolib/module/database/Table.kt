@@ -52,6 +52,10 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         return workspace(dataSource) { insert(*keys) { func(this) } }.run()
     }
 
+    open fun insert(dataSource: DataSource, keys: List<String>, func: ActionInsert.() -> Unit): Int {
+        return workspace(dataSource) { insert(keys) { func(this) } }.run()
+    }
+
     open fun workspace(dataSource: DataSource, func: Query.() -> Unit): QueryTask {
         return Query(this, dataSource).also(func).tasks.lastOrNull() ?: EmptyTask
     }

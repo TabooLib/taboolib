@@ -52,6 +52,13 @@ val runningExactClassMap by unsafeLazy { runningClassMap.filter { !it.key.contai
 val runningExactClasses by unsafeLazy { LinkedList(runningExactClassMap.values) }
 
 /**
+ * 从 TabooLibCommon 的 ClassLoader 中获取类，且不触发类的初始化
+ */
+fun getClass(name: String): Class<*> {
+    return Class.forName(name, false, TabooLibCommon::class.java.classLoader)
+}
+
+/**
  * 取该类在当前项目中被加载的任何实例
  * 例如：@Awake 自唤醒类，或是 Kotlin Companion Object、Kotlin Object 对象
  *
@@ -74,13 +81,11 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
         return null
     }
     return try {
-        // 获取 Kotlin Companion 字段
         val field = if (simpleName == "Companion") {
-            val companion = Class.forName(name.substringBeforeLast('$'), false, TabooLibCommon::class.java.classLoader)
-            ReflexClass.of(companion).getField("Companion", findToParent = false, remap = false)
-        }
-        // 获取 Kotlin Object 字段
-        else {
+            // 获取 Kotlin Companion 字段
+            ReflexClass.of(getClass(name.substringBeforeLast('$'))).getField("Companion", findToParent = false, remap = false)
+        } else {
+            // 获取 Kotlin Object 字段
             ReflexClass.of(this).getField("INSTANCE", findToParent = false, remap = false)
         }
         lazySupplier { field.get() as T }

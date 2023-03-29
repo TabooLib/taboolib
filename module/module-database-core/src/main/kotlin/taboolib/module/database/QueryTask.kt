@@ -9,7 +9,6 @@ import java.sql.ResultSet
  * @author sky
  * @since 2021/6/23 2:11 下午
  */
-@Suppress("UNCHECKED_CAST")
 open class QueryTask(val future: Future<ResultSet>) {
 
     open fun run(): Int {
@@ -20,37 +19,47 @@ open class QueryTask(val future: Future<ResultSet>) {
         return future.call { next() }
     }
 
-    open fun <T> first(resultSet: ResultSet.() -> T): T {
+    open fun <T> first(call: ResultSet.() -> T): T {
         return future.call {
             next()
-            resultSet(this)
+            call(this)
         }
     }
 
-    open fun <T> firstOrNull(resultSet: ResultSet.() -> T): T? {
+    open fun <T> firstOrNull(call: ResultSet.() -> T): T? {
         return future.call {
             if (next()) {
-                resultSet(this)
+                call(this)
             } else {
                 null
             }
         }
     }
 
-    open fun <T> map(resultSet: ResultSet.() -> T): List<T> {
+    open fun <T> map(call: ResultSet.() -> T): List<T> {
         return future.call {
-            ArrayList<T>().also {
-                while (next()) {
-                    it += resultSet(this)
-                }
+            val arr = arrayListOf<T>()
+            while (next()) {
+                arr += call(this)
             }
+            arr
         }
     }
 
-    open fun forEach(resultSet: ResultSet.() -> Unit) {
+    open fun <T> mapNotNull(call: ResultSet.() -> T?): List<T> {
+        return future.call {
+            val arr = arrayListOf<T>()
+            while (next()) {
+                call(this)?.also { t -> arr += t }
+            }
+            arr
+        }
+    }
+
+    open fun forEach(call: ResultSet.() -> Unit) {
         future.call {
             while (next()) {
-                resultSet(this)
+                call(this)
             }
         }
     }

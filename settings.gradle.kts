@@ -36,6 +36,7 @@ fun importExtensions() {
     include("expansion:expansion-command-helper")
     include("expansion:expansion-player-database")
     include("expansion:expansion-persistent-container")
+    include("expansion:expansion-persistent-container-object")
     include("expansion:expansion-alkaid-redis")
     include("expansion:expansion-geek-tool")
     include("expansion:expansion-lang-tools")

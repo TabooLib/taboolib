@@ -27,6 +27,7 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly(kotlin("reflect"))
     }
 
     java {

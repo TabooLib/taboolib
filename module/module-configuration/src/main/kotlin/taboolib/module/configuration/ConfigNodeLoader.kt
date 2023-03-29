@@ -23,7 +23,7 @@ class ConfigNodeLoader : ClassVisitor(2) {
             }
             file.nodes += field
             val value = node.property("value", "")
-            var data = file.conf[value.ifEmpty { field.name.toNode() }]
+            var data = file.configuration[value.ifEmpty { field.name.toNode() }]
             if (data == null) {
                 warning("$value not found in $bind")
                 return
