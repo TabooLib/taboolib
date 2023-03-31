@@ -314,22 +314,21 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         return this.value.merge(key, value, remappingFunction);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ItemTag)) {
-            return false;
-        }
-        ItemTag that = (ItemTag) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), value);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof ItemTag)) return false;
+//        if (!super.equals(o)) return false;
+//        ItemTag itemTag = (ItemTag) o;
+//        return Objects.equals(value, itemTag.value);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = super.hashCode();
+//        result = 31 * result + (value != null ? value.hashCode() : 0);
+//        return result;
+//    }
 
     @Override
     public String toString() {

@@ -209,22 +209,22 @@ public class ItemTagData {
         return nbt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ItemTagData)) {
-            return false;
-        }
-        ItemTagData itemTagData = (ItemTagData) o;
-        return getType() == itemTagData.getType() && Objects.equals(data, itemTagData.data);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getType(), data);
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof ItemTagData)) return false;
+//        ItemTagData that = (ItemTagData) o;
+//        if (getType() != that.getType()) return false;
+//        if (data != null ? !data.equals(that.data) : that.data != null) return false;
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = getType() != null ? getType().hashCode() : 0;
+//        result = 31 * result + (data != null ? data.hashCode() : 0);
+//        return result;
+//    }
 
     @Override
     public String toString() {
