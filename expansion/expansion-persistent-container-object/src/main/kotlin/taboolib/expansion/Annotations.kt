@@ -1,7 +1,5 @@
 package taboolib.expansion
 
-import kotlin.reflect.KCallable
-
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Id
 

@@ -90,7 +90,7 @@ public class RuntimeEnv {
         } else {
             file = new File(defaultAssets, name);
         }
-        if (file.exists() && DependencyDownloader.readFileHash(file).equals(hash)) {
+        if (file.exists() && IO.getHash(file).equals(hash)) {
             return;
         }
         if (!file.getParentFile().exists()) {
@@ -100,17 +100,17 @@ public class RuntimeEnv {
         try {
             if (zip) {
                 File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
-                Repository.downloadToFile(new URL(url + ".zip"), cacheFile);
+                IO.downloadFile(new URL(url + ".zip"), cacheFile);
                 try (ZipFile zipFile = new ZipFile(cacheFile)) {
                     InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(url.substring(url.lastIndexOf('/') + 1)));
                     try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                        fileOutputStream.write(DependencyDownloader.readFully(inputStream));
+                        fileOutputStream.write(IO.readFully(inputStream));
                     }
                 } finally {
                     cacheFile.delete();
                 }
             } else {
-                Repository.downloadToFile(new URL(url), file);
+                IO.downloadFile(new URL(url), file);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -206,8 +206,9 @@ public class RuntimeEnv {
         downloader.setInitiative(initiative);
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
-        File pomShaFile = new File(pomFile.getPath() + ".sha1");
-        if (pomFile.exists() && pomShaFile.exists() && DependencyDownloader.readFile(pomShaFile).startsWith(DependencyDownloader.readFileHash(pomFile))) {
+        File pomFile1 = new File(pomFile.getPath() + ".sha1");
+        // 验证文件完整性
+        if (IO.validation(pomFile, pomFile1)) {
             downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
         } else {
             String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);

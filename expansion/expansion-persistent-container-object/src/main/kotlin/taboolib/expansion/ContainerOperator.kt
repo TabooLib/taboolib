@@ -2,7 +2,7 @@ package taboolib.expansion
 
 import taboolib.module.database.Table
 import taboolib.module.database.Where
-import java.util.UUID
+import java.util.*
 import javax.sql.DataSource
 
 /**

@@ -2,10 +2,7 @@ package taboolib.module.nms
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import org.jetbrains.annotations.Contract
 import taboolib.common.util.unsafeLazy
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 internal val nmsGeneric by unsafeLazy { nmsProxy<NMSGeneric>() }
 

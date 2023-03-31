@@ -1,6 +1,5 @@
 package taboolib.module.chat
 
-import net.md_5.bungee.api.chat.*
 import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 

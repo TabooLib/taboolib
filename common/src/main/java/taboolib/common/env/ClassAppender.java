@@ -18,9 +18,9 @@ import java.nio.file.Path;
  * @since 2020-04-12 22:39
  */
 public class ClassAppender {
+
     static MethodHandles.Lookup lookup;
     static Unsafe unsafe;
-    
 
     static {
         try {
@@ -81,7 +81,6 @@ public class ClassAppender {
         } catch (Throwable t) {
             t.printStackTrace();
         }
-        
         return null;
     }
 

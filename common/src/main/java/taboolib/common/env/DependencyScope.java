@@ -9,50 +9,32 @@ package taboolib.common.env;
 public enum DependencyScope {
 
 	/**
-	 * The dependency is needed when the code is being compiled, so it will be
-	 * downloaded while resolving dependencies at runtime.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项在编译代码时需要，因此它将在运行时解析依赖项时下载。
 	 */
 	COMPILE,
 
 	/**
-	 * The dependency is provided by the runtime environment, so it does not
-	 * need to be downloaded while resolving dependencies at runtime.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项由运行时环境提供，因此在运行时解析依赖项时无需下载。
 	 */
 	PROVIDED,
 
 	/**
-	 * The dependency is needed when the application is running, so it will be
-	 * downloaded while resolving dependencies at runtime.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项在应用程序运行时需要，因此它将在运行时解析依赖项时下载。
 	 */
 	RUNTIME,
 
 	/**
-	 * The dependency is needed for compiling and running the unit tests, so it
-	 * does not need to be downloaded while resolving dependencies at runtime.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项在编译和运行单元测试时需要，因此在运行时解析依赖项时无需下载。
 	 */
 	TEST,
 
 	/**
-	 * The dependency should be on the system already, so it does not need to be
-	 * downloaded while resolving dependencies at runtime.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项应该已经在系统上，因此在运行时解析依赖项时无需下载。
 	 */
 	SYSTEM,
 
 	/**
-	 * The dependency is actually just a pom and not a jar, so we do not need to
-	 * download it at all.
-	 * 
-	 * @since 1.0.0
+	 * 依赖项实际上只是一个 pom 而不是一个 jar，因此我们不需要下载它。
 	 */
 	IMPORT
 }

@@ -1,8 +1,6 @@
 package taboolib.expansion
 
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaType
+import java.lang.reflect.Parameter
 
 /**
  * TabooLib
@@ -11,16 +9,16 @@ import kotlin.reflect.jvm.javaType
  * @author 坏黑
  * @since 2023/3/29 11:28
  */
-class AnalyzedClassMember(private val root: KParameter, val isFinal: Boolean) {
+class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal: Boolean) {
 
     /** 名称 */
-    val name = root.findAnnotation<Alias>()?.value ?: root.name!!.toColumnName()
+    val name = root.findAnnotation<Alias>()?.value ?: name.toColumnName()
 
     /** 属性名称 */
-    val propertyName = root.name
+    val propertyName: String = name
 
     /** 返回类型 */
-    val returnType = root.type.javaType as Class<*>
+    val returnType: Class<*> = root.type
 
     /** 是否为 ID 键 */
     val isPrimary = root.findAnnotation<Id>() != null
@@ -105,6 +103,14 @@ class AnalyzedClassMember(private val root: KParameter, val isFinal: Boolean) {
     /** 转换为数据库字段名称 */
     private fun String.toColumnName(): String {
         return toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
+    }
+
+    /** 获取注解 */
+    private inline fun <reified T : Annotation> Parameter.findAnnotation(): T? {
+        if (isAnnotationPresent(T::class.java)) {
+            return getAnnotation(T::class.java)
+        }
+        return null
     }
 
     override fun toString(): String {

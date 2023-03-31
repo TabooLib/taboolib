@@ -1,6 +1,5 @@
 package taboolib.expansion
 
-import taboolib.common.platform.function.info
 import taboolib.module.database.Table
 import taboolib.module.database.Where
 import javax.sql.DataSource

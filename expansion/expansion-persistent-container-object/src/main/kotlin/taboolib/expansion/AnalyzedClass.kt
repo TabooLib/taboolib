@@ -1,14 +1,11 @@
 package taboolib.expansion
 
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.warning
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common5.*
+import java.lang.reflect.Parameter
 import java.sql.ResultSet
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.*
-import kotlin.reflect.jvm.javaType
 
 /**
  * TabooLib
@@ -21,21 +18,19 @@ import kotlin.reflect.jvm.javaType
 class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 主构造器 */
-    private val primaryConstructor = clazz.kotlin.primaryConstructor ?: error("No primary constructor found for $clazz")
+    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() } ?: error("No primary constructor found for $clazz")
 
     /** 成员列表 */
-    private val memberProperties = clazz.kotlin.memberProperties.associateBy { it.name }
+    private val memberProperties = clazz.declaredFields.associateBy { it.name }
+
+    private val mps = memberProperties.entries.toMutableList()
 
     /** 成员列表 */
-    val members = primaryConstructor.valueParameters.map {
-        // 不知道为什么，isFinal 方法在这里会失效，全部都是 true
-        // 测试日志：
-        // name=username, p=val com.github.username.GameHistory.username: java.util.UUID, f=true
-        // name=game, p=val com.github.username.GameHistory.game: kotlin.String, f=true
-        // name=playTimes, p=var com.github.username.GameHistory.playTimes: kotlin.Int, f=true
-        // name=deepLevel, p=var com.github.username.GameHistory.deepLevel: kotlin.Int, f=true
-        // name=useTime, p=var com.github.username.GameHistory.useTime: kotlin.Long, f=true
-        AnalyzedClassMember(validation(it), memberProperties[it.name]?.toString()?.startsWith("var") != true)
+    val members = primaryConstructor.parameters.map {
+        val entry = mps.firstOrNull { e -> e.value.type == it.type } ?: error("No member found for $it in $clazz")
+        mps.remove(entry)
+        val final = entry.value.modifiers and 16 != 0
+        AnalyzedClassMember(validation(it), entry.value.name, final)
     }
 
     /** 主成员 */
@@ -45,11 +40,11 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     val primaryMemberName = primaryMember?.name
 
     /** 反序列化所在伴生类实例 */
-    val wrapperObjectInstance = clazz.kotlin.companionObjectInstance
+    val wrapperObjectInstance = runCatching { clazz.getProperty<Any>("Companion", isStatic = true) }.getOrNull()
 
     /** 反序列化方法 */
-    val wrapperFunction = clazz.kotlin.companionObject?.functions?.firstOrNull {
-        it.valueParameters.size == 1 && BundleMap::class.java.isAssignableFrom(it.valueParameters[0].type.javaType as Class<*>)
+    val wrapperFunction = wrapperObjectInstance?.javaClass?.declaredMethods?.firstOrNull {
+        it.parameters.size == 1 && BundleMap::class.java.isAssignableFrom(it.parameters[0].type)
     }
 
     init {
@@ -60,18 +55,20 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
         if (members.count { it.isPrimary } > 1) {
             error("The primary member only supports one, but found ${members.count { it.isPrimary }}")
         }
+        // 获取访问权限
+        memberProperties.forEach { it.value.isAccessible = true }
     }
 
     /** 获取主成员值 */
     fun getPrimaryMemberValue(data: Any): Any {
-        val property = memberProperties[primaryMember?.propertyName] ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
-        return property.call(data)!!
+        val property = memberProperties[primaryMember?.propertyName.toString()] ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
+        return property.get(data)!!
     }
 
     /** 获取成员值 */
     fun getValue(data: Any, member: AnalyzedClassMember): Any {
         val property = memberProperties[member.propertyName] ?: error("Member \"${member.name}\" not found in $clazz")
-        return property.call(data)!!
+        return property.get(data)!!
     }
 
     /** 读取数据 */
@@ -101,11 +98,11 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     /** 创建实例 */
     fun <T> createInstance(map: Map<String, Any?>): T {
         return if (wrapperFunction != null) {
-            wrapperFunction.call(wrapperObjectInstance, BundleMapImpl(map)) ?: error("Failed to create instance for $clazz")
+            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map)) ?: error("Failed to create instance for $clazz")
         } else {
             val args = members.map { map[it.name] }
             try {
-                primaryConstructor.call(*args.toTypedArray())
+                primaryConstructor.newInstance(*args.toTypedArray())
             } catch (ex: Throwable) {
                 error("Failed to create instance for $clazz ($args), map=$map")
             }
@@ -113,11 +110,9 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     }
 
     /** 验证参数 */
-    fun validation(parameter: KParameter): KParameter {
-        if (parameter.name == null) {
-            error("Parameter name is null for $parameter")
-        }
-        if (parameter.isVararg) {
+    fun validation(parameter: Parameter): Parameter {
+        // 可变参数
+        if (parameter.isVarArgs) {
             error("Vararg parameters are not supported for $parameter")
         }
         return parameter

@@ -75,10 +75,8 @@ public abstract class AbstractXmlParser {
      *
      * @param name The name of the node to search for
      * @param node The node to search inside of
-     * @param def  The default value, or <code>null</code> if the value is
-     *             required
-     * @return The text content of the node it found, or <code>def</code> if the
-     * node is not found
+     * @param def  The default value, or <code>null</code> if the value is required
+     * @return The text content of the node it found, or <code>def</code> if the node is not found
      * @throws ParseException If the node cannot be found and there is no default value
      * @since 1.0.0
      */
