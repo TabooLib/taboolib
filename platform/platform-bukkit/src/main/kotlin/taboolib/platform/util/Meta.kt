@@ -12,7 +12,7 @@ fun Metadatable.setMeta(key: String, value: Any) {
 }
 
 fun Metadatable.hasMeta(key: String): Boolean {
-    return hasMetadata(key)
+    return getMetaFirstOrNull(key) != null
 }
 
 fun Metadatable.getMeta(key: String): List<MetadataValue> {
