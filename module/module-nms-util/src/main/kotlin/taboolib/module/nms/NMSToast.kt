@@ -113,11 +113,12 @@ private fun eject(key: NamespacedKey): NamespacedKey {
     return key
 }
 
-private fun toJsonToast(icon: String, title: String, frame: ToastFrame, background: ToastBackground): JsonObject {
+private fun toJsonToast(icon: String, title: String, frame: ToastFrame, background: ToastBackground, customModelData: Int = 0): JsonObject {
     val json = JsonObject()
     json.add("display", JsonObject().run {
         this.add("icon", JsonObject().run {
             this.addProperty("item", icon)
+            this.addProperty("nbt", "{CustomModelData:$customModelData}")
             this
         })
         this.addProperty("title", title)

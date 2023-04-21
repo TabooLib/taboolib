@@ -39,7 +39,7 @@ fun InventoryClickEvent.getAffectItems(): List<ItemStack> {
     if (click == ClickType.NUMBER_KEY) {
         val hotbarButton = whoClicked.inventory.getItem(hotbarButton)
         if (hotbarButton.isNotAir()) {
-            items += hotbarButton!!
+            items += hotbarButton
         }
     }
     if (currentItem.isNotAir()) {

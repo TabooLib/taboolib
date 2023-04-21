@@ -15,7 +15,7 @@ import taboolib.module.kether.*
 @PlatformSide([Platform.BUKKIT])
 object ActionItemStack {
 
-    @KetherParser(["item", "itemstack"])
+    @KetherParser(["itemstack"])
     fun actionItemStack() = scriptParser {
         val str = it.nextParsedAction()
         actionTake { run(str).str { s -> ItemStack(Material.getMaterial(s.uppercase()) ?: error("Unknown material: $s")) } }
