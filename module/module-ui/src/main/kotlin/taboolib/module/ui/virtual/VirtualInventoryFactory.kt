@@ -72,7 +72,7 @@ fun RemoteInventory.inject(basic: Basic) {
 fun RemoteInventory.createInventoryView(): InventoryView {
     return try {
         VirtualInventoryView(this)
-    } catch (_: VerifyError) {
+    } catch (_: LinkageError) {
         VirtualInventoryViewLegacy(object : RemoteInventoryLegacy {
 
             val bottomInventory = VirtualStorageInventory(inventory)
