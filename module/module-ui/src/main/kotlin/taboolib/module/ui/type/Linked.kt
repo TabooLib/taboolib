@@ -39,6 +39,9 @@ open class Linked<T>(title: String) : Basic(title) {
     /** 异步元素生成回调 **/
     internal var asyncGenerateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
 
+    /** 页面切换回调 */
+    internal var pageChangeCallback: ((player: Player) -> Unit) = { _ -> }
+
     /** 页面玩家 **/
     private lateinit var player: Player
 
@@ -120,6 +123,7 @@ open class Linked<T>(title: String) : Basic(title) {
                 } else {
                     player.openInventory(build())
                 }
+                pageChangeCallback(player)
             }
         }
     }
@@ -140,8 +144,16 @@ open class Linked<T>(title: String) : Basic(title) {
                 } else {
                     player.openInventory(build())
                 }
+                pageChangeCallback(player)
             }
         }
+    }
+
+    /**
+     * 切换页面回调
+     */
+    open fun onPageChange(callback: (player: Player) -> Unit) {
+        pageChangeCallback = callback
     }
 
     /**
