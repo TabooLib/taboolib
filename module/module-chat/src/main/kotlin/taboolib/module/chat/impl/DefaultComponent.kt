@@ -311,6 +311,10 @@ class DefaultComponent() : ComponentText {
         return this
     }
 
+    override fun toSpigotObject(): BaseComponent {
+        return component
+    }
+
     /** 释放缓冲区 */
     fun flush() {
         left.addAll(latest)

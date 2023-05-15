@@ -1,5 +1,6 @@
 package taboolib.module.chat
 
+import net.md_5.bungee.api.chat.BaseComponent
 import java.awt.Color
 
 /**
@@ -134,6 +135,9 @@ interface ComponentText : Source {
 
     /** 移除颜色 */
     fun uncolor(): ComponentText
+
+    /** 转换为 Spigot 对象 */
+    fun toSpigotObject(): BaseComponent
 
     companion object {
 
