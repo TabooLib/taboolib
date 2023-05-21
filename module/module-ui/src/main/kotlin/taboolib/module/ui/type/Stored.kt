@@ -142,7 +142,10 @@ open class Stored(title: String) : Basic(title) {
         internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
 
         /** 读取物品回调 **/
-        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot -> inventory.getItem(slot) }
+        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot ->
+            if (slot in 0 until inventory.size) inventory.getItem(slot)
+            null
+        }
 
         /**
          * 定义判定位置
