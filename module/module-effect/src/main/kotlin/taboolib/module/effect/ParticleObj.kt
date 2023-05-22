@@ -21,19 +21,39 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     private var matrix: Matrix? = null
     private var task: PlatformTask? = null
 
-    fun addMatrix(matrix: Matrix) {
+    /**
+     * 给该特效对象叠加一个矩阵
+     *
+     * @param matrix 给定的矩阵
+     * @return [ParticleObj]
+     */
+    open fun addMatrix(matrix: Matrix): ParticleObj {
         if (this.matrix == null) {
             setMatrix(matrix)
+            return this
         }
         this.matrix = matrix.multiply(this.matrix)
+        return this
     }
 
-    fun setMatrix(matrix: Matrix?) {
+    /**
+     * 给该特效对象设置一个矩阵
+     * 该方法将会直接覆盖之前所有已经变换好的矩阵
+     *
+     * @param matrix 给定的矩阵
+     * @return [ParticleObj]
+     */
+    open fun setMatrix(matrix: Matrix?): ParticleObj {
         this.matrix = matrix
+        return this
     }
-
-    fun removeMatrix() {
+    /**
+     * 移除该特效对象的矩阵
+     * @return [ParticleObj]
+     */
+    open fun removeMatrix(): ParticleObj {
         matrix = null
+        return this
     }
 
     fun hasMatrix(): Boolean {
