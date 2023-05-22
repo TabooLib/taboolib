@@ -139,7 +139,9 @@ open class Stored(title: String) : Basic(title) {
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
 
         /** 写入物品回调 **/
-        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
+        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot ->
+            if (slot in 0 until inventory.size) inventory.setItem(slot, item)
+        }
 
         /** 读取物品回调 **/
         internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot ->
