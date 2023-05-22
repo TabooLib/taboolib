@@ -1,11 +1,18 @@
 package taboolib.module.effect.renderer;
 
+import kotlin.Unit;
 import taboolib.common.Isolated;
+import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
+import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
+import taboolib.module.effect.Playable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 表示一个参数方程渲染器
@@ -13,7 +20,7 @@ import java.util.function.Function;
  * @author Zoyn
  */
 @Isolated
-public class ParametricEquationRenderer extends ParticleObj {
+public class ParametricEquationRenderer extends ParticleObj implements Playable {
 
     private final Function<Double, Double> xFunction;
     private final Function<Double, Double> yFunction;
@@ -21,6 +28,7 @@ public class ParametricEquationRenderer extends ParticleObj {
     private double minT;
     private double maxT;
     private double dt;
+    private double currentT;
 
     /**
      * 参数方程渲染器, 自动将z方程变为0
@@ -82,6 +90,30 @@ public class ParametricEquationRenderer extends ParticleObj {
     }
 
     @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        for (double t = minT; t < maxT; t += dt) {
+            double x = xFunction.apply(t);
+            double y = yFunction.apply(t);
+            double z = zFunction.apply(t);
+            points.add(getOrigin().clone().add(x, y, z));
+        }
+        // 做一个对 Matrix 和 Increment 的兼容
+        return points.stream().map(location -> {
+            Location showLocation = location;
+            if (hasMatrix()) {
+                Vector v = new Vector(location.getX() - getOrigin().getX(), location.getY() - getOrigin().getY(), location.getZ() - getOrigin().getZ());
+                Vector changed = getMatrix().applyVector(v);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            return showLocation;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public void show() {
         for (double t = minT; t < maxT; t += dt) {
             double x = xFunction.apply(t);
@@ -89,6 +121,36 @@ public class ParametricEquationRenderer extends ParticleObj {
             double z = zFunction.apply(t);
             spawnParticle(getOrigin().clone().add(x, y, z));
         }
+    }
+
+    @Override
+    public void play() {
+        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+            // 进行关闭
+            if (currentT > maxT) {
+                task.cancel();
+            }
+            currentT += dt;
+
+            double x = xFunction.apply(currentT);
+            double y = yFunction.apply(currentT);
+            double z = zFunction.apply(currentT);
+            spawnParticle(getOrigin().clone().add(x, y, z));
+            return Unit.INSTANCE;
+        });
+    }
+
+    @Override
+    public void playNextPoint() {
+        if (currentT > maxT) {
+            currentT = minT;
+        }
+        currentT += dt;
+
+        double x = xFunction.apply(currentT);
+        double y = yFunction.apply(currentT);
+        double z = zFunction.apply(currentT);
+        spawnParticle(getOrigin().clone().add(x, y, z));
     }
 
     public double getMinT() {

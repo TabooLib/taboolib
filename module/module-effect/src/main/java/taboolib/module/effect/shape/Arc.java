@@ -4,9 +4,13 @@ import kotlin.Unit;
 import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
+import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.Playable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 表示一个弧
@@ -83,6 +87,28 @@ public class Arc extends ParticleObj implements Playable {
         this.radius = radius;
         this.step = step;
         setPeriod(period);
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        for (double i = startAngle; i < angle; i += step) {
+            double radians = Math.toRadians(i);
+            double x = radius * Math.cos(radians);
+            double z = radius * Math.sin(radians);
+
+            Location showLocation = getOrigin().clone().add(x, 0, z);
+            if (hasMatrix()) {
+                Vector vector = new Vector(x, 0, z);
+                Vector changed = getMatrix().applyVector(vector);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            points.add(showLocation);
+        }
+        return points;
     }
 
     @Override

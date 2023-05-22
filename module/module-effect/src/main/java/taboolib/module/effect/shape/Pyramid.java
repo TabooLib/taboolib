@@ -1,6 +1,5 @@
 package taboolib.module.effect.shape;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
@@ -11,111 +10,98 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 表示一个正多边形
+ * 表示一个N棱锥特效
  *
  * @author Zoyn
  */
-@Isolated
-public class Polygon extends ParticleObj {
+public class Pyramid extends ParticleObj {
 
     private final List<Location> locations;
-
-    /**
-     * 边数
-     */
     private int side;
+    private double height;
     private double step;
-
     private double radius;
+    private Location upLoc;
 
-    /**
-     * 构造一个正多边形
-     *
-     * @param side   边数
-     * @param origin 原点
-     */
-    public Polygon(int side, Location origin, ParticleSpawner spawner) {
-        this(side, origin, 0.02, spawner);
+    public Pyramid(Location origin, int side, ParticleSpawner spawner) {
+        this(origin, side, 1, 1, spawner);
+    }
+
+    public Pyramid(Location origin, int side, double radius, double height, ParticleSpawner spawner) {
+        this(origin, side, radius, height, 0.02, spawner);
     }
 
     /**
-     * 构造一个正多边形
+     * 表示一个棱锥特效
      *
-     * @param side   边数
-     * @param origin 原点
-     * @param step   步长
+     * @param origin 棱锥底面中心点
+     * @param side   棱的个数
+     * @param radius 底面半径, 中心点到任意一个角的长度
+     * @param height 底面中心点到最上方顶点的长度
+     * @param step   粒子的间距
      */
-    public Polygon(int side, Location origin, double step, ParticleSpawner spawner) {
+    public Pyramid(Location origin, int side, double radius, double height, double step, ParticleSpawner spawner) {
         super(spawner);
         if (side <= 2) {
-            throw new IllegalArgumentException("side <= 2");
+            throw new IllegalArgumentException("边数不可为小于或等于2的数!");
         }
         this.side = side;
-        setOrigin(origin);
+        this.height = height;
         this.step = step;
+        this.radius = radius;
+
         this.locations = new ArrayList<>();
-        resetLocations();
+        setOrigin(origin);
     }
 
-    /**
-     * 获取正多边形的边数
-     *
-     * @return 正多边形边数
-     */
     public int getSide() {
         return side;
     }
 
-    /**
-     * 设置正多边形的边数
-     *
-     * @param side 边数
-     * @return {@link Polygon}
-     */
-    public Polygon setSide(int side) {
+    public Pyramid setSide(int side) {
         this.side = side;
+        resetLocations();
+        return this;
+
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public Pyramid setHeight(double height) {
+        this.height = height;
+        upLoc = getOrigin().clone().add(0, height, 0);
         resetLocations();
         return this;
     }
 
-    /**
-     * 获取正多边形渲染粒子之间的间距
-     *
-     * @return 粒子之间的间距
-     */
     public double getStep() {
         return step;
     }
 
-    /**
-     * 设置正多边形渲染粒子之间的间距
-     *
-     * @param step 给定的间距
-     * @return {@link Polygon}
-     */
-    public Polygon setStep(double step) {
+    public Pyramid setStep(double step) {
         this.step = step;
         resetLocations();
         return this;
     }
 
-    /**
-     * 获取正多边形的半径
-     *
-     * @return 正多边形的半径
-     */
     public double getRadius() {
         return radius;
     }
 
-    /**
-     * 设置正多边形的半径
-     *
-     * @param radius 正多边形的半径
-     * @return {@link Polygon}
-     */
-    public Polygon setRadius(double radius) {
+    public Pyramid setRadius(double radius) {
         this.radius = radius;
+        resetLocations();
+        return this;
+    }
+
+    @Override
+    public ParticleObj setOrigin(Location origin) {
+        super.setOrigin(origin);
+        // 重置最上方的 Loc
+        upLoc = origin.clone().add(0, height, 0);
+
         resetLocations();
         return this;
     }
@@ -132,6 +118,7 @@ public class Polygon extends ParticleObj {
 
             temp.add(getOrigin().clone().add(x, 0, z));
         }
+
         for (int i = 0; i < temp.size(); i++) {
             if (i + 1 == temp.size()) {
                 Vector vectorAB = temp.get(i).clone().subtract(temp.get(0)).toVector();
@@ -148,6 +135,14 @@ public class Polygon extends ParticleObj {
             vectorAB.normalize();
             for (double j = 0; j < vectorLength; j += step) {
                 points.add(temp.get(i).clone().add(vectorAB.clone().multiply(j)));
+            }
+
+            // 棱长部分
+            vectorAB = temp.get(i).clone().subtract(upLoc).toVector();
+            vectorLength = vectorAB.length();
+            vectorAB.normalize();
+            for (double j = 0; j < vectorLength; j += step) {
+                points.add(upLoc.clone().add(vectorAB.clone().multiply(j)));
             }
         }
         // 做一个对 Matrix 和 Increment 的兼容
@@ -170,7 +165,11 @@ public class Polygon extends ParticleObj {
         if (locations.isEmpty()) {
             return;
         }
+
         for (int i = 0; i < locations.size(); i++) {
+            // 棱
+            buildLine(upLoc, locations.get(i), step);
+            // 底面
             if (i + 1 == locations.size()) {
                 buildLine(locations.get(i), locations.get(0), step);
                 break;
@@ -179,21 +178,20 @@ public class Polygon extends ParticleObj {
         }
     }
 
-    /**
-     * 重设渲染粒子的所有Location点位
-     */
     public void resetLocations() {
         locations.clear();
+
         for (double angle = 0; angle <= 360; angle += 360D / side) {
             double radians = Math.toRadians(angle);
-            double x = Math.cos(radians) * radius;
-            double z = Math.sin(radians) * radius;
+            double x = radius * Math.cos(radians);
+            double z = radius * Math.sin(radians);
+
             locations.add(getOrigin().clone().add(x, 0, z));
         }
     }
 
     /**
-     * 此方法只用于 Polygon
+     * 此方法只用于 Pyramid
      *
      * @param locA 点A
      * @param locB 点B

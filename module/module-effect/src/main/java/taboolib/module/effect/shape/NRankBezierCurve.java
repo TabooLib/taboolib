@@ -1,12 +1,17 @@
 package taboolib.module.effect.shape;
 
+import kotlin.Unit;
 import taboolib.common.Isolated;
+import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
+import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
+import taboolib.module.effect.Playable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 表示一条n阶贝塞尔曲线
@@ -15,7 +20,7 @@ import java.util.List;
  * @author Zoyn
  */
 @Isolated
-public class NRankBezierCurve extends ParticleObj {
+public class NRankBezierCurve extends ParticleObj implements Playable {
 
     /**
      * 用于保存将要播放的粒子的点位
@@ -26,6 +31,7 @@ public class NRankBezierCurve extends ParticleObj {
      * 用于计算贝塞尔曲线上的点
      */
     private final List<Location> locations;
+    private int currentSample = 0;
 
     /**
      * 构造一个N阶贝塞尔曲线
@@ -70,12 +76,58 @@ public class NRankBezierCurve extends ParticleObj {
     }
 
     @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        for (double t = 0; t < 1; t += step) {
+            Location location = calculateCurve(locations, t);
+            points.add(location);
+        }
+
+        // 做一个对 Matrix 和 Increment 的兼容
+        return points.stream().map(location -> {
+            Location showLocation = location;
+            if (hasMatrix()) {
+                Vector v = new Vector(location.getX() - getOrigin().getX(), location.getY() - getOrigin().getY(), location.getZ() - getOrigin().getZ());
+                Vector changed = getMatrix().applyVector(v);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            return showLocation;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     public void show() {
         points.forEach(loc -> {
             if (loc != null) {
                 spawnParticle(loc);
             }
         });
+    }
+
+    @Override
+    public void play() {
+        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+            // 进行关闭
+            if (currentSample + 1 == points.size()) {
+                task.cancel();
+            }
+            currentSample++;
+
+            spawnParticle(points.get(currentSample));
+            return Unit.INSTANCE;
+        });
+    }
+
+    @Override
+    public void playNextPoint() {
+        if (currentSample + 1 == points.size()) {
+            currentSample = 0;
+        }
+        spawnParticle(points.get(currentSample));
+        currentSample++;
     }
 
     public void resetLocation() {

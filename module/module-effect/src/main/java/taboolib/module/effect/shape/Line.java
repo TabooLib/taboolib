@@ -9,6 +9,9 @@ import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.Playable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 表示一条线
  *
@@ -77,6 +80,16 @@ public class Line extends ParticleObj implements Playable {
         for (double i = 0; i < vectorLength; i += step) {
             spawner.spawn(locA.clone().add(vectorAB.clone().multiply(i)));
         }
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        for (double i = 0; i < length; i += step) {
+            Vector vectorTemp = vector.clone().multiply(i);
+            points.add(start.clone().add(vectorTemp));
+        }
+        return points;
     }
 
     @Override

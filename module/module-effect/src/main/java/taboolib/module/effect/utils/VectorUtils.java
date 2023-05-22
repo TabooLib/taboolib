@@ -1,6 +1,7 @@
 package taboolib.module.effect.utils;
 
 import taboolib.common.Isolated;
+import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
 /**
@@ -11,6 +12,17 @@ import taboolib.common.util.Vector;
 @SuppressWarnings("DuplicatedCode")
 @Isolated
 public class VectorUtils {
+
+    /**
+     * 只通过数字本身相减得到向量, 减少额外克隆的损耗
+     *
+     * @param start 起点
+     * @param end   终点
+     * @return {@link Vector}
+     */
+    public static Vector createVector(Location start, Location end) {
+        return new Vector(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
+    }
 
     /**
      * 将给定向量绕X轴进行旋转
