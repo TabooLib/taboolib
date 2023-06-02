@@ -1,5 +1,6 @@
 package taboolib.module.effect.shape;
 
+import org.jetbrains.annotations.NotNull;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
@@ -97,13 +98,12 @@ public class Pyramid extends ParticleObj {
     }
 
     @Override
-    public ParticleObj setOrigin(Location origin) {
+    public void setOrigin(@NotNull Location origin) {
         super.setOrigin(origin);
         // 重置最上方的 Loc
         upLoc = origin.clone().add(0, height, 0);
 
         resetLocations();
-        return this;
     }
 
     @Override
