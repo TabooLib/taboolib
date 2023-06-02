@@ -1,10 +1,12 @@
 @file:Isolated
 package taboolib.platform.util
 
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import taboolib.common.Isolated
 import taboolib.type.BukkitEquipment
@@ -33,4 +35,28 @@ fun LivingEntity.getEquipment(slot: BukkitEquipment): ItemStack? {
  */
 fun LivingEntity.setEquipment(slot: BukkitEquipment, item: ItemStack) {
     slot.setItem(this, item)
+}
+
+/**
+ * 转换为安全实体类
+ */
+fun <T : Entity> T.safely(): SafeEntity<T> {
+    return SafeEntity(this)
+}
+
+/**
+ * 安全实体类
+ */
+@Suppress("UNCHECKED_CAST")
+class SafeEntity<T : Entity>(private var entity: T) {
+
+    /**
+     * 在特定情况下，玩家实体可能会失效，因此需要重新从服务器获取
+     */
+    fun get(): T {
+        if (entity is Player && !entity.isValid) {
+            entity = Bukkit.getPlayerExact(entity.name) as T
+        }
+        return entity
+    }
 }

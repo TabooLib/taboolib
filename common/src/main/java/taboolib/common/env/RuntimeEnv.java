@@ -38,7 +38,7 @@ public class RuntimeEnv {
             }
             File env = new File(ENV_FILE_NAME);
             if (env.exists()) {
-                ENV_PROPERTIES.load(Files.newInputStream(Paths.get(ENV_FILE_NAME)));
+                ENV_PROPERTIES.load(new ByteArrayInputStream(Files.readAllBytes(env.toPath())));
                 defaultAssets = ENV_PROPERTIES.getProperty("assets", defaultAssets);
                 defaultLibrary = ENV_PROPERTIES.getProperty("library", defaultLibrary);
                 defaultRepositoryCentral = ENV_PROPERTIES.getProperty("repository-central", defaultRepositoryCentral);
