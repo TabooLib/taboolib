@@ -7,7 +7,10 @@ import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.utils.VectorUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 表示一个立方体
@@ -26,9 +29,9 @@ public class Cube extends ParticleObj {
      * 向 X正半轴 的向量
      */
     private static final Vector RIGHT = new Vector(1, 0, 0).normalize();
-    private final Location minLoc;
-    private final Location maxLoc;
-    private final double step;
+    private Location minLoc;
+    private Location maxLoc;
+    private double step;
 
     public Cube(Location minLoc, Location maxLoc, ParticleSpawner spawner) {
         this(minLoc, maxLoc, 0.2D, spawner);
@@ -49,6 +52,94 @@ public class Cube extends ParticleObj {
         if (!Objects.requireNonNull(minLoc.getWorld()).equals(maxLoc.getWorld())) {
             throw new IllegalArgumentException("这两个坐标的所对应的世界不相同");
         }
+
+        setOrigin(minLoc.clone().add(VectorUtils.createVector(minLoc, maxLoc).multiply(0.5)));
+    }
+
+    public Location getMinLocation() {
+        return minLoc;
+    }
+
+    public void setMinLocation(Location minLoc) {
+        this.minLoc = minLoc;
+    }
+
+    public Location getMaxLocation() {
+        return maxLoc;
+    }
+
+    public void setMaxLocation(Location maxLoc) {
+        this.maxLoc = maxLoc;
+    }
+
+    public double getStep() {
+        return step;
+    }
+
+    public void setStep(double step) {
+        this.step = step;
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        // 获得最大最小的两个点
+        double minX = Math.min(minLoc.getX(), maxLoc.getX());
+        double minY = Math.min(minLoc.getY(), maxLoc.getY());
+        double minZ = Math.min(minLoc.getZ(), maxLoc.getZ());
+
+        double maxX = Math.max(minLoc.getX(), maxLoc.getX());
+        double maxY = Math.max(minLoc.getY(), maxLoc.getY());
+        double maxZ = Math.max(minLoc.getZ(), maxLoc.getZ());
+
+        Location minLoc = new Location(this.minLoc.getWorld(), minX, minY, minZ);
+
+        // 获得立方体的 长 宽 高
+        double width = maxX - minX;
+        double height = maxY - minY;
+        double depth = maxZ - minZ;
+
+        // 此处的 newOrigin是底部的四个点
+        Location newOrigin = minLoc;
+        double length;
+        // 这里直接得到向X正半轴方向的向量
+        Vector vector = RIGHT.clone();
+        for (int i = 1; i <= 4; i++) {
+            if (i % 2 == 0) {
+                length = depth;
+            } else {
+                length = width;
+            }
+
+            // 4条高
+            for (double j = 0; j < height; j += step) {
+                points.add(newOrigin.clone().add(UP.clone().multiply(j)));
+            }
+
+            // 第n条边
+            for (double j = 0; j < length; j += step) {
+                Location spawnLoc = newOrigin.clone().add(vector.clone().multiply(j));
+                points.add(spawnLoc);
+                points.add(spawnLoc.clone().add(0, height, 0));
+            }
+            // 获取结束时的坐标
+            newOrigin = newOrigin.clone().add(vector.clone().multiply(length));
+            vector = VectorUtils.rotateAroundAxisY(vector, 90D);
+        }
+
+        // 做一个对 Matrix 和 Increment 的兼容
+        return points.stream().map(location -> {
+            Location showLocation = location;
+            if (hasMatrix()) {
+                Vector v = new Vector(location.getX() - getOrigin().getX(), location.getY() - getOrigin().getY(), location.getZ() - getOrigin().getZ());
+                Vector changed = getMatrix().applyVector(v);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            return showLocation;
+        }).collect(Collectors.toList());
     }
 
     @Override

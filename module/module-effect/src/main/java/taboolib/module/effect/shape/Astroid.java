@@ -4,9 +4,13 @@ import kotlin.Unit;
 import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
+import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.Playable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 表示一个星形线
@@ -57,6 +61,29 @@ public class Astroid extends ParticleObj implements Playable {
 
     public void setStep(double step) {
         this.step = step;
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        for (double t = 0.0D; t < 360.0D; t += step) {
+            double radians = Math.toRadians(t);
+            // 计算公式
+            double x = Math.pow(this.radius * Math.cos(radians), 3.0D);
+            double z = Math.pow(this.radius * Math.sin(radians), 3.0D);
+
+            Location showLocation = getOrigin().clone().add(x, 0, z);
+            if (hasMatrix()) {
+                Vector vector = new Vector(x, 0, z);
+                Vector changed = getMatrix().applyVector(vector);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            points.add(showLocation);
+        }
+        return points;
     }
 
     @Override

@@ -4,6 +4,7 @@ import kotlin.Unit;
 import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
+import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
 import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.Playable;
@@ -41,6 +42,30 @@ public class FilledCircle extends ParticleObj implements Playable {
         this.radius = radius;
         this.sample = sample;
         this.currentCount = 0;
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> locations = new ArrayList<>();
+        for (int i = 0; i < sample; i++) {
+            double indices = i + 0.5;
+            double r = Math.sqrt(indices / sample);
+            double theta = Math.PI * (1 + Math.sqrt(5)) * indices;
+            double x = radius * r * Math.cos(theta);
+            double z = radius * r * Math.sin(theta);
+
+            Location showLocation = getOrigin().clone().add(x, 0, z);
+            if (hasMatrix()) {
+                Vector vector = new Vector(x, 0 ,z);
+                Vector changed = getMatrix().applyVector(vector);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            locations.add(showLocation);
+        }
+        return locations;
     }
 
     @Override

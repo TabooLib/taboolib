@@ -1,16 +1,20 @@
 package taboolib.module.effect;
 
+import taboolib.common.util.Location;
+import taboolib.module.effect.math.Matrix;
 import taboolib.module.effect.math.Matrixs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 代表一个特效组
  * <p>
  * 如果你要使用 EffectGroup#scale 这样的方法, 我不建议你将 2D 的特效和 3D 的特效放在一起
- * </p>
+ * <p>
+ * EffectGroup 的矩阵默认使用 3行3列 的矩阵进行变换
  *
  * @author Zoyn IceCold
  */
@@ -56,6 +60,12 @@ public class EffectGroup {
         return this;
     }
 
+    public List<Location> calculateLocations() {
+        return effectList.stream()
+                .flatMap(p -> p.calculateLocations().stream())
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
     /**
      * 利用给定的下标, 将特效组里的第 index-1 个特效进行删除
      *
@@ -85,18 +95,64 @@ public class EffectGroup {
      * @return {@link EffectGroup}
      */
     public EffectGroup scale(double value) {
-        effectList.forEach(effect -> effect.addMatrix(Matrixs.scale(2, 2, value)));
+        effectList.forEach(effect -> effect.addMatrix(Matrixs.scale(3, 3, value)));
         return this;
     }
 
     /**
-     * 将特效组内的特效进行旋转
+     * 将特效组内的特效绕 X 轴进行旋转
      *
      * @param angle 旋转角度
      * @return {@link EffectGroup}
      */
-    public EffectGroup rotate(double angle) {
-        effectList.forEach(effect -> effect.addMatrix(Matrixs.rotate2D(angle)));
+    public EffectGroup rotateAroundXAxis(double angle) {
+        effectList.forEach(effect -> effect.addMatrix(Matrixs.rotateAroundXAxis(angle)));
+        return this;
+    }
+
+    /**
+     * 将特效组内的特效绕 Y 轴进行旋转
+     *
+     * @param angle 旋转角度
+     * @return {@link EffectGroup}
+     */
+    public EffectGroup rotateAroundYAxis(double angle) {
+        effectList.forEach(effect -> effect.addMatrix(Matrixs.rotateAroundYAxis(angle)));
+        return this;
+    }
+
+    /**
+     * 将特效组内的特效绕 Z 轴进行旋转
+     *
+     * @param angle 旋转角度
+     * @return {@link EffectGroup}
+     */
+    public EffectGroup rotateAroundZAxis(double angle) {
+        effectList.forEach(effect -> effect.addMatrix(Matrixs.rotateAroundZAxis(angle)));
+        return this;
+    }
+
+    /**
+     * 将特效组内的特效增加一个矩阵
+     * <p>
+     * 建议请把矩阵设定为 3行3列 的矩阵, 以支持 2D 和 3D 的特效
+     * </p>
+     *
+     * @param matrix 指定的矩阵
+     * @return {@link EffectGroup}
+     */
+    public EffectGroup addMatrix(Matrix matrix) {
+        effectList.forEach(effect -> effect.addMatrix(matrix));
+        return this;
+    }
+
+    /**
+     * 将特效组内的特效的矩阵全部移除
+     *
+     * @return {@link EffectGroup}
+     */
+    public EffectGroup removeMatrix() {
+        effectList.forEach(ParticleObj::removeMatrix);
         return this;
     }
 
