@@ -174,6 +174,10 @@ open class Linked<T>(title: String) : Basic(title) {
         return title.replace("%p", (page + 1).toString())
     }
 
+    open fun resetElementsCache() {
+        elementsCache = elementsCallback()
+    }
+
     /**
      * 构建页面
      */
