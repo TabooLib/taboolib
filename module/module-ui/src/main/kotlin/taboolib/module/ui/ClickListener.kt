@@ -1,6 +1,7 @@
 package taboolib.module.ui
 
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -76,6 +77,7 @@ internal object ClickListener {
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
+                e.currentItem?.type = Material.AIR
                 e.currentItem = null
             }
         } else if (e.cursor.isNotAir() && e.rawSlot == -999) {
@@ -87,6 +89,7 @@ internal object ClickListener {
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
+                e.view.cursor?.type = Material.AIR
                 e.view.cursor = null
             }
         }

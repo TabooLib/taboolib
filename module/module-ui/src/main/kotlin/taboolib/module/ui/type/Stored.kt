@@ -96,13 +96,14 @@ open class Stored(title: String) : Basic(title) {
                 if (it.clickEvent().click.isShiftClick && it.rawSlot >= it.inventory.size && currentItem.isNotAir()) {
                     it.isCancelled = true
                     // 获取有效位置
-                    val firstSlot = rule.firstSlot(it.inventory, currentItem!!)
+                    val firstSlot = rule.firstSlot(it.inventory, currentItem)
                     // 目标位置不存在任何物品
                     // 防止覆盖物品
                     if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot).isAir) {
                         // 设置物品
                         rule.writeItem(it.inventory, currentItem, firstSlot)
                         // 移除物品
+                        it.currentItem?.type = Material.AIR
                         it.currentItem = null
                     }
                 } else if (it.rawSlot < it.inventory.size) {
