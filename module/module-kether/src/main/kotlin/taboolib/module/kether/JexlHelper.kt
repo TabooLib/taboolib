@@ -11,7 +11,7 @@ fun String.compileToJexl(): JexlScript {
     return object : JexlScript {
 
         override fun eval(map: Map<String, Any?>): Any? {
-            return script.execute(MapContext())
+            return script.execute(MapContext(map))
         }
     }
 }
