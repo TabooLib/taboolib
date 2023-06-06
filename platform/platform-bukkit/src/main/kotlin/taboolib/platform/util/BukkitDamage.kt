@@ -15,19 +15,18 @@ fun Damageable.kill() {
 }
 
 val EntityDamageByEntityEvent.attacker: LivingEntity?
-    get() = if (damager is LivingEntity) {
-        damager as LivingEntity
-    } else if (damager is Projectile && (damager as Projectile).shooter is LivingEntity) {
-        (damager as Projectile).shooter as LivingEntity?
-    } else if (damager.javaClass.simpleName == "EvokerFangs" && damager is EvokerFangs) {
-        (damager as EvokerFangs).owner
-    } else {
-        null
+    get() {
+        val attacker = damager
+        return when {
+            attacker is LivingEntity -> attacker
+            // 弹射物
+            attacker is Projectile && attacker.shooter is LivingEntity -> attacker.shooter as LivingEntity?
+            // 版本兼容策略
+            attacker.javaClass.simpleName == "EvokerFangs" && attacker is EvokerFangs -> attacker.owner
+            // 其他
+            else -> null
+        }
     }
 
 val PlayerDeathEvent.killer: LivingEntity?
-    get() = if (entity.killer != null && entity.killer is LivingEntity) {
-        entity.killer as LivingEntity
-    } else {
-        null
-    }
+    get() = entity.killer ?: (entity.lastDamageCause as? EntityDamageByEntityEvent)?.attacker
