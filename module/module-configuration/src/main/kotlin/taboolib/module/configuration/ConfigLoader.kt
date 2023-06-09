@@ -14,9 +14,9 @@ import java.util.function.Supplier
 
 @RuntimeDependencies(
     RuntimeDependency(
-        "!org.yaml:snakeyaml:1.32",
-        test = "!org.yaml.snakeyaml_1_32.Yaml",
-        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_1_32"]
+        "!org.yaml:snakeyaml:2.0",
+        test = "!org.yaml.snakeyaml_2_0.Yaml",
+        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_0"]
     ),
     RuntimeDependency("!com.typesafe:config:1.4.2", test = "!com.typesafe.config.Config"),
     RuntimeDependency("!com.electronwill.night-config:core:3.6.6", test = "!com.electronwill.nightconfig.core.Config"),

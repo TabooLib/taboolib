@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 dependencies {
     implementation("com.electronwill.night-config:core-conversion:6.0.0")
-    compileOnly("org.yaml:snakeyaml:1.32")
+    compileOnly("org.yaml:snakeyaml:2.0")
     compileOnly("com.typesafe:config:1.4.2")
     compileOnly("com.electronwill.night-config:core:3.6.6")
     compileOnly("com.electronwill.night-config:toml:3.6.6")
@@ -25,7 +25,7 @@ tasks {
             include(dependency("com.electronwill.night-config:core-conversion:6.0.0"))
         }
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
-        relocate("org.yaml.snakeyaml.", "org.yaml.snakeyaml_1_32.")
+        relocate("org.yaml.snakeyaml.", "org.yaml.snakeyaml_2_0.")
         relocate("org.tabooproject", "taboolib.library")
         minimize()
     }

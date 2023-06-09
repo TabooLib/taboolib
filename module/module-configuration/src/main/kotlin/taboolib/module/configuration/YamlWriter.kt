@@ -21,15 +21,17 @@ class YamlWriter : ConfigWriter {
     private val blackConfig = "{}\n"
     private val dumperOptions = DumperOptions()
     private val loaderOptions = LoaderOptions()
-    private val representer = YamlRepresenter()
-    private val constructor = YamlConstructor()
+    private val representer: YamlRepresenter
+    private val constructor: YamlConstructor
     private val yaml: Yaml
     private val yamlCommentLoader: YamlCommentLoader
 
     init {
-        representer.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
         dumperOptions.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
         loaderOptions.maxAliasesForCollections = Integer.MAX_VALUE
+        representer = YamlRepresenter(dumperOptions)
+        representer.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
+        constructor = YamlConstructor(loaderOptions)
         yaml = BukkitYaml(constructor, representer, dumperOptions, loaderOptions)
         yamlCommentLoader = YamlCommentLoader(dumperOptions, loaderOptions, constructor, representer, yaml)
     }
