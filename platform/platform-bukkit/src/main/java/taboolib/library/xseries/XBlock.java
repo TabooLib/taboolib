@@ -56,10 +56,17 @@ import java.util.*;
 @SuppressWarnings({"deprecation"})
 @Isolated
 public final class XBlock {
+    /**
+     * This list contains both block and item version of the same material.
+     */
     public static final Set<XMaterial> CROPS = Collections.unmodifiableSet(EnumSet.of(
-            XMaterial.CARROT, XMaterial.POTATO, XMaterial.NETHER_WART, XMaterial.WHEAT_SEEDS, XMaterial.PUMPKIN_SEEDS,
-            XMaterial.MELON_SEEDS, XMaterial.BEETROOT_SEEDS, XMaterial.SUGAR_CANE, XMaterial.BAMBOO_SAPLING, XMaterial.CHORUS_PLANT,
-            XMaterial.KELP, XMaterial.SEA_PICKLE, XMaterial.BROWN_MUSHROOM, XMaterial.RED_MUSHROOM
+            XMaterial.CARROT, XMaterial.CARROTS, XMaterial.POTATO, XMaterial.POTATOES,
+            XMaterial.NETHER_WART, XMaterial.PUMPKIN_SEEDS, XMaterial.WHEAT_SEEDS, XMaterial.WHEAT,
+            XMaterial.MELON_SEEDS, XMaterial.BEETROOT_SEEDS, XMaterial.BEETROOTS, XMaterial.SUGAR_CANE,
+            XMaterial.BAMBOO_SAPLING, XMaterial.BAMBOO, XMaterial.CHORUS_PLANT,
+            XMaterial.KELP, XMaterial.KELP_PLANT, XMaterial.SEA_PICKLE, XMaterial.BROWN_MUSHROOM, XMaterial.RED_MUSHROOM,
+            XMaterial.MELON_STEM, XMaterial.PUMPKIN_STEM
+
     ));
     public static final Set<XMaterial> DANGEROUS = Collections.unmodifiableSet(EnumSet.of(
             XMaterial.MAGMA_BLOCK, XMaterial.LAVA, XMaterial.CAMPFIRE, XMaterial.FIRE, XMaterial.SOUL_FIRE
@@ -84,7 +91,8 @@ public final class XBlock {
         ITEM_TO_BLOCK.put(XMaterial.PUMPKIN_PIE, XMaterial.PUMPKIN);
     }
 
-    private XBlock() {}
+    private XBlock() {
+    }
 
     public static boolean isLit(Block block) {
         if (ISFLAT) {
@@ -102,7 +110,6 @@ public final class XBlock {
      * has an inventory.
      *
      * @param block the block to check.
-     *
      * @return true if the block is a container, otherwise false.
      */
     public static boolean isContainer(@Nullable Block block) {
@@ -135,7 +142,6 @@ public final class XBlock {
      * Any material that can be planted which is from {@link #CROPS}
      *
      * @param material the material to check.
-     *
      * @return true if this material is a crop, otherwise false.
      */
     public static boolean isCrop(XMaterial material) {
@@ -146,7 +152,6 @@ public final class XBlock {
      * Any material that can damage players, usually by interacting with the block.
      *
      * @param material the material to check.
-     *
      * @return true if this material is dangerous, otherwise false.
      */
     public static boolean isDangerous(XMaterial material) {
@@ -213,7 +218,8 @@ public final class XBlock {
 
         BlockState state = block.getState();
         MaterialData data = state.getData();
-        if (data instanceof org.bukkit.material.Directional) return ((org.bukkit.material.Directional) data).getFacing();
+        if (data instanceof org.bukkit.material.Directional)
+            return ((org.bukkit.material.Directional) data).getFacing();
         return BlockFace.SELF;
     }
 
@@ -260,7 +266,8 @@ public final class XBlock {
         }
 
         LegacyMaterial legacyMaterial = LegacyMaterial.getMaterial(parsedName);
-        if (legacyMaterial == LegacyMaterial.BANNER) block.setType(LegacyMaterial.STANDING_BANNER.material, applyPhysics);
+        if (legacyMaterial == LegacyMaterial.BANNER)
+            block.setType(LegacyMaterial.STANDING_BANNER.material, applyPhysics);
         LegacyMaterial.Handling handling = legacyMaterial == null ? null : legacyMaterial.handling;
 
         BlockState state = block.getState();
@@ -326,11 +333,13 @@ public final class XBlock {
                         case REDWOOD:
                         case BIRCH:
                         case JUNGLE:
-                            if (!firstType) throw new AssertionError("Invalid tree species " + species + " for block type" + legacyMaterial + ", use block type 2 instead");
+                            if (!firstType)
+                                throw new AssertionError("Invalid tree species " + species + " for block type" + legacyMaterial + ", use block type 2 instead");
                             break;
                         case ACACIA:
                         case DARK_OAK:
-                            if (firstType) throw new AssertionError("Invalid tree species " + species + " for block type 2 " + legacyMaterial + ", use block type instead");
+                            if (firstType)
+                                throw new AssertionError("Invalid tree species " + species + " for block type 2 " + legacyMaterial + ", use block type instead");
                             break;
                     }
                     state.setRawData((byte) ((state.getRawData() & 0xC) | (species.getData() & 0x3)));
@@ -389,7 +398,6 @@ public final class XBlock {
      *
      * @param block the block to color.
      * @param color the color to use.
-     *
      * @return true if the block can be colored, otherwise false.
      */
     public static boolean setColor(Block block, DyeColor color) {
@@ -416,7 +424,6 @@ public final class XBlock {
      *
      * @param block the block to set the fluid level of.
      * @param level the level of fluid.
-     *
      * @return true if this block can have a fluid level, otherwise false.
      */
     public static boolean setFluidLevel(Block block, int level) {
@@ -560,7 +567,6 @@ public final class XBlock {
 
     /**
      * @param block the block to get its XMaterial type.
-     *
      * @return the XMaterial of the block.
      * @deprecated Not stable, use {@link #isType(Block, XMaterial)} or {@link #isSimilar(Block, XMaterial)} instead.
      * If you want to save a block material somewhere, you need to use {@link XMaterial#matchXMaterial(Material)}
@@ -593,7 +599,6 @@ public final class XBlock {
      *
      * @param block    the block to compare.
      * @param material the material to compare with.
-     *
      * @return true if block type is similar to the given material.
      * @see #isType(Block, XMaterial)
      * @since 1.3.0
@@ -611,7 +616,6 @@ public final class XBlock {
      *
      * @param block    the block to check.
      * @param material the XMaterial similar to this block type.
-     *
      * @return true if the raw block type matches with the material.
      * @see #isSimilar(Block, XMaterial)
      */
@@ -675,7 +679,8 @@ public final class XBlock {
         }
 
         String name = block.getType().name();
-        if (name.startsWith("REDSTONE_COMPARATOR")) return block.getType() == BlockMaterial.REDSTONE_COMPARATOR_ON.material;
+        if (name.startsWith("REDSTONE_COMPARATOR"))
+            return block.getType() == BlockMaterial.REDSTONE_COMPARATOR_ON.material;
         return false;
     }
 

@@ -138,7 +138,6 @@ public enum XPotion {
      * the normal RegEx + String Methods approach for both formatted and unformatted material names.
      *
      * @param name the potion effect type name to format.
-     *
      * @return an enum name.
      * @since 1.0.0
      */
@@ -152,7 +151,8 @@ public enum XPotion {
         for (int i = 0; i < len; i++) {
             char ch = name.charAt(i);
 
-            if (!appendUnderline && count != 0 && (ch == '-' || ch == ' ' || ch == '_') && chs[count] != '_') appendUnderline = true;
+            if (!appendUnderline && count != 0 && (ch == '-' || ch == ' ' || ch == '_') && chs[count] != '_')
+                appendUnderline = true;
             else {
                 if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
                     if (appendUnderline) {
@@ -172,13 +172,13 @@ public enum XPotion {
      * Supports type IDs.
      *
      * @param potion the type of the type's ID of the potion effect type.
-     *
      * @return a potion effect type.
      * @since 1.0.0
      */
     @NotNull
     public static Optional<XPotion> matchXPotion(@NotNull String potion) {
-        if (potion == null || potion.isEmpty()) throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
+        if (potion == null || potion.isEmpty())
+            throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
         PotionEffectType idType = fromId(potion);
         if (idType != null) {
             XPotion type = Data.NAMES.get(idType.getName());
@@ -192,7 +192,6 @@ public enum XPotion {
      * Parses the XPotion for this potion effect.
      *
      * @param type the potion effect type.
-     *
      * @return the XPotion of this potion effect.
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
      * @since 1.0.0
@@ -208,7 +207,6 @@ public enum XPotion {
      * Parses the type ID if available.
      *
      * @param type the ID of the potion effect type.
-     *
      * @return a potion effect type from the ID, or null if it's not an ID or the effect is not found.
      * @since 1.0.0
      */
@@ -265,7 +263,6 @@ public enum XPotion {
      * The last argument (the amplifier can also have a chance which if not met, returns null.
      *
      * @param potion the potion string to parse.
-     *
      * @return a potion effect, or null if the potion type is wrong.
      * @see #buildPotionEffect(int, int)
      * @since 1.0.0
@@ -298,7 +295,8 @@ public enum XPotion {
         int amplifier = 0;
         if (split.size() > 1) {
             duration = toInt(split.get(1), 1) * 20;
-            if (split.size() > 2) amplifier = toInt(chanceIndex <= 0 ? split.get(2) : split.get(2).substring(0, chanceIndex), 1) - 1;
+            if (split.size() > 2)
+                amplifier = toInt(chanceIndex <= 0 ? split.get(2) : split.get(2).substring(0, chanceIndex), 1) - 1;
         }
 
         return new Effect(new PotionEffect(type, duration, amplifier), chance);
@@ -317,7 +315,6 @@ public enum XPotion {
      *
      * @param entity  the entity to add potion effects to.
      * @param effects the list of potion effects to parse and add to the entity.
-     *
      * @see #parseEffect(String)
      * @since 1.0.0
      */
@@ -328,7 +325,6 @@ public enum XPotion {
 
     /**
      * @param effectsString a list of effects with a format following {@link #parseEffect(String)}
-     *
      * @return a list of parsed effets.
      * @since 3.0.0
      */
@@ -351,7 +347,6 @@ public enum XPotion {
      * @param entity  the entity to throw the potion from.
      * @param color   the color of the potion's bottle.
      * @param effects the effects of the potion.
-     *
      * @return a thrown splash potion.
      * @since 1.0.0
      */
@@ -362,7 +357,7 @@ public enum XPotion {
         ItemStack potion = Material.getMaterial("SPLASH_POTION") == null ?
                 new ItemStack(Material.POTION, 1, (short) 16398) : // or 16384?
                 new ItemStack(Material.SPLASH_POTION);
-        // TODO check why the fuck Lingering potion isn't supported.
+        // Why the fuck isn't Lingering potion supported?
 
         PotionMeta meta = (PotionMeta) potion.getItemMeta();
         meta.setColor(color);
@@ -389,14 +384,14 @@ public enum XPotion {
      * @param type    the type of the potion.
      * @param color   the color of the potion's bottle.
      * @param effects the effects of the potion.
-     *
      * @return an item with the specified effects.
      * @since 1.0.0
      */
     @NotNull
     public static ItemStack buildItemWithEffects(@NotNull Material type, @Nullable Color color, @Nullable PotionEffect... effects) {
         Objects.requireNonNull(type, "Cannot build an effected item with null type");
-        if (!canHaveEffects(type)) throw new IllegalArgumentException("Cannot build item with " + type.name() + " potion type");
+        if (!canHaveEffects(type))
+            throw new IllegalArgumentException("Cannot build item with " + type.name() + " potion type");
 
         ItemStack item = new ItemStack(type);
         PotionMeta meta = (PotionMeta) item.getItemMeta();
@@ -415,7 +410,6 @@ public enum XPotion {
      * You should avoid using them or use XMaterial instead.
      *
      * @param material the material to check.
-     *
      * @return true if the material is a potion, otherwise false.
      * @since 1.0.0
      */
@@ -471,7 +465,6 @@ public enum XPotion {
      *
      * @param duration  the duration of the potion effect in ticks.
      * @param amplifier the amplifier of the potion effect (starting from 1).
-     *
      * @return a potion effect.
      * @see #parseEffect(String)
      * @since 1.0.0

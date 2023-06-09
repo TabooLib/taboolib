@@ -136,7 +136,7 @@ public class XSkull {
         SkullMeta meta = (SkullMeta) head.getItemMeta();
 
         if (SUPPORTS_UUID) meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
-        else meta.setOwner(id.toString());
+        else meta.setOwner(Bukkit.getOfflinePlayer(id).getName());
 
         head.setItemMeta(meta);
         return head;
@@ -221,7 +221,8 @@ public class XSkull {
         try {
             UUID.fromString(identifier);
             return ValueType.UUID;
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException ignored) {
+        }
 
         if (isUsername(identifier)) return ValueType.NAME;
         if (identifier.contains("textures.minecraft.net")) return ValueType.TEXTURE_URL;
@@ -275,19 +276,23 @@ public class XSkull {
     }
 
     @Nullable
-    public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
+    public static String getSkinValue(@NotNull ItemMeta skull) {
+        Objects.requireNonNull(skull, "Skull ItemStack cannot be null");
+        SkullMeta meta = (SkullMeta) skull;
         GameProfile profile = null;
+
         try {
-            profile = Reflex.Companion.getProperty(skull, "profile", false, true, true);
-        } catch (Exception ignored) {
+            profile = (GameProfile) CRAFT_META_SKULL_PROFILE_GETTER.invoke(meta);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
+
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
             for (Property property : profile.getProperties().get("textures")) {
-                if (!property.getValue().isEmpty()) {
-                    return new ItemBuilder.SkullTexture(property.getValue(), profile.getId());
-                }
+                if (!property.getValue().isEmpty()) return property.getValue();
             }
         }
+
         return null;
     }
 
@@ -295,7 +300,6 @@ public class XSkull {
      * https://help.minecraft.net/hc/en-us/articles/360034636712
      *
      * @param name the username to check.
-     *
      * @return true if the string matches the Minecraft username rule, otherwise false.
      */
     private static boolean isUsername(@NotNull String name) {
@@ -304,7 +308,8 @@ public class XSkull {
 
         // For some reasons Apache's Lists.charactersOf is faster than character indexing for small strings.
         for (char ch : Lists.charactersOf(name)) {
-            if (ch != '_' && !(ch >= 'A' && ch <= 'Z') && !(ch >= 'a' && ch <= 'z') && !(ch >= '0' && ch <= '9')) return false;
+            if (ch != '_' && !(ch >= 'A' && ch <= 'Z') && !(ch >= 'a' && ch <= 'z') && !(ch >= '0' && ch <= '9'))
+                return false;
         }
         return true;
     }

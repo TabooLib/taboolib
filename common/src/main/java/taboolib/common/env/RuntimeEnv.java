@@ -79,7 +79,11 @@ public class RuntimeEnv {
             return;
         }
         for (RuntimeResource resource : resources) {
-            loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+            String url = resource.name();
+            if (resource.zip() && url.endsWith(".zip")) {
+                url = url.substring(0, url.length() - 4);
+            }
+            loadAssets(url, resource.hash(), resource.value(), resource.zip());
         }
     }
 

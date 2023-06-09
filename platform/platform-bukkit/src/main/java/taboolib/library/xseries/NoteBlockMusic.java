@@ -131,7 +131,6 @@ public final class NoteBlockMusic {
      * https://minecraft.gamepedia.com/Note_Block#Notes
      *
      * @param ch the character of the note tone.
-     *
      * @return the note tone or null if not found.
      * @since 3.0.0
      */
@@ -163,7 +162,6 @@ public final class NoteBlockMusic {
      * You can still give me the script and I'll put it on the Spigot page.
      *
      * @param player the player to send the notes to.
-     *
      * @return the async task handling the notes.
      * @since 1.0.0
      */
@@ -179,7 +177,6 @@ public final class NoteBlockMusic {
      * @param player   the player to play the music to.
      * @param location the location to play the notes to.
      * @param path     the path of the file to read the music notes from.
-     *
      * @return the async task handling the file operations and music parsers.
      * @see #playMusic(Player, Supplier, String)
      * @since 1.0.0
@@ -191,7 +188,7 @@ public final class NoteBlockMusic {
                 while ((line = reader.readLine()) != null) {
                     line = line.trim();
                     if (line.isEmpty() || line.startsWith("#")) continue;
-                    parseInstructions(line).play(player, location);
+                    parseInstructions(line).play(player, location, true);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -241,7 +238,6 @@ public final class NoteBlockMusic {
      * @param player   in order to play the note we need a player instance. Any player.
      * @param location the location to play this note to.
      * @param script   the music script.
-     *
      * @return the async task processing the script.
      * @see #fromFile(Player, Supplier, Path)
      * @since 1.0.0
@@ -252,7 +248,7 @@ public final class NoteBlockMusic {
         return CompletableFuture.runAsync(() -> {
             if (Strings.isNullOrEmpty(script)) return;
             Sequence seq = parseInstructions(script);
-            seq.play(player, location);
+            seq.play(player, location, true);
         }).exceptionally(ex -> {
             ex.printStackTrace();
             return null;
@@ -330,7 +326,6 @@ public final class NoteBlockMusic {
      * {@link Character#isDigit(char)} won't work perfectly in this case.
      *
      * @param ch the character to check.
-     *
      * @return if and only if this character is an English digit number.
      * @since 1.2.0
      */
@@ -425,7 +420,8 @@ public final class NoteBlockMusic {
 
     @SuppressWarnings("StringBufferField")
     private static final class InstructionBuilder {
-        @NotNull final CharSequence script;
+        @NotNull
+        final CharSequence script;
         final int len;
         final StringBuilder
                 instrumentBuilder = new StringBuilder(10),
@@ -507,7 +503,8 @@ public final class NoteBlockMusic {
                             phase = InstructionParserPhase.INSTRUMENT;
                         }
                         isBuilding = true;
-                        if ((ch = phase.checkup(ch)) == '\0') err("Unexpected char at index " + i + " with phase " + phase + ": " + script.charAt(i));
+                        if ((ch = phase.checkup(ch)) == '\0')
+                            err("Unexpected char at index " + i + " with phase " + phase + ": " + script.charAt(i));
                         currentBuilder.append(ch);
                 }
             }
@@ -606,8 +603,7 @@ public final class NoteBlockMusic {
          * A note, has a tone, and a tone is a named <a href="https://en.wikipedia.org/wiki/Pitch_(music)">pitch</a>
          * with a specific (constant) <a href="https://en.wikipedia.org/wiki/Timbre">timbre</a>.
          */
-        public final float volume;
-        public float pitch;
+        public float volume, pitch;
 
         public Sound(Instrument instrument, Note note, float volume, int restatement, int restatementFermata, int fermata) {
             super(restatement, restatementFermata, fermata);
@@ -632,9 +628,17 @@ public final class NoteBlockMusic {
         }
 
         @Override
-        public void play(Player player, Supplier<Location> location) {
+        public void play(Player player, Supplier<Location> location, boolean playAtLocation) {
+            org.bukkit.Sound bukkitSound = sound.parseSound();
             for (int repeat = restatement; repeat > 0; repeat--) {
-                player.getWorld().playSound(location.get(), sound.parseSound(), volume, pitch);
+                Location finalLocation = location.get();
+                if (bukkitSound != null) {
+                    if (playAtLocation) {
+                        finalLocation.getWorld().playSound(finalLocation, bukkitSound, volume, pitch);
+                    } else {
+                        player.playSound(finalLocation, bukkitSound, volume, pitch);
+                    }
+                }
                 if (restatementFermata > 0) sleep(restatementFermata);
             }
             if (fermata > 0) sleep(fermata);
@@ -656,10 +660,9 @@ public final class NoteBlockMusic {
      * @since 3.0.0
      */
     public abstract static class Instruction {
-        @Nullable public Sequence parent;
-        public final int restatement;
-        public final int restatementFermata;
-        public final int fermata;
+        @Nullable
+        public Sequence parent;
+        public int restatement, restatementFermata, fermata;
 
         public Instruction(int restatement, int restatementFermata, int fermata) {
             this.restatement = restatement;
@@ -667,7 +670,7 @@ public final class NoteBlockMusic {
             this.fermata = fermata;
         }
 
-        public abstract void play(Player player, Supplier<Location> location);
+        public abstract void play(Player player, Supplier<Location> location, boolean playAtLocation);
 
         public long getEstimatedLength() {
             return (long) restatement * restatementFermata;
@@ -683,7 +686,7 @@ public final class NoteBlockMusic {
      * @since 3.0.0
      */
     public static class Sequence extends Instruction {
-        public final Collection<Instruction> instructions = new ArrayList<>(16);
+        public Collection<Instruction> instructions = new ArrayList<>(16);
 
         public Sequence() {
             super(1, 0, 0);
@@ -699,10 +702,10 @@ public final class NoteBlockMusic {
         }
 
         @Override
-        public void play(Player player, Supplier<Location> location) {
+        public void play(Player player, Supplier<Location> location, boolean playAtLocation) {
             for (int repeat = restatement; repeat > 0; repeat--) {
                 for (Instruction instruction : instructions) {
-                    instruction.play(player, location);
+                    instruction.play(player, location, playAtLocation);
                 }
                 if (restatementFermata > 0) sleep(restatementFermata);
             }
