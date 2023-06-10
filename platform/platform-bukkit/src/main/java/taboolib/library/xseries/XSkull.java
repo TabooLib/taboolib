@@ -276,7 +276,7 @@ public class XSkull {
     }
 
     @Nullable
-    public static String getSkinValue(@NotNull ItemMeta skull) {
+    public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
         Objects.requireNonNull(skull, "Skull ItemStack cannot be null");
         SkullMeta meta = (SkullMeta) skull;
         GameProfile profile = null;
@@ -289,7 +289,9 @@ public class XSkull {
 
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
             for (Property property : profile.getProperties().get("textures")) {
-                if (!property.getValue().isEmpty()) return property.getValue();
+                if (!property.getValue().isEmpty()) {
+                    return new ItemBuilder.SkullTexture(property.getValue(), null);
+                }
             }
         }
 

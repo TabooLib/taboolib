@@ -334,7 +334,7 @@ open class ItemBuilder {
                 if (itemMeta.owner != null) {
                     skullOwner = itemMeta.owner
                 }
-                skullTexture = XSkull.getSkinValue(itemMeta)
+                XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
             }
         }
         try {
