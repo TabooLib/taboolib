@@ -48,6 +48,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+import static taboolib.module.nms.MinecraftServerUtilKt.nmsClass;
 import static taboolib.module.nms.MinecraftServerUtilKt.sendPacket;
 
 /**
@@ -65,6 +66,7 @@ public class NMSGenericImpl extends NMSGeneric {
     private Method getKeyMethod;
 
     public NMSGenericImpl() {
+        // 1.13+
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             for (Field declaredField : net.minecraft.server.v1_12_R1.Entity.class.getDeclaredFields()) {
                 if (declaredField.getType().getSimpleName().equals("EntityTypes")) {
@@ -73,16 +75,19 @@ public class NMSGenericImpl extends NMSGeneric {
                 }
             }
         }
+        // 1.17+
         if (MinecraftVersion.INSTANCE.getMajor() >= 9) {
             try {
+                // 1.18+
                 if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
                     Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
                     getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
                 }
+                // 1.20+
                 if (MinecraftVersion.INSTANCE.getMajor() >= 12) {
                     packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
                             net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
-                            net.minecraft.world.level.lighting.LevelLightEngine.class,
+                            nmsClass("LevelLightEngine"), // class file has wrong version 61.0, should be 52.0
                             BitSet.class,
                             BitSet.class
                     );
