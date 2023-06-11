@@ -54,9 +54,9 @@ class ConnectionGetterImpl : ConnectionGetter() {
             9 -> {
                 ((Bukkit.getServer() as CraftServer19).server as NMSMinecraftServer).invokeMethod<ServerConnection>("getServerConnection")?.connections
             }
-            // 1.18, 1.19 -> List<NetworkManager> getConnections()
+            // 1.18, 1.19, 1.20 -> List<NetworkManager> getConnections()
             // 这个版本开始获取 ServerConnection 的方法变更为 getConnection()
-            10, 11 -> {
+            10, 11, 12 -> {
                 ((Bukkit.getServer() as CraftServer19).server as NMSMinecraftServer).connection?.connections
             }
             // 不支持
@@ -113,9 +113,9 @@ class ConnectionGetterImpl : ConnectionGetter() {
             // 1.13, 1.14, 1.15, 1.16
             // public SocketAddress socketAddress;
             5, 6, 7, 8 -> ((connection as NMS13NetworkManager).socketAddress as InetSocketAddress)
-            // 1.17, 1.18, 1.19
+            // 1.17, 1.18, 1.19, 1.20
             // public SocketAddress address;
-            9, 10, 11 -> ((connection as NetworkManager).address as InetSocketAddress)
+            9, 10, 11, 12 -> ((connection as NetworkManager).address as InetSocketAddress)
             // 不支持
             else -> error("Unsupported Minecraft version: $major")
         }

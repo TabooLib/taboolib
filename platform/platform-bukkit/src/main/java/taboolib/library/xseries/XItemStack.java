@@ -189,7 +189,7 @@ public final class XItemStack {
                 config.set(entry, enchant.getValue());
             }
         } else if (meta instanceof SkullMeta) {
-            String skull = XSkull.getSkinValue(meta);
+            String skull = XSkull.getSkinValue(meta).getTextures();
             if (skull != null) config.set("skull", skull);
         } else if (meta instanceof BannerMeta) {
             BannerMeta banner = (BannerMeta) meta;
