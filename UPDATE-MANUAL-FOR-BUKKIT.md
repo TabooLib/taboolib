@@ -96,7 +96,7 @@ Done! (15100ms)
         tag = "1.20:combined" // 表示这是一个类映射表
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg", // 如果你的文件有 .zip 后缀，写到这里时要摘掉
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg",
         hash = "c7b1c17b32428b6d2d3f401d789301a1c1e11eff",
         zip = true,
         tag = "1.20:fields"  // 表示这是一个字段映射表
