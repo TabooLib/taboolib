@@ -90,13 +90,13 @@ Done! (15100ms)
 @RuntimeResources(
     ...
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg.zip",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg", // 如果你的文件有 .zip 后缀，写到这里时要摘掉
         hash = "f3a27c142537e6231ea43b516dfc322a3a8a3003",
         zip = true,
         tag = "1.20:combined" // 表示这是一个类映射表
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg.zip",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg", // 如果你的文件有 .zip 后缀，写到这里时要摘掉
         hash = "c7b1c17b32428b6d2d3f401d789301a1c1e11eff",
         zip = true,
         tag = "1.20:fields"  // 表示这是一个字段映射表

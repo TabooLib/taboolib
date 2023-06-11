@@ -132,13 +132,13 @@ import taboolib.common.env.RuntimeResources
         tag = "1.19.4:fields"
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg.zip",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg",
         hash = "f3a27c142537e6231ea43b516dfc322a3a8a3003",
         zip = true,
         tag = "1.20:combined"
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg.zip",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg",
         hash = "c7b1c17b32428b6d2d3f401d789301a1c1e11eff",
         zip = true,
         tag = "1.20:fields"
