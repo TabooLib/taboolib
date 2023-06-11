@@ -79,13 +79,22 @@ public class NMSGenericImpl extends NMSGeneric {
                     Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
                     getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
                 }
-                packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
-                        net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
-                        net.minecraft.server.v1_16_R1.LightEngine.class,
-                        BitSet.class,
-                        BitSet.class,
-                        Boolean.TYPE
-                );
+                if (MinecraftVersion.INSTANCE.getMajor() >= 12) {
+                    packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
+                            net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
+                            net.minecraft.world.level.lighting.LevelLightEngine.class,
+                            BitSet.class,
+                            BitSet.class
+                    );
+                } else {
+                    packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
+                            net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
+                            net.minecraft.server.v1_16_R1.LightEngine.class,
+                            BitSet.class,
+                            BitSet.class,
+                            Boolean.TYPE
+                    );
+                }
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
             }
