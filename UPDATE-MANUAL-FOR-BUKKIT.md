@@ -91,13 +91,13 @@ Done! (15100ms)
     ...
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg", // 如果你的文件有 .zip 后缀，写到这里时要摘掉
-        hash = "f3a27c142537e6231ea43b516dfc322a3a8a3003",
+        hash = "1e2870b303f37a07709c2045b5db7e6c79e48acd", // 原始文件的 SHA1 值（压缩前的）
         zip = true,
         tag = "1.20:combined" // 表示这是一个类映射表
     ),
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c571a01f-members.csrg",
-        hash = "c7b1c17b32428b6d2d3f401d789301a1c1e11eff",
+        hash = "de0d266adbbff4f7ffe4dd44ed0e36f9205b31b1",
         zip = true,
         tag = "1.20:fields"  // 表示这是一个字段映射表
     )
