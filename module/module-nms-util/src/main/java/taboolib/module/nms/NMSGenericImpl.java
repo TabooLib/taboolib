@@ -63,6 +63,7 @@ public class NMSGenericImpl extends NMSGeneric {
 
     private Field entityTypesField;
     private Constructor packetPlayOutLightUpdateConstructor;
+    private Constructor packetPlayOutSignEditorConstructor;
     private Method getKeyMethod;
 
     public NMSGenericImpl() {
@@ -90,6 +91,10 @@ public class NMSGenericImpl extends NMSGeneric {
                             nmsClass("LevelLightEngine"), // class file has wrong version 61.0, should be 52.0
                             BitSet.class,
                             BitSet.class
+                    );
+                    packetPlayOutSignEditorConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutOpenSignEditor.class.getDeclaredConstructor(
+                            net.minecraft.server.v1_16_R1.BlockPosition.class,
+                            Boolean.class
                     );
                 } else {
                     packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
@@ -680,13 +685,11 @@ public class NMSGenericImpl extends NMSGeneric {
     @Override
     public void openSignEditor(Player player, Block block) {
         try {
+            net.minecraft.server.v1_12_R1.BlockPosition blockPosition = new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
             // 1.20
             if (MinecraftVersion.INSTANCE.getMajor() >= 12) {
-                net.minecraft.core.BlockPosition blockPosition = new net.minecraft.core.BlockPosition(block.getX(), block.getY(), block.getZ());
-                net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor packet = new net.minecraft.network.protocol.game.PacketPlayOutOpenSignEditor(blockPosition, true);
-                sendPacket(player, packet);
+                sendPacket(player, packetPlayOutSignEditorConstructor.newInstance(blockPosition, true));
             } else {
-                net.minecraft.server.v1_12_R1.BlockPosition blockPosition = new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
                 net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor packet = new net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition);
                 sendPacket(player, packet);
             }
