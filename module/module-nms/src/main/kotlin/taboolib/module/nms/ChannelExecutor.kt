@@ -10,6 +10,7 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isListened
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.warning
@@ -108,9 +109,19 @@ object ChannelExecutor {
         ConnectionGetter.instance.release(e.player.address ?: return)
     }
 
-    @Awake(LifeCycle.ENABLE)
+    @Awake(LifeCycle.ACTIVE)
     private fun onEnable() {
-        onlinePlayers.forEach { addPlayerChannel(it, it.address?.address ?: return@forEach) }
+        if (TabooLibCommon.isStopped()) {
+            return
+        }
+        onlinePlayers.forEach {
+            val address = it.address?.address
+            if (address == null) {
+                warning("Cannot get player address: ${it.name} (${it.address})")
+                return@forEach
+            }
+            addPlayerChannel(it, address)
+        }
     }
 
     @Awake(LifeCycle.DISABLE)

@@ -101,7 +101,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
             }
             used
         }
-        dev("Player connection ($address) -> ${connection.address()} (init=$init)")
+        dev("Player connection ($address) -> ${connection.address()} (${if (init) "init" else "get"})")
         return connection
     }
 
