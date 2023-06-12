@@ -14,7 +14,7 @@ import java.net.InetSocketAddress
  */
 abstract class ConnectionGetter {
 
-    abstract fun getConnection(address: InetAddress, first: Boolean): Any
+    abstract fun getConnection(address: InetAddress, init: Boolean): Any
 
     abstract fun getChannel(connection: Any): Channel
 

@@ -41,9 +41,8 @@ object ChannelExecutor {
         return PacketSendEvent::class.java.isListened() || PacketReceiveEvent::class.java.isListened()
     }
 
-    fun getPlayerChannel(address: InetAddress, first: Boolean): Channel {
-        val connection = ConnectionGetter.instance.getConnection(address, first)
-        return ConnectionGetter.instance.getChannel(connection)
+    fun getPlayerChannel(address: InetAddress, init: Boolean): Channel {
+        return ConnectionGetter.instance.getChannel(ConnectionGetter.instance.getConnection(address, init))
     }
 
     fun addPlayerChannel(player: Player, address: InetAddress) {
@@ -70,7 +69,7 @@ object ChannelExecutor {
         }
     }
 
-    fun removePlayerChannel(player: Player) {
+    fun removePlayerChannel(player: Player, async: Boolean = true) {
         if (isDisabled || !isPacketEventListened()) {
             return
         }
@@ -79,7 +78,7 @@ object ChannelExecutor {
             return
         }
         val address = player.address?.address ?: return
-        pool.submit {
+        fun process() {
             try {
                 val pipeline = getPlayerChannel(address, false).pipeline()
                 if (pipeline[id] != null) {
@@ -88,6 +87,11 @@ object ChannelExecutor {
             } catch (ex: Throwable) {
                 ex.printStackTrace()
             }
+        }
+        if (async) {
+            pool.submit(::process)
+        } else {
+            process()
         }
     }
 
@@ -114,6 +118,6 @@ object ChannelExecutor {
         if (TabooLibCommon.isStopped()) {
             return
         }
-        onlinePlayers.forEach { removePlayerChannel(it) }
+        onlinePlayers.forEach { removePlayerChannel(it, async = false) }
     }
 }

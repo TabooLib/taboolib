@@ -29,7 +29,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
     val major = MinecraftVersion.major
     val addressUsed = ConcurrentHashMap<InetSocketAddress, Any>()
 
-    override fun getConnection(address: InetAddress, first: Boolean): Any {
+    override fun getConnection(address: InetAddress, init: Boolean): Any {
         // 获取服务器中的所有连接
         val serverConnections = when (major) {
             // 1.8, 1.9, 1.10, 1.11, 1.12 -> List<NetworkManager> h
@@ -63,29 +63,45 @@ class ConnectionGetterImpl : ConnectionGetter() {
             else -> error("Unsupported Minecraft version: $major")
         } ?: error("Unable to get connections from ${Bukkit.getServer()}")
         // 获取相同 IP 的连接
-        val connections = serverConnections.filter { getAddress(it).address == address }
+        val connections = serverConnections.filter { conn -> conn.address().address == address }
         // 没有相同 IP 的连接
         if (connections.isEmpty()) {
-            warning("Unable to get player connection (${address})")
+            warning("No connection found with the same address (${address})")
             warning("Server connections:")
-            serverConnections.forEach { conn -> warning("- ${getAddress(conn)}") }
+            serverConnections.forEach { conn -> warning("- ${conn.address()}") }
             throw IllegalStateException()
         }
         // 打印信息
         if (isDevelopmentMode) {
             info("Player connection ($address)")
             info("Server connections:")
-            serverConnections.forEach { conn -> info("- ${getAddress(conn)}") }
+            serverConnections.forEach { conn -> info("- ${conn.address()}") }
         }
-        // 首次进入服务器
-        val connection = if (first) {
+        // 是否进行初始化
+        val connection = if (init) {
             // 获取未被使用的连接
-            connections.first { !addressUsed.containsKey(getAddress(it)) }.also { addressUsed[getAddress(it)] = it }
+            val unused = connections.find { conn -> !addressUsed.containsKey(conn.address()) }
+            if (unused == null) {
+                warning("Connections with the same address are already occupied (${address})")
+                warning("Server connections:")
+                serverConnections.forEach { conn -> warning("- ${conn.address()}") }
+                throw IllegalStateException()
+            }
+            addressUsed[unused.address()] = unused
+            unused
         } else {
             // 获取已使用的连接
-            connections.first { conn -> addressUsed[getAddress(conn)] == conn }
+            val used = connections.find { conn -> addressUsed[conn.address()] == conn }
+            // 没有找到玩家之前存入插件的连接
+            if (used == null) {
+                warning("Get the connection before initialisation (${address})")
+                warning("Server connections:")
+                serverConnections.forEach { conn -> warning("- ${conn.address()}") }
+                throw IllegalStateException()
+            }
+            used
         }
-        dev("Player connection ($address) -> ${getAddress(connection)} (first=$first)")
+        dev("Player connection ($address) -> ${connection.address()} (init=$init)")
         return connection
     }
 
@@ -102,20 +118,20 @@ class ConnectionGetterImpl : ConnectionGetter() {
         return ClientboundBundlePacket(iterator.asIterable() as Iterable<Packet<PacketListenerPlayOut>>)
     }
 
-    private fun getAddress(connection: Any): InetSocketAddress {
+    fun Any.address(): InetSocketAddress {
         // 这种方式无法在 BungeeCord 中获取到正确的地址：
         // return (getChannel(connection).remoteAddress() as? InetSocketAddress)?.address
         // 因此要根据不同的版本获取不同的 SocketAddress 字段：
         return when (major) {
             // 1.8, 1.9, 1.10, 1.11, 1.12
             // public SocketAddress l;
-            0, 1, 2, 3, 4 -> ((connection as NMS8NetworkManager).l as InetSocketAddress)
+            0, 1, 2, 3, 4 -> ((this as NMS8NetworkManager).l as InetSocketAddress)
             // 1.13, 1.14, 1.15, 1.16
             // public SocketAddress socketAddress;
-            5, 6, 7, 8 -> ((connection as NMS13NetworkManager).socketAddress as InetSocketAddress)
+            5, 6, 7, 8 -> ((this as NMS13NetworkManager).socketAddress as InetSocketAddress)
             // 1.17, 1.18, 1.19, 1.20
             // public SocketAddress address;
-            9, 10, 11, 12 -> ((connection as NetworkManager).address as InetSocketAddress)
+            9, 10, 11, 12 -> ((this as NetworkManager).address as InetSocketAddress)
             // 不支持
             else -> error("Unsupported Minecraft version: $major")
         }
