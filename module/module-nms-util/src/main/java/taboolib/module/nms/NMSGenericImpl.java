@@ -94,7 +94,7 @@ public class NMSGenericImpl extends NMSGeneric {
                     );
                     packetPlayOutSignEditorConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutOpenSignEditor.class.getDeclaredConstructor(
                             net.minecraft.server.v1_16_R1.BlockPosition.class,
-                            Boolean.class
+                            Boolean.TYPE
                     );
                 } else {
                     packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(

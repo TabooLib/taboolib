@@ -80,6 +80,11 @@ public class ItemTagData {
         this.data = data;
     }
 
+    public ItemTagData(ItemTagType type, Object data) {
+        this.type = type;
+        this.data = data;
+    }
+
     public String toJsonSimplified() {
         return toJsonSimplified(0);
     }
