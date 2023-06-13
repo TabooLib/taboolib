@@ -41,6 +41,7 @@ fun importExtensions() {
     include("expansion:expansion-geek-tool")
     include("expansion:expansion-lang-tools")
     include("expansion:expansion-ioc")
+    include("expansion:expansion-application-console")
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
 }

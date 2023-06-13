@@ -24,11 +24,18 @@ class AppIO : PlatformIO {
     val date: String
         get() = DateFormatUtils.format(System.currentTimeMillis(), "HH:mm:ss")
 
-    override val pluginId: String
-        get() = "application"
+    val isLog4jEnabled by lazy {
+        try {
+            Class.forName("org.apache.log4j.Logger")
+            true
+        } catch (e: ClassNotFoundException) {
+            false
+        }
+    }
 
-    override val pluginVersion: String
-        get() = "application"
+    override var pluginId = "application"
+
+    override var pluginVersion = "application"
 
     override val isPrimaryThread: Boolean
         get() = true
@@ -38,15 +45,30 @@ class AppIO : PlatformIO {
     }
 
     override fun info(vararg message: Any?) {
-        message.filterNotNull().forEach { println("[${date}][INFO] $it") }
+        message.filterNotNull().forEach {
+            if (isLog4jEnabled)
+                println(it)
+            else
+                println("[${date}][INFO] $it")
+        }
     }
 
     override fun severe(vararg message: Any?) {
-        message.filterNotNull().forEach { println("[${date}][ERROR] $it") }
+        message.filterNotNull().forEach {
+            if (isLog4jEnabled)
+                println(it)
+            else
+                println("[${date}][ERROR] $it")
+        }
     }
 
     override fun warning(vararg message: Any?) {
-        message.filterNotNull().forEach { println("[${date}][WARN] $it") }
+        message.filterNotNull().forEach {
+            if (isLog4jEnabled)
+                println(it)
+            else
+                println("[${date}][WARN] $it")
+        }
     }
 
     override fun releaseResourceFile(path: String, replace: Boolean): File {
