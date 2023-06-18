@@ -25,6 +25,7 @@ abstract class InventoryHandler {
 
     abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor): RemoteInventory
 
+    @PlatformSide([Platform.BUKKIT])
     companion object {
 
         val instance by unsafeLazy { nmsProxy<InventoryHandler>() }
