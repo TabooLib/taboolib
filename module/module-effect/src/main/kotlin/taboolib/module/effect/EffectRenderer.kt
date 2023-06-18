@@ -1,4 +1,5 @@
 @file:Isolated
+
 package taboolib.module.effect
 
 import taboolib.common.Isolated
@@ -24,20 +25,13 @@ fun createGeneralEquationRenderer(
     maxX: Double = 5.0,
     dx: Double = 0.1,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): GeneralEquationRenderer {
-    return GeneralEquationRenderer(
-        origin,
-        function,
-        minX,
-        maxX,
-        dx,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return GeneralEquationRenderer(origin, function, minX, maxX, dx, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }
 
 /**
@@ -61,22 +55,13 @@ fun createParametricEquationRenderer(
     maxT: Double = 5.0,
     dt: Double = 0.1,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): ParametricEquationRenderer {
-    return ParametricEquationRenderer(
-        origin,
-        xFunction,
-        yFunction,
-        zFunction,
-        minT,
-        maxT,
-        dt,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return ParametricEquationRenderer(origin, xFunction, yFunction, zFunction, minT, maxT, dt, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }
 
 /**
@@ -96,18 +81,11 @@ fun createPolarEquationRenderer(
     maxT: Double = 5.0,
     dt: Double = 0.1,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): PolarEquationRenderer {
-    return PolarEquationRenderer(
-        origin,
-        rFunction,
-        minT,
-        maxT,
-        dt,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return PolarEquationRenderer(origin, rFunction, minT, maxT, dt, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }

@@ -102,7 +102,7 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
 
     abstract fun show()
 
-    abstract fun calculateLocations(): MutableList<Location>?
+    abstract fun calculateLocations(): List<Location>
 
     open fun alwaysShow() {
         turnOffTask()

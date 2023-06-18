@@ -18,11 +18,11 @@ import taboolib.module.effect.shape.Ray.RayStopType
 fun createLotus(
     origin: Location,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Lotus {
-    return Lotus(origin , period , object:ParticleSpawner{
+    return Lotus(origin, period, object : ParticleSpawner {
         override fun spawn(location: Location) {
-           spawn(origin)
+            spawner(origin)
         }
     }).also {
         it.period = period
@@ -37,23 +37,13 @@ fun createRay(
     range: Double = 0.5,
     stopType: RayStopType,
     period: Long = 20L,
-    spawner: (p: Location) -> Unit
-): Ray{
-    return Ray(
-        origin,
-        direction,
-        maxLength,
-        step,
-        range,
-        stopType,
-        period,
-        object : ParticleSpawner{
-            override fun spawn(location: Location) {
-                spawn(location)
-            }
-
+    spawner: (p: Location) -> Unit = {}
+): Ray {
+    return Ray(origin, direction, maxLength, step, range, stopType, period, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
         }
-    )
+    })
 }
 
 fun createStar(
@@ -61,19 +51,13 @@ fun createStar(
     radius: Double,
     step: Double,
     period: Long = 20L,
-    spawner: (p: Location) -> Unit
-): Star{
-    return Star(
-        origin,
-        radius,
-        step,
-        period,
-        object : ParticleSpawner{
-            override fun spawn(location: Location) {
-                spawn(location)
-            }
+    spawner: (p: Location) -> Unit = {}
+): Star {
+    return Star(origin, radius, step, period, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
         }
-    )
+    })
 }
 
 /*
@@ -89,20 +73,15 @@ fun createHeart(
     yScaleRate: Double,
     origin: Location,
     period: Long,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Heart {
-    return Heart(
-        xScaleRate,
-        yScaleRate,
-        origin,
-        period,
-        object :ParticleSpawner{
-            override fun spawn(location: Location) {
-                spawn(location)
-            }
+    return Heart(xScaleRate, yScaleRate, origin, period, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
         }
-    )
+    })
 }
+
 /**
  * 创建一个弧
  *
@@ -120,21 +99,13 @@ fun createArc(
     radius: Double = 1.0,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Arc {
-    return Arc(
-        origin,
-        startAngle,
-        angle,
-        radius,
-        step,
-        period,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        })
+    return Arc(origin, startAngle, angle, radius, step, period, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    })
 }
 
 /**
@@ -150,10 +121,9 @@ fun createAstroid(
     radius: Double = 1.0,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Astroid {
     return Astroid(radius, origin, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
@@ -176,19 +146,13 @@ fun createCircle(
     radius: Double = 1.0,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Circle {
-    return Circle(
-        origin,
-        radius,
-        step,
-        period,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        })
+    return Circle(origin, radius, step, period, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    })
 }
 
 /**
@@ -204,18 +168,13 @@ fun createFilledCircle(
     radius: Double = 1.0,
     sample: Int = 100,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): FilledCircle {
-    return FilledCircle(
-        origin,
-        radius,
-        sample,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return FilledCircle(origin, radius, sample, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }
 
 /**
@@ -231,10 +190,9 @@ fun createCube(
     max: Location,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Cube {
     return Cube(min, max, step, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
@@ -254,10 +212,9 @@ fun createLine(
     end: Location,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Line {
     return Line(start, end, step, period, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
@@ -278,10 +235,9 @@ fun createPolygon(
     sides: Int = 3,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Polygon {
     return Polygon(sides, origin, step, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
@@ -304,13 +260,11 @@ fun createSphere(
     radius: Double = 1.0,
     sample: Int = 100,
     period: Long = 20,
-    spawner: (p: Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): Sphere {
     return Sphere(origin, sample, radius, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
     }).also { it.period = period }
-
 }
