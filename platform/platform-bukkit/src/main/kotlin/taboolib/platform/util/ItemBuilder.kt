@@ -84,7 +84,7 @@ fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemSta
 @Isolated
 open class ItemBuilder {
 
-    class SkullTexture(val textures: String, val uuid: UUID? = UUID.randomUUID())
+    class SkullTexture(val textures: String, val uuid: UUID)
 
     /**
      * 物品材质

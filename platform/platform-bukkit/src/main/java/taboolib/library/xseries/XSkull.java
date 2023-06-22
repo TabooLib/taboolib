@@ -277,24 +277,18 @@ public class XSkull {
 
     @Nullable
     public static ItemBuilder.SkullTexture getSkinValue(@NotNull ItemMeta skull) {
-        Objects.requireNonNull(skull, "Skull ItemStack cannot be null");
-        SkullMeta meta = (SkullMeta) skull;
         GameProfile profile = null;
-
         try {
-            profile = (GameProfile) CRAFT_META_SKULL_PROFILE_GETTER.invoke(meta);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            profile = Reflex.Companion.getProperty(skull, "profile", false, true, true);
+        } catch (Exception ignored) {
         }
-
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
             for (Property property : profile.getProperties().get("textures")) {
                 if (!property.getValue().isEmpty()) {
-                    return new ItemBuilder.SkullTexture(property.getValue(), null);
+                    return new ItemBuilder.SkullTexture(property.getValue(), profile.getId());
                 }
             }
         }
-
         return null;
     }
 
