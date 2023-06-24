@@ -9,6 +9,7 @@ import taboolib.common.TabooLibCommon
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isListened
@@ -96,9 +97,11 @@ object ChannelExecutor {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(EventPriority.MONITOR)
     private fun onJoin(e: PlayerLoginEvent) {
-        addPlayerChannel(e.player, e.address)
+        if (e.result == PlayerLoginEvent.Result.ALLOWED) {
+            addPlayerChannel(e.player, e.address)
+        }
     }
 
     @SubscribeEvent

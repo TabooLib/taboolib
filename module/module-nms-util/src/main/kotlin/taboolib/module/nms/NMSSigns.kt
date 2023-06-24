@@ -23,17 +23,21 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
     } catch (t: NoSuchMethodError) {
         sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!, 0.toByte())
     }
-    sendSignChange(location, lines.format())
+    try {
+        sendSignChange(location, lines.format(4))
+    } catch (ex: Throwable) {
+        sendSignChange(location, lines.format(3))
+    }
     SignsListener.inputs[name] = function
     nmsGeneric.openSignEditor(this, location.block)
 }
 
-private fun Array<String>.format(): Array<String> {
+private fun Array<String>.format(line: Int): Array<String> {
     val list = toMutableList()
-    while (list.size < 4) {
+    while (list.size < line) {
         list.add("")
     }
-    while (list.size > 4) {
+    while (list.size > line) {
         list.removeLast()
     }
     return list.toTypedArray()
