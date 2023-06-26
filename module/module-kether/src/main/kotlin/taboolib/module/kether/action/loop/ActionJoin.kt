@@ -12,7 +12,7 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: ParsedAction<
 
     override fun run(frame: ScriptFrame): CompletableFuture<String> {
         val future = CompletableFuture<String>()
-        frame.newFrame(separator).run<Any>().thenAccept { separator ->
+        frame.run(separator).str { separator ->
             val array = ArrayList<Any>()
             fun process(cur: Int) {
                 if (cur < source.size) {
@@ -20,13 +20,13 @@ class ActionJoin(val source: List<ParsedAction<*>>, val separator: ParsedAction<
                         array.add(it)
                         if (frame.script().breakLoop) {
                             frame.script().breakLoop = false
-                            future.complete(array.joinToString(separator.toString()))
+                            future.complete(array.joinToString(separator))
                         } else {
                             process(cur + 1)
                         }
-                    }
+                    }.except { future.complete("") }
                 } else {
-                    future.complete(array.joinToString(separator.toString()))
+                    future.complete(array.joinToString(separator))
                 }
             }
             process(0)

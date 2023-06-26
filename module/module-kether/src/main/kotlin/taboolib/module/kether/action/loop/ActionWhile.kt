@@ -19,11 +19,11 @@ class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) :
                         } else {
                             process()
                         }
-                    }
+                    }.except { future.complete(null) }
                 } else {
                     future.complete(null)
                 }
-            }
+            }.except { future.complete(null) }
         }
         process()
         return future

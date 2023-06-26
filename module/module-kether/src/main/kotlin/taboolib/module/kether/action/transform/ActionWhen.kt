@@ -75,7 +75,7 @@ internal object ActionWhen {
                         val caseBlock = blocks[cur]
                         // 默认块
                         if (caseBlock is CaseDefaultAction) {
-                            run(caseBlock.action).thenAccept { r -> f.complete(r) }
+                            run(caseBlock.action).thenAccept { r -> f.complete(r) }.exceptNull { f.complete(null) }
                         } else {
                             // 包含判断
                             if (caseBlock.checkType.multi) {
@@ -94,11 +94,11 @@ internal object ActionWhen {
                                 }
                                 CompletableFuture.allOf(*values).thenAccept {
                                     if (caseBlock.checkType.check(input, if (values.size > 1) values.map { el -> el!!.get() } else values[0]!!.get())) {
-                                        run(caseBlock.action).thenAccept { r -> f.complete(r) }
+                                        run(caseBlock.action).thenAccept { r -> f.complete(r) }.exceptNull { f.complete(null) }
                                     } else {
                                         process(cur + 1)
                                     }
-                                }
+                                }.exceptNull { f.complete(null) }
                             }
                             // 非包含则进行「或」判断
                             else {
@@ -108,11 +108,11 @@ internal object ActionWhen {
                                 }
                                 future.thenAccept { cond ->
                                     if (cond) {
-                                        run(caseBlock.action).thenAccept { r -> f.complete(r) }
+                                        run(caseBlock.action).thenAccept { r -> f.complete(r) }.exceptNull { f.complete(null) }
                                     } else {
                                         process(cur + 1)
                                     }
-                                }
+                                }.exceptNull { f.complete(null) }
                             }
                         }
                     } else {
@@ -120,7 +120,7 @@ internal object ActionWhen {
                     }
                 }
                 process(0)
-            }
+            }.exceptNull { f.complete(null) }
         }
     }
 }
