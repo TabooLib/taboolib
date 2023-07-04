@@ -76,7 +76,7 @@ class BukkitCommand : PlatformCommand {
             pluginCommand.setTabCompleter { sender, _, label, args ->
                 completer.execute(adaptCommandSender(sender), command, label, args) ?: emptyList()
             }
-            val permission = command.permission.ifEmpty { "${plugin.name.lowercase()}.command.use" }
+            val permission = command.permission.ifEmpty { "${plugin.name.lowercase()}.command.${command.name}.use" }
             // 修改属性
             pluginCommand.setProperty("description", command.description.ifEmpty { command.name })
             pluginCommand.setProperty("usageMessage", command.usage)
