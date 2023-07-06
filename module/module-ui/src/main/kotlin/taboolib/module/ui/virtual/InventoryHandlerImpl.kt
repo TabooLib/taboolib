@@ -47,9 +47,9 @@ class InventoryHandlerImpl : InventoryHandler() {
                 player.sendPacket(packet)
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
-            // 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19
+            // 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20
             // public static Containers getNotchInventoryType(InventoryType type)
-            in 5..11 -> {
+            in 5..12 -> {
                 val windowType = Craft16Container.getNotchInventoryType(inventory.bukkitInventory)
                 val container = Craft16Container(inventory.bukkitInventory, (player as Craft16Player).handle, id)
                 val title = container.bukkitView.title
@@ -101,9 +101,9 @@ class InventoryHandlerImpl : InventoryHandler() {
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
                     viewer.sendPacket(NMS16PacketPlayOutWindowItems(id, nmsWindowItems))
                 }
-                // 1.17, 1.18, 1.19
+                // 1.17, 1.18, 1.19, 1.20
                 // public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
-                in 9..11 -> {
+                in 9..12 -> {
                     val nmsWindowItems = NMS16NonNullList.a<NMSItemStack>() as NonNullList<NMSItemStack>
                     nmsWindowItems.addAll(windowItems.map { Craft19ItemStack.asNMSCopy(it) })
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
@@ -143,9 +143,9 @@ class InventoryHandlerImpl : InventoryHandler() {
                 in 1..8 -> {
                     viewer.sendPacket(NMS16PacketPlayOutSetSlot(id, slot, Craft16ItemStack.asNMSCopy(itemStack)))
                 }
-                // 1.17, 1.18, 1.19
+                // 1.17, 1.18, 1.19, 1.20
                 // public PacketPlayOutSetSlot(int var0, int var1, int var2, ItemStack var3)
-                in 9..11 -> {
+                in 9..12 -> {
                     viewer.sendPacket(NMSPacketPlayOutSetSlot(id, incrementStateId(), slot, Craft19ItemStack.asNMSCopy(itemStack)))
                 }
                 // 不支持
@@ -219,8 +219,8 @@ class InventoryHandlerImpl : InventoryHandler() {
                     val shift = packet.read<Any>("shift").toString()
                     handle(slot, button, shift)
                 }
-                // 1.17, 1.18, 1.19
-                in 9..11 -> {
+                // 1.17, 1.18, 1.19, 1.20
+                in 9..12 -> {
                     // val stateId = packet.read<Int>("stateId")!!
                     val slotNum = packet.read<Int>("slotNum")!!
                     val buttonNum = packet.read<Int>("buttonNum")!!
