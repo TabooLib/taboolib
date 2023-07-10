@@ -15,6 +15,8 @@ import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
+import taboolib.module.lang.Language;
+import taboolib.platform.lang.TypeBossBar;
 
 import java.io.File;
 import java.net.URL;
@@ -55,6 +57,11 @@ public class BukkitPlugin extends JavaPlugin {
             // 搜索 Plugin 实现
             if (TabooLibCommon.isKotlinEnvironment()) {
                 pluginInstance = Project1Kt.findImplementation(Plugin.class);
+            }
+            // 注册语言文件
+            try {
+                Language.INSTANCE.getLanguageType().put("boss", TypeBossBar.class);
+            } catch (Throwable ignored) {
             }
         }
     }

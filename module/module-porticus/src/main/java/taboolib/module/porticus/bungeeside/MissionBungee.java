@@ -1,6 +1,7 @@
 package taboolib.module.porticus.bungeeside;
 
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -36,6 +37,8 @@ public class MissionBungee extends PorticusMission {
         super.run(target);
         if (target instanceof Server) {
             sendBungeeMessage((Server) target, command);
+        } else if (target instanceof ServerInfo) {
+            sendBungeeMessage((ServerInfo) target, command);
         } else if (target instanceof ProxiedPlayer) {
             sendBungeeMessage((ProxiedPlayer) target, command);
         } else {
@@ -48,6 +51,10 @@ public class MissionBungee extends PorticusMission {
     }
 
     public static void sendBungeeMessage(Server server, String... args) {
+        sendBungeeMessage(server.getInfo(), args);
+    }
+
+    public static void sendBungeeMessage(ServerInfo server, String... args) {
         BungeeCord.getInstance().getScheduler().runAsync(plugin, () -> {
             try {
                 for (byte[] bytes : MessageBuilder.create(args)) {
