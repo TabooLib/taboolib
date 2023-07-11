@@ -131,7 +131,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                 } else {
                     // 获取重定向后的文件
                     String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
-                    File rel = new File(file.getParentFile(), name + "_r_" + Math.abs(relocation.hashCode()) + ".jar");
+                    File rel = new File(file.getParentFile(), name + "_r2_" + Math.abs(relocation.hashCode()) + ".jar");
                     // 如果文件不存在或者文件大小为 0，就执行重定向逻辑
                     if (!rel.exists() || rel.length() == 0) {
                         try {

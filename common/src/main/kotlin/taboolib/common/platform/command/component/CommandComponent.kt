@@ -97,7 +97,7 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
                         // 若不满足约束
                         it.commandRestrict?.exec(context, parameter) == false -> false
                         // 若不满足建议（启用约束建议）
-                        suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s.equals(parameter, true) } == true -> false
+                        suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s == parameter } == true -> false
                         // 通过
                         else -> true
                     }
