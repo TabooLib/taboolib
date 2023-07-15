@@ -120,6 +120,8 @@ typealias NMS16NonNullList<T> = net.minecraft.server.v1_16_R1.NonNullList<T>
 
 typealias NMS16ItemStack = net.minecraft.server.v1_16_R1.ItemStack
 
+typealias NMS16IChatBaseComponentChatSerializer = net.minecraft.server.v1_16_R1.IChatBaseComponent.ChatSerializer
+
 typealias Craft16ChatMessage = org.bukkit.craftbukkit.v1_16_R1.util.CraftChatMessage
 
 typealias Craft16Container = org.bukkit.craftbukkit.v1_16_R1.inventory.CraftContainer
@@ -138,11 +140,13 @@ typealias NMS9EntityHuman = net.minecraft.server.v1_9_R2.EntityHuman
 
 typealias NMS9ItemStack = net.minecraft.server.v1_9_R2.ItemStack
 
+typealias NMS9ChatComponentText = net.minecraft.server.v1_9_R2.ChatComponentText
+
+typealias NMS9IChatBaseComponentChatSerializer = net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer
+
 typealias Craft9ChatMessage = org.bukkit.craftbukkit.v1_9_R2.util.CraftChatMessage
 
 typealias Craft9Container = org.bukkit.craftbukkit.v1_9_R2.inventory.CraftContainer
-
-typealias Craft9ChatComponentText = net.minecraft.server.v1_9_R2.ChatComponentText
 
 typealias Craft9Player = org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer
 

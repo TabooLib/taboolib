@@ -1,6 +1,7 @@
 package taboolib.module.ui.virtual
 
 import net.minecraft.core.NonNullList
+import net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -43,7 +44,12 @@ class InventoryHandlerImpl : InventoryHandler() {
                     size = 0
                 }
                 val title = container.bukkitView.title
-                val packet = NMS9PacketPlayOutOpenWindow(container.windowId, windowType, Craft9ChatComponentText(title), size)
+                val component = if (title.startsWith('{') && title.endsWith('}')) {
+                    NMS9IChatBaseComponentChatSerializer.a(title)
+                } else {
+                    NMS9ChatComponentText(title)
+                }
+                val packet = NMS9PacketPlayOutOpenWindow(container.windowId, windowType, component, size)
                 player.sendPacket(packet)
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
@@ -53,7 +59,12 @@ class InventoryHandlerImpl : InventoryHandler() {
                 val windowType = Craft16Container.getNotchInventoryType(inventory.bukkitInventory)
                 val container = Craft16Container(inventory.bukkitInventory, (player as Craft16Player).handle, id)
                 val title = container.bukkitView.title
-                val packet = NMS16PacketPlayOutOpenWindow(id, windowType, Craft16ChatMessage.fromString(title)[0])
+                val component = if (title.startsWith('{') && title.endsWith('}')) {
+                    NMS16IChatBaseComponentChatSerializer.a(title)
+                } else {
+                    Craft16ChatMessage.fromString(title)[0]
+                }
+                val packet = NMS16PacketPlayOutOpenWindow(id, windowType, component)
                 player.sendPacket(packet)
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
