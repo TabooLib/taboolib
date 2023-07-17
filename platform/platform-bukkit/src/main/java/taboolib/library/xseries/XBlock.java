@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Crypto Morin
+ * Copyright (c) 2022 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ package taboolib.library.xseries;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
+import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -32,7 +33,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tabooproject.reflex.Reflex;
 import taboolib.common.Isolated;
 
 import java.util.*;
@@ -47,13 +47,13 @@ import java.util.*;
  * This class doesn't and shouldn't support materials that are {@link Material#isLegacy()}.
  *
  * @author Crypto Morin
- * @version 2.1.0.1
+ * @version 2.2.1
  * @see Block
  * @see BlockState
  * @see MaterialData
  * @see XMaterial
  */
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings("deprecation")
 @Isolated
 public final class XBlock {
     /**
@@ -281,7 +281,7 @@ public final class XBlock {
                 String color = xName.substring(0, colorIndex);
                 if (color.equals("LIGHT")) color = xName.substring(0, "LIGHT_".length() + 4);
 
-                Reflex.Companion.invokeMethod(banner, "setBaseColor", new Object[]{DyeColor.valueOf(color)}, false, true, false);
+                banner.setBaseColor(DyeColor.valueOf(color));
             } else state.setRawData(material.getData());
             update = true;
         } else if (handling == LegacyMaterial.Handling.WOOD_SPECIES) {

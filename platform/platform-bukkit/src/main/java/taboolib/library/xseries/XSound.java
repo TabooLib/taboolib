@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Crypto Morin
+ * Copyright (c) 2022 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,12 +29,12 @@ import org.bukkit.Note;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
-import taboolib.platform.BukkitPlugin;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -50,13 +50,13 @@ import java.util.stream.Collectors;
  * <b>Volume:</b> 0.0-∞ - 1.0f (normal) - Using higher values increase the distance from which the sound can be heard.<br>
  * <b>Pitch:</b> 0.5-2.0 - 1.0f (normal) - How fast the sound is play.
  * <p>
- * 1.8: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
- * Latest: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
- * Basics: https://bukkit.org/threads/151517/
- * play command: https://minecraft.gamepedia.com/Commands/play
+ * 1.8: <a href="http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html">Sound Enum</a>
+ * Latest: <a href="https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html">Sound Enum</a>
+ * Basics: <a href="https://bukkit.org/threads/151517/">Bukkit Thread</a>
+ * play command: <a href="https://minecraft.gamepedia.com/Commands/play">minecraft.gamepedia.com</a>
  *
  * @author Crypto Morin
- * @version 7.0.1
+ * @version 9.2.0
  * @see Sound
  */
 @SuppressWarnings("DuplicatedCode")
@@ -89,6 +89,7 @@ public enum XSound {
     BLOCK_AMETHYST_BLOCK_FALL,
     BLOCK_AMETHYST_BLOCK_HIT,
     BLOCK_AMETHYST_BLOCK_PLACE,
+    BLOCK_AMETHYST_BLOCK_RESONATE,
     BLOCK_AMETHYST_BLOCK_STEP,
     BLOCK_AMETHYST_CLUSTER_BREAK,
     BLOCK_AMETHYST_CLUSTER_FALL,
@@ -614,6 +615,7 @@ public enum XSound {
     BLOCK_SHROOMLIGHT_STEP,
     BLOCK_SHULKER_BOX_CLOSE,
     BLOCK_SHULKER_BOX_OPEN,
+    BLOCK_SIGN_WAXED_INTERACT_FAIL,
     BLOCK_SLIME_BLOCK_BREAK("BLOCK_SLIME_BREAK"),
     BLOCK_SLIME_BLOCK_FALL("BLOCK_SLIME_FALL"),
     BLOCK_SLIME_BLOCK_HIT("BLOCK_SLIME_HIT"),
@@ -628,6 +630,9 @@ public enum XSound {
     BLOCK_SMALL_DRIPLEAF_STEP,
     BLOCK_SMITHING_TABLE_USE,
     BLOCK_SMOKER_SMOKE,
+    BLOCK_SNIFFER_EGG_CRACK,
+    BLOCK_SNIFFER_EGG_HATCH,
+    BLOCK_SNIFFER_EGG_PLOP,
     BLOCK_SNOW_BREAK("DIG_SNOW"),
     BLOCK_SNOW_FALL,
     BLOCK_SNOW_HIT,
@@ -662,6 +667,11 @@ public enum XSound {
     BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF("BLOCK_STONE_PRESSUREPLATE_CLICK_OFF"),
     BLOCK_STONE_PRESSURE_PLATE_CLICK_ON("BLOCK_STONE_PRESSUREPLATE_CLICK_ON"),
     BLOCK_STONE_STEP("STEP_STONE"),
+    BLOCK_SUSPICIOUS_GRAVEL_BREAK,
+    BLOCK_SUSPICIOUS_GRAVEL_FALL,
+    BLOCK_SUSPICIOUS_GRAVEL_HIT,
+    BLOCK_SUSPICIOUS_GRAVEL_PLACE,
+    BLOCK_SUSPICIOUS_GRAVEL_STEP,
     BLOCK_SUSPICIOUS_SAND_BREAK,
     BLOCK_SUSPICIOUS_SAND_FALL,
     BLOCK_SUSPICIOUS_SAND_HIT,
@@ -1415,7 +1425,18 @@ public enum XSound {
     ITEM_BOTTLE_EMPTY,
     ITEM_BOTTLE_FILL,
     ITEM_BOTTLE_FILL_DRAGONBREATH,
+    /**
+     * Removed in v1.20
+     */
     ITEM_BRUSH_BRUSHING,
+    ITEM_BRUSH_BRUSHING_GENERIC,
+    ITEM_BRUSH_BRUSHING_GRAVEL,
+    ITEM_BRUSH_BRUSHING_GRAVEL_COMPLETE,
+    ITEM_BRUSH_BRUSHING_SAND,
+    ITEM_BRUSH_BRUSHING_SAND_COMPLETE,
+    /**
+     * Removed in v1.20
+     */
     ITEM_BRUSH_BRUSH_SAND_COMPLETED,
     ITEM_BUCKET_EMPTY,
     ITEM_BUCKET_EMPTY_AXOLOTL,
@@ -1489,6 +1510,7 @@ public enum XSound {
     MUSIC_DISC_MELLOHI("RECORD_MELLOHI"),
     MUSIC_DISC_OTHERSIDE,
     MUSIC_DISC_PIGSTEP,
+    MUSIC_DISC_RELIC,
     MUSIC_DISC_STAL("RECORD_STAL"),
     MUSIC_DISC_STRAD("RECORD_STRAD"),
     MUSIC_DISC_WAIT("RECORD_WAIT"),
@@ -1502,17 +1524,27 @@ public enum XSound {
     MUSIC_NETHER_NETHER_WASTES,
     MUSIC_NETHER_SOUL_SAND_VALLEY,
     MUSIC_NETHER_WARPED_FOREST,
+    MUSIC_OVERWORLD_BADLANDS,
+    MUSIC_OVERWORLD_BAMBOO_JUNGLE,
     MUSIC_OVERWORLD_CHERRY_GROVE,
     MUSIC_OVERWORLD_DEEP_DARK,
+    MUSIC_OVERWORLD_DESERT,
     MUSIC_OVERWORLD_DRIPSTONE_CAVES,
+    MUSIC_OVERWORLD_FLOWER_FOREST,
+    MUSIC_OVERWORLD_FOREST,
     MUSIC_OVERWORLD_FROZEN_PEAKS,
     MUSIC_OVERWORLD_GROVE,
     MUSIC_OVERWORLD_JAGGED_PEAKS,
+    MUSIC_OVERWORLD_JUNGLE,
+    /**
+     * Removed in v1.20
+     */
     MUSIC_OVERWORLD_JUNGLE_AND_FOREST,
     MUSIC_OVERWORLD_LUSH_CAVES,
     MUSIC_OVERWORLD_MEADOW,
     MUSIC_OVERWORLD_OLD_GROWTH_TAIGA,
     MUSIC_OVERWORLD_SNOWY_SLOPES,
+    MUSIC_OVERWORLD_SPARSE_JUNGLE,
     MUSIC_OVERWORLD_STONY_PEAKS,
     MUSIC_OVERWORLD_SWAMP,
     MUSIC_UNDER_WATER,
@@ -1759,6 +1791,7 @@ public enum XSound {
      * Plays an instrument's notes in an ascending form.
      * This method is not really relevant to this utility class, but a nice feature.
      *
+     * @param plugin      the plugin handling schedulers.
      * @param player      the player to play the note from.
      * @param playTo      the entity to play the note to.
      * @param instrument  the instrument.
@@ -1768,7 +1801,7 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public static BukkitTask playAscendingNote(@NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
+    public static BukkitTask playAscendingNote(@NotNull Plugin plugin, @NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
                                                int ascendLevel, int delay) {
         Objects.requireNonNull(player, "Cannot play note from null player");
         Objects.requireNonNull(playTo, "Cannot play note to null entity");
@@ -1785,7 +1818,7 @@ public enum XSound {
                 player.playNote(playTo.getLocation(), instrument, Note.natural(1, Note.Tone.values()[ascendLevel - repeating]));
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimerAsynchronously(BukkitPlugin.getInstance(), 0, delay);
+        }.runTaskTimerAsynchronously(plugin, 0, delay);
     }
 
     /**
@@ -1830,6 +1863,7 @@ public enum XSound {
     /**
      * Plays a sound repeatedly with the given delay at a moving target's location.
      *
+     * @param plugin the plugin handling schedulers. (You can replace this with a static instance)
      * @param entity the entity to play the sound to. We exactly need an entity to keep the track of location changes.
      * @param volume the volume of the sound.
      * @param pitch  the pitch of the sound.
@@ -1840,13 +1874,14 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public BukkitTask playRepeatedly(@NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
-        return playRepeatedly(Collections.singleton(entity), volume, pitch, repeat, delay);
+    public BukkitTask playRepeatedly(@NotNull Plugin plugin, @NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
+        return playRepeatedly(plugin, Collections.singleton(entity), volume, pitch, repeat, delay);
     }
 
     /**
      * Plays a sound repeatedly with the given delay at moving targets' locations.
      *
+     * @param plugin   the plugin handling schedulers. (You can replace this with a static instance)
      * @param entities the entities to play the sound to. We exactly need the entities to keep the track of location changes.
      * @param volume   the volume of the sound.
      * @param pitch    the pitch of the sound.
@@ -1857,7 +1892,8 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public BukkitTask playRepeatedly(@NotNull Iterable<? extends Entity> entities, float volume, float pitch, int repeat, int delay) {
+    public BukkitTask playRepeatedly(@NotNull Plugin plugin, @NotNull Iterable<? extends Entity> entities, float volume, float pitch, int repeat, int delay) {
+        Objects.requireNonNull(plugin, "Cannot play repeating sound from null plugin");
         Objects.requireNonNull(entities, "Cannot play repeating sound at null locations");
 
         if (repeat <= 0) throw new IllegalArgumentException("Cannot repeat playing sound " + repeat + " times");
@@ -1874,7 +1910,7 @@ public enum XSound {
 
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimer(BukkitPlugin.getInstance(), 0, delay);
+        }.runTaskTimer(plugin, 0, delay);
     }
 
     /**
