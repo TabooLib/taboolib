@@ -35,6 +35,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
+import taboolib.platform.BukkitPlugin;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -1791,7 +1792,6 @@ public enum XSound {
      * Plays an instrument's notes in an ascending form.
      * This method is not really relevant to this utility class, but a nice feature.
      *
-     * @param plugin      the plugin handling schedulers.
      * @param player      the player to play the note from.
      * @param playTo      the entity to play the note to.
      * @param instrument  the instrument.
@@ -1801,7 +1801,7 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public static BukkitTask playAscendingNote(@NotNull Plugin plugin, @NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
+    public static BukkitTask playAscendingNote(@NotNull Player player, @NotNull Entity playTo, @NotNull Instrument instrument,
                                                int ascendLevel, int delay) {
         Objects.requireNonNull(player, "Cannot play note from null player");
         Objects.requireNonNull(playTo, "Cannot play note to null entity");
@@ -1818,7 +1818,7 @@ public enum XSound {
                 player.playNote(playTo.getLocation(), instrument, Note.natural(1, Note.Tone.values()[ascendLevel - repeating]));
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimerAsynchronously(plugin, 0, delay);
+        }.runTaskTimerAsynchronously(BukkitPlugin.getInstance(), 0, delay);
     }
 
     /**
@@ -1863,7 +1863,6 @@ public enum XSound {
     /**
      * Plays a sound repeatedly with the given delay at a moving target's location.
      *
-     * @param plugin the plugin handling schedulers. (You can replace this with a static instance)
      * @param entity the entity to play the sound to. We exactly need an entity to keep the track of location changes.
      * @param volume the volume of the sound.
      * @param pitch  the pitch of the sound.
@@ -1874,14 +1873,13 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public BukkitTask playRepeatedly(@NotNull Plugin plugin, @NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
-        return playRepeatedly(plugin, Collections.singleton(entity), volume, pitch, repeat, delay);
+    public BukkitTask playRepeatedly(@NotNull Entity entity, float volume, float pitch, int repeat, int delay) {
+        return playRepeatedly(Collections.singleton(entity), volume, pitch, repeat, delay);
     }
 
     /**
      * Plays a sound repeatedly with the given delay at moving targets' locations.
      *
-     * @param plugin   the plugin handling schedulers. (You can replace this with a static instance)
      * @param entities the entities to play the sound to. We exactly need the entities to keep the track of location changes.
      * @param volume   the volume of the sound.
      * @param pitch    the pitch of the sound.
@@ -1892,8 +1890,7 @@ public enum XSound {
      * @since 2.0.0
      */
     @NotNull
-    public BukkitTask playRepeatedly(@NotNull Plugin plugin, @NotNull Iterable<? extends Entity> entities, float volume, float pitch, int repeat, int delay) {
-        Objects.requireNonNull(plugin, "Cannot play repeating sound from null plugin");
+    public BukkitTask playRepeatedly(@NotNull Iterable<? extends Entity> entities, float volume, float pitch, int repeat, int delay) {
         Objects.requireNonNull(entities, "Cannot play repeating sound at null locations");
 
         if (repeat <= 0) throw new IllegalArgumentException("Cannot repeat playing sound " + repeat + " times");
@@ -1910,7 +1907,7 @@ public enum XSound {
 
                 if (repeating-- == 0) cancel();
             }
-        }.runTaskTimer(plugin, 0, delay);
+        }.runTaskTimer(BukkitPlugin.getInstance(), 0, delay);
     }
 
     /**
