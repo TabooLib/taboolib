@@ -66,7 +66,7 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
             }
             // 渐变
             properties["gradient"] != null -> {
-                val color = properties["color"] ?: error("Missing color for gradient.")
+                val color = properties["gradient"] ?: error("Missing color for gradient.")
                 rawMessage.append(newText.toGradientColor(transfer(color).split(',').map { it.parseToHexColor() }))
             }
             // 语言文件
