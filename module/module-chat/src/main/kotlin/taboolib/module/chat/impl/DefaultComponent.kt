@@ -127,7 +127,9 @@ class DefaultComponent() : ComponentText {
         text as? DefaultComponent ?: error("Unsupported component type.")
         try {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.component))) }
-        } catch (ex: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
+        } catch (_: NoSuchMethodError) {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
         }
         return this
@@ -137,6 +139,8 @@ class DefaultComponent() : ComponentText {
         try {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(nbt))) }
         } catch (_: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
+        } catch (_: NoSuchMethodError) {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
         }
         return this
