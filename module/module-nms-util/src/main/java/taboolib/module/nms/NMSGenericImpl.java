@@ -1,5 +1,6 @@
 package taboolib.module.nms;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.IRegistry;
@@ -670,8 +671,23 @@ public class NMSGenericImpl extends NMSGeneric {
     @NotNull
     public String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
         if (MinecraftVersion.INSTANCE.isUniversal()) {
-            Registry<MobEffectList> registry = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true, false, true);
-            return registry.fromId(potionEffectType.getId()).c();
+            // 1.19, 1.20. IRegistry.MOB_EFFECT -> BuiltInRegistries.MOB_EFFECT
+            // 1.18 及以上版本, 不可以使用 fromId, 没有这个函数.
+            // 1.17 可正常使用以前的代码运行
+            switch (MinecraftVersion.INSTANCE.getMajor()) {
+                // 1.17
+                case 9:
+                    final Registry<MobEffectList> registry = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true, false, true);
+                    return registry.fromId(potionEffectType.getId()).c();
+                // 1.18
+                case 10:
+                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry0 = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true, false, true);
+                    return registry0.byId(potionEffectType.getId()).getDescriptionId();
+                // 1.19, 1.20
+                default:
+                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry1 = BuiltInRegistries.MOB_EFFECT;
+                    return registry1.byId(potionEffectType.getId()).getDescriptionId();
+            }
         }
         if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
             return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
