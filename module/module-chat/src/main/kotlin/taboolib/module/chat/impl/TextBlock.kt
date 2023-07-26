@@ -65,8 +65,8 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                 rawMessage.appendScore(newText, transfer(obj))
             }
             // 渐变
-            properties["gradient"] != null -> {
-                val color = properties["gradient"] ?: error("Missing color for gradient.")
+            properties["gradient", "g"] != null -> {
+                val color = properties["gradient", "g"] ?: error("Missing color for gradient.")
                 rawMessage.append(newText.toGradientColor(transfer(color).split(',').map { it.parseToHexColor() }))
             }
             // 语言文件
@@ -100,7 +100,7 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                 "i" -> rawMessage.italic()
                 "b" -> rawMessage.bold()
                 "o" -> rawMessage.obfuscated()
-                "newline", "nl" -> rawMessage.newLine()
+                "newline", "br" -> rawMessage.newLine()
                 "font" -> rawMessage.font(transfer(value))
                 "url" -> rawMessage.clickOpenURL(transfer(value))
                 "file" -> rawMessage.clickOpenFile(transfer(value))
