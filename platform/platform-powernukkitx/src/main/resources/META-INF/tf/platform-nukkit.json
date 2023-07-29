@@ -1,0 +1,14 @@
+{
+  "group": [
+    {
+      "check": [
+        "starslib/platform/util/NukkitLocationKt",
+        "starslib/platform/type/NukkitPlayer"
+      ],
+      "member": [
+        "starslib/platform/util/NukkitLocationKt"
+      ],
+      "mode": "REMOVE"
+    }
+  ]
+}
