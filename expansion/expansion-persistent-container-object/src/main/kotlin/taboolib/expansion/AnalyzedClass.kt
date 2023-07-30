@@ -1,7 +1,9 @@
 package taboolib.expansion
 
+import com.electronwill.nightconfig.json.JsonParser
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common5.*
+import taboolib.module.configuration.Configuration
 import java.lang.reflect.Parameter
 import java.sql.ResultSet
 import java.util.*
@@ -18,7 +20,8 @@ import java.util.concurrent.ConcurrentHashMap
 class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 主构造器 */
-    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() } ?: error("No primary constructor found for $clazz")
+    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() }
+        ?: error("No primary constructor found for $clazz")
 
     /** 成员列表 */
     private val memberProperties = clazz.declaredFields.associateBy { it.name }
@@ -61,7 +64,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 获取主成员值 */
     fun getPrimaryMemberValue(data: Any): Any {
-        val property = memberProperties[primaryMember?.propertyName.toString()] ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
+        val property = memberProperties[primaryMember?.propertyName.toString()]
+            ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
         return property.get(data)!!
     }
 
@@ -88,6 +92,7 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isString -> obj.toString()
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
+                member.isJson -> JsonParser().parse(obj.toString())
                 else -> error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
             }
             map[member.name] = wrap
@@ -98,7 +103,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     /** 创建实例 */
     fun <T> createInstance(map: Map<String, Any?>): T {
         return if (wrapperFunction != null) {
-            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map)) ?: error("Failed to create instance for $clazz")
+            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map))
+                ?: error("Failed to create instance for $clazz")
         } else {
             val args = members.map { map[it.name] }
             try {

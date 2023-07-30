@@ -1,5 +1,6 @@
 package taboolib.expansion
 
+import com.electronwill.nightconfig.core.Config
 import java.lang.reflect.Parameter
 
 /**
@@ -75,6 +76,10 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
     /** 是否为枚举 */
     val isEnum: Boolean
         get() = Enum::class.java.isAssignableFrom(returnType)
+
+    /** 是否为Json */
+    val isJson: Boolean
+        get() = returnType == Config::class.java
 
     /** 是否为自定义对象 */
     val isCustomObject: Boolean

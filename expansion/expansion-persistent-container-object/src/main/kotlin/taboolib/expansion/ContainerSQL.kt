@@ -62,6 +62,7 @@ class ContainerSQL(
             isFloat -> ColumnTypeSQL.FLOAT
             isDouble -> ColumnTypeSQL.DOUBLE
             isChar -> ColumnTypeSQL.INT
+            isJson -> ColumnTypeSQL.JSON
             else -> error("Unsupported type: $name (${returnType})")
         }
     }
