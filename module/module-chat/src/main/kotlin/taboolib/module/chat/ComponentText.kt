@@ -46,6 +46,9 @@ interface ComponentText : Source {
     /** 显示文本 */
     fun hoverText(text: String): ComponentText
 
+    /** 显示多行文本 */
+    fun hoverText(text: List<String>): ComponentText
+
     /** 显示 [ComponentText] */
     fun hoverText(text: ComponentText): ComponentText
 
