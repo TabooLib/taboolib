@@ -1,4 +1,5 @@
 @file:Suppress("KDocUnresolvedReference", "DEPRECATION")
+
 package taboolib.module.nms.i18n
 
 import com.google.gson.JsonObject
@@ -22,12 +23,14 @@ import java.util.concurrent.Executors
  * @author sky
  * @since 2020-04-04 19:51
  */
+@Suppress("DuplicatedCode")
 object I18nCurrently : I18nBase() {
 
     val locales = arrayOf(
-        arrayOf("zh_cn", "1d1291c554a9bdfce7abd4b40207c82f8f9f1a6f"),
-        arrayOf("zh_tw", "0587a4c3de3f56cba952fb92453fda612c94d1df"),
-        arrayOf("en_gb", "d72da85adc86e9c31ea84a45ef89ecd9f421f23b")
+            arrayOf("zh_cn", "047c10e1a6ec7f7bcbb4d5c23a7d21f3b6673780"),
+            arrayOf("zh_hk", "3bcb1edf75506bc790390ae1694db11334f77889"),
+            arrayOf("zh_tw", "0eb2fb4d5c8cb3fe053589728140fe0d31f2edff"),
+            arrayOf("en_gb", "d81bbc616f798828fdd41be3eb4c4a1d4ab6c168")
     )
 
     private val cache: MutableMap<String, JsonObject> = HashMap()

@@ -39,7 +39,7 @@ fun adaptPlayer(any: Any): ProxyPlayer {
  * 通过名称获取玩家
  */
 fun getProxyPlayer(name: String): ProxyPlayer? {
-    return onlinePlayers().firstOrNull { it.name == name }
+    return onlinePlayers().firstOrNull { it.name.equals(name, true) }
 }
 
 /**

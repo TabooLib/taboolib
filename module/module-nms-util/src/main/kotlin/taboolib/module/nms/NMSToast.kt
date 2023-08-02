@@ -10,6 +10,7 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.platform.function.submit
+import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion.major
 import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
@@ -18,9 +19,41 @@ import taboolib.platform.BukkitPlugin
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-private val classJsonElement = Class.forName("com.google.gson.JsonElement")
-
 private val toastMap = ConcurrentHashMap<Toast, NamespacedKey>()
+
+private val classJsonElement by unsafeLazy { Class.forName("com.google.gson.JsonElement") }
+
+private val classCraftNamespacedKey by unsafeLazy { obcClass("util.CraftNamespacedKey") }
+
+private val classMinecraftServer by unsafeLazy { nmsClass("MinecraftServer") }
+
+private val classSerializedAdvancement by unsafeLazy { nmsClass("Advancement\$SerializedAdvancement") }
+
+private val constructorLootDeserializationContext by unsafeLazy { nmsClass("LootDeserializationContext").declaredConstructors[0] }
+
+private val lootDataManager by unsafeLazy {
+    when {
+        // 1.20
+        major >= 12 -> minecraftServerObject.invokeMethod<Any>("getLootData")
+        // 1.17
+        major >= 9 -> minecraftServerObject.invokeMethod<Any>("getPredicateManager")
+        // 其他版本
+        else -> minecraftServerObject.invokeMethod<Any>("getLootPredicateManager")
+    }
+}
+
+private val advancements by unsafeLazy {
+    when {
+        // 1.18
+        major >= 10 -> minecraftServerObject.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!
+        // 1.17
+        major >= 9 -> minecraftServerObject.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
+        // 其他版本
+        else -> minecraftServerObject.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("REGISTRY")!!
+    }
+}
+
+private val advancementsMap by unsafeLazy { advancements.getProperty<MutableMap<Any, Any>>("advancements")!! }
 
 /**
  * 发送虚拟 Toast 成就信息
@@ -33,14 +66,11 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
     if (MinecraftVersion.majorLegacy < 11300) {
         error("Not supported yet.")
     }
+    val cache = Toast(icon, message, frame)
+    val jsonToast = toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)
+    // 在主线程操作
     submit {
-        val cache = Toast(icon, message, frame)
-        val namespaceKey = toastMap.computeIfAbsent(cache) {
-            inject(
-                NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"),
-                toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)
-            )
-        }
+        val namespaceKey = toastMap.getOrPut(cache) { injectAdvancement(NamespacedKey(BukkitPlugin.getInstance(), "toast_${UUID.randomUUID()}"), jsonToast) }
         // 注册成就
         grant(this@sendToast, namespaceKey)
         // 延迟注销，否则会出问题
@@ -48,6 +78,9 @@ fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastF
     }
 }
 
+/**
+ * 赋予玩家成就
+ */
 private fun grant(player: Player, key: NamespacedKey) {
     val advancement = Bukkit.getAdvancement(key)!!
     if (!player.getAdvancementProgress(advancement).isDone) {
@@ -57,6 +90,9 @@ private fun grant(player: Player, key: NamespacedKey) {
     }
 }
 
+/**
+ * 注销玩家成就
+ */
 private fun revoke(player: Player, key: NamespacedKey) {
     val advancement = Bukkit.getAdvancement(key)
     if (advancement != null && player.getAdvancementProgress(advancement).isDone) {
@@ -66,44 +102,33 @@ private fun revoke(player: Player, key: NamespacedKey) {
     }
 }
 
-private fun inject(key: NamespacedKey, toast: JsonObject): NamespacedKey {
+/**
+ * 将成就注入到服务器
+ */
+private fun injectAdvancement(key: NamespacedKey, toast: JsonObject): NamespacedKey {
     if (Bukkit.getAdvancement(key) == null) {
-        val localMinecraftKey = obcClass("util.CraftNamespacedKey").invokeMethod<Any>("toMinecraft", key, isStatic = true)
-        val localMinecraftServer = nmsClass("MinecraftServer").invokeMethod<Any>("getServer", isStatic = true)!!
-        val localLootPredicateManager = if (major >= 9) {
-            localMinecraftServer.invokeMethod<Any>("getPredicateManager")
-        } else {
-            localMinecraftServer.invokeMethod<Any>("getLootPredicateManager")
-        }
-        val lootDeserializationContext = nmsClass("LootDeserializationContext")
-            .getDeclaredConstructor(localMinecraftKey!!.javaClass, localLootPredicateManager!!.javaClass)
-            .newInstance(localMinecraftKey, localLootPredicateManager)
-        val localSerializedAdvancement =
-            nmsClass("Advancement\$SerializedAdvancement").invokeMethod<Any>("a", toast, lootDeserializationContext, isStatic = true)
+        // 获取 MinecraftKey
+        val localMinecraftKey = classCraftNamespacedKey.invokeMethod<Any>("toMinecraft", key, isStatic = true)
+        // 创建 LootDeserializationContext
+        val lootDeserializationContext = constructorLootDeserializationContext.newInstance(localMinecraftKey, lootDataManager)
+        // 创建 SerializedAdvancement (public static SerializedAdvancement a(JsonObject var0, LootDeserializationContext var1))
+        val localSerializedAdvancement = classSerializedAdvancement.invokeMethod<Any>("a", toast, lootDeserializationContext, isStatic = true)
         if (localSerializedAdvancement != null) {
-            if (major >= 10) {
-                localMinecraftServer.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!
-                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
-            } else if (major >= 9) {
-                localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
-                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
-            } else {
-                localMinecraftServer.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("REGISTRY")!!
-                    .invokeMethod<Any>("a", HashMap(Collections.singletonMap(localMinecraftKey, localSerializedAdvancement)))
-            }
+            // 注入到服务器
+            advancements.invokeMethod<Any>("a", hashMapOf(localMinecraftKey to localSerializedAdvancement))
         }
     }
     return key
 }
 
-private fun eject(key: NamespacedKey): NamespacedKey {
+private fun ejectAdvancement(key: NamespacedKey): NamespacedKey {
     try {
+        // 移除成就
         Bukkit.getUnsafe().removeAdvancement(key)
-        val console = Bukkit.getServer().getProperty<Any>("console")!!
-        val advancements = console.invokeMethod<Any>("getAdvancementData")!!.getProperty<MutableMap<Any, Any>>("REGISTRY/advancements")!!
-        for ((k, v) in advancements) {
+        // 从 AdvancementsMap 中移除
+        for ((k, v) in advancementsMap) {
             if (v.getProperty<Any>("name/key") == key.key) {
-                advancements.remove(k)
+                advancementsMap.remove(k)
                 break
             }
         }

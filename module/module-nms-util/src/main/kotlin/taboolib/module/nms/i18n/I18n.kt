@@ -19,12 +19,12 @@ object I18n {
     val instance: I18nBase
 
     init {
-        version[7] = I18nCurrently // 1.15
-        version[8] = I18nCurrently // 1.16
-        version[9] = I18nCurrently // 1.17
-        version[10] = I18nCurrently // 1.18
-        version[11] = I18nCurrently // 1.19
-        instance = version.getOrDefault(major, I18nLegacy.INSTANCE)
+        // 1.8 .. 1.14
+        (1..6).forEach { version[it] = I18nLegacy.INSTANCE }
+        // 1.15 .. 1.20
+        (7..12).forEach { version[it] = I18nCurrently }
+        // 获取版本
+        instance = version[major] ?: error("Unsupported version")
         instance.init()
     }
 }

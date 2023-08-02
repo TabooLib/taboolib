@@ -1,12 +1,15 @@
 package taboolib.module.nms
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.util.unsafeLazy
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
@@ -18,10 +21,30 @@ private val nmsProxyInstanceMap = ConcurrentHashMap<String, Any>()
 
 private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 
+/**
+ * 获取 MinecraftServer 实例
+ */
+val minecraftServerObject: Any by unsafeLazy {
+    Bukkit.getServer().getProperty(when (MinecraftVersion.major) {
+        // 1.8, 1.9, 1.10, 1.11, 1.12, 1.13 类型为：MinecraftServer
+        in 0..5 -> "console"
+        // 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20 类型为：DedicatedServer
+        in 6..12 -> "console"
+        // 其他版本
+        else -> "console"
+    })!!
+}
+
+/**
+ * 获取 OBC 类
+ */
 fun obcClass(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
 }
 
+/**
+ * 获取 NMS 类
+ */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
         Class.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: error("Cannot find nms class: $name"))

@@ -123,6 +123,17 @@ class DefaultComponent() : ComponentText {
         return hoverText(ComponentText.of(text))
     }
 
+    override fun hoverText(text: List<String>): ComponentText {
+        val component = ComponentText.empty()
+        text.forEachIndexed { index, s ->
+            component.append(s)
+            if (index != text.size - 1) {
+                component.newLine()
+            }
+        }
+        return hoverText(component)
+    }
+
     override fun hoverText(text: ComponentText): ComponentText {
         text as? DefaultComponent ?: error("Unsupported component type.")
         try {
