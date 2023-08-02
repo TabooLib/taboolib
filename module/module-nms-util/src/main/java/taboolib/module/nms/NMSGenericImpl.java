@@ -685,7 +685,7 @@ public class NMSGenericImpl extends NMSGeneric {
                     return registry0.byId(potionEffectType.getId()).getDescriptionId();
                 // 1.19, 1.20
                 default:
-                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry1 = BuiltInRegistries.MOB_EFFECT;
+                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry1 = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("BuiltinRegistries"), "MOB_EFFECT", true, false, true);
                     return registry1.byId(potionEffectType.getId()).getDescriptionId();
             }
         }
