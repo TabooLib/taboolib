@@ -113,7 +113,12 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                     if (value is PropertyValue.Link) {
                         rawMessage.hoverText(value.getValue(transfer))
                     } else {
-                        rawMessage.hoverText(transfer(value))
+                        val content = transfer(value)
+                        if (content.contains(",")) {
+                            rawMessage.hoverText(content.split(','))
+                        } else {
+                            rawMessage.hoverText(transfer(value))
+                        }
                     }
                 }
                 "color", "c" -> {
