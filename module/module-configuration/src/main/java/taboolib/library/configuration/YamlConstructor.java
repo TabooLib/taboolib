@@ -27,7 +27,7 @@ public class YamlConstructor extends SafeConstructor {
         return constructObject(node);
     }
 
-    private class ConstructCustomObject extends ConstructYamlMap {
+    class ConstructCustomObject extends ConstructYamlMap {
 
         @Nullable
         @Override

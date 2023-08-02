@@ -11,7 +11,7 @@ public class YamlRepresenter extends Representer {
         this.multiRepresenters.put(ConfigurationSection.class, new RepresentConfigurationSection());
     }
 
-    private class RepresentConfigurationSection extends RepresentMap {
+    class RepresentConfigurationSection extends RepresentMap {
 
         @Override
         public Node representData(Object data) {

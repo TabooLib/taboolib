@@ -32,7 +32,7 @@ import taboolib.common.env.RuntimeDependency
     ),
     RuntimeDependency(
         "!org.apache.commons:commons-pool2:2.11.1",
-        test = "!org.apache.commons.pool2:ObjectPool",
+        test = "!org.apache.commons.pool2.ObjectPool",
         transitive = false
     ),
     RuntimeDependency(
