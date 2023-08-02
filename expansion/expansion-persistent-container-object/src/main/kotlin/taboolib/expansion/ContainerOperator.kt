@@ -41,7 +41,11 @@ abstract class ContainerOperator {
     }
 
     /** 倒序排序 */
-    inline fun <reified T> sortDescending(row: String, limit: Int = 10, noinline where: Where.() -> Unit = {}): List<T> {
+    inline fun <reified T> sortDescending(
+        row: String,
+        limit: Int = 10,
+        noinline where: Where.() -> Unit = {}
+    ): List<T> {
         return sortDescending(T::class.java, row, limit, where)
     }
 
@@ -87,7 +91,10 @@ abstract class ContainerOperator {
         return when (this) {
             is UUID -> this.toString()
             is Char -> this.code
-            else -> this
+            else -> {
+                val data = CustomObjectType.getData(this)
+                data?.serialize(this) ?: this
+            }
         }
     }
 }

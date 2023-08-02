@@ -1,5 +1,6 @@
 package taboolib.expansion
 
+import taboolib.common.platform.function.info
 import taboolib.module.database.*
 
 class ContainerSQL(
@@ -62,8 +63,9 @@ class ContainerSQL(
             isFloat -> ColumnTypeSQL.FLOAT
             isDouble -> ColumnTypeSQL.DOUBLE
             isChar -> ColumnTypeSQL.INT
-            isJson -> ColumnTypeSQL.JSON
-            else -> error("Unsupported type: $name (${returnType})")
+            else -> {
+                CustomObjectType.getDataByClass(returnType)?.sqlType ?: error("Unsupported type: $name (${returnType})")
+            }
         }
     }
 }

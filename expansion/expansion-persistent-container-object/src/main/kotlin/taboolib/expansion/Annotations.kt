@@ -14,3 +14,6 @@ annotation class Length(val value: Int = 64)
 
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Alias(val value: String)
+
+@Retention(AnnotationRetention.RUNTIME)
+annotation class CustomType

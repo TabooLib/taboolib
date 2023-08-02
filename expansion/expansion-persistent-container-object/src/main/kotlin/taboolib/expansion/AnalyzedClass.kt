@@ -1,9 +1,10 @@
 package taboolib.expansion
 
-import com.electronwill.nightconfig.json.JsonParser
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.platform.function.info
 import taboolib.common5.*
 import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
 import java.lang.reflect.Parameter
 import java.sql.ResultSet
 import java.util.*
@@ -53,7 +54,12 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     init {
         val customs = members.filter { it.isCustomObject }
         if (customs.isNotEmpty()) {
-            error("The following members are not supported: $customs")
+//            error("The following members are not supported: $customs")
+            customs.forEach {
+                if (CustomObjectType.getDataByClass(it.returnType) == null) {
+                    error("Unsupported type ${it.returnType} for ${it.name} in $clazz")
+                }
+            }
         }
         if (members.count { it.isPrimary } > 1) {
             error("The primary member only supports one, but found ${members.count { it.isPrimary }}")
@@ -92,8 +98,11 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isString -> obj.toString()
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
-                member.isJson -> JsonParser().parse(obj.toString())
-                else -> error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                else -> {
+                    val custom = CustomObjectType.getData(obj)
+                    custom?.deserialize(obj)
+                        ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                }
             }
             map[member.name] = wrap
         }

@@ -25,7 +25,9 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                     member.canConvertedDecimal() -> add(member.name) {
                         type(ColumnTypeSQLite.REAL) { options(member) }
                     }
-                    else -> error("Unsupported type: ${member.name} (${member.returnType})")
+                    else -> {
+                        CustomObjectType.getDataByClass(member.returnType)?.sqlLiteType ?: error("Unsupported type: ${member.name} (${member.returnType})")
+                    }
                 }
             }
         }
