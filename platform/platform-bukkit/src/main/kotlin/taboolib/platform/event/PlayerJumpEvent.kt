@@ -8,9 +8,9 @@ import taboolib.common.Isolated
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
-import taboolib.common.platform.event.ProxyEvent
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Baffle
+import taboolib.platform.type.BukkitProxyEvent
 import java.util.concurrent.TimeUnit
 
 /**
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/7/18 12:11 下午
  */
 @Isolated
-class PlayerJumpEvent(val player: Player) : ProxyEvent() {
+class PlayerJumpEvent(val player: Player) : BukkitProxyEvent() {
 
     @PlatformSide([Platform.BUKKIT])
     internal object Listener {
@@ -29,7 +29,7 @@ class PlayerJumpEvent(val player: Player) : ProxyEvent() {
         val baffle = Baffle.of(350, TimeUnit.MILLISECONDS)
 
         @SubscribeEvent(priority = EventPriority.HIGH, ignoreCancelled = true)
-        fun e(e: PlayerMoveEvent) {
+        fun onMove(e: PlayerMoveEvent) {
             val to = e.to ?: return
             if (e.player.isFlying || e.player.gameMode == GameMode.SPECTATOR) {
                 return
@@ -43,7 +43,7 @@ class PlayerJumpEvent(val player: Player) : ProxyEvent() {
         }
 
         @SubscribeEvent
-        fun e(e: PlayerQuitEvent) {
+        fun onQuit(e: PlayerQuitEvent) {
             baffle.reset(e.player.name)
         }
     }

@@ -3,7 +3,10 @@ package taboolib.module.nms.i18n
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.MinecraftVersion.major
+import taboolib.module.nms.MinecraftVersion.minecraftVersion
 
 /**
  * 原版语言文件工具
@@ -15,16 +18,17 @@ import taboolib.module.nms.MinecraftVersion.major
 @PlatformSide([Platform.BUKKIT])
 object I18n {
 
-    val version = HashMap<Int, I18nBase>()
-    val instance: I18nBase
-
-    init {
-        // 1.8 .. 1.14
-        (1..6).forEach { version[it] = I18nLegacy.INSTANCE }
-        // 1.15 .. 1.20
-        (7..12).forEach { version[it] = I18nCurrently }
-        // 获取版本
-        instance = version[major] ?: error("Unsupported version")
-        instance.init()
+    /** 当前版本的语言文件 */
+    val instance: I18nBase by unsafeLazy {
+        val field = when (major) {
+            // 1.8 .. 1.14
+            in MinecraftVersion.V1_8..MinecraftVersion.V1_14 -> I18nLegacy.INSTANCE
+            // 1.15 .. 1.20
+            in MinecraftVersion.V1_15..MinecraftVersion.V1_20 -> I18nCurrently
+            // 其他版本
+            else -> error("Unsupported version")
+        }
+        field.init()
+        field
     }
 }

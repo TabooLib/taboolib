@@ -2,7 +2,7 @@ package taboolib.module.nms;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.util.NumberConversions;
-import taboolib.common.platform.function.IOKt;
+import org.jetbrains.annotations.NotNull;import taboolib.common.platform.function.IOKt;
 
 import java.util.List;
 import java.util.Map;
@@ -144,6 +144,7 @@ public class ItemTagData {
         return ItemTagList.of(data);
     }
 
+    @NotNull
     public ItemTagType getType() {
         return type;
     }

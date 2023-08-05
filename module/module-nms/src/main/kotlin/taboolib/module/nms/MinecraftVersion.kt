@@ -14,8 +14,23 @@ import java.io.FileInputStream
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 
+    // 一些版本号
+    const val V1_8 = 0
+    const val V1_9 = 1
+    const val V1_10 = 2
+    const val V1_11 = 3
+    const val V1_12 = 4
+    const val V1_13 = 5
+    const val V1_14 = 6
+    const val V1_15 = 7
+    const val V1_16 = 8
+    const val V1_17 = 9
+    const val V1_18 = 10
+    const val V1_19 = 11
+    const val V1_20 = 12
+
     @Awake(LifeCycle.LOAD)
-    fun init() {
+    private fun init() {
         if (!isSupported) {
             disablePlugin()
             error("Unsupported Minecraft version, plugin disabled")
@@ -109,7 +124,7 @@ object MinecraftVersion {
      * 是否为 1.17 以上版本
      */
     val isUniversal by unsafeLazy {
-        major >= 9
+        major >= V1_17
     }
 
     /**
@@ -133,5 +148,21 @@ object MinecraftVersion {
             FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
             FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
         )
+    }
+
+    fun isHigher(version: Int): Boolean {
+        return version < major
+    }
+
+    fun isHigherOrEqual(version: Int): Boolean {
+        return version <= major
+    }
+
+    fun isLower(version: Int): Boolean {
+        return version > major
+    }
+
+    fun isLowerOrEqual(version: Int): Boolean {
+        return version >= major
     }
 }

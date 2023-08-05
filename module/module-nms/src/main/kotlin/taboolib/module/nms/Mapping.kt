@@ -51,7 +51,7 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
         }
     }
 
-    class Field(val path: String, val mojangName: String, val translateName: String) {
+    data class Field(val path: String, val mojangName: String, val translateName: String) {
 
         val className = path.substringAfterLast('.', "")
     }

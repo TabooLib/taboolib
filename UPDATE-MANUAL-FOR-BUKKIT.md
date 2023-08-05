@@ -169,6 +169,31 @@ javax.annotation.Nonnull  -> org.jetbrains.annotations.NotNull
 javax.annotation.Nullable -> org.jetbrains.annotations.Nullable
 ```
 
+### 3.3. `taboolib/module/nms/ConnectionGetterImpl.kt`
+
+根据版本获取玩家连接。
+
+### 3.4. `taboolib/module/nms/MinecraftServerUtil.kt`
+
+根据版本获取服务端实例。
+
+### 3.5 `taboolib/module/nms/i18n/I18nCurrently.kt`
+
+根据版本获取语言文件。
+
+> https://launchermeta.mojang.com/mc/game/version_manifest.json -> [version] -> [assetIndex] -> [...]
+
+```kotlin
+    ...
+    val locales = arrayOf(
+            arrayOf("zh_cn", "047c10e1a6ec7f7bcbb4d5c23a7d21f3b6673780"),
+            arrayOf("zh_hk", "3bcb1edf75506bc790390ae1694db11334f77889"),
+            arrayOf("zh_tw", "0eb2fb4d5c8cb3fe053589728140fe0d31f2edff"),
+            arrayOf("en_gb", "d81bbc616f798828fdd41be3eb4c4a1d4ab6c168")
+    )
+    ...
+```
+
 ## 4. 发布
 
 默认情况下，TabooLib 在推送后会自动发布到 **坏黑** 的个人仓库供大家下载：

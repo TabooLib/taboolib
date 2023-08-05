@@ -1,10 +1,11 @@
 package taboolib.module.nms
 
 import org.bukkit.Bukkit
+import org.bukkit.Chunk
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
+import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.type.LightType
-
 
 /**
  * 创建光源
@@ -69,4 +70,23 @@ fun Block.updateLight(lightType: LightType, viewers: Collection<Player>) {
             }
         }
     }
+}
+
+abstract class NMSLight {
+
+    abstract fun createLight(block: Block, lightType: LightType, lightLevel: Int): Boolean
+
+    abstract fun deleteLight(block: Block, lightType: LightType): Boolean
+
+    abstract fun getRawLightLevel(block: Block, lightType: LightType): Int
+
+    abstract fun setRawLightLevel(block: Block, lightType: LightType, lightLevel: Int)
+
+    abstract fun recalculateLight(block: Block, lightType: LightType)
+
+    abstract fun recalculateLightAround(block: Block, lightType: LightType, lightLevel: Int)
+
+    abstract fun updateLight(chunk: Chunk, viewers: Collection<Player>)
+
+    abstract fun updateLightUniversal(block: Block, lightType: LightType, viewers: Collection<Player>)
 }

@@ -6,18 +6,34 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import org.bukkit.util.NumberConversions
 
+/**
+ * TabooLib
+ * taboolib.module.nms.ItemTagSerializer
+ *
+ * @author 坏黑
+ * @since 2023/8/5 00:56
+ */
 object ItemTagSerializer {
 
+    /**
+     * 序列化 [ItemTag]
+     */
     fun serializeTag(tag: ItemTag): JsonObject {
         return JsonObject().also { json -> tag.forEach { (k, v) -> json.add(k, serializeData(v)) } }
     }
 
+    /**
+     * 序列化 [ItemTagList]
+     */
     fun serializeList(tagList: ItemTagList): JsonArray {
         return JsonArray().also { json -> tagList.forEach { json.add(serializeData(it)) } }
     }
 
+    /**
+     * 序列化 [ItemTagData]
+     */
     fun serializeData(tagData: ItemTagData): JsonElement {
-        return when (tagData.type!!) {
+        return when (tagData.type) {
             ItemTagType.COMPOUND -> serializeTag(tagData as ItemTag)
             ItemTagType.LIST -> serializeList(tagData as ItemTagList)
             ItemTagType.BYTE -> JsonPrimitive("${tagData.asByte()}b")
@@ -29,6 +45,7 @@ object ItemTagSerializer {
             ItemTagType.STRING, ItemTagType.END -> JsonPrimitive("${tagData.asString()}t")
             ItemTagType.INT_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}i]")
             ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asByteArray().joinToString(",") { it.toString() }}b]")
+            else -> error("Unsupported type ${tagData.type}")
         }
     }
 

@@ -25,6 +25,13 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
         this.data = this;
     }
 
+    public ItemTagList(List<ItemTagData> value) {
+        super(0);
+        this.type = ItemTagType.LIST;
+        this.data = this;
+        this.value.addAll(value);
+    }
+
     public static ItemTagList of(ItemTagData... base) {
         ItemTagList list = new ItemTagList();
         list.addAll(Arrays.asList(base));

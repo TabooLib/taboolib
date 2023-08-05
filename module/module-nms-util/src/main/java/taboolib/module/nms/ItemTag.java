@@ -27,6 +27,13 @@ public class ItemTag extends ItemTagData implements Map<String, ItemTagData> {
         this.data = this;
     }
 
+    public ItemTag(Map<String, ItemTagData> value) {
+        super(0);
+        this.type = ItemTagType.COMPOUND;
+        this.data = this;
+        this.value.putAll(value);
+    }
+
     public void saveTo(ItemStack item) {
         item.setItemMeta(NMSItemTagKt.setItemTag(item, this).getItemMeta());
     }

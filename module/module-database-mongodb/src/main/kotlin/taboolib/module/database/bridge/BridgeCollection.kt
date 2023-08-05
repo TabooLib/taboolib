@@ -14,7 +14,7 @@ import taboolib.module.configuration.Update
 import taboolib.module.configuration.contrastAs
 import java.util.concurrent.ConcurrentHashMap
 
-class BridgeCollection constructor(val database: BridgeDatabase, val collection: String, val index: Index = Index.NONE) {
+class BridgeCollection(val database: BridgeDatabase, val collection: String, val index: Index = Index.NONE) {
 
     val dataMap = ConcurrentHashMap<String, BridgeData>()
 

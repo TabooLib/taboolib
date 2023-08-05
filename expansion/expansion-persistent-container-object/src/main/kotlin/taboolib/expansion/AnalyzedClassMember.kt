@@ -100,20 +100,23 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
         return isFloat || isDouble
     }
 
-    /** 转换为数据库字段名称 */
-    private fun String.toColumnName(): String {
-        return toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
-    }
-
-    /** 获取注解 */
-    private inline fun <reified T : Annotation> Parameter.findAnnotation(): T? {
-        if (isAnnotationPresent(T::class.java)) {
-            return getAnnotation(T::class.java)
-        }
-        return null
-    }
-
     override fun toString(): String {
         return "$name(${returnType})"
+    }
+
+    companion object {
+
+        /** 转换为数据库字段名称 */
+        fun String.toColumnName(): String {
+            return toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
+        }
+
+        /** 获取注解 */
+        inline fun <reified T : Annotation> Parameter.findAnnotation(): T? {
+            if (isAnnotationPresent(T::class.java)) {
+                return getAnnotation(T::class.java)
+            }
+            return null
+        }
     }
 }
