@@ -26,6 +26,7 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 fun ItemTagData.clone(): ItemTagData {
     return when (type) {
         ItemTagType.END -> ItemTagData(type, null)
+        // 基本类型
         ItemTagType.BYTE,
         ItemTagType.SHORT,
         ItemTagType.INT,
@@ -38,8 +39,6 @@ fun ItemTagData.clone(): ItemTagData {
         ItemTagType.INT_ARRAY -> ItemTagData(type, asIntArray().copyOf())
         ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
         ItemTagType.COMPOUND -> ItemTag().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
-        // 不支持的类型
-        else -> error("Unsupported type.")
     }
 }
 
@@ -85,17 +84,17 @@ abstract class NMSItemTag {
 @Suppress("SpellCheckingInspection", "UNCHECKED_CAST")
 class NMSItemTagImpl : NMSItemTag() {
 
-    val nbtTagCompoundGetter = net.minecraft.server.v1_12_R1.NBTTagCompound::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "x" else "map")
-    val nbtTagListGetter = net.minecraft.server.v1_12_R1.NBTTagList::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "list")
-    val nbtTagByteGetter = net.minecraft.server.v1_12_R1.NBTTagByte::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "x" else "data")
-    val nbtTagShortGetter = net.minecraft.server.v1_12_R1.NBTTagShort::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagIntGetter = net.minecraft.server.v1_12_R1.NBTTagInt::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongGetter = net.minecraft.server.v1_12_R1.NBTTagLong::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagFloatGetter = net.minecraft.server.v1_12_R1.NBTTagFloat::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "w" else "data")
-    val nbtTagDoubleGetter = net.minecraft.server.v1_12_R1.NBTTagDouble::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "w" else "data")
-    val nbtTagStringGetter = net.minecraft.server.v1_12_R1.NBTTagString::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "A" else "data")
-    val nbtTagByteArrayGetter = net.minecraft.server.v1_12_R1.NBTTagByteArray::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagIntArrayGetter = net.minecraft.server.v1_12_R1.NBTTagIntArray::class.java.unreflectGetter(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagCompoundGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagCompound>(if (MinecraftVersion.isUniversal) "x" else "map")
+    val nbtTagListGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagList>(if (MinecraftVersion.isUniversal) "c" else "list")
+    val nbtTagByteGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagByte>(if (MinecraftVersion.isUniversal) "x" else "data")
+    val nbtTagShortGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagShort>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagIntGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagInt>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagLongGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagLong>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagFloatGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagFloat>(if (MinecraftVersion.isUniversal) "w" else "data")
+    val nbtTagDoubleGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagDouble>(if (MinecraftVersion.isUniversal) "w" else "data")
+    val nbtTagStringGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagString>(if (MinecraftVersion.isUniversal) "A" else "data")
+    val nbtTagByteArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagByteArray>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagIntArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagIntArray>(if (MinecraftVersion.isUniversal) "c" else "data")
 
     override fun getItemTag(itemStack: ItemStack): ItemTag {
         val nmsItem = nmsProxy<NMSItem>().getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
@@ -184,8 +183,8 @@ class NMSItemTagImpl : NMSItemTag() {
         }
     }
 
-    private fun Class<*>.unreflectGetter(name: String): MethodHandle {
-        return UnsafeAccess.lookup.unreflectGetter(getDeclaredField(name).apply { isAccessible = true })
+    private inline fun <reified T> unreflectGetter(name: String): MethodHandle {
+        return UnsafeAccess.lookup.unreflectGetter(T::class.java.getDeclaredField(name).apply { isAccessible = true })
     }
 
     private fun <T> MethodHandle.get(src: Any): T {
