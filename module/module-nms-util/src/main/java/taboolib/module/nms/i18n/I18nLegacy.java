@@ -17,7 +17,7 @@ import taboolib.common.env.RuntimeResource;
 import taboolib.module.nms.ItemTag;
 import taboolib.module.nms.MinecraftVersion;
 import taboolib.module.nms.NMSI18nKt;
-import taboolib.module.nms.NMSItemTagKt;
+import taboolib.module.nms.v2.NMSItemTagKt;
 
 import java.io.File;
 import java.util.Locale;

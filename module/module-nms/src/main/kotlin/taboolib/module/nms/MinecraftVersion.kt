@@ -14,7 +14,6 @@ import java.io.FileInputStream
 @PlatformSide([Platform.BUKKIT])
 object MinecraftVersion {
 
-    // 一些版本号
     const val V1_8 = 0
     const val V1_9 = 1
     const val V1_10 = 2
@@ -29,24 +28,15 @@ object MinecraftVersion {
     const val V1_19 = 11
     const val V1_20 = 12
 
-    @Awake(LifeCycle.LOAD)
-    private fun init() {
-        if (!isSupported) {
-            disablePlugin()
-            error("Unsupported Minecraft version, plugin disabled")
-        }
-        if (runningPlatform == Platform.BUKKIT) {
-            Reflex.remapper.add(RefRemapper)
-        }
-    }
-
-    @Suppress("MemberNameEqualsClassName")
+    /**
+     * 当前运行的版本（字符版本），例如：v1_8_R3
+     */
     val minecraftVersion by unsafeLazy {
         Bukkit.getServer().javaClass.name.split('.')[3]
     }
 
     /**
-     * 当前正在运行的版本
+     * 当前运行的版本（数字版本），例如：1.8.8
      */
     val runningVersion by unsafeLazy {
         val version = Bukkit.getServer().version.split("MC:")[1]
@@ -128,12 +118,15 @@ object MinecraftVersion {
     }
 
     /**
-     * 是否支持打包数据包（1.19.4+）
+     * 是否支持 BundlePacket 数据包（1.19.4+）
      */
     val isBundlePacketSupported by unsafeLazy {
         majorLegacy >= 11904
     }
 
+    /**
+     * 获取当前运行版本的映射文件
+     */
     val mapping by unsafeLazy {
         val mappingFile = if (isUniversal) {
             MappingFile.files[runningVersion]
@@ -150,19 +143,45 @@ object MinecraftVersion {
         )
     }
 
+    /**
+     * 是否高于某个版本，使用方式如下：
+     * ```
+     * MinecraftVersion.isHigher(MinecraftVersion.V1_12)
+     * ```
+     */
     fun isHigher(version: Int): Boolean {
         return version < major
     }
 
+    /**
+     * 是否高于或等于某个版本
+     */
     fun isHigherOrEqual(version: Int): Boolean {
         return version <= major
     }
 
+    /**
+     * 是否低于某个版本
+     */
     fun isLower(version: Int): Boolean {
         return version > major
     }
 
+    /**
+     * 是否低于或等于某个版本
+     */
     fun isLowerOrEqual(version: Int): Boolean {
         return version >= major
+    }
+
+    @Awake(LifeCycle.LOAD)
+    private fun init() {
+        if (!isSupported) {
+            disablePlugin()
+            error("Unsupported Minecraft version, plugin disabled")
+        }
+        if (runningPlatform == Platform.BUKKIT) {
+            Reflex.remapper.add(RefRemapper)
+        }
     }
 }

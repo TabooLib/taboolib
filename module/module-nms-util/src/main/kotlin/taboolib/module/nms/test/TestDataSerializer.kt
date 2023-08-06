@@ -15,11 +15,13 @@ import taboolib.module.nms.dataSerializerBuilder
 object TestDataSerializer : Test() {
 
     override fun check(): List<Result> {
-        return listOf(sandbox("NMS:dataSerializerBuilder()") {
-            dataSerializerBuilder {
-                writeUtf("test")
-                writeVarInt(1)
+        return listOf(
+            sandbox("NMS:dataSerializerBuilder()") {
+                dataSerializerBuilder {
+                    writeUtf("test")
+                    writeVarInt(1)
+                }
             }
-        })
+        )
     }
 }

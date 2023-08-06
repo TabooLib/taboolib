@@ -1,4 +1,4 @@
-package taboolib.module.nms
+package taboolib.module.nms.v2
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.chat.ComponentSerializer
@@ -13,37 +13,58 @@ import org.bukkit.boss.BossBar
 import org.bukkit.craftbukkit.v1_16_R3.boss.CraftBossBar
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.setProperty
-import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsProxy
+import taboolib.module.nms.sendPacket
 
+/**
+ * 将 Json 信息设置到 [BossBar] 的标题上
+ */
 fun BossBar.setRawTitle(title: String) {
-    NMSMessage.instance.setTitle(this, title)
+    nmsProxy<NMSMessage>().setRawTitle(this, title)
 }
 
+/**
+ * 发送 Json 信息到玩家的 Title 上
+ */
 fun Player.sendRawTitle(title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
-    NMSMessage.instance.send(this, title, subtitle, fadein, stay, fadeout)
+    nmsProxy<NMSMessage>().sendRawTitle(this, title, subtitle, fadein, stay, fadeout)
 }
 
+/**
+ * 发送 Json 信息到玩家的 ActionBar 上
+ */
 fun Player.sendRawActionBar(message: String) {
-    NMSMessage.instance.send(this, message)
+    nmsProxy<NMSMessage>().sendRawActionBar(this, message)
 }
 
+/**
+ * TabooLib
+ * taboolib.module.nms.NMSMessage
+ *
+ * @author 坏黑
+ * @since 2023/8/5 03:47
+ */
 abstract class NMSMessage {
 
-    abstract fun send(player: Player, title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int)
+    abstract fun setRawTitle(bossBar: BossBar, title: String)
 
-    abstract fun send(player: Player, action: String)
+    abstract fun sendRawTitle(player: Player, title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int)
 
-    abstract fun setTitle(bossBar: BossBar, title: String)
-
-    companion object {
-
-        val instance by unsafeLazy { nmsProxy<NMSMessage>() }
-    }
+    abstract fun sendRawActionBar(player: Player, action: String)
 }
 
+/**
+ * [NMSMessage] 的实现类
+ */
 class NMSMessageImpl : NMSMessage() {
 
-    override fun send(player: Player, title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
+    override fun setRawTitle(bossBar: BossBar, title: String) {
+        bossBar as CraftBossBar
+        bossBar.handle.a(ChatSerializer.a(title))
+    }
+
+    override fun sendRawTitle(player: Player, title: String?, subtitle: String?, fadein: Int, stay: Int, fadeout: Int) {
         if (MinecraftVersion.isUniversal) {
             player.sendPacket(ClientboundSetTitlesAnimationPacket(fadein, stay, fadeout))
             if (title != null) {
@@ -63,7 +84,7 @@ class NMSMessageImpl : NMSMessage() {
         }
     }
 
-    override fun send(player: Player, action: String) {
+    override fun sendRawActionBar(player: Player, action: String) {
         try {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *ComponentSerializer.parse(action))
         } catch (ex: NoSuchMethodError) {
@@ -72,10 +93,5 @@ class NMSMessageImpl : NMSMessage() {
                 it.setProperty("components", ComponentSerializer.parse(action))
             })
         }
-    }
-
-    override fun setTitle(bossBar: BossBar, title: String) {
-        bossBar as CraftBossBar
-        bossBar.handle.a(ChatSerializer.a(title))
     }
 }

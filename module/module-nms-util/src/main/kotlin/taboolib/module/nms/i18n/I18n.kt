@@ -14,7 +14,6 @@ import taboolib.module.nms.MinecraftVersion.minecraftVersion
  * @author sky
  * @since 2020-04-04 19:33
  */
-@Awake
 @PlatformSide([Platform.BUKKIT])
 object I18n {
 

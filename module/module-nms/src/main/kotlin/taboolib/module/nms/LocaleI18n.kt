@@ -7,6 +7,8 @@ import taboolib.common.TabooLibCommon
 import taboolib.common.io.digest
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import java.io.File
 import java.net.URL
 
@@ -17,6 +19,7 @@ import java.net.URL
  * @author 坏黑
  * @since 2023/8/6 02:44
  */
+@PlatformSide([Platform.BUKKIT])
 object LocaleI18n {
 
     /** 资源文件地址 */

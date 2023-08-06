@@ -27,9 +27,9 @@ private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 val minecraftServerObject: Any by unsafeLazy {
     Bukkit.getServer().getProperty(when (MinecraftVersion.major) {
         // 1.8, 1.9, 1.10, 1.11, 1.12, 1.13 类型为：MinecraftServer
-        in 0..5 -> "console"
+        in MinecraftVersion.V1_8..MinecraftVersion.V1_13 -> "console"
         // 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20 类型为：DedicatedServer
-        in 6..12 -> "console"
+        in MinecraftVersion.V1_14..MinecraftVersion.V1_20 -> "console"
         // 其他版本
         else -> "console"
     })!!
@@ -113,7 +113,7 @@ fun Player.sendBundlePacket(vararg packet: Any): CompletableFuture<Void> {
  */
 fun Player.sendBundlePacket(packet: List<Any>): CompletableFuture<Void> {
     return if (MinecraftVersion.isBundlePacketSupported) {
-        sendPacket(ConnectionGetter.instance.newBundlePacket(packet))
+        sendPacket(nmsProxy<ConnectionGetter>().newBundlePacket(packet))
     } else {
         CompletableFuture.allOf(*packet.map { sendPacket(it) }.toTypedArray())
     }
@@ -149,7 +149,7 @@ fun Player.sendBundlePacketBlocking(vararg packet: Any) {
  */
 fun Player.sendBundlePacketBlocking(packet: List<Any>) {
     if (MinecraftVersion.isBundlePacketSupported) {
-        sendPacketBlocking(ConnectionGetter.instance.newBundlePacket(packet))
+        sendPacketBlocking(nmsProxy<ConnectionGetter>().newBundlePacket(packet))
     } else {
         packet.forEach { sendPacketBlocking(it) }
     }

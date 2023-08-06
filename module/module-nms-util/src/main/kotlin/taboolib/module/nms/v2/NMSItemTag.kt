@@ -1,9 +1,9 @@
-package taboolib.module.nms
+package taboolib.module.nms.v2
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
-import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.*
 import java.lang.invoke.MethodHandle
 
 /**
@@ -54,6 +54,13 @@ private fun ItemStack?.validation(): ItemStack {
     }
 }
 
+/**
+ * TabooLib
+ * taboolib.module.nms.NMSItemTag
+ *
+ * @author 坏黑
+ * @since 2023/8/5 03:47
+ */
 abstract class NMSItemTag {
 
     /** 获取物品 [ItemTag] */
@@ -72,6 +79,9 @@ abstract class NMSItemTag {
     abstract fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData
 }
 
+/**
+ * [NMSItemTag] 的实现类
+ */
 @Suppress("SpellCheckingInspection", "UNCHECKED_CAST")
 class NMSItemTagImpl : NMSItemTag() {
 

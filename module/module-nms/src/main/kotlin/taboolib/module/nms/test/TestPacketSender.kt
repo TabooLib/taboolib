@@ -22,16 +22,15 @@ object TestPacketSender : Test() {
 
     override fun check(): List<Result> {
         val result = arrayListOf<Result>()
+        result += sandbox("NMS:getConnections()") { nmsProxy<ConnectionGetter>().getConnections() }
         val player = onlinePlayers.firstOrNull()
         if (player != null) {
             result += sandbox("NMS:getConnection(Player)") { PacketSender.getConnection(player) }
             result += sandbox("NMS:sendPacketBlocking(Player, Any)") { player.sendPacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance()) }
             result += sandbox("NMS:sendBundlePacketBlocking(Player, Any)") { player.sendBundlePacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance()) }
-        } else {
-            result += Failure.of("NMS:NO_PLAYER")
+            result += if (testSend) Success.of("NMS:PacketSendEvent") else Failure.of("NMS:PacketSendEvent")
+            result += if (testReceive) Success.of("NMS:PacketReceiveEvent") else Failure.of("NMS:PacketReceiveEvent")
         }
-        result += if (testSend) Success.of("NMS:PacketSendEvent") else Failure.of("NMS:PacketSendEvent")
-        result += if (testReceive) Success.of("NMS:PacketReceiveEvent") else Failure.of("NMS:PacketReceiveEvent")
         return result
     }
 

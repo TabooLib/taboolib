@@ -11,7 +11,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isListened
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.warning
@@ -28,25 +27,32 @@ object ChannelExecutor {
 
     private val id = "taboolib_${pluginId}_packet_handler"
     private val pool = Executors.newSingleThreadExecutor()
-
-    /** 是否强制禁用 **/
     private var isDisabled = false
 
+    /**
+     * 禁用 Channel 注入
+     */
     fun disable() {
         isDisabled = true
     }
 
     /**
-     * 数据包事件是否被监听
+     * 数据包事件是否被当前插件监听
      */
     fun isPacketEventListened(): Boolean {
         return PacketSendEvent::class.java.isListened() || PacketReceiveEvent::class.java.isListened()
     }
 
-    fun getPlayerChannel(address: InetAddress, init: Boolean): Channel {
-        return ConnectionGetter.instance.getChannel(ConnectionGetter.instance.getConnection(address, init))
+    /**
+     * 获取玩家的 [Channel]
+     */
+    fun getPlayerChannel(address: InetAddress, isFirst: Boolean): Channel {
+        return nmsProxy<ConnectionGetter>().getChannel(address, isFirst)
     }
 
+    /**
+     * 将 TabooLib 的 [ChannelHandler] 注入到玩家的 [Channel] 中，只有插件监听了 [PacketSendEvent] 或 [PacketReceiveEvent] 时才会执行。
+     */
     fun addPlayerChannel(player: Player, address: InetAddress) {
         if (isDisabled || !isPacketEventListened()) {
             return
@@ -71,6 +77,10 @@ object ChannelExecutor {
         }
     }
 
+    /**
+     * 取消玩家的 [Channel] 注入
+     * @param async 是否异步执行
+     */
     fun removePlayerChannel(player: Player, async: Boolean = true) {
         if (isDisabled || !isPacketEventListened()) {
             return
@@ -109,7 +119,7 @@ object ChannelExecutor {
         if (TabooLibCommon.isStopped()) {
             return
         }
-        ConnectionGetter.instance.release(e.player.address ?: return)
+        nmsProxy<ConnectionGetter>().release(e.player.address ?: return)
     }
 
     @Awake(LifeCycle.ACTIVE)

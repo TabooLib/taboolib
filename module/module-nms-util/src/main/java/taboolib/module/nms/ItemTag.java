@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import taboolib.module.nms.v2.NMSItemTagKt;
 
 import java.util.*;
 import java.util.function.BiConsumer;

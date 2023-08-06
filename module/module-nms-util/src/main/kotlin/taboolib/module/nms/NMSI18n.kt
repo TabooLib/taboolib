@@ -13,7 +13,7 @@ val nmsGeneric by unsafeLazy { nmsProxy<NMSGeneric>() }
 /**
  * 获得物品的名称，如果没有则返回译名
  */
-fun ItemStack.getLocaleKey(player: Player? = null): String {
+fun ItemStack.getName(player: Player? = null): String {
     return if (itemMeta?.hasDisplayName() == true) itemMeta!!.displayName else getI18nName(player)
 }
 

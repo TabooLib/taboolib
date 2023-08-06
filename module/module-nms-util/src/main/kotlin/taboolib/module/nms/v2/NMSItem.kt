@@ -1,12 +1,34 @@
-package taboolib.module.nms
+package taboolib.module.nms.v2
 
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsProxy
 import taboolib.module.nms.type.LocaleKey
 import java.lang.reflect.Method
+
+/** 获取物品的 Key，例如 `diamond_sword` */
+fun ItemStack.getKey(): String {
+    return nmsProxy<NMSItem>().getKey(this)
+}
+
+/** 获取物品的语言文件节点，例如 `item.minecraft.diamond_sword` */
+fun ItemStack.getLocaleKey(): LocaleKey {
+    return nmsProxy<NMSItem>().getLocaleKey(this)
+}
+
+/** 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness` */
+fun Enchantment.getLocaleKey(): String {
+    return nmsProxy<NMSItem>().getEnchantmentLocaleKey(this)
+}
+
+/** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
+fun PotionEffectType.getLocaleKey(): String {
+    return nmsProxy<NMSItem>().getPotionEffectTypeLocaleKey(this)
+}
 
 /**
  * TabooLib
