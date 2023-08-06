@@ -3,15 +3,30 @@ package taboolib.module.nms.type
 import org.bukkit.entity.Player
 import taboolib.module.nms.nmsScoreboard
 
+/**
+ * 玩家记分板信息缓存
+ */
 class PlayerScoreboard(val player: Player) {
 
+    /** 当前标题 */
     private var currentTitle = ""
+
+    /** 当前内容 */
     private val currentContent = HashMap<Int, String>()
+
+    /** 当前前缀 */
     private var prefix = ""
+
+    /** 当前后缀 */
     private var suffix = ""
+
+    /** 当前队伍颜色 */
     private var color = ChatColorFormat.RESET
 
+    /** 是否被删除 */
     var deleted = false
+
+    /** 是否被创建 */
     var created = false
 
     init {

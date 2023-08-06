@@ -1,5 +1,8 @@
 package taboolib.module.nms.type
 
+/**
+ * [Toast] 的框架
+ */
 enum class ToastFrame {
 
     /**

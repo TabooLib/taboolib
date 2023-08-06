@@ -174,6 +174,20 @@ object MinecraftVersion {
         return version >= major
     }
 
+    /**
+     * 是否在某个版本范围内
+     */
+    fun isIn(range: IntRange): Boolean {
+        return major in range
+    }
+
+    /**
+     * 是否在某个版本范围内
+     */
+    fun isIn(min: Int, max: Int): Boolean {
+        return major in min..max
+    }
+
     @Awake(LifeCycle.LOAD)
     private fun init() {
         if (!isSupported) {

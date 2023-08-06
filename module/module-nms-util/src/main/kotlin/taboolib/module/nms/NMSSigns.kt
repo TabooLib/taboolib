@@ -46,8 +46,8 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), function: (lines: Array<S
             sendBlockChange(location, location.block.type, location.block.data)
         }
     }
-    // 使玩家打开牌子
-    nmsGeneric.openSignEditor(this, location.block)
+    // FIXME 使玩家打开牌子
+    // nmsGeneric.openSignEditor(this, location.block)
 }
 
 private fun Array<String>.formatSign(line: Int): Array<String> {

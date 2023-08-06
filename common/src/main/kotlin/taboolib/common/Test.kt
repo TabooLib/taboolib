@@ -50,15 +50,15 @@ abstract class Test {
             }
 
             fun of(error: Throwable): Failure {
-                return Failure(error.message ?: "Unknown", error)
+                return Failure(error.message ?: "NULL", error)
             }
 
             fun of(reason: String): Failure {
-                return Failure(reason, RuntimeException(reason))
+                return Failure(reason, RuntimeException("FAIL"))
             }
 
             fun of(): Failure {
-                return Failure("Unknown", RuntimeException("Unknown"))
+                return Failure("Unknown", RuntimeException("FAIL"))
             }
         }
     }

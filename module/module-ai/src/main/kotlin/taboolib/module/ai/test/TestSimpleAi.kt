@@ -27,8 +27,10 @@ object TestSimpleAi : Test() {
         val world = worlds[0]
         // 生成实体
         val villager = world.spawnEntity(Location(world, 0.0, 0.0, 0.0), EntityType.VILLAGER) as Villager
-        villager.isInvisible = true
-        villager.isInvulnerable = true
+        try {
+            villager.isInvulnerable = true
+        } catch (_: Throwable) {
+        }
         // 测试功能
         results += sandbox("AI:clearAi()") {
             villager.clearGoalAi()

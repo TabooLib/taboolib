@@ -1,33 +1,44 @@
 package taboolib.module.nms.v2
 
+import net.minecraft.server.v1_14_R1.MobEffectList
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
 import taboolib.module.nms.type.LocaleKey
 import java.lang.reflect.Method
 
-/** 获取物品的 Key，例如 `diamond_sword` */
+/**
+ * 获取物品的 Key，例如 `diamond_sword`
+ */
 fun ItemStack.getKey(): String {
     return nmsProxy<NMSItem>().getKey(this)
 }
 
-/** 获取物品的语言文件节点，例如 `item.minecraft.diamond_sword` */
+/**
+ * 获取物品的语言文件节点，例如 `item.minecraft.diamond_sword`
+ */
 fun ItemStack.getLocaleKey(): LocaleKey {
     return nmsProxy<NMSItem>().getLocaleKey(this)
 }
 
-/** 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness` */
-fun Enchantment.getLocaleKey(): String {
-    return nmsProxy<NMSItem>().getEnchantmentLocaleKey(this)
+/**
+ * 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness`
+ */
+fun Enchantment.getLocaleKey(): LocaleKey {
+    return nmsProxy<NMSItem>().getLocaleKey(this)
 }
 
-/** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
-fun PotionEffectType.getLocaleKey(): String {
-    return nmsProxy<NMSItem>().getPotionEffectTypeLocaleKey(this)
+/**
+ * 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration`
+ */
+fun PotionEffectType.getLocaleKey(): LocaleKey {
+    return nmsProxy<NMSItem>().getLocaleKey(this)
 }
 
 /**
@@ -52,10 +63,10 @@ abstract class NMSItem {
     abstract fun getLocaleKey(itemStack: ItemStack): LocaleKey
 
     /** 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness` */
-    abstract fun getEnchantmentLocaleKey(enchantment: Enchantment): String
+    abstract fun getLocaleKey(enchantment: Enchantment): LocaleKey
 
     /** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
-    abstract fun getPotionEffectTypeLocaleKey(potionEffectType: PotionEffectType): String
+    abstract fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey
 }
 
 /**
@@ -191,12 +202,91 @@ class NMSItemImpl : NMSItem() {
         }
     }
 
-    override fun getEnchantmentLocaleKey(enchantment: Enchantment): String {
-        return ""
+    /**
+     * **Enchantment**, **1.12-** 表现为：
+     * ```
+     * public String a() {
+     *     return "enchantment." + this.d;
+     * }
+     * ```
+     * **Enchantment**, **1.13+** 表现为：
+     * ```
+     * protected String f() {
+     *     if (this.descriptionId == null) {
+     *         this.descriptionId = // 省略 ...
+     *     }
+     *     return this.descriptionId;
+     * }
+     *
+     * public String g() {
+     *     return this.f();
+     * }
+     * ```
+     * **Enchantment**, **1.18+** 表现为：
+     * ```
+     * protected String getOrCreateDescriptionId() {
+     *     // 同 1.13+
+     * }
+     *
+     * public String getDescriptionId() {
+     *     return this.getOrCreateDescriptionId();
+     * }
+     * ```
+     */
+    override fun getLocaleKey(enchantment: Enchantment): LocaleKey {
+        if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) {
+            return LocaleKey("N", org.bukkit.craftbukkit.v1_12_R1.enchantments.CraftEnchantment.getRaw(enchantment).a())
+        }
+        return try {
+            LocaleKey("N", org.bukkit.craftbukkit.v1_20_R1.enchantments.CraftEnchantment.getRaw(enchantment).descriptionId)
+        } catch (_: NoSuchMethodError) {
+            LocaleKey("N", org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment.getRaw(enchantment).g())
+        }
     }
 
-    override fun getPotionEffectTypeLocaleKey(potionEffectType: PotionEffectType): String {
-        return ""
+    /**
+     * 表现形式与 [Enchantment] 接近，仅转换为 NMS 类型的方法不同。
+     */
+    override fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey {
+        if (MinecraftVersion.isUniversal) {
+            // 1.19, 1.20. IRegistry.MOB_EFFECT -> BuiltInRegistries.MOB_EFFECT
+            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) {
+                // 需要 Java 17 编译，因此全程反射
+                nmsClass("BuiltInRegistries").getProperty<Any>("MOB_EFFECT")!!.invokeMethod<Any>("byId")!!.invokeMethod<String>("getDescriptionId")
+            }
+            // 1.18 及以上版本, 不可以使用 fromId, 没有这个函数.
+            // 1.17 可正常使用以前的代码运行
+        }
+        // 1.13+ 开始使用 SystemUtils.a("effect", IRegistry.MOB_EFFECT.getKey(this)) 获取 key
+        else if (MinecraftVersion.isIn(MinecraftVersion.V1_13..MinecraftVersion.V1_16)) {
+            net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.id)!!.c()
+        }
+        // 1.13- 方法相对原始
+        else if (MinecraftVersion.isIn(MinecraftVersion.V1_9..MinecraftVersion.V1_12)) {
+            net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.id)!!.a()
+        }
+        // 1.8
+        else {
+            net.minecraft.server.v1_8_R3.MobEffectList.byId[potionEffectType.id].a()
+        }
+
+//        net.minecraft.server.v1_8_R3.MobEffectList.byId
+//        net.minecraft.server.v1_9_R2.MobEffectList.fromId()
+//        net.minecraft.server.v1_16_R1.MobEffectList.fromId()
+//        net.minecraft.core.IRegistry
+//        net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.byId()
+
+        if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) {
+            potionEffectType as org.bukkit.craftbukkit.v1_12_R1.potion.CraftPotionEffectType
+            return LocaleKey("N", potionEffectType.handle.a())
+        }
+        return try {
+            potionEffectType as org.bukkit.craftbukkit.v1_20_R1.potion.CraftPotionEffectType
+            LocaleKey("N", potionEffectType.handle.descriptionId)
+        } catch (_: NoSuchMethodError) {
+            potionEffectType as org.bukkit.craftbukkit.v1_16_R1.potion.CraftPotionEffectType
+            LocaleKey("N", potionEffectType.handle.c())
+        }
     }
 
     /** 获取物品「译名」的方法名称 */

@@ -21,7 +21,7 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 }
 
 /**
- * 克隆 ItemTag
+ * 克隆 [ItemTag]
  */
 fun ItemTagData.clone(): ItemTagData {
     return when (type) {
@@ -39,17 +39,6 @@ fun ItemTagData.clone(): ItemTagData {
         ItemTagType.INT_ARRAY -> ItemTagData(type, asIntArray().copyOf())
         ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
         ItemTagType.COMPOUND -> ItemTag().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
-    }
-}
-
-/**
- * 判断物品是否为空
- */
-private fun ItemStack?.validation(): ItemStack {
-    if (this == null || type == Material.AIR || type.name.endsWith("_AIR")) {
-        error("ItemStack must be not null.")
-    } else {
-        return this
     }
 }
 
@@ -189,5 +178,16 @@ class NMSItemTagImpl : NMSItemTag() {
 
     private fun <T> MethodHandle.get(src: Any): T {
         return bindTo(src).invoke() as T
+    }
+}
+
+/**
+ * 判断物品是否为空
+ */
+private fun ItemStack?.validation(): ItemStack {
+    if (this == null || type == Material.AIR || type.name.endsWith("_AIR")) {
+        error("ItemStack must be not null.")
+    } else {
+        return this
     }
 }

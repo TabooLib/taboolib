@@ -24,10 +24,10 @@ fun Block.createLight(
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
-    if (nmsGeneric.getRawLightLevel(this, lightType) > lightLevel) {
-        nmsGeneric.deleteLight(this, lightType)
+    if (nmsProxy<NMSLight>().getRawLightLevel(this, lightType) > lightLevel) {
+        nmsProxy<NMSLight>().deleteLight(this, lightType)
     }
-    val result = nmsGeneric.createLight(this, lightType, lightLevel)
+    val result = nmsProxy<NMSLight>().createLight(this, lightType, lightLevel)
     if (update) {
         updateLight(lightType, viewers)
     }
@@ -49,7 +49,7 @@ fun Block.deleteLight(
     if (MinecraftVersion.majorLegacy < 11200) {
         error("Not supported yet.")
     }
-    val result = nmsGeneric.deleteLight(this, lightType)
+    val result = nmsProxy<NMSLight>().deleteLight(this, lightType)
     if (update) {
         updateLight(lightType, viewers)
     }
@@ -61,12 +61,12 @@ fun Block.deleteLight(
  */
 fun Block.updateLight(lightType: LightType, viewers: Collection<Player>) {
     if (MinecraftVersion.isUniversal) {
-        nmsGeneric.updateLightUniversal(this, lightType, viewers)
+        nmsProxy<NMSLight>().updateLightUniversal(this, lightType, viewers)
     } else {
         // 更新邻边区块 (为了防止光只在一个区块的尴尬局面)
         (-1..1).forEach { x ->
             (-1..1).forEach { z ->
-                nmsGeneric.updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
+                nmsProxy<NMSLight>().updateLight(world.getChunkAt(chunk.x + x, chunk.z + z), viewers)
             }
         }
     }

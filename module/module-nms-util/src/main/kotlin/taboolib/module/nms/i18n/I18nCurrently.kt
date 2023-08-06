@@ -1,5 +1,3 @@
-@file:Suppress("KDocUnresolvedReference", "DEPRECATION")
-
 package taboolib.module.nms.i18n
 
 import com.google.gson.JsonObject
@@ -10,7 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import taboolib.common.TabooLibCommon
-import taboolib.module.nms.getInternalName
+import taboolib.module.nms.v2.getLocaleKey
 import java.io.File
 import java.net.URL
 import java.nio.charset.StandardCharsets
@@ -24,7 +22,7 @@ import java.util.concurrent.Executors
  * @since 2020-04-04 19:51
  */
 @Suppress("DuplicatedCode")
-object I18nCurrently : I18nBase() {
+class I18nCurrently : I18nBase() {
 
     val locales = arrayOf(
             arrayOf("zh_cn", "047c10e1a6ec7f7bcbb4d5c23a7d21f3b6673780"),
@@ -49,7 +47,7 @@ object I18nCurrently : I18nBase() {
         }
     }
 
-    override fun init() {
+    fun init() {
         executor.submit {
             load()
             if (cache.isEmpty()) {
@@ -76,7 +74,7 @@ object I18nCurrently : I18nBase() {
             return "[LOADING]"
         }
         val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
-        val element = locale[entity.getInternalName()]
+        val element = locale[entity.getLocaleKey().key]
         return if (element == null) entity.name else element.asString
     }
 
@@ -85,7 +83,7 @@ object I18nCurrently : I18nBase() {
             return "[LOADING]"
         }
         val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
-        val element = locale[itemStack.getInternalName()]
+        val element = locale[itemStack.getLocaleKey().key]
         return if (element == null) itemStack.type.name.lowercase(Locale.getDefault()).replace("_", "") else element.asString
     }
 
@@ -94,7 +92,7 @@ object I18nCurrently : I18nBase() {
             return "[LOADING]"
         }
         val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
-        val element = locale[enchantment.getInternalName()]
+        val element = locale[enchantment.getLocaleKey().key]
         return if (element == null) enchantment.name else element.asString
     }
 
@@ -103,7 +101,7 @@ object I18nCurrently : I18nBase() {
             return "[LOADING]"
         }
         val locale = getLocale(player) ?: return "[NO LOCALE:${player?.locale ?: "zh_cn (default)"}]"
-        val element = locale[potionEffectType.getInternalName()]
+        val element = locale[potionEffectType.getLocaleKey().key]
         return if (element == null) potionEffectType.name else element.asString
     }
 

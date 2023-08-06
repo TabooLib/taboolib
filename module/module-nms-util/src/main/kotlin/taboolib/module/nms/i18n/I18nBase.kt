@@ -14,8 +14,6 @@ import org.bukkit.potion.PotionEffectType
  */
 abstract class I18nBase {
 
-    abstract fun init()
-
     /**
      * 获取实体对应译名
      * 如果传入玩家则通过该玩家的客户端语言获取对应译名
