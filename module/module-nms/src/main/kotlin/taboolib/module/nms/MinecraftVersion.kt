@@ -188,6 +188,13 @@ object MinecraftVersion {
         return major in min..max
     }
 
+    /**
+     * 是否等于某个版本
+     */
+    fun isEqual(version: Int): Boolean {
+        return version == major
+    }
+
     @Awake(LifeCycle.LOAD)
     private fun init() {
         if (!isSupported) {

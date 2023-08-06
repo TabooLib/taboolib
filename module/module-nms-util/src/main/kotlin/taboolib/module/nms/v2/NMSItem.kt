@@ -1,12 +1,12 @@
 package taboolib.module.nms.v2
 
-import net.minecraft.server.v1_14_R1.MobEffectList
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
@@ -89,6 +89,16 @@ class NMSItemImpl : NMSItem() {
     val itemLocaleKeyMethod: Method? = net.minecraft.server.v1_12_R1.Item::class.java.declaredMethods.find {
         checkName1(it.name) && it.parameterTypes.size == 1 && it.parameterTypes[0] == net.minecraft.server.v1_12_R1.ItemStack::class.java && it.returnType == String::class.java
     }
+
+    /**
+     * 1.19, 1.20 -> BuiltInRegistries.MOB_EFFECT
+     */
+    val mobEffectBuiltInRegistries by unsafeLazy { nmsClass("BuiltInRegistries").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
+
+    /**
+     * 1.17, 1.18 -> IRegistry.MOB_EFFECT
+     */
+    val mobEffectIRegistry by unsafeLazy { nmsClass("IRegistry").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
 
     init {
         itemLocaleNameMethod?.isAccessible = true
@@ -194,7 +204,7 @@ class NMSItemImpl : NMSItem() {
                 if (localeKey == null) {
                     // 对于一些特殊的物品，例如：修改 SkullOwner 后的头、成书等，译名会被修改，导致无法获取到语言文件节点。
                     itemLocaleKeyMethod ?: error("Unsupported item: ${itemStack.type}.")
-                    LocaleKey("S",itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack)?.toString() ?: error("Unsupported item ${itemStack.type}"))
+                    LocaleKey("S", itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack)?.toString() ?: error("Unsupported item ${itemStack.type}"))
                 } else {
                     LocaleKey("N", localeKey)
                 }
@@ -247,15 +257,22 @@ class NMSItemImpl : NMSItem() {
     /**
      * 表现形式与 [Enchantment] 接近，仅转换为 NMS 类型的方法不同。
      */
+    @Suppress("UNCHECKED_CAST")
     override fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey {
-        if (MinecraftVersion.isUniversal) {
-            // 1.19, 1.20. IRegistry.MOB_EFFECT -> BuiltInRegistries.MOB_EFFECT
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) {
-                // 需要 Java 17 编译，因此全程反射
-                nmsClass("BuiltInRegistries").getProperty<Any>("MOB_EFFECT")!!.invokeMethod<Any>("byId")!!.invokeMethod<String>("getDescriptionId")
+        val descriptionId = if (MinecraftVersion.isUniversal) {
+            // 1.17
+            // 继续使用 fromId
+            if (MinecraftVersion.isEqual(MinecraftVersion.V1_17)) {
+                val registry = mobEffectIRegistry as net.minecraft.server.v1_16_R1.Registry<Any>
+                registry.fromId(potionEffectType.id)!!.invokeMethod<String>("c", remap = false)
             }
-            // 1.18 及以上版本, 不可以使用 fromId, 没有这个函数.
-            // 1.17 可正常使用以前的代码运行
+            // 1.18 ... 1.20
+            // fromId -> byId
+            else {
+                val registry = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) mobEffectBuiltInRegistries else mobEffectIRegistry
+                registry as net.minecraft.core.Registry<Any>
+                registry.byId(potionEffectType.id)!!.invokeMethod<String>("getDescriptionId")
+            }
         }
         // 1.13+ 开始使用 SystemUtils.a("effect", IRegistry.MOB_EFFECT.getKey(this)) 获取 key
         else if (MinecraftVersion.isIn(MinecraftVersion.V1_13..MinecraftVersion.V1_16)) {
@@ -269,24 +286,7 @@ class NMSItemImpl : NMSItem() {
         else {
             net.minecraft.server.v1_8_R3.MobEffectList.byId[potionEffectType.id].a()
         }
-
-//        net.minecraft.server.v1_8_R3.MobEffectList.byId
-//        net.minecraft.server.v1_9_R2.MobEffectList.fromId()
-//        net.minecraft.server.v1_16_R1.MobEffectList.fromId()
-//        net.minecraft.core.IRegistry
-//        net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.byId()
-
-        if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) {
-            potionEffectType as org.bukkit.craftbukkit.v1_12_R1.potion.CraftPotionEffectType
-            return LocaleKey("N", potionEffectType.handle.a())
-        }
-        return try {
-            potionEffectType as org.bukkit.craftbukkit.v1_20_R1.potion.CraftPotionEffectType
-            LocaleKey("N", potionEffectType.handle.descriptionId)
-        } catch (_: NoSuchMethodError) {
-            potionEffectType as org.bukkit.craftbukkit.v1_16_R1.potion.CraftPotionEffectType
-            LocaleKey("N", potionEffectType.handle.c())
-        }
+        return LocaleKey("N", descriptionId!!)
     }
 
     /** 获取物品「译名」的方法名称 */
