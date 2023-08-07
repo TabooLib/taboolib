@@ -1,6 +1,7 @@
 package taboolib.common
 
 import taboolib.common.platform.function.info
+import java.lang.IllegalStateException
 
 /**
  * TabooLib

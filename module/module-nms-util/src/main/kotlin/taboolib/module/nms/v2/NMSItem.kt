@@ -7,10 +7,10 @@ import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.LocaleKey
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
-import taboolib.module.nms.type.LocaleKey
 import java.lang.reflect.Method
 
 /**
@@ -91,12 +91,12 @@ class NMSItemImpl : NMSItem() {
     }
 
     /**
-     * 1.19, 1.20 -> BuiltInRegistries.MOB_EFFECT
+     * 1.19.3, 1.20 -> BuiltInRegistries.MOB_EFFECT
      */
     val mobEffectBuiltInRegistries by unsafeLazy { nmsClass("BuiltInRegistries").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
 
     /**
-     * 1.17, 1.18 -> IRegistry.MOB_EFFECT
+     * 1.17, 1.19.2 -> IRegistry.MOB_EFFECT
      */
     val mobEffectIRegistry by unsafeLazy { nmsClass("IRegistry").getProperty<Any>("MOB_EFFECT", isStatic = true)!! }
 
@@ -269,7 +269,7 @@ class NMSItemImpl : NMSItem() {
             // 1.18 ... 1.20
             // fromId -> byId
             else {
-                val registry = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) mobEffectBuiltInRegistries else mobEffectIRegistry
+                val registry = runCatching { mobEffectBuiltInRegistries }.getOrElse { mobEffectIRegistry }
                 registry as net.minecraft.core.Registry<Any>
                 registry.byId(potionEffectType.id)!!.invokeMethod<String>("getDescriptionId")
             }

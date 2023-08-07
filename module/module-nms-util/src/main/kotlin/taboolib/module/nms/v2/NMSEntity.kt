@@ -9,7 +9,7 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsClass
 import taboolib.module.nms.nmsProxy
-import taboolib.module.nms.type.LocaleKey
+import taboolib.module.nms.LocaleKey
 import java.util.function.Consumer
 
 /**
@@ -48,12 +48,12 @@ abstract class NMSEntity {
 class NMSEntityImpl : NMSEntity() {
 
     /**
-     * 1.19, 1.20 -> BuiltInRegistries.VILLAGER_PROFESSION
+     * 1.19.3, 1.20 -> BuiltInRegistries.VILLAGER_PROFESSION
      */
     val villagerProfessionBuiltInRegistries by unsafeLazy { nmsClass("BuiltInRegistries").getProperty<Any>("VILLAGER_PROFESSION", isStatic = true)!! }
 
     /**
-     * 1.17, 1.18 -> IRegistry.VILLAGER_PROFESSION
+     * 1.17, 1.19.2 -> IRegistry.VILLAGER_PROFESSION
      */
     val villagerProfessionIRegistry by unsafeLazy { nmsClass("IRegistry").getProperty<Any>("VILLAGER_PROFESSION", isStatic = true)!! }
 
@@ -239,7 +239,7 @@ class NMSEntityImpl : NMSEntity() {
     @Suppress("UNCHECKED_CAST")
     private fun getVillagerLocaleKey3(nmsEntity: Any): String {
         nmsEntity as net.minecraft.world.entity.npc.EntityVillager
-        val registry = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) villagerProfessionBuiltInRegistries else villagerProfessionIRegistry
+        val registry = runCatching { villagerProfessionBuiltInRegistries }.getOrElse { villagerProfessionIRegistry }
         registry as net.minecraft.core.IRegistry<Any>
         return registry.getKey(nmsEntity.villagerData.profession)!!.getProperty<String>("path")!!
     }
