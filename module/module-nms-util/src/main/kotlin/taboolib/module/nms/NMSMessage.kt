@@ -1,13 +1,10 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import net.md_5.bungee.api.ChatMessageType
 import net.md_5.bungee.chat.ComponentSerializer
 import org.bukkit.boss.BossBar
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.setProperty
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsProxy
-import taboolib.module.nms.sendPacket
 
 /**
  * 将 Json 信息设置到 [BossBar] 的标题栏

@@ -12,6 +12,7 @@ dependencies {
     compileOnly("ink.ptms.core:v12000:12000-minimize:universal")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly(project(":common"))
+    compileOnly(project(":common-5"))
     compileOnly(project(":module:module-nms"))
     compileOnly(project(":platform:platform-bukkit"))
 }

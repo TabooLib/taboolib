@@ -16,7 +16,7 @@ object TestLocaleI18n : Test() {
 
     override fun check(): List<Result> {
         return listOf(
-            sandbox("I18n:localeFiles") { if (LocaleI18n.localeFiles.size != 4) throw IllegalStateException() }
+            sandbox("I18n:localeFiles") { if (LocaleI18n.localeFiles.size != 4) error(LocaleI18n.localeFiles.size) }
         )
     }
 }

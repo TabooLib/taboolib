@@ -16,21 +16,21 @@ import org.bukkit.util.NumberConversions
 object ItemTagSerializer {
 
     /**
-     * 序列化 [ItemTag]
+     * 序列化 [ItemTag] 为 [JsonObject]
      */
     fun serializeTag(tag: ItemTag): JsonObject {
         return JsonObject().also { json -> tag.forEach { (k, v) -> json.add(k, serializeData(v)) } }
     }
 
     /**
-     * 序列化 [ItemTagList]
+     * 序列化 [ItemTagList] 为 [JsonArray]
      */
     fun serializeList(tagList: ItemTagList): JsonArray {
         return JsonArray().also { json -> tagList.forEach { json.add(serializeData(it)) } }
     }
 
     /**
-     * 序列化 [ItemTagData]
+     * 序列化 [ItemTagData] 为 [JsonElement]
      */
     fun serializeData(tagData: ItemTagData): JsonElement {
         return when (tagData.type) {
@@ -49,18 +49,27 @@ object ItemTagSerializer {
         }
     }
 
+    /**
+     * 反序列化 [JsonObject] 为 [ItemTag]
+     */
     fun deserializeTag(json: JsonObject): ItemTag {
         val itemTag = ItemTag()
         json.entrySet().forEach { itemTag[it.key] = deserializeData(it.value) }
         return itemTag
     }
 
+    /**
+     * 反序列化 [JsonArray] 为 [ItemTagList]
+     */
     fun deserializeArray(json: JsonArray): ItemTagList {
         val itemTagList = ItemTagList()
         json.forEach { itemTagList.add(deserializeData(it)) }
         return itemTagList
     }
 
+    /**
+     * 反序列化 [JsonElement] 为 [ItemTagData]
+     */
     fun deserializeData(json: JsonElement): ItemTagData {
         return when (json) {
             is JsonArray -> deserializeArray(json)

@@ -1,9 +1,8 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
-import taboolib.module.nms.*
 import java.lang.invoke.MethodHandle
 
 /**
@@ -21,25 +20,10 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 }
 
 /**
- * 克隆 [ItemTag]
+ * 将 [ItemTagData] 转换为字符串
  */
-fun ItemTagData.clone(): ItemTagData {
-    return when (type) {
-        ItemTagType.END -> ItemTagData(type, null)
-        // 基本类型
-        ItemTagType.BYTE,
-        ItemTagType.SHORT,
-        ItemTagType.INT,
-        ItemTagType.LONG,
-        ItemTagType.FLOAT,
-        ItemTagType.DOUBLE,
-        ItemTagType.STRING -> ItemTagData(type, unsafeData())
-        // 数组和列表需要深拷贝
-        ItemTagType.BYTE_ARRAY -> ItemTagData(type, asByteArray().copyOf())
-        ItemTagType.INT_ARRAY -> ItemTagData(type, asIntArray().copyOf())
-        ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
-        ItemTagType.COMPOUND -> ItemTag().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
-    }
+fun ItemTagData.saveToString(): String {
+    return nmsProxy<NMSItemTag>().itemTagToString(this)
 }
 
 /**
@@ -86,15 +70,14 @@ class NMSItemTagImpl : NMSItemTag() {
     val nbtTagIntArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagIntArray>(if (MinecraftVersion.isUniversal) "c" else "data")
 
     override fun getItemTag(itemStack: ItemStack): ItemTag {
-        val nmsItem = nmsProxy<NMSItem>().getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
+        val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
         return if (nmsItem.hasTag()) itemTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
     }
 
     override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
-        val nmsProxy = nmsProxy<NMSItem>()
-        val nmsItem = nmsProxy.getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
+        val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
         nmsItem.tag = itemTagToNMSCopy(itemTag) as net.minecraft.server.v1_12_R1.NBTTagCompound
-        return nmsProxy.getBukkitCopy(nmsItem)
+        return NMSItem.asBukkitCopy(nmsItem)
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {

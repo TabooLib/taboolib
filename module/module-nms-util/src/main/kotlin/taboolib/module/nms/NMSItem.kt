@@ -1,4 +1,4 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
@@ -7,10 +7,6 @@ import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.unsafeLazy
-import taboolib.module.nms.LocaleKey
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsClass
-import taboolib.module.nms.nmsProxy
 import java.lang.reflect.Method
 
 /**
@@ -67,6 +63,23 @@ abstract class NMSItem {
 
     /** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
     abstract fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey
+
+    companion object {
+
+        /**
+         * 获取 [ItemStack] 的 NMS 副本
+         */
+        fun asNMSCopy(item: ItemStack): Any {
+            return nmsProxy<NMSItem>().getNMSCopy(item)
+        }
+
+        /**
+         * 获取 NMS 物品的 Bukkit 副本
+         */
+        fun asBukkitCopy(item: Any): ItemStack {
+            return nmsProxy<NMSItem>().getBukkitCopy(item)
+        }
+    }
 }
 
 /**
@@ -204,7 +217,12 @@ class NMSItemImpl : NMSItem() {
                 if (localeKey == null) {
                     // 对于一些特殊的物品，例如：修改 SkullOwner 后的头、成书等，译名会被修改，导致无法获取到语言文件节点。
                     itemLocaleKeyMethod ?: error("Unsupported item: ${itemStack.type}.")
-                    LocaleKey("S", itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack)?.toString() ?: error("Unsupported item ${itemStack.type}"))
+                    var name = itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack)?.toString() ?: error("Unsupported item ${itemStack.type}")
+                    // 如果物品不以 .name 结尾，则添加 .name 后缀
+                    if (!name.endsWith(".name")) {
+                        name += ".name"
+                    }
+                    LocaleKey("S", name)
                 } else {
                     LocaleKey("N", localeKey)
                 }

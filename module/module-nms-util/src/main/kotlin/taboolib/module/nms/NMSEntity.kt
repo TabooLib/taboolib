@@ -1,4 +1,4 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import org.bukkit.Location
 import org.bukkit.entity.Entity
@@ -6,10 +6,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.unsafeLazy
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsClass
-import taboolib.module.nms.nmsProxy
-import taboolib.module.nms.LocaleKey
 import java.util.function.Consumer
 
 /**

@@ -282,7 +282,7 @@ public class NMSGenericImpl extends NMSGeneric {
 
     private Object toNBTBase(ItemTagData base) {
         boolean v11500 = MinecraftVersion.INSTANCE.getMajor() >= 7;
-        switch (base.getType().getId()) {
+        switch (base.getType().id) {
             case 1:
                 if (v11500) {
                     return net.minecraft.server.v1_15_R1.NBTTagByte.a(base.asByte());

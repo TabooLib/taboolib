@@ -1,12 +1,10 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
-import taboolib.module.nms.LocaleI18n
-import taboolib.module.nms.getLocaleFile
 
 /**
  * 获取物品的名称（若存在 displayName 则返回 displayName，反之获取译名）

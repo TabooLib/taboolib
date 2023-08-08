@@ -21,14 +21,14 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
 
     public ItemTagList() {
         super(0);
-        this.type = ItemTagType.LIST;
-        this.data = this;
+//        this.type = ItemTagType.LIST;
+//        this.data = this;
     }
 
     public ItemTagList(List<ItemTagData> value) {
         super(0);
-        this.type = ItemTagType.LIST;
-        this.data = this;
+//        this.type = ItemTagType.LIST;
+//        this.data = this;
         this.value.addAll(value);
     }
 
@@ -55,10 +55,10 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
     public String toJsonSimplified(int index) {
         StringBuilder builder = new StringBuilder();
         builder.append("[\n");
-        value.forEach(v -> builder.append(copy("  ", index + 1))
-                .append(v.toJsonSimplified(index + 1))
-                .append("\n"));
-        builder.append(copy("  ", index)).append("]");
+//        value.forEach(v -> builder.append(copy("  ", index + 1))
+//                .append(v.toJsonSimplified(index + 1))
+//                .append("\n"));
+//        builder.append(copy("  ", index)).append("]");
         return builder.toString();
     }
 
@@ -236,8 +236,8 @@ public class ItemTagList extends ItemTagData implements List<ItemTagData> {
         return Objects.hash(super.hashCode(), value);
     }
 
-    @Override
-    public String toString() {
-        return NMS_UTILS.itemTagToString(this);
-    }
+//    @Override
+//    public String toString() {
+//        return NMS_UTILS.itemTagToString(this);
+//    }
 }

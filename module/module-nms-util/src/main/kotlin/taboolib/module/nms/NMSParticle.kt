@@ -1,10 +1,8 @@
-package taboolib.module.nms.v2
+package taboolib.module.nms
 
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
-import taboolib.module.nms.MinecraftVersion
-import taboolib.module.nms.nmsProxy
 
 /**
  * 通过 [Particle] 创建粒子数据包

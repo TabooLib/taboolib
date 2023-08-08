@@ -11,6 +11,8 @@ import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.info
+import taboolib.common.platform.function.warning
 import java.io.File
 import java.net.URL
 import java.util.Properties
@@ -91,15 +93,16 @@ object LocaleI18n {
 
     @Awake(LifeCycle.INIT)
     private fun init() {
-        if (checkLocaleFile()) {
-            return
+        if (!checkLocaleFile()) {
+            info("Downloading language files ...")
+            downloadLocaleFile()
         }
-        downloadLocaleFile()
+        loadLocaleFile()
     }
 
     /** 检查语言文件 */
     private fun checkLocaleFile(): Boolean {
-        return getFiles().size != supportedLanguage.size
+        return getFiles().size == supportedLanguage.size
     }
 
     /** 下载语言文件 */
@@ -138,20 +141,15 @@ object LocaleI18n {
                         }
                     }
                 }
-                break
+                return
             }
         }
+        warning("No language file found.")
     }
 
     /** 加载语言文件 */
     private fun loadLocaleFile() {
-        localeFiles += getFiles().mapValues { (_, v) ->
-            when (v.extension) {
-                "lang" -> LocaleProperties(v)
-                "json" -> LocaleJson(v)
-                else -> error("Unsupported locale file $v")
-            }
-        }
+        localeFiles += getFiles().mapValues { (_, v) -> if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) LocaleJson(v) else LocaleProperties(v) }
     }
 
     private fun readJson(url: String): JsonObject {

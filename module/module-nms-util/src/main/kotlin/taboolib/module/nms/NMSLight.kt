@@ -21,8 +21,8 @@ fun Block.createLight(
     update: Boolean = true,
     viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
 ): Boolean {
-    if (MinecraftVersion.majorLegacy < 11200) {
-        error("Not supported yet.")
+    if (MinecraftVersion.isLower(MinecraftVersion.V1_12)) {
+        error("Unsupported version.")
     }
     if (nmsProxy<NMSLight>().getRawLightLevel(this, lightType) > lightLevel) {
         nmsProxy<NMSLight>().deleteLight(this, lightType)
@@ -46,8 +46,8 @@ fun Block.deleteLight(
     update: Boolean = true,
     viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
 ): Boolean {
-    if (MinecraftVersion.majorLegacy < 11200) {
-        error("Not supported yet.")
+    if (MinecraftVersion.isLower(MinecraftVersion.V1_12)) {
+        error("Unsupported version.")
     }
     val result = nmsProxy<NMSLight>().deleteLight(this, lightType)
     if (update) {
