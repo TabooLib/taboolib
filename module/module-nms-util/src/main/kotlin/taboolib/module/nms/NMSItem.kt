@@ -130,7 +130,7 @@ class NMSItemImpl : NMSItem() {
         return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             itemStack.type.key.key
         } else {
-            val nmsItemStack = getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
+            val nmsItemStack = getNMSCopy(itemStack) as net.minecraft.server.v1_8_R3.ItemStack
             val nmsItem = nmsItemStack.item
             val name = nmsItem.getProperty<String>("name")!!
             name.toCharArray().joinToString { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }

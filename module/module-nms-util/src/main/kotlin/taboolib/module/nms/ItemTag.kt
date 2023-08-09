@@ -1,6 +1,6 @@
 package taboolib.module.nms
 
-import com.google.gson.GsonBuilder
+import com.google.gson.*
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.ItemTagSerializer.serializeData
 import taboolib.module.nms.ItemTagSerializer.serializeTag
@@ -179,91 +179,95 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
         return value.containsKey(key)
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ItemTag) return false
+        if (value != other.value) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
+
     override fun toString(): String {
         return saveToString()
     }
 
-    /*
-
-    public static ItemTag fromJson(String json) {
-        return fromJson(new JsonParser().parse(json)).asCompound();
+    @Deprecated("不推荐使用", ReplaceWith("Gson().toJson(this)", "com.google.gson.Gson"))
+    fun toLegacyJson(): String {
+        return Gson().toJson(this)
     }
 
-    public static ItemTagData fromJson(JsonElement element) {
-        return ItemTagSerializer.INSTANCE.deserializeData(element);
-    }
+    companion object {
 
-    @Deprecated
-    public String toLegacyJson() {
-        return new Gson().toJson(this);
-    }
+        @JvmStatic
+        fun fromJson(json: String): ItemTag {
+            return fromJson(JsonParser().parse(json)).asCompound()
+        }
 
-    @Deprecated
-    public static ItemTag fromLegacyJson(String json) {
-        return fromLegacyJson(new JsonParser().parse(json)).asCompound();
-    }
+        @JvmStatic
+        fun fromJson(element: JsonElement): ItemTagData {
+            return ItemTagSerializer.deserializeData(element)
+        }
 
-    @Deprecated
-    public static ItemTagData fromLegacyJson(JsonElement element) {
-        if (element instanceof JsonObject) {
-            JsonObject json = (JsonObject) element;
-            // base
-            if (json.has("type") && json.has("data") && json.entrySet().size() == 2) {
-                switch (ItemTagType.parse(json.get("type").getAsString())) {
-                    case BYTE:
-                        return new ItemTagData(json.get("data").getAsByte());
-                    case SHORT:
-                        return new ItemTagData(json.get("data").getAsShort());
-                    case INT:
-                        return new ItemTagData(json.get("data").getAsInt());
-                    case LONG:
-                        return new ItemTagData(json.get("data").getAsLong());
-                    case FLOAT:
-                        return new ItemTagData(json.get("data").getAsFloat());
-                    case DOUBLE:
-                        return new ItemTagData(json.get("data").getAsDouble());
-                    case STRING:
-                        return new ItemTagData(json.get("data").getAsString());
-                    case BYTE_ARRAY: {
-                        JsonArray array = json.get("data").getAsJsonArray();
-                        byte[] bytes = new byte[array.size()];
-                        for (int i = 0; i < array.size(); i++) {
-                            bytes[i] = array.get(i).getAsByte();
+        @JvmStatic
+        fun fromLegacyJson(json: String): ItemTag {
+            return fromLegacyJson(JsonParser().parse(json)).asCompound()
+        }
+
+        @JvmStatic
+        fun fromLegacyJson(element: JsonElement): ItemTagData {
+            return if (element is JsonObject) {
+                val json = element.asJsonObject
+                // 基本类型
+                if (json.has("type") && json.has("data") && json.entrySet().size == 2) {
+                    when (val type = ItemTagType.parse(json.get("type").asString)) {
+                        ItemTagType.BYTE -> ItemTagData(json.get("data").asByte)
+                        ItemTagType.SHORT -> ItemTagData(json.get("data").asShort)
+                        ItemTagType.INT -> ItemTagData(json.get("data").asInt)
+                        ItemTagType.LONG -> ItemTagData(json.get("data").asLong)
+                        ItemTagType.FLOAT -> ItemTagData(json.get("data").asFloat)
+                        ItemTagType.DOUBLE -> ItemTagData(json.get("data").asDouble)
+                        ItemTagType.STRING -> ItemTagData(json.get("data").asString)
+                        // byte 数组
+                        ItemTagType.BYTE_ARRAY -> {
+                            val array = json.get("data").asJsonArray
+                            val bytes = ByteArray(array.size())
+                            for (i in 0 until array.size()) {
+                                bytes[i] = array.get(i).asByte
+                            }
+                            ItemTagData(bytes)
                         }
-                        return new ItemTagData(bytes);
-                    }
-                    case INT_ARRAY: {
-                        JsonArray array = json.get("data").getAsJsonArray();
-                        int[] ints = new int[array.size()];
-                        for (int i = 0; i < array.size(); i++) {
-                            ints[i] = array.get(i).getAsInt();
+                        // int 数组
+                        ItemTagType.INT_ARRAY -> {
+                            val array = json.get("data").asJsonArray
+                            val ints = IntArray(array.size())
+                            for (i in 0 until array.size()) {
+                                ints[i] = array.get(i).asInt
+                            }
+                            ItemTagData(ints)
                         }
-                        return new ItemTagData(ints);
+                        // 不支持的类型
+                        else -> error("Unsupported nbt type: $type")
                     }
-                    default: {
-                        return new ItemTagData("error: " + element);
+                } else {
+                    // 复合类型
+                    val compound = ItemTag()
+                    for ((key, value) in json.entrySet()) {
+                        compound[key] = fromLegacyJson(value)
                     }
+                    compound
                 }
-            }
-            // compound
-            else {
-                ItemTag compound = new ItemTag();
-                for (Entry<String, JsonElement> elementEntry : json.entrySet()) {
-                    compound.put(elementEntry.getKey(), fromLegacyJson(elementEntry.getValue()));
+            } else if (element is JsonArray) {
+                val list = ItemTagList()
+                for (value in element) {
+                    list.add(fromLegacyJson(value))
                 }
-                return compound;
+                list
+            } else {
+                error("Not JsonObject")
             }
         }
-        // list
-        else if (element instanceof JsonArray) {
-            ItemTagList list = new ItemTagList();
-            for (JsonElement jsonElement : (JsonArray) element) {
-                list.add(fromLegacyJson(jsonElement));
-            }
-            return list;
-        }
-        return new ItemTagData("error: " + element);
     }
-
-     */
 }
