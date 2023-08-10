@@ -1,11 +1,8 @@
 package taboolib.module.nms.type
 
 /**
- * TabooLib
- * taboolib.module.nms.type.ChatColorFormat
- *
- * @author 坏黑
- * @since 2022/9/13 22:05
+ * 记分板颜色格式
+ * 因为原版 [ChatColor] 为非枚举类，因此这里重新定义了一个枚举类
  */
 enum class ChatColorFormat {
 

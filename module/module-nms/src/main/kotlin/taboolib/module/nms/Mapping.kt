@@ -19,6 +19,7 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
     val methods = LinkedList<Method>() // 1.18 only
 
     init {
+        // 解析类名映射
         inputStreamCombined.use {
             it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
                 if (line.startsWith('#')) {
@@ -30,6 +31,7 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
                 }
             }
         }
+        // 解析字段映射
         inputStreamFields.use {
             it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
                 if (line.startsWith('#')) {
@@ -51,11 +53,17 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
         }
     }
 
-    class Field(val path: String, val mojangName: String, val translateName: String) {
+    /**
+     * 字段映射
+     */
+    data class Field(val path: String, val mojangName: String, val translateName: String) {
 
         val className = path.substringAfterLast('.', "")
     }
 
+    /**
+     * 方法映射，1.18+
+     */
     data class Method(val path: String, val mojangName: String, val translateName: String, val descriptor: String) {
 
         val className = path.substringAfterLast('.', "")

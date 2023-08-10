@@ -244,8 +244,10 @@ open class ItemBuilder {
                 itemMeta.setColor(color)
             }
             is PotionMeta -> {
-                itemMeta.color = color
                 potions.forEach { itemMeta.addCustomEffect(it, true) }
+                if (color != null) {
+                    itemMeta.color = color
+                }
                 if (potionData != null) {
                     itemMeta.basePotionData = potionData!!
                 }

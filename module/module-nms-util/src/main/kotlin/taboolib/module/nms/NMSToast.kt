@@ -1,4 +1,5 @@
 @file:Suppress("DEPRECATION")
+@file:Isolated
 
 package taboolib.module.nms
 
@@ -9,9 +10,11 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.Isolated
 import taboolib.common.platform.function.submit
 import taboolib.common.util.unsafeLazy
-import taboolib.module.nms.MinecraftVersion.major
+import taboolib.module.nms.MinecraftVersion.V1_17
+import taboolib.module.nms.MinecraftVersion.V1_18
 import taboolib.module.nms.type.Toast
 import taboolib.module.nms.type.ToastBackground
 import taboolib.module.nms.type.ToastFrame
@@ -34,9 +37,9 @@ private val constructorLootDeserializationContext by unsafeLazy { nmsClass("Loot
 private val lootDataManager by unsafeLazy {
     when {
         // 1.20
-        major >= 12 -> minecraftServerObject.invokeMethod<Any>("getLootData")
+        MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20) -> minecraftServerObject.invokeMethod<Any>("getLootData")
         // 1.17
-        major >= 9 -> minecraftServerObject.invokeMethod<Any>("getPredicateManager")
+        MinecraftVersion.isHigherOrEqual(V1_17) -> minecraftServerObject.invokeMethod<Any>("getPredicateManager")
         // 其他版本
         else -> minecraftServerObject.invokeMethod<Any>("getLootPredicateManager")
     }
@@ -45,9 +48,9 @@ private val lootDataManager by unsafeLazy {
 private val advancements by unsafeLazy {
     when {
         // 1.18
-        major >= 10 -> minecraftServerObject.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!
+        MinecraftVersion.isHigherOrEqual(V1_18) -> minecraftServerObject.invokeMethod<Any>("getAdvancements")!!.getProperty<Any>("advancements")!!
         // 1.17
-        major >= 9 -> minecraftServerObject.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
+        MinecraftVersion.isHigherOrEqual(V1_17) -> minecraftServerObject.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("advancements")!!
         // 其他版本
         else -> minecraftServerObject.invokeMethod<Any>("getAdvancementData")!!.getProperty<Any>("REGISTRY")!!
     }
@@ -63,8 +66,8 @@ private val advancementsMap by unsafeLazy { advancements.getProperty<MutableMap<
  * @param background 成就背景图片
  */
 fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastFrame.TASK, background: ToastBackground = ToastBackground.ADVENTURE) {
-    if (MinecraftVersion.majorLegacy < 11300) {
-        error("Not supported yet.")
+    if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
+        error("Unsupported version.")
     }
     val cache = Toast(icon, message, frame)
     val jsonToast = toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)
@@ -121,6 +124,9 @@ private fun injectAdvancement(key: NamespacedKey, toast: JsonObject): Namespaced
     return key
 }
 
+/**
+ * 注销成就
+ */
 private fun ejectAdvancement(key: NamespacedKey): NamespacedKey {
     try {
         // 移除成就
@@ -138,6 +144,9 @@ private fun ejectAdvancement(key: NamespacedKey): NamespacedKey {
     return key
 }
 
+/**
+ * 生成成就 Json
+ */
 private fun toJsonToast(icon: String, title: String, frame: ToastFrame, background: ToastBackground, customModelData: Int = 0): JsonObject {
     val json = JsonObject()
     json.add("display", JsonObject().run {

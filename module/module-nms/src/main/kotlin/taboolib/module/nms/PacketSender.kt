@@ -25,12 +25,17 @@ object PacketSender {
     private val playerConnectionMap = ConcurrentHashMap<String, Any>()
     private var sendPacketMethod: ClassMethod? = null
 
+    /**
+     * 发送数据包
+     * @param player 玩家
+     * @param packet 数据包实例
+     */
     fun sendPacket(player: Player, packet: Any) {
         val connection = getConnection(player)
         if (sendPacketMethod == null) {
             val reflexClass = ReflexClass.of(connection.javaClass)
             // 1.19 更名为 send 方法
-            sendPacketMethod = if (MinecraftVersion.major >= 10) {
+            sendPacketMethod = if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_19)) {
                 reflexClass.getMethod("send", true, true, packet)
             } else {
                 reflexClass.getMethod("sendPacket", true, true, packet)
@@ -39,6 +44,9 @@ object PacketSender {
         sendPacketMethod!!.invoke(connection, packet)
     }
 
+    /**
+     * 获取玩家的连接实例，如果不存在则会抛出 [NullPointerException]
+     */
     fun getConnection(player: Player): Any {
         return if (playerConnectionMap.containsKey(player.name)) {
             playerConnectionMap[player.name]!!
@@ -54,12 +62,12 @@ object PacketSender {
     }
 
     @SubscribeEvent
-    fun onJoin(e: PlayerJoinEvent) {
+    private fun onJoin(e: PlayerJoinEvent) {
         playerConnectionMap.remove(e.player.name)
     }
 
     @SubscribeEvent
-    fun onQuit(e: PlayerQuitEvent) {
+    private fun onQuit(e: PlayerQuitEvent) {
         submit(delay = 20) { playerConnectionMap.remove(e.player.name) }
     }
 }

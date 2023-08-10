@@ -1,14 +1,11 @@
 package taboolib.module.nms;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.v1_12_R1.EntityVillager;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_13_R2.IRegistry;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.EnumSkyBlock;
-import net.minecraft.server.v1_14_R1.MobEffectList;
 import net.minecraft.server.v1_14_R1.*;
-import net.minecraft.server.v1_16_R1.Registry;
 import net.minecraft.server.v1_16_R1.WorldDataServer;
 import net.minecraft.server.v1_8_R3.NBTTagByte;
 import net.minecraft.server.v1_8_R3.NBTTagByteArray;
@@ -60,380 +57,31 @@ import static taboolib.module.nms.MinecraftServerUtilKt.sendPacket;
  * @since 2021/6/18 8:54 下午
  */
 @SuppressWarnings("ALL")
-public class NMSGenericImpl extends NMSGeneric {
+public class NMSLightImpl extends NMSLight {
 
-    private Field entityTypesField;
     private Constructor packetPlayOutLightUpdateConstructor;
-    private Constructor packetPlayOutSignEditorConstructor;
-    private Method getKeyMethod;
 
-    public NMSGenericImpl() {
-        // 1.13+
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            for (Field declaredField : net.minecraft.server.v1_12_R1.Entity.class.getDeclaredFields()) {
-                if (declaredField.getType().getSimpleName().equals("EntityTypes")) {
-                    entityTypesField = declaredField;
-                    break;
-                }
+    public NMSLightImpl() {
+        try {
+            // 1.20+
+            if (MinecraftVersion.INSTANCE.isHigherOrEqual(MinecraftVersion.V1_20)) {
+                packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
+                        net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
+                        nmsClass("LevelLightEngine"), // class file has wrong version 61.0, should be 52.0
+                        BitSet.class,
+                        BitSet.class
+                );
+            } else if (MinecraftVersion.INSTANCE.isHigherOrEqual(MinecraftVersion.V1_17)) {
+                packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
+                        net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
+                        net.minecraft.server.v1_16_R1.LightEngine.class,
+                        BitSet.class,
+                        BitSet.class,
+                        Boolean.TYPE
+                );
             }
-        }
-        // 1.17+
-        if (MinecraftVersion.INSTANCE.getMajor() >= 9) {
-            try {
-                // 1.18+
-                if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
-                    Class<?> entityTypes = MinecraftServerUtilKt.nmsClass("EntityTypes");
-                    getKeyMethod = ((Class<?>) entityTypes).getDeclaredMethod("a", entityTypes);
-                }
-                // 1.20+
-                if (MinecraftVersion.INSTANCE.getMajor() >= 12) {
-                    packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
-                            net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
-                            nmsClass("LevelLightEngine"), // class file has wrong version 61.0, should be 52.0
-                            BitSet.class,
-                            BitSet.class
-                    );
-                    packetPlayOutSignEditorConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutOpenSignEditor.class.getDeclaredConstructor(
-                            net.minecraft.server.v1_16_R1.BlockPosition.class,
-                            Boolean.TYPE
-                    );
-                } else {
-                    packetPlayOutLightUpdateConstructor = net.minecraft.server.v1_16_R1.PacketPlayOutLightUpdate.class.getDeclaredConstructor(
-                            net.minecraft.server.v1_16_R1.ChunkCoordIntPair.class,
-                            net.minecraft.server.v1_16_R1.LightEngine.class,
-                            BitSet.class,
-                            BitSet.class,
-                            Boolean.TYPE
-                    );
-                }
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @NotNull
-    @Override
-    public String getKey(ItemStack itemStack) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            return itemStack.getType().getKey().getKey();
-        } else {
-            Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
-            net.minecraft.server.v1_12_R1.Item item = ((net.minecraft.server.v1_12_R1.ItemStack) nmsItem).getItem();
-            String name = Reflex.Companion.getProperty(item, "name", false, false, true);
-            String r = "";
-            for (char c : name.toCharArray()) {
-                if (Character.isUpperCase(c)) {
-                    r += "_" + Character.toLowerCase(c);
-                } else {
-                    r += c;
-                }
-            }
-            return r;
-        }
-    }
-
-    @Override
-    @NotNull
-    public String getName(org.bukkit.inventory.ItemStack itemStack) {
-        Object obcItem = CraftItemStack.asNMSCopy(itemStack);
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            String name;
-            // 1.18 Supported
-            if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
-                net.minecraft.server.v1_8_R3.Item nmsItem = ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getItem();
-                name = Reflex.Companion.invokeMethod(nmsItem, "getDescriptionId", new Object[0], false, true, true);
-            } else {
-                name = ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getItem().getName();
-            }
-            if (itemStack.getItemMeta() instanceof PotionMeta) {
-                name += ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getTag().getString("Potion").replaceAll("minecraft:(strong_|long_)?", "");
-            }
-            return name;
-        } else if (MinecraftVersion.INSTANCE.getMajor() >= 3) {
-            String name = ((net.minecraft.server.v1_12_R1.ItemStack) obcItem).getItem().a((net.minecraft.server.v1_12_R1.ItemStack) obcItem);
-            if (itemStack.getItemMeta() instanceof PotionMeta) {
-                return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getTag().getString("Potion").replaceAll("(minecraft:)?(strong_|long_)?", "");
-            }
-            return name + ".name";
-        } else {
-            String name = ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getItem().getName();
-            if (itemStack.getItemMeta() instanceof PotionMeta) {
-                return name.replace("item.", "") + ".effect." + ((net.minecraft.server.v1_8_R3.ItemStack) obcItem).getTag().getString("Potion").replaceAll("(minecraft:)?(strong_|long_)?", "");
-            }
-            return name + ".name";
-        }
-    }
-
-    @Override
-    @NotNull
-    public String getName(Entity entity) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
-            Object nmsEntity = ((org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity) entity).getHandle();
-            Object minecraftKey = null;
-            // 1.18 Supported
-            if (MinecraftVersion.INSTANCE.getMajor() >= 10) {
-                try {
-                    Object type = Reflex.Companion.invokeMethod(nmsEntity, "getType", new Object[0], false, true, true);
-                    minecraftKey = getKeyMethod.invoke(null, type);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return "entity.minecraft." + Reflex.Companion.invokeMethod(minecraftKey, "getPath", new Object[0], false, true, true);
-            } else {
-                minecraftKey = net.minecraft.server.v1_14_R1.EntityTypes.getName(((net.minecraft.server.v1_14_R1.Entity) nmsEntity).getEntityType());
-                return "entity.minecraft." + ((net.minecraft.server.v1_14_R1.MinecraftKey) minecraftKey).getKey();
-            }
-        } else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            try {
-                String name = "entity.minecraft." + IRegistry.ENTITY_TYPE.getKey(UnsafeAccess.INSTANCE.get(((org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity) entity).getHandle(), entityTypesField)).getKey();
-                if (entity instanceof Villager) {
-                    Object career = Reflex.Companion.invokeMethod(entity, "getCareer", new Object[0], false, true, true);
-                    if (career != null) {
-                        name += "." + String.valueOf(career).toLowerCase(Locale.getDefault());
-                    }
-                }
-                return name;
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-            return "entity.null";
-        } else {
-            try {
-                if (entity instanceof Player) {
-                    return "entity.Player.name";
-                }
-                if (entity instanceof Villager) {
-                    String name = "name";
-                    Object villager = ((org.bukkit.craftbukkit.v1_12_R1.entity.CraftVillager) entity).getHandle();
-                    Object export = new NBTTagCompound();
-                    ((EntityVillager) villager).b((NBTTagCompound) export);
-                    int career = ((NBTTagCompound) export).getInt("Career");
-                    switch (((EntityVillager) villager).getProfession()) {
-                        case 0:
-                            if (career == 1) {
-                                name = "farmer";
-                            } else if (career == 2) {
-                                name = "fisherman";
-                            } else if (career == 3) {
-                                name = "shepherd";
-                            } else if (career == 4) {
-                                name = "fletcher";
-                            }
-                            break;
-                        case 1:
-                            if (career == 1) {
-                                name = "librarian";
-                            } else if (career == 2) {
-                                name = "cartographer";
-                            }
-                            break;
-                        case 2:
-                            name = "cleric";
-                            break;
-                        case 3:
-                            if (career == 1) {
-                                name = "armor";
-                            } else if (career == 2) {
-                                name = "weapon";
-                            } else if (career == 3) {
-                                name = "tool";
-                            }
-                            break;
-                        case 4:
-                            if (career == 1) {
-                                name = "butcher";
-                            } else if (career == 2) {
-                                name = "leather";
-                            }
-                            break;
-                        case 5:
-                            name = "nitwit";
-                            break;
-                        default:
-                            break;
-                    }
-                    return "entity.Villager." + name;
-                }
-                return "entity." + entity.getType().getEntityClass().getSimpleName() + ".name";
-            } catch (Throwable ignore) {
-            }
-            return "entity.null";
-        }
-    }
-
-    @NotNull
-    @Override
-    public ItemTag getItemTag(org.bukkit.inventory.ItemStack itemStack) {
-        Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        net.minecraft.server.v1_8_R3.ItemStack nmsItemStack = (net.minecraft.server.v1_8_R3.ItemStack) nmsItem;
-        return (nmsItemStack).hasTag() ? fromNBTBase((nmsItemStack).getTag()).asCompound() : new ItemTag();
-    }
-
-    @Override
-    public @NotNull
-    ItemStack setItemTag(ItemStack itemStack, ItemTag compound) {
-        Object nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        ((net.minecraft.server.v1_8_R3.ItemStack) nmsItem).setTag((net.minecraft.server.v1_8_R3.NBTTagCompound) toNBTBase(compound));
-        return CraftItemStack.asBukkitCopy((net.minecraft.server.v1_8_R3.ItemStack) nmsItem);
-    }
-
-    @NotNull
-    @Override
-    public String itemTagToString(ItemTagData itemTag) {
-        return toNBTBase(itemTag).toString();
-    }
-
-    private Object toNBTBase(ItemTagData base) {
-        boolean v11500 = MinecraftVersion.INSTANCE.getMajor() >= 7;
-        switch (base.getType().getId()) {
-            case 1:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagByte.a(base.asByte());
-                } else {
-                    return new NBTTagByte(base.asByte());
-                }
-            case 2:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagShort.a(base.asShort());
-                } else {
-                    return new NBTTagShort(base.asShort());
-                }
-            case 3:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagInt.a(base.asInt());
-                } else {
-                    return new NBTTagInt(base.asInt());
-                }
-            case 4:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagLong.a(base.asLong());
-                } else {
-                    return new NBTTagLong(base.asLong());
-                }
-            case 5:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagFloat.a(base.asFloat());
-                } else {
-                    return new NBTTagFloat(base.asFloat());
-                }
-            case 6:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagDouble.a(base.asDouble());
-                } else {
-                    return new NBTTagDouble(base.asDouble());
-                }
-            case 7:
-                return new NBTTagByteArray(base.asByteArray());
-            case 11:
-                return new NBTTagIntArray(base.asIntArray());
-            case 8:
-                if (v11500) {
-                    return net.minecraft.server.v1_15_R1.NBTTagString.a(base.asString());
-                } else {
-                    return new NBTTagString(base.asString());
-                }
-            case 9:
-                Object nmsList = new NBTTagList();
-                for (ItemTagData value : base.asList()) {
-                    // 1.14+
-                    if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
-                        ((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).add(((net.minecraft.server.v1_14_R1.NBTTagList) nmsList).size(), (net.minecraft.server.v1_14_R1.NBTBase) toNBTBase(value));
-                    }
-                    // 1.13
-                    else if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-                        ((net.minecraft.server.v1_13_R2.NBTTagList) nmsList).add((net.minecraft.server.v1_13_R2.NBTBase) toNBTBase(value));
-                    }
-                    // 1.12-
-                    else {
-                        ((NBTTagList) nmsList).add((net.minecraft.server.v1_8_R3.NBTBase) toNBTBase(value));
-                    }
-                }
-                return nmsList;
-            case 10:
-                Object nmsTag = new net.minecraft.server.v1_8_R3.NBTTagCompound();
-                if (MinecraftVersion.INSTANCE.isUniversal()) {
-                    for (Map.Entry<String, ItemTagData> entry : base.asCompound().entrySet()) {
-                        ((Map) Reflex.Companion.getProperty(nmsTag, "tags", false, true, true)).put(entry.getKey(), toNBTBase(entry.getValue()));
-                    }
-                } else {
-                    for (Map.Entry<String, ItemTagData> entry : base.asCompound().entrySet()) {
-                        ((Map) Reflex.Companion.getProperty(nmsTag, "map", false, true, true)).put(entry.getKey(), toNBTBase(entry.getValue()));
-                    }
-                }
-                return nmsTag;
-            default:
-                break;
-        }
-        return null;
-    }
-
-    private ItemTagData fromNBTBase(Object base) {
-        if (base instanceof net.minecraft.server.v1_8_R3.NBTTagCompound) {
-            ItemTag itemTag = new ItemTag();
-            Map<String, net.minecraft.server.v1_12_R1.NBTBase> map;
-            if (MinecraftVersion.INSTANCE.isUniversal()) {
-                map = Reflex.Companion.getProperty(base, "tags", false, false, true);
-            } else {
-                map = Reflex.Companion.getProperty(base, "map", false, false, true);
-            }
-            for (Map.Entry<String, net.minecraft.server.v1_12_R1.NBTBase> entry : map.entrySet()) {
-                itemTag.put(entry.getKey(), (ItemTagData) fromNBTBase(entry.getValue()));
-            }
-            return itemTag;
-        } else if (base instanceof NBTTagList) {
-            ItemTagList itemTagList = new ItemTagList();
-            List list = Reflex.Companion.getProperty(base, "list", false, false, true);
-            for (Object v : list) {
-                itemTagList.add((ItemTagData) fromNBTBase(v));
-            }
-            return itemTagList;
-        } else {
-            Object data = Reflex.Companion.getProperty(base, "data", false, false, true);
-            if (base instanceof NBTTagString) {
-                return new ItemTagData((String) data);
-            } else if (base instanceof NBTTagDouble) {
-                return new ItemTagData((double) data);
-            } else if (base instanceof NBTTagInt) {
-                return new ItemTagData((int) data);
-            } else if (base instanceof NBTTagFloat) {
-                return new ItemTagData((float) data);
-            } else if (base instanceof NBTTagShort) {
-                return new ItemTagData((short) data);
-            } else if (base instanceof NBTTagLong) {
-                return new ItemTagData((long) data);
-            } else if (base instanceof NBTTagByte) {
-                return new ItemTagData((byte) data);
-            } else if (base instanceof NBTTagIntArray) {
-                return new ItemTagData((int[]) data);
-            } else if (base instanceof NBTTagByteArray) {
-                return new ItemTagData((byte[]) data);
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    public Object getEntityType(String name) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 6) {
-            return net.minecraft.server.v1_14_R1.EntityTypes.a(name).orElse(null);
-        } else {
-            return net.minecraft.server.v1_13_R2.EntityTypes.a(name);
-        }
-    }
-
-    @Override
-    public <T extends Entity> T spawnEntity(Location location, Class<T> entity, Consumer<T> e) {
-        if (MinecraftVersion.INSTANCE.getMajor() >= 4) {
-            return location.getWorld().spawn(location, entity, e::accept);
-        } else {
-            Object createEntity = ((CraftWorld) location.getWorld()).createEntity(location, entity);
-            try {
-                e.accept((T) ((net.minecraft.server.v1_13_R2.Entity) createEntity).getBukkitEntity());
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-            return ((CraftWorld) location.getWorld()).addEntity((net.minecraft.server.v1_13_R2.Entity) createEntity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
         }
     }
 
@@ -594,7 +242,7 @@ public class NMSGenericImpl extends NMSGeneric {
     }
 
     @Override
-    public void updateLight(Chunk chunk, Collection<Player> viewers) {
+    public void updateLight(@NotNull Chunk chunk, @NotNull Collection<? extends Player> viewers) {
         for (Player player : viewers) {
             Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
             Object chunk1 = ((CraftWorld) player.getWorld()).getHandle().getChunkAt(chunk.getX(), chunk.getZ());
@@ -612,7 +260,7 @@ public class NMSGenericImpl extends NMSGeneric {
     }
 
     @Override
-    public void updateLightUniversal(Block block, LightType lightType, Collection<Player> viewers) {
+    public void updateLightUniversal(@NotNull Block block, @NotNull LightType lightType, @NotNull Collection<? extends Player> viewers) {
         Chunk chunk = block.getChunk();
         for (Player player : viewers) {
             Object human = ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
@@ -644,73 +292,6 @@ public class NMSGenericImpl extends NMSGeneric {
                     e.printStackTrace();
                 }
             }
-        }
-    }
-
-    @Override
-    @NotNull
-    public String getEnchantmentKey(Enchantment enchantment) {
-        if (MinecraftVersion.INSTANCE.getMajor() > 5) {
-            NamespacedKey key = (NamespacedKey) Reflex.Companion.invokeMethod(enchantment, "getKey", new Object[0], false, true, true);
-            return "enchantment.minecraft." + key.getKey();
-        } else if (MinecraftVersion.INSTANCE.getMajor() == 5) {
-            int id = (int) Reflex.Companion.invokeMethod(enchantment, "id", new Object[0], false, true, true);
-            return net.minecraft.server.v1_13_R2.IRegistry.ENCHANTMENT.fromId(id).g();
-        } else {
-            Map<String, Enchantment> byName = Reflex.Companion.getProperty(Enchantment.class, "byName", true, false, true);
-            for (Map.Entry<String, Enchantment> entry : byName.entrySet()) {
-                if (entry == enchantment) {
-                    return "enchantment.minecraft." + entry.getKey();
-                }
-            }
-            return "null";
-        }
-    }
-
-    @Override
-    @NotNull
-    public String getPotionEffectTypeKey(PotionEffectType potionEffectType) {
-        if (MinecraftVersion.INSTANCE.isUniversal()) {
-            // 1.19, 1.20. IRegistry.MOB_EFFECT -> BuiltInRegistries.MOB_EFFECT
-            // 1.18 及以上版本, 不可以使用 fromId, 没有这个函数.
-            // 1.17 可正常使用以前的代码运行
-            switch (MinecraftVersion.INSTANCE.getMajor()) {
-                // 1.17
-                case 9:
-                    final Registry<MobEffectList> registry = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true, false, true);
-                    return registry.fromId(potionEffectType.getId()).c();
-                // 1.18
-                case 10:
-                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry0 = Reflex.Companion.getProperty(MinecraftServerUtilKt.nmsClass("IRegistry"), "MOB_EFFECT", true, false, true);
-                    return registry0.byId(potionEffectType.getId()).getDescriptionId();
-                // 1.19, 1.20
-                default:
-                    final net.minecraft.core.Registry<net.minecraft.world.effect.MobEffectList> registry1 = BuiltInRegistries.MOB_EFFECT;
-                    return registry1.byId(potionEffectType.getId()).getDescriptionId();
-            }
-        }
-        if (MinecraftVersion.INSTANCE.getMajor() >= 5) {
-            return net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.getId()).c();
-        } else if (MinecraftVersion.INSTANCE.getMajor() >= 1) {
-            return net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.getId()).a();
-        } else {
-            return net.minecraft.server.v1_8_R3.MobEffectList.byId[potionEffectType.getId()].a();
-        }
-    }
-
-    @Override
-    public void openSignEditor(Player player, Block block) {
-        try {
-            net.minecraft.server.v1_12_R1.BlockPosition blockPosition = new net.minecraft.server.v1_12_R1.BlockPosition(block.getX(), block.getY(), block.getZ());
-            // 1.20
-            if (MinecraftVersion.INSTANCE.getMajor() >= 12) {
-                sendPacket(player, packetPlayOutSignEditorConstructor.newInstance(blockPosition, true));
-            } else {
-                net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor packet = new net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition);
-                sendPacket(player, packet);
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
         }
     }
 
@@ -820,7 +401,7 @@ public class NMSGenericImpl extends NMSGeneric {
                         Reflex.Companion.invokeMethod(s, "c", new Object[0], false, true, true);
                     }
                 }
-                Object[] params = new Object[] { 9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true };
+                Object[] params = new Object[]{9223372036854775807L, ((net.minecraft.server.v1_14_R1.BlockPosition) position).asLong(), 15 - level, true};
                 Reflex.Companion.invokeMethod(lightEngineLayer, "a", params, false, true, true);
             } catch (Throwable t) {
                 t.printStackTrace();

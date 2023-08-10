@@ -12,10 +12,11 @@ import taboolib.common.util.unsafeLazy
 interface DataSerializerFactory {
 
     fun newSerializer(): DataSerializer
+}
 
-    companion object {
-
-        @JvmStatic
-        val instance by unsafeLazy { nmsProxy<DataSerializerFactory>() }
-    }
+/**
+ * 创建一个 [DataSerializer]
+ */
+fun dataSerializerBuilder(builder: DataSerializer.() -> Unit = {}): DataSerializer {
+    return nmsProxy<DataSerializerFactory>().newSerializer().also(builder)
 }

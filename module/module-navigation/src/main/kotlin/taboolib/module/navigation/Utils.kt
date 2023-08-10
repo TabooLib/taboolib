@@ -87,7 +87,7 @@ fun Block.isClimbable(): Boolean {
 }
 
 fun Block.isOpened(): Boolean {
-    return if (MinecraftVersion.major >= 5) {
+    return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
         (blockData as org.bukkit.block.data.Openable).isOpen
     } else {
         NMS.instance.isDoorOpened(this)
@@ -98,7 +98,7 @@ fun Block.isOpened(): Boolean {
 fun Material.isAirLegacy(): Boolean {
     return when {
         MinecraftVersion.major >= 7 -> isAir
-        MinecraftVersion.major >= 5 -> {
+        MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13) -> {
             when (this) {
                 Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.LEGACY_AIR -> true
                 else -> false

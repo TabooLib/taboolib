@@ -1,5 +1,8 @@
 package taboolib.module.nms.type
 
+/**
+ * [Toast] 的背景
+ */
 enum class ToastBackground(val url: String) {
 
     /**

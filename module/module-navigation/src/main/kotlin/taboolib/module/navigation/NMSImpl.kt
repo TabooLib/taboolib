@@ -45,7 +45,7 @@ class NMSImpl : NMS() {
     }
 
     override fun getBlockHeight(block: Block): Double {
-        return if (MinecraftVersion.major >= 5) {
+        return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             if (block.type.isSolid) {
                 (block.boundingBox.maxY - block.y).coerceAtLeast(0.0)
             } else {

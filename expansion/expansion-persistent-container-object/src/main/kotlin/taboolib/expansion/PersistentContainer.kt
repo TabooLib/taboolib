@@ -2,6 +2,7 @@ package taboolib.expansion
 
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
+import taboolib.expansion.AnalyzedClassMember.Companion.toColumnName
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.ConfigLoader
 import taboolib.module.configuration.Configuration
@@ -131,7 +132,7 @@ class PersistentContainer {
     /**
      * 从数据类创建容器
      */
-    fun <T> new(type: Class<T>, name: String) {
+    fun <T> new(type: Class<T>, name: String = type.simpleName.toColumnName()) {
         container.createTable(AnalyzedClass.of(type), name)
     }
 

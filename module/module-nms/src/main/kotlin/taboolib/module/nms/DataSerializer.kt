@@ -131,7 +131,3 @@ interface DataSerializer {
 
     fun build(): Any
 }
-
-fun dataSerializerBuilder(builder: DataSerializer.() -> Unit): DataSerializer {
-    return DataSerializerFactory.instance.newSerializer().also(builder)
-}
