@@ -1,4 +1,4 @@
-package taboolib.module.nms.test
+package taboolib.test.nms
 
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Isolated
@@ -28,8 +28,8 @@ object TestPacketSender : Test() {
             result += sandbox("NMS:getConnection(Player)") { PacketSender.getConnection(player) }
             result += sandbox("NMS:sendPacketBlocking(Player, Any)") { player.sendPacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance()) }
             result += sandbox("NMS:sendBundlePacketBlocking(Player, Any)") { player.sendBundlePacketBlocking(nmsClass("PacketPlayOutKeepAlive").unsafeInstance()) }
-            result += if (testSend) Success.of("NMS:PacketSendEvent") else Failure.of("NMS:PacketSendEvent")
-            result += if (testReceive) Success.of("NMS:PacketReceiveEvent") else Failure.of("NMS:PacketReceiveEvent")
+            result += if (testSend) Success.of("NMS:PacketSendEvent") else Failure.of("NMS:PacketSendEvent", "NOT_TRIGGERED")
+            result += if (testReceive) Success.of("NMS:PacketReceiveEvent") else Failure.of("NMS:PacketReceiveEvent", "NOT_TRIGGERED")
         }
         return result
     }

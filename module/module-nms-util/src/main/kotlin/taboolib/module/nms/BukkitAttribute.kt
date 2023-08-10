@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.attribute.Attribute
 import org.tabooproject.reflex.ReflexClass
 import taboolib.common.Isolated
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
 
 /**
@@ -73,6 +74,9 @@ enum class BukkitAttribute(val minecraftKey: String, val simplifiedKey: Array<St
      * 转换为 Bukkit Attribute
      */
     fun toBukkit(): Attribute {
+        if (MinecraftVersion.isLower(MinecraftVersion.V1_9)) {
+            throw UnsupportedVersionException()
+        }
         return try {
             Attribute.valueOf("GENERIC_$name")
         } catch (e: Exception) {
@@ -84,6 +88,9 @@ enum class BukkitAttribute(val minecraftKey: String, val simplifiedKey: Array<St
      * 转换为 NMS Attribute
      */
     fun toNMS(): Any? {
+        if (MinecraftVersion.isLower(MinecraftVersion.V1_9)) {
+            throw UnsupportedVersionException()
+        }
         if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_13)) {
             val getName = classAttributeBase.getMethod("getName")
             for (field in classAttributeBase.structure.fields) {

@@ -72,7 +72,7 @@ object LocaleI18n {
     var resourceUrl = "https://resources.download.minecraft.net"
 
     /** 支持的语言文件 */
-    val supportedLanguage = arrayListOf("zh_cn", "zh_hk", "zh_tw", "en_gb")
+    val supportedLanguage = arrayListOf("zh_cn", "zh_tw", "en_gb")
 
     /** 语言文件 */
     val localeFiles = hashMapOf<String, LocaleFile>()

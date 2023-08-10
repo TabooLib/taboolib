@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Method
 
@@ -33,7 +34,7 @@ fun Enchantment.getLocaleKey(): LocaleKey {
 /**
  * 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration`
  */
-fun PotionEffectType.getLocaleKey(): LocaleKey {
+fun PotionEffectType?.getLocaleKey(): LocaleKey {
     return nmsProxy<NMSItem>().getLocaleKey(this)
 }
 
@@ -62,7 +63,7 @@ abstract class NMSItem {
     abstract fun getLocaleKey(enchantment: Enchantment): LocaleKey
 
     /** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
-    abstract fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey
+    abstract fun getLocaleKey(potionEffectType: PotionEffectType?): LocaleKey
 
     companion object {
 
@@ -186,7 +187,7 @@ class NMSItemImpl : NMSItem() {
         val nmsItemStack = getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
         val nmsItem = nmsItemStack.item
         return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-            itemLocaleKeyMethod ?: error("Unsupported version.")
+            itemLocaleKeyMethod ?: throw UnsupportedVersionException()
             LocaleKey("N", itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack).toString())
         } else {
             // 对 ItemMonsterEgg 进行特殊处理
@@ -207,7 +208,7 @@ class NMSItemImpl : NMSItem() {
                 }
                 LocaleKey("S", "${nmsItem.name}.name", if (entityKey != null) "entity.$entityKey.name" else null)
             } else {
-                itemLocaleNameMethod ?: error("Unsupported version.")
+                itemLocaleNameMethod ?: throw UnsupportedVersionException()
                 // 获取译名
                 val localeName = itemLocaleNameMethod.invoke(nmsItem, nmsItemStack).toString()
                 val localeLanguage = net.minecraft.server.v1_8_R3.LocaleI18n::class.java.getProperty<net.minecraft.server.v1_8_R3.LocaleLanguage>("a", true, remap = false)!!
@@ -276,7 +277,10 @@ class NMSItemImpl : NMSItem() {
      * 表现形式与 [Enchantment] 接近，仅转换为 NMS 类型的方法不同。
      */
     @Suppress("UNCHECKED_CAST")
-    override fun getLocaleKey(potionEffectType: PotionEffectType): LocaleKey {
+    override fun getLocaleKey(potionEffectType: PotionEffectType?): LocaleKey {
+        if (potionEffectType == null) {
+            return LocaleKey("D", "null")
+        }
         val descriptionId = if (MinecraftVersion.isUniversal) {
             // 1.17
             // 继续使用 fromId

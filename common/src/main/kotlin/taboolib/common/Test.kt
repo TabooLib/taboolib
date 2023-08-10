@@ -1,7 +1,6 @@
 package taboolib.common
 
 import taboolib.common.platform.function.info
-import java.lang.IllegalStateException
 
 /**
  * TabooLib
@@ -46,6 +45,10 @@ abstract class Test {
 
         companion object {
 
+            fun of(reason: String, error: String): Failure {
+                return Failure(reason, RuntimeException(error))
+            }
+
             fun of(reason: String, error: Throwable): Failure {
                 return Failure(reason, error)
             }
@@ -65,12 +68,19 @@ abstract class Test {
     }
 
     /**
+     * 不支持
+     */
+    class Unsupported(reason: String) : Result(reason)
+
+    /**
      * 运行测试
      */
     protected fun sandbox(reason: String, func: () -> Unit): Result {
         return try {
             func()
             Success.of(reason)
+        } catch (ex: UnsupportedVersionException) {
+            Unsupported(reason)
         } catch (ex: Throwable) {
             Failure.of(reason, ex)
         }
@@ -92,6 +102,7 @@ abstract class Test {
 
             val success = results.count { it is Success }
             val failure = results.count { it is Failure }
+            val unsupported = results.count { it is Unsupported }
 
             /**
              * 打印测试结果
@@ -105,18 +116,19 @@ abstract class Test {
                         is Failure -> {
                             if (detail) {
                                 message += "[ FAILURE ] : ${it.reason}"
-                                it.error.printStackTrace()
+                                message += it.error.stackTraceToString().lines()
                             } else {
                                 message += "[ FAILURE ] : ${it.reason}${" ".repeat(len - it.reason.length)} : ${it.error.message ?: "NULL"}"
                             }
                         }
+                        is Unsupported -> message += "[ UNSUPPORTED ] : ${it.reason}"
                     }
                 }
                 len = message.maxOf { it.length }
                 val h1 = "=".repeat(len)
                 val h2 = "-".repeat(len)
                 info(h1)
-                info("[ TOTAL : ${results.size}, SUCCESS : $success, FAILURE : $failure ]")
+                info("[ TOTAL : ${results.size}, SUCCESS : $success, FAILURE : $failure, UNSUPPORTED : $unsupported ]")
                 info(h2)
                 message.forEach { info(it) }
                 info(h1)

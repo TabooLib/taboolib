@@ -7,6 +7,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
@@ -69,7 +70,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 return VInventory(inventory, id, player, container, cursorItem, title)
             }
             // 不支持
-            else -> error("Unsupported version")
+            else -> throw UnsupportedVersionException()
         }
     }
 
@@ -121,7 +122,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                     viewer.sendPacket(NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem))
                 }
                 // 不支持
-                else -> error("Unsupported version")
+                else -> throw UnsupportedVersionException()
             }
         }
 
@@ -160,7 +161,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                     viewer.sendPacket(NMSPacketPlayOutSetSlot(id, incrementStateId(), slot, Craft19ItemStack.asNMSCopy(itemStack)))
                 }
                 // 不支持
-                else -> error("Unsupported version")
+                else -> throw UnsupportedVersionException()
             }
         }
 
@@ -239,7 +240,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                     handle(slotNum, buttonNum, clickType)
                 }
                 // 不支持
-                else -> error("Unsupported version")
+                else -> throw UnsupportedVersionException()
             }
         }
 

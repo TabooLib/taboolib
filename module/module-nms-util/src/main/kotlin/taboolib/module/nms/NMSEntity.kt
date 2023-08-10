@@ -5,13 +5,14 @@ import org.bukkit.entity.Entity
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
 import java.util.function.Consumer
 
 /**
  *  在坐标处中生成实体，并在生成前执行回调函数
  */
-fun <T : Entity> Location.spawnEntity(entity: Class<T>, prepare: Consumer<T>): T {
+fun <T : Entity> Location.spawnEntity(entity: Class<T>, prepare: Consumer<T> = Consumer { }): T {
     return nmsProxy<NMSEntity>().spawnEntity(this, entity, prepare)
 }
 
@@ -131,7 +132,7 @@ class NMSEntityImpl : NMSEntity() {
                 }
             }
             // 不支持的版本
-            else -> error("Unsupported version")
+            else -> throw UnsupportedVersionException()
         }
         return LocaleKey("N", key)
     }

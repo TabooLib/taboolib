@@ -34,8 +34,8 @@ object ItemTagSerializer {
      */
     fun serializeData(tagData: ItemTagData): JsonElement {
         return when (tagData.type) {
-            ItemTagType.COMPOUND -> serializeTag(tagData as ItemTag)
-            ItemTagType.LIST -> serializeList(tagData as ItemTagList)
+            ItemTagType.COMPOUND -> serializeTag(tagData.asCompound())
+            ItemTagType.LIST -> serializeList(tagData.asList())
             ItemTagType.BYTE -> JsonPrimitive("${tagData.asByte()}b")
             ItemTagType.SHORT -> JsonPrimitive("${tagData.asShort()}s")
             ItemTagType.INT -> JsonPrimitive("${tagData.asInt()}i")
@@ -45,7 +45,6 @@ object ItemTagSerializer {
             ItemTagType.STRING, ItemTagType.END -> JsonPrimitive("${tagData.asString()}t")
             ItemTagType.INT_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}i]")
             ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asByteArray().joinToString(",") { it.toString() }}b]")
-            else -> error("Unsupported type ${tagData.type}")
         }
     }
 

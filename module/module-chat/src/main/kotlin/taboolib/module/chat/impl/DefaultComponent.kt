@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.hover.content.Entity
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.chat.ComponentSerializer
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
@@ -85,7 +86,7 @@ class DefaultComponent() : ComponentText {
     }
 
     override fun append(other: ComponentText): ComponentText {
-        other as? DefaultComponent ?: error("Unsupported component type.")
+        other as? DefaultComponent ?: throw UnsupportedVersionException()
         flush()
         latest += other.component
         return this

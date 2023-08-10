@@ -1,4 +1,4 @@
-package taboolib.module.nms.test
+package taboolib.test.nms
 
 import taboolib.common.Isolated
 import taboolib.common.Test

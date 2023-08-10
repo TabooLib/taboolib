@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
+import taboolib.common.UnsupportedVersionException
 
 /**
  * 通过 [Particle] 创建粒子数据包
@@ -41,7 +42,7 @@ class NMSParticleImpl : NMSParticle() {
         if (data != null && !particle.dataType.isInstance(data)) {
             error("data should be ${particle.dataType} (${data.javaClass})")
         }
-        return if (version >= 11200) {
+        return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
             net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles(
                 org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data),
                 true,
