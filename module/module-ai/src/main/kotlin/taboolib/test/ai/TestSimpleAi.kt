@@ -1,4 +1,4 @@
-package taboolib.module.ai.test
+package taboolib.test.ai
 
 import org.bukkit.Bukkit
 import org.bukkit.Location

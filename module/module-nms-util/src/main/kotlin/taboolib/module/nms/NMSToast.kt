@@ -11,6 +11,7 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.Isolated
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.function.submit
 import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion.V1_17
@@ -67,7 +68,7 @@ private val advancementsMap by unsafeLazy { advancements.getProperty<MutableMap<
  */
 fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastFrame.TASK, background: ToastBackground = ToastBackground.ADVENTURE) {
     if (MinecraftVersion.isLower(MinecraftVersion.V1_13)) {
-        error("Unsupported version.")
+        throw UnsupportedVersionException()
     }
     val cache = Toast(icon, message, frame)
     val jsonToast = toJsonToast(icon.invokeMethod<Any>("getKey").toString(), message, frame, background)

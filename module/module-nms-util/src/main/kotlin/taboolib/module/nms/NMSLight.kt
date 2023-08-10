@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
-import taboolib.common.util.unsafeLazy
+import taboolib.common.UnsupportedVersionException
 import taboolib.module.nms.type.LightType
 
 /**
@@ -22,7 +22,7 @@ fun Block.createLight(
     viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
 ): Boolean {
     if (MinecraftVersion.isLower(MinecraftVersion.V1_12)) {
-        error("Unsupported version.")
+        throw UnsupportedVersionException()
     }
     if (nmsProxy<NMSLight>().getRawLightLevel(this, lightType) > lightLevel) {
         nmsProxy<NMSLight>().deleteLight(this, lightType)
@@ -47,7 +47,7 @@ fun Block.deleteLight(
     viewers: Collection<Player> = Bukkit.getOnlinePlayers(),
 ): Boolean {
     if (MinecraftVersion.isLower(MinecraftVersion.V1_12)) {
-        error("Unsupported version.")
+        throw UnsupportedVersionException()
     }
     val result = nmsProxy<NMSLight>().deleteLight(this, lightType)
     if (update) {

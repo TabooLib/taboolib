@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex
 import taboolib.common.LifeCycle
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -135,7 +136,7 @@ object MinecraftVersion {
         }
         if (mappingFile == null) {
             disablePlugin()
-            error("Unsupported $runningVersion")
+            throw UnsupportedVersionException()
         }
         Mapping(
             FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),

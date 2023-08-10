@@ -9,6 +9,7 @@ import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.platform.function.dev
 import taboolib.common.platform.function.info
@@ -60,7 +61,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
                 ((Bukkit.getServer() as CraftServer19).server as NMSMinecraftServer).connection?.connections ?: error("Unable to get connections from ${Bukkit.getServer()}")
             }
             // 不支持
-            else -> error("Unsupported version: $major")
+            else -> throw UnsupportedVersionException()
         }
     }
 
@@ -125,7 +126,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
             // public SocketAddress address;
             in MinecraftVersion.V1_17..MinecraftVersion.V1_20 -> ((connection as NetworkManager).address as InetSocketAddress)
             // 不支持
-            else -> error("Unsupported version: $major")
+            else -> throw UnsupportedVersionException()
         }
     }
 
