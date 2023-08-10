@@ -5,6 +5,7 @@ import taboolib.common.io.runningClasses
 import taboolib.common.platform.Awake
 import java.util.concurrent.ConcurrentHashMap
 
+/** Ray_Hughes **/
 object CustomObjectType {
 
     /** 保证线程安全 Key无作用 */

@@ -15,5 +15,6 @@ annotation class Length(val value: Int = 64)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Alias(val value: String)
 
+/** Ray_Hughes **/
 @Retention(AnnotationRetention.RUNTIME)
 annotation class CustomType

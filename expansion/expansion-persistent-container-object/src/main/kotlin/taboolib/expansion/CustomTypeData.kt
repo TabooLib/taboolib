@@ -3,6 +3,7 @@ package taboolib.expansion
 import taboolib.module.database.ColumnOptionSQLite
 import taboolib.module.database.ColumnTypeSQL
 
+/** Ray_Hughes **/
 interface CustomTypeData {
 
     val sqlType: ColumnTypeSQL?
