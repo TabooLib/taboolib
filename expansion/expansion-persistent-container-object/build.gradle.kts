@@ -1,4 +1,6 @@
 dependencies {
+    testImplementation(project(":module:module-database-core"))
+    testImplementation("ink.ptms.core:v11701:11701-minimize:universal")
     compileOnly(project(":common"))
     compileOnly(project(":common-5"))
     compileOnly(project(":module:module-database-core"))
