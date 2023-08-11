@@ -50,7 +50,12 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     init {
         val customs = members.filter { it.isCustomObject }
         if (customs.isNotEmpty()) {
-            error("The following members are not supported: $customs")
+            // error("The following members are not supported: $customs")
+            customs.forEach {
+                if (CustomTypeFactory.getCustomTypeByClass(it.returnType) == null) {
+                    error("Unsupported type ${it.returnType} for ${it.name} in $clazz")
+                }
+            }
         }
         if (members.count { it.isPrimary } > 1) {
             error("The primary member only supports one, but found ${members.count { it.isPrimary }}")
@@ -88,7 +93,10 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isString -> obj.toString()
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
-                else -> error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                else -> {
+                    val customType = CustomTypeFactory.getCustomType(obj) ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                    customType.deserialize(obj)
+                }
             }
             map[member.name] = wrap
         }

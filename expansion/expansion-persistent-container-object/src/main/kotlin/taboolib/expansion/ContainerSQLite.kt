@@ -25,7 +25,10 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                     member.canConvertedDecimal() -> add(member.name) {
                         type(ColumnTypeSQLite.REAL) { options(member) }
                     }
-                    else -> error("Unsupported type: ${member.name} (${member.returnType})")
+                    else -> {
+                        val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type: ${member.name} (${member.returnType})")
+                        add(member.name) { type(customType.typeSQLite, customType.length) { options(member) } }
+                    }
                 }
             }
         }

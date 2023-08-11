@@ -37,7 +37,12 @@ class ContainerSQL(
                     }
                     // 其他类型
                     else -> add(member.name) {
-                        type(member.type()) { options(member) }
+                        val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType)
+                        if (customType == null) {
+                            type(member.type()) { options(member) }
+                        } else {
+                            type(customType.typeSQL, customType.length) { options(member) }
+                        }
                     }
                 }
             }

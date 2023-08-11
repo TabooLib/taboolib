@@ -87,7 +87,7 @@ abstract class ContainerOperator {
         return when (this) {
             is UUID -> this.toString()
             is Char -> this.code
-            else -> this
+            else -> CustomTypeFactory.getCustomType(this)?.serialize(this) ?: this
         }
     }
 }
