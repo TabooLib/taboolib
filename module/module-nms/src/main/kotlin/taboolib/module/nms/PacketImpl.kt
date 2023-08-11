@@ -19,8 +19,8 @@ class PacketImpl(override var source: Any) : Packet() {
     override var fullyName = source.javaClass.name.toString()
 
     /** 读取字段 */
-    override fun <T> read(name: String): T? {
-        return source.getProperty<T>(name)
+    override fun <T> read(name: String, remap: Boolean): T? {
+        return source.getProperty<T>(name, remap = remap)
     }
 
     /** 写入字段 */

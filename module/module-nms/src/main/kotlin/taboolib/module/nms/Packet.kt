@@ -19,7 +19,7 @@ abstract class Packet {
     abstract val fullyName: String
 
     /** 读取字段 */
-    abstract fun <T> read(name: String): T?
+    abstract fun <T> read(name: String, remap: Boolean = true): T?
 
     /** 写入字段 */
     abstract fun write(name: String, value: Any?)

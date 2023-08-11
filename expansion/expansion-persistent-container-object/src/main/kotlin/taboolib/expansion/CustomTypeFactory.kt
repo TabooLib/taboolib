@@ -21,7 +21,7 @@ class CustomTypeFactory : ClassVisitor() {
     }
 
     override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {
-        if (CustomType::class.java.isAssignableFrom(clazz)) {
+        if (CustomType::class.java != clazz && CustomType::class.java.isAssignableFrom(clazz)) {
             if (instance == null) {
                 error("Cannot create instance of CustomType: $clazz")
             }

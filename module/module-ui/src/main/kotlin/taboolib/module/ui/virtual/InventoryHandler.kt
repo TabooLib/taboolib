@@ -25,6 +25,10 @@ import java.util.concurrent.ConcurrentHashMap
  */
 abstract class InventoryHandler {
 
+    abstract fun craftChatMessageToPlain(message: Any): String
+
+    abstract fun parseToCraftChatMessage(source: String): Any
+    
     abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor): RemoteInventory
 
     @PlatformSide([Platform.BUKKIT])
@@ -58,6 +62,7 @@ abstract class InventoryHandler {
             }
         }
 
+        @Suppress("UnstableApiUsage")
         @Ghost
         @SubscribeEvent
         private fun onReceive(e: PacketReceiveEvent) {
@@ -72,7 +77,11 @@ abstract class InventoryHandler {
                     val remoteInventory = playerRemoteInventoryMap[player.name]
                     if (remoteInventory != null && remoteInventory.id == id) {
                         playerRemoteInventoryMap.remove(player.name)?.close(sendPacket = false)
-                        player.updateInventory()
+                        try {
+                            player.updateInventory()
+                        } catch (ex: NoSuchMethodError) {
+                            ex.printStackTrace()
+                        }
                     }
                 }
                 "PacketPlayInWindowClick" -> {
@@ -87,67 +96,3 @@ abstract class InventoryHandler {
         }
     }
 }
-
-// 1.19
-
-typealias NMSPacketPlayOutWindowItems = net.minecraft.network.protocol.game.PacketPlayOutWindowItems
-
-typealias NMSPacketPlayOutSetSlot = net.minecraft.network.protocol.game.PacketPlayOutSetSlot
-
-typealias NMSItemStack = net.minecraft.world.item.ItemStack
-
-typealias Craft19Container = org.bukkit.craftbukkit.v1_19_R3.inventory.CraftContainer
-
-typealias Craft19ItemStack = org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack
-
-typealias Craft19Player = org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer
-
-// 1.16
-
-typealias NMS16PacketPlayOutOpenWindow = net.minecraft.server.v1_16_R1.PacketPlayOutOpenWindow
-
-typealias NMS16PacketPlayOutWindowItems = net.minecraft.server.v1_16_R1.PacketPlayOutWindowItems
-
-typealias NMS16PacketPlayOutSetSlot = net.minecraft.server.v1_16_R1.PacketPlayOutSetSlot
-
-typealias NMS16PacketPlayOutWindowData = net.minecraft.server.v1_16_R1.PacketPlayOutWindowData
-
-typealias NMS16PacketPlayOutCloseWindow = net.minecraft.server.v1_16_R1.PacketPlayOutCloseWindow
-
-typealias NMS16EntityHuman = net.minecraft.server.v1_16_R1.EntityHuman
-
-typealias NMS16NonNullList<T> = net.minecraft.server.v1_16_R1.NonNullList<T>
-
-typealias NMS16ItemStack = net.minecraft.server.v1_16_R1.ItemStack
-
-typealias NMS16IChatBaseComponentChatSerializer = net.minecraft.server.v1_16_R1.IChatBaseComponent.ChatSerializer
-
-typealias Craft16ChatMessage = org.bukkit.craftbukkit.v1_16_R1.util.CraftChatMessage
-
-typealias Craft16Container = org.bukkit.craftbukkit.v1_16_R1.inventory.CraftContainer
-
-typealias Craft16Player = org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer
-
-typealias Craft16ItemStack = org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack
-
-// 1.9
-
-typealias NMS9PacketPlayOutOpenWindow = net.minecraft.server.v1_9_R2.PacketPlayOutOpenWindow
-
-typealias NMS9PacketPlayOutWindowItems = net.minecraft.server.v1_9_R2.PacketPlayOutWindowItems
-
-typealias NMS9EntityHuman = net.minecraft.server.v1_9_R2.EntityHuman
-
-typealias NMS9ItemStack = net.minecraft.server.v1_9_R2.ItemStack
-
-typealias NMS9ChatComponentText = net.minecraft.server.v1_9_R2.ChatComponentText
-
-typealias NMS9IChatBaseComponentChatSerializer = net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer
-
-typealias Craft9ChatMessage = org.bukkit.craftbukkit.v1_9_R2.util.CraftChatMessage
-
-typealias Craft9Container = org.bukkit.craftbukkit.v1_9_R2.inventory.CraftContainer
-
-typealias Craft9Player = org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer
-
-typealias Craft9ItemStack = org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack
