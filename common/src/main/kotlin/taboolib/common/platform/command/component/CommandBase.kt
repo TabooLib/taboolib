@@ -127,7 +127,7 @@ class CommandBase : CommandComponent(-1, false) {
                             else -> emptyList()
                         }
                     }
-                    suggest.filter { it.startsWith(args, ignoreCase = true) }.ifEmpty { null }
+                    suggest.filter { args.isEmpty() || it.startsWith(args, ignoreCase = true) }.ifEmpty { null }
                 }
                 else -> null
             }

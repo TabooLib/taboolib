@@ -52,6 +52,11 @@ val runningExactClassMap by unsafeLazy { runningClassMap.filter { !it.key.contai
 val runningExactClasses by unsafeLazy { LinkedList(runningExactClassMap.values) }
 
 /**
+ * 当前插件的所有资源文件（非类文件）
+ */
+val runningResources by unsafeLazy { TabooLibCommon::class.java.protectionDomain.codeSource.location.getResources() }
+
+/**
  * 从 TabooLibCommon 的 ClassLoader 中获取类，且不触发类的初始化
  */
 fun getClass(name: String): Class<*> {
@@ -175,4 +180,22 @@ fun URL.getClasses(): Map<String, Class<*>> {
         }
     }
     return classes
+}
+
+/**
+ * 获取 URL 下的所有文件
+ */
+fun URL.getResources(): Set<String> {
+    val resources = HashSet<String>()
+    val srcFile = try {
+        File(toURI())
+    } catch (ex: IllegalArgumentException) {
+        File((openConnection() as JarURLConnection).jarFileURL.toURI())
+    } catch (ex: URISyntaxException) {
+        File(path)
+    }
+    JarFile(srcFile).stream().filter { !it.name.endsWith(".class") && !it.isDirectory }.forEach {
+        resources += it.name
+    }
+    return resources
 }
