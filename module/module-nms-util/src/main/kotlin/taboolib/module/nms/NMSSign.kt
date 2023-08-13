@@ -87,7 +87,7 @@ abstract class NMSSign {
 /**
  * [NMSSign] 的实现类
  */
-class NMSSIgnImpl : NMSSign() {
+class NMSSignImpl : NMSSign() {
 
     val constructorPacketOutSignEditor: Constructor<*> by unsafeLazy {
         net.minecraft.server.v1_16_R1.PacketPlayOutOpenSignEditor::class.java.getDeclaredConstructor(
