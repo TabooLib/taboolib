@@ -130,4 +130,13 @@ class ContainerOperatorImpl(override val table: Table<*, *>, override val dataSo
             where(where)
         }
     }
+
+    override fun <T> delete(type: Class<T>, id: Any, where: Where.() -> Unit) {
+        val typeClass = AnalyzedClass.of(type)
+        val name = typeClass.primaryMemberName ?: error("No primary id found.")
+        table.delete(dataSource) {
+            where(name eq id.value())
+            where(where)
+        }
+    }
 }

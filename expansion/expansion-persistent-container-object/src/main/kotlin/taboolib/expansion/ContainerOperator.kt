@@ -50,6 +50,11 @@ abstract class ContainerOperator {
         return has(T::class.java, id, where)
     }
 
+    /** 删除数据 */
+    inline fun <reified T> delete(id: Any, noinline where: Where.() -> Unit = {}) {
+        return delete(T::class.java, id, where)
+    }
+
     /** 查询数据 */
     abstract fun <T> getOne(type: Class<T>, where: Where.() -> Unit = {}): T?
 
@@ -82,6 +87,9 @@ abstract class ContainerOperator {
 
     /** 检查数据 */
     abstract fun has(where: Where.() -> Unit): Boolean
+
+    /** 删除数据 */
+    abstract fun <T> delete(type: Class<T>, id: Any, where: Where.() -> Unit = {})
 
     protected fun Any.value(): Any {
         return when (this) {
