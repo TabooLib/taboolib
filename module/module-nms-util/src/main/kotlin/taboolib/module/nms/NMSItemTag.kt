@@ -124,7 +124,6 @@ class NMSItemTagImpl : NMSItemTag() {
                     // private final Map<String, NBTBase> map
                     val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(nmsCompound)
                     itemTagData.asCompound().entries.forEach { (key, value) -> map[key] = itemTagToNMSCopy(value) }
-                    info("nmsCompound $nmsCompound")
                 }
             }
 
