@@ -47,6 +47,10 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
         return GsonBuilder().setPrettyPrinting().create().toJson(serializeTag(this))
     }
 
+    override fun asCompound(): ItemTag {
+        return this
+    }
+
     override fun toJsonSimplified(): String {
         return toJsonSimplified(0)
     }
@@ -96,7 +100,7 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
      */
     fun removeDeep(key: String): ItemTagData? {
         return if (key.contains('.')) {
-            getDeepWith(key) { it.remove(key.substringAfterLast('.')) }
+            getDeepWith(key, false) { it.remove(key.substringAfterLast('.')) }
         } else {
             remove(key)
         }
@@ -119,7 +123,7 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
      */
     fun putDeep(key: String, value: Any): ItemTagData? {
         return if (key.contains('.')) {
-            getDeepWith(key) { it.put(key.substringAfterLast('.'), toNBT(value)) }
+            getDeepWith(key, true) { it.put(key.substringAfterLast('.'), toNBT(value)) }
         } else {
             put(key, value)
         }
@@ -138,7 +142,7 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
      */
     fun getDeep(key: String): ItemTagData? {
         return if (key.contains('.')) {
-            getDeepWith(key) { it[key.substringAfterLast('.')] }
+            getDeepWith(key, false) { it[key.substringAfterLast('.')] }
         } else {
             get(key)
         }
@@ -147,14 +151,22 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     /**
      * 针对 getDeep, putDeep, removeDeep 的重复代码做出的优化
      */
-    fun getDeepWith(key: String, action: (ItemTag) -> ItemTagData?): ItemTagData? {
+    fun getDeepWith(key: String, create: Boolean, action: (ItemTag) -> ItemTagData?): ItemTagData? {
         val keys = key.split('.').dropLast(1)
         if (keys.isEmpty()) {
             return null
         }
         var find: ItemTag = this
         for (element in keys) {
-            val next = find[element] ?: return null
+            var next = find[element]
+            if (next == null) {
+                if (create) {
+                    next = ItemTag()
+                    find[element] = next
+                } else {
+                    return null
+                }
+            }
             if (next.type == ItemTagType.COMPOUND) {
                 find = next.asCompound()
             } else {

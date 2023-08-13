@@ -23,6 +23,10 @@ class ItemTagList : ItemTagData, MutableList<ItemTagData> {
         this.value += list
     }
 
+    override fun asList(): ItemTagList {
+        return this
+    }
+
     override fun toJsonSimplified(): String {
         return toJsonSimplified(0)
     }

@@ -157,6 +157,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
                 is Byte -> ItemTagData(obj)
                 is ByteArray -> ItemTagData(obj)
                 is IntArray -> ItemTagData(obj)
+                is List<*> -> translateList(ItemTagList(), obj)
                 is Map<*, *> -> ItemTag(obj.map { (k, v) -> k.toString() to toNBT(v) }.toMap())
                 is ConfigurationSection -> translateSection(ItemTag(), obj)
                 else -> error("Unsupported nbt: $obj (${obj.javaClass})")

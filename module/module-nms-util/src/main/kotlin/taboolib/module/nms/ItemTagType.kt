@@ -8,7 +8,7 @@ import com.google.common.base.Enums
  * @author 坏黑
  * @since 2019-05-24 17:46
  */
-enum class ItemTagType(@JvmField val id: Int) {
+enum class ItemTagType(@JvmField val id: Byte) {
 
     END(0),
     BYTE(1),

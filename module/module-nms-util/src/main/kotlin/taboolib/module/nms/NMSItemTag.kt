@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
+import taboolib.common.platform.function.info
 import java.lang.invoke.MethodHandle
 
 /**
@@ -59,6 +60,7 @@ class NMSItemTagImpl : NMSItemTag() {
 
     val nbtTagCompoundGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagCompound>(if (MinecraftVersion.isUniversal) "x" else "map")
     val nbtTagListGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagList>(if (MinecraftVersion.isUniversal) "c" else "list")
+    val nbtTagListTypeSetter = unreflectSetter<net.minecraft.server.v1_12_R1.NBTTagList>(if (MinecraftVersion.isUniversal) "w" else "type")
     val nbtTagByteGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagByte>(if (MinecraftVersion.isUniversal) "x" else "data")
     val nbtTagShortGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagShort>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagInt>(if (MinecraftVersion.isUniversal) "c" else "data")
@@ -106,7 +108,12 @@ class NMSItemTagImpl : NMSItemTag() {
                     // 反射获取字段：
                     // private final List<NBTBase> list;
                     val list = nbtTagListGetter.get<MutableList<Any>>(nmsList)
-                    itemTagData.asList().forEach { list += itemTagToNMSCopy(it) }
+                    val dataList = itemTagData.asList()
+                    if (dataList.isNotEmpty()) {
+                        dataList.forEach { list += itemTagToNMSCopy(it) }
+                        // 修改 NBTTagList 的类型，不改他妈这条 List 作废，天坑。。。
+                        nbtTagListTypeSetter.set(nmsList, dataList.first().type.id)
+                    }
                 }
             }
 
@@ -117,6 +124,7 @@ class NMSItemTagImpl : NMSItemTag() {
                     // private final Map<String, NBTBase> map
                     val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(nmsCompound)
                     itemTagData.asCompound().entries.forEach { (key, value) -> map[key] = itemTagToNMSCopy(value) }
+                    info("nmsCompound $nmsCompound")
                 }
             }
 
@@ -142,12 +150,12 @@ class NMSItemTagImpl : NMSItemTag() {
 
             // 列表类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagList -> {
-                ItemTagData(ItemTagType.LIST, ItemTagList(nbtTagListGetter.get<List<Any>>(nbtTag).map { itemTagToBukkitCopy(it) }))
+                ItemTagList(nbtTagListGetter.get<List<Any>>(nbtTag).map { itemTagToBukkitCopy(it) })
             }
 
             // 复合类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagCompound -> {
-                ItemTagData(ItemTagType.COMPOUND, ItemTag().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nbtTag).forEach { put(it.key, itemTagToBukkitCopy(it.value)) } })
+                ItemTag().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nbtTag).forEach { put(it.key, itemTagToBukkitCopy(it.value)) } }
             }
 
             // 不支持的类型
@@ -159,8 +167,16 @@ class NMSItemTagImpl : NMSItemTag() {
         return UnsafeAccess.lookup.unreflectGetter(T::class.java.getDeclaredField(name).apply { isAccessible = true })
     }
 
+    private inline fun <reified T> unreflectSetter(name: String): MethodHandle {
+        return UnsafeAccess.lookup.unreflectSetter(T::class.java.getDeclaredField(name).apply { isAccessible = true })
+    }
+
     private fun <T> MethodHandle.get(src: Any): T {
         return bindTo(src).invoke() as T
+    }
+
+    private fun <T> MethodHandle.set(src: Any, value: T) {
+        bindTo(src).invoke(value)
     }
 }
 
