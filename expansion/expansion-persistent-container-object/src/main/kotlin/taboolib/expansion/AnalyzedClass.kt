@@ -94,7 +94,7 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
                 else -> {
-                    val customType = CustomTypeFactory.getCustomType(obj) ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                    val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
                     customType.deserialize(obj)
                 }
             }
