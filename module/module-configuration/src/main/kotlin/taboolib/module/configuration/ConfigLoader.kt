@@ -32,10 +32,11 @@ class ConfigLoader : ClassVisitor(1) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val configAnno = field.getAnnotation(Config::class.java)
             val name = configAnno.property("value", "config.yml")
+            val target = configAnno.property("target", name)
             if (files.containsKey(name)) {
                 field.set(instance?.get(), files[name]!!.configuration)
             } else {
-                val file = releaseResourceFile(name)
+                val file = releaseResourceFile(name, target)
                 // 兼容模式加载
                 val conf = if (field.fieldType == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
                 // 赋值

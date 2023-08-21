@@ -55,12 +55,12 @@ class BungeeIO : PlatformIO {
         message.filterNotNull().forEach { logger.warning(it.toString()) }
     }
 
-    override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(getDataFolder(), path)
+    override fun releaseResourceFile(source: String, target: String = source, replace: Boolean): File {
+        val file = File(getDataFolder(), target)
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(BungeePlugin.getInstance().getResourceAsStream(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(BungeePlugin.getInstance().getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
         return file
     }
 
