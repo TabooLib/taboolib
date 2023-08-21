@@ -20,7 +20,7 @@ interface PlatformIO {
 
     fun warning(vararg message: Any?)
 
-    fun releaseResourceFile(source: String, target: String = resource, replace: Boolean = false): File
+    fun releaseResourceFile(source: String, target: String = source, replace: Boolean = false): File
 
     fun getJarFile(): File
 
