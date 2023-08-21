@@ -48,12 +48,12 @@ class BukkitIO : PlatformIO {
         message.filterNotNull().forEach { plugin.logger.warning(it.toString()) }
     }
 
-    override fun releaseResourceFile(path: String, replace: Boolean): File {
-        val file = File(getDataFolder(), path)
+    override fun releaseResourceFile(source: String, target: String = source, replace: Boolean): File {
+        val file = File(getDataFolder(), target)
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(plugin.getResource(path)?.readBytes() ?: error("resource not found: $path"))
+        newFile(file).writeBytes(plugin.getResource(source)?.readBytes() ?: error("resource not found: $source"))
         return file
     }
 
