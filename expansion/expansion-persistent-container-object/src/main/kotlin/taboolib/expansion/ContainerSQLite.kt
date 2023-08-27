@@ -26,7 +26,8 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                         type(ColumnTypeSQLite.REAL) { options(member) }
                     }
                     else -> {
-                        CustomObjectType.getDataByClass(member.returnType)?.sqlLiteType ?: error("Unsupported type: ${member.name} (${member.returnType})")
+                        val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type: ${member.name} (${member.returnType})")
+                        add(member.name) { type(customType.typeSQLite, customType.length) { options(member) } }
                     }
                 }
             }

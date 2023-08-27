@@ -327,6 +327,7 @@ open class Basic(title: String = "chest") : Menu(title) {
      */
     override fun build(): Inventory {
         var inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
+        // 虚拟化
         if (virtual) {
             inventory = inventory.virtualize(storageContents)
         }

@@ -73,11 +73,12 @@ fun warning(vararg message: Any?) {
 /**
  * 释放当前插件内的特定资源文件
  *
- * @param path 资源文件路径
+ * @param source 资源文件源路径
  * @param replace 是否覆盖文件
+ * @param target 资源文件目标路径
  */
-fun releaseResourceFile(path: String, replace: Boolean = false): File {
-    return PlatformFactory.getService<PlatformIO>().releaseResourceFile(path, replace)
+fun releaseResourceFile(source: String, replace: Boolean = false, target: String = source): File {
+    return PlatformFactory.getService<PlatformIO>().releaseResourceFile(source, target, replace)
 }
 
 /**

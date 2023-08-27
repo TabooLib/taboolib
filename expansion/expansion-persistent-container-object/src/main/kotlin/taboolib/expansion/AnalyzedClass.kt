@@ -1,10 +1,7 @@
 package taboolib.expansion
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
-import taboolib.common.platform.function.info
 import taboolib.common5.*
-import taboolib.module.configuration.Configuration
-import taboolib.module.configuration.Type
 import java.lang.reflect.Parameter
 import java.sql.ResultSet
 import java.util.*
@@ -21,8 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 主构造器 */
-    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() }
-        ?: error("No primary constructor found for $clazz")
+    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() } ?: error("No primary constructor found for $clazz")
 
     /** 成员列表 */
     private val memberProperties = clazz.declaredFields.associateBy { it.name }
@@ -54,9 +50,9 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     init {
         val customs = members.filter { it.isCustomObject }
         if (customs.isNotEmpty()) {
-//            error("The following members are not supported: $customs")
+            // error("The following members are not supported: $customs")
             customs.forEach {
-                if (CustomObjectType.getDataByClass(it.returnType) == null) {
+                if (CustomTypeFactory.getCustomTypeByClass(it.returnType) == null) {
                     error("Unsupported type ${it.returnType} for ${it.name} in $clazz")
                 }
             }
@@ -70,8 +66,7 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 获取主成员值 */
     fun getPrimaryMemberValue(data: Any): Any {
-        val property = memberProperties[primaryMember?.propertyName.toString()]
-            ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
+        val property = memberProperties[primaryMember?.propertyName.toString()] ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
         return property.get(data)!!
     }
 
@@ -99,9 +94,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
                 else -> {
-                    val custom = CustomObjectType.getData(obj)
-                    custom?.deserialize(obj)
-                        ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                    val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                    customType.deserialize(obj)
                 }
             }
             map[member.name] = wrap
@@ -112,8 +106,7 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     /** 创建实例 */
     fun <T> createInstance(map: Map<String, Any?>): T {
         return if (wrapperFunction != null) {
-            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map))
-                ?: error("Failed to create instance for $clazz")
+            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map)) ?: error("Failed to create instance for $clazz")
         } else {
             val args = members.map { map[it.name] }
             try {

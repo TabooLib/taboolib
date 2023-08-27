@@ -5,6 +5,7 @@ dependencies {
     compileOnly("ink.ptms.core:v11200:11200-minimize")
     compileOnly("ink.ptms.core:v10900:10900")
     compileOnly(project(":common"))
+    compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-nms"))
     compileOnly(project(":platform:platform-bukkit"))
 }

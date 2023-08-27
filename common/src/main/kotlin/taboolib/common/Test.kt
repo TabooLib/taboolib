@@ -9,6 +9,7 @@ import taboolib.common.platform.function.info
  * @author 坏黑
  * @since 2023/8/4 02:33
  */
+@Isolated
 abstract class Test {
 
     /**

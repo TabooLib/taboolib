@@ -114,8 +114,8 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                         rawMessage.hoverText(value.getValue(transfer))
                     } else {
                         val content = transfer(value)
-                        if (content.contains("\n")) {
-                            rawMessage.hoverText(content.split('\n'))
+                        if (content.contains("<br>")) {
+                            rawMessage.hoverText(content.split("<br>"))
                         } else {
                             rawMessage.hoverText(content)
                         }
