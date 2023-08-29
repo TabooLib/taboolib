@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import org.bukkit.scheduler.BukkitRunnable
+import taboolib.common.classloader.IsolatedClassLoader
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -29,6 +30,12 @@ class BukkitExecutor : PlatformExecutor {
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
+        val runnableExecutor: PlatformExecutor.PlatformTask.() -> Unit = if (IsolatedClassLoader.isEnabled()) {
+            {
+                BukkitPlugin.getIsolatedClassLoader()?.runIsolated { runnable.executor(this) }
+            }
+        } else runnable.executor
+        
         if (started) {
             val task: BukkitPlatformTask
             when {
@@ -36,7 +43,7 @@ class BukkitExecutor : PlatformExecutor {
                     object : BukkitRunnable() {
                         init {
                             task = BukkitPlatformTask(this)
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                         override fun run() {
                         }
@@ -48,7 +55,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTaskTimerAsynchronously(plugin, runnable.delay, runnable.period)
                 } else {
@@ -57,7 +64,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTaskTimer(plugin, runnable.delay, runnable.period)
                 }
@@ -67,7 +74,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTaskLaterAsynchronously(plugin, runnable.delay)
                 } else {
@@ -76,7 +83,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTaskLater(plugin, runnable.delay)
                 }
@@ -86,7 +93,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTaskAsynchronously(plugin)
                 } else {
@@ -95,7 +102,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnable.executor(task)
+                            runnableExecutor(task)
                         }
                     }.runTask(plugin)
                 }

@@ -29,7 +29,7 @@ import java.util.Set;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
 @PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
@@ -38,6 +38,8 @@ public class BukkitPlugin extends JavaPlugin {
     private static BukkitPlugin instance;
     private static Class<?> delegateClass;
     private static Object delegateObject;
+    @Nullable
+    private static IsolatedClassLoader isolatedClassLoader;
 
     static {
         if (IsolatedClassLoader.isEnabled()) {
@@ -46,11 +48,12 @@ public class BukkitPlugin extends JavaPlugin {
                         new URL[]{BukkitPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
                         BukkitPlugin.class.getClassLoader()
                 );
+                isolatedClassLoader = loader;
                 delegateClass = Class.forName("taboolib.platform.BukkitPluginDelegate", true, loader);
                 delegateObject = delegateClass.getConstructor().newInstance();
                 delegateClass.getMethod("onConst").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
@@ -72,7 +75,7 @@ public class BukkitPlugin extends JavaPlugin {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             // 修改访问提示（似乎有用）
@@ -88,7 +91,7 @@ public class BukkitPlugin extends JavaPlugin {
             try {
                 delegateClass.getMethod("onLoad").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.LOAD);
@@ -109,7 +112,7 @@ public class BukkitPlugin extends JavaPlugin {
             try {
                 delegateClass.getMethod("onEnable").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
@@ -148,7 +151,7 @@ public class BukkitPlugin extends JavaPlugin {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             // 在插件未关闭的前提下，执行 onDisable() 方法
@@ -184,6 +187,11 @@ public class BukkitPlugin extends JavaPlugin {
     @Nullable
     public static Plugin getPluginInstance() {
         return pluginInstance;
+    }
+    
+    @Nullable
+    public static IsolatedClassLoader getIsolatedClassLoader() {
+        return isolatedClassLoader;
     }
 
     /**
