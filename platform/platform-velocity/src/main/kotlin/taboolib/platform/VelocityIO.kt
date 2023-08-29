@@ -57,7 +57,7 @@ class VelocityIO : PlatformIO {
         message.filterNotNull().forEach { logger.warn(it.toString()) }
     }
 
-    override fun releaseResourceFile(source: String, target: String = source, replace: Boolean): File {
+    override fun releaseResourceFile(source: String, target: String, replace: Boolean): File {
         val file = File(getDataFolder(), target)
         if (file.exists() && !replace) {
             return file

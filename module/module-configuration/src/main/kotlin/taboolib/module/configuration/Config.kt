@@ -4,7 +4,7 @@ package taboolib.module.configuration
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Config(
     val value: String = "config.yml",
-    val target: String? = null,
+    val target: String = "",
     val migrate: Boolean = false,
     val autoReload: Boolean = false
 )

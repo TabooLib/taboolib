@@ -48,7 +48,7 @@ class BukkitIO : PlatformIO {
         message.filterNotNull().forEach { plugin.logger.warning(it.toString()) }
     }
 
-    override fun releaseResourceFile(source: String, target: String = source, replace: Boolean): File {
+    override fun releaseResourceFile(source: String, target: String, replace: Boolean): File {
         val file = File(getDataFolder(), target)
         if (file.exists() && !replace) {
             return file
