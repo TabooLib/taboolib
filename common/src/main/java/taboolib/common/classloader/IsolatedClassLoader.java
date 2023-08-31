@@ -37,18 +37,9 @@ public class IsolatedClassLoader extends URLClassLoader {
 	public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
 
-		excludedClasses.addAll(Arrays.asList(
-				"taboolib.common.classloader.IsolatedClassLoader",
-				"taboolib.common.platform.Plugin",
-				"taboolib.platform.BukkitPlugin",
-				"taboolib.platform.BungeePlugin",
-				"taboolib.platform.VelocityPlugin",
-				"taboolib.platform.CloudNetV3Plugin",
-				"taboolib.platform.NukkitPlugin",
-				"taboolib.platform.Sponge7Plugin",
-				"taboolib.platform.Sponge8Plugin",
-				"taboolib.platform.Sponge9Plugin"
-		));
+		excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
+		excludedClasses.add("taboolib.common.platform.Plugin");
+		excludedPackages.add("java.");
 	}
 	
 	@Override
