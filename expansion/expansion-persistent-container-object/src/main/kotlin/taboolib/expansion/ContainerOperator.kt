@@ -91,6 +91,9 @@ abstract class ContainerOperator {
     /** 删除数据 */
     abstract fun <T> delete(type: Class<T>, id: Any, where: Where.() -> Unit = {})
 
+    /** 删除数据 */
+    abstract fun delete(where: Where.() -> Unit = {})
+
     protected fun Any.value(): Any {
         return when (this) {
             is UUID -> this.toString()

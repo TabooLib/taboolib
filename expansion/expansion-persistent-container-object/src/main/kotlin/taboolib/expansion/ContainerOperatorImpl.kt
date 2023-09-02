@@ -139,4 +139,10 @@ class ContainerOperatorImpl(override val table: Table<*, *>, override val dataSo
             where(where)
         }
     }
+
+    override fun delete(where: Where.() -> Unit) {
+        table.delete(dataSource) {
+            where(where)
+        }
+    }
 }
