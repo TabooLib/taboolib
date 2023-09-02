@@ -2,6 +2,7 @@ package taboolib.module.nms
 
 import org.bukkit.configuration.ConfigurationSection
 import taboolib.common5.*
+import java.util.UUID
 import java.util.regex.Pattern
 
 /**
@@ -28,6 +29,8 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
     constructor(data: ByteArray) : this(ItemTagType.BYTE_ARRAY, data)
 
     constructor(data: String) : this(ItemTagType.STRING, data)
+
+    constructor(data: UUID) : this(ItemTagType.STRING, data.toString())
 
     constructor(data: ItemTagList) : this(ItemTagType.LIST, data)
 
