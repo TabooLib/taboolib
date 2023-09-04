@@ -13,6 +13,7 @@ import java.sql.PreparedStatement
 class ActionSelect(val table: String) : WhereExecutor(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
+    private var format: String = "*"
     private var distinct: String? = null
     private var rows: Array<String> = emptyArray()
     private val join = ArrayList<Join>()
@@ -27,10 +28,12 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
                 rows.isNotEmpty() -> {
                     rows.joinToString { if (it.contains('(') && it.endsWith(')')) it else it.formatColumn() }
                 }
+
                 distinct != null -> {
                     "DISTINCT ${distinct!!.formatColumn()}"
                 }
-                else -> "*"
+
+                else -> format
             }
             query += " FROM ${table.formatColumn()}"
             if (join.isNotEmpty()) {
@@ -60,6 +63,10 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         if (row.isNotEmpty()) {
             rows += row
         }
+    }
+
+    fun format(format: String){
+
     }
 
     fun where(whereData: WhereData) {
