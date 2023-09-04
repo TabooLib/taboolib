@@ -8,6 +8,6 @@ class OrderCast(val row: String, val cast: String, val desc: Boolean = false) {
 
     val query: String
         get() {
-            return "CAST (`${row.replace(".", "`.`")}` AS ${cast}) ${if (desc) "DESC" else "ASC"}"
+            return "CAST(`${row.replace(".", "`.`")}` AS ${cast}) ${if (desc) "DESC" else "ASC"}"
         }
 }
