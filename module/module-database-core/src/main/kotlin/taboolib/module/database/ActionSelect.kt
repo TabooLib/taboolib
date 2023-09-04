@@ -14,11 +14,13 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private var format: String = "*"
+    private var cast: String = ""
     private var distinct: String? = null
     private var rows: Array<String> = emptyArray()
     private val join = ArrayList<Join>()
     private var where: Where? = null
     private val order = ArrayList<Order>()
+    private val orderCast = ArrayList<OrderCast>()
     private var limit = -1
 
     override val query: String
@@ -45,6 +47,9 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
             if (order.isNotEmpty()) {
                 query += " ORDER BY ${order.joinToString { it.query }}"
             }
+            if (orderCast.isNotEmpty()) {
+                query += " ORDER BY ${orderCast.joinToString { it.query }}"
+            }
             if (limit > 0) {
                 query += " LIMIT $limit"
             }
@@ -65,7 +70,7 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         }
     }
 
-    fun format(format: String){
+    fun format(format: String) {
 
     }
 
@@ -90,6 +95,10 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
 
     fun order(row: String, desc: Boolean = false) {
         this.order += Order(row, desc)
+    }
+
+    fun orderCast(row: String, cast: String, desc: Boolean = false) {
+        this.orderCast += OrderCast(row, cast, desc)
     }
 
     fun limit(limit: Int) {
