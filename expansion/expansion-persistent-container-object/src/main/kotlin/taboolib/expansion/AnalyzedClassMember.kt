@@ -32,6 +32,12 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
     /** 长度 */
     val length = root.findAnnotation<Length>()?.value ?: 64
 
+    /** 自定义类型 */
+    val typeSQL = root.findAnnotation<TypeSQL>()?.value
+
+    /** 自定义类型 */
+    val typeSQLite = root.findAnnotation<TypeSQLite>()?.value
+
     /** 是否为基础类型（Boolean） */
     val isBoolean: Boolean
         get() = returnType == Boolean::class.java || returnType == Boolean::class.javaPrimitiveType

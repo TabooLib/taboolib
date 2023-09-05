@@ -14,7 +14,6 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private var format: String = "*"
-    private var cast: String = ""
     private var distinct: String? = null
     private var rows: Array<String> = emptyArray()
     private val join = ArrayList<Join>()
@@ -71,7 +70,7 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
     }
 
     fun format(format: String) {
-
+        this.format = format
     }
 
     fun where(whereData: WhereData) {
