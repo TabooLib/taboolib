@@ -30,12 +30,6 @@ class BukkitExecutor : PlatformExecutor {
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
-        val runnableExecutor: PlatformExecutor.PlatformTask.() -> Unit = if (IsolatedClassLoader.isEnabled()) {
-            {
-                BukkitPlugin.getIsolatedClassLoader()?.runIsolated { runnable.executor(this) }
-            }
-        } else runnable.executor
-        
         if (started) {
             val task: BukkitPlatformTask
             when {
@@ -43,7 +37,7 @@ class BukkitExecutor : PlatformExecutor {
                     object : BukkitRunnable() {
                         init {
                             task = BukkitPlatformTask(this)
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                         override fun run() {
                         }
@@ -55,7 +49,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTaskTimerAsynchronously(plugin, runnable.delay, runnable.period)
                 } else {
@@ -64,7 +58,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTaskTimer(plugin, runnable.delay, runnable.period)
                 }
@@ -74,7 +68,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTaskLaterAsynchronously(plugin, runnable.delay)
                 } else {
@@ -83,7 +77,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTaskLater(plugin, runnable.delay)
                 }
@@ -93,7 +87,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTaskAsynchronously(plugin)
                 } else {
@@ -102,7 +96,7 @@ class BukkitExecutor : PlatformExecutor {
                             task = BukkitPlatformTask(this)
                         }
                         override fun run() {
-                            runnableExecutor(task)
+                            runnable.executor(task)
                         }
                     }.runTask(plugin)
                 }
