@@ -6,19 +6,19 @@ import taboolib.common.platform.ProxyPlayer
 fun ProxyCommandSender.sendLang(node: String, vararg args: Any) {
     val file = getLocaleFile()
     if (file == null) {
-        sendMessage("{$node}")
+        sendMessage(node)
     } else {
         val type = file.nodes[node]
         if (type != null) {
             type.send(this, *args)
         } else {
-            sendMessage("{$node}")
+            sendMessage(node)
         }
     }
 }
 
 fun ProxyCommandSender.asLangText(node: String, vararg args: Any): String {
-    return asLangTextOrNull(node, *args) ?: "{$node}"
+    return asLangTextOrNull(node, *args) ?: node
 }
 
 fun ProxyCommandSender.asLangTextOrNull(node: String, vararg args: Any): String? {
@@ -32,7 +32,7 @@ fun ProxyCommandSender.asLangTextOrNull(node: String, vararg args: Any): String?
 fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<String> {
     val file = getLocaleFile()
     return if (file == null) {
-        listOf("{$node}")
+        listOf(node)
     } else {
         when (val type = file.nodes[node]) {
             is TypeText -> {
@@ -43,7 +43,7 @@ fun ProxyCommandSender.asLangTextList(node: String, vararg args: Any): List<Stri
                 type.asTextList(this, *args)
             }
             else -> {
-                listOf("{$node}")
+                listOf(node)
             }
         }
     }
