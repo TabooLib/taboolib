@@ -114,15 +114,21 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
         return this.value.put(key, value)
     }
 
-    fun put(key: String, value: Any): ItemTagData? {
-        return this.value.put(key, toNBT(value))
+    fun put(key: String, value: Any?): ItemTagData? {
+        return if (value == null) {
+            remove(key)
+        } else {
+            this.value.put(key, toNBT(value))
+        }
     }
 
     /**
      * 深度写入，以 "." 作为分层符
      */
-    fun putDeep(key: String, value: Any): ItemTagData? {
-        return if (key.contains('.')) {
+    fun putDeep(key: String, value: Any?): ItemTagData? {
+        return if (value == null) {
+            removeDeep(key)
+        } else if (key.contains('.')) {
             getDeepWith(key, true) { it.put(key.substringAfterLast('.'), toNBT(value)) }
         } else {
             put(key, value)
