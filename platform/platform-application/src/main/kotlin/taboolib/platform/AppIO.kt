@@ -46,28 +46,31 @@ class AppIO : PlatformIO {
 
     override fun info(vararg message: Any?) {
         message.filterNotNull().forEach {
-            if (isLog4jEnabled)
+            if (isLog4jEnabled) {
                 println(it)
-            else
+            } else {
                 println("[${date}][INFO] $it")
+            }
         }
     }
 
     override fun severe(vararg message: Any?) {
         message.filterNotNull().forEach {
-            if (isLog4jEnabled)
+            if (isLog4jEnabled) {
                 println(it)
-            else
+            } else {
                 println("[${date}][ERROR] $it")
+            }
         }
     }
 
     override fun warning(vararg message: Any?) {
         message.filterNotNull().forEach {
-            if (isLog4jEnabled)
+            if (isLog4jEnabled) {
                 println(it)
-            else
+            } else {
                 println("[${date}][WARN] $it")
+            }
         }
     }
 
