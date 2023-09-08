@@ -13,13 +13,7 @@ annotation class Key
 annotation class UniqueKey
 
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Length(val value: Int = 64)
-
-@Retention(AnnotationRetention.RUNTIME)
-annotation class TypeSQL(val value: ColumnTypeSQL)
-
-@Retention(AnnotationRetention.RUNTIME)
-annotation class TypeSQLite(val value: ColumnTypeSQLite)
+annotation class Length(val value: Int = 64, val long: Boolean = false, val medium: Boolean = false,val char: Boolean = false)
 
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Alias(val value: String)

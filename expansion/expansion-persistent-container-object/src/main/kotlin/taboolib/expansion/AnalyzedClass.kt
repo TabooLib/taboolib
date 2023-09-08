@@ -18,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap
 class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 主构造器 */
-    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() } ?: error("No primary constructor found for $clazz")
+    private val primaryConstructor = clazz.declaredConstructors.firstOrNull { it.parameters.isNotEmpty() }
+        ?: error("No primary constructor found for $clazz")
 
     /** 成员列表 */
     private val memberProperties = clazz.declaredFields.associateBy { it.name }
@@ -66,7 +67,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
 
     /** 获取主成员值 */
     fun getPrimaryMemberValue(data: Any): Any {
-        val property = memberProperties[primaryMember?.propertyName.toString()] ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
+        val property = memberProperties[primaryMember?.propertyName.toString()]
+            ?: error("Primary member \"$primaryMemberName\" not found in $clazz")
         return property.get(data)!!
     }
 
@@ -94,7 +96,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
                 member.isUUID -> UUID.fromString(obj.toString())
                 member.isEnum -> member.returnType.enumConstants.first { it.toString() == obj.toString() }
                 else -> {
-                    val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
+                    val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType)
+                        ?: error("Unsupported type ${member.returnType} for ${member.name} in $clazz")
                     customType.deserialize(obj)
                 }
             }
@@ -106,7 +109,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     /** 创建实例 */
     fun <T> createInstance(map: Map<String, Any?>): T {
         return if (wrapperFunction != null) {
-            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map)) ?: error("Failed to create instance for $clazz")
+            wrapperFunction.invoke(wrapperObjectInstance, BundleMapImpl(map))
+                ?: error("Failed to create instance for $clazz")
         } else {
             val args = members.map { map[it.name] }
             try {
@@ -127,11 +131,8 @@ class AnalyzedClass private constructor(val clazz: Class<*>) {
     }
 
     companion object {
-
-        val cached = ConcurrentHashMap<Class<*>, AnalyzedClass>()
-
         fun of(clazz: Class<*>): AnalyzedClass {
-            return cached.computeIfAbsent(clazz) { AnalyzedClass(it) }
+            return AnalyzedClass(clazz)
         }
     }
 }

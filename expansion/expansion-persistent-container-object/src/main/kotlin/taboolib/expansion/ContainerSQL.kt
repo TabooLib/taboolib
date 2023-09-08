@@ -29,11 +29,11 @@ class ContainerSQL(
                 when {
                     // 字符串
                     member.isString || member.isEnum -> add(member.name) {
-                        type(member.typeSQL ?: ColumnTypeSQL.LONGTEXT, member.length) { options(member) }
+                        type((member.typeSQL ?: ColumnTypeSQL.VARCHAR), member.length) { options(member) }
                     }
                     // UUID
                     member.isUUID -> add(member.name) {
-                        type(member.typeSQL ?: ColumnTypeSQL.CHAR, 36) { options(member) }
+                        type((member.typeSQL ?: ColumnTypeSQL.CHAR), 36) { options(member) }
                     }
                     // 其他类型
                     else -> add(member.name) {
@@ -67,7 +67,7 @@ class ContainerSQL(
             isFloat -> ColumnTypeSQL.FLOAT
             isDouble -> ColumnTypeSQL.DOUBLE
             isChar -> ColumnTypeSQL.INT
-            else -> typeSQL ?: error("Unsupported type: $name (${returnType})")
+            else -> error("Unsupported type: $name (${returnType})")
         }
     }
 }

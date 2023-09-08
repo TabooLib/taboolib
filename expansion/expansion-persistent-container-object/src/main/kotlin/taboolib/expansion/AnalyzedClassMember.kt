@@ -1,5 +1,7 @@
 package taboolib.expansion
 
+import taboolib.module.database.ColumnTypeSQL
+import taboolib.module.database.ColumnTypeSQLite
 import java.lang.reflect.Parameter
 
 /**
@@ -33,10 +35,15 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
     val length = root.findAnnotation<Length>()?.value ?: 64
 
     /** 自定义类型 */
-    val typeSQL = root.findAnnotation<TypeSQL>()?.value
-
-    /** 自定义类型 */
-    val typeSQLite = root.findAnnotation<TypeSQLite>()?.value
+    val typeSQL: ColumnTypeSQL?
+        get() = root.findAnnotation<Length>()?.let {
+            when {
+                it.long -> ColumnTypeSQL.LONGTEXT
+                it.medium -> ColumnTypeSQL.MEDIUMTEXT
+                it.char -> ColumnTypeSQL.CHAR
+                else -> null
+            }
+        }
 
     /** 是否为基础类型（Boolean） */
     val isBoolean: Boolean

@@ -11,19 +11,19 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                 when {
                     // 字符串
                     member.isString || member.isEnum -> add(member.name) {
-                        type(member.typeSQLite ?: ColumnTypeSQLite.TEXT, member.length) { options(member) }
+                        type(ColumnTypeSQLite.TEXT, member.length) { options(member) }
                     }
                     // UUID
                     member.isUUID -> add(member.name) {
-                        type(member.typeSQLite ?: ColumnTypeSQLite.TEXT, 36) { options(member) }
+                        type(ColumnTypeSQLite.TEXT, 36) { options(member) }
                     }
                     // 整数
                     member.canConvertedInteger() -> add(member.name) {
-                        type(member.typeSQLite ?: ColumnTypeSQLite.INTEGER) { options(member) }
+                        type(ColumnTypeSQLite.INTEGER) { options(member) }
                     }
                     // 小数
                     member.canConvertedDecimal() -> add(member.name) {
-                        type(member.typeSQLite ?: ColumnTypeSQLite.REAL) { options(member) }
+                        type(ColumnTypeSQLite.REAL) { options(member) }
                     }
                     else -> {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type: ${member.name} (${member.returnType})")
