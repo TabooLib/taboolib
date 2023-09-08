@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
 @PlatformSide(Platform.BUNGEE)
 public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
@@ -31,6 +31,8 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     private static BungeePlugin instance;
     private static Class<?> delegateClass;
     private static Object delegateObject;
+    @Nullable
+    private static IsolatedClassLoader isolatedClassLoader;
 
     static {
         if (IsolatedClassLoader.isEnabled()) {
@@ -39,11 +41,13 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                         new URL[]{BungeePlugin.class.getProtectionDomain().getCodeSource().getLocation()},
                         BungeePlugin.class.getClassLoader()
                 );
+                loader.addExcludedClass("taboolib.platform.BungeePlugin");
+                isolatedClassLoader = loader;
                 delegateClass = Class.forName("taboolib.platform.BungeePluginDelegate", true, loader);
                 delegateObject = delegateClass.getConstructor().newInstance();
                 delegateClass.getMethod("onConst").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
@@ -60,7 +64,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             // 生命周期
@@ -74,7 +78,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             try {
                 delegateClass.getMethod("onLoad").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.LOAD);
@@ -95,7 +99,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             try {
                 delegateClass.getMethod("onEnable").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
@@ -133,7 +137,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             // 在插件未关闭的前提下，执行 onDisable() 方法
@@ -152,5 +156,10 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     @Nullable
     public static Plugin getPluginInstance() {
         return pluginInstance;
+    }
+
+    @Nullable
+    public static IsolatedClassLoader getIsolatedClassLoader() {
+        return isolatedClassLoader;
     }
 }

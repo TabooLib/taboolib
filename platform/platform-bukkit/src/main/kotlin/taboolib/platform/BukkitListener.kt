@@ -33,11 +33,7 @@ class BukkitListener : PlatformListener {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        val listener = BukkitListener(event) {
-            if (IsolatedClassLoader.isEnabled()) {
-                BukkitPlugin.getIsolatedClassLoader()?.runIsolated { func(it as T) }
-            } else func(it as T)
-        }
+        val listener = BukkitListener(event) { func(it as T) }
         Bukkit.getPluginManager().registerEvent(event.getUsableEvent() as Class<Event>, listener, priority.toBukkit(), listener, plugin, ignoreCancelled)
         return listener
     }

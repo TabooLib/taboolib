@@ -41,7 +41,9 @@ public class Sponge8Plugin {
     private static Sponge8Plugin instance;
     private static Class<?> delegateClass;
     private static Object delegateObject;
-
+    @Nullable
+    private static IsolatedClassLoader isolatedClassLoader;
+    
     private final PluginContainer pluginContainer;
     private final Logger logger;
 
@@ -50,24 +52,26 @@ public class Sponge8Plugin {
     private Path pluginConfigDir;
 
     static {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
-            if (TabooLibCommon.isKotlinEnvironment()) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
-            }
-        } else {
-            try {
-                IsolatedClassLoader loader = new IsolatedClassLoader(
-                        new URL[]{Sponge8Plugin.class.getProtectionDomain().getCodeSource().getLocation()},
-                        Sponge8Plugin.class.getClassLoader()
-                );
-                delegateClass = Class.forName("taboolib.platform.Sponge8PluginDelegate", true, loader);
-                delegateObject = delegateClass.getConstructor().newInstance();
-                delegateClass.getMethod("onConst").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+	    if (IsolatedClassLoader.isEnabled()) {
+	        try {
+	            IsolatedClassLoader loader = new IsolatedClassLoader(
+	                    new URL[]{Sponge8Plugin.class.getProtectionDomain().getCodeSource().getLocation()},
+	                    Sponge8Plugin.class.getClassLoader()
+	            );
+                loader.addExcludedClass("taboolib.platform.Sponge8Plugin");
+                isolatedClassLoader = loader;
+	            delegateClass = Class.forName("taboolib.platform.Sponge8PluginDelegate", true, loader);
+	            delegateObject = delegateClass.getConstructor().newInstance();
+	            delegateClass.getMethod("onConst").invoke(delegateObject);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    } else {
+	        TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.SPONGE_API_8);
+	        if (TabooLibCommon.isKotlinEnvironment()) {
+	            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+	        }
+	    }
     }
 
     @Inject
@@ -81,76 +85,76 @@ public class Sponge8Plugin {
     // It should not trigger by other plugins, as I asked in the discord channel
     @Listener
     public void e(final ConstructPluginEvent e) {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.INIT);
-            TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-            if (pluginInstance == null) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
-            }
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-                pluginInstance.onLoad();
-            }
-        } else {
-            try {
-                delegateClass.getMethod("onLoad").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+	    if (IsolatedClassLoader.isEnabled()) {
+	        try {
+	            delegateClass.getMethod("onLoad").invoke(delegateObject);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    } else {
+	        TabooLibCommon.lifeCycle(LifeCycle.INIT);
+	        TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+	        if (pluginInstance == null) {
+	            pluginInstance = Project1Kt.findImplementation(Plugin.class);
+	        }
+	        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+	            pluginInstance.onLoad();
+	        }
+	    }
     }
 
     @Listener
     public void e(final StartingEngineEvent<Server> e) {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-            if (!TabooLibCommon.isStopped()) {
-                if (pluginInstance != null) {
-                    pluginInstance.onEnable();
-                }
-                try {
-                    ExecutorKt.startExecutor();
-                } catch (NoClassDefFoundError ignored) {
-                }
-            }
-        } else {
-            try {
-                delegateClass.getMethod("onEnable").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+	    if (IsolatedClassLoader.isEnabled()) {
+	        try {
+	            delegateClass.getMethod("onEnable").invoke(delegateObject);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    } else {
+	        TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+	        if (!TabooLibCommon.isStopped()) {
+	            if (pluginInstance != null) {
+	                pluginInstance.onEnable();
+	            }
+	            try {
+	                ExecutorKt.startExecutor();
+	            } catch (NoClassDefFoundError ignored) {
+	            }
+	        }
+	    }
     }
 
     @Listener
     public void e(final StartedEngineEvent<Server> e) {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-                pluginInstance.onActive();
-            }
-        } else {
-            try {
-                delegateClass.getMethod("onActive").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+	    if (IsolatedClassLoader.isEnabled()) {
+	        try {
+	            delegateClass.getMethod("onActive").invoke(delegateObject);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    } else {
+	        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+	        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+	            pluginInstance.onActive();
+	        }
+	    }
     }
 
     @Listener
     public void e(final StoppingEngineEvent<Server> e) {
-        if (!IsolatedClassLoader.isEnabled()) {
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-                pluginInstance.onDisable();
-            }
-        } else {
-            try {
-                delegateClass.getMethod("onDisable").invoke(delegateObject);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
-        }
+	    if (IsolatedClassLoader.isEnabled()) {
+	        try {
+	            delegateClass.getMethod("onDisable").invoke(delegateObject);
+	        } catch (Exception ex) {
+	            ex.printStackTrace();
+	        }
+	    } else {
+	        TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+	        if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+	            pluginInstance.onDisable();
+	        }
+	    }
     }
 
     @NotNull
@@ -162,6 +166,11 @@ public class Sponge8Plugin {
     public static Plugin getPluginInstance() {
         return pluginInstance;
     }
+
+	@Nullable
+	public static IsolatedClassLoader getIsolatedClassLoader() {
+		return isolatedClassLoader;
+	}
 
     @NotNull
     public PluginContainer getPluginContainer() {

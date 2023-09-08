@@ -28,7 +28,7 @@ import java.nio.file.Path;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode"})
+@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
 @com.velocitypowered.api.plugin.Plugin(
         id = "@plugin_id@",
         name = "@plugin_name@",
@@ -42,6 +42,8 @@ public class VelocityPlugin {
     private static VelocityPlugin instance;
     private static Class<?> delegateClass;
     private static Object delegateObject;
+    @Nullable
+    private static IsolatedClassLoader isolatedClassLoader;
 
     static {
         if (IsolatedClassLoader.isEnabled()) {
@@ -50,11 +52,13 @@ public class VelocityPlugin {
                         new URL[]{VelocityPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
                         VelocityPlugin.class.getClassLoader()
                 );
+                loader.addExcludedClass("taboolib.platform.VelocityPlugin");
+                isolatedClassLoader = loader;
                 delegateClass = Class.forName("taboolib.platform.VelocityPluginDelegate", true, loader);
                 delegateObject = delegateClass.getConstructor().newInstance();
                 delegateClass.getMethod("onConst").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
@@ -79,7 +83,7 @@ public class VelocityPlugin {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             TabooLibCommon.lifeCycle(LifeCycle.INIT);
@@ -92,7 +96,7 @@ public class VelocityPlugin {
             try {
                 delegateClass.getMethod("onLoad").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             if (!TabooLibCommon.isStopped()) {
@@ -134,7 +138,7 @@ public class VelocityPlugin {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         } else {
             if (pluginInstance != null && !TabooLibCommon.isStopped()) {
@@ -167,5 +171,10 @@ public class VelocityPlugin {
     @NotNull
     public Path getConfigDirectory() {
         return configDirectory;
+    }
+
+    @Nullable
+    public static IsolatedClassLoader getIsolatedClassLoader() {
+        return isolatedClassLoader;
     }
 }

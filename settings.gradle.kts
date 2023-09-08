@@ -44,6 +44,7 @@ fun importExtensions() {
 //    include("expansion:expansion-folia")
     include("expansion:expansion-fx-tool")
     include("expansion:expansion-application-console")
+    include("expansion:expansion-player-fake-op")
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
 }
