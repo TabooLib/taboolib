@@ -32,6 +32,8 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
 
     constructor(data: UUID) : this(ItemTagType.STRING, data.toString())
 
+    constructor(data: Boolean) : this(ItemTagType.STRING, data.toString())
+
     constructor(data: ItemTagList) : this(ItemTagType.LIST, data)
 
     constructor(data: ItemTag) : this(ItemTagType.COMPOUND, data)
@@ -152,7 +154,9 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
                 is ItemTagData -> obj
                 // 在字符串类型中对 1s 这种特殊数字类型进行处理
                 is String -> if (shortPattern.matcher(obj).matches()) ItemTagData(obj.substring(0, obj.length - 1).cshort) else ItemTagData(obj)
+                is Boolean -> ItemTagData(obj)
                 is Int -> ItemTagData(obj)
+                is UUID -> ItemTagData(obj)
                 is Double -> ItemTagData(obj)
                 is Float -> ItemTagData(obj)
                 is Short -> ItemTagData(obj)
