@@ -42,6 +42,7 @@ fun importExtensions() {
     include("expansion:expansion-lang-tools")
     include("expansion:expansion-ioc")
     include("expansion:expansion-application-console")
+    include("expansion:expansion-player-fake-op")
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
 }
