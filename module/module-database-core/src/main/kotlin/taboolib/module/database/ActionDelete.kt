@@ -4,39 +4,38 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 
 /**
- * TabooLib
- * taboolib.module.database.ActionDelete
+ * 一个删除行为
  *
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionDelete(val table: String) : WhereExecutor(), Action {
+class ActionDelete(val table: String) : Filterable(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
-    private var where: Where? = null
+    private var filter: Filter? = null
 
     override val query: String
-        get() = "DELETE FROM ${table.formatColumn()} WHERE ${where?.query ?: ""}".trim()
+        get() = "DELETE FROM ${table.formatColumn()} WHERE ${filter?.query ?: ""}".trim()
 
     override val elements: List<Any>
-        get() = where?.elements ?: emptyList()
+        get() = filter?.elements ?: emptyList()
 
-    fun where(whereData: WhereData) {
-        if (where == null) {
-            where = Where()
+    fun where(filterCriteria: Criteria) {
+        if (filter == null) {
+            filter = Filter()
         }
-        where!!.data += whereData
+        filter!!.data += filterCriteria
     }
 
-    fun where(func: Where.() -> Unit) {
-        if (where == null) {
-            where = Where().also(func)
+    fun where(func: Filter.() -> Unit) {
+        if (filter == null) {
+            filter = Filter().also(func)
         } else {
-            func(where!!)
+            func(filter!!)
         }
     }
 
-    override fun append(whereData: WhereData) {
+    override fun append(criteria: Criteria) {
     }
 
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {

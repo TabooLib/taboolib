@@ -7,15 +7,15 @@ package taboolib.module.database
  * @author sky
  * @since 2021/6/23 3:32 下午
  */
-class Join(val type: JoinType, val from: String, val where: Where) {
+class Join(val type: JoinType, val from: String, val filter: Filter) {
 
     val query: String
-        get() = if (where.isEmpty()) {
+        get() = if (filter.isEmpty()) {
             "$type JOIN `$from`"
         } else {
-            "$type JOIN `$from` ON ${where.query}"
+            "$type JOIN `$from` ON ${filter.query}"
         }
 
     val elements: List<Any>
-        get() = where.elements
+        get() = filter.elements
 }

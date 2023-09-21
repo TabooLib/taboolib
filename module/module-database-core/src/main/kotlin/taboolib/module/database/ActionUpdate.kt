@@ -10,11 +10,11 @@ import java.sql.PreparedStatement
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionUpdate(val table: String) : WhereExecutor(), Action {
+class ActionUpdate(val table: String) : Filterable(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private val set = ArrayList<QuerySet>()
-    private var where: Where? = null
+    private var filter: Filter? = null
 
     override val query: String
         get() {
@@ -22,8 +22,8 @@ class ActionUpdate(val table: String) : WhereExecutor(), Action {
             if (set.isNotEmpty()) {
                 query += " SET ${set.joinToString { it.query }}"
             }
-            if (where != null) {
-                query += " WHERE ${where!!.query}"
+            if (filter != null) {
+                query += " WHERE ${filter!!.query}"
             }
             return query
         }
@@ -32,7 +32,7 @@ class ActionUpdate(val table: String) : WhereExecutor(), Action {
         get() {
             val el = ArrayList<Any>()
             el.addAll(set.mapNotNull { it.value })
-            el.addAll(where?.elements ?: emptyList())
+            el.addAll(filter?.elements ?: emptyList())
             return el
         }
 
@@ -50,22 +50,22 @@ class ActionUpdate(val table: String) : WhereExecutor(), Action {
         }
     }
 
-    fun where(whereData: WhereData) {
-        if (where == null) {
-            where = Where()
+    fun where(filterCriteria: Criteria) {
+        if (filter == null) {
+            filter = Filter()
         }
-        where!!.data += whereData
+        filter!!.data += filterCriteria
     }
 
-    fun where(func: Where.() -> Unit) {
-        if (where == null) {
-            where = Where().also(func)
+    fun where(func: Filter.() -> Unit) {
+        if (filter == null) {
+            filter = Filter().also(func)
         } else {
-            func(where!!)
+            func(filter!!)
         }
     }
 
-    override fun append(whereData: WhereData) {
+    override fun append(criteria: Criteria) {
     }
 
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {

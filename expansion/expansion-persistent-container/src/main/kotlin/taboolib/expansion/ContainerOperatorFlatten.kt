@@ -1,7 +1,7 @@
 package taboolib.expansion
 
 import taboolib.module.database.Table
-import taboolib.module.database.Where
+import taboolib.module.database.Filter
 import java.util.*
 import javax.sql.DataSource
 
@@ -52,30 +52,30 @@ class ContainerOperatorFlatten(
         }
     }
 
-    override fun select(where: Where.() -> Unit): Map<String, Any?> {
-        return select(key, value) { where() }
+    override fun select(filter: Filter.() -> Unit): Map<String, Any?> {
+        return select(key, value) { filter() }
     }
 
-    override fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?> {
+    override fun select(vararg rows: String, filter: Filter.() -> Unit): Map<String, Any?> {
         return table.select(dataSource) {
             rows(*rows)
-            where(where)
+            where(filter)
             limit(1)
         }.firstOrNull { rows.associateWith { getObject(it) } } ?: emptyMap()
     }
 
-    override fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>> {
-        return selectAll(key, value) { where() }
+    override fun selectAll(filter: Filter.() -> Unit): List<Map<String, Any?>> {
+        return selectAll(key, value) { filter() }
     }
 
-    override fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>> {
+    override fun selectAll(vararg rows: String, filter: Filter.() -> Unit): List<Map<String, Any?>> {
         return table.select(dataSource) {
             rows(*rows)
-            where(where)
+            where(filter)
         }.map { rows.associateWith { getObject(it) } }
     }
 
-    override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {
+    override fun update(map: Map<String, Any?>, filter: Filter.() -> Unit) {
         error("Not supported in flatten container")
     }
 

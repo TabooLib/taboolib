@@ -1,7 +1,7 @@
 package taboolib.expansion
 
 import taboolib.module.database.Table
-import taboolib.module.database.Where
+import taboolib.module.database.Filter
 import java.util.*
 import javax.sql.DataSource
 
@@ -58,33 +58,33 @@ class ContainerOperatorNormal(
         }
     }
 
-    override fun select(where: Where.() -> Unit): Map<String, Any?> {
-        return select(*data.map { it.name }.toTypedArray()) { where() }
+    override fun select(filter: Filter.() -> Unit): Map<String, Any?> {
+        return select(*data.map { it.name }.toTypedArray()) { filter() }
     }
 
-    override fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?> {
+    override fun select(vararg rows: String, filter: Filter.() -> Unit): Map<String, Any?> {
         return table.select(dataSource) {
             rows(*rows)
-            where(where)
+            where(filter)
             limit(1)
         }.firstOrNull { rows.associateWith { getObject(it) } } ?: emptyMap()
     }
 
-    override fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>> {
-        return selectAll(*data.map { it.name }.toTypedArray()) { where() }
+    override fun selectAll(filter: Filter.() -> Unit): List<Map<String, Any?>> {
+        return selectAll(*data.map { it.name }.toTypedArray()) { filter() }
     }
 
-    override fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>> {
+    override fun selectAll(vararg rows: String, filter: Filter.() -> Unit): List<Map<String, Any?>> {
         return table.select(dataSource) {
             rows(*rows)
-            where(where)
+            where(filter)
         }.map { rows.associateWith { getObject(it) } }
     }
 
-    override fun update(map: Map<String, Any?>, where: Where.() -> Unit) {
-        if (table.find(dataSource) { where(where) }) {
+    override fun update(map: Map<String, Any?>, filter: Filter.() -> Unit) {
+        if (table.find(dataSource) { where(filter) }) {
             table.update(dataSource) {
-                where(where)
+                where(filter)
                 map.forEach { (k, v) -> set(k, v) }
             }
         } else {

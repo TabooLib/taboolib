@@ -10,13 +10,13 @@ import java.sql.PreparedStatement
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionSelect(val table: String) : WhereExecutor(), Action {
+class ActionSelect(val table: String) : Filterable(), Action {
 
     private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
     private var distinct: String? = null
     private var rows: Array<String> = emptyArray()
     private val join = ArrayList<Join>()
-    private var where: Where? = null
+    private var filter: Filter? = null
     private val order = ArrayList<Order>()
     private var limit = -1
 
@@ -36,8 +36,8 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
             if (join.isNotEmpty()) {
                 query += " ${join.joinToString(" ") { it.query }}"
             }
-            if (where != null && !where!!.isEmpty()) {
-                query += " WHERE ${where!!.query}"
+            if (filter != null && !filter!!.isEmpty()) {
+                query += " WHERE ${filter!!.query}"
             }
             if (order.isNotEmpty()) {
                 query += " ORDER BY ${order.joinToString { it.query }}"
@@ -52,7 +52,7 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         get() {
             val el = ArrayList<Any>()
             el.addAll(join.flatMap { it.elements })
-            el.addAll(where?.elements ?: emptyList())
+            el.addAll(filter?.elements ?: emptyList())
             return el
         }
 
@@ -62,18 +62,18 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         }
     }
 
-    fun where(whereData: WhereData) {
-        if (where == null) {
-            where = Where()
+    fun where(filterCriteria: Criteria) {
+        if (filter == null) {
+            filter = Filter()
         }
-        where!!.data += whereData
+        filter!!.data += filterCriteria
     }
 
-    fun where(func: Where.() -> Unit) {
-        if (where == null) {
-            where = Where().also(func)
+    fun where(func: Filter.() -> Unit) {
+        if (filter == null) {
+            filter = Filter().also(func)
         } else {
-            func(where!!)
+            func(filter!!)
         }
     }
 
@@ -89,19 +89,19 @@ class ActionSelect(val table: String) : WhereExecutor(), Action {
         this.limit = limit
     }
 
-    fun innerJoin(table: String, func: Where.() -> Unit) {
-        join += Join(JoinType.INNER, table, Where().also(func))
+    fun innerJoin(table: String, func: Filter.() -> Unit) {
+        join += Join(JoinType.INNER, table, Filter().also(func))
     }
 
-    fun leftJoin(table: String, func: Where.() -> Unit) {
-        join += Join(JoinType.LEFT, table, Where().also(func))
+    fun leftJoin(table: String, func: Filter.() -> Unit) {
+        join += Join(JoinType.LEFT, table, Filter().also(func))
     }
 
-    fun rightJoin(table: String, func: Where.() -> Unit) {
-        join += Join(JoinType.RIGHT, table, Where().also(func))
+    fun rightJoin(table: String, func: Filter.() -> Unit) {
+        join += Join(JoinType.RIGHT, table, Filter().also(func))
     }
 
-    override fun append(whereData: WhereData) {
+    override fun append(criteria: Criteria) {
     }
 
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
