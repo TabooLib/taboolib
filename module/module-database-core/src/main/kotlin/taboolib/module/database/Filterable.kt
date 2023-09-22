@@ -30,7 +30,8 @@ abstract class Filterable {
     /**
      * 追加一个过滤标准
      */
-    abstract fun append(criteria: Criteria)
+    open fun append(criteria: Criteria) {
+    }
 
     /** 或 */
     infix fun Criteria.or(other: Criteria): Criteria {
@@ -54,49 +55,49 @@ abstract class Filterable {
     infix fun String.inside(value: Array<Any>): Criteria {
         if (value.isEmpty()) error("empty value")
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} IN (${unwrapArray(value, el)}})", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} IN (${unwrapArray(value, el)}})", el).apply(this@Filterable)
     }
 
     /** 在某范围之内 */
     infix fun String.between(value: Pair<Any, Any>): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} BETWEEN ${unwrap(value.first, el)} AND ${unwrap(value.second, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} BETWEEN ${unwrap(value.first, el)} AND ${unwrap(value.second, el)}", el).apply(this@Filterable)
     }
 
     /** 等于 */
     infix fun String.eq(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} = ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} = ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 小于 */
     infix fun String.lt(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} < ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} < ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 小于等于 */
     infix fun String.lte(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} <= ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} <= ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 大于 */
     infix fun String.gt(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} > ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} > ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 大于等于 */
     infix fun String.gte(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} >= ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} >= ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 模糊匹配 */
     infix fun String.like(value: Any): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${formatColumn()} LIKE ${unwrap(value, el)}", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} LIKE ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
     /** 否定 */
@@ -107,15 +108,15 @@ abstract class Filterable {
     /** 或 */
     fun or(func: Filter.() -> Unit): Criteria {
         val filter = Filter().also(func)
-        if (filter.data.isEmpty()) error("empty function")
-        return Criteria("(${filter.data.joinToString(" OR ") { it.query }})", children = filter.data).apply(this)
+        if (filter.criteria.isEmpty()) error("empty function")
+        return Criteria("(${filter.criteria.joinToString(" OR ") { it.query }})", children = filter.criteria).apply(this)
     }
 
     /** 与 */
     fun and(func: Filter.() -> Unit): Criteria {
         val filter = Filter().also(func)
-        if (filter.data.isEmpty()) error("empty function")
-        return Criteria("(${filter.data.joinToString(" AND ") { it.query }})", children = filter.data).apply(this)
+        if (filter.criteria.isEmpty()) error("empty function")
+        return Criteria("(${filter.criteria.joinToString(" AND ") { it.query }})", children = filter.criteria).apply(this)
     }
 
     /**
@@ -136,7 +137,7 @@ abstract class Filterable {
 
     private fun unwrap(value: Any, el: MutableList<Any>? = null): String {
         return if (value is PreValue) {
-            value.formatColumn()
+            value.asFormattedColumnName()
         } else {
             el?.add(value)
             "?"

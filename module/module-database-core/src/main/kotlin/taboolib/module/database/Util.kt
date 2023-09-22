@@ -37,34 +37,13 @@ fun <T> PreparedStatement.use(func: PreparedStatement.() -> T): T {
 /**
  * 尝试格式化一个列名
  */
-internal fun Any.formatColumn(): String {
-    var isColumnName = false
-    var escape = false
-    val name = toString().toCharArray().joinToString("") {
-        when (it) {
-            // 若出现「`」则认为是列名
-            '`' -> {
-                isColumnName = true
-                it.toString()
-            }
-            // 转义符号
-            '\\' -> {
-                if (escape) {
-                    "\\"
-                } else {
-                    escape = true
-                    ""
-                }
-            }
-            '.' -> {
-                if (escape) {
-                    it.toString()
-                } else {
-                    "`.`"
-                }
-            }
-            else -> it.toString()
-        }
+internal fun Any.asFormattedColumnName(): String {
+    val str = this.toString()
+    // 如果字符串是 "null" || 如果字符串是一个函数或表达式 || 如果字符串已经被格式化
+    if (str == "null" || str.contains(Regex("\\(.+\\)")) || (str.startsWith("`") && str.endsWith("`"))) {
+        return str
     }
-    return if (isColumnName) name else "`$name`"
+    // 通过 "." 分割字符串并分别格式化每个部分
+    val parts = str.split(".")
+    return parts.joinToString(".") { "`$it`" }
 }

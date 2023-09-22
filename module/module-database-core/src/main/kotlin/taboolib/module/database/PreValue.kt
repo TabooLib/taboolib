@@ -1,8 +1,7 @@
 package taboolib.module.database
 
 /**
- * TabooLib
- * taboolib.module.database.PreValue
+ * 非占位符值
  *
  * @author sky
  * @since 2021/6/23 10:14 下午

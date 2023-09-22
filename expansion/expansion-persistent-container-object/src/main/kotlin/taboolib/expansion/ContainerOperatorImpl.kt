@@ -2,6 +2,7 @@ package taboolib.expansion
 
 import taboolib.module.database.Table
 import taboolib.module.database.Filter
+import taboolib.module.database.Order
 import javax.sql.DataSource
 
 /**
@@ -48,18 +49,18 @@ class ContainerOperatorImpl(override val table: Table<*, *>, override val dataSo
     override fun <T> sort(type: Class<T>, row: String, limit: Int, filter: Filter.() -> Unit): List<T> {
         val typeClass = AnalyzedClass.of(type)
         return table.select(dataSource) {
-            order(row)
-            limit(limit)
             where(filter)
+            limit(limit)
+            orderBy(row)
         }.map { typeClass.createInstance(typeClass.read(this)) }
     }
 
     override fun <T> sortDescending(type: Class<T>, row: String, limit: Int, filter: Filter.() -> Unit): List<T> {
         val typeClass = AnalyzedClass.of(type)
         return table.select(dataSource) {
-            order(row, true)
-            limit(limit)
             where(filter)
+            limit(limit)
+            orderBy(row, Order.Type.DESC)
         }.map { typeClass.createInstance(typeClass.read(this)) }
     }
 

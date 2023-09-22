@@ -9,40 +9,27 @@ import java.sql.PreparedStatement
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
-class ActionDelete(val table: String) : Filterable(), Action {
+class ActionDelete(val table: String) : ActionFilterable() {
 
-    private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
-    private var filter: Filter? = null
+    /** 该行为执行完毕后的回调 */
+    private var finallyCallback: (PreparedStatement.(Connection) -> Unit)? = null
 
+    /** 语句 */
     override val query: String
-        get() = "DELETE FROM ${table.formatColumn()} WHERE ${filter?.query ?: ""}".trim()
+        get() = Statement("DELETE FROM")
+            .addSegment(table.asFormattedColumnName())
+            .addFilter(filter)
+            .build()
 
+    /** 元素 */
     override val elements: List<Any>
         get() = filter?.elements ?: emptyList()
 
-    fun where(filterCriteria: Criteria) {
-        if (filter == null) {
-            filter = Filter()
-        }
-        filter!!.data += filterCriteria
-    }
-
-    fun where(func: Filter.() -> Unit) {
-        if (filter == null) {
-            filter = Filter().also(func)
-        } else {
-            func(filter!!)
-        }
-    }
-
-    override fun append(criteria: Criteria) {
-    }
-
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
-        this.onFinally = onFinally
+        this.finallyCallback = onFinally
     }
 
-    override fun runFinally(preparedStatement: PreparedStatement, connection: Connection) {
-        this.onFinally?.invoke(preparedStatement, connection)
+    override fun callFinally(preparedStatement: PreparedStatement, connection: Connection) {
+        this.finallyCallback?.invoke(preparedStatement, connection)
     }
 }

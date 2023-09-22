@@ -56,8 +56,8 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         return workspace(dataSource) { insert(keys) { func(this) } }.run()
     }
 
-    open fun workspace(dataSource: DataSource, func: Query.() -> Unit): QueryTask {
-        return Query(this, dataSource).also(func).tasks.lastOrNull() ?: EmptyTask
+    open fun workspace(dataSource: DataSource, func: ExecutableSource.() -> Unit): QueryTask {
+        return ExecutableSource(this, dataSource).also(func).tasks.lastOrNull() ?: EmptyTask
     }
 
     override fun toString(): String {
