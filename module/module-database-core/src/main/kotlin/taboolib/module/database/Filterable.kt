@@ -55,7 +55,7 @@ abstract class Filterable {
     infix fun String.inside(value: Array<Any>): Criteria {
         if (value.isEmpty()) error("empty value")
         val el = arrayListOf<Any>()
-        return Criteria("${asFormattedColumnName()} IN (${unwrapArray(value, el)}})", el).apply(this@Filterable)
+        return Criteria("${asFormattedColumnName()} IN (${unwrapArray(value, el)})", el).apply(this@Filterable)
     }
 
     /** 在某范围之内 */

@@ -93,7 +93,8 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
      * 需要注意的是，上面工作空间中的 `select` 操作只会执行一次，且在 `run()` 之前。
      */
     open fun workspace(dataSource: DataSource, func: ExecutableSource.() -> Unit): ResultProcessorList {
-        return ResultProcessorList(ExecutableSource(this, dataSource, false).also(func).processors, false)
+        val source = ExecutableSource(this, dataSource, false).also(func)
+        return ResultProcessorList(source.processors, source)
     }
 
     /**

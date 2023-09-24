@@ -111,6 +111,20 @@ open class ResultProcessor(val query: String, val executor: Executable<ResultSet
             }
         }
     }
+
+    /** 运行并遍历所有结果 */
+    open fun forEachIndexed(call: ResultSet.(index: Int) -> Unit) {
+        if (isExecuted) {
+            error("processor is already executed: $query")
+        }
+        isExecuted = true
+        executor.invoke {
+            var i = 0
+            while (next()) {
+                call(this, i++)
+            }
+        }
+    }
 }
 
 /** 向下兼容 */

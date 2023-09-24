@@ -19,7 +19,9 @@ class Statement {
 
     /** 追加语句 */
     fun addSegment(literal: String): Statement {
-        query += literal
+        if (literal.isNotEmpty()) {
+            query += literal
+        }
         return this
     }
 
@@ -32,7 +34,16 @@ class Statement {
     /** 追加语句 */
     fun addSegmentIfTrue(predicate: Boolean, builder: Statement.() -> Unit): Statement {
         if (predicate) {
-            query += Statement().also(builder).query
+            query += Statement().also(builder).query.joinToString(" ")
+        }
+        return this
+    }
+
+    /** 追加语句 */
+    fun addSegmentSequence(prefix: String = "", suffix: String = "", builder: Statement.() -> Unit): Statement {
+        val children = Statement().also(builder).query
+        if (children.isNotEmpty()) {
+            query += "$prefix${children.joinToString()}$suffix"
         }
         return this
     }

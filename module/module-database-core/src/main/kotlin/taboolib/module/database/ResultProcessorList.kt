@@ -8,7 +8,7 @@ import java.sql.ResultSet
  * @author sky
  * @since 2021/6/23 2:11 下午
  */
-open class ResultProcessorList(processors: List<ResultProcessor>, val transaction: Boolean = false) {
+open class ResultProcessorList(processors: List<ResultProcessor>, val source: ExecutableSource? = null) {
 
     val processors = processors.toMutableList()
 
@@ -28,8 +28,12 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        return last.executor.invoke { fetchSize }
+        return try {
+            processors.forEach { it.run() }
+            last.run()
+        } finally {
+            source?.close()
+        }
     }
 
     open fun find(): Boolean {
@@ -38,8 +42,12 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        return last.executor.invoke { next() }
+        return try {
+            processors.forEach { it.run() }
+            last.executor.invoke { next() }
+        } finally {
+            source?.close()
+        }
     }
 
     open fun <T> first(resultSet: ResultSet.() -> T): T {
@@ -48,10 +56,14 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        return last.executor.invoke {
-            next()
-            resultSet(this)
+        return try {
+            processors.forEach { it.run() }
+            last.executor.invoke {
+                next()
+                resultSet(this)
+            }
+        } finally {
+            source?.close()
         }
     }
 
@@ -61,13 +73,17 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        return last.executor.invoke {
-            if (next()) {
-                resultSet(this)
-            } else {
-                null
+        return try {
+            processors.forEach { it.run() }
+            last.executor.invoke {
+                if (next()) {
+                    resultSet(this)
+                } else {
+                    null
+                }
             }
+        } finally {
+            source?.close()
         }
     }
 
@@ -77,13 +93,17 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        return last.executor.invoke {
-            ArrayList<T>().also {
+        return try {
+            processors.forEach { it.run() }
+            last.executor.invoke {
+                val arr = ArrayList<T>()
                 while (next()) {
-                    it += resultSet(this)
+                    arr += resultSet(this)
                 }
+                arr
             }
+        } finally {
+            source?.close()
         }
     }
 
@@ -93,11 +113,15 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        last.executor.invoke {
-            while (next()) {
-                resultSet(this)
+        try {
+            processors.forEach { it.run() }
+            last.executor.invoke {
+                while (next()) {
+                    resultSet(this)
+                }
             }
+        } finally {
+            source?.close()
         }
     }
 
@@ -107,12 +131,16 @@ open class ResultProcessorList(processors: List<ResultProcessor>, val transactio
         }
         isExecuted = true
         val last = processors.removeLast()
-        processors.forEach { it.executor.invoke { fetchSize } }
-        last.executor.invoke {
-            var i = 0
-            while (next()) {
-                resultSet(this, i++)
+        try {
+            processors.forEach { it.run() }
+            last.executor.invoke {
+                var i = 0
+                while (next()) {
+                    resultSet(this, i++)
+                }
             }
+        } finally {
+            source?.close()
         }
     }
 }

@@ -13,7 +13,7 @@ class ActionSelect(val table: String) : ActionFilterable() {
     private var distincts = arrayListOf<String>()
 
     /** 查询行 */
-    private var rows = arrayListOf<String>()
+    private var rows = arrayListOf("*")
 
     /** 连接 */
     private val join = arrayListOf<Join>()
@@ -61,6 +61,7 @@ class ActionSelect(val table: String) : ActionFilterable() {
      * 选择并返回表中关于 [row] 的所有数据，与 [distincts] 互斥
      */
     fun rows(vararg row: String) {
+        rows.clear()
         rows += row
         distincts.clear()
     }
