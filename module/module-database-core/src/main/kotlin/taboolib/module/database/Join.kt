@@ -10,11 +10,13 @@ class Join(val joinType: JoinType, val tableName: String, val filter: Filter) : 
 
     /** 语句 */
     override val query: String
-        get() = if (filter.isEmpty()) {
-            "$joinType JOIN ${tableName.asFormattedColumnName()}"
-        } else {
-            "$joinType JOIN ${tableName.asFormattedColumnName()} ON ${filter.query}"
-        }
+        get() = Statement(joinType.name)
+            .addSegment("JOIN")
+            .addSegment(tableName.asFormattedColumnName())
+            .addSegmentIfTrue(filter.isNotEmpty()) {
+                addSegment("ON")
+                addSegment(filter.query)
+            }.build()
 
     /** 占位符对应的元素 */
     override val elements: List<Any>

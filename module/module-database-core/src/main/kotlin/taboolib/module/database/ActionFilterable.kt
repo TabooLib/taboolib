@@ -1,5 +1,8 @@
 package taboolib.module.database
 
+import java.sql.Connection
+import java.sql.PreparedStatement
+
 /**
  * 支持过滤的行为
  *
@@ -7,6 +10,9 @@ package taboolib.module.database
  * @since 2023/9/22 13:17
  */
 abstract class ActionFilterable : Filterable(), Action {
+
+    /** 该行为执行完毕后的回调 */
+    protected var finallyCallback: (PreparedStatement.(Connection) -> Unit)? = null
 
     /** 该行为的过滤器 */
     protected var filter: Filter? = null
@@ -40,5 +46,13 @@ abstract class ActionFilterable : Filterable(), Action {
     }
 
     override fun append(criteria: Criteria) {
+    }
+
+    override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
+        this.finallyCallback = onFinally
+    }
+
+    override fun callFinally(preparedStatement: PreparedStatement, connection: Connection) {
+        this.finallyCallback?.invoke(preparedStatement, connection)
     }
 }

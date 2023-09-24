@@ -24,6 +24,12 @@ class Statement {
     }
 
     /** 追加语句 */
+    fun addSegment(literal: List<String>): Statement {
+        query += literal
+        return this
+    }
+
+    /** 追加语句 */
     fun addSegmentIfTrue(predicate: Boolean, builder: Statement.() -> Unit): Statement {
         if (predicate) {
             query += Statement().also(builder).query
@@ -56,6 +62,12 @@ class Statement {
     /** 追加值 */
     fun addValues(values: List<Array<Any>>): Statement {
         query += values.joinToString { "(${it.joinToString { "?" }})" }
+        return this
+    }
+
+    /** 追加特殊值 */
+    fun addSpecialValue(value: Any): Statement {
+        query += (if (value is String && value.startsWith('$')) value.substring(1) else "'$value'")
         return this
     }
 

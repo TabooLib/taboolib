@@ -267,7 +267,7 @@ class NMSItemImpl : NMSItem() {
             return LocaleKey("N", org.bukkit.craftbukkit.v1_12_R1.enchantments.CraftEnchantment.getRaw(enchantment).a())
         }
         return try {
-            LocaleKey("N", org.bukkit.craftbukkit.v1_20_R1.enchantments.CraftEnchantment.getRaw(enchantment).descriptionId)
+            LocaleKey("N", org.bukkit.craftbukkit.v1_20_R2.enchantments.CraftEnchantment.getRaw(enchantment).descriptionId)
         } catch (_: NoSuchMethodError) {
             LocaleKey("N", org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment.getRaw(enchantment).g())
         }

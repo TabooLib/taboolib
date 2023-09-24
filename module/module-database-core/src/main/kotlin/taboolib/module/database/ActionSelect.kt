@@ -1,8 +1,5 @@
 package taboolib.module.database
 
-import java.sql.Connection
-import java.sql.PreparedStatement
-
 /**
  * TabooLib
  * taboolib.module.database.ActionSelect
@@ -11,9 +8,6 @@ import java.sql.PreparedStatement
  * @since 2021/6/23 5:07 下午
  */
 class ActionSelect(val table: String) : ActionFilterable() {
-
-    /** 该行为执行完毕后的回调 */
-    private var finallyCallback: (PreparedStatement.(Connection) -> Unit)? = null
 
     /** 去除重复 */
     private var distincts = arrayListOf<String>()
@@ -120,13 +114,5 @@ class ActionSelect(val table: String) : ActionFilterable() {
      */
     fun rightJoin(table: String, func: Filter.() -> Unit) {
         join += Join(JoinType.RIGHT, table, Filter().also(func))
-    }
-
-    override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
-        this.finallyCallback = onFinally
-    }
-
-    override fun callFinally(preparedStatement: PreparedStatement, connection: Connection) {
-        this.finallyCallback?.invoke(preparedStatement, connection)
     }
 }

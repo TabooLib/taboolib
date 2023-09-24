@@ -1,8 +1,5 @@
 package taboolib.module.database
 
-import java.sql.Connection
-import java.sql.PreparedStatement
-
 /**
  * TabooLib
  * taboolib.module.database.ActionUpdate
@@ -11,9 +8,6 @@ import java.sql.PreparedStatement
  * @since 2021/6/23 5:07 下午
  */
 class ActionUpdate(val table: String) : ActionFilterable() {
-
-    /** 该行为执行完毕后的回调 */
-    private var finallyCallback: (PreparedStatement.(Connection) -> Unit)? = null
 
     /** 操作 */
     private val operations = ArrayList<UpdateOperation>()
@@ -45,13 +39,5 @@ class ActionUpdate(val table: String) : ActionFilterable() {
             is PreValue -> UpdateOperation("${key.asFormattedColumnName()} = ${value.asFormattedColumnName()}")
             else -> UpdateOperation("${key.asFormattedColumnName()} = ?", value)
         }
-    }
-
-    override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
-        this.finallyCallback = onFinally
-    }
-
-    override fun callFinally(preparedStatement: PreparedStatement, connection: Connection) {
-        this.finallyCallback?.invoke(preparedStatement, connection)
     }
 }
