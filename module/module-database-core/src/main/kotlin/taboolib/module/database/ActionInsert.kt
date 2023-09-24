@@ -4,8 +4,7 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 
 /**
- * TabooLib
- * taboolib.module.database.ActionInsert
+ * 一个插入行为
  *
  * @author sky
  * @since 2021/6/23 5:07 下午
