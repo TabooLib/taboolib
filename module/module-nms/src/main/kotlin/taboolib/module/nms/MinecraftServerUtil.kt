@@ -47,7 +47,7 @@ fun obcClass(name: String): Class<*> {
  */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        Class.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: error("Cannot find nms class: $name"))
+        Class.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
     } else {
         Class.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }
