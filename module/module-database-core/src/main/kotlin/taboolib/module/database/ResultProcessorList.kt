@@ -10,7 +10,7 @@ import java.sql.ResultSet
  */
 open class ResultProcessorList(processors: List<ResultProcessor>, val source: ExecutableSource? = null) {
 
-    val processors = processors.toMutableList()
+    private val processors = processors.toMutableList()
 
     /** 是否已经执行 */
     var isExecuted = false

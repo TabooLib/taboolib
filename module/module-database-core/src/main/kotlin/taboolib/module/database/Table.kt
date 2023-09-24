@@ -32,8 +32,8 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         workspace(dataSource) { createTable(checkExists) }.run()
     }
 
-    open fun select(dataSource: DataSource, func: ActionSelect.() -> Unit): ResultProcessor {
-        return workspace(dataSource) { select(func) }.processors.first()
+    open fun select(dataSource: DataSource, func: ActionSelect.() -> Unit): ResultProcessorList {
+        return workspace(dataSource) { select(func) }
     }
 
     open fun find(dataSource: DataSource, func: ActionSelect.() -> Unit): Boolean {
