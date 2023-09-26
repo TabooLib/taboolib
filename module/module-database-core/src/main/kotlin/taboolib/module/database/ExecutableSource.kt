@@ -104,7 +104,7 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
      */
     open fun saveChanges(): Result<Unit> {
         // 使用 autoCommit 的同时也可以判断是否成功取到了连接
-        return if (connection.autoCommit) {
+        return if (!connection.autoCommit) {
             try {
                 // 执行所有的处理器
                 processors.forEach { it.run() }
