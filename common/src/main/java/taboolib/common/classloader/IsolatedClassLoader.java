@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 public class IsolatedClassLoader extends URLClassLoader {
@@ -39,6 +40,18 @@ public class IsolatedClassLoader extends URLClassLoader {
 		excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
 		excludedClasses.add("taboolib.common.platform.Plugin");
 		excludedPackages.add("java.");
+
+		// Load excluded classes and packages by SPI
+		ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);
+		for (IsolatedClassLoaderConfig config : serviceLoader) {
+			Set<String> configExcludedClasses = config.excludedClasses();
+			if (configExcludedClasses != null && !configExcludedClasses.isEmpty())
+				excludedClasses.addAll(configExcludedClasses);
+
+			Set<String> configExcludedPackages = config.excludedPackages();
+			if (configExcludedPackages != null && !configExcludedPackages.isEmpty())
+				excludedPackages.addAll(configExcludedPackages);
+		}
 	}
 	
 	@Override
