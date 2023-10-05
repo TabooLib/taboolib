@@ -197,7 +197,7 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
     }
 
     override fun getViewers(): MutableList<HumanEntity> {
-        return arrayListOf()
+        return remoteInventory?.viewer?.let { mutableListOf(it) } ?: mutableListOf()
     }
 
     override fun getType(): InventoryType {
