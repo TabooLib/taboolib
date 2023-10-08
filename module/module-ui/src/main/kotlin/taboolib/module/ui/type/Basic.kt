@@ -83,6 +83,13 @@ open class Basic(title: String = "chest") : Menu(title) {
     }
 
     /**
+     * 隐藏玩家背包（自动启动虚拟页面）
+     */
+    open fun hidePlayerInventory() {
+        virtualize((0 until 36).map { ItemStack(Material.AIR) })
+    }
+
+    /**
      * 行数
      * 为 1 - 6 之间的整数，并非原版 9 的倍数
      */
@@ -137,6 +144,8 @@ open class Basic(title: String = "chest") : Menu(title) {
     /**
      * 页面关闭时触发回调
      * 只能触发一次（玩家客户端强制关闭时会触发两次原版 InventoryCloseEvent 事件）
+     *
+     * TODO 2023/10/09 若启用虚拟化菜单，则 player.closeInventory() 不会触发该回调函数
      */
     open fun onClose(once: Boolean = true, skipUpdateTitle: Boolean = true, callback: (event: InventoryCloseEvent) -> Unit) {
         closeCallback = callback

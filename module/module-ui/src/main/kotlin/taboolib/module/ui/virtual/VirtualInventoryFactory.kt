@@ -41,24 +41,28 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory): RemoteInvento
 /**
  * 注入事件到 Basic 页面
  */
-fun RemoteInventory.inject(basic: Basic) {
+fun RemoteInventory.inject(menu: Basic) {
     onClick {
         // 处理事件
         try {
             val e = VirtualInventoryInteractEvent(this, createInventoryView())
-            val event = ClickEvent(e, ClickType.VIRTUAL, basic.getSlot(clickSlot), basic)
-            basic.clickCallback.forEach { it(event) }
-            basic.selfClickCallback(event)
+            val event = ClickEvent(e, ClickType.VIRTUAL, menu.getSlot(clickSlot), menu)
+            menu.clickCallback.forEach { it(event) }
+            menu.selfClickCallback(event)
         } catch (t: Throwable) {
             t.printStackTrace()
         }
     }
     onClose {
         try {
-            basic.closeCallback.invoke(InventoryCloseEvent(createInventoryView()))
+            // 标题更新 && 跳过关闭回调
+            if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+                return@onClose
+            }
+            menu.closeCallback.invoke(InventoryCloseEvent(createInventoryView()))
             // 只触发一次
-            if (basic.onceCloseCallback) {
-                basic.closeCallback = {}
+            if (menu.onceCloseCallback) {
+                menu.closeCallback = {}
             }
         } catch (t: Throwable) {
             t.printStackTrace()
