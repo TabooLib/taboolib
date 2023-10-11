@@ -30,7 +30,11 @@ class BukkitAdapter : PlatformAdapter {
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
-        return Bukkit.getWorlds().flatMap { it.players }.filter { Bukkit.getPlayer(it.uniqueId) != null }.map { adaptPlayer(it) }
+        return try {
+            Bukkit.getOnlinePlayers().map { adaptPlayer(it) }
+        } catch (_: NoSuchMethodError) {
+            Bukkit.getWorlds().flatMap { it.players }.filter { Bukkit.getPlayer(it.uniqueId) != null }.map { adaptPlayer(it) }
+        }
     }
 
     override fun adaptPlayer(any: Any): ProxyPlayer {
