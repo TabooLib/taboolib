@@ -257,7 +257,7 @@ open class ItemBuilder {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, null).also {
+                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, "null").also {
                         it.properties.put("textures", Property("textures", skullTexture!!.textures))
                     })
                 }
