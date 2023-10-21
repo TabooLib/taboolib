@@ -15,17 +15,22 @@ fun ItemStack.toNMSKeyAndItemData(): Pair<String, String> {
     val nmsKey = try {
         type.key.key
     } catch (ex: NoSuchMethodError) {
+        // #359
+        // 错误的获取方式
+        // val nmsItem = nmsItemStack.invokeMethod<Any>("getItem")!!
+        // val name = nmsItem.getProperty<String>("name")!!
+        // var key = ""
+        // name.forEach { c ->
+        //     if (c.isUpperCase()) {
+        //         key += "_" + c.lowercase()
+        //     } else {
+        //         key += c
+        //     }
+        // }
+        // key
         val nmsItem = nmsItemStack.invokeMethod<Any>("getItem")!!
-        val name = nmsItem.getProperty<String>("name")!!
-        var key = ""
-        name.forEach { c ->
-            if (c.isUpperCase()) {
-                key += "_" + c.lowercase()
-            } else {
-                key += c
-            }
-        }
-        key
+        val nmsKey = classNMSItem.getProperty<Any>("REGISTRY", isStatic = true)!!.invokeMethod<Any>("b", nmsItem)!!
+        nmsKey.invokeMethod<String>("getKey")!!
     }
     return nmsKey to (nmsItemStack.invokeMethod<Any>("getTag")?.toString() ?: "{}")
 }
@@ -44,6 +49,18 @@ private val classCraftItemStack by unsafeLazy {
     obcClassLegacy("inventory.CraftItemStack")
 }
 
+private val classCraftMagicNumbers by unsafeLazy {
+    obcClassLegacy("util.CraftMagicNumbers")
+}
+
+private val classNMSItem by unsafeLazy {
+    nmsClassLegacy("Item")
+}
+
 private fun obcClassLegacy(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${Bukkit.getServer().javaClass.name.split('.')[3]}.$name")
+}
+
+private fun nmsClassLegacy(name: String): Class<*> {
+    return Class.forName("net.minecraft.server.${Bukkit.getServer().javaClass.name.split('.')[3]}.$name")
 }

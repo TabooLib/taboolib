@@ -25,8 +25,6 @@ dependencies {
     compileOnly(project(":module:module-configuration"))
     compileOnly("org.tabooproject.reflex:reflex:1.0.19")
     compileOnly("org.tabooproject.reflex:analyser:1.0.19")
-
-    compileOnly(fileTree("libs"))
 }
 
 tasks {

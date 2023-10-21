@@ -23,8 +23,9 @@ package taboolib.library.xseries;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import java.lang.invoke.MethodType;
+
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -65,9 +66,10 @@ import java.util.regex.Pattern;
  * @see XMaterial
  */
 public class XSkull {
+
     protected static final MethodHandle
             CRAFT_META_SKULL_PROFILE_GETTER, CRAFT_META_SKULL_PROFILE_SETTER,
-            CRAFT_META_SKULL_BLOCK_SETTER, PROPERTY_GETVALUE;
+            CRAFT_META_SKULL_BLOCK_SETTER, PROPERTY_GET_VALUE;
 
     /**
      * Some people use this without quotes surrounding the keys, not sure what that'd work.
@@ -91,7 +93,7 @@ public class XSkull {
     /**
      * In v1.20.2 there were some changes to the mojang API.
      */
-    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2");
+    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2") || ReflectionUtils.supports(21);
 
     /**
      * Does using a random UUID have any advantage?
@@ -106,10 +108,17 @@ public class XSkull {
      * get base64 information from player's UUID.
      */
     private static final String TEXTURES = "https://textures.minecraft.net/texture/";
+    private static final Class<?> CLASS_PROPERTY;
 
     static {
+        try {
+            CLASS_PROPERTY = Class.forName("com.mojang.authlib.properties.Property");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle profileSetter = null, profileGetter = null, blockSetter = null, propGetval = null;
+        MethodHandle profileSetter = null, profileGetter = null, blockSetter = null, propGetval = null, propConstructor = null;
 
         try {
             Class<?> CraftMetaSkull = ReflectionUtils.getCraftClass("inventory.CraftMetaSkull");
@@ -139,16 +148,21 @@ public class XSkull {
             e.printStackTrace();
         }
 
-        if (!NULLABILITY_RECORD_UPDATE) {
+        if (NULLABILITY_RECORD_UPDATE) {
             try {
-                //noinspection JavaLangInvokeHandleSignature
-                propGetval = lookup.findVirtual(Property.class, "getValue", MethodType.methodType(String.class));
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "value", MethodType.methodType(String.class));
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            try {
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "getValue", MethodType.methodType(String.class));
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }
         }
 
-        PROPERTY_GETVALUE = propGetval;
+        PROPERTY_GET_VALUE = propGetval;
         CRAFT_META_SKULL_PROFILE_SETTER = profileSetter;
         CRAFT_META_SKULL_PROFILE_GETTER = profileGetter;
         CRAFT_META_SKULL_BLOCK_SETTER = blockSetter;
@@ -310,7 +324,7 @@ public class XSkull {
         } catch (Exception ignored) {
         }
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
-            for (Property property : profile.getProperties().get("textures")) {
+            for (Object property : profile.getProperties().get("textures")) {
                 String value = getPropertyValue(property);
                 if (!value.isEmpty()) {
                     return new ItemBuilder.SkullTexture(value, profile.getId());
@@ -321,19 +335,15 @@ public class XSkull {
     }
 
     /**
-     * They changed {@link Property} to a Java record in 1.20.2
+     * They changed Property to a Java record in 1.20.2
      *
      * @since 4.0.1
      */
-    private static String getPropertyValue(Property property) {
-        if (NULLABILITY_RECORD_UPDATE) {
-            return property.value();
-        } else {
-            try {
-                return (String) PROPERTY_GETVALUE.invoke(property);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+    private static String getPropertyValue(Object property) {
+        try {
+            return (String) PROPERTY_GET_VALUE.invoke(property);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 

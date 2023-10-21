@@ -134,7 +134,7 @@ class NMSItemImpl : NMSItem() {
             val nmsItemStack = getNMSCopy(itemStack) as net.minecraft.server.v1_8_R3.ItemStack
             val nmsItem = nmsItemStack.item
             val name = nmsItem.getProperty<String>("name")!!
-            name.toCharArray().joinToString { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
+            name.toCharArray().joinToString("") { if (it.isUpperCase()) "_${it.lowercase()}" else it.toString() }
         }
     }
 
