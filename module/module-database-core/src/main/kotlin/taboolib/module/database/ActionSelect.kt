@@ -19,7 +19,7 @@ class ActionSelect(val table: String) : ActionFilterable() {
     private val join = arrayListOf<Join>()
 
     /** 分组 */
-    private val group = Group(arrayListOf<Any>())
+    private val group = Group(arrayListOf())
 
     /** 排序 */
     private val order = arrayListOf<Order>()
@@ -84,7 +84,7 @@ class ActionSelect(val table: String) : ActionFilterable() {
      * 分组
      */
     fun groupBy(vararg values: Any): Group {
-        group.values.clear()
+        group.reset()
         group.values.addAll(listOf(*values))
         return group
     }

@@ -8,6 +8,11 @@ package taboolib.module.database
  */
 class Group(val values: ArrayList<Any>, var rollup: Boolean = false) : Attributes {
 
+    fun reset() {
+        values.clear()
+        rollup = false
+    }
+
     fun withRollup() {
         rollup = true
     }
