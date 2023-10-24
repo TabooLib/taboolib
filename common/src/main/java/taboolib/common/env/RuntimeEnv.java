@@ -21,10 +21,10 @@ import java.util.zip.ZipFile;
  */
 public class RuntimeEnv {
 
-    public static final RuntimeEnv ENV = new RuntimeEnv();
-
     private static final String ENV_FILE_NAME = "env.properties";
     private static final Properties ENV_PROPERTIES = new Properties();
+
+    public static final RuntimeEnv ENV = new RuntimeEnv();
 
     private static String defaultAssets = "assets";
     private static String defaultLibrary = "libs";
