@@ -6,11 +6,7 @@ package taboolib.module.database
  * @author legoshi
  * @since 2023-10-24 15:33
  */
-class Group(val values: ArrayList<Any>, var rollup: Boolean) : Attributes {
-
-    fun isNotEmpty(): Boolean {
-        return values.isNotEmpty()
-    }
+class Group(val values: ArrayList<Any>, var rollup: Boolean = false) : Attributes {
 
     fun withRollup() {
         rollup = true
