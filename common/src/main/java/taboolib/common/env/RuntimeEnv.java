@@ -24,11 +24,11 @@ public class RuntimeEnv {
     private static final String ENV_FILE_NAME = "env.properties";
     private static final Properties ENV_PROPERTIES = new Properties();
 
-    public static final RuntimeEnv ENV = new RuntimeEnv();
-
     private static String defaultAssets = "assets";
     private static String defaultLibrary = "libs";
     private static String defaultRepositoryCentral = "https://maven.aliyun.com/repository/central";
+
+    public static final RuntimeEnv ENV = new RuntimeEnv();
 
     RuntimeEnv() {
         try {
