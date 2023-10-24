@@ -65,9 +65,13 @@ abstract class Filterable {
     }
 
     /** 等于 */
-    infix fun String.eq(value: Any): Criteria {
+    infix fun String.eq(value: Any?): Criteria {
         val el = arrayListOf<Any>()
-        return Criteria("${asFormattedColumnName()} = ${unwrap(value, el)}", el).apply(this@Filterable)
+        return if (value == null) {
+            Criteria("${asFormattedColumnName()} IS NULL", el).apply(this@Filterable)
+        } else {
+            Criteria("${asFormattedColumnName()} = ${unwrap(value, el)}", el).apply(this@Filterable)
+        }
     }
 
     /** 小于 */
