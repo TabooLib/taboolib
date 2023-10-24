@@ -18,6 +18,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
     /** 连接 */
     private val join = arrayListOf<Join>()
 
+    /** 分组 */
+    private val group = Group()
+
     /** 排序 */
     private val order = arrayListOf<Order>()
 
@@ -40,6 +43,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
                 addOperations(join, separator = " ")
             }
             .addFilter(filter)
+            .addSegmentIfTrue(group.isNotEmpty()) {
+                addSegment(group.query)
+            }
             .addSegmentIfTrue(order.isNotEmpty()) {
                 addSegment("ORDER BY")
                 addOperations(order)
@@ -72,6 +78,14 @@ class ActionSelect(val table: String) : ActionFilterable() {
     fun distinct(vararg distinct: String) {
         rows.clear()
         distincts += distinct
+    }
+
+    /**
+     * 分组
+     */
+    fun groupBy(vararg values: Any): Group {
+        group = Group(arrayListOf(*values))
+        return group
     }
 
     /**

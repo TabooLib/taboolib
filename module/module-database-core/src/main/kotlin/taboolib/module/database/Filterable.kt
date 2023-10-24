@@ -100,6 +100,18 @@ abstract class Filterable {
         return Criteria("${asFormattedColumnName()} LIKE ${unwrap(value, el)}", el).apply(this@Filterable)
     }
 
+    /** 为空 */
+    fun String.isNull(): Criteria {
+        val el = arrayListOf<Any>()
+        return Criteria("${asFormattedColumnName()} IS NULL", el).apply(this@Filterable)
+    }
+
+    /** 不为空 */
+    fun String.isNotNull(): Criteria {
+        val el = arrayListOf<Any>()
+        return Criteria("${asFormattedColumnName()} IS NOT NULL", el).apply(this@Filterable)
+    }
+
     /** 否定 */
     fun not(func: Criteria): Criteria {
         return func.copy(query = "NOT (${func.query})")
