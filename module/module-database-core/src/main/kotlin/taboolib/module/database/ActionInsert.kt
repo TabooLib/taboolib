@@ -4,79 +4,85 @@ import java.sql.Connection
 import java.sql.PreparedStatement
 
 /**
- * TabooLib
- * taboolib.module.database.ActionInsert
+ * 一个插入行为
  *
  * @author sky
  * @since 2021/6/23 5:07 下午
  */
 class ActionInsert(val table: String, val keys: Array<String>) : Action {
 
-    private var onFinally: (PreparedStatement.(Connection) -> Unit)? = null
+    /** 该行为执行完毕后的回调 */
+    private var finallyCallback: (PreparedStatement.(Connection) -> Unit)? = null
+
+    /** 插入值 */
     private var values = ArrayList<Array<Any>>()
-    private var update = ArrayList<QuerySet>()
 
+    /** 重复时更新 */
+    private var duplicateUpdate = ArrayList<UpdateOperation>()
+
+    /** 语句 */
     override val query: String
-        get() {
-            var query = "INSERT INTO ${table.formatColumn()}"
-            if (keys.isNotEmpty()) {
-                query += " (${keys.joinToString { it.formatColumn() }})"
+        get() = Statement("INSERT INTO")
+            .addSegment(table.asFormattedColumnName())
+            .addSegmentIfTrue(keys.isNotEmpty()) {
+                addKeys(keys)
             }
-            if (values.isNotEmpty()) {
-                query += " VALUES ${values.joinToString { "(${it.joinToString { "?" }})" }}"
+            .addSegmentIfTrue(values.isNotEmpty()) {
+                addSegment("VALUES")
+                addValues(values)
             }
-            if (update.isNotEmpty()) {
-                query += " ON DUPLICATE KEY UPDATE ${update.joinToString { it.query }}"
-            }
-            return query
-        }
+            .addSegmentIfTrue(duplicateUpdate.isNotEmpty()) {
+                addSegment("ON DUPLICATE KEY UPDATE")
+                addOperations(duplicateUpdate)
+            }.build()
 
+    /** 元素 */
     override val elements: List<Any>
         get() {
             val el = ArrayList<Any>()
             el.addAll(values.flatMap { it.toList() })
-            el.addAll(update.mapNotNull { it.value })
+            el.addAll(duplicateUpdate.mapNotNull { it.value })
             return el
         }
 
-    fun pre(any: Any): PreValue {
-        return PreValue(any)
-    }
-
+    /** 插入值 */
     fun value(vararg args: Any) {
         values.add(arrayOf(*args))
     }
 
+    /** 插入值 */
     fun values(args: Array<Any>) {
         values.add(args)
     }
 
+    /** 插入值 */
     fun values(args: List<Any>) {
         values.add(args.toTypedArray())
     }
 
-    fun onDuplicateKeyUpdate(func: DuplicateKey.() -> Unit) {
-        update = DuplicateKey().also(func).update
-    }
-
-    class DuplicateKey {
-
-        internal val update = ArrayList<QuerySet>()
-
-        fun update(key: String, value: Any) {
-            update += if (value is PreValue) {
-                QuerySet("${key.formatColumn()} = ${value.formatColumn()}")
-            } else {
-                QuerySet("${key.formatColumn()} = ?", value)
-            }
-        }
+    /** 重复时更新 */
+    fun onDuplicateKeyUpdate(func: DuplicateUpdateBehavior.() -> Unit) {
+        duplicateUpdate = DuplicateUpdateBehavior().also(func).updateOperations
     }
 
     override fun onFinally(onFinally: PreparedStatement.(Connection) -> Unit) {
-        this.onFinally = onFinally
+        this.finallyCallback = onFinally
     }
 
-    override fun runFinally(preparedStatement: PreparedStatement, connection: Connection) {
-        this.onFinally?.invoke(preparedStatement, connection)
+    override fun callFinally(preparedStatement: PreparedStatement, connection: Connection) {
+        this.finallyCallback?.invoke(preparedStatement, connection)
+    }
+
+    class DuplicateUpdateBehavior {
+
+        val updateOperations = ArrayList<UpdateOperation>()
+
+        fun update(key: String, value: Any) {
+            updateOperations += if (value is PreValue) {
+                UpdateOperation("${key.asFormattedColumnName()} = ${value.asFormattedColumnName()}")
+            } else {
+                UpdateOperation("${key.asFormattedColumnName()} = ?", value)
+            }
+        }
     }
 }

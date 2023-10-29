@@ -97,19 +97,23 @@ internal object ClickListener {
 
     @SubscribeEvent
     fun onDrag(e: InventoryDragEvent) {
-        val builder = MenuHolder.fromInventory(e.inventory) ?: return
-        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', builder)
-        builder.clickCallback.forEach { it.invoke(clickEvent) }
-        builder.selfClickCallback(clickEvent)
+        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', menu)
+        menu.clickCallback.forEach { it.invoke(clickEvent) }
+        menu.selfClickCallback(clickEvent)
     }
 
     @SubscribeEvent
     fun onClose(e: InventoryCloseEvent) {
-        val close = MenuHolder.fromInventory(e.inventory)
-        close?.closeCallback?.invoke(e)
+        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        // 标题更新 && 跳过关闭回调
+        if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+            return
+        }
+        menu.closeCallback.invoke(e)
         // 只触发一次
-        if (close?.onceCloseCallback == true) {
-            close.closeCallback = {}
+        if (menu.onceCloseCallback) {
+            menu.closeCallback = {}
         }
     }
 

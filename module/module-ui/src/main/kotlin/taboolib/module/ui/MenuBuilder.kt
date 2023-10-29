@@ -1,5 +1,6 @@
 package taboolib.module.ui
 
+import org.bukkit.entity.HumanEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -49,9 +50,19 @@ inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -
 /**
  * 构建一个菜单并为玩家打开
  */
-inline fun <reified T : Menu> Player.openMenu(title: String = "chest", builder: T.() -> Unit) {
+inline fun <reified T : Menu> HumanEntity.openMenu(title: String = "chest", builder: T.() -> Unit) {
     try {
-        val buildMenu = buildMenu(title, builder)
+        openMenu(buildMenu(title, builder))
+    } catch (ex: Throwable) {
+        ex.printStackTrace()
+    }
+}
+
+/**
+ * 打开一个构建后的菜单
+ */
+fun HumanEntity.openMenu(buildMenu: Inventory) {
+    try {
         if (buildMenu is VirtualInventory) {
             val remoteInventory = openVirtualInventory(buildMenu)
             val basic = MenuHolder.fromInventory(buildMenu)

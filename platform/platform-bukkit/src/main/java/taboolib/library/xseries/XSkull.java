@@ -23,6 +23,8 @@ package taboolib.library.xseries;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import java.lang.invoke.MethodType;
+
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -55,15 +57,19 @@ import java.util.regex.Pattern;
  * <ul>
  *     <li>https://minecraft-heads.com/</li>
  * </ul>
+ * <p>
+ * The basic premise behind this API is that the final skull data is contained in a {@link GameProfile}
+ * either by ID, name or encoded textures URL property.
  *
  * @author Crypto Morin
- * @version 3.1.1
+ * @version 4.0.3
  * @see XMaterial
  */
 public class XSkull {
+
     protected static final MethodHandle
             CRAFT_META_SKULL_PROFILE_GETTER, CRAFT_META_SKULL_PROFILE_SETTER,
-            CRAFT_META_SKULL_BLOCK_SETTER;
+            CRAFT_META_SKULL_BLOCK_SETTER, PROPERTY_GET_VALUE;
 
     /**
      * Some people use this without quotes surrounding the keys, not sure what that'd work.
@@ -85,16 +91,34 @@ public class XSkull {
     private static final Pattern MOJANG_SHA256_APPROX = Pattern.compile("[0-9a-z]{60,70}");
 
     /**
+     * In v1.20.2 there were some changes to the mojang API.
+     */
+    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2") || ReflectionUtils.supports(21);
+
+    /**
+     * Does using a random UUID have any advantage?
+     */
+    private static final UUID GAME_PROFILE_EMPTY_UUID = NULLABILITY_RECORD_UPDATE ? new UUID(0, 0) : null;
+    private static final String GAME_PROFILE_EMPTY_NAME = NULLABILITY_RECORD_UPDATE ? "" : null;
+
+    /**
      * The value after this URL is probably an SHA-252 value that Mojang uses to unique identify player skins.
      * <br>
      * This <a href="https://wiki.vg/Mojang_API#UUID_to_Profile_and_Skin/Cape">wiki</a> documents how to
      * get base64 information from player's UUID.
      */
     private static final String TEXTURES = "https://textures.minecraft.net/texture/";
+    private static final Class<?> CLASS_PROPERTY;
 
     static {
+        try {
+            CLASS_PROPERTY = Class.forName("com.mojang.authlib.properties.Property");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandle profileSetter = null, profileGetter = null, blockSetter = null;
+        MethodHandle profileSetter = null, profileGetter = null, blockSetter = null, propGetval = null, propConstructor = null;
 
         try {
             Class<?> CraftMetaSkull = ReflectionUtils.getCraftClass("inventory.CraftMetaSkull");
@@ -110,7 +134,7 @@ public class XSkull {
             } catch (NoSuchMethodException e) {
                 profileSetter = lookup.unreflectSetter(profile);
             }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 
@@ -124,6 +148,21 @@ public class XSkull {
             e.printStackTrace();
         }
 
+        if (NULLABILITY_RECORD_UPDATE) {
+            try {
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "value", MethodType.methodType(String.class));
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            try {
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "getValue", MethodType.methodType(String.class));
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        PROPERTY_GET_VALUE = propGetval;
         CRAFT_META_SKULL_PROFILE_SETTER = profileSetter;
         CRAFT_META_SKULL_PROFILE_GETTER = profileGetter;
         CRAFT_META_SKULL_BLOCK_SETTER = blockSetter;
@@ -192,7 +231,9 @@ public class XSkull {
 
     @NotNull
     public static GameProfile profileFromBase64(String value) {
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        // Use an empty string instead of null for the name parameter because it's now null-checked since 1.20.2.
+        // It doesn't seem to affect functionality.
+        GameProfile profile = new GameProfile(GAME_PROFILE_EMPTY_UUID, GAME_PROFILE_EMPTY_NAME);
         profile.getProperties().put("textures", new Property("textures", value));
         return profile;
     }
@@ -206,8 +247,8 @@ public class XSkull {
     public static GameProfile detectProfileFromString(String identifier) {
         // @formatter:off sometimes programming is just art that a machine can't understand :)
         switch (detectSkullValueType(identifier)) {
-            case UUID:         return new GameProfile(UUID.fromString(               identifier), null);
-            case NAME:         return new GameProfile(null,                          identifier);
+            case UUID:         return new GameProfile(UUID.fromString(               identifier), GAME_PROFILE_EMPTY_NAME);
+            case NAME:         return new GameProfile(GAME_PROFILE_EMPTY_UUID,                          identifier);
             case BASE64:       return profileFromBase64(                             identifier);
             case TEXTURE_URL:  return profileFromBase64(encodeTexturesURL(           identifier));
             case TEXTURE_HASH: return profileFromBase64(encodeTexturesURL(TEXTURES + identifier));
@@ -283,13 +324,27 @@ public class XSkull {
         } catch (Exception ignored) {
         }
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
-            for (Property property : profile.getProperties().get("textures")) {
-                if (!property.getValue().isEmpty()) {
-                    return new ItemBuilder.SkullTexture(property.getValue(), profile.getId());
+            for (Object property : profile.getProperties().get("textures")) {
+                String value = getPropertyValue(property);
+                if (!value.isEmpty()) {
+                    return new ItemBuilder.SkullTexture(value, profile.getId());
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * They changed Property to a Java record in 1.20.2
+     *
+     * @since 4.0.1
+     */
+    private static String getPropertyValue(Object property) {
+        try {
+            return (String) PROPERTY_GET_VALUE.invoke(property);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

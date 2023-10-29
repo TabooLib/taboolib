@@ -75,7 +75,7 @@ class NMSEntityImpl : NMSEntity() {
         val key = when (MinecraftVersion.major) {
             // 1.17 .. 1.20
             in MinecraftVersion.V1_17..MinecraftVersion.V1_20 -> {
-                entity as org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity
+                entity as org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity
                 val nmsEntity = entity.handle
                 // 1.17 版本特殊处理
                 var key = if (MinecraftVersion.isEqual(MinecraftVersion.V1_17)) {

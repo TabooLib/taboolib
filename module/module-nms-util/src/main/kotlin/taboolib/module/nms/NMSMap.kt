@@ -234,7 +234,7 @@ class NMSMap(val image: BufferedImage, var hand: Hand = Hand.MAIN, val builder: 
     }
 
     fun sendTo(player: Player) {
-        submit(delay = 3, async = true) {
+        submit(delay = 3) {
             val container = if (MinecraftVersion.isUniversal) {
                 player.getProperty<Any>("entity/inventoryMenu")
             } else {

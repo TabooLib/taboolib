@@ -68,7 +68,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
-    @Suppress("SimplifiableCallChain")
     fun loadNodes(file: Configuration, nodesMap: HashMap<String, Type>, code: String) {
         migrateLegacyVersion(file)
         file.getKeys(false).forEach { node ->

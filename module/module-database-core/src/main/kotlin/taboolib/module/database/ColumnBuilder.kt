@@ -1,5 +1,9 @@
 package taboolib.module.database
 
+/**
+ * @author 坏黑
+ * @since 2018-12-08 13:46
+ */
 abstract class ColumnBuilder {
 
     internal var name: String? = null
@@ -11,6 +15,10 @@ abstract class ColumnBuilder {
     abstract fun getColumn(): Column
 }
 
+/**
+ * @author 坏黑
+ * @since 2018-12-08 13:46
+ */
 class SQL : ColumnBuilder() {
 
     internal var type: ColumnTypeSQL? = null
@@ -72,6 +80,10 @@ class SQL : ColumnBuilder() {
     }
 }
 
+/**
+ * @author 坏黑
+ * @since 2018-12-08 13:46
+ */
 class SQLite : ColumnBuilder() {
 
     internal var type: ColumnTypeSQLite? = null

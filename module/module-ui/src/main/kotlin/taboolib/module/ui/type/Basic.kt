@@ -7,10 +7,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.library.xseries.XMaterial
-import taboolib.module.ui.ClickEvent
-import taboolib.module.ui.ClickType
-import taboolib.module.ui.Menu
-import taboolib.module.ui.MenuHolder
+import taboolib.module.ui.*
 import taboolib.module.ui.virtual.virtualize
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
@@ -22,6 +19,9 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     /** 虚拟化 */
     internal var virtual = false
+
+    /** 最后一次构建的页面 */
+    internal lateinit var lastInventory: Inventory
 
     /** 虚拟化时玩家背包内容 */
     internal var storageContents: List<ItemStack>? = null
@@ -46,6 +46,12 @@ open class Basic(title: String = "chest") : Menu(title) {
 
     /** 只触发一次关闭回调 **/
     internal var onceCloseCallback = false
+
+    /** 忽略 updateTitle 的关闭回调 **/
+    internal var skipCloseCallbackOnUpdateTitle = true
+
+    /** 是否刷新标题 */
+    internal var isUpdateTitle = false
 
     /** 构建回调 **/
     internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> isOpened = true }
@@ -74,6 +80,13 @@ open class Basic(title: String = "chest") : Menu(title) {
     open fun virtualize(storageContents: List<ItemStack>? = null) {
         this.virtual = true
         this.storageContents = storageContents
+    }
+
+    /**
+     * 隐藏玩家背包（自动启动虚拟页面）
+     */
+    open fun hidePlayerInventory() {
+        virtualize((0 until 36).map { ItemStack(Material.AIR) })
     }
 
     /**
@@ -131,10 +144,13 @@ open class Basic(title: String = "chest") : Menu(title) {
     /**
      * 页面关闭时触发回调
      * 只能触发一次（玩家客户端强制关闭时会触发两次原版 InventoryCloseEvent 事件）
+     *
+     * TODO 2023/10/09 若启用虚拟化菜单，则 player.closeInventory() 不会触发该回调函数
      */
-    open fun onClose(once: Boolean = true, callback: (event: InventoryCloseEvent) -> Unit) {
+    open fun onClose(once: Boolean = true, skipUpdateTitle: Boolean = true, callback: (event: InventoryCloseEvent) -> Unit) {
         closeCallback = callback
         onceCloseCallback = once
+        skipCloseCallbackOnUpdateTitle = skipUpdateTitle
     }
 
     /**
@@ -318,6 +334,25 @@ open class Basic(title: String = "chest") : Menu(title) {
         slots.forEach { player.giveItem(inventory.getItem(it)) }
     }
 
+    /**
+     * 更新标题
+     */
+    fun updateTitle(title: String) {
+        this.title = title
+        this.isUpdateTitle = true
+        try {
+            // 获取所有打开页面的玩家
+            val viewers = lastInventory.viewers.toList()
+            // 重新构建页面
+            build()
+            // 重新打开页面
+            viewers.forEach { it.openMenu(lastInventory) }
+        } catch (ex: Throwable) {
+            ex.printStackTrace()
+        }
+        this.isUpdateTitle = false
+    }
+
     protected open fun createTitle(): String {
         return title
     }
@@ -326,21 +361,21 @@ open class Basic(title: String = "chest") : Menu(title) {
      * 构建页面
      */
     override fun build(): Inventory {
-        var inventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
+        lastInventory = Bukkit.createInventory(holderCallback(this), if (rows > 0) rows * 9 else slots.size * 9, createTitle())
         // 虚拟化
         if (virtual) {
-            inventory = inventory.virtualize(storageContents)
+            lastInventory = lastInventory.virtualize(storageContents)
         }
         var row = 0
         while (row < slots.size) {
             val line = slots[row]
             var cel = 0
             while (cel < line.size && cel < 9) {
-                inventory.setItem(row * 9 + cel, items[line[cel]] ?: ItemStack(Material.AIR))
+                lastInventory.setItem(row * 9 + cel, items[line[cel]] ?: ItemStack(Material.AIR))
                 cel++
             }
             row++
         }
-        return inventory
+        return lastInventory
     }
 }

@@ -32,7 +32,7 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         workspace(dataSource) { createTable(checkExists) }.run()
     }
 
-    open fun select(dataSource: DataSource, func: ActionSelect.() -> Unit): QueryTask {
+    open fun select(dataSource: DataSource, func: ActionSelect.() -> Unit): ResultProcessorList {
         return workspace(dataSource) { select(func) }
     }
 
@@ -56,8 +56,71 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         return workspace(dataSource) { insert(keys) { func(this) } }.run()
     }
 
-    open fun workspace(dataSource: DataSource, func: Query.() -> Unit): QueryTask {
-        return Query(this, dataSource).also(func).tasks.lastOrNull() ?: EmptyTask
+    /**
+     * # 创建工作空间
+     *
+     * 以一个连接的方式执行多个操作
+     *
+     * ```
+     * workspace(dataSource) {
+     *     update {
+     *          set("data", 1)
+     *          where("name" eq "sky")
+     *     }
+     *     update {
+     *          set("data", 2)
+     *          where("name" eq "black")
+     *     }
+     * }.run()
+     * ```
+     *
+     * 最终你需要一个执行函数（`run()` 或 `find()` 等）来完成这些操作。
+     *
+     * ```
+     * workspace(dataSource) {
+     *     update {
+     *          set("data", 1)
+     *          where("name" eq "sky")
+     *     }
+     *     select {
+     *         where("name" eq "sky")
+     *     }.first {
+     *         info("sky's data is ${getInteger("data")}")
+     *     }
+     * }.run()
+     * ```
+     *
+     * 需要注意的是，上面工作空间中的 `select` 操作只会执行一次，且在 `run()` 之前。
+     */
+    open fun workspace(dataSource: DataSource, func: ExecutableSource.() -> Unit): ResultProcessorList {
+        val source = ExecutableSource(this, dataSource, false).also(func)
+        return ResultProcessorList(source.processors, source)
+    }
+
+    /**
+     * # 创建事务空间
+     *
+     * 在数据库中，事务指的是一组作为单个工作单位执行的操作，这些操作要么全都完成，要么全都不完成。
+     * 事务为数据库操作提供了一种机制，确保数据始终保持一致状态。
+     * 如果事务中的某个操作失败，那么整个事务将被回滚，所有已完成的操作都将撤销。
+     *
+     * ```
+     * val isSuccess = transaction(dataSource) {
+     *     update {
+     *          set("data", 1)
+     *          where("name" eq "sky")
+     *     }
+     *     update {
+     *          set("data", 2)
+     *          where("name" eq "black")
+     *     }
+     * }.isSuccess
+     * ```
+     *
+     * 与 `workspace` 不同的是，`transaction` 会自动执行并提交事务，不需要调用执行函数 `run()`。
+     */
+    open fun transaction(dataSource: DataSource, func: ExecutableSource.() -> Unit): Result<Unit> {
+        return ExecutableSource(this, dataSource, true).also(func).saveChanges()
     }
 
     override fun toString(): String {

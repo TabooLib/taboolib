@@ -62,6 +62,18 @@ fun ProxyPlayer.setupDataContainer(usernameMode: Boolean = false) {
     playerDataContainer[uniqueId] = DataContainer(user, playerDatabase!!)
 }
 
+fun UUID.setupPlayerDataContainer() {
+    playerDataContainer[this] = DataContainer(this.toString(), playerDatabase!!)
+}
+
+fun UUID.getPlayerDataContainer(): DataContainer {
+    return playerDataContainer[this] ?: error("unavailable")
+}
+
+fun UUID.releasePlayerDataContainer() {
+    playerDataContainer.remove(this)
+}
+
 fun ProxyPlayer.releaseDataContainer() {
     playerDataContainer.remove(uniqueId)
 }

@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import net.minecraft.world.scores.DisplaySlot
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
@@ -173,7 +174,13 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun display(player: Player) {
         val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardDisplayObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("slot", 1)
+            // 1.12.2
+            // Cannot cast java.lang.Integer to net.minecraft.world.scores.DisplaySlot
+            if (MinecraftVersion.majorLegacy >= 12002) {
+                packet.setProperty("slot", DisplaySlot.SIDEBAR)
+            } else {
+                packet.setProperty("slot", 1)
+            }
             packet.setProperty("objectiveName", objectiveName)
         } else {
             packet.setProperty("a", 1)
