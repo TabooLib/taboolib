@@ -6,9 +6,9 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.nmsProxy
 
 @RuntimeDependency(
-    value = "!net.bytebuddy:byte-buddy:1.14.6",
-    relocate = ["!net.bytebuddy", "!net.bytebuddy_1_14_6"],
-    test = "!net.bytebuddy_1_14_6.ByteBuddy",
+    value = "!net.bytebuddy:byte-buddy:1.14.9",
+    relocate = ["!net.bytebuddy", "!net.bytebuddy_1_14_9"],
+    test = "!net.bytebuddy_1_14_9.ByteBuddy",
     transitive = false
 )
 abstract class PlayerFakeOpNMS {
