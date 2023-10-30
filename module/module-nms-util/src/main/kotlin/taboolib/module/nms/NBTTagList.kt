@@ -5,25 +5,25 @@ import java.util.function.Consumer
 
 /**
  * TabooLib
- * taboolib.module.nms.ItemTagList
+ * taboolib.module.nms.NBTTagList
  *
  * @author 坏黑
  * @since 2023/8/10 01:17
  */
-class ItemTagList : ItemTagData, MutableList<ItemTagData> {
+class NBTTagList : NBTTagData, MutableList<NBTTagData> {
 
-    private val value = CopyOnWriteArrayList<ItemTagData>()
+    private val value = CopyOnWriteArrayList<NBTTagData>()
 
-    constructor() : super(ItemTagType.LIST, 0) {
+    constructor() : super(NBTTagType.LIST, 0) {
         this.data = this
     }
 
-    constructor(list: List<ItemTagData>) : super(ItemTagType.LIST, 0) {
+    constructor(list: List<NBTTagData>) : super(NBTTagType.LIST, 0) {
         this.data = this
         this.value += list
     }
 
-    override fun asList(): ItemTagList {
+    override fun asList(): NBTTagList {
         return this
     }
 
@@ -50,23 +50,23 @@ class ItemTagList : ItemTagData, MutableList<ItemTagData> {
         value.clear()
     }
 
-    override fun addAll(elements: Collection<ItemTagData>): Boolean {
+    override fun addAll(elements: Collection<NBTTagData>): Boolean {
         return value.addAll(elements)
     }
 
-    override fun addAll(index: Int, elements: Collection<ItemTagData>): Boolean {
+    override fun addAll(index: Int, elements: Collection<NBTTagData>): Boolean {
         return value.addAll(index, elements)
     }
 
-    override fun add(index: Int, element: ItemTagData) {
+    override fun add(index: Int, element: NBTTagData) {
         value.add(index, element)
     }
 
-    override fun add(element: ItemTagData): Boolean {
+    override fun add(element: NBTTagData): Boolean {
         return value.add(element)
     }
 
-    override fun get(index: Int): ItemTagData {
+    override fun get(index: Int): NBTTagData {
         return value[index]
     }
 
@@ -74,61 +74,61 @@ class ItemTagList : ItemTagData, MutableList<ItemTagData> {
         return value.isEmpty()
     }
 
-    override fun iterator(): MutableIterator<ItemTagData> {
+    override fun iterator(): MutableIterator<NBTTagData> {
         return value.iterator()
     }
 
-    override fun listIterator(): MutableListIterator<ItemTagData> {
+    override fun listIterator(): MutableListIterator<NBTTagData> {
         return value.listIterator()
     }
 
-    override fun listIterator(index: Int): MutableListIterator<ItemTagData> {
+    override fun listIterator(index: Int): MutableListIterator<NBTTagData> {
         return value.listIterator(index)
     }
 
-    override fun removeAt(index: Int): ItemTagData {
+    override fun removeAt(index: Int): NBTTagData {
         return value.removeAt(index)
     }
 
-    override fun subList(fromIndex: Int, toIndex: Int): MutableList<ItemTagData> {
+    override fun subList(fromIndex: Int, toIndex: Int): MutableList<NBTTagData> {
         return value.subList(fromIndex, toIndex)
     }
 
-    override fun set(index: Int, element: ItemTagData): ItemTagData {
+    override fun set(index: Int, element: NBTTagData): NBTTagData {
         return value.set(index, element)
     }
 
-    override fun retainAll(elements: Collection<ItemTagData>): Boolean {
+    override fun retainAll(elements: Collection<NBTTagData>): Boolean {
         return value.retainAll(elements.toSet())
     }
 
-    override fun removeAll(elements: Collection<ItemTagData>): Boolean {
+    override fun removeAll(elements: Collection<NBTTagData>): Boolean {
         return value.removeAll(elements.toSet())
     }
 
-    override fun remove(element: ItemTagData): Boolean {
+    override fun remove(element: NBTTagData): Boolean {
         return value.remove(element)
     }
 
-    override fun lastIndexOf(element: ItemTagData): Int {
+    override fun lastIndexOf(element: NBTTagData): Int {
         return value.lastIndexOf(element)
     }
 
-    override fun indexOf(element: ItemTagData): Int {
+    override fun indexOf(element: NBTTagData): Int {
         return value.indexOf(element)
     }
 
-    override fun containsAll(elements: Collection<ItemTagData>): Boolean {
+    override fun containsAll(elements: Collection<NBTTagData>): Boolean {
         return value.containsAll(elements)
     }
 
-    override fun contains(element: ItemTagData): Boolean {
+    override fun contains(element: NBTTagData): Boolean {
         return value.contains(element)
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ItemTagList) return false
+        if (other !is NBTTagList) return false
         if (value != other.value) return false
         return true
     }
@@ -144,13 +144,13 @@ class ItemTagList : ItemTagData, MutableList<ItemTagData> {
     companion object {
 
         @JvmStatic
-        fun of(vararg list: ItemTagData): ItemTagList {
-            return ItemTagList(list.toList())
+        fun of(vararg list: NBTTagData): NBTTagList {
+            return NBTTagList(list.toList())
         }
 
         @JvmStatic
-        fun of(vararg list: Any): ItemTagList {
-            return ItemTagList(list.map { toNBT(it) })
+        fun of(vararg list: Any): NBTTagList {
+            return NBTTagList(list.map { toNBT(it) })
         }
     }
 }

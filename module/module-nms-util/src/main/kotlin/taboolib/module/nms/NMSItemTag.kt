@@ -5,6 +5,12 @@ import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
 import java.lang.invoke.MethodHandle
 
+typealias ItemTag = NBTTag
+typealias ItemTagData = NBTTagData
+typealias ItemTagList = NBTTagList
+typealias ItemTagSerializer = NBTTagSerializer
+typealias ItemTagType = NBTTagType
+
 /**
  * 获取物品 [ItemTag]
  */
@@ -20,10 +26,17 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 }
 
 /**
- * 将 [ItemTagData] 转换为字符串
+ * 将 [NBTTagData] 转换为字符串
  */
-fun ItemTagData.saveToString(): String {
-    return nmsProxy<NMSItemTag>().itemTagToString(this)
+fun NBTTagData.saveToString(): String {
+    return nmsProxy<NMSItemTag>().nbtTagToString(this)
+}
+
+/**
+ * 将 [NBTTagData] 转换为 [net.minecraft.server] 下的 NBTTagCompound
+ */
+fun NBTTagData.toNMSTag(): Any {
+    return nmsProxy<NMSItemTag>().nbtTagToNMSCopy(this)
 }
 
 /**
@@ -41,14 +54,14 @@ abstract class NMSItemTag {
     /** 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
     abstract fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack
 
-    /** 将 [ItemTag] 转换为字符串 */
-    abstract fun itemTagToString(itemTagData: ItemTagData): String
+    /** 将 [NBTTag] 转换为字符串 */
+    abstract fun nbtTagToString(nbtTagData: NBTTagData): String
 
-    /** 将 [ItemTagData] 转换为 [net.minecraft.server] 下的 NBTTagCompound */
-    abstract fun itemTagToNMSCopy(itemTagData: ItemTagData): Any
+    /** 将 [NBTTagData] 转换为 [net.minecraft.server] 下的 NBTTagCompound */
+    abstract fun nbtTagToNMSCopy(nbtTagData: NBTTagData): Any
 
-    /** 将 [net.minecraft.server] 下的 NBTTag 转换为 [ItemTagData] */
-    abstract fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData
+    /** 将 [net.minecraft.server] 下的 NBTTag 转换为 [NBTTagData] */
+    abstract fun nbtTagToBukkitCopy(nbtTag: Any): NBTTagData
 }
 
 /**
@@ -73,45 +86,45 @@ class NMSItemTagImpl : NMSItemTag() {
 
     override fun getItemTag(itemStack: ItemStack): ItemTag {
         val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
-        return if (nmsItem.hasTag()) itemTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
+        return if (nmsItem.hasTag()) nbtTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
     }
 
     override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
         val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
-        nmsItem.tag = itemTagToNMSCopy(itemTag) as net.minecraft.server.v1_12_R1.NBTTagCompound
+        nmsItem.tag = nbtTagToNMSCopy(itemTag) as net.minecraft.server.v1_12_R1.NBTTagCompound
         return NMSItem.asBukkitCopy(nmsItem)
     }
 
-    override fun itemTagToString(itemTagData: ItemTagData): String {
-        return itemTagToNMSCopy(itemTagData).toString()
+    override fun nbtTagToString(nbtTagData: NBTTagData): String {
+        return nbtTagToNMSCopy(nbtTagData).toString()
     }
 
-    override fun itemTagToNMSCopy(itemTagData: ItemTagData): Any {
+    override fun nbtTagToNMSCopy(nbtTagData: NBTTagData): Any {
         val new = MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_15)
-        return when (itemTagData.type) {
+        return when (nbtTagData.type) {
             // 基本类型
-            ItemTagType.BYTE -> if (new) net.minecraft.server.v1_15_R1.NBTTagByte.a(itemTagData.asByte()) else net.minecraft.server.v1_12_R1.NBTTagByte(itemTagData.asByte())
-            ItemTagType.SHORT -> if (new) net.minecraft.server.v1_15_R1.NBTTagShort.a(itemTagData.asShort()) else net.minecraft.server.v1_12_R1.NBTTagShort(itemTagData.asShort())
-            ItemTagType.INT -> if (new) net.minecraft.server.v1_15_R1.NBTTagInt.a(itemTagData.asInt()) else net.minecraft.server.v1_12_R1.NBTTagInt(itemTagData.asInt())
-            ItemTagType.LONG -> if (new) net.minecraft.server.v1_15_R1.NBTTagLong.a(itemTagData.asLong()) else net.minecraft.server.v1_12_R1.NBTTagLong(itemTagData.asLong())
-            ItemTagType.FLOAT -> if (new) net.minecraft.server.v1_15_R1.NBTTagFloat.a(itemTagData.asFloat()) else net.minecraft.server.v1_12_R1.NBTTagFloat(itemTagData.asFloat())
-            ItemTagType.DOUBLE -> if (new) net.minecraft.server.v1_15_R1.NBTTagDouble.a(itemTagData.asDouble()) else net.minecraft.server.v1_12_R1.NBTTagDouble(itemTagData.asDouble())
-            ItemTagType.STRING -> if (new) net.minecraft.server.v1_15_R1.NBTTagString.a(itemTagData.asString()) else net.minecraft.server.v1_12_R1.NBTTagString(itemTagData.asString())
+            NBTTagType.BYTE -> if (new) net.minecraft.server.v1_15_R1.NBTTagByte.a(nbtTagData.asByte()) else net.minecraft.server.v1_12_R1.NBTTagByte(nbtTagData.asByte())
+            NBTTagType.SHORT -> if (new) net.minecraft.server.v1_15_R1.NBTTagShort.a(nbtTagData.asShort()) else net.minecraft.server.v1_12_R1.NBTTagShort(nbtTagData.asShort())
+            NBTTagType.INT -> if (new) net.minecraft.server.v1_15_R1.NBTTagInt.a(nbtTagData.asInt()) else net.minecraft.server.v1_12_R1.NBTTagInt(nbtTagData.asInt())
+            NBTTagType.LONG -> if (new) net.minecraft.server.v1_15_R1.NBTTagLong.a(nbtTagData.asLong()) else net.minecraft.server.v1_12_R1.NBTTagLong(nbtTagData.asLong())
+            NBTTagType.FLOAT -> if (new) net.minecraft.server.v1_15_R1.NBTTagFloat.a(nbtTagData.asFloat()) else net.minecraft.server.v1_12_R1.NBTTagFloat(nbtTagData.asFloat())
+            NBTTagType.DOUBLE -> if (new) net.minecraft.server.v1_15_R1.NBTTagDouble.a(nbtTagData.asDouble()) else net.minecraft.server.v1_12_R1.NBTTagDouble(nbtTagData.asDouble())
+            NBTTagType.STRING -> if (new) net.minecraft.server.v1_15_R1.NBTTagString.a(nbtTagData.asString()) else net.minecraft.server.v1_12_R1.NBTTagString(nbtTagData.asString())
 
             // 数组类型特殊处理
-            ItemTagType.BYTE_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagByteArray(itemTagData.asByteArray().copyOf())
-            ItemTagType.INT_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagIntArray(itemTagData.asIntArray().copyOf())
-            ItemTagType.LONG_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagLongArray(itemTagData.asLongArray().copyOf())
+            NBTTagType.BYTE_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagByteArray(nbtTagData.asByteArray().copyOf())
+            NBTTagType.INT_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagIntArray(nbtTagData.asIntArray().copyOf())
+            NBTTagType.LONG_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagLongArray(nbtTagData.asLongArray().copyOf())
 
             // 列表类型特殊处理
-            ItemTagType.LIST -> {
+            NBTTagType.LIST -> {
                 net.minecraft.server.v1_12_R1.NBTTagList().also { nmsList ->
                     // 反射获取字段：
                     // private final List<NBTBase> list;
                     val list = nbtTagListGetter.get<MutableList<Any>>(nmsList)
-                    val dataList = itemTagData.asList()
+                    val dataList = nbtTagData.asList()
                     if (dataList.isNotEmpty()) {
-                        dataList.forEach { list += itemTagToNMSCopy(it) }
+                        dataList.forEach { list += nbtTagToNMSCopy(it) }
                         // 修改 NBTTagList 的类型，不改他妈这条 List 作废，天坑。。。
                         nbtTagListTypeSetter.set(nmsList, dataList.first().type.id)
                     }
@@ -119,44 +132,44 @@ class NMSItemTagImpl : NMSItemTag() {
             }
 
             // 复合类型特殊处理
-            ItemTagType.COMPOUND -> {
+            NBTTagType.COMPOUND -> {
                 net.minecraft.server.v1_12_R1.NBTTagCompound().also { nmsCompound ->
                     // 反射获取字段：
                     // private final Map<String, NBTBase> map
                     val map = nbtTagCompoundGetter.get<MutableMap<String, Any>>(nmsCompound)
-                    itemTagData.asCompound().entries.forEach { (key, value) -> map[key] = itemTagToNMSCopy(value) }
+                    nbtTagData.asCompound().entries.forEach { (key, value) -> map[key] = nbtTagToNMSCopy(value) }
                 }
             }
 
             // 不支持的类型
-            else -> error("Unsupported type: ${itemTagData.type}}")
+            else -> error("Unsupported type: ${nbtTagData.type}}")
         }
     }
 
-    override fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData {
+    override fun nbtTagToBukkitCopy(nbtTag: Any): NBTTagData {
         return when (nbtTag) {
             // 基本类型
-            is net.minecraft.server.v1_12_R1.NBTTagByte -> ItemTagData(ItemTagType.BYTE, nbtTagByteGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagShort -> ItemTagData(ItemTagType.SHORT, nbtTagShortGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagInt -> ItemTagData(ItemTagType.INT, nbtTagIntGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagLong -> ItemTagData(ItemTagType.LONG, nbtTagLongGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagFloat -> ItemTagData(ItemTagType.FLOAT, nbtTagFloatGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagDouble -> ItemTagData(ItemTagType.DOUBLE, nbtTagDoubleGetter.get(nbtTag))
-            is net.minecraft.server.v1_12_R1.NBTTagString -> ItemTagData(ItemTagType.STRING, nbtTagStringGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagByte -> NBTTagData(NBTTagType.BYTE, nbtTagByteGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagShort -> NBTTagData(NBTTagType.SHORT, nbtTagShortGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagInt -> NBTTagData(NBTTagType.INT, nbtTagIntGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagLong -> NBTTagData(NBTTagType.LONG, nbtTagLongGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagFloat -> NBTTagData(NBTTagType.FLOAT, nbtTagFloatGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagDouble -> NBTTagData(NBTTagType.DOUBLE, nbtTagDoubleGetter.get(nbtTag))
+            is net.minecraft.server.v1_12_R1.NBTTagString -> NBTTagData(NBTTagType.STRING, nbtTagStringGetter.get(nbtTag))
 
             // 数组类型特殊处理
-            is net.minecraft.server.v1_12_R1.NBTTagByteArray -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTagByteArrayGetter.get<ByteArray>(nbtTag).copyOf())
-            is net.minecraft.server.v1_12_R1.NBTTagIntArray -> ItemTagData(ItemTagType.INT_ARRAY, nbtTagIntArrayGetter.get<IntArray>(nbtTag).copyOf())
-            is net.minecraft.server.v1_12_R1.NBTTagLongArray -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
+            is net.minecraft.server.v1_12_R1.NBTTagByteArray -> NBTTagData(NBTTagType.BYTE_ARRAY, nbtTagByteArrayGetter.get<ByteArray>(nbtTag).copyOf())
+            is net.minecraft.server.v1_12_R1.NBTTagIntArray -> NBTTagData(NBTTagType.INT_ARRAY, nbtTagIntArrayGetter.get<IntArray>(nbtTag).copyOf())
+            is net.minecraft.server.v1_12_R1.NBTTagLongArray -> NBTTagData(NBTTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
 
             // 列表类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagList -> {
-                ItemTagList(nbtTagListGetter.get<List<Any>>(nbtTag).map { itemTagToBukkitCopy(it) })
+                NBTTagList(nbtTagListGetter.get<List<Any>>(nbtTag).map { nbtTagToBukkitCopy(it) })
             }
 
             // 复合类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagCompound -> {
-                ItemTag().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nbtTag).forEach { put(it.key, itemTagToBukkitCopy(it.value)) } }
+                NBTTag().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nbtTag).forEach { put(it.key, nbtTagToBukkitCopy(it.value)) } }
             }
 
             // 不支持的类型
