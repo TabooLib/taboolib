@@ -21,7 +21,8 @@ enum class ItemTagType(@JvmField val id: Byte) {
     STRING(8),
     LIST(9),
     COMPOUND(10),
-    INT_ARRAY(11);
+    INT_ARRAY(11),
+    LONG_ARRAY(12);
 
     companion object {
 

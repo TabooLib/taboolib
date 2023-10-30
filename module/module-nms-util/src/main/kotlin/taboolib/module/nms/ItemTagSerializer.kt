@@ -45,6 +45,7 @@ object ItemTagSerializer {
             ItemTagType.STRING, ItemTagType.END -> JsonPrimitive("${tagData.asString()}t")
             ItemTagType.INT_ARRAY -> JsonPrimitive("${tagData.asIntArray().joinToString(",") { it.toString() }}i]")
             ItemTagType.BYTE_ARRAY -> JsonPrimitive("${tagData.asByteArray().joinToString(",") { it.toString() }}b]")
+            ItemTagType.LONG_ARRAY -> JsonPrimitive("${tagData.asLongArray().joinToString(",") { it.toString() }}l]")
         }
     }
 
@@ -79,6 +80,7 @@ object ItemTagSerializer {
                     when (val i = str.substring(str.length - 2, str.length - 1)) {
                         "b" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toByte(it) }.toByteArray())
                         "i" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toInt(it) }.toIntArray())
+                        "l" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toLong(it) }.toLongArray())
                         else -> error("unsupported array $json ($i)")
                     }
                 } else {
