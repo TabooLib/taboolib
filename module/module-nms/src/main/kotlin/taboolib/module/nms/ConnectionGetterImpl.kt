@@ -9,8 +9,10 @@ import net.minecraft.server.network.ServerConnection
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.LifeCycle
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.io.isDevelopmentMode
+import taboolib.common.platform.Awake
 import taboolib.common.platform.function.dev
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
@@ -27,6 +29,15 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Suppress("UNCHECKED_CAST")
 class ConnectionGetterImpl : ConnectionGetter() {
+
+    companion object{
+
+        @Awake(LifeCycle.ENABLE)
+        fun test(){
+            val connections = nmsProxy<ConnectionGetter>().getConnections()
+            println(connections)
+        }
+    }
 
     val major = MinecraftVersion.major
     val addressUsed = ConcurrentHashMap<InetSocketAddress, Any>()
@@ -53,7 +64,7 @@ class ConnectionGetterImpl : ConnectionGetter() {
             // 1.17 -> List<NetworkManager> getConnections()
             // 傻逼项目引入依赖天天出问题，滚去反射吧
             MinecraftVersion.V1_17 -> {
-                ((Bukkit.getServer() as CraftServer19).server as NMSMinecraftServer).invokeMethod<ServerConnection>("getServerConnection")!!.connections
+                ((Bukkit.getServer() as CraftServer19).server as NMSMinecraftServer).invokeMethod<ServerConnection>("getServerConnection")!!.getProperty<List<Any>>("g")!!
             }
             // 1.18, 1.19, 1.20 -> List<NetworkManager> getConnections()
             // 这个版本开始获取 ServerConnection 的方法变更为 getConnection()
