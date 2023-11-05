@@ -266,6 +266,15 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
                             }
                             ItemTagData(ints)
                         }
+                        // long 数组
+                        ItemTagType.LONG_ARRAY -> {
+                            val array = json.get("data").asJsonArray
+                            val longs = LongArray(array.size())
+                            for (i in 0 until array.size()) {
+                                longs[i] = array.get(i).asLong
+                            }
+                            ItemTagData(longs)
+                        }
                         // 不支持的类型
                         else -> error("Unsupported nbt type: $type")
                     }

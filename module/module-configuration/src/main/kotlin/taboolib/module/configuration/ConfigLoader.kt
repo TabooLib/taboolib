@@ -14,15 +14,15 @@ import java.util.function.Supplier
 
 @RuntimeDependencies(
     RuntimeDependency(
-        "!org.yaml:snakeyaml:2.0",
-        test = "!org.yaml.snakeyaml_2_0.Yaml",
-        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_0"]
+        "!org.yaml:snakeyaml:2.2",
+        test = "!org.yaml.snakeyaml_2_2.Yaml",
+        relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_2"]
     ),
-    RuntimeDependency("!com.typesafe:config:1.4.2", test = "!com.typesafe.config.Config"),
-    RuntimeDependency("!com.electronwill.night-config:core:3.6.6", test = "!com.electronwill.nightconfig.core.Config"),
-    RuntimeDependency("!com.electronwill.night-config:toml:3.6.6", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
-    RuntimeDependency("!com.electronwill.night-config:json:3.6.6", test = "!com.electronwill.nightconfig.json.JsonFormat"),
-    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.6", test = "!com.electronwill.nightconfig.hocon.HoconFormat")
+    RuntimeDependency("!com.typesafe:config:1.4.3", test = "!com.typesafe.config.Config"),
+    RuntimeDependency("!com.electronwill.night-config:core:3.6.7", test = "!com.electronwill.nightconfig.core.Config"),
+    RuntimeDependency("!com.electronwill.night-config:toml:3.6.7", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
+    RuntimeDependency("!com.electronwill.night-config:json:3.6.7", test = "!com.electronwill.nightconfig.json.JsonFormat"),
+    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.7", test = "!com.electronwill.nightconfig.hocon.HoconFormat")
 )
 @Awake
 class ConfigLoader : ClassVisitor(1) {

@@ -194,7 +194,7 @@ public class RuntimeEnv {
         // 支持用户对源进行替换
         if (repository == null || repository.isEmpty()) {
             repository = defaultRepositoryCentral;
-        } else if (ENV_PROPERTIES.contains("repository-" + repository)) {
+        } else if (ENV_PROPERTIES.containsKey("repository-" + repository)) {
             repository = ENV_PROPERTIES.getProperty("repository-" + repository);
         }
         downloader.addRepository(new Repository(repository));

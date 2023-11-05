@@ -3,7 +3,6 @@ package taboolib.module.nms
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
-import taboolib.common.platform.function.info
 import java.lang.invoke.MethodHandle
 
 /**
@@ -70,6 +69,7 @@ class NMSItemTagImpl : NMSItemTag() {
     val nbtTagStringGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagString>(if (MinecraftVersion.isUniversal) "A" else "data")
     val nbtTagByteArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagByteArray>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagIntArray>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagLongArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagLongArray>(if (MinecraftVersion.isUniversal) "c" else "data")
 
     override fun getItemTag(itemStack: ItemStack): ItemTag {
         val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
@@ -101,6 +101,7 @@ class NMSItemTagImpl : NMSItemTag() {
             // 数组类型特殊处理
             ItemTagType.BYTE_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagByteArray(itemTagData.asByteArray().copyOf())
             ItemTagType.INT_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagIntArray(itemTagData.asIntArray().copyOf())
+            ItemTagType.LONG_ARRAY -> net.minecraft.server.v1_12_R1.NBTTagLongArray(itemTagData.asLongArray().copyOf())
 
             // 列表类型特殊处理
             ItemTagType.LIST -> {
@@ -146,6 +147,7 @@ class NMSItemTagImpl : NMSItemTag() {
             // 数组类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagByteArray -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTagByteArrayGetter.get<ByteArray>(nbtTag).copyOf())
             is net.minecraft.server.v1_12_R1.NBTTagIntArray -> ItemTagData(ItemTagType.INT_ARRAY, nbtTagIntArrayGetter.get<IntArray>(nbtTag).copyOf())
+            is net.minecraft.server.v1_12_R1.NBTTagLongArray -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
 
             // 列表类型特殊处理
             is net.minecraft.server.v1_12_R1.NBTTagList -> {

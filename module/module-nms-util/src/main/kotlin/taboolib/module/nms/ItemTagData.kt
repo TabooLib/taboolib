@@ -35,6 +35,8 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
 
     constructor(data: IntArray) : this(ItemTagType.INT_ARRAY, data)
 
+    constructor(data: LongArray) : this(ItemTagType.LONG_ARRAY, data)
+
     /**
      * 获取为 [Byte]
      */
@@ -91,6 +93,11 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
     open fun asIntArray() = data as IntArray
 
     /**
+     * 获取为 [LongArray]
+     */
+    open fun asLongArray() = data as LongArray
+
+    /**
      * 通过不安全的方式获取数据
      */
     open fun unsafeData() = data
@@ -126,6 +133,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
             // 数组和列表需要深拷贝
             ItemTagType.BYTE_ARRAY -> ItemTagData(type, asByteArray().copyOf())
             ItemTagType.INT_ARRAY -> ItemTagData(type, asIntArray().copyOf())
+            ItemTagType.LONG_ARRAY -> ItemTagData(type, asLongArray().copyOf())
             ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
             ItemTagType.COMPOUND -> ItemTag().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
         }
@@ -157,6 +165,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
                 is Byte -> ItemTagData(obj)
                 is ByteArray -> ItemTagData(obj)
                 is IntArray -> ItemTagData(obj)
+                is LongArray -> ItemTagData(obj)
                 is List<*> -> translateList(ItemTagList(), obj)
                 is Map<*, *> -> ItemTag(obj.map { (k, v) -> k.toString() to toNBT(v) }.toMap())
                 is ConfigurationSection -> translateSection(ItemTag(), obj)
