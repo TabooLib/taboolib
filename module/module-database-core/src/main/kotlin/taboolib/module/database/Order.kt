@@ -27,6 +27,6 @@ class Order(val row: String, val type: Type = Type.ASC) : Attributes {
     /** 语句 */
     override val query: String
         get() {
-            return "`${row.asFormattedColumnName()}` $type"
+            return "${row.asFormattedColumnName()} $type"
         }
 }
