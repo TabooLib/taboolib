@@ -25,7 +25,7 @@ tasks {
             include(dependency("com.electronwill.night-config:core-conversion:6.0.0"))
         }
         relocate("com.electronwill.nightconfig.core.conversion", "taboolib.library.configuration")
-        relocate("org.yaml.snakeyaml.", "org.yaml.snakeyaml_2_0.")
+        relocate("org.yaml.snakeyaml.", "org.yaml.snakeyaml_2_2.")
         relocate("org.tabooproject", "taboolib.library")
         minimize()
     }
