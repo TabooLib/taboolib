@@ -186,12 +186,18 @@ public class DependencyDownloader extends AbstractXmlParser {
         // 获取依赖项的 pom 文件和 jar 文件
         File pom = dependency.findFile(baseDir, "pom");
         File pom1 = new File(pom.getPath() + ".sha1");
+        // 下载 md5
+        File pom2 = new File(pom.getPath() + ".md5");
+
         File jar = dependency.findFile(baseDir, "jar");
         File jar1 = new File(jar.getPath() + ".sha1");
+        // 下载 md5
+        File jar2 = new File(jar.getPath() + ".md5");
+
         Set<Dependency> downloaded = new HashSet<>();
         downloaded.add(dependency);
         // 检查文件的完整性
-        if (IO.validation(pom, pom1) && IO.validation(jar, jar1)) {
+        if (IO.validation(pom, pom1, pom2) && IO.validation(jar, jar1, jar2)) {
             // 加载依赖项
             downloadedDependencies.add(dependency);
             if (pom.exists()) {

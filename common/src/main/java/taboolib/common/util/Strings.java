@@ -24,7 +24,7 @@ public class Strings {
         }
     }
 
-    private static String bytesToHexString(byte[] bytes) {
+    public static String bytesToHexString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte aByte : bytes) {
             String hex = Integer.toHexString(0xFF & aByte);
