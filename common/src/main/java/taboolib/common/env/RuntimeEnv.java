@@ -206,8 +206,9 @@ public class RuntimeEnv {
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
         File pomFile1 = new File(pomFile.getPath() + ".sha1");
+        File pomFile2 = new File(pomFile.getPath() + ".md5");
         // 验证文件完整性
-        if (IO.validation(pomFile, pomFile1)) {
+        if (IO.validation(pomFile, pomFile1, pomFile2)) {
             downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
         } else {
             String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);

@@ -12,6 +12,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
+import static taboolib.common.util.Strings.bytesToHexString;
+
 /**
  * TabooLib
  * taboolib.common.env.IO
@@ -23,6 +25,32 @@ public class IO {
 
     public static boolean validation(File file, File hashFile) {
         return file.exists() && hashFile.exists() && IO.readFile(hashFile).startsWith(IO.getHash(file));
+    }
+
+    public static boolean validation(File file, File hashFile, File md5File) {
+        // 如果 hashFile 不存在 就判断 md5
+        if (!hashFile.exists()) {
+            return file.exists() && md5File.exists() && IO.readFile(md5File).startsWith(IO.getMD5(file));
+        }
+        return validation(file, hashFile);
+    }
+
+    public static String getMD5(File file) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            try (FileInputStream inputStream = new FileInputStream(file)) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    digest.update(buffer, 0, bytesRead);
+                }
+            }
+            byte[] hashBytes = digest.digest();
+            return bytesToHexString(hashBytes);
+        } catch (IOException | NoSuchAlgorithmException ex) {
+            ex.printStackTrace();
+        }
+        return "null (" + UUID.randomUUID() + ")";
     }
 
     @NotNull
@@ -98,4 +126,5 @@ public class IO {
         outs.close();
         ins.close();
     }
+
 }

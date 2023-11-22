@@ -55,7 +55,12 @@ public class Repository extends AbstractXmlParser {
         TabooLibCommon.print(String.format("Downloading ... %s", url));
         // 下载文件
         IO.downloadFile(url, out);
-        IO.downloadFile(dep.getURL(this, ext + ".sha1"), new File(out.getPath() + ".sha1"));
+        // 如果不支持 sha1 则下载 md5
+        try {
+            IO.downloadFile(dep.getURL(this, ext + ".sha1"), new File(out.getPath() + ".sha1"));
+        } catch (Exception ignored) {
+            IO.downloadFile(dep.getURL(this, ext + ".md5"), new File(out.getPath() + ".md5"));
+        }
     }
 
     /**
