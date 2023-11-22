@@ -51,9 +51,9 @@ fun CommandComponent.euler(
     dynamic: CommandComponentDynamic.() -> Unit = {}
 ): CommandComponentDynamic {
     return decimal(yaw, optional = optional, permission = permission)
-        .suggestionUncheck<ProxyPlayer> { sender, _ -> of("~", sender.location.pitch) }
-        .decimal(pitch, dynamic = dynamic)
         .suggestionUncheck<ProxyPlayer> { sender, _ -> of("~", sender.location.yaw) }
+        .decimal(pitch, dynamic = dynamic)
+        .suggestionUncheck<ProxyPlayer> { sender, _ -> of("~", sender.location.pitch) }
 }
 
 /**

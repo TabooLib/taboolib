@@ -8,7 +8,6 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipFile;
 
@@ -194,7 +193,7 @@ public class RuntimeEnv {
         // 支持用户对源进行替换
         if (repository == null || repository.isEmpty()) {
             repository = defaultRepositoryCentral;
-        } else if (ENV_PROPERTIES.contains("repository-" + repository)) {
+        } else if (ENV_PROPERTIES.containsKey("repository-" + repository)) {
             repository = ENV_PROPERTIES.getProperty("repository-" + repository);
         }
         downloader.addRepository(new Repository(repository));
