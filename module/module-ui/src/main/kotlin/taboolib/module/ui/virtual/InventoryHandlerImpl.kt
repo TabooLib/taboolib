@@ -56,9 +56,9 @@ class InventoryHandlerImpl : InventoryHandler() {
     override fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack): RemoteInventory {
         val id = getContainerCounter(player)
         when (major) {
-            // 1.9, 1.10, 1.11, 1.12
+            // 1.8 1.9, 1.10, 1.11, 1.12
             // public static String getNotchInventoryType(InventoryType type)
-            in MinecraftVersion.V1_9..MinecraftVersion.V1_12 -> {
+            in MinecraftVersion.V1_8..MinecraftVersion.V1_12 -> {
                 val windowType = Craft9Container.getNotchInventoryType(inventory.type)
                 val container = try {
                     Craft9Container(inventory.bukkitInventory, player, id)
@@ -127,9 +127,9 @@ class InventoryHandlerImpl : InventoryHandler() {
                 return
             }
             when (major) {
-                // 1.9, 1.10
+                // 1.8 1.9, 1.10
                 // public PacketPlayOutWindowItems(int var1, List<ItemStack> var2)
-                in MinecraftVersion.V1_9..MinecraftVersion.V1_10 -> {
+                in MinecraftVersion.V1_8..MinecraftVersion.V1_10 -> {
                     viewer.sendPacket(NMS9PacketPlayOutWindowItems(id, windowItems.map { Craft9ItemStack.asNMSCopy(it) }))
                 }
                 // 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
@@ -176,9 +176,9 @@ class InventoryHandlerImpl : InventoryHandler() {
             }
             val id = if (slot == -1) -1 else id
             when (major) {
-                // 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
+                // 1.8 1.9, 1.10, 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
                 // public PacketPlayOutSetSlot(int var1, int var2, ItemStack var3)
-                in MinecraftVersion.V1_9..MinecraftVersion.V1_16 -> {
+                in MinecraftVersion.V1_8..MinecraftVersion.V1_16 -> {
                     viewer.sendPacket(NMS16PacketPlayOutSetSlot(id, slot, Craft16ItemStack.asNMSCopy(itemStack)))
                 }
                 // 1.17, 1.18, 1.19, 1.20
@@ -264,6 +264,25 @@ class InventoryHandlerImpl : InventoryHandler() {
                     val buttonNum = packet.read<Int>("buttonNum")!!
                     val clickType = packet.read<Any>("clickType").toString()
                     handle(slotNum, buttonNum, clickType)
+                }
+                MinecraftVersion.V1_8 -> {
+                    val slot = packet.read<Int>("slot")!!
+                    val button = packet.read<Int>("button")!!
+                    // val d = packet.read<Short>("d")!!
+                    val shift = packet.read<Int>("shift")
+                    val translatedShift = when(shift) {
+                        0 -> "PICKUP"
+                        1 -> "QUICK_MOVE"
+                        2 -> "SWAP"
+                        3 -> "CLONE"
+                        4 -> "THROW"
+                        // 5是拖拽
+                        5 -> "DRAG"
+                        6 -> "PICKUP_ALL"
+                        else -> "UNKNOWN"
+                    }
+
+                    handle(slot, button, translatedShift)
                 }
                 // 不支持
                 else -> throw UnsupportedVersionException()
