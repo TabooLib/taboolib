@@ -134,7 +134,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 }
                 // 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
                 // public PacketPlayOutWindowItems(int var1, NonNullList<ItemStack> var2)
-                in MinecraftVersion.V1_13..MinecraftVersion.V1_16 -> {
+                in MinecraftVersion.V1_11..MinecraftVersion.V1_16 -> {
                     val nmsWindowItems = NMS16NonNullList.a<NMS16ItemStack>()
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
                     viewer.sendPacket(NMS16PacketPlayOutWindowItems(id, nmsWindowItems))
