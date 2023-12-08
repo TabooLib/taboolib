@@ -10,7 +10,8 @@ import taboolib.library.configuration.ConfigurationSection
  */
 class HostSQL(val host: String, val port: String, val user: String, val password: String, val database: String) : Host<SQL>() {
 
-    val flags = arrayListOf("characterEncoding=utf-8", "useSSL=false")
+    // allowPublicKeyRetrieval=true 用来针对MySQL8版本出现的Public Key Retrieval is not allowed异常
+    val flags = arrayListOf("characterEncoding=utf-8", "useSSL=false", "allowPublicKeyRetrieval=true")
 
     val flagsURL: String
         get() = if (flags.isEmpty()) "" else "?${flags.joinToString("&")}"
