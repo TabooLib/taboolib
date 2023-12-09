@@ -13,7 +13,8 @@ class ConfigNodeTransfer<T, R>(internal val transfer: T.() -> R) {
     internal var value: Any? = null
         private set
 
-    internal fun update(value: Any?) {
+    // 外部业务调用
+    fun update(value: Any?) {
         this.value = transfer(value as T)
     }
 
