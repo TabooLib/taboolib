@@ -3,7 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
-import taboolib.common.UnsupportedVersionException
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * 通过 [Particle] 创建粒子数据包
@@ -43,8 +43,17 @@ class NMSParticleImpl : NMSParticle() {
             error("data should be ${particle.dataType} (${data.javaClass})")
         }
         return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
+            val param = if (MinecraftVersion.majorLegacy >= 12002) {
+                try {
+                    org.bukkit.craftbukkit.v1_16_R1.CraftParticle::class.java.invokeMethod<Any>("createParticleParam", particle, data, isStatic = true)
+                } catch (e: NoSuchMethodError) {
+                    org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
+                }
+            } else {
+                org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
+            }
             net.minecraft.server.v1_16_R1.PacketPlayOutWorldParticles(
-                org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data),
+                param as net.minecraft.server.v1_16_R1.ParticleParam,
                 true,
                 location.x,
                 location.y,

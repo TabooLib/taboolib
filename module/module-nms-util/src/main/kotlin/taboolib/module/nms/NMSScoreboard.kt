@@ -251,7 +251,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
 
     private fun component(text: String): Any {
         return if (MinecraftVersion.major >= 11) {
-            net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic = true)!!
+            if (text.startsWith("{") && text.endsWith("}")) {
+                net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer::class.java.invokeMethod<Any>("fromJson", text, isStatic = true)!!
+            } else {
+                net.minecraft.server.v1_16_R3.IChatBaseComponent::class.java.invokeMethod<Any>("literal", text, isStatic = true)!!
+            }
         } else {
             net.minecraft.server.v1_16_R3.ChatComponentText(text)
         }
