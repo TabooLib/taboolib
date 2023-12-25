@@ -127,7 +127,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         get() = player.isSneaking
 
     override val isSprinting: Boolean
-        get() = player.isSneaking
+        get() = player.isSprinting
 
     override val isBlocking: Boolean
         get() = player.isBlocking
