@@ -69,7 +69,7 @@ class NMSItemTagImpl : NMSItemTag() {
     val nbtTagStringGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagString>(if (MinecraftVersion.isUniversal) "A" else "data")
     val nbtTagByteArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagByteArray>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagIntArray>(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagLongArray>(if (MinecraftVersion.isUniversal) "c" else "data")
+    val nbtTagLongArrayGetter = unreflectGetter<net.minecraft.server.v1_12_R1.NBTTagLongArray>(if (MinecraftVersion.isUniversal) "c" else "b")
 
     override fun getItemTag(itemStack: ItemStack): ItemTag {
         val nmsItem = NMSItem.asNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
