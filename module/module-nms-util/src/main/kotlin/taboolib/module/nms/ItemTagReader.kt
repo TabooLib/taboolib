@@ -1,7 +1,9 @@
+@file:Isolated
 package taboolib.module.nms
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Isolated
 import taboolib.platform.util.isAir
 import java.util.*
 
@@ -33,9 +35,8 @@ fun ItemStack?.itemTagReader(reader: ItemTagReader.() -> Unit) {
     item.getItemTag().reader(reader)
 }
 
-data class ItemTagReader(
-    val itemTag: ItemTag
-) {
+@Isolated
+data class ItemTagReader(val itemTag: ItemTag) {
 
     fun getString(key: String, def: String): String {
         return itemTag.getDeepOrElse(key, ItemTagData(def)).asString()
@@ -140,5 +141,4 @@ data class ItemTagReader(
     fun close(): ItemTag {
         return itemTag
     }
-
 }

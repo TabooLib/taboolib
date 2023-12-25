@@ -11,6 +11,7 @@ import taboolib.common.env.RuntimeResources
  * @since 2021/7/17 9:04 下午
  */
 @RuntimeResources(
+    // 1.17
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-e3c5450d-combined.csrg",
         hash = "ec52bfc2822dd8385c619f6e80e106baab1c1454",
@@ -23,6 +24,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.17:fields"
     ),
+    // 1.17.1
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-00fabbe5-combined.csrg",
         hash = "a1a36e589321cd782aa9f0917bc0a1516a69de3d",
@@ -35,6 +37,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.17.1:fields"
     ),
+    // 1.18
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.18-cl.csrg",
         hash = "9a3742d6b84542d263c7309fb5a23066a113e307",
@@ -47,6 +50,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.18:fields"
     ),
+    // 1.18.1
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.18.1-cl.csrg",
         hash = "9a3742d6b84542d263c7309fb5a23066a113e307",
@@ -59,6 +63,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.18.1:fields"
     ),
+    // 1.18.2
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.18.2-cl.csrg",
         hash = "bcf6240fb6a77d326538f61a822334f9ff65c9ec",
@@ -71,6 +76,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.18.2:fields"
     ),
+    // 1.19
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19-cl.csrg",
         hash = "44eaa87a517f3fb7661afe387edd68669b782435",
@@ -83,6 +89,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.19:fields"
     ),
+    // 1.19.1
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19.1-cl.csrg",
         hash = "3cee4d607a86f0a7e1dd2a6fb669a2644e4d400c",
@@ -95,6 +102,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.19.1:fields"
     ),
+    // 1.19.2
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19.2-cl.csrg",
         hash = "c77adbc7fdc2df0b274e2eafecbf3f820ebd710e",
@@ -107,6 +115,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.19.2:fields"
     ),
+    // 1.19.3
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19.3-cl.csrg",
         hash = "496893661f336066292d50ea5ce12acba20cb2c5",
@@ -119,6 +128,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.19.3:fields"
     ),
+    // 1.19.4
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.19.4-cl.csrg",
         hash = "523cd77ba9aa25f0f59cebee1eb6b3e9a4e9c602",
@@ -131,6 +141,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.19.4:fields"
     ),
+    // 1.20
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20-cl.csrg",
         hash = "1e2870b303f37a07709c2045b5db7e6c79e48acd",
@@ -143,6 +154,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.20:fields"
     ),
+    // 1.20.1
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.1-cl.csrg",
         hash = "dc9d85b9aff4158fe86b105e93998a1bde83996f",
@@ -155,6 +167,7 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.20.1:fields"
     ),
+    // 1.20.2
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.2-cl.csrg",
         hash = "692710df12b804c3367d2823727d8bc1503fee8d",
@@ -166,12 +179,25 @@ import taboolib.common.env.RuntimeResources
         hash = "96203601dcb93b7b85021f58d8e4b99ad0b4e223",
         zip = true,
         tag = "1.20.2:fields"
+    ),
+    // 1.20.4
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.4-cl.csrg",
+        hash = "4cf1c21c1b0e91556f12f846accc3f69826fb682",
+        zip = true,
+        tag = "1.20.4:combined"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c13d4d77-members.csrg",
+        hash = "5f5890b12c92f10af6d2770c0dd599ae21f7890f",
+        zip = true,
+        tag = "1.20.4:fields"
     )
 )
 class MappingFile(val combined: String, val fields: String) {
 
     companion object {
-
+        
         val files = MappingFile::class.java.getDeclaredAnnotation(RuntimeResources::class.java).value
             .groupBy { it.tag.split(':')[0] }
             .map {
