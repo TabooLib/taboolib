@@ -16,4 +16,9 @@ interface SimpleComponent {
     fun buildColored(transfer: TextTransfer.() -> Unit = {}): ComponentText {
         return build { colored() }
     }
+
+    /** 直接构建为 RawMessage */
+    fun buildToRaw(transfer: TextTransfer.() -> Unit = {}): String {
+        return buildColored(transfer).toRawMessage()
+    }
 }
