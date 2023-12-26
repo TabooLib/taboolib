@@ -79,7 +79,6 @@ class ExpIryBuilder(
         if (this.millis < 0) {
             this.millis = 0
         }
-        this.millis -= System.currentTimeMillis() / 1000
         return this
     }
 
