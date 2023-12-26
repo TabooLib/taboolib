@@ -37,7 +37,7 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
                         } else {
                             process(cur + 1, i)
                         }
-                    }
+                    }.except { future.complete(result) }
                 } else {
                     frame.variables().also { v ->
                         v.remove(key)
@@ -53,7 +53,7 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
                 is Map<*, *> -> process(0, it.entries.toList())
                 else -> process(0, listOf(it))
             }
-        }
+        }.except { future.complete(result) }
         return future
     }
 

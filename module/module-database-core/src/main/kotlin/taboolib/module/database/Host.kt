@@ -7,6 +7,8 @@ import java.util.concurrent.CopyOnWriteArrayList
 import javax.sql.DataSource
 
 /**
+ * 数据库地址
+ *
  * @author sky
  * @since 2018-05-14 19:07
  */

@@ -22,11 +22,11 @@ fun persistentContainer(
  * 创建持久化储存容器
  */
 fun persistentContainer(
-    host: String,
-    port: Int,
-    user: String,
-    password: String,
-    database: String,
+    host: String = "localhost",
+    port: Int = 3306,
+    user: String = "root",
+    password: String = "root",
+    database: String = "minecraft",
     flags: List<String> = emptyList(),
     clearFlags: Boolean = false,
     ssl: String? = null,

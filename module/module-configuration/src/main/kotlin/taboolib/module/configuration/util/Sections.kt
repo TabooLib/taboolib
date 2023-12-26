@@ -16,8 +16,8 @@ fun <V> ConfigurationSection.mapValue(transform: (Any) -> V): Map<String, V> {
     return getKeys(false).associateWith { transform(get(it)!!) }
 }
 
-fun <V> ConfigurationSection.mapValue(node: String, transform: (ConfigurationSection) -> V): Map<String, V> {
-    return getConfigurationSection(node)?.mapSection(transform) ?: emptyMap()
+fun <V> ConfigurationSection.mapValue(node: String, transform: (Any) -> V): Map<String, V> {
+    return getConfigurationSection(node)?.mapValue(transform) ?: emptyMap()
 }
 
 fun <V> ConfigurationSection.mapSection(transform: (ConfigurationSection) -> V): Map<String, V> {

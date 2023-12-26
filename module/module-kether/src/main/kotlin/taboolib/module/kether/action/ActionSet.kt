@@ -3,10 +3,7 @@ package taboolib.module.kether.action
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext
-import taboolib.module.kether.KetherParser
-import taboolib.module.kether.literalAction
-import taboolib.module.kether.run
-import taboolib.module.kether.scriptParser
+import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
 class ActionSet {
@@ -26,9 +23,7 @@ class ActionSet {
     class ForAction(val key: String, val action: ParsedAction<*>) : QuestAction<Void>() {
 
         override fun process(frame: QuestContext.Frame): CompletableFuture<Void> {
-            return frame.run(action).thenAccept {
-                frame.variables().set(key, it)
-            }
+            return frame.run(action).thenAccept { frame.variables().set(key, it) }.except()
         }
     }
 

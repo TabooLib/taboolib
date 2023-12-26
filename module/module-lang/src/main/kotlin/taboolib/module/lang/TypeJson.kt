@@ -4,7 +4,9 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.chat.*
+import taboolib.module.chat.RawMessage
+import taboolib.module.chat.parseToHexColor
+import taboolib.module.chat.toGradientColor
 
 /**
  * TabooLib

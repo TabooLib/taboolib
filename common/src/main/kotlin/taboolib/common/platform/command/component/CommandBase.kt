@@ -122,12 +122,12 @@ class CommandBase : CommandComponent(-1, false) {
                 cur + 1 == context.realArgs.size -> {
                     val suggest = component.findChildren(context).flatMap {
                         when (it) {
-                            is CommandComponentLiteral -> it.aliases.toList()
+                            is CommandComponentLiteral -> if (it.hidden) emptyList() else it.aliases.toList()
                             is CommandComponentDynamic -> it.commandSuggestion?.exec(context) ?: emptyList()
                             else -> emptyList()
                         }
                     }
-                    suggest.filter { it.startsWith(args, ignoreCase = true) }.ifEmpty { null }
+                    suggest.filter { args.isEmpty() || it.startsWith(args, ignoreCase = true) }.ifEmpty { null }
                 }
                 else -> null
             }

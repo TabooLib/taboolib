@@ -27,7 +27,7 @@ class ScriptOptions(
         private val options = ScriptOptions()
 
         /** 是否使用缓存 */
-        fun useCache(useCache: Boolean) = apply { options.useCache = useCache }
+        fun useCache(useCache: Boolean = true) = apply { options.useCache = useCache }
 
         /** 命名空间 */
         fun namespace(namespace: List<String>) = apply { options.namespace = namespace }
@@ -51,10 +51,10 @@ class ScriptOptions(
         fun set(key: String, value: Any?) = apply { options.vars.map[key] = value }
 
         /** 是否在沙盒中执行（不产生异常）*/
-        fun sandbox(value: Boolean) = apply { options.sandbox = value }
+        fun sandbox(value: Boolean = true) = apply { options.sandbox = value }
 
         /** 是否打印详细的错误信息 */
-        fun detailError(value: Boolean) = apply { options.detailError = value }
+        fun detailError(value: Boolean = true) = apply { options.detailError = value }
 
         /** 上下文回调函数 */
         fun context(context: ScriptContext.() -> Unit) = apply { options.context = context }

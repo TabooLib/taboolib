@@ -29,7 +29,7 @@ fun CommandComponentDynamic.suggestUncheck(suggest: () -> List<String>?): Comman
  * 创建参数补全（仅布尔值）
  */
 fun CommandComponentDynamic.suggestBoolean(): CommandComponentDynamic {
-    return suggest { listOf("true", "false", "t", "f") }
+    return suggest { listOf("true", "false", "t", "f", "1", "0") }
 }
 
 /**

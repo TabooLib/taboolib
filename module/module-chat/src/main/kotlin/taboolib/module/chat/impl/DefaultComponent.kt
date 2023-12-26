@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.hover.content.Entity
 import net.md_5.bungee.api.chat.hover.content.Item
 import net.md_5.bungee.api.chat.hover.content.Text
 import net.md_5.bungee.chat.ComponentSerializer
+import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
@@ -85,7 +86,7 @@ class DefaultComponent() : ComponentText {
     }
 
     override fun append(other: ComponentText): ComponentText {
-        other as? DefaultComponent ?: error("Unsupported component type.")
+        other as? DefaultComponent ?: throw UnsupportedVersionException()
         flush()
         latest += other.component
         return this
@@ -123,11 +124,24 @@ class DefaultComponent() : ComponentText {
         return hoverText(ComponentText.of(text))
     }
 
+    override fun hoverText(text: List<String>): ComponentText {
+        val component = ComponentText.empty()
+        text.forEachIndexed { index, s ->
+            component.append(s)
+            if (index != text.size - 1) {
+                component.newLine()
+            }
+        }
+        return hoverText(component)
+    }
+
     override fun hoverText(text: ComponentText): ComponentText {
         text as? DefaultComponent ?: error("Unsupported component type.")
         try {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, Text(arrayOf(text.component))) }
-        } catch (ex: NoClassDefFoundError) {
+        } catch (_: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
+        } catch (_: NoSuchMethodError) {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, arrayOf(text.component)) }
         }
         return this
@@ -137,6 +151,8 @@ class DefaultComponent() : ComponentText {
         try {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, Item(id, 1, ItemTag.ofNbt(nbt))) }
         } catch (_: NoClassDefFoundError) {
+            latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
+        } catch (_: NoSuchMethodError) {
             latest.forEach { it.hoverEvent = HoverEvent(HoverEvent.Action.SHOW_ITEM, ComponentBuilder("{id:\"$id\",Count:1b,tag:$nbt}").create()) }
         }
         return this
@@ -309,6 +325,10 @@ class DefaultComponent() : ComponentText {
     override fun uncolor(): ComponentText {
         latest.forEach { it.color = null }
         return this
+    }
+
+    override fun toSpigotObject(): BaseComponent {
+        return component
     }
 
     /** 释放缓冲区 */

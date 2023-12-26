@@ -21,19 +21,79 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     private var matrix: Matrix? = null
     private var task: PlatformTask? = null
 
-    fun addMatrix(matrix: Matrix) {
+    private var incrementX = 0.0
+    private var incrementY = 0.0
+    private var incrementZ = 0.0
+
+    open fun getIncrementX(): Double {
+        return incrementX
+    }
+
+    open fun getIncrementY(): Double {
+        return incrementY
+    }
+
+    open fun getIncrementZ(): Double {
+        return incrementZ
+    }
+
+    open fun setIncrementX(incrementX: Double): ParticleObj {
+        this.incrementX = incrementX
+        return this
+    }
+
+    open fun setIncrementY(incrementY: Double): ParticleObj {
+        this.incrementY = incrementY
+        return this
+    }
+
+    open fun setIncrementZ(incrementZ: Double): ParticleObj {
+        this.incrementZ = incrementZ
+        return this
+    }
+
+    /**
+     * 得到该特效对象的矩阵
+     *
+     * @return [Matrix]
+     */
+    open fun getMatrix(): Matrix? {
+        return matrix
+    }
+
+    /**
+     * 给该特效对象叠加一个矩阵
+     *
+     * @param matrix 给定的矩阵
+     * @return [ParticleObj]
+     */
+    open fun addMatrix(matrix: Matrix): ParticleObj {
         if (this.matrix == null) {
             setMatrix(matrix)
+            return this
         }
         this.matrix = matrix.multiply(this.matrix)
+        return this
     }
 
-    fun setMatrix(matrix: Matrix?) {
+    /**
+     * 给该特效对象设置一个矩阵
+     * 该方法将会直接覆盖之前所有已经变换好的矩阵
+     *
+     * @param matrix 给定的矩阵
+     * @return [ParticleObj]
+     */
+    open fun setMatrix(matrix: Matrix?): ParticleObj {
         this.matrix = matrix
+        return this
     }
-
-    fun removeMatrix() {
+    /**
+     * 移除该特效对象的矩阵
+     * @return [ParticleObj]
+     */
+    open fun removeMatrix(): ParticleObj {
         matrix = null
+        return this
     }
 
     fun hasMatrix(): Boolean {
@@ -41,6 +101,8 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
     }
 
     abstract fun show()
+
+    abstract fun calculateLocations(): List<Location>
 
     open fun alwaysShow() {
         turnOffTask()
@@ -135,6 +197,10 @@ abstract class ParticleObj(var spawner: ParticleSpawner) {
             val changed = matrix!!.applyVector(vector)
             showLocation = origin.clone().add(changed)
         }
+
+        // 在这里可以设置一个XYZ的变化量
+        showLocation.add(incrementX, incrementY, incrementZ)
+
         spawner.spawn(showLocation)
     }
 }

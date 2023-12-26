@@ -8,6 +8,7 @@ import taboolib.module.effect.ParticleSpawner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 表示一个正多边形
@@ -117,6 +118,51 @@ public class Polygon extends ParticleObj {
         this.radius = radius;
         resetLocations();
         return this;
+    }
+
+    @Override
+    public List<Location> calculateLocations() {
+        List<Location> points = new ArrayList<>();
+        List<Location> temp = new ArrayList<>();
+
+        for (double angle = 0; angle <= 360; angle += 360D / side) {
+            double radians = Math.toRadians(angle);
+            double x = Math.cos(radians);
+            double z = Math.sin(radians);
+
+            temp.add(getOrigin().clone().add(x, 0, z));
+        }
+        for (int i = 0; i < temp.size(); i++) {
+            if (i + 1 == temp.size()) {
+                Vector vectorAB = temp.get(i).clone().subtract(temp.get(0)).toVector();
+                double vectorLength = vectorAB.length();
+                vectorAB.normalize();
+                for (double j = 0; j < vectorLength; j += step) {
+                    points.add(temp.get(0).clone().add(vectorAB.clone().multiply(j)));
+                }
+                break;
+            }
+
+            Vector vectorAB = temp.get(i + 1).clone().subtract(temp.get(i)).toVector();
+            double vectorLength = vectorAB.length();
+            vectorAB.normalize();
+            for (double j = 0; j < vectorLength; j += step) {
+                points.add(temp.get(i).clone().add(vectorAB.clone().multiply(j)));
+            }
+        }
+        // 做一个对 Matrix 和 Increment 的兼容
+        return points.stream().map(location -> {
+            Location showLocation = location;
+            if (hasMatrix()) {
+                Vector v = new Vector(location.getX() - getOrigin().getX(), location.getY() - getOrigin().getY(), location.getZ() - getOrigin().getZ());
+                Vector changed = getMatrix().applyVector(v);
+
+                showLocation = getOrigin().clone().add(changed);
+            }
+
+            showLocation.add(getIncrementX(), getIncrementY(), getIncrementZ());
+            return showLocation;
+        }).collect(Collectors.toList());
     }
 
     @Override

@@ -15,4 +15,9 @@ package taboolib.common.env;
         test = "!kotlin.collections.jdk8.CollectionsJDK8Kt",
         initiative = true
 )
+//@RuntimeDependency(
+//        value = "!org.jetbrains.kotlin:kotlin-reflect:@kotlin_version@",
+//        test = "!kotlin.reflect.full.KClassesKt",
+//        initiative = true
+//)
 public class KotlinEnvNoRelocate { }

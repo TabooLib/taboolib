@@ -290,4 +290,13 @@ public class TabooLibCommon {
             System.out.println(message);
         }
     }
+
+    /**
+     * 执行目标代码 (供IsolatedClassLoader反射调用)
+     * 
+     * @param target 执行的目标代码
+     */
+    public static void run(Runnable target) {
+        target.run();
+    }
 }

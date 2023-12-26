@@ -56,22 +56,22 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
         // 文本类型
         when {
             // 快捷键
-            properties["keybind", "key"] != null -> rawMessage.appendKeybind(newText)
+            properties.containsKey("keybind") || properties.containsKey("key") -> rawMessage.appendKeybind(newText)
             // 选择器
-            properties["selector", "select"] != null -> rawMessage.appendSelector(newText)
+            properties.containsKey("selector") || properties.containsKey("select") -> rawMessage.appendSelector(newText)
             // 分数
             properties["score"] != null -> {
                 val obj = properties["objective", "obj"] ?: error("Missing objective for score.")
                 rawMessage.appendScore(newText, transfer(obj))
             }
             // 渐变
-            properties["gradient"] != null -> {
-                val color = properties["color"] ?: error("Missing color for gradient.")
+            properties["gradient", "g"] != null -> {
+                val color = properties["gradient", "g"] ?: error("Missing color for gradient.")
                 rawMessage.append(newText.toGradientColor(transfer(color).split(',').map { it.parseToHexColor() }))
             }
             // 语言文件
             // 这玩意儿还是算了吧，泛用性真不高
-            properties["translate", "trans"] != null -> {
+            properties.containsKey("translate") || properties.containsKey("trans") -> {
                 // 语言文件参数
                 // 支持格式: arg0=bar;arg1=foo;args=foo,bar
                 val args = arrayListOf<TransArgument>()
@@ -100,6 +100,7 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                 "i" -> rawMessage.italic()
                 "b" -> rawMessage.bold()
                 "o" -> rawMessage.obfuscated()
+                "newline", "br" -> rawMessage.newLine()
                 "font" -> rawMessage.font(transfer(value))
                 "url" -> rawMessage.clickOpenURL(transfer(value))
                 "file" -> rawMessage.clickOpenFile(transfer(value))
@@ -112,7 +113,12 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                     if (value is PropertyValue.Link) {
                         rawMessage.hoverText(value.getValue(transfer))
                     } else {
-                        rawMessage.hoverText(transfer(value))
+                        val content = transfer(value)
+                        if (content.contains("<br>")) {
+                            rawMessage.hoverText(content.split("<br>"))
+                        } else {
+                            rawMessage.hoverText(content)
+                        }
                     }
                 }
                 "color", "c" -> {

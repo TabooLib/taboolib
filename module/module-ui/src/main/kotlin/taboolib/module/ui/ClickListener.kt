@@ -1,6 +1,7 @@
 package taboolib.module.ui
 
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -72,9 +73,11 @@ internal object ClickListener {
             item.pickupDelay = 20
             item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
+            Bukkit.getPluginManager().callEvent(event)
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
+                e.currentItem?.type = Material.AIR
                 e.currentItem = null
             }
         } else if (e.cursor.isNotAir() && e.rawSlot == -999) {
@@ -82,9 +85,11 @@ internal object ClickListener {
             item.pickupDelay = 20
             item.setMeta("internal-drop", true)
             val event = PlayerDropItemEvent((e.whoClicked as Player), item)
+            Bukkit.getPluginManager().callEvent(event)
             if (event.isCancelled) {
                 event.itemDrop.remove()
             } else {
+                e.view.cursor?.type = Material.AIR
                 e.view.cursor = null
             }
         }
@@ -92,19 +97,23 @@ internal object ClickListener {
 
     @SubscribeEvent
     fun onDrag(e: InventoryDragEvent) {
-        val builder = MenuHolder.fromInventory(e.inventory) ?: return
-        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', builder)
-        builder.clickCallback.forEach { it.invoke(clickEvent) }
-        builder.selfClickCallback(clickEvent)
+        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', menu)
+        menu.clickCallback.forEach { it.invoke(clickEvent) }
+        menu.selfClickCallback(clickEvent)
     }
 
     @SubscribeEvent
     fun onClose(e: InventoryCloseEvent) {
-        val close = MenuHolder.fromInventory(e.inventory)
-        close?.closeCallback?.invoke(e)
+        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        // 标题更新 && 跳过关闭回调
+        if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+            return
+        }
+        menu.closeCallback.invoke(e)
         // 只触发一次
-        if (close?.onceCloseCallback == true) {
-            close.closeCallback = {}
+        if (menu.onceCloseCallback) {
+            menu.closeCallback = {}
         }
     }
 

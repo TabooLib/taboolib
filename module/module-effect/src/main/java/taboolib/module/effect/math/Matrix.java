@@ -201,16 +201,12 @@ public class Matrix {
      * 将本矩阵的变换作用至给定的坐标上
      *
      * @param location 给定的坐标
+     * @param origin   原点坐标 用于确定变换的原点
      * @return {@link Location}
      */
-    public Location applyLocation(Location location) {
-        if (getRow() == 2 && getColumn() == 2) {
-            return applyIn2DLocation(location);
-        } else if (getRow() == 3 && getColumn() == 3) {
-            return applyIn3DLocation(location);
-        }
-
-        throw new IllegalArgumentException("当前矩阵非 2*2 或 3*3 的方阵");
+    public Location applyLocation(Location location, Location origin) {
+        Vector vector = createVector(origin, location);
+        return origin.clone().add(applyVector(vector));
     }
 
     /**
@@ -261,36 +257,7 @@ public class Matrix {
         return new Vector(ax + ay + az, bx + by + bz, cx + cy + cz);
     }
 
-    private Location applyIn2DLocation(Location location) {
-        double x = location.getX();
-        double z = location.getZ();
-        double ax = getAsArray()[0][0] * x;
-        double ay = getAsArray()[0][1] * z;
-
-        double bx = getAsArray()[1][0] * x;
-        double by = getAsArray()[1][1] * z;
-
-        return new Location(location.getWorld(), ax + ay, location.getY(), bx + by, location.getYaw(), location.getPitch());
+    public static Vector createVector(Location start, Location end) {
+        return new Vector(end.getX() - start.getX(), end.getY() - start.getY(), end.getZ() - start.getZ());
     }
-
-    private Location applyIn3DLocation(Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-
-        double ax = getAsArray()[0][0] * x;
-        double ay = getAsArray()[0][1] * y;
-        double az = getAsArray()[0][2] * z;
-
-        double bx = getAsArray()[1][0] * x;
-        double by = getAsArray()[1][1] * y;
-        double bz = getAsArray()[1][2] * z;
-
-        double cx = getAsArray()[2][0] * x;
-        double cy = getAsArray()[2][1] * y;
-        double cz = getAsArray()[2][2] * z;
-
-        return new Location(location.getWorld(), ax + ay + az, bx + by + bz, cx + cy + cz, location.getYaw(), location.getPitch());
-    }
-
 }

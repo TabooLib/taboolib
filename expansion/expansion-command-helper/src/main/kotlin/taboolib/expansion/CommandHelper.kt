@@ -11,9 +11,22 @@ fun CommandComponent.createHelper(checkPermissions: Boolean = true) {
         val command = context.command
         val builder = StringBuilder("§cUsage: /${command.name}")
         var newline = false
+
+        fun check(children: List<CommandComponent>): List<CommandComponent> {
+            // 检查权限
+            val filterChildren = if (checkPermissions) {
+                children.filter { sender.hasPermission(it.permission) }
+            } else {
+                children
+            }
+            // 过滤隐藏
+            return filterChildren.filter { it !is CommandComponentLiteral || !it.hidden }
+        }
+
         fun space(space: Int): String {
             return (1..space).joinToString("") { " " }
         }
+
         fun print(compound: CommandComponent, index: Int, size: Int, offset: Int = 8, level: Int = 0, end: Boolean = false, optional: Boolean = false) {
             var option = optional
             var comment = 0
@@ -58,24 +71,20 @@ fun CommandComponent.createHelper(checkPermissions: Boolean = true) {
             if (level > 0) {
                 comment += 1
             }
-            compound.children.forEachIndexed { i, children ->
+            val checkedChildren = check(compound.children)
+            checkedChildren.forEachIndexed { i, children ->
                 // 因 literal 产生新的行
                 if (newline) {
-                    print(children, i, compound.children.size, offset, level + comment, end, option)
+                    print(children, i, checkedChildren.size, offset, level + comment, end, option)
                 } else {
                     val length = if (offset == 8) command.name.length + 1 else comment + 1
-                    print(children, i, compound.children.size, offset + length, level, end, option)
+                    print(children, i, checkedChildren.size, offset + length, level, end, option)
                 }
             }
         }
-        // 检查权限
-        val filterChildren = if (checkPermissions) {
-            context.commandCompound.children.filter { sender.hasPermission(it.permission) } 
-        } else {
-            context.commandCompound.children
-        }
-        val size = filterChildren.size
-        filterChildren.forEachIndexed { index, children ->
+        val checkedChildren = check(context.commandCompound.children)
+        val size = checkedChildren.size
+        checkedChildren.forEachIndexed { index, children ->
             print(children, index, size, end = index + 1 == size)
         }
         builder.lines().forEach {

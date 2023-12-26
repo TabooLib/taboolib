@@ -1,6 +1,7 @@
 package taboolib.module.kether.action.transform
 
 import taboolib.common5.Coerce
+import taboolib.common5.cint
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -18,7 +19,7 @@ class ActionElement {
     class SizeOf(val array: ParsedAction<*>) : ScriptAction<Int>() {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Int> {
-            return frame.newFrame(array).run<Any>().thenApply {
+            return frame.run(array).thenApply {
                 when (it) {
                     is Collection<*> -> it.size
                     is Array<*> -> it.size
@@ -32,12 +33,12 @@ class ActionElement {
 
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             val future = CompletableFuture<Any?>()
-            frame.newFrame(index).run<Any>().thenApply { index ->
-                frame.newFrame(array).run<Any>().thenApply {
+            frame.run(index).int { index ->
+                frame.run(array).thenApply {
                     future.complete(when (it) {
-                        is Collection<*> -> it.toList().getOrNull(Coerce.toInteger(index))
-                        is Array<*> -> it.toList().getOrNull(Coerce.toInteger(index))
-                        else -> it.toString().getOrNull(Coerce.toInteger(index))
+                        is Collection<*> -> it.toList().getOrNull(index)
+                        is Array<*> -> it.toList().getOrNull(index)
+                        else -> it.toString().getOrNull(index)
                     })
                 }
             }

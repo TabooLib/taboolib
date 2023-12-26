@@ -77,7 +77,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
                     } else {
                         process(cur + 1)
                     }
-                }
+                }.except { future.complete(0) }
             } else {
                 future.complete(type.exec(number))
             }
@@ -128,7 +128,7 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
                     }
                     check()
                     if (stack.size > 1) {
-                        actionFuture {
+                        actionFuture { f ->
                             newFrame(stack[0].action).run<Any>().thenApply { base ->
                                 var num = base.inferType() as Number
                                 fun process(cur: Int) {
@@ -136,9 +136,9 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
                                         newFrame(stack[cur].action).run<Any>().thenApply { num2 ->
                                             num = stack[cur].symbol!!.exec(listOf(num, num2))
                                             process(cur + 1)
-                                        }
+                                        }.except { f.complete(0) }
                                     } else {
-                                        it.complete(num)
+                                        f.complete(num)
                                     }
                                 }
                                 process(1)

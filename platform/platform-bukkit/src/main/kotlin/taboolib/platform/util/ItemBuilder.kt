@@ -84,7 +84,7 @@ fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemSta
 @Isolated
 open class ItemBuilder {
 
-    class SkullTexture(val textures: String, val uuid: UUID? = UUID.randomUUID())
+    class SkullTexture(val textures: String, val uuid: UUID)
 
     /**
      * 物品材质
@@ -244,8 +244,10 @@ open class ItemBuilder {
                 itemMeta.setColor(color)
             }
             is PotionMeta -> {
-                itemMeta.color = color
                 potions.forEach { itemMeta.addCustomEffect(it, true) }
+                if (color != null) {
+                    itemMeta.color = color
+                }
                 if (potionData != null) {
                     itemMeta.basePotionData = potionData!!
                 }
@@ -255,7 +257,7 @@ open class ItemBuilder {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, null).also {
+                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, "null").also {
                         it.properties.put("textures", Property("textures", skullTexture!!.textures))
                     })
                 }
@@ -334,7 +336,7 @@ open class ItemBuilder {
                 if (itemMeta.owner != null) {
                     skullOwner = itemMeta.owner
                 }
-                skullTexture = XSkull.getSkinValue(itemMeta)
+                XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
             }
         }
         try {

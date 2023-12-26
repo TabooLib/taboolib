@@ -28,7 +28,8 @@ annotation class CommandBody(
     val aliases: Array<String> = [],
     val optional: Boolean = false,
     val permission: String = "",
-    val permissionDefault: PermissionDefault = PermissionDefault.OP
+    val permissionDefault: PermissionDefault = PermissionDefault.OP,
+    val hidden: Boolean = false,
 )
 
 fun mainCommand(func: CommandBase.() -> Unit): SimpleCommandMain {
@@ -48,6 +49,7 @@ class SimpleCommandBody(val func: CommandComponent.() -> Unit = {}) {
     var optional = false
     var permission = ""
     var permissionDefault: PermissionDefault = PermissionDefault.OP
+    var hidden = false
     val children = ArrayList<SimpleCommandBody>()
 
     override fun toString(): String {
@@ -55,6 +57,7 @@ class SimpleCommandBody(val func: CommandComponent.() -> Unit = {}) {
     }
 }
 
+@Suppress("DuplicatedCode")
 @Awake
 class SimpleCommandRegister : ClassVisitor(0) {
 
@@ -76,6 +79,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         optional = annotation.property("optional", false)
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
+                        hidden = annotation.property("hidden", false)
                     }
                 }
                 else -> {
@@ -85,6 +89,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         optional = annotation.property("optional", false)
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
+                        hidden = annotation.property("hidden", false)
                         // 向下搜索字段
                         ReflexClass.of(field.fieldType).structure.fields.forEach {
                             children += loadBody(it, instance) ?: return@forEach
@@ -120,7 +125,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandComponent) {
-                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission) {
+                        component.literal(body.name, *body.aliases, optional = body.optional, permission = body.permission, hidden = body.hidden) {
                             if (body.children.isEmpty()) {
                                 body.func(this)
                             } else {

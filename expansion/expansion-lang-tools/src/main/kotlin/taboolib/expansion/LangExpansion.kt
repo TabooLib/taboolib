@@ -1,80 +1,55 @@
 package taboolib.expansion
 
-import org.bukkit.command.CommandSender
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.warning
-import taboolib.module.chat.colored
-import taboolib.platform.util.asLangText
-import taboolib.platform.util.bukkitPlugin
+import taboolib.common.platform.ProxyCommandSender
+import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.console
+import taboolib.module.lang.sendInfo
+import taboolib.module.lang.sendWarn
 
-private val consoleSender = bukkitPlugin.server.consoleSender
-
-
-/**
- * Info as lang
- * 国际化普通消息
- *
- * @param node 节点
- * @author Bingzi
- */
-fun infoAsLang(node: String) {
-    info(consoleSender.asLangText(node).colored())
+internal fun infoMessageAsLang(node: String) {
+    console().sendInfo(node)
 }
 
-/**
- * Info as lang
- * 国际化普通消息
- *
- * @param node 节点
- * @param args 参数
- * @author Bingzi
- */
-fun infoAsLang(node: String, vararg args: Any) {
-    info(consoleSender.asLangText(node, *args).colored())
+internal fun infoMessageAsLang(node: String, vararg args: Any) {
+    console().sendInfo(node, *args)
 }
 
-/**
- * Warning as lang
- * 国际化警告消息
- *
- * @param node 节点
- * @author Bingzi
- */
-fun warningAsLang(node: String) {
-    warning(consoleSender.asLangText(node).colored())
+internal fun warningMessageAsLang(node: String) {
+    console().sendWarn(node)
 }
 
-/**
- * Warning as lang
- * 国际化警告消息
- *
- * @param node 节点
- * @param args 参数
- * @author Bingzi
- */
-fun warningAsLang(node: String, vararg args: Any) {
-    warning(consoleSender.asLangText(node, *args).colored())
+internal fun warningMessageAsLang(node: String, vararg args: Any) {
+    console().sendWarn(node, *args)
 }
 
-/**
- * Send message as lang
- * 国际化文本消息
- *
- * @param node 节点
- * @author Bingzi
- */
-fun CommandSender.sendMessageAsLang(node: String) {
-    this.sendMessage(this.asLangText(node).colored())
+internal fun ProxyCommandSender.infoAsLang(node: String) {
+    if (this is ProxyPlayer) {
+        this.sendInfo(node)
+    } else {
+        infoMessageAsLang(node)
+    }
 }
 
-/**
- * Send message as lang
- * 国际化文本消息
- *
- * @param node 节点
- * @param args 参数
- * @author Bingzi
- */
-fun CommandSender.sendMessageAsLang(node: String, vararg args: Any) {
-    this.sendMessage(this.asLangText(node, *args).colored())
+internal fun ProxyCommandSender.infoAsLang(node: String, vararg args: Any) {
+    if (this is ProxyPlayer) {
+        this.sendInfo(node, *args)
+    } else {
+        infoMessageAsLang(node, *args)
+    }
+}
+
+internal fun ProxyCommandSender.warningAsLang(node: String) {
+    if (this is ProxyPlayer) {
+        this.sendWarn(node)
+    } else {
+        warningMessageAsLang(node)
+    }
+}
+
+internal fun ProxyCommandSender.warningAsLang(node: String, vararg args: Any) {
+    if (this is ProxyPlayer) {
+        this.sendWarn(node, *args)
+    } else {
+        warningMessageAsLang(node, *args)
+    }
 }

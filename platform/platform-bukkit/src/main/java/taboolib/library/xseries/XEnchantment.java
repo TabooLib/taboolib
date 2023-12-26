@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Crypto Morin
+ * Copyright (c) 2022 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * Enchanting: https://minecraft.gamepedia.com/Enchanting
  *
  * @author Crypto Morin
- * @version 2.1.1
+ * @version 2.3.0
  * @see Enchantment
  */
 @SuppressWarnings("DuplicatedCode")
@@ -167,7 +167,6 @@ public enum XEnchantment {
      * against this type of mob.
      *
      * @param type the type of the mob.
-     *
      * @return true if smite enchantment is effective against the mob, otherwise false.
      * @since 1.1.0
      */
@@ -180,7 +179,6 @@ public enum XEnchantment {
      * against this type of mob.
      *
      * @param type the type of the mob.
-     *
      * @return true if Bane of Arthropods enchantment is effective against the mob, otherwise false.
      * @since 1.1.0
      */
@@ -195,7 +193,6 @@ public enum XEnchantment {
      * the normal RegEx + String Methods approach for both formatted and unformatted material names.
      *
      * @param name the enchantment name to format.
-     *
      * @return an enum name.
      * @since 1.0.0
      */
@@ -209,7 +206,8 @@ public enum XEnchantment {
         for (int i = 0; i < len; i++) {
             char ch = name.charAt(i);
 
-            if (!appendUnderline && count != 0 && (ch == '-' || ch == ' ' || ch == '_') && chs[count] != '_') appendUnderline = true;
+            if (!appendUnderline && count != 0 && (ch == '-' || ch == ' ' || ch == '_') && chs[count] != '_')
+                appendUnderline = true;
             else {
                 if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
                     if (appendUnderline) {
@@ -229,13 +227,13 @@ public enum XEnchantment {
      * There are also some aliases available.
      *
      * @param enchantment the name of the enchantment.
-     *
      * @return an enchantment.
      * @since 1.0.0
      */
     @NotNull
     public static Optional<XEnchantment> matchXEnchantment(@NotNull String enchantment) {
-        if (enchantment.isEmpty()) throw new IllegalArgumentException("Enchantment name cannot be null or empty");
+        if (enchantment == null || enchantment.isEmpty())
+            throw new IllegalArgumentException("Enchantment name cannot be null or empty");
         return Optional.ofNullable(Data.NAMES.get(format(enchantment)));
     }
 
@@ -244,7 +242,6 @@ public enum XEnchantment {
      * There are also some aliases available.
      *
      * @param enchantment the enchantment.
-     *
      * @return an enchantment.
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
      * @since 1.0.0
@@ -260,7 +257,6 @@ public enum XEnchantment {
      * Gets the enchanted book of this enchantment.
      *
      * @param level the level of this enchantment.
-     *
      * @return an enchanted book.
      * @since 1.0.0
      */

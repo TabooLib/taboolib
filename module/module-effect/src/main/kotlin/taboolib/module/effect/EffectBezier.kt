@@ -1,4 +1,5 @@
 @file:Isolated
+
 package taboolib.module.effect
 
 import taboolib.common.Isolated
@@ -22,19 +23,13 @@ fun createTwoRankBezierCurve(
     p2: Location,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): TwoRankBezierCurve {
-    return TwoRankBezierCurve(
-        p0,
-        p1,
-        p2,
-        step,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return TwoRankBezierCurve(p0, p1, p2, step, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }
 
 /**
@@ -54,20 +49,13 @@ fun createThreeRankBezierCurve(
     p3: Location,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): ThreeRankBezierCurve {
-    return ThreeRankBezierCurve(
-        p0,
-        p1,
-        p2,
-        p3,
-        step,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return ThreeRankBezierCurve(p0, p1, p2, p3, step, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }
 
 /**
@@ -81,10 +69,9 @@ fun createNRankBezierCurve(
     points: List<Location>,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): NRankBezierCurve {
     return NRankBezierCurve(points, step, object : ParticleSpawner {
-
         override fun spawn(location: Location) {
             spawner(location)
         }
@@ -102,15 +89,11 @@ fun createNRankBezierCurve(
     vararg points: Location,
     step: Double = 1.0,
     period: Long = 20,
-    spawner: (Location) -> Unit
+    spawner: (p: Location) -> Unit = {}
 ): NRankBezierCurve {
-    return NRankBezierCurve(
-        points.toList(),
-        step,
-        object : ParticleSpawner {
-
-            override fun spawn(location: Location) {
-                spawner(location)
-            }
-        }).also { it.period = period }
+    return NRankBezierCurve(points.toList(), step, object : ParticleSpawner {
+        override fun spawn(location: Location) {
+            spawner(location)
+        }
+    }).also { it.period = period }
 }

@@ -12,18 +12,23 @@ import org.tabooproject.reflex.Reflex.Companion.setProperty
  */
 class PacketImpl(override var source: Any) : Packet() {
 
+    /** 数据包名称 */
     override var name = source.javaClass.simpleName.toString()
 
+    /** 数据包完整名称 */
     override var fullyName = source.javaClass.name.toString()
 
-    override fun <T> read(name: String): T? {
-        return source.getProperty<T>(name)
+    /** 读取字段 */
+    override fun <T> read(name: String, remap: Boolean): T? {
+        return source.getProperty<T>(name, remap = remap)
     }
 
+    /** 写入字段 */
     override fun write(name: String, value: Any?) {
         source.setProperty(name, value)
     }
 
+    /** 覆盖原始数据包 */
     override fun overwrite(newPacket: Any) {
         source = newPacket
         name = newPacket.javaClass.simpleName.toString()

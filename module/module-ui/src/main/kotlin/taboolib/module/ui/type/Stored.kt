@@ -96,13 +96,14 @@ open class Stored(title: String) : Basic(title) {
                 if (it.clickEvent().click.isShiftClick && it.rawSlot >= it.inventory.size && currentItem.isNotAir()) {
                     it.isCancelled = true
                     // 获取有效位置
-                    val firstSlot = rule.firstSlot(it.inventory, currentItem!!)
+                    val firstSlot = rule.firstSlot(it.inventory, currentItem)
                     // 目标位置不存在任何物品
                     // 防止覆盖物品
                     if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot).isAir) {
                         // 设置物品
                         rule.writeItem(it.inventory, currentItem, firstSlot)
                         // 移除物品
+                        it.currentItem?.type = Material.AIR
                         it.currentItem = null
                     }
                 } else if (it.rawSlot < it.inventory.size) {
@@ -139,10 +140,15 @@ open class Stored(title: String) : Basic(title) {
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
 
         /** 写入物品回调 **/
-        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot -> inventory.setItem(slot, item) }
+        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot ->
+            if (slot in 0 until inventory.size) inventory.setItem(slot, item)
+        }
 
         /** 读取物品回调 **/
-        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot -> inventory.getItem(slot) }
+        internal var readItem: ((inventory: Inventory, slot: Int) -> ItemStack?) = { inventory, slot ->
+            if (slot in 0 until inventory.size) inventory.getItem(slot)
+            else null
+        }
 
         /**
          * 定义判定位置

@@ -32,61 +32,62 @@ class ColumnSQL(val type: ColumnTypeSQL, val name: String) : Column() {
      */
     internal var desc = false
 
+    /** 设置参数 */
     fun parameter(parameter1: Int = 0, parameter2: Int = 0) {
         parameter[0] = parameter1
         parameter[1] = parameter2
     }
 
+    /** 设置选项 */
     fun options(vararg options: ColumnOptionSQL) {
         this.options += options
     }
 
+    /** 默认值 */
     fun def(def: Any? = null) {
         this.def = def
     }
 
+    /** 当更新时 */
     fun onUpdate(onUpdate: String? = null) {
         this.onUpdate = onUpdate
     }
 
+    /** 索引类型 */
     fun indexType(indexType: IndexType) {
         this.indexType = indexType
     }
 
+    /** 倒序索引 */
     fun indexDesc(desc: Boolean) {
         this.desc = desc
     }
 
     override val query: String
-        get() = when {
-            parameter[0] == 0 && parameter[1] == 0 && !type.isRequired -> {
-                "`$name` $type $queryOptions"
+        get() = Statement(name.asFormattedColumnName()).also { stat ->
+            when {
+                // 无参数
+                parameter[0] == 0 && parameter[1] == 0 && !type.isRequired -> stat.addSegment(type.name)
+                // 一个参数
+                parameter[1] == 0 -> stat.addSegment("$type(${parameter[0]})")
+                // 完整参数
+                else -> stat.addSegment("$type(${parameter[0]},${parameter[1]})")
             }
-            parameter[1] == 0 -> {
-                "`$name` $type(${parameter[0]}) $queryOptions"
-            }
-            else -> {
-                "`$name` $type(${parameter[0]},${parameter[1]}) $queryOptions"
-            }
-        }
+        }.addSegment(queryOptions).build()
 
     val queryOptions: String
-        get() {
-            var query = options.filter { it !== ColumnOptionSQL.UNIQUE_KEY && it !== ColumnOptionSQL.KEY }.joinToString(" ") { it.query }
-            if (def is String) {
-                query += if (def.toString().startsWith("$")) {
-                    " DEFAULT ${def.toString().substring(1)}"
-                } else {
-                    " DEFAULT '$def'"
-                }
-            } else if (def != null) {
-                query += " DEFAULT $def"
+        get() = Statement().also { stat ->
+            stat.addSegment(options.filter { it !== ColumnOptionSQL.UNIQUE_KEY && it !== ColumnOptionSQL.KEY }.map { it.query })
+            // 默认值
+            if (def != null) {
+                stat.addSegment("DEFAULT")
+                stat.addSpecialValue(def!!)
             }
+            // 当更新时
             if (onUpdate != null) {
-                query += " On UPDATE $onUpdate"
+                stat.addSegment("ON UPDATE").addSegment(onUpdate!!)
             }
-            return query
-        }
+        }.build()
 
     override fun toString(): String {
         return "ColumnSQL(type=$type, name='$name', parameter=${parameter.contentToString()}, options=${options.contentToString()}, def=$def, onUpdate=$onUpdate, indexType=$indexType, desc=$desc, query='$query')"

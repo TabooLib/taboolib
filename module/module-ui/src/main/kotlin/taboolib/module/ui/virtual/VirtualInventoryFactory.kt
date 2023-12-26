@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
@@ -30,9 +31,9 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory): RemoteInvento
     InventoryHandler.playerRemoteInventoryMap[name] = remoteInventory
     // 唤起事件
     if (isPrimaryThread) {
-        Bukkit.getPluginManager().callEvent(InventoryOpenEvent(VirtualInventoryView(remoteInventory)))
+        Bukkit.getPluginManager().callEvent(InventoryOpenEvent(remoteInventory.createInventoryView()))
     } else {
-        submit { Bukkit.getPluginManager().callEvent(InventoryOpenEvent(VirtualInventoryView(remoteInventory))) }
+        submit { Bukkit.getPluginManager().callEvent(InventoryOpenEvent(remoteInventory.createInventoryView())) }
     }
     return remoteInventory
 }
@@ -40,28 +41,58 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory): RemoteInvento
 /**
  * 注入事件到 Basic 页面
  */
-fun RemoteInventory.inject(basic: Basic) {
+fun RemoteInventory.inject(menu: Basic) {
     onClick {
         // 处理事件
         try {
-            val e = VirtualInventoryInteractEvent(this, VirtualInventoryView(this@inject))
-            val event = ClickEvent(e, ClickType.VIRTUAL, basic.getSlot(clickSlot), basic)
-            basic.clickCallback.forEach { it(event) }
-            basic.selfClickCallback(event)
+            val e = VirtualInventoryInteractEvent(this, createInventoryView())
+            val event = ClickEvent(e, ClickType.VIRTUAL, menu.getSlot(clickSlot), menu)
+            menu.clickCallback.forEach { it(event) }
+            menu.selfClickCallback(event)
         } catch (t: Throwable) {
             t.printStackTrace()
         }
     }
     onClose {
         try {
-            basic.closeCallback.invoke(InventoryCloseEvent(VirtualInventoryView(this)))
+            // 标题更新 && 跳过关闭回调
+            if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+                return@onClose
+            }
+            menu.closeCallback.invoke(InventoryCloseEvent(createInventoryView()))
             // 只触发一次
-            if (basic.onceCloseCallback) {
-                basic.closeCallback = {}
+            if (menu.onceCloseCallback) {
+                menu.closeCallback = {}
             }
         } catch (t: Throwable) {
             t.printStackTrace()
         }
+    }
+}
+
+/**
+ * 生成 InventoryView
+ */
+fun RemoteInventory.createInventoryView(): InventoryView {
+    return try {
+        VirtualInventoryView(this)
+    } catch (_: LinkageError) {
+        VirtualInventoryViewLegacy(object : RemoteInventoryLegacy {
+
+            val bottomInventory = VirtualStorageInventory(inventory)
+
+            override fun inventory(): Inventory {
+                return inventory
+            }
+
+            override fun bottomInventory(): Inventory {
+                return bottomInventory
+            }
+
+            override fun viewer(): Player {
+                return viewer
+            }
+        })
     }
 }
 

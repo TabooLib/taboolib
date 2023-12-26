@@ -16,7 +16,7 @@ fun importModules() {
     include("module:module-database-mongodb")
     include("module:module-porticus")
     include("module:module-navigation")
-    include("module:module-ui")
+    include("module:module-ui", "module:module-ui-legacy")
     include("module:module-ui-receptacle")
     include("module:module-configuration", "module:module-configuration-shaded", "module:module-configuration-legacy")
 }
@@ -36,11 +36,13 @@ fun importExtensions() {
     include("expansion:expansion-command-helper")
     include("expansion:expansion-player-database")
     include("expansion:expansion-persistent-container")
+    include("expansion:expansion-persistent-container-object")
     include("expansion:expansion-alkaid-redis")
     include("expansion:expansion-geek-tool")
     include("expansion:expansion-lang-tools")
     include("expansion:expansion-ioc")
-
+    include("expansion:expansion-application-console")
+    include("expansion:expansion-player-fake-op")
     // 从 common-5 中移除
     include("expansion:expansion-javascript")
 }

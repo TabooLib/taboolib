@@ -75,7 +75,7 @@ fun <T> CommandContext<T>.floatOrNull(id: String): Float? {
  */
 fun <T> CommandContext<T>.bool(id: String): Boolean {
     val value = get(id)
-    return value.equals("true", true) || value.equals("1", true)
+    return value.equals("true", true) || value.equals("t", true) || value.equals("1", true)
 }
 
 /**
@@ -86,5 +86,5 @@ fun <T> CommandContext<T>.bool(id: String): Boolean {
  */
 fun <T> CommandContext<T>.boolOrNull(id: String): Boolean? {
     val value = getOrNull(id) ?: return null
-    return value.equals("true", true) || value.equals("1", true)
+    return value.equals("true", true) || value.equals("t", true) || value.equals("1", true)
 }

@@ -6,5 +6,6 @@ package taboolib.module.database
  */
 abstract class Column {
 
+    /** 生成语句 */
     abstract val query: String
 }

@@ -29,7 +29,12 @@ fun HumanEntity.giveItem(itemStack: List<ItemStack>) {
 
 fun HumanEntity.giveItem(itemStack: ItemStack?, repeat: Int = 1) {
     if (itemStack.isNotAir()) {
-        repeat(repeat) { inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) } }
+        // CraftInventory.addItem 的执行过程中, 实质上有可能修改ItemStack的amount, 如果不注意这一点, 则会吞物品而不自知
+        val preAmount = itemStack.amount
+        repeat(repeat) {
+            inventory.addItem(itemStack).values.forEach { world.dropItem(location, it) }
+            itemStack.amount = preAmount
+        }
     }
 }
 

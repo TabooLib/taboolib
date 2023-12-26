@@ -20,9 +20,10 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
         vararg aliases: String,
         optional: Boolean = false,
         permission: String = "",
+        hidden: Boolean = false,
         literal: CommandComponentLiteral.() -> Unit = {}
     ): CommandComponentLiteral {
-        val component = CommandComponentLiteral(index + 1, arrayOf(*aliases), optional, permission).also(literal).also { it.parent = this }
+        val component = CommandComponentLiteral(arrayOf(*aliases), hidden, index + 1, optional, permission).also(literal).also { it.parent = this }
         // 如果当前节点已存在命令执行器
         // 则自动视为可选节点
         if (commandExecutor != null) {
@@ -41,7 +42,7 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
         permission: String = "",
         dynamic: CommandComponentDynamic.() -> Unit = {}
     ): CommandComponentDynamic {
-        val component = CommandComponentDynamic(index + 1, comment, optional, permission).also(dynamic).also { it.parent = this }
+        val component = CommandComponentDynamic(comment, index + 1, optional, permission).also(dynamic).also { it.parent = this }
         // 如果当前节点已存在命令执行器
         // 则自动视为可选节点
         if (commandExecutor != null) {
@@ -96,7 +97,7 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
                         // 若不满足约束
                         it.commandRestrict?.exec(context, parameter) == false -> false
                         // 若不满足建议（启用约束建议）
-                        suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s.equals(parameter, true) } == true -> false
+                        suggestion?.uncheck == false && suggestion.exec(context)?.none { s -> s == parameter } == true -> false
                         // 通过
                         else -> true
                     }

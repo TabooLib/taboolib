@@ -1,0 +1,40 @@
+name: build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    if: "contains(github.event.head_commit.message, 'dev')"
+    runs-on: ubuntu-latest
+    steps:
+      # 环境配置
+      - name: checkout repository
+        uses: actions/checkout@v2
+      - name: cache gradle packages
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+      - name: validate gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+      - name: setup jdk 8.0
+        uses: actions/setup-java@v2
+        with:
+          distribution: adopt
+          java-version: 8.0
+
+      # 设置权限
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      # 编译测试
+      - name: build test
+        id: publish_1
+        continue-on-error: true
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+        run: ./gradlew build -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD

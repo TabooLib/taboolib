@@ -18,4 +18,11 @@ package taboolib.common.env;
         relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@."},
         initiative = true
 )
-public class KotlinEnv { }
+//@RuntimeDependency(
+//        value = "!org.jetbrains.kotlin:kotlin-reflect:@kotlin_version@",
+//        test = "!kotlin@kotlin_version_escape@.reflect.full.KClassesKt",
+//        relocate = {"!kotlin.", "!kotlin@kotlin_version_escape@.",},
+//        initiative = true
+//)
+public class KotlinEnv {
+}

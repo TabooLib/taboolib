@@ -1,21 +1,24 @@
 package taboolib.module.database
 
 /**
- * TabooLib
- * taboolib.module.database.Join
+ * Join 语法中所包含的信息
  *
  * @author sky
  * @since 2021/6/23 3:32 下午
  */
-class Join(val type: JoinType, val from: String, val where: Where) {
+class Join(val joinType: JoinType, val tableName: String, val filter: Filter) : Attributes {
 
-    val query: String
-        get() = if (where.isEmpty()) {
-            "$type JOIN `$from`"
-        } else {
-            "$type JOIN `$from` ON ${where.query}"
-        }
+    /** 语句 */
+    override val query: String
+        get() = Statement(joinType.name)
+            .addSegment("JOIN")
+            .addSegment(tableName.asFormattedColumnName())
+            .addSegmentIfTrue(filter.isNotEmpty()) {
+                addSegment("ON")
+                addSegment(filter.query)
+            }.build()
 
-    val elements: List<Any>
-        get() = where.elements
+    /** 占位符对应的元素 */
+    override val elements: List<Any>
+        get() = filter.elements
 }

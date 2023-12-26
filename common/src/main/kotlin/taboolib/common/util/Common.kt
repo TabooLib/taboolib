@@ -34,12 +34,10 @@ fun Class<*>.nonPrimitive(): Class<*> {
 fun <T> lazySupplier(supplier: () -> T): Supplier<T> {
     return object : Supplier<T> {
 
-        val obj by lazy {
-            supplier()
-        }
+        val value by unsafeLazy { supplier() }
 
         override fun get(): T {
-            return obj
+            return value
         }
     }
 }

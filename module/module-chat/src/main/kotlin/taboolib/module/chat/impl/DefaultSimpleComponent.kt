@@ -51,12 +51,25 @@ class DefaultSimpleComponent(val source: String): SimpleComponent {
     /** 构建为 RawMessage */
     fun build(transfer: TextTransfer): ComponentText {
         val rawMessage = Components.empty()
-        root.forEach { block ->
+        var i = 0
+        var lastBlock: ComponentText? = null
+        val clone = root.toMutableList()
+        // 移除最后一个空白文本块
+        if (clone.isNotEmpty() && clone.last().build(transfer).toRawMessage() == rawMessage.toRawMessage()) {
+            clone.removeLast()
+        }
+        clone.forEach { block ->
             if (block is TextBlock.NewLine) {
                 rawMessage.newLine()
             } else {
-                rawMessage.append(block.build(transfer))
+                lastBlock = block.build(transfer)
+                rawMessage.append(lastBlock!!)
             }
+            i++
+        }
+        // 直接返回单段文本，避免出现 extra 连套两层的问题
+        if (i == 1) {
+            return lastBlock!!
         }
         return rawMessage
     }

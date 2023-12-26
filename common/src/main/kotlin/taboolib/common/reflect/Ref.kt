@@ -1,8 +1,10 @@
 package taboolib.common.reflect
 
 import org.tabooproject.reflex.UnsafeAccess
+import taboolib.common.Isolated
 import java.lang.reflect.Field
 
+@Isolated
 @Deprecated("Use taboolib.library.reflex.UnsafeAccess")
 object Ref {
 

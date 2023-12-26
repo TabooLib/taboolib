@@ -13,7 +13,7 @@ import taboolib.library.kether.AbstractQuestContext
  */
 open class ScriptContext(service: ScriptService, script: Script) : AbstractQuestContext<ScriptContext>(service, script, null) {
 
-    lateinit var id: String
+    var id = "null"
 
     /** 脚本执行者 */
     var sender: ProxyCommandSender?

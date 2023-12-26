@@ -14,12 +14,14 @@ import org.bukkit.inventory.InventoryView
  */
 class VirtualInventoryView(val remoteInventory: RemoteInventory) : InventoryView() {
 
+    val bottomInventory = VirtualStorageInventory(remoteInventory.inventory)
+
     override fun getTopInventory(): Inventory {
         return remoteInventory.inventory
     }
 
     override fun getBottomInventory(): Inventory {
-        return VirtualStorageInventory(remoteInventory.inventory)
+        return bottomInventory
     }
 
     override fun getPlayer(): HumanEntity {

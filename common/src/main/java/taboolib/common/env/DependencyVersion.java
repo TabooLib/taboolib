@@ -13,19 +13,26 @@ import java.util.List;
 public class DependencyVersion implements Comparable<DependencyVersion> {
 
     /**
-     * A list of the components of the version
-     *
-     * @since 1.0.0
+     * 版本的组件列表
      */
     private final List<Integer> parts;
 
     /**
-     * The version as a string
-     *
-     * @since 1.0.0
+     * 作为字符串的版本
      */
     private final String version;
 
+    public DependencyVersion(String version) {
+        parts = new ArrayList<>();
+        for (String part : version.split("[^0-9]")) {
+            if (!part.isEmpty()) {
+                parts.add(Integer.parseInt(part));
+            }
+        }
+        this.version = version;
+    }
+
+    @Override
     public int compareTo(DependencyVersion o) {
         Iterator<Integer> us = parts.iterator();
         Iterator<Integer> them = o.parts.iterator();
@@ -41,21 +48,5 @@ public class DependencyVersion implements Comparable<DependencyVersion> {
     @Override
     public String toString() {
         return version;
-    }
-
-    /**
-     * Creates a new version
-     *
-     * @param version The version string to parse
-     * @since 1.0.0
-     */
-    public DependencyVersion(String version) {
-        parts = new ArrayList<>();
-        for (String part : version.split("[^0-9]")) {
-            if (!part.isEmpty()) {
-                parts.add(Integer.parseInt(part));
-            }
-        }
-        this.version = version;
     }
 }

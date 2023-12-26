@@ -1,7 +1,7 @@
 package taboolib.expansion
 
 import taboolib.module.database.Table
-import taboolib.module.database.Where
+import taboolib.module.database.Filter
 import java.util.*
 import javax.sql.DataSource
 
@@ -26,19 +26,18 @@ abstract class ContainerOperator {
 
     abstract operator fun set(uniqueId: UUID, map: Map<String, Any?>)
 
-    /**
-     * 统一容器
-     */
-    abstract fun select(where: Where.() -> Unit): Map<String, Any?>
+    abstract fun select(filter: Filter.() -> Unit): Map<String, Any?>
 
-    abstract fun select(vararg rows: String, where: Where.() -> Unit): Map<String, Any?>
+    abstract fun select(vararg rows: String, filter: Filter.() -> Unit): Map<String, Any?>
 
-    abstract fun selectAll(where: Where.() -> Unit): List<Map<String, Any?>>
+    abstract fun selectAll(filter: Filter.() -> Unit): List<Map<String, Any?>>
 
-    abstract fun selectAll(vararg rows: String, where: Where.() -> Unit): List<Map<String, Any?>>
+    abstract fun selectAll(vararg rows: String, filter: Filter.() -> Unit): List<Map<String, Any?>>
 
-    abstract fun update(map: Map<String, Any?>, where: Where.() -> Unit)
+    /** 仅限标准容器 */
+    abstract fun update(map: Map<String, Any?>, filter: Filter.() -> Unit)
 
+    /** 仅限标准容器 */
     abstract fun insert(map: Map<String, Any?>)
 }
 

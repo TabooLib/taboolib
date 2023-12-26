@@ -55,17 +55,16 @@ import java.util.stream.Collectors;
  * Material Source Code: https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/Material.java
  * XMaterial v1: https://www.spigotmc.org/threads/329630/
  * <p>
- * This class will throw a "unsupported material" error if someone tries to use an item with an invalid data value which can only happen in 1.12 servers and below or when the
+ * This class will throw an "unsupported material" error if someone tries to use an item with an invalid data value which can only happen in 1.12 servers and below or when the
  * utility is missing a new material in that specific version.
  * To get an invalid item, (aka <a href="https://minecraft.fandom.com/wiki/Missing_Texture_Block">Missing Texture Block</a>) you can use the command
  * <b>/give @p minecraft:dirt 1 10</b> where 1 is the item amount, and 10 is the data value. The material {@link #DIRT} with a data value of {@code 10} doesn't exist.
  *
  * @author Crypto Morin
- * @version 11.0.0
+ * @version 11.4.1
  * @see Material
  * @see ItemStack
  */
-@SuppressWarnings("DuplicatedCode")
 public enum XMaterial {
     ACACIA_BOAT("BOAT_ACACIA"),
     ACACIA_BUTTON("WOOD_BUTTON"),
@@ -73,6 +72,7 @@ public enum XMaterial {
     ACACIA_DOOR("ACACIA_DOOR", "ACACIA_DOOR_ITEM"),
     ACACIA_FENCE,
     ACACIA_FENCE_GATE,
+    ACACIA_HANGING_SIGN,
     ACACIA_LEAVES(0, "LEAVES_2"),
     ACACIA_LOG(0, "LOG_2"),
     ACACIA_PLANKS(4, "WOOD"),
@@ -82,11 +82,12 @@ public enum XMaterial {
     ACACIA_SLAB(4, "WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     ACACIA_STAIRS,
     ACACIA_TRAPDOOR("TRAP_DOOR"),
+    ACACIA_WALL_HANGING_SIGN,
     ACACIA_WALL_SIGN("WALL_SIGN"),
     ACACIA_WOOD(0, "LOG_2"),
     ACTIVATOR_RAIL,
     /**
-     * https://minecraft.gamepedia.com/Air
+     * <a href="https://minecraft.gamepedia.com/Air">Air</a>
      * {@link Material#isAir()}
      *
      * @see #VOID_AIR
@@ -103,9 +104,12 @@ public enum XMaterial {
     ANDESITE_SLAB,
     ANDESITE_STAIRS,
     ANDESITE_WALL,
+    ANGLER_POTTERY_SHERD,
     ANVIL,
     APPLE,
+    ARCHER_POTTERY_SHERD,
     ARMOR_STAND,
+    ARMS_UP_POTTERY_SHERD,
     ARROW,
     ATTACHED_MELON_STEM(7, "MELON_STEM"),
     ATTACHED_PUMPKIN_STEM(7, "PUMPKIN_STEM"),
@@ -116,7 +120,26 @@ public enum XMaterial {
     AZURE_BLUET(3, "RED_ROSE"),
     BAKED_POTATO,
     BAMBOO,
+    BAMBOO_BLOCK,
+    BAMBOO_BUTTON,
+    BAMBOO_CHEST_RAFT,
+    BAMBOO_DOOR,
+    BAMBOO_FENCE,
+    BAMBOO_FENCE_GATE,
+    BAMBOO_HANGING_SIGN,
+    BAMBOO_MOSAIC,
+    BAMBOO_MOSAIC_SLAB,
+    BAMBOO_MOSAIC_STAIRS,
+    BAMBOO_PLANKS,
+    BAMBOO_PRESSURE_PLATE,
+    BAMBOO_RAFT,
     BAMBOO_SAPLING,
+    BAMBOO_SIGN,
+    BAMBOO_SLAB,
+    BAMBOO_STAIRS,
+    BAMBOO_TRAPDOOR,
+    BAMBOO_WALL_HANGING_SIGN,
+    BAMBOO_WALL_SIGN,
     BARREL,
     BARRIER,
     BASALT,
@@ -143,6 +166,7 @@ public enum XMaterial {
     BIRCH_DOOR("BIRCH_DOOR", "BIRCH_DOOR_ITEM"),
     BIRCH_FENCE,
     BIRCH_FENCE_GATE,
+    BIRCH_HANGING_SIGN,
     BIRCH_LEAVES(2, "LEAVES"),
     BIRCH_LOG(2, "LOG"),
     BIRCH_PLANKS(2, "WOOD"),
@@ -152,6 +176,7 @@ public enum XMaterial {
     BIRCH_SLAB(2, "WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     BIRCH_STAIRS("BIRCH_WOOD_STAIRS"),
     BIRCH_TRAPDOOR("TRAP_DOOR"),
+    BIRCH_WALL_HANGING_SIGN,
     BIRCH_WALL_SIGN("WALL_SIGN"),
     BIRCH_WOOD(2, "LOG"),
     BLACKSTONE,
@@ -176,6 +201,7 @@ public enum XMaterial {
     BLACK_TERRACOTTA(15, "STAINED_CLAY"),
     BLACK_WALL_BANNER("WALL_BANNER"),
     BLACK_WOOL(15, "WOOL"),
+    BLADE_POTTERY_SHERD,
     BLAST_FURNACE,
     BLAZE_POWDER,
     BLAZE_ROD,
@@ -209,9 +235,10 @@ public enum XMaterial {
     BRAIN_CORAL_FAN,
     BRAIN_CORAL_WALL_FAN,
     BREAD,
+    BREWER_POTTERY_SHERD,
     BREWING_STAND("BREWING_STAND", "BREWING_STAND_ITEM"),
     BRICK("CLAY_BRICK"),
-    BRICKS("BRICKS", "BRICK"),
+    BRICKS("BRICK"),
     BRICK_SLAB(4, "STEP"),
     BRICK_STAIRS,
     BRICK_WALL,
@@ -232,6 +259,7 @@ public enum XMaterial {
     BROWN_TERRACOTTA(12, "STAINED_CLAY"),
     BROWN_WALL_BANNER(3, "WALL_BANNER"),
     BROWN_WOOL(12, "WOOL"),
+    BRUSH,
     BUBBLE_COLUMN,
     BUBBLE_CORAL,
     BUBBLE_CORAL_BLOCK,
@@ -240,9 +268,12 @@ public enum XMaterial {
     BUCKET,
     BUDDING_AMETHYST,
     BUNDLE,
+    BURN_POTTERY_SHERD,
     CACTUS,
     CAKE("CAKE_BLOCK"),
     CALCITE,
+    CALIBRATED_SCULK_SENSOR,
+    CAMEL_SPAWN_EGG,
     CAMPFIRE,
     CANDLE,
     CANDLE_CAKE,
@@ -269,11 +300,31 @@ public enum XMaterial {
     CHAINMAIL_LEGGINGS,
     CHAIN_COMMAND_BLOCK("COMMAND", "COMMAND_CHAIN"),
     CHARCOAL(1, "COAL"),
+    CHERRY_BOAT,
+    CHERRY_BUTTON,
+    CHERRY_CHEST_BOAT,
+    CHERRY_DOOR,
+    CHERRY_FENCE,
+    CHERRY_FENCE_GATE,
+    CHERRY_HANGING_SIGN,
+    CHERRY_LEAVES,
+    CHERRY_LOG,
+    CHERRY_PLANKS,
+    CHERRY_PRESSURE_PLATE,
+    CHERRY_SAPLING,
+    CHERRY_SIGN,
+    CHERRY_SLAB,
+    CHERRY_STAIRS,
+    CHERRY_TRAPDOOR,
+    CHERRY_WALL_HANGING_SIGN,
+    CHERRY_WALL_SIGN,
+    CHERRY_WOOD,
     CHEST("LOCKED_CHEST"),
     CHEST_MINECART("STORAGE_MINECART"),
     CHICKEN("RAW_CHICKEN"),
     CHICKEN_SPAWN_EGG(93, "MONSTER_EGG"),
     CHIPPED_ANVIL(1, "ANVIL"),
+    CHISELED_BOOKSHELF,
     CHISELED_DEEPSLATE,
     CHISELED_NETHER_BRICKS(1, "NETHER_BRICKS"),
     CHISELED_POLISHED_BLACKSTONE("POLISHED_BLACKSTONE"),
@@ -291,6 +342,7 @@ public enum XMaterial {
     COAL_BLOCK,
     COAL_ORE,
     COARSE_DIRT(1, "DIRT"),
+    COAST_ARMOR_TRIM_SMITHING_TEMPLATE,
     COBBLED_DEEPSLATE,
     COBBLED_DEEPSLATE_SLAB,
     COBBLED_DEEPSLATE_STAIRS,
@@ -346,6 +398,7 @@ public enum XMaterial {
     CRIMSON_FENCE,
     CRIMSON_FENCE_GATE,
     CRIMSON_FUNGUS,
+    CRIMSON_HANGING_SIGN,
     CRIMSON_HYPHAE,
     CRIMSON_NYLIUM,
     CRIMSON_PLANKS,
@@ -356,6 +409,7 @@ public enum XMaterial {
     CRIMSON_STAIRS,
     CRIMSON_STEM,
     CRIMSON_TRAPDOOR,
+    CRIMSON_WALL_HANGING_SIGN,
     CRIMSON_WALL_SIGN("WALL_SIGN"),
     CROSSBOW,
     CRYING_OBSIDIAN,
@@ -383,12 +437,14 @@ public enum XMaterial {
     CYAN_WOOL(9, "WOOL"),
     DAMAGED_ANVIL(2, "ANVIL"),
     DANDELION("YELLOW_FLOWER"),
+    DANGER_POTTERY_SHERD,
     DARK_OAK_BOAT("BOAT_DARK_OAK"),
     DARK_OAK_BUTTON("WOOD_BUTTON"),
     DARK_OAK_CHEST_BOAT,
     DARK_OAK_DOOR("DARK_OAK_DOOR", "DARK_OAK_DOOR_ITEM"),
     DARK_OAK_FENCE,
     DARK_OAK_FENCE_GATE,
+    DARK_OAK_HANGING_SIGN,
     DARK_OAK_LEAVES(1, "LEAVES_2"),
     DARK_OAK_LOG(1, "LOG_2"),
     DARK_OAK_PLANKS(5, "WOOD"),
@@ -398,6 +454,7 @@ public enum XMaterial {
     DARK_OAK_SLAB(5, "WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     DARK_OAK_STAIRS,
     DARK_OAK_TRAPDOOR("TRAP_DOOR"),
+    DARK_OAK_WALL_HANGING_SIGN,
     DARK_OAK_WALL_SIGN("WALL_SIGN"),
     DARK_OAK_WOOD(1, "LOG_2"),
     DARK_PRISMARINE(2, "PRISMARINE"),
@@ -426,6 +483,7 @@ public enum XMaterial {
     DEAD_TUBE_CORAL_FAN,
     DEAD_TUBE_CORAL_WALL_FAN,
     DEBUG_STICK,
+    DECORATED_POT,
     DEEPSLATE,
     DEEPSLATE_BRICKS,
     DEEPSLATE_BRICK_SLAB,
@@ -479,6 +537,7 @@ public enum XMaterial {
     DRIPSTONE_BLOCK,
     DROPPER,
     DROWNED_SPAWN_EGG,
+    DUNE_ARMOR_TRIM_SMITHING_TEMPLATE,
     ECHO_SHARD,
     EGG,
     ELDER_GUARDIAN_SPAWN_EGG(4, "MONSTER_EGG"),
@@ -492,6 +551,7 @@ public enum XMaterial {
     ENDERMAN_SPAWN_EGG(58, "MONSTER_EGG"),
     ENDERMITE_SPAWN_EGG(67, "MONSTER_EGG"),
     ENDER_CHEST,
+    ENDER_DRAGON_SPAWN_EGG,
     ENDER_EYE("EYE_OF_ENDER"),
     ENDER_PEARL,
     END_CRYSTAL,
@@ -506,10 +566,12 @@ public enum XMaterial {
     END_STONE_BRICK_WALL,
     EVOKER_SPAWN_EGG(34, "MONSTER_EGG"),
     EXPERIENCE_BOTTLE("EXP_BOTTLE"),
+    EXPLORER_POTTERY_SHERD,
     EXPOSED_COPPER,
     EXPOSED_CUT_COPPER,
     EXPOSED_CUT_COPPER_SLAB,
     EXPOSED_CUT_COPPER_STAIRS,
+    EYE_ARMOR_TRIM_SMITHING_TEMPLATE,
     FARMLAND("SOIL"),
     FEATHER,
     FERMENTED_SPIDER_EYE,
@@ -518,7 +580,7 @@ public enum XMaterial {
      * For some reasons filled map items are really special.
      * Their data value starts from 0 and every time a player
      * creates a new map that maps data value increases.
-     * https://github.com/CryptoMorin/XSeries/issues/91
+     * <a href="https://github.com/CryptoMorin/XSeries/issues/91">GitHub Issue</a>
      */
     FILLED_MAP("MAP"),
     FIRE,
@@ -538,6 +600,7 @@ public enum XMaterial {
     FLOWER_BANNER_PATTERN,
     FLOWER_POT("FLOWER_POT", "FLOWER_POT_ITEM"),
     FOX_SPAWN_EGG,
+    FRIEND_POTTERY_SHERD,
     FROGSPAWN,
     FROG_SPAWN_EGG,
     /**
@@ -625,7 +688,9 @@ public enum XMaterial {
     GUNPOWDER("SULPHUR"),
     HANGING_ROOTS,
     HAY_BLOCK,
+    HEARTBREAK_POTTERY_SHERD,
     HEART_OF_THE_SEA,
+    HEART_POTTERY_SHERD,
     HEAVY_WEIGHTED_PRESSURE_PLATE("IRON_PLATE"),
     HOGLIN_SPAWN_EGG("MONSTER_EGG"),
     HONEYCOMB,
@@ -639,6 +704,8 @@ public enum XMaterial {
     HORN_CORAL_FAN,
     HORN_CORAL_WALL_FAN,
     HORSE_SPAWN_EGG(100, "MONSTER_EGG"),
+    HOST_ARMOR_TRIM_SMITHING_TEMPLATE,
+    HOWL_POTTERY_SHERD,
     HUSK_SPAWN_EGG(23, "MONSTER_EGG"),
     ICE,
     INFESTED_CHISELED_STONE_BRICKS(5, "MONSTER_EGGS"),
@@ -660,6 +727,7 @@ public enum XMaterial {
     IRON_BOOTS,
     IRON_CHESTPLATE,
     IRON_DOOR("IRON_DOOR_BLOCK"),
+    IRON_GOLEM_SPAWN_EGG,
     IRON_HELMET,
     IRON_HOE,
     IRON_HORSE_ARMOR("IRON_BARDING"),
@@ -681,6 +749,7 @@ public enum XMaterial {
     JUNGLE_DOOR("JUNGLE_DOOR", "JUNGLE_DOOR_ITEM"),
     JUNGLE_FENCE,
     JUNGLE_FENCE_GATE,
+    JUNGLE_HANGING_SIGN,
     JUNGLE_LEAVES(3, "LEAVES"),
     JUNGLE_LOG(3, "LOG"),
     JUNGLE_PLANKS(3, "WOOD"),
@@ -690,6 +759,7 @@ public enum XMaterial {
     JUNGLE_SLAB(3, "WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     JUNGLE_STAIRS("JUNGLE_WOOD_STAIRS"),
     JUNGLE_TRAPDOOR("TRAP_DOOR"),
+    JUNGLE_WALL_HANGING_SIGN,
     JUNGLE_WALL_SIGN("WALL_SIGN"),
     JUNGLE_WOOD(3, "LOG"),
     KELP,
@@ -797,6 +867,7 @@ public enum XMaterial {
     MANGROVE_DOOR,
     MANGROVE_FENCE,
     MANGROVE_FENCE_GATE,
+    MANGROVE_HANGING_SIGN,
     MANGROVE_LEAVES,
     MANGROVE_LOG,
     MANGROVE_PLANKS,
@@ -807,6 +878,7 @@ public enum XMaterial {
     MANGROVE_SLAB,
     MANGROVE_STAIRS,
     MANGROVE_TRAPDOOR,
+    MANGROVE_WALL_HANGING_SIGN,
     MANGROVE_WALL_SIGN,
     MANGROVE_WOOD,
     /**
@@ -824,6 +896,7 @@ public enum XMaterial {
     MELON_STEM,
     MILK_BUCKET,
     MINECART,
+    MINER_POTTERY_SHERD,
     MOJANG_BANNER_PATTERN,
     MOOSHROOM_SPAWN_EGG(96, "MONSTER_EGG"),
     MOSSY_COBBLESTONE,
@@ -836,6 +909,7 @@ public enum XMaterial {
     MOSSY_STONE_BRICK_WALL,
     MOSS_BLOCK,
     MOSS_CARPET,
+    MOURNER_POTTERY_SHERD,
     MOVING_PISTON("PISTON_MOVING_PIECE"),
     MUD,
     MUDDY_MANGROVE_ROOTS,
@@ -857,6 +931,7 @@ public enum XMaterial {
     MUSIC_DISC_MELLOHI("RECORD_7"),
     MUSIC_DISC_OTHERSIDE,
     MUSIC_DISC_PIGSTEP,
+    MUSIC_DISC_RELIC,
     MUSIC_DISC_STAL("RECORD_8"),
     MUSIC_DISC_STRAD("RECORD_9"),
     MUSIC_DISC_WAIT("RECORD_12"),
@@ -877,6 +952,7 @@ public enum XMaterial {
     NETHERITE_SCRAP,
     NETHERITE_SHOVEL,
     NETHERITE_SWORD,
+    NETHERITE_UPGRADE_SMITHING_TEMPLATE,
     NETHERRACK,
     NETHER_BRICK("NETHER_BRICK_ITEM"),
     NETHER_BRICKS("NETHER_BRICK"),
@@ -890,7 +966,7 @@ public enum XMaterial {
     NETHER_SPROUTS,
     NETHER_STAR,
     /**
-     * Just like mentioned in https://minecraft.gamepedia.com/Nether_Wart
+     * Just like mentioned in <a href="https://minecraft.gamepedia.com/Nether_Wart">Nether Wart</a>
      * Nether wart is also known as nether stalk in the code.
      * NETHER_STALK is the planted state of nether warts.
      */
@@ -903,6 +979,7 @@ public enum XMaterial {
     OAK_DOOR("WOODEN_DOOR", "WOOD_DOOR"),
     OAK_FENCE("FENCE"),
     OAK_FENCE_GATE("FENCE_GATE"),
+    OAK_HANGING_SIGN,
     OAK_LEAVES("LEAVES"),
     OAK_LOG("LOG"),
     OAK_PLANKS("WOOD"),
@@ -912,6 +989,7 @@ public enum XMaterial {
     OAK_SLAB("WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     OAK_STAIRS("WOOD_STAIRS"),
     OAK_TRAPDOOR("TRAP_DOOR"),
+    OAK_WALL_HANGING_SIGN,
     OAK_WALL_SIGN("WALL_SIGN"),
     OAK_WOOD("LOG"),
     OBSERVER,
@@ -952,7 +1030,9 @@ public enum XMaterial {
     PHANTOM_SPAWN_EGG,
     PIGLIN_BANNER_PATTERN,
     PIGLIN_BRUTE_SPAWN_EGG,
+    PIGLIN_HEAD,
     PIGLIN_SPAWN_EGG(57, "MONSTER_EGG"),
+    PIGLIN_WALL_HEAD,
     PIG_SPAWN_EGG(90, "MONSTER_EGG"),
     PILLAGER_SPAWN_EGG,
     PINK_BANNER(9, "STANDING_BANNER", "BANNER"),
@@ -964,6 +1044,7 @@ public enum XMaterial {
     PINK_CONCRETE_POWDER(6, "CONCRETE_POWDER"),
     PINK_DYE(9, "INK_SACK"),
     PINK_GLAZED_TERRACOTTA,
+    PINK_PETALS,
     PINK_SHULKER_BOX,
     PINK_STAINED_GLASS(6, "STAINED_GLASS"),
     PINK_STAINED_GLASS_PANE(6, "THIN_GLASS", "STAINED_GLASS_PANE"),
@@ -973,8 +1054,12 @@ public enum XMaterial {
     PINK_WOOL(6, "WOOL"),
     PISTON("PISTON_BASE"),
     PISTON_HEAD("PISTON_EXTENSION"),
+    PITCHER_CROP,
+    PITCHER_PLANT,
+    PITCHER_POD,
     PLAYER_HEAD(3, "SKULL", "SKULL_ITEM"),
     PLAYER_WALL_HEAD(3, "SKULL", "SKULL_ITEM"),
+    PLENTY_POTTERY_SHERD,
     PODZOL(2, "DIRT"),
     POINTED_DRIPSTONE,
     POISONOUS_POTATO,
@@ -1018,6 +1103,7 @@ public enum XMaterial {
     POTTED_BLUE_ORCHID(1, "FLOWER_POT"),
     POTTED_BROWN_MUSHROOM("FLOWER_POT"),
     POTTED_CACTUS("FLOWER_POT"),
+    POTTED_CHERRY_SAPLING,
     POTTED_CORNFLOWER,
     POTTED_CRIMSON_FUNGUS,
     POTTED_CRIMSON_ROOTS,
@@ -1037,10 +1123,15 @@ public enum XMaterial {
     POTTED_RED_MUSHROOM("FLOWER_POT"),
     POTTED_RED_TULIP(4, "FLOWER_POT"),
     POTTED_SPRUCE_SAPLING(1, "FLOWER_POT"),
+    POTTED_TORCHFLOWER,
     POTTED_WARPED_FUNGUS,
     POTTED_WARPED_ROOTS,
     POTTED_WHITE_TULIP(6, "FLOWER_POT"),
     POTTED_WITHER_ROSE,
+    POTTERY_SHARD_ARCHER,
+    POTTERY_SHARD_ARMS_UP,
+    POTTERY_SHARD_PRIZE,
+    POTTERY_SHARD_SKULL,
     POWDER_SNOW,
     POWDER_SNOW_BUCKET,
     POWDER_SNOW_CAULDRON,
@@ -1054,6 +1145,7 @@ public enum XMaterial {
     PRISMARINE_SLAB,
     PRISMARINE_STAIRS,
     PRISMARINE_WALL,
+    PRIZE_POTTERY_SHERD,
     PUFFERFISH(3, "RAW_FISH"),
     PUFFERFISH_BUCKET,
     PUFFERFISH_SPAWN_EGG,
@@ -1092,6 +1184,7 @@ public enum XMaterial {
     RABBIT_SPAWN_EGG(101, "MONSTER_EGG"),
     RABBIT_STEW,
     RAIL("RAILS"),
+    RAISER_ARMOR_TRIM_SMITHING_TEMPLATE,
     RAVAGER_SPAWN_EGG,
     RAW_COPPER,
     RAW_COPPER_BLOCK,
@@ -1156,6 +1249,7 @@ public enum XMaterial {
     REPEATER("DIODE_BLOCK_ON", "DIODE_BLOCK_OFF", "DIODE"),
     REPEATING_COMMAND_BLOCK("COMMAND", "COMMAND_REPEATING"),
     RESPAWN_ANCHOR,
+    RIB_ARMOR_TRIM_SMITHING_TEMPLATE,
     ROOTED_DIRT,
     ROSE_BUSH(4, "DOUBLE_PLANT"),
     ROTTEN_FLESH,
@@ -1178,19 +1272,25 @@ public enum XMaterial {
     SEAGRASS,
     SEA_LANTERN,
     SEA_PICKLE,
+    SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE,
+    SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE,
+    SHEAF_POTTERY_SHERD,
     SHEARS,
     SHEEP_SPAWN_EGG(91, "MONSTER_EGG"),
+    SHELTER_POTTERY_SHERD,
     SHIELD,
     SHROOMLIGHT,
     SHULKER_BOX("PURPLE_SHULKER_BOX"),
     SHULKER_SHELL,
     SHULKER_SPAWN_EGG(69, "MONSTER_EGG"),
+    SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE,
     SILVERFISH_SPAWN_EGG(60, "MONSTER_EGG"),
     SKELETON_HORSE_SPAWN_EGG(28, "MONSTER_EGG"),
     SKELETON_SKULL("SKULL", "SKULL_ITEM"),
     SKELETON_SPAWN_EGG(51, "MONSTER_EGG"),
     SKELETON_WALL_SKULL("SKULL", "SKULL_ITEM"),
     SKULL_BANNER_PATTERN,
+    SKULL_POTTERY_SHERD,
     SLIME_BALL,
     SLIME_BLOCK,
     SLIME_SPAWN_EGG(55, "MONSTER_EGG"),
@@ -1210,9 +1310,14 @@ public enum XMaterial {
     SMOOTH_SANDSTONE_STAIRS,
     SMOOTH_STONE,
     SMOOTH_STONE_SLAB,
+    SNIFFER_EGG,
+    SNIFFER_SPAWN_EGG,
+    SNORT_POTTERY_SHERD,
+    SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE,
     SNOW,
     SNOWBALL("SNOW_BALL"),
     SNOW_BLOCK,
+    SNOW_GOLEM_SPAWN_EGG,
     SOUL_CAMPFIRE,
     SOUL_FIRE,
     SOUL_LANTERN,
@@ -1224,6 +1329,7 @@ public enum XMaterial {
     SPECTRAL_ARROW,
     SPIDER_EYE,
     SPIDER_SPAWN_EGG(52, "MONSTER_EGG"),
+    SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE,
     SPLASH_POTION,
     SPONGE,
     SPORE_BLOSSOM,
@@ -1233,6 +1339,7 @@ public enum XMaterial {
     SPRUCE_DOOR("SPRUCE_DOOR", "SPRUCE_DOOR_ITEM"),
     SPRUCE_FENCE,
     SPRUCE_FENCE_GATE,
+    SPRUCE_HANGING_SIGN,
     SPRUCE_LEAVES(1, "LEAVES"),
     SPRUCE_LOG(1, "LOG"),
     SPRUCE_PLANKS(1, "WOOD"),
@@ -1242,6 +1349,7 @@ public enum XMaterial {
     SPRUCE_SLAB(1, "WOOD_DOUBLE_STEP", "WOOD_STEP", "WOODEN_SLAB"),
     SPRUCE_STAIRS("SPRUCE_WOOD_STAIRS"),
     SPRUCE_TRAPDOOR("TRAP_DOOR"),
+    SPRUCE_WALL_HANGING_SIGN,
     SPRUCE_WALL_SIGN("WALL_SIGN"),
     SPRUCE_WOOD(1, "LOG"),
     SPYGLASS,
@@ -1268,8 +1376,11 @@ public enum XMaterial {
     STRING,
     STRIPPED_ACACIA_LOG,
     STRIPPED_ACACIA_WOOD,
+    STRIPPED_BAMBOO_BLOCK,
     STRIPPED_BIRCH_LOG,
     STRIPPED_BIRCH_WOOD,
+    STRIPPED_CHERRY_LOG,
+    STRIPPED_CHERRY_WOOD,
     STRIPPED_CRIMSON_HYPHAE,
     STRIPPED_CRIMSON_STEM,
     STRIPPED_DARK_OAK_LOG,
@@ -1296,6 +1407,8 @@ public enum XMaterial {
      */
     SUGAR_CANE("SUGAR_CANE_BLOCK"),
     SUNFLOWER("DOUBLE_PLANT"),
+    SUSPICIOUS_GRAVEL,
+    SUSPICIOUS_SAND,
     SUSPICIOUS_STEW,
     SWEET_BERRIES,
     SWEET_BERRY_BUSH,
@@ -1305,11 +1418,15 @@ public enum XMaterial {
     TALL_SEAGRASS,
     TARGET,
     TERRACOTTA("HARD_CLAY"),
+    TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
     TINTED_GLASS,
     TIPPED_ARROW,
     TNT,
     TNT_MINECART("EXPLOSIVE_MINECART"),
     TORCH,
+    TORCHFLOWER,
+    TORCHFLOWER_CROP,
+    TORCHFLOWER_SEEDS,
     TOTEM_OF_UNDYING("TOTEM"),
     TRADER_LLAMA_SPAWN_EGG,
     TRAPPED_CHEST,
@@ -1330,6 +1447,7 @@ public enum XMaterial {
     TWISTING_VINES,
     TWISTING_VINES_PLANT,
     VERDANT_FROGLIGHT,
+    VEX_ARMOR_TRIM_SMITHING_TEMPLATE,
     VEX_SPAWN_EGG(35, "MONSTER_EGG"),
     VILLAGER_SPAWN_EGG(120, "MONSTER_EGG"),
     VINDICATOR_SPAWN_EGG(36, "MONSTER_EGG"),
@@ -1343,12 +1461,14 @@ public enum XMaterial {
     WALL_TORCH("TORCH"),
     WANDERING_TRADER_SPAWN_EGG,
     WARDEN_SPAWN_EGG,
+    WARD_ARMOR_TRIM_SMITHING_TEMPLATE,
     WARPED_BUTTON,
     WARPED_DOOR,
     WARPED_FENCE,
     WARPED_FENCE_GATE,
     WARPED_FUNGUS,
     WARPED_FUNGUS_ON_A_STICK,
+    WARPED_HANGING_SIGN,
     WARPED_HYPHAE,
     WARPED_NYLIUM,
     WARPED_PLANKS,
@@ -1359,13 +1479,14 @@ public enum XMaterial {
     WARPED_STAIRS,
     WARPED_STEM,
     WARPED_TRAPDOOR,
+    WARPED_WALL_HANGING_SIGN,
     WARPED_WALL_SIGN("WALL_SIGN"),
     WARPED_WART_BLOCK,
     /**
      * This is used for blocks only.
      * In 1.13- WATER will turn into STATIONARY_WATER after it finished spreading.
      * After 1.13+ this uses
-     * https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/data/Levelled.html water flowing system.
+     * <a href="https://hub.spigotmc.org/javadocs/spigot/org/bukkit/block/data/Levelled.html">Levelled</a> water flowing system.
      */
     WATER("STATIONARY_WATER"),
     WATER_BUCKET,
@@ -1386,6 +1507,7 @@ public enum XMaterial {
     WAXED_WEATHERED_CUT_COPPER,
     WAXED_WEATHERED_CUT_COPPER_SLAB,
     WAXED_WEATHERED_CUT_COPPER_STAIRS,
+    WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE,
     WEATHERED_COPPER,
     WEATHERED_CUT_COPPER,
     WEATHERED_CUT_COPPER_SLAB,
@@ -1414,11 +1536,13 @@ public enum XMaterial {
     WHITE_TULIP(6, "RED_ROSE"),
     WHITE_WALL_BANNER(15, "WALL_BANNER"),
     WHITE_WOOL("WOOL"),
+    WILD_ARMOR_TRIM_SMITHING_TEMPLATE,
     WITCH_SPAWN_EGG(66, "MONSTER_EGG"),
     WITHER_ROSE,
     WITHER_SKELETON_SKULL(1, "SKULL", "SKULL_ITEM"),
     WITHER_SKELETON_SPAWN_EGG(5, "MONSTER_EGG"),
     WITHER_SKELETON_WALL_SKULL(1, "SKULL", "SKULL_ITEM"),
+    WITHER_SPAWN_EGG,
     WOLF_SPAWN_EGG(95, "MONSTER_EGG"),
     WOODEN_AXE("WOOD_AXE"),
     WOODEN_HOE("WOOD_HOE"),
@@ -1489,7 +1613,7 @@ public enum XMaterial {
             .build();
     /**
      * The maximum data value in the pre-flattening update which belongs to {@link #VILLAGER_SPAWN_EGG}<br>
-     * https://minecraftitemids.com/types/spawn-egg
+     * <a href="https://minecraftitemids.com/types/spawn-egg">Spawn Eggs</a>
      *
      * @see #matchXMaterialWithData(String)
      * @since 8.0.0
@@ -1541,7 +1665,7 @@ public enum XMaterial {
     }
 
     /**
-     * The data value of this material https://minecraft.gamepedia.com/Java_Edition_data_values/Pre-flattening
+     * The data value of this material <a href="https://minecraft.gamepedia.com/Java_Edition_data_values/Pre-flattening">Pre-flattening</a>
      * It's never a negative number.
      *
      * @see #getData()
@@ -1577,14 +1701,15 @@ public enum XMaterial {
         this.material = mat;
     }
 
-    XMaterial(String... legacy) {this(0, legacy);}
+    XMaterial(String... legacy) {
+        this(0, legacy);
+    }
 
     /**
      * Gets the XMaterial with this name similar to {@link #valueOf(String)}
      * without throwing an exception.
      *
      * @param name the name of the material.
-     *
      * @return an optional that can be empty.
      * @since 5.1.0
      */
@@ -1629,21 +1754,6 @@ public enum XMaterial {
     }
 
     /**
-     * Parses the given material name as an XMaterial with a given data
-     * value in the string if attached. Check {@link #matchXMaterialWithData(String)} for more info.
-     *
-     * @see #matchXMaterialWithData(String)
-     * @see #matchDefinedXMaterial(String, byte)
-     * @since 2.0.0
-     */
-    @NotNull
-    public static Optional<XMaterial> matchXMaterial(@NotNull String name) {
-        if (name == null || name.isEmpty()) throw new IllegalArgumentException("Cannot match a material with null or empty material name");
-        Optional<XMaterial> oldMatch = matchXMaterialWithData(name);
-        return oldMatch.isPresent() ? oldMatch : matchDefinedXMaterial(format(name), UNKNOWN_DATA_VALUE);
-    }
-
-    /**
      * Parses material name and data value from the specified string.
      * The separator for the material name and its data value is {@code :}
      * Spaces are allowed. Mostly used when getting materials from config for old school minecrafters.
@@ -1655,7 +1765,6 @@ public enum XMaterial {
      * </pre>
      *
      * @param name the material string that consists of the material name, data and separator character.
-     *
      * @return the parsed XMaterial.
      * @see #matchXMaterial(String)
      * @since 3.0.0
@@ -1678,6 +1787,22 @@ public enum XMaterial {
     }
 
     /**
+     * Parses the given material name as an XMaterial with a given data
+     * value in the string if attached. Check {@link #matchXMaterialWithData(String)} for more info.
+     *
+     * @see #matchXMaterialWithData(String)
+     * @see #matchDefinedXMaterial(String, byte)
+     * @since 2.0.0
+     */
+    @NotNull
+    public static Optional<XMaterial> matchXMaterial(@NotNull String name) {
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Cannot match a material with null or empty material name");
+        Optional<XMaterial> oldMatch = matchXMaterialWithData(name);
+        return oldMatch.isPresent() ? oldMatch : matchDefinedXMaterial(format(name), UNKNOWN_DATA_VALUE);
+    }
+
+    /**
      * Parses the given material as an XMaterial.
      *
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
@@ -1697,7 +1822,6 @@ public enum XMaterial {
      * if not a damageable item {@link ItemStack#getDurability()}.
      *
      * @param item the ItemStack to match.
-     *
      * @return an XMaterial if matched any.
      * @throws IllegalArgumentException may be thrown as an unexpected exception.
      * @see #matchXMaterial(Material)
@@ -1708,7 +1832,11 @@ public enum XMaterial {
     public static XMaterial matchXMaterial(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot match null ItemStack");
         String material = item.getType().name();
-        byte data = (byte) (Data.ISFLAT || item.getType().getMaxDurability() > 0 ? 0 : item.getDurability());
+
+        // 1.13+ doesn't use data values at all.
+        // Maps are given different data values for different parts of the map also some plugins use negative values for custom images.
+        // Items that have durability, such as armor and tools don't use the data value to distinguish their material.
+        byte data = (byte) (Data.ISFLAT || material.equals("MAP") || item.getType().getMaxDurability() > 0 ? 0 : item.getDurability());
 
         // Versions 1.9-1.12 didn't really use the items data value.
         if (supports(9) && !supports(13) && item.hasItemMeta() && material.equals("MONSTER_EGG")) {
@@ -1747,18 +1875,41 @@ public enum XMaterial {
     }
 
     /**
+     * Gets the XMaterial based on the material's ID (Magic Value) and data value.<br>
+     * You should avoid using this for performance issues.
+     *
+     * @param id   the ID (Magic value) of the material.
+     * @param data the data value of the material.
+     * @return a parsed XMaterial with the same ID and data value.
+     * @see #matchXMaterial(ItemStack)
+     * @since 2.0.0
+     * @deprecated this method loops through all the available materials and matches their ID using {@link #getId()}
+     * which takes a really long time. Plugins should no longer support IDs. If you want, you can make a {@link Map} cache yourself.
+     * This method obviously doesn't work for 1.13+ and will not be supported. This is only here for debugging purposes.
+     */
+    @NotNull
+    @Deprecated
+    public static Optional<XMaterial> matchXMaterial(int id, byte data) {
+        if (id < 0 || id > MAX_ID || data < 0) return Optional.empty();
+        for (XMaterial materials : VALUES) {
+            if (materials.data == data && materials.getId() == id) return Optional.of(materials);
+        }
+        return Optional.empty();
+    }
+
+    /**
      * The main method that parses the given material name and data value as an XMaterial.
      * All the values passed to this method will not be null or empty and are formatted correctly.
      *
      * @param name the formatted name of the material.
      * @param data the data value of the material. Is always 0 or {@link #UNKNOWN_DATA_VALUE} when {@link Data#ISFLAT}
-     *
      * @return an XMaterial (with the same data value if specified)
      * @see #matchXMaterial(Material)
      * @see #matchXMaterial(int, byte)
      * @see #matchXMaterial(ItemStack)
      * @since 3.0.0
      */
+    @SuppressWarnings({"DanglingJavadoc", "JavadocBlankLines"})
     @NotNull
     protected static Optional<XMaterial> matchDefinedXMaterial(@NotNull String name, byte data) {
         // if (!Boolean.valueOf(Boolean.getBoolean(Boolean.TRUE.toString())).equals(Boolean.FALSE.booleanValue())) return null;
@@ -1778,49 +1929,26 @@ public enum XMaterial {
             return (data >= 0 && isAMap) ? Optional.of(FILLED_MAP) : Optional.empty();
         }
 
-        if (!Data.ISFLAT && oldXMaterial.isPlural() && (duplicated == null ? isDuplicated(name) : duplicated)) return getIfPresent(name);
+        /**
+         * XMaterial Paradox (Duplication Check)
+         * I've concluded that this is just an infinite loop that keeps
+         * going around the Singular Form and the Plural Form materials. A waste of brain cells and a waste of time.
+         * This solution works just fine anyway.
+         *
+         * A solution for XMaterial Paradox.
+         * Manually parses the duplicated materials to find the exact material based on the server version.
+         * If the name ends with "S" -> Plural Form Material.
+         * Plural methods are only plural if they're also {@link #DUPLICATED}
+         *
+         * The only special exceptions are {@link #BRICKS} (??) and {@link #NETHER_BRICKS}
+         * Note: BRICKS was added because
+         * {@code XMaterial.matchXMaterial("BRICK")} would match {@link #BRICKS} instead in 1.8.
+         */
+        boolean isPlural = oldXMaterial == CARROTS || oldXMaterial == POTATOES || oldXMaterial == BRICKS;
+
+        if (!Data.ISFLAT && isPlural && (duplicated == null ? isDuplicated(name) : duplicated))
+            return getIfPresent(name);
         return Optional.of(oldXMaterial);
-    }
-
-    /**
-     * <b>XMaterial Paradox (Duplication Check)</b>
-     * Checks if the material has any duplicates.
-     * <p>
-     * <b>Example:</b>
-     * <p>{@code MELON, CARROT, POTATO, BEETROOT -> true}
-     *
-     * @param name the name of the material to check.
-     *
-     * @return true if there's a duplicated material for this material, otherwise false.
-     * @since 2.0.0
-     */
-    private static boolean isDuplicated(@NotNull String name) {
-        // Don't use matchXMaterial() since this method is being called from matchXMaterial() itself and will cause a StackOverflowError.
-        return DUPLICATED.contains(name);
-    }
-
-    /**
-     * Gets the XMaterial based on the material's ID (Magic Value) and data value.<br>
-     * You should avoid using this for performance issues.
-     *
-     * @param id   the ID (Magic value) of the material.
-     * @param data the data value of the material.
-     *
-     * @return a parsed XMaterial with the same ID and data value.
-     * @see #matchXMaterial(ItemStack)
-     * @since 2.0.0
-     * @deprecated this method loops through all the available materials and matches their ID using {@link #getId()}
-     * which takes a really long time. Plugins should no longer support IDs. If you want, you can make a {@link Map} cache yourself.
-     * This method obviously doesn't work for 1.13+ and will not be supported. This is only here for debugging purposes.
-     */
-    @NotNull
-    @Deprecated
-    public static Optional<XMaterial> matchXMaterial(int id, byte data) {
-        if (id < 0 || id > MAX_ID || data < 0) return Optional.empty();
-        for (XMaterial materials : VALUES) {
-            if (materials.data == data && materials.getId() == id) return Optional.of(materials);
-        }
-        return Optional.empty();
     }
 
     /**
@@ -1830,7 +1958,6 @@ public enum XMaterial {
      * the normal RegEx + String Methods approach for both formatted and unformatted material names.
      *
      * @param name the material name to modify.
-     *
      * @return an enum name.
      * @since 2.0.0
      */
@@ -1868,7 +1995,6 @@ public enum XMaterial {
      * Checks if the specified version is the same version or higher than the current server version.
      *
      * @param version the major version to be checked. "1." is ignored. E.g. 1.12 = 12 | 1.9 = 9
-     *
      * @return true of the version is equal or higher than the current version.
      * @since 2.0.0
      */
@@ -1878,27 +2004,6 @@ public enum XMaterial {
 
     public String[] getLegacy() {
         return this.legacy;
-    }
-
-    /**
-     * XMaterial Paradox (Duplication Check)
-     * I've concluded that this is just an infinite loop that keeps
-     * going around the Singular Form and the Plural Form materials. A waste of brain cells and a waste of time.
-     * This solution works just fine anyway.
-     * <p>
-     * A solution for XMaterial Paradox.
-     * Manually parses the duplicated materials to find the exact material based on the server version.
-     * If the name ends with "S" -> Plural Form Material.
-     * Plural methods are only plural if they're also {@link #DUPLICATED}
-     * <p>
-     * The only special exceptions are {@link #BRICKS} and {@link #NETHER_BRICKS}
-     *
-     * @return true if this material is a plural form material, otherwise false.
-     * @since 8.0.0
-     */
-    private boolean isPlural() {
-        // this.name().charAt(this.name().length() - 1) == 'S'
-        return this == CARROTS || this == POTATOES;
     }
 
     /**
@@ -1935,7 +2040,6 @@ public enum XMaterial {
      * Want to learn RegEx? You can mess around in <a href="https://regexr.com/">RegExr</a> website.
      *
      * @param materials the material names to check base material on.
-     *
      * @return true if one of the given material names is similar to the base material.
      * @since 3.1.1
      */
@@ -1979,7 +2083,6 @@ public enum XMaterial {
      * Use {@link #parseItem()} instead when creating new ItemStacks.
      *
      * @param item the item to change its type.
-     *
      * @see #parseItem()
      * @since 3.0.0
      */
@@ -2000,7 +2103,6 @@ public enum XMaterial {
      * All the values passed to this method will not be null or empty and are formatted correctly.
      *
      * @param name the material name to check.
-     *
      * @return true if it's one of the legacy names, otherwise false.
      * @since 2.0.0
      */
@@ -2035,7 +2137,7 @@ public enum XMaterial {
 
     /**
      * Gets the ID (Magic value) of the material.
-     * https://www.minecraftinfo.com/idlist.htm
+     * <a href="https://www.minecraftinfo.com/idlist.htm">ID List</a>
      * <p>
      * Spigot added material ID support back in 1.16+
      *
@@ -2101,7 +2203,6 @@ public enum XMaterial {
      * Checks if an item has the same material (and data value on older versions).
      *
      * @param item item to check.
-     *
      * @return true if the material is the same as the item's material (and data value if on older versions), otherwise false.
      * @since 1.0.0
      */
@@ -2134,12 +2235,27 @@ public enum XMaterial {
      * no matter if it is supported or not.
      *
      * @param alternateMaterial the material to get if this one is not supported.
-     *
      * @return this material or the {@code alternateMaterial} if not supported.
      */
     @Nullable
     public XMaterial or(@Nullable XMaterial alternateMaterial) {
         return isSupported() ? this : alternateMaterial;
+    }
+
+    /**
+     * <b>XMaterial Paradox (Duplication Check)</b>
+     * Checks if the material has any duplicates.
+     * <p>
+     * <b>Example:</b>
+     * <p>{@code MELON, CARROT, POTATO, BEETROOT -> true}
+     *
+     * @param name the name of the material to check.
+     * @return true if there's a duplicated material for this material, otherwise false.
+     * @since 2.0.0
+     */
+    private static boolean isDuplicated(@NotNull String name) {
+        // Don't use matchXMaterial() since this method is being called from matchXMaterial() itself and will cause a StackOverflowError.
+        return DUPLICATED.contains(name);
     }
 
     /**

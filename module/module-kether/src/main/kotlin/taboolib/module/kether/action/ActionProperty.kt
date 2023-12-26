@@ -2,6 +2,7 @@
 
 package taboolib.module.kether.action
 
+import taboolib.common.platform.function.warning
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.Kether
 import taboolib.module.kether.ScriptAction
@@ -47,7 +48,8 @@ object ActionProperty {
             val future = CompletableFuture<Void>()
             frame.newFrame(instance).run<Any>().thenApply { instance ->
                 if (instance == null) {
-                    error("Property object must be not null.")
+                    warning("Property object must be not null.")
+                    future.complete(null)
                 }
                 frame.newFrame(value).run<Any?>().thenAccept close@{ value ->
                     val propertyList = getScriptProperty(instance)
@@ -58,7 +60,8 @@ object ActionProperty {
                             return@close
                         }
                     }
-                    error("${instance.javaClass.simpleName}[$key] not supported yet.")
+                    warning("${instance.javaClass.simpleName}[$key] not supported yet.")
+                    future.complete(null)
                 }
             }
             return future
@@ -70,7 +73,8 @@ object ActionProperty {
         override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
             return frame.newFrame(instance).run<Any>().thenApply {
                 if (it == null) {
-                    error("Property object must be not null.")
+                    warning("Property object must be not null.")
+                    return@thenApply null
                 }
                 val propertyList = getScriptProperty(it)
                 for (property in propertyList) {
@@ -79,7 +83,8 @@ object ActionProperty {
                         return@thenApply result.value
                     }
                 }
-                error("${it.javaClass.simpleName}[$key] not supported yet.")
+                warning("${it.javaClass.simpleName}[$key] not supported yet.")
+                return@thenApply null
             }
         }
     }

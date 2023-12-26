@@ -2,7 +2,7 @@ package taboolib.common.platform.command.component
 
 import taboolib.common.platform.command.CommandContext
 
-class CommandComponentDynamic(index: Int, val comment: String, optional: Boolean, permission: String) : CommandComponent(index, optional, permission) {
+class CommandComponentDynamic(val comment: String, index: Int, optional: Boolean, permission: String) : CommandComponent(index, optional, permission) {
 
     internal var commandRestrict: CommandRestrict<*>? = null
     internal var commandSuggestion: CommandSuggestion<*>? = null

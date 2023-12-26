@@ -33,7 +33,7 @@ class ActionFor(val key: String, val values: ParsedAction<*>, val action: Parsed
                         } else {
                             process(cur + 1, i)
                         }
-                    }
+                    }.except { future.complete(null) }
                 } else {
                     frame.variables().also { v ->
                         v.remove(key)
@@ -49,7 +49,7 @@ class ActionFor(val key: String, val values: ParsedAction<*>, val action: Parsed
                 is Map<*, *> -> process(0, it.entries.toList())
                 else -> process(0, listOf(it))
             }
-        }
+        }.except { future.complete(null) }
         return future
     }
 
