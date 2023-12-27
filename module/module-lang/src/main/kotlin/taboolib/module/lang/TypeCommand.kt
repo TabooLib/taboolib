@@ -3,6 +3,7 @@ package taboolib.module.lang
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.common.util.asList
+import taboolib.common.util.replaceWithOrder
 
 /**
  * TabooLib
@@ -20,7 +21,7 @@ class TypeCommand : Type {
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
-        command?.forEach { console().performCommand(it.replace("@p", sender.name)) }
+        command?.forEach { console().performCommand(it.replace("@p", sender.name).translate(sender, *args).replaceWithOrder(*args)) }
     }
 
     override fun toString(): String {

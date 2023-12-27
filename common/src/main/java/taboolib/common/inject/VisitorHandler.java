@@ -8,6 +8,7 @@ import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
 import taboolib.common.TabooLibCommon;
 import taboolib.common.io.Project1Kt;
+import taboolib.common.io.Project2Kt;
 import taboolib.common.platform.Ghost;
 import taboolib.common.platform.PlatformFactory;
 import taboolib.common.platform.SkipTo;
@@ -22,6 +23,7 @@ import java.util.function.Supplier;
  * @author sky
  * @since 2021/8/14 12:18 上午
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public class VisitorHandler {
 
     private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
@@ -149,10 +151,14 @@ public class VisitorHandler {
     private static List<Class<?>> getClasses() {
         if (classes.isEmpty()) {
             // 获取所有类
-            for (Class<?> runningClass : Project1Kt.getRunningClasses()) {
-                // 检查平台是否支持
-                if (PlatformFactory.INSTANCE.checkPlatform(runningClass)) {
-                    classes.add(runningClass);
+            for (Map.Entry<String, Class<?>> it : Project1Kt.getRunningClassMap().entrySet()) {
+                // 排除第三方库
+                // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
+                if (!it.getKey().startsWith(Project2Kt.getGroupId() + ".library") && !it.getKey().startsWith(Project2Kt.getTaboolibPath() + ".library")) {
+                    // 排除其他平台
+                    if (PlatformFactory.INSTANCE.checkPlatform(it.getValue())) {
+                        classes.add(it.getValue());
+                    }
                 }
             }
         }
