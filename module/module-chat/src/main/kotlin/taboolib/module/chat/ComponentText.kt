@@ -142,6 +142,9 @@ interface ComponentText : Source {
     /** 转换为 Spigot 对象 */
     fun toSpigotObject(): BaseComponent
 
+    /** 转换为 RawMessage */
+    fun toLegacyRawMessage(): RawMessage
+
     companion object {
 
         fun empty(): ComponentText {

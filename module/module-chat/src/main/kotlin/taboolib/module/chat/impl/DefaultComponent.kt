@@ -331,6 +331,10 @@ class DefaultComponent() : ComponentText {
         return component
     }
 
+    override fun toLegacyRawMessage(): RawMessage {
+        return RawMessage(this)
+    }
+
     /** 释放缓冲区 */
     fun flush() {
         left.addAll(latest)

@@ -19,7 +19,6 @@ import taboolib.module.chat.impl.ErrorSimpleComponent
     // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
     repository = "https://repo2s.ptms.ink/repository/releases"
 )
-@Suppress("SpellCheckingInspection")
 object Components {
 
     /** 创建空白块 */
@@ -59,4 +58,16 @@ object Components {
             ErrorSimpleComponent(ex)
         }
     }
+
+    /** 解析 TabooLib SimpleComponent 并转换为 Raw */
+    fun parseSimpleToRaw(text: String, transfer: TextTransfer.() -> Unit = {}) = parseSimple(text).buildToRaw(transfer)
+
+    /** 解析 TabooLib SimpleComponent 并转换为 Raw */
+    fun parseSimpleToRaw(text: List<String>, transfer: TextTransfer.() -> Unit = {}) = text.map { parseSimple(it).buildToRaw(transfer) }
+
+    /** 解析 TabooLib SimpleComponent 并转换为 RawMessage */
+    fun parseSimpleToLegacyRaw(text: String, transfer: TextTransfer.() -> Unit = {}) = parseSimple(text).buildColored(transfer).toLegacyRawMessage()
+
+    /** 解析 TabooLib SimpleComponent 并转换为 RawMessage */
+    fun parseSimpleToLegacyRaw(text: List<String>, transfer: TextTransfer.() -> Unit = {}) = text.map { parseSimple(it).buildColored(transfer).toLegacyRawMessage() }
 }
