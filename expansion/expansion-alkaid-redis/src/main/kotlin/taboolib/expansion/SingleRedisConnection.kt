@@ -30,11 +30,11 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class SingleRedisConnection(internal var pool: JedisPool, internal val connector: SingleRedisConnector): Closeable {
+class SingleRedisConnection(internal var pool: JedisPool, internal val connector: SingleRedisConnector): Closeable, IRedisConnection {
 
-    internal val service: ExecutorService = Executors.newCachedThreadPool()
+    private val service: ExecutorService = Executors.newCachedThreadPool()
 
-    internal fun <T> exec(loop: Boolean = false, func: (Jedis) -> T): T {
+    private fun <T> exec(loop: Boolean = false, func: (Jedis) -> T): T {
         return try {
             pool.resource.use { func(it) }
         } catch (ex: JedisConnectionException) {
@@ -54,6 +54,18 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
+    override fun eval(script: String, keys: List<String>, args: List<String>): Any? {
+        return exec {
+            it.eval(script, keys, args)
+        }
+    }
+
+    override fun eval(script: String, keyC: Int, args: List<String>): Any? {
+        return exec {
+            it.eval(script, keyC, *args.toTypedArray())
+        }
+    }
+
     /**
      * 关闭连接
      */
@@ -67,8 +79,12 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param key 键
      * @param value 值
      */
-    operator fun set(key: String, value: String?) {
+    override operator fun set(key: String, value: String?) {
         exec { if (value == null) it.del(key) else it[key] = value }
+    }
+
+    override fun setNx(key: String, value: String?) {
+        exec { if (value == null) it.del(key) else it.setnx(key, value) }
     }
 
     /**
@@ -77,7 +93,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param key 键
      * @return 值
      */
-    operator fun get(key: String): String? {
+    override operator fun get(key: String): String? {
         return exec { it[key] }
     }
 
@@ -86,7 +102,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      *
      * @param key 键
      */
-    fun delete(key: String) {
+    override fun delete(key: String) {
         exec { it.del(key) }
     }
 
@@ -97,7 +113,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param value 值
      * @param seconds 过期时间
      */
-    fun expire(key: String, value: Long, timeUnit: TimeUnit) {
+    override fun expire(key: String, value: Long, timeUnit: TimeUnit) {
         exec { it.expire(key, timeUnit.toSeconds(value)) }
     }
 
@@ -107,7 +123,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param key
      * @return Boolean
      */
-    fun contains(key: String): Boolean {
+    override fun contains(key: String): Boolean {
         return exec { it.exists(key) }
     }
 
@@ -117,7 +133,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param channel 频道
      * @param message 消息
      */
-    fun publish(channel: String, message: Any) {
+    override fun publish(channel: String, message: Any) {
         exec {
             if (message is String) {
                 it.publish(channel, message)
@@ -134,7 +150,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      * @param patternMode 频道名称是否为正则模式
      * @param func 信息处理函数
      */
-    fun subscribe(vararg channel: String, patternMode: Boolean = false, func: RedisMessage.() -> Unit) {
+    override fun subscribe(vararg channel: String, patternMode: Boolean, func: RedisMessage.() -> Unit) {
         service.submit {
             try {
                 exec(true) { jedis ->
@@ -150,7 +166,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    internal fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub {
+    override fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub {
         return object : JedisPubSub() {
 
             init {
