@@ -25,6 +25,7 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
                     member.canConvertedDecimal() -> add(member.name) {
                         type(ColumnTypeSQLite.REAL) { options(member) }
                     }
+
                     else -> {
                         val customType = CustomTypeFactory.getCustomTypeByClass(member.returnType) ?: error("Unsupported type: ${member.name} (${member.returnType})")
                         add(member.name) { type(customType.typeSQLite, customType.length) { options(member) } }
@@ -35,6 +36,9 @@ class ContainerSQLite(file: File) : Container<SQLite>(HostSQLite(file)) {
     }
 
     private fun ColumnSQLite.options(member: AnalyzedClassMember) {
+        if (member.isPrimary) {
+            options(ColumnOptionSQLite.PRIMARY_KEY)
+        }
         if (member.isUniqueKey) {
             options(ColumnOptionSQLite.UNIQUE)
         }

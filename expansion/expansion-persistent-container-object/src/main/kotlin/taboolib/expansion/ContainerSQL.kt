@@ -50,9 +50,10 @@ class ContainerSQL(
     }
 
     private fun ColumnSQL.options(member: AnalyzedClassMember) {
-        if (member.isKey) {
+        if (member.isKey || member.isPrimary) {
             options(ColumnOptionSQL.KEY)
-        } else if (member.isUniqueKey) {
+        }
+        if (member.isUniqueKey) {
             options(ColumnOptionSQL.UNIQUE_KEY)
         }
     }

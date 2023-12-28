@@ -127,7 +127,7 @@ class PersistentContainer {
     /**
      * 从数据类创建容器
      */
-    inline fun <reified T> new(name: String) = new(T::class.java, name)
+    inline fun <reified T> new(name: String = T::class.java.simpleName.toColumnName()) = new(T::class.java, name)
 
     /**
      * 从数据类创建容器
@@ -141,6 +141,13 @@ class PersistentContainer {
      */
     operator fun get(name: String): ContainerOperator {
         return container.operator(name)
+    }
+
+    /**
+     * 获取控制器
+     */
+    inline fun <reified T> get(): ContainerOperator {
+        return get(T::class.java.simpleName.toColumnName())
     }
 
     /**
