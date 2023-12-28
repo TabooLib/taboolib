@@ -75,4 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: 6.0.12-${{ github.run_number }}
-          release_name: Release 6.0.12-${{ github.run_number }}
+          release_name: 6.0.12-${{ github.run_number }}
+          release_notes: |-
+            ## 🤨 本次更新都有哪些主要改动？
+            - ${{ github.event.head_commit.message }}
