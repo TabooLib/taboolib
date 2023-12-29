@@ -121,4 +121,20 @@ internal object Actions {
             }
         }
     }
+
+    @PlatformSide([Platform.BUKKIT])
+    @KetherParser(["stopsound"])
+    fun actionStopSound() = combinationParser {
+        it.group(
+            text(),
+        ).apply(it) { sound ->
+            now {
+                if (sound.startsWith("resource:")) {
+                    player().playSoundResource(player().location, sound.substringAfter("resource:"), -1f, -1f)
+                } else {
+                    player().playSound(player().location, sound.replace('.', '_').uppercase(), -1f, -1f)
+                }
+            }
+        }
+    }
 }
