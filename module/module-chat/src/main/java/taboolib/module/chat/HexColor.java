@@ -79,7 +79,7 @@ public class HexColor {
         String colorString = builder.toString();
         // 1.20.4 不再支持该写法，该模块无法判断版本，因此全部替换为白色
         // 若需要恢复默认色请使用 SimpleComponent 中的 reset 属性
-        colorString = colorString.replace("&r", "&f");
+        colorString = colorString.replace("&r", "&f").replace("§r", "§f");
         return ChatColor.translateAlternateColorCodes('&', colorString);
     }
 
