@@ -29,7 +29,12 @@ class ContainerSQL(
                 when {
                     // 字符串
                     member.isString || member.isEnum -> add(member.name) {
-                        type(ColumnTypeSQL.VARCHAR, member.length) { options(member) }
+                        // length == -1 时使用longtext
+                        if (member.length < 0) {
+                            type(ColumnTypeSQL.LONGTEXT) { options(member) }
+                        } else {
+                            type(ColumnTypeSQL.VARCHAR, member.length) { options(member) }
+                        }
                     }
                     // UUID
                     member.isUUID -> add(member.name) {

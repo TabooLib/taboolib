@@ -58,6 +58,38 @@ object AlkaidRedis {
     }
 
     /**
+     * 创建 RedisCluster 连接器
+     * Redis集群模式连接器
+     *
+     * Node按照官方推荐最小是 6个 3主3从 最低是 3主
+     *
+     * @return [ClusterRedisConnector]
+     */
+    fun linkCluster(builder: ClusterRedisConnector.() -> Unit = {}): ClusterRedisConnector {
+        return ClusterRedisConnector().apply {
+            builder.invoke(this)
+            build()
+        }
+    }
+
+//    fun test() {
+//        val connection = linkCluster {
+//            addNode("127.0.0.1:3306")
+//        }.connection()
+//
+//        val lock = connection.getLock("测试Lock"){
+//            internalLockLeaseTime = 1000L
+//        }
+//        try {
+//            if (lock.tryLock()) {
+//                println("获取锁成功")
+//            }
+//        } finally {
+//            lock.unlock()
+//        }
+//    }
+
+    /**
      * 创建 Redis 连接
      *
      * @return [SingleRedisConnection]

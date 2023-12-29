@@ -24,6 +24,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
     /** 排序 */
     private val order = arrayListOf<Order>()
 
+    /** 求和 */
+    private val sum = arrayListOf<Sum>()
+
     /** 限制 */
     private var limit = -1
 
@@ -32,6 +35,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
         get() = Statement("SELECT")
             .addSegmentIfTrue(rows.isNotEmpty()) {
                 addKeys(rows.toTypedArray(), false)
+            }
+            .addSegmentIfTrue(sum.isNotEmpty()) {
+                addOperations(sum)
             }
             .addSegmentIfTrue(distincts.isNotEmpty()) {
                 addSegment("DISTINCT")
@@ -99,9 +105,21 @@ class ActionSelect(val table: String) : ActionFilterable() {
 
     /**
      * 排序
+     *
+     * 在config中可以使用castType来对列进行类型转换
+     * 然后使用转换后的row进行排序
      */
-    fun orderBy(row: String, type: Order.Type = Order.Type.ASC) {
-        this.order += Order(row, type)
+    fun orderBy(row: String, type: Order.Type = Order.Type.ASC, config: Order.() -> Unit = {}) {
+        this.order += Order(row, type).also(config)
+    }
+
+    /**
+     * 求和
+     *
+     * 对某个列的值求和 然后结果转换为另一个临时列
+     */
+    fun sum(row: String, tempRow: String, config: Sum.() -> Unit = {}) {
+        this.sum += Sum(row, tempRow).also(config)
     }
 
     /**
