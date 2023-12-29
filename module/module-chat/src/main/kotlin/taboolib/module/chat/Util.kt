@@ -69,7 +69,12 @@ fun String.parseToHexColor(): Int {
     // NAMED: white
     val knownColor = StandardColors.match(this)
     if (knownColor.isPresent) {
-        return knownColor.get().chatColor.color.rgb
+        // 没颜色的
+        if (knownColor.get().chatColor.color == null) {
+            warning("$this is not a color.")
+        } else {
+            knownColor.get().chatColor.color.rgb
+        }
     }
     warning("Unknown color $this")
     return 0

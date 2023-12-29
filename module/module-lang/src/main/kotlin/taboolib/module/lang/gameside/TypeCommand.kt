@@ -1,13 +1,14 @@
-package taboolib.module.lang
+package taboolib.module.lang.gameside
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.console
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
+import taboolib.module.lang.Type
 
 /**
  * TabooLib
- * taboolib.module.lang.TypeCommand
+ * taboolib.module.lang.gameside.TypeCommand
  *
  * @author sky
  * @since 2021/6/20 10:55 下午

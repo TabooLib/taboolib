@@ -5,7 +5,6 @@ import taboolib.module.chat.*
 import java.awt.Color
 
 /** 文本块 */
-@Suppress("SpellCheckingInspection")
 open class TextBlock(val level: Int, val properties: MutableMap<String, PropertyValue?> = hashMapOf(), var parent: TextBlock? = null) {
 
     /** 换行文本块 */
@@ -97,19 +96,20 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
             when (key) {
                 "s" -> rawMessage.strikethrough()
                 "u" -> rawMessage.underline()
-                "i" -> rawMessage.italic()
-                "b" -> rawMessage.bold()
-                "o" -> rawMessage.obfuscated()
-                "newline", "br" -> rawMessage.newLine()
-                "font" -> rawMessage.font(transfer(value))
+                "i", "italic" -> rawMessage.italic()
+                "b", "bold" -> rawMessage.bold()
+                "o", "obf" -> rawMessage.obfuscated()
+                "r", "reset" -> rawMessage.undecoration().uncolor()
+                "br", "nl", "newline" -> rawMessage.newLine()
+                "f", "font" -> rawMessage.font(transfer(value))
                 "url" -> rawMessage.clickOpenURL(transfer(value))
                 "file" -> rawMessage.clickOpenFile(transfer(value))
-                "command", "cmd" -> rawMessage.clickRunCommand(transfer(value))
+                "cmd", "command" -> rawMessage.clickRunCommand(transfer(value))
                 "suggest" -> rawMessage.clickSuggestCommand(transfer(value))
                 "page" -> rawMessage.clickChangePage(transfer(value).toInt())
                 "copy" -> rawMessage.clickCopyToClipboard(transfer(value))
-                "insertion", "insert" -> rawMessage.clickInsertText(transfer(value))
-                "hover", "h" -> {
+                "insert", "insertion" -> rawMessage.clickInsertText(transfer(value))
+                "h", "hover" -> {
                     if (value is PropertyValue.Link) {
                         rawMessage.hoverText(value.getValue(transfer))
                     } else {
@@ -121,7 +121,8 @@ open class TextBlock(val level: Int, val properties: MutableMap<String, Property
                         }
                     }
                 }
-                "color", "c" -> {
+                // 颜色
+                "c", "color" -> {
                     val color = value?.toString() ?: error("Missing color.")
                     if (color.length == 1) {
                         rawMessage.color(ChatColor.getByChar(color[0])?.color ?: error("Invalid color code: ${color[0]}"))

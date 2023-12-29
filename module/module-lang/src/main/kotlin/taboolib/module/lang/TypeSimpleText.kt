@@ -6,12 +6,17 @@ import taboolib.module.chat.component
 
 /**
  * TabooLib
- * taboolib.module.lang.TypeText
+ * taboolib.module.lang.TypeSimpleText
+ *
+ * test:
+ * - ==: simple_text
+ *   text: |-
+ *     [你好](c=black)
  *
  * @author sky
  * @since 2021/6/20 10:55 下午
  */
-class TypeText : Type {
+class TypeSimpleText : Type {
 
     var text: String? = null
 
@@ -36,12 +41,7 @@ class TypeText : Type {
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
         if (text != null) {
-            val newText = text!!.translate(sender, *args).replaceWithOrder(*args)
-            if (Language.enableSimpleComponent) {
-                newText.component().sendTo(sender)
-            } else {
-                sender.sendMessage(newText)
-            }
+            text!!.translate(sender, *args).replaceWithOrder(*args).component().sendTo(sender)
         }
     }
 

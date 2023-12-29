@@ -9,6 +9,10 @@ import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
+import taboolib.module.lang.gameside.TypeActionBar
+import taboolib.module.lang.gameside.TypeCommand
+import taboolib.module.lang.gameside.TypeSound
+import taboolib.module.lang.gameside.TypeTitle
 import java.util.*
 import java.util.jar.JarFile
 
@@ -49,6 +53,7 @@ object Language {
     )
 
     /** 语言文件类型 */
+    @Suppress("SpellCheckingInspection")
     val languageType = hashMapOf(
         "text" to TypeText::class.java,
         "raw" to TypeJson::class.java,
@@ -56,8 +61,14 @@ object Language {
         "title" to TypeTitle::class.java,
         "sound" to TypeSound::class.java,
         "command" to TypeCommand::class.java,
-        "actionbar" to TypeActionBar::class.java
+        "actionbar" to TypeActionBar::class.java,
+        "action_bar" to TypeActionBar::class.java,
+        "simpletext" to TypeSimpleText::class.java,
+        "simple_text" to TypeSimpleText::class.java,
     )
+
+    /** 是否在语言文件中启用 SimpleComponent 格式化 */
+    val enableSimpleComponent = false
 
     /** 添加新的语言文件 */
     fun addLanguage(vararg code: String) {

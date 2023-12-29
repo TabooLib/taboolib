@@ -14,7 +14,7 @@ import taboolib.module.chat.impl.ErrorSimpleComponent
  * @since 2023/2/9 20:16
  */
 @RuntimeDependency(
-    value = "!net.md-5:bungeecord-chat:1.17",
+    value = "!net.md-5:bungeecord-chat:1.20",
     test = "!net.md_5.bungee.api.chat.TextComponent",
     // relocate = ["!net.md_5.bungee", "!net.md_5.bungee117"],
     repository = "https://repo2s.ptms.ink/repository/releases"

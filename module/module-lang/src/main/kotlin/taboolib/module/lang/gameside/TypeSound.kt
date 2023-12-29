@@ -1,11 +1,12 @@
-package taboolib.module.lang
+package taboolib.module.lang.gameside
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
+import taboolib.module.lang.Type
 
 /**
  * TabooLib
- * taboolib.module.lang.TypeSound
+ * taboolib.module.lang.gameside.TypeSound
  *
  * @author sky
  * @since 2021/6/20 10:55 下午

@@ -1,5 +1,7 @@
 package taboolib.module.chat
 
+import taboolib.common.platform.ProxyCommandSender
+
 /**
  * TabooLib
  * taboolib.module.chat.SimpleComponent
@@ -20,5 +22,15 @@ interface SimpleComponent {
     /** 直接构建为 RawMessage */
     fun buildToRaw(transfer: TextTransfer.() -> Unit = {}): String {
         return buildColored(transfer).toRawMessage()
+    }
+
+    /** 广播给所有玩家 */
+    fun broadcast() {
+        build().broadcast()
+    }
+
+    /** 发送给玩家 */
+    fun sendTo(sender: ProxyCommandSender) {
+        build().sendTo(sender)
     }
 }

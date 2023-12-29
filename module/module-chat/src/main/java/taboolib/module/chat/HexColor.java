@@ -1,6 +1,7 @@
 package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.chat.BaseComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -39,6 +40,7 @@ public class HexColor {
      * @param in 字符串
      * @return String
      */
+    @SuppressWarnings("CallToPrintStackTrace")
     @NotNull
     public static String translate(String in) {
         if (isLegacy) {
@@ -74,7 +76,11 @@ public class HexColor {
                 builder.append(chars[i]);
             }
         }
-        return ChatColor.translateAlternateColorCodes('&', builder.toString());
+        String colorString = builder.toString();
+        // 1.20.4 不再支持该写法，该模块无法判断版本，因此全部替换为白色
+        // 若需要恢复默认色请使用 SimpleComponent 中的 reset 属性
+        colorString = colorString.replace("&r", "&f");
+        return ChatColor.translateAlternateColorCodes('&', colorString);
     }
 
     public static String getColorCode(int color) {
