@@ -14,7 +14,7 @@ import kotlin.random.Random
  * @author sky
  * @since 2021/1/30 9:26 下午
  */
-class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val action: ParsedAction<*>? = null) : ScriptAction<Any?>() {
+internal class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, val action: ParsedAction<*>? = null) : ScriptAction<Any?>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
         val future = CompletableFuture<Any?>()

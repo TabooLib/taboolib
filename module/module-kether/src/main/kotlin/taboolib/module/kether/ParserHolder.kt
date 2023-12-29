@@ -17,8 +17,20 @@ object ParserHolder {
         }
     }
 
-    /** 取任意类型列表 */
-    fun anyList(): Parser<List<Any?>> = any().listOf()
+    /** 取任意类型并转换为列表 */
+    @Suppress("UNCHECKED_CAST")
+    fun anyAsList(): Parser<MutableList<Any?>> {
+        return Parser.frame { r ->
+            val action = r.nextParsedAction()
+            Action { it.run(action).thenApply { obj -> if (obj is MutableList<*>) obj as MutableList<Any?> else mutableListOf(obj) } }
+        }
+    }
+
+    /**
+     * 取原始列表
+     * 例如：[1, 2, 3]
+     */
+    fun originList(): Parser<MutableList<Any?>> = any().listOf()
 
     /** 取特定类型 */
     inline fun <reified T> type(): Parser<T> = any().map { it as T }
@@ -27,7 +39,7 @@ object ParserHolder {
     fun action(): Parser<ParsedAction<*>> = Parser.of { it.nextParsedAction() }
 
     /** 取动作列表 */
-    fun actionList(): Parser<List<ParsedAction<*>>> = Parser.of { it.next(ArgTypes.listOf(ArgTypes.ACTION)) }
+    fun actionList(): Parser<MutableList<ParsedAction<*>>> = Parser.of { it.next(ArgTypes.listOf(ArgTypes.ACTION)) }
 
     /** 取文本（固定的）*/
     fun symbol(): Parser<String> = Parser.of { it.nextToken() }

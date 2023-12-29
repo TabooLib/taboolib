@@ -8,28 +8,35 @@ import kotlin.math.roundToInt
 
 internal object Actions {
 
-    @KetherParser(["array"])
-    fun actionArray() = combinationParser {
-        it.group(anyList()).apply(it) { array -> now { array } }
-    }
-
+    /**
+     * 格式化数字
+     */
     @KetherParser(["scale", "scaled"])
     fun actionScale() = combinationParser {
         it.group(double()).apply(it) { d -> now { Coerce.format(d) }}
     }
 
+    /**
+     * 取整
+     */
     @KetherParser(["round"])
     fun actionRound() = combinationParser {
         it.group(double()).apply(it) { d -> now { d.roundToInt() }}
     }
 
+    /**
+     * 拆分字符串
+     */
     @KetherParser(["split"])
     fun actionSplit() = combinationParser {
         it.group(text(), command("by", "with", then = text()).option()).apply(it) { t, s ->
-            now { if (s != null) t.split(s.toRegex()) else t.toCharArray().map { c -> c.toString() } }
+            now { if (s != null) t.split(s.toRegex()) else t.toCharArray().map { c -> c.toString() }.toMutableList() }
         }
     }
 
+    /**
+     * 格式化时间
+     */
     @KetherParser(["format"])
     fun actionFormat() = combinationParser {
         it.group(long(), command("by", "with", then = text()).option()).apply(it) { t, s ->
@@ -37,13 +44,19 @@ internal object Actions {
         }
     }
 
+    /**
+     * 将字符串转换为打字机效果
+     */
     @KetherParser(["printed"])
     fun actionPrinted() = combinationParser {
         it.group(text(), command("by", "with", then = text()).option()).apply(it) { t, s ->
-            now { t.printed(s ?: "_") }
+            now { t.printed(s ?: "_").toMutableList() }
         }
     }
 
+    /**
+     * 比较
+     */
     @KetherParser(["check"])
     fun actionCheck() = combinationParser {
         it.group(any(), symbol(), any()).apply(it) { l, s, r ->
@@ -52,6 +65,9 @@ internal object Actions {
         }
     }
 
+    /**
+     * 内联函数
+     */
     @KetherParser(["inline", "function"])
     fun actionFunction() = combinationParser {
         it.group(text()).apply(it) { f ->
@@ -59,6 +75,9 @@ internal object Actions {
         }
     }
 
+    /**
+     * 可能为空的值
+     */
     @KetherParser(["optional"])
     fun actionOptional() = combinationParser {
         it.group(any(), command("else", then = action()).option()).apply(it) { t, e ->
@@ -72,6 +91,9 @@ internal object Actions {
         }
     }
 
+    /**
+     * 取一个范围内的数字
+     */
     @KetherParser(["range"])
     fun actionRange() = combinationParser {
         it.group(
@@ -81,10 +103,10 @@ internal object Actions {
         ).apply(it) { from, to, s ->
             now {
                 if (s == 0.0) {
-                    (from.toInt()..to.toInt()).toList()
+                    (from.toInt()..to.toInt()).toMutableList()
                 } else {
                     val intStep = s.toInt().toDouble() == s
-                    val array = ArrayList<Any>()
+                    val array = arrayListOf<Any>()
                     var i = from
                     while (i <= to) {
                         array.add(if (intStep) i.toInt() else i)

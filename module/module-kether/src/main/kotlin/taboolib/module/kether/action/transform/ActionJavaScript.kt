@@ -11,7 +11,7 @@ import javax.script.SimpleBindings
 /**
  * @author IzzelAliz
  */
-class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
+internal class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>() {
 
     override fun run(frame: ScriptFrame): CompletableFuture<Any> {
         val s = frame.script()
