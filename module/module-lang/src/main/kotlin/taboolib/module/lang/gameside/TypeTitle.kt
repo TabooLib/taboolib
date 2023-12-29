@@ -1,16 +1,9 @@
 package taboolib.module.lang.gameside
 
-import taboolib.common.platform.Platform
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.runningPlatform
-import taboolib.common.platform.function.warning
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.chat.component
-import taboolib.module.lang.Language
 import taboolib.module.lang.Type
-import taboolib.module.nms.NMSMessage
-import taboolib.module.nms.nmsProxy
 
 /**
  * TabooLib
@@ -39,23 +32,25 @@ class TypeTitle : Type {
         if (sender is ProxyPlayer) {
             val title = title?.translate(sender, *args)?.replaceWithOrder(*args) ?: ""
             val subtitle = subtitle?.translate(sender, *args)?.replaceWithOrder(*args) ?: ""
-            if (Language.enableSimpleComponent) {
-                // 仅限于 Bukkit
-                if (runningPlatform == Platform.BUKKIT) {
-                    try {
-                        val rawTitle = title.component().build().toRawMessage()
-                        val rawSubtitle = subtitle.component().build().toRawMessage()
-                        nmsProxy<NMSMessage>().sendRawTitle(sender.cast(), rawTitle, rawSubtitle, fadein, stay, fadeout)
-                    } catch (ex: NoClassDefFoundError) {
-                        warning("RawTitle requires module-nms-util")
-                    }
-                } else {
-                    warning("RawTitle is not supported on ${runningPlatform}.")
-                    sender.sendTitle(title, subtitle, fadein, stay, fadeout)
-                }
-            } else {
-                sender.sendTitle(title, subtitle, fadein, stay, fadeout)
-            }
+//            // 暂不支持
+//            if (Language.enableSimpleComponent) {
+//                // 仅限于 Bukkit
+//                if (runningPlatform == Platform.BUKKIT) {
+//                    try {
+//                        val rawTitle = title.component().build().toRawMessage()
+//                        val rawSubtitle = subtitle.component().build().toRawMessage()
+//                        nmsProxy<NMSMessage>().sendRawTitle(sender.cast(), rawTitle, rawSubtitle, fadein, stay, fadeout)
+//                    } catch (ex: NoClassDefFoundError) {
+//                        warning("RawTitle requires module-nms-util")
+//                    }
+//                } else {
+//                    warning("RawTitle is not supported on ${runningPlatform}.")
+//                    sender.sendTitle(title, subtitle, fadein, stay, fadeout)
+//                }
+//            } else {
+//                sender.sendTitle(title, subtitle, fadein, stay, fadeout)
+//            }
+            sender.sendTitle(title, subtitle, fadein, stay, fadeout)
         } else {
             sender.sendMessage(toString())
         }
