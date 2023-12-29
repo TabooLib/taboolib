@@ -68,6 +68,13 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
 
+      # 获取 commit 信息
+      - name: get commit messages
+        id: get_commits
+        run: |
+          commit_messages=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s")
+          echo "::set-output name=messages::$commit_messages"
+
       # 发布到 GitHub
       - name: create release
         uses: actions/create-release@v1
@@ -76,6 +83,6 @@ jobs:
         with:
           tag_name: 6.0.12-${{ github.run_number }}
           release_name: 6.0.12-${{ github.run_number }}
-          release_notes: |-
+          body: |
             ## 🤨 本次更新都有哪些主要改动？
-            - ${{ github.event.head_commit.message }}
+            ${{ steps.get_commits.outputs.messages }}
