@@ -37,7 +37,7 @@ class TypeActionBar : Type {
 //                    sender.sendRawMessage(newText)
 //                }
 //            }
-            sender.sendRawMessage(newText)
+            sender.sendActionBar(newText)
         } else {
             sender.sendMessage(newText)
         }
