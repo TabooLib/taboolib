@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.platform.Ghost
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.util.unsafeLazy
@@ -80,6 +81,7 @@ private val playerScoreboardMap = ConcurrentHashMap<UUID, PlayerScoreboard>()
 /**
  * 进入游戏时移除记分板标记
  */
+@Ghost
 @SubscribeEvent(priority = EventPriority.LOWEST)
 private fun onJoin(e: PlayerJoinEvent) {
     e.player.removeMeta("t_scoreboard_init")
@@ -88,6 +90,7 @@ private fun onJoin(e: PlayerJoinEvent) {
 /**
  * 离开游戏时释放记分板缓存
  */
+@Ghost
 @SubscribeEvent
 private fun onQuit(e: PlayerQuitEvent) {
     // 移除记分板缓存
