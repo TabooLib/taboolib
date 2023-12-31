@@ -2,15 +2,25 @@ package taboolib.module.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 import javax.sql.DataSource
 
-@RuntimeDependency(
-    "!com.zaxxer:HikariCP:4.0.3",
-    test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
-    relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3"]
+@RuntimeDependencies(
+    RuntimeDependency(
+        "!org.slf4j:slf4j-api:2.0.8",
+        test = "!org.slf4j_2_0_8.LoggerFactory",
+        relocate = ["!org.slf4j", "!org.slf4j_2_0_8"],
+        transitive = false
+    ),
+    RuntimeDependency(
+        "!com.zaxxer:HikariCP:4.0.3",
+        test = "!com.zaxxer.hikari_4_0_3.HikariDataSource",
+        relocate = ["!com.zaxxer.hikari", "!com.zaxxer.hikari_4_0_3", "!org.slf4j", "!org.slf4j_2_0_8"],
+        transitive = false
+    )
 )
 object Database {
 
