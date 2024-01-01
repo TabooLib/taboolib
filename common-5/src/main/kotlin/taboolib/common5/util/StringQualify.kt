@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
 
 package taboolib.common5.util
 
@@ -7,7 +8,7 @@ import taboolib.common.Isolated
 /**
  * 将文字转换为打印机特效
  */
-fun String.printed(separator: String = ""): List<String> {
+inline fun String.printed(separator: String = ""): List<String> {
     val result = ArrayList<String>()
     var i = 0
     while (i < length) {
@@ -32,7 +33,7 @@ fun String.printed(separator: String = ""): List<String> {
  * @param length 长度
  * @param percent 百分比
  */
-fun createBar(empty: String, fill: String, length: Int, percent: Double): String {
+inline fun createBar(empty: String, fill: String, length: Int, percent: Double): String {
     return (1..length).joinToString("") {
         if (percent.isNaN() || percent == 0.0) empty else if (percent >= it.toDouble() / length) fill else empty
     }
