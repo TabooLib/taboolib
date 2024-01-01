@@ -1,4 +1,6 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
+
 package taboolib.common.util
 
 import taboolib.common.Isolated
@@ -9,15 +11,15 @@ import java.util.*
  *
  * @param func 执行函数
  */
-fun <T> Optional<T>.presentRun(func: T.() -> Unit) {
+inline fun <T> Optional<T>.presentRun(noinline func: T.() -> Unit) {
     ifPresent(func)
 }
 
-fun <T> Optional<T>.orNull(): T? {
+inline fun <T> Optional<T>.orNull(): T? {
     return orElse(null)
 }
 
-fun <T> optional(value: Any, func: () -> T): T? {
+inline fun <T> optional(value: Any, func: () -> T): T? {
     try {
         return func()
     } catch (ex: NullPointerException) {

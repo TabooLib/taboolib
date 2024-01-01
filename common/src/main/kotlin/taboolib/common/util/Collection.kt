@@ -1,9 +1,10 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
 package taboolib.common.util
 
 import taboolib.common.Isolated
 
-fun Any.asList(): List<String> {
+inline fun Any.asList(): List<String> {
     return when (this) {
         is Collection<*> -> map { it.toString() }
         is Array<*> -> map { it.toString() }

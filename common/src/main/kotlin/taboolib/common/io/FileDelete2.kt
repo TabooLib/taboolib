@@ -42,27 +42,3 @@ fun File.deepDeleteAsync(await: Boolean = false, futures: MutableSet<Future<*>>?
     // It shouldn't be called inside this function
     if (await) future.get()
 }
-
-/**
- * 删除特定文件夹下的所有子文件
- */
-fun File.deepDelete() {
-    if (exists()) {
-        if (isDirectory) {
-            listFiles()?.forEach { it.deepDelete() }
-        }
-        delete()
-    }
-}
-
-/**
- * 复制文件或文件夹
- * 若目标为文件夹则复制其所有子文件
- */
-fun File.deepCopyTo(target: File) {
-    if (isDirectory) {
-        listFiles()?.forEach { it.deepCopyTo(File(target, it.name)) }
-    } else {
-        copyTo(target)
-    }
-}

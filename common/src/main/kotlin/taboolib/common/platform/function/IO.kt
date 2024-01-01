@@ -1,34 +1,20 @@
+@file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
+
 package taboolib.common.platform.function
 
+import taboolib.common.Isolated
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformIO
 import java.io.File
 
 /**
- * 获取当前插件名称
- */
-val pluginId: String
-    get() = PlatformFactory.getService<PlatformIO>().pluginId
-
-/**
- * 获取当前插件版本
- */
-val pluginVersion: String
-    get() = PlatformFactory.getService<PlatformIO>().pluginVersion
-
-/**
- * 当前是否在主线程中运行
- */
-val isPrimaryThread: Boolean
-    get() = PlatformFactory.getService<PlatformIO>().isPrimaryThread
-
-/**
  * 获取控制台对象
  * 例如：
  * server<ConsoleCommandSender>()
  */
-fun <T> server(): T {
+inline fun <T> server(): T {
     return PlatformFactory.getService<PlatformIO>().server()
 }
 
@@ -37,7 +23,7 @@ fun <T> server(): T {
  *
  * @param message 日志内容
  */
-fun dev(vararg message: Any?) {
+inline fun dev(vararg message: Any?) {
     if (isDevelopmentMode) {
         info(*message)
     }
@@ -48,7 +34,7 @@ fun dev(vararg message: Any?) {
  *
  * @param message 日志内容
  */
-fun info(vararg message: Any?) {
+inline fun info(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().info(*message)
 }
 
@@ -57,7 +43,7 @@ fun info(vararg message: Any?) {
  *
  * @param message 日志内容
  */
-fun severe(vararg message: Any?) {
+inline fun severe(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().severe(*message)
 }
 
@@ -66,7 +52,7 @@ fun severe(vararg message: Any?) {
  *
  * @param message 日志内容
  */
-fun warning(vararg message: Any?) {
+inline fun warning(vararg message: Any?) {
     PlatformFactory.getService<PlatformIO>().warning(*message)
 }
 
@@ -77,14 +63,14 @@ fun warning(vararg message: Any?) {
  * @param replace 是否覆盖文件
  * @param target 资源文件目标路径
  */
-fun releaseResourceFile(source: String, replace: Boolean = false, target: String = source): File {
+inline fun releaseResourceFile(source: String, replace: Boolean = false, target: String = source): File {
     return PlatformFactory.getService<PlatformIO>().releaseResourceFile(source, target, replace)
 }
 
 /**
  * 获取当前插件的 Jar 文件对象
  */
-fun getJarFile(): File {
+inline fun getJarFile(): File {
     return PlatformFactory.getService<PlatformIO>().getJarFile()
 }
 
@@ -92,7 +78,7 @@ fun getJarFile(): File {
  * 获取当前插件的配置文件目录
  * 可能不存在，需要手动调用 mkdirs 方法创建
  */
-fun getDataFolder(): File {
+inline fun getDataFolder(): File {
     return PlatformFactory.getService<PlatformIO>().getDataFolder()
 }
 
@@ -100,6 +86,6 @@ fun getDataFolder(): File {
  * 获取当前平台的信息
  * 用于 BStats 统计，无实际用途
  */
-fun getPlatformData(): Map<String, Any> {
+inline fun getPlatformData(): Map<String, Any> {
     return PlatformFactory.getService<PlatformIO>().getPlatformData()
 }

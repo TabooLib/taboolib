@@ -1,5 +1,9 @@
+@file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
+
 package taboolib.common.platform.function
 
+import taboolib.common.Isolated
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
@@ -15,7 +19,7 @@ import taboolib.common.platform.service.PlatformCommand
  *  @param completer 补全器
  *  @param commandBuilder 命令构建器
  */
-fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBase.() -> Unit) {
+inline fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, noinline commandBuilder: CommandBase.() -> Unit) {
     PlatformFactory.getService<PlatformCommand>().registerCommand(command, executor, completer, commandBuilder)
 }
 
@@ -24,7 +28,7 @@ fun registerCommand(command: CommandStructure, executor: CommandExecutor, comple
  *
  * @param command 命令结构
  */
-fun unregisterCommand(command: CommandStructure) {
+inline fun unregisterCommand(command: CommandStructure) {
     unregisterCommand(command.name)
     command.aliases.forEach { unregisterCommand(it) }
 }
@@ -34,13 +38,13 @@ fun unregisterCommand(command: CommandStructure) {
  *
  * @param command 命令名称
  */
-fun unregisterCommand(command: String) {
+inline fun unregisterCommand(command: String) {
     PlatformFactory.getService<PlatformCommand>().unregisterCommand(command)
 }
 
 /**
  * 注销所有命令
  */
-fun unregisterCommands() {
+inline fun unregisterCommands() {
     PlatformFactory.getService<PlatformCommand>().unregisterCommands()
 }

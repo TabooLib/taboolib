@@ -1,4 +1,6 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
+
 package taboolib.common.util
 
 import taboolib.common.Isolated
@@ -12,7 +14,7 @@ import java.util.concurrent.CompletableFuture
  * @throws IllegalStateException 如果当前线程为主线程
  * @return 任务返回值
  */
-fun <T> sync(func: () -> T): T {
+inline fun <T> sync(noinline func: () -> T): T {
     if (isPrimaryThread) {
         error("Cannot run sync task in main thread.")
     }

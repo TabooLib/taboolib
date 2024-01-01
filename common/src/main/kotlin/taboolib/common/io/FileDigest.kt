@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
 
 package taboolib.common.io
 
@@ -15,7 +16,7 @@ import java.security.MessageDigest
  * @param algorithm 算法类型（可使用：md5, sha-1, sha-256 等）
  * @return 数字签名
  */
-fun String.digest(algorithm: String): String {
+inline fun String.digest(algorithm: String): String {
     val digest = MessageDigest.getInstance(algorithm)
     digest.update(toByteArray(StandardCharsets.UTF_8))
     return BigInteger(1, digest.digest()).toString(16)
@@ -27,7 +28,7 @@ fun String.digest(algorithm: String): String {
  * @param algorithm 算法类型（可使用：md5, sha-1, sha-256 等）
  * @return 数字签名
  */
-fun File.digest(algorithm: String): String {
+inline fun File.digest(algorithm: String): String {
     return FileInputStream(this).use {
         val digest = MessageDigest.getInstance(algorithm)
         val buffer = ByteArray(1024)

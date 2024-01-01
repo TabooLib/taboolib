@@ -1,5 +1,8 @@
+@file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
 package taboolib.common.io
 
+import taboolib.common.Isolated
 import java.io.File
 
 /**
@@ -11,7 +14,7 @@ import java.io.File
  * @param folder 该文件是否为文件夹（默认为否）
  * @return 该文件自身
  */
-fun newFile(file: File, path: String, create: Boolean = true, folder: Boolean = false): File {
+inline fun newFile(file: File, path: String, create: Boolean = true, folder: Boolean = false): File {
     return newFile(File(file, path), create, folder)
 }
 
@@ -23,7 +26,7 @@ fun newFile(file: File, path: String, create: Boolean = true, folder: Boolean = 
  * @param folder 该文件是否为文件夹（默认为否）
  * @return 该文件自身
  */
-fun newFile(path: String, create: Boolean = true, folder: Boolean = false): File {
+inline fun newFile(path: String, create: Boolean = true, folder: Boolean = false): File {
     return newFile(File(path), create, folder)
 }
 
@@ -35,7 +38,7 @@ fun newFile(path: String, create: Boolean = true, folder: Boolean = false): File
  * @param folder 该文件是否为文件夹（默认为否）
  * @return 该文件自身
  */
-fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
+inline fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
     if (!file.parentFile.exists()) {
         file.parentFile.mkdirs()
     }
@@ -57,7 +60,7 @@ fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
  * @param create 若目录不存在是否新建（默认为是）
  * @return 该目录自身
  */
-fun newFolder(folder: File, path: String, create: Boolean = true): File {
+inline fun newFolder(folder: File, path: String, create: Boolean = true): File {
     return newFile(folder, path, create, folder = true)
 }
 
@@ -68,6 +71,6 @@ fun newFolder(folder: File, path: String, create: Boolean = true): File {
  * @param create 若目录不存在是否新建（默认为是）
  * @return 该目录自身
  */
-fun newFolder(path: String, create: Boolean = true): File {
+inline fun newFolder(path: String, create: Boolean = true): File {
     return newFile(path, create, folder = true)
 }

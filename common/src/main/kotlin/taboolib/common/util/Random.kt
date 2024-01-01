@@ -1,4 +1,5 @@
 @file:Isolated
+@file:Suppress("NOTHING_TO_INLINE")
 
 package taboolib.common.util
 
@@ -11,7 +12,7 @@ import kotlin.math.min
 /**
  * 创建线程安全的随机数生成器
  */
-fun random(): Random {
+inline fun random(): Random {
     return ThreadLocalRandom.current()
 }
 
@@ -20,7 +21,7 @@ fun random(): Random {
  *
  * @param v 0-1
  */
-fun random(v: Double): Boolean {
+inline fun random(v: Double): Boolean {
     return ThreadLocalRandom.current().nextDouble() <= v
 }
 
@@ -29,7 +30,7 @@ fun random(v: Double): Boolean {
  *
  * @param v 最大值
  */
-fun random(v: Int): Int {
+inline fun random(v: Int): Int {
     return ThreadLocalRandom.current().nextInt(v)
 }
 
@@ -39,7 +40,7 @@ fun random(v: Int): Int {
  * @param num1 最小值
  * @param num2 最大值
  */
-fun random(num1: Int, num2: Int): Int {
+inline fun random(num1: Int, num2: Int): Int {
     val min = min(num1, num2)
     val max = max(num1, num2)
     return ThreadLocalRandom.current().nextInt(min, max + 1)
@@ -51,7 +52,7 @@ fun random(num1: Int, num2: Int): Int {
  * @param num1 最小值
  * @param num2 最大值
  */
-fun random(num1: Double, num2: Double): Double {
+inline fun random(num1: Double, num2: Double): Double {
     val min = min(num1, num2)
     val max = max(num1, num2)
     return if (min == max) max else ThreadLocalRandom.current().nextDouble(min, max)
@@ -62,6 +63,6 @@ fun random(num1: Double, num2: Double): Double {
  *
  * @return 0-1
  */
-fun randomDouble(): Double {
+inline fun randomDouble(): Double {
     return random().nextDouble()
 }

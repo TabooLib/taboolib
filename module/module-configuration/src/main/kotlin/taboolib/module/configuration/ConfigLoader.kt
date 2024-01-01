@@ -18,11 +18,31 @@ import java.util.function.Supplier
         test = "!org.yaml.snakeyaml_2_2.Yaml",
         relocate = ["!org.yaml.snakeyaml", "!org.yaml.snakeyaml_2_2"]
     ),
-    RuntimeDependency("!com.typesafe:config:1.4.3", test = "!com.typesafe.config.Config"),
-    RuntimeDependency("!com.electronwill.night-config:core:3.6.7", test = "!com.electronwill.nightconfig.core.Config"),
-    RuntimeDependency("!com.electronwill.night-config:toml:3.6.7", test = "!com.electronwill.nightconfig.toml.TomlFormat"),
-    RuntimeDependency("!com.electronwill.night-config:json:3.6.7", test = "!com.electronwill.nightconfig.json.JsonFormat"),
-    RuntimeDependency("!com.electronwill.night-config:hocon:3.6.7", test = "!com.electronwill.nightconfig.hocon.HoconFormat")
+    RuntimeDependency(
+        "!com.typesafe:config:1.4.3",
+        test = "!com.typesafe.config.Config",
+        relocate = ["!com.typesafe.config", "!com.typesafe.config_1_4_3"]
+    ),
+    RuntimeDependency(
+        "!com.electronwill.night-config:core:3.6.7",
+        test = "!com.electronwill.nightconfig.core.Config",
+        relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
+    ),
+    RuntimeDependency(
+        "!com.electronwill.night-config:toml:3.6.7",
+        test = "!com.electronwill.nightconfig.toml.TomlFormat",
+        relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
+    ),
+    RuntimeDependency(
+        "!com.electronwill.night-config:json:3.6.7",
+        test = "!com.electronwill.nightconfig.json.JsonFormat",
+        relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
+    ),
+    RuntimeDependency(
+        "!com.electronwill.night-config:hocon:3.6.7",
+        test = "!com.electronwill.nightconfig.hocon.HoconFormat",
+        relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
+    )
 )
 @Awake
 class ConfigLoader : ClassVisitor(1) {
@@ -35,7 +55,6 @@ class ConfigLoader : ClassVisitor(1) {
             val target = configAnno.property("target", name).let {
                 it.ifEmpty { name }
             }
-            
             if (files.containsKey(name)) {
                 field.set(instance?.get(), files[name]!!.configuration)
             } else {
