@@ -20,27 +20,27 @@ import java.util.function.Supplier
     ),
     RuntimeDependency(
         "!com.typesafe:config:1.4.3",
-        test = "!com.typesafe.config.Config",
+        test = "!com.typesafe.config_1_4_3.Config",
         relocate = ["!com.typesafe.config", "!com.typesafe.config_1_4_3"]
     ),
     RuntimeDependency(
         "!com.electronwill.night-config:core:3.6.7",
-        test = "!com.electronwill.nightconfig.core.Config",
+        test = "!com.electronwill.nightconfig_3_6_7.core.Config",
         relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
     ),
     RuntimeDependency(
         "!com.electronwill.night-config:toml:3.6.7",
-        test = "!com.electronwill.nightconfig.toml.TomlFormat",
+        test = "!com.electronwill.nightconfig_3_6_7.toml.TomlFormat",
         relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
     ),
     RuntimeDependency(
         "!com.electronwill.night-config:json:3.6.7",
-        test = "!com.electronwill.nightconfig.json.JsonFormat",
+        test = "!com.electronwill.nightconfig_3_6_7.json.JsonFormat",
         relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
     ),
     RuntimeDependency(
         "!com.electronwill.night-config:hocon:3.6.7",
-        test = "!com.electronwill.nightconfig.hocon.HoconFormat",
+        test = "!com.electronwill.nightconfig_3_6_7.hocon.HoconFormat",
         relocate = ["!com.electronwill.nightconfig", "!com.electronwill.nightconfig_3_6_7", "!com.typesafe.config", "!com.typesafe.config_1_4_3"]
     )
 )
