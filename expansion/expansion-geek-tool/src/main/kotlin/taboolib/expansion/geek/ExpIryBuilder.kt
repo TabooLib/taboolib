@@ -145,7 +145,20 @@ class ExpIryBuilder(
             if (time.isEmpty()) return -1
             var timer: Long = 0
             expiryRegex.findAll(time).forEach {
-                timer += it.groupValues[0].substringBefore(it.groupValues[1]).toLong()
+                // 修复未计算
+                val data = it.groupValues[0].substringBefore(it.groupValues[1]).toLong()
+                timer += when (it.groupValues[1]) {
+                    "d","天" -> {
+                        data * 60 * 60 * 24
+                    }
+                    "h","时" -> {
+                        data * 60 * 60
+                    }
+                    "m","分" -> {
+                        data * 60
+                    }
+                    else -> data
+                }
             }
             return timer
         }
