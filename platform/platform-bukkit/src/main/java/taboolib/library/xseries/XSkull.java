@@ -93,7 +93,7 @@ public class XSkull {
     /**
      * In v1.20.2 there were some changes to the mojang API.
      */
-    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2") || ReflectionUtils.supports(21);
+    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2") ||ReflectionUtils.supports(20);
 
     /**
      * Does using a random UUID have any advantage?
