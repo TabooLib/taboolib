@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Crypto Morin
+ * Copyright (c) 2023 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
+import org.bukkit.inventory.meta.trim.ArmorTrim;
+import org.bukkit.inventory.meta.trim.TrimMaterial;
+import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.map.MapView;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
@@ -71,13 +74,15 @@ import static taboolib.library.xseries.XMaterial.supports;
  *     ConfigurationSection section = plugin.getConfig().getConfigurationSection("staffs.dragon-staff");
  *     ItemStack item = XItemStack.deserialize(section);
  * </pre>
- * ItemStack: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemStack.html
+ * <a href="https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemStack.html">ItemStack</a>
  *
  * @author Crypto Morin
- * @version 6.0.0
+ * @version 7.3.3
+ * @see XMaterial
+ * @see XSkull
+ * @see XEnchantment
  * @see ItemStack
  */
-@SuppressWarnings("ALL")
 public final class XItemStack {
     public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
 
@@ -92,6 +97,24 @@ public final class XItemStack {
     public static boolean isDefaultItem(ItemStack item) {
         return DEFAULT_MATERIAL.isSimilar(item);
     }
+
+    private static BlockState safeBlockState(BlockStateMeta meta) {
+        // Due to a bug in the latest paper v1.9-1.10 (and some older v1.11) versions.
+        // java.lang.IllegalStateException: Missing blockState for BREWING_STAND_ITEM
+        // BREWING_STAND_ITEM, ENCHANTMENT_TABLE, REDSTONE_COMPARATOR
+        // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java?until=b6ad714e853042def52620befe9bc85d0137cd71
+        try {
+            return meta.getBlockState();
+        } catch (IllegalStateException ex) {
+            if (ex.getMessage().toLowerCase(Locale.ENGLISH).contains("missing blockstate")) {
+                return null;
+            } else {
+                throw ex;
+            }
+        }
+    }
+
+    // Edited: bukkit.ConfigurationSection to taboolib.ConfigurationSection
 
     /**
      * Writes an ItemStack object into a config.
@@ -150,7 +173,7 @@ public final class XItemStack {
             config.set("flags", flagNames);
         }
 
-        // Attributes - https://minecraft.gamepedia.com/Attribute
+        // Attributes - https://minecraft.wiki/w/Attribute
         if (supports(13)) {
             Multimap<Attribute, AttributeModifier> attributes = meta.getAttributeModifiers();
             if (attributes != null) {
@@ -168,7 +191,7 @@ public final class XItemStack {
         }
 
         if (meta instanceof BlockStateMeta) {
-            BlockState state = ((BlockStateMeta) meta).getBlockState();
+            BlockState state = safeBlockState((BlockStateMeta) meta);
 
             if (supports(11) && state instanceof ShulkerBox) {
                 ShulkerBox box = (ShulkerBox) state;
@@ -180,7 +203,7 @@ public final class XItemStack {
                 }
             } else if (state instanceof CreatureSpawner) {
                 CreatureSpawner cs = (CreatureSpawner) state;
-                config.set("spawner", cs.getSpawnedType().name());
+                if (cs.getSpawnedType() != null) config.set("spawner", cs.getSpawnedType().name());
             }
         } else if (meta instanceof EnchantmentStorageMeta) {
             EnchantmentStorageMeta book = (EnchantmentStorageMeta) meta;
@@ -210,7 +233,7 @@ public final class XItemStack {
                     effects.add(effect.getType().getName() + ", " + effect.getDuration() + ", " + effect.getAmplifier());
                 }
 
-                config.set("effects", effects);
+                if (!effects.isEmpty()) config.set("effects", effects);
                 PotionData potionData = potion.getBasePotionData();
                 config.set("base-effect", potionData.getType().name() + ", " + potionData.isExtended() + ", " + potionData.isUpgraded());
 
@@ -295,60 +318,80 @@ public final class XItemStack {
                     view.set("unlimited-tracking", mapView.isUnlimitedTracking());
                 }
             }
-        } else if (supports(17)) {
-            if (meta instanceof AxolotlBucketMeta) {
-                AxolotlBucketMeta bucket = (AxolotlBucketMeta) meta;
-                if (bucket.hasVariant()) config.set("color", bucket.getVariant().toString());
-            }
-        } else if (supports(16)) {
-            if (meta instanceof CompassMeta) {
-                CompassMeta compass = (CompassMeta) meta;
-                ConfigurationSection subSection = config.createSection("lodestone");
-                subSection.set("tracked", compass.isLodestoneTracked());
-                if (compass.hasLodestone()) {
-                    Location location = compass.getLodestone();
-                    subSection.set("location.world", location.getWorld().getName());
-                    subSection.set("location.x", location.getX());
-                    subSection.set("location.y", location.getY());
-                    subSection.set("location.z", location.getZ());
+        } else {
+            if (supports(20)) {
+                if (meta instanceof ArmorMeta) {
+                    ArmorMeta armorMeta = (ArmorMeta) meta;
+                    if (armorMeta.hasTrim()) {
+                        ArmorTrim trim = armorMeta.getTrim();
+                        ConfigurationSection trimConfig = config.createSection("trim");
+                        trimConfig.set("material", trim.getMaterial().getKey().getNamespace() + ':' + trim.getMaterial().getKey().getKey());
+                        trimConfig.set("pattern", trim.getPattern().getKey().getNamespace() + ':' + trim.getPattern().getKey().getKey());
+                    }
                 }
             }
-        } else if (supports(14)) {
-            if (meta instanceof CrossbowMeta) {
-                CrossbowMeta crossbow = (CrossbowMeta) meta;
-                int i = 0;
-                for (ItemStack projectiles : crossbow.getChargedProjectiles()) {
-                    serialize(projectiles, config.getConfigurationSection("projectiles." + i));
-                    i++;
-                }
-            } else if (meta instanceof TropicalFishBucketMeta) {
-                TropicalFishBucketMeta tropical = (TropicalFishBucketMeta) meta;
-                config.set("pattern", tropical.getPattern().name());
-                config.set("color", tropical.getBodyColor().name());
-                config.set("pattern-color", tropical.getPatternColor().name());
-            } else if (meta instanceof SuspiciousStewMeta) {
-                SuspiciousStewMeta stew = (SuspiciousStewMeta) meta;
-                List<PotionEffect> customEffects = stew.getCustomEffects();
-                List<String> effects = new ArrayList<>(customEffects.size());
 
-                for (PotionEffect effect : customEffects) {
-                    effects.add(effect.getType().getName() + ", " + effect.getDuration() + ", " + effect.getAmplifier());
+            if (supports(17)) {
+                if (meta instanceof AxolotlBucketMeta) {
+                    AxolotlBucketMeta bucket = (AxolotlBucketMeta) meta;
+                    if (bucket.hasVariant()) config.set("color", bucket.getVariant().toString());
                 }
-
-                config.set("effects", effects);
             }
-        } else if (!supports(13)) {
-            // Spawn Eggs
-            if (supports(11)) {
-                if (meta instanceof SpawnEggMeta) {
-                    SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
-                    config.set("creature", spawnEgg.getSpawnedType().getName());
+
+            if (supports(16)) {
+                if (meta instanceof CompassMeta) {
+                    CompassMeta compass = (CompassMeta) meta;
+                    ConfigurationSection subSection = config.createSection("lodestone");
+                    subSection.set("tracked", compass.isLodestoneTracked());
+                    if (compass.hasLodestone()) {
+                        Location location = compass.getLodestone();
+                        subSection.set("location.world", location.getWorld().getName());
+                        subSection.set("location.x", location.getX());
+                        subSection.set("location.y", location.getY());
+                        subSection.set("location.z", location.getZ());
+                    }
                 }
-            } else {
-                MaterialData data = item.getData();
-                if (data instanceof SpawnEgg) {
-                    SpawnEgg spawnEgg = (SpawnEgg) data;
-                    config.set("creature", spawnEgg.getSpawnedType().getName());
+            }
+
+            if (supports(14)) {
+                if (meta instanceof CrossbowMeta) {
+                    CrossbowMeta crossbow = (CrossbowMeta) meta;
+                    int i = 0;
+                    for (ItemStack projectiles : crossbow.getChargedProjectiles()) {
+                        serialize(projectiles, config.getConfigurationSection("projectiles." + i));
+                        i++;
+                    }
+                } else if (meta instanceof TropicalFishBucketMeta) {
+                    TropicalFishBucketMeta tropical = (TropicalFishBucketMeta) meta;
+                    config.set("pattern", tropical.getPattern().name());
+                    config.set("color", tropical.getBodyColor().name());
+                    config.set("pattern-color", tropical.getPatternColor().name());
+                } else if (meta instanceof SuspiciousStewMeta) {
+                    SuspiciousStewMeta stew = (SuspiciousStewMeta) meta;
+                    List<PotionEffect> customEffects = stew.getCustomEffects();
+                    List<String> effects = new ArrayList<>(customEffects.size());
+
+                    for (PotionEffect effect : customEffects) {
+                        effects.add(effect.getType().getName() + ", " + effect.getDuration() + ", " + effect.getAmplifier());
+                    }
+
+                    config.set("effects", effects);
+                }
+            }
+
+            if (!supports(13)) {
+                // Spawn Eggs
+                if (supports(11)) {
+                    if (meta instanceof SpawnEggMeta) {
+                        SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
+                        config.set("creature", spawnEgg.getSpawnedType().getName());
+                    }
+                } else {
+                    MaterialData data = item.getData();
+                    if (data instanceof SpawnEgg) {
+                        SpawnEgg spawnEgg = (SpawnEgg) data;
+                        config.set("creature", spawnEgg.getSpawnedType().getName());
+                    }
                 }
             }
         }
@@ -362,6 +405,7 @@ public final class XItemStack {
      */
     public static Map<String, Object> serialize(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
+        // Edited: "new MemoryConfiguration()" to "Configuration.Companion.empty(Type.YAML, false)"
         ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
         serialize(item, config);
         return configSectionToMap(config);
@@ -533,14 +577,15 @@ public final class XItemStack {
                 if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
                 else throw unsupportedMaterialCondition;
             }
-//            if (XMaterialUtil.INVENTORY_NOT_DISPLAYABLE.isTagged(material)) {
-//                UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.NOT_DISPLAYABLE);
-//                if (restart == null) throw unsupportedMaterialCondition;
-//                restart.accept(unsupportedMaterialCondition);
-//
-//                if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
-//                else throw unsupportedMaterialCondition;
-//            }
+            if (XMaterialUtil.INVENTORY_NOT_DISPLAYABLE.isTagged(material)) {
+                UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.NOT_DISPLAYABLE);
+                if (restart == null) throw unsupportedMaterialCondition;
+                restart.accept(unsupportedMaterialCondition);
+
+                if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
+                else throw unsupportedMaterialCondition;
+            }
+
             material.setType(item);
         }
 
@@ -580,7 +625,6 @@ public final class XItemStack {
             BannerMeta banner = (BannerMeta) meta;
             ConfigurationSection patterns = config.getConfigurationSection("patterns");
 
-            //System.out.println("patters v2: "  + patterns);
             if (patterns != null) {
                 for (String pattern : patterns.getKeys(false)) {
                     PatternType type = PatternType.getByIdentifier(pattern);
@@ -636,13 +680,17 @@ public final class XItemStack {
             }
         } else if (meta instanceof BlockStateMeta) {
             BlockStateMeta bsm = (BlockStateMeta) meta;
-            BlockState state = bsm.getBlockState();
+            BlockState state = safeBlockState(bsm);
 
             if (state instanceof CreatureSpawner) {
+                // Do we still need this? XMaterial handles it, doesn't it?
                 CreatureSpawner spawner = (CreatureSpawner) state;
-                spawner.setSpawnedType(Enums.getIfPresent(EntityType.class, config.getString("spawner").toUpperCase(Locale.ENGLISH)).orNull());
-                spawner.update(true);
-                bsm.setBlockState(spawner);
+                String spawnerStr = config.getString("spawner");
+                if (!Strings.isNullOrEmpty(spawnerStr)) {
+                    spawner.setSpawnedType(Enums.getIfPresent(EntityType.class, spawnerStr.toUpperCase(Locale.ENGLISH)).orNull());
+                    spawner.update(true);
+                    bsm.setBlockState(spawner);
+                }
             } else if (supports(11) && state instanceof ShulkerBox) {
                 ConfigurationSection shulkerSection = config.getConfigurationSection("contents");
                 if (shulkerSection != null) {
@@ -663,7 +711,6 @@ public final class XItemStack {
                     banner.setBaseColor(DyeColor.WHITE);
                 }
 
-                //System.out.println("patterns are "  + patterns);
                 if (patterns != null) {
                     for (String pattern : patterns.getKeys(false)) {
                         PatternType type = PatternType.getByIdentifier(pattern);
@@ -695,15 +742,17 @@ public final class XItemStack {
                             .or(FireworkEffect.Type.STAR));
 
                     ConfigurationSection colorsSection = fw.getConfigurationSection("colors");
-                    List<String> fwColors = colorsSection.getStringList("base");
-                    List<Color> colors = new ArrayList<>(fwColors.size());
-                    for (String colorStr : fwColors) colors.add(parseColor(colorStr));
-                    builder.withColor(colors);
+                    if (colorsSection != null) {
+                        List<String> fwColors = colorsSection.getStringList("base");
+                        List<Color> colors = new ArrayList<>(fwColors.size());
+                        for (String colorStr : fwColors) colors.add(parseColor(colorStr));
+                        builder.withColor(colors);
 
-                    fwColors = colorsSection.getStringList("fade");
-                    colors = new ArrayList<>(fwColors.size());
-                    for (String colorStr : fwColors) colors.add(parseColor(colorStr));
-                    builder.withFade(colors);
+                        fwColors = colorsSection.getStringList("fade");
+                        colors = new ArrayList<>(fwColors.size());
+                        for (String colorStr : fwColors) colors.add(parseColor(colorStr));
+                        builder.withFade(colors);
+                    }
 
                     firework.addEffect(builder.build());
                 }
@@ -732,6 +781,7 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
+                    // Edited: "mapSection.isSet" to "mapSection.contains"
                     if (mapSection.contains("location")) map.setLocationName(mapSection.getString("location"));
                     if (mapSection.contains("color")) {
                         Color color = parseColor(mapSection.getString("color"));
@@ -752,83 +802,111 @@ public final class XItemStack {
                             mapView.setUnlimitedTracking(view.getBoolean("unlimited-tracking"));
 
                             ConfigurationSection centerSection = view.getConfigurationSection("center");
-                            mapView.setCenterX(centerSection.getInt("x"));
-                            mapView.setCenterZ(centerSection.getInt("z"));
+                            if (centerSection != null) {
+                                mapView.setCenterX(centerSection.getInt("x"));
+                                mapView.setCenterZ(centerSection.getInt("z"));
+                            }
 
                             map.setMapView(mapView);
                         }
                     }
                 }
             }
-        } else if (supports(17)) {
-            if (meta instanceof AxolotlBucketMeta) {
-                AxolotlBucketMeta bucket = (AxolotlBucketMeta) meta;
-                String variantStr = config.getString("color");
-                if (variantStr != null) {
-                    Axolotl.Variant variant = Enums.getIfPresent(Axolotl.Variant.class, variantStr.toUpperCase(Locale.ENGLISH)).or(Axolotl.Variant.BLUE);
-                    bucket.setVariant(variant);
-                }
-            }
-        } else if (supports(16)) {
-            if (meta instanceof CompassMeta) {
-                CompassMeta compass = (CompassMeta) meta;
-                compass.setLodestoneTracked(config.getBoolean("tracked"));
-
-                ConfigurationSection lodestone = config.getConfigurationSection("lodestone");
-                if (lodestone != null) {
-                    World world = Bukkit.getWorld(lodestone.getString("world"));
-                    double x = lodestone.getDouble("x");
-                    double y = lodestone.getDouble("y");
-                    double z = lodestone.getDouble("z");
-                    compass.setLodestone(new Location(world, x, y, z));
-                }
-            }
-        } else if (supports(15)) {
-            if (meta instanceof SuspiciousStewMeta) {
-                SuspiciousStewMeta stew = (SuspiciousStewMeta) meta;
-                for (String effects : config.getStringList("effects")) {
-                    XPotion.Effect effect = XPotion.parseEffect(effects);
-                    if (effect.hasChance()) stew.addCustomEffect(effect.getEffect(), true);
-                }
-            }
-        } else if (supports(14)) {
-            if (meta instanceof CrossbowMeta) {
-                CrossbowMeta crossbow = (CrossbowMeta) meta;
-                for (String projectiles : config.getConfigurationSection("projectiles").getKeys(false)) {
-                    ItemStack projectile = deserialize(config.getConfigurationSection("projectiles." + projectiles));
-                    crossbow.addChargedProjectile(projectile);
-                }
-            } else if (meta instanceof TropicalFishBucketMeta) {
-                TropicalFishBucketMeta tropical = (TropicalFishBucketMeta) meta;
-                DyeColor color = Enums.getIfPresent(DyeColor.class, config.getString("color")).or(DyeColor.WHITE);
-                DyeColor patternColor = Enums.getIfPresent(DyeColor.class, config.getString("pattern-color")).or(DyeColor.WHITE);
-                TropicalFish.Pattern pattern = Enums.getIfPresent(TropicalFish.Pattern.class, config.getString("pattern")).or(TropicalFish.Pattern.BETTY);
-
-                tropical.setBodyColor(color);
-                tropical.setPatternColor(patternColor);
-                tropical.setPattern(pattern);
-            }
-            // Apparently Suspicious Stew was never added in 1.14
-        } else if (!supports(13)) {
-            // Spawn Eggs
-            if (supports(11)) {
-                if (meta instanceof SpawnEggMeta) {
-                    String creatureName = config.getString("creature");
-                    if (!Strings.isNullOrEmpty(creatureName)) {
-                        SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
-                        com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
-                        if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
+        } else {
+            if (supports(20)) {
+                if (meta instanceof ArmorMeta) {
+                    ArmorMeta armorMeta = (ArmorMeta) meta;
+                    // Edited: "config.isSet" to "config.contains"
+                    if (config.contains("trim")) {
+                        ConfigurationSection trim = config.getConfigurationSection("trim");
+                        TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(NamespacedKey.fromString(trim.getString("material")));
+                        TrimPattern trimPattern = Registry.TRIM_PATTERN.get(NamespacedKey.fromString(trim.getString("pattern")));
+                        armorMeta.setTrim(new ArmorTrim(trimMaterial, trimPattern));
                     }
                 }
-            } else {
-                MaterialData data = item.getData();
-                if (data instanceof SpawnEgg) {
-                    String creatureName = config.getString("creature");
-                    if (!Strings.isNullOrEmpty(creatureName)) {
-                        SpawnEgg spawnEgg = (SpawnEgg) data;
-                        com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
-                        if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
-                        item.setData(data);
+            }
+
+            if (supports(17)) {
+                if (meta instanceof AxolotlBucketMeta) {
+                    AxolotlBucketMeta bucket = (AxolotlBucketMeta) meta;
+                    String variantStr = config.getString("color");
+                    if (variantStr != null) {
+                        Axolotl.Variant variant = Enums.getIfPresent(Axolotl.Variant.class, variantStr.toUpperCase(Locale.ENGLISH)).or(Axolotl.Variant.BLUE);
+                        bucket.setVariant(variant);
+                    }
+                }
+            }
+
+            if (supports(16)) {
+                if (meta instanceof CompassMeta) {
+                    CompassMeta compass = (CompassMeta) meta;
+                    compass.setLodestoneTracked(config.getBoolean("tracked"));
+
+                    ConfigurationSection lodestone = config.getConfigurationSection("lodestone");
+                    if (lodestone != null) {
+                        World world = Bukkit.getWorld(lodestone.getString("world"));
+                        double x = lodestone.getDouble("x");
+                        double y = lodestone.getDouble("y");
+                        double z = lodestone.getDouble("z");
+                        compass.setLodestone(new Location(world, x, y, z));
+                    }
+                }
+            }
+
+            if (supports(15)) {
+                if (meta instanceof SuspiciousStewMeta) {
+                    SuspiciousStewMeta stew = (SuspiciousStewMeta) meta;
+                    for (String effects : config.getStringList("effects")) {
+                        XPotion.Effect effect = XPotion.parseEffect(effects);
+                        if (effect.hasChance()) stew.addCustomEffect(effect.getEffect(), true);
+                    }
+                }
+            }
+
+            if (supports(14)) {
+                if (meta instanceof CrossbowMeta) {
+                    CrossbowMeta crossbow = (CrossbowMeta) meta;
+                    ConfigurationSection projectiles = config.getConfigurationSection("projectiles");
+                    if (projectiles != null) {
+                        for (String projectile : projectiles.getKeys(false)) {
+                            ItemStack projectileItem = deserialize(config.getConfigurationSection("projectiles." + projectile));
+                            crossbow.addChargedProjectile(projectileItem);
+                        }
+                    }
+                } else if (meta instanceof TropicalFishBucketMeta) {
+                    TropicalFishBucketMeta tropical = (TropicalFishBucketMeta) meta;
+                    DyeColor color = Enums.getIfPresent(DyeColor.class, config.getString("color")).or(DyeColor.WHITE);
+                    DyeColor patternColor = Enums.getIfPresent(DyeColor.class, config.getString("pattern-color")).or(DyeColor.WHITE);
+                    TropicalFish.Pattern pattern = Enums.getIfPresent(TropicalFish.Pattern.class, config.getString("pattern")).or(TropicalFish.Pattern.BETTY);
+
+                    tropical.setBodyColor(color);
+                    tropical.setPatternColor(patternColor);
+                    tropical.setPattern(pattern);
+                }
+            }
+
+            // Apparently Suspicious Stew was never added in 1.14
+            if (!supports(13)) {
+                // Spawn Eggs
+                if (supports(11)) {
+                    if (meta instanceof SpawnEggMeta) {
+                        String creatureName = config.getString("creature");
+                        if (!Strings.isNullOrEmpty(creatureName)) {
+                            SpawnEggMeta spawnEgg = (SpawnEggMeta) meta;
+                            com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
+                            if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
+                        }
+                    }
+                } else {
+                    MaterialData data = item.getData();
+                    if (data instanceof SpawnEgg) {
+                        String creatureName = config.getString("creature");
+                        if (!Strings.isNullOrEmpty(creatureName)) {
+                            SpawnEgg spawnEgg = (SpawnEgg) data;
+                            com.google.common.base.Optional<EntityType> creature = Enums.getIfPresent(EntityType.class, creatureName.toUpperCase(Locale.ENGLISH));
+                            if (creature.isPresent()) spawnEgg.setSpawnedType(creature.get());
+                            item.setData(data);
+                        }
                     }
                 }
             }
@@ -852,6 +930,7 @@ public final class XItemStack {
         }
 
         // Lore
+        // Edited: "config.isSet" to "config.contains"
         if (config.contains("lore")) {
             List<String> translatedLore;
             List<String> lores = config.getStringList("lore");
@@ -931,7 +1010,7 @@ public final class XItemStack {
                 meta.addItemFlags(ITEM_FLAGS);
         }
 
-        // Atrributes - https://minecraft.gamepedia.com/Attribute
+        // Atrributes - https://minecraft.wiki/w/Attribute
         if (supports(13)) {
             ConfigurationSection attributes = config.getConfigurationSection("attributes");
             if (attributes != null) {
@@ -948,7 +1027,7 @@ public final class XItemStack {
                     AttributeModifier modifier = new AttributeModifier(
                             id,
                             section.getString("name"),
-                            section.getInt("amount"),
+                            section.getDouble("amount"),
                             Enums.getIfPresent(AttributeModifier.Operation.class, section.getString("operation"))
                                     .or(AttributeModifier.Operation.ADD_NUMBER),
                             slot);
@@ -970,6 +1049,7 @@ public final class XItemStack {
      */
     @NotNull
     private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
+        // Edited: "new MemoryConfiguration()" to "Configuration.Companion.empty(Type.YAML, false)"
         ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -1069,8 +1149,8 @@ public final class XItemStack {
      * <a href="https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java">CraftInventory</a>
      *
      * @param inventory       the inventory to add the items to.
-     * @param split           if it should check for the inventory stack size {@link Inventory#getMaxStackSize()} or
-     *                        item's max stack size {@link ItemStack#getMaxStackSize()} when putting items. This is useful when
+     * @param split           false if it should check for the inventory stack size {@link Inventory#getMaxStackSize()} or
+     *                        true for item's max stack size {@link ItemStack#getMaxStackSize()} when putting items. This is useful when
      *                        you're adding stacked tools such as swords that you'd like to split them to other slots.
      * @param modifiableSlots the slots that are allowed to be used for adding the items, otherwise null to allow all slots.
      * @param items           the items to add.
@@ -1086,7 +1166,7 @@ public final class XItemStack {
         List<ItemStack> leftOvers = new ArrayList<>(items.length);
 
         // No other optimized way to access this using Bukkit API...
-        // We could pass the length to individual methods so they could also use getItem() which
+        // We could pass the length to individual methods, so they could also use getItem() which
         // skips parsing all the items in the inventory if not needed, but that's just too much.
         // Note: This is not the same as Inventory#getSize()
         int invSize = inventory.getStorageContents().length;
@@ -1094,12 +1174,13 @@ public final class XItemStack {
 
         for (ItemStack item : items) {
             int lastPartial = 0;
+            int maxAmount = split ? item.getMaxStackSize() : inventory.getMaxStackSize();
 
             while (true) {
                 // Check if there is a similar item that can be stacked before using free slots.
                 int firstPartial = lastPartial >= invSize ? -1 : firstPartial(inventory, item, lastPartial, modifiableSlots);
-                if (firstPartial == -1) {
-                    // Start adding items to left overs if there are no partial and empty slots
+                if (firstPartial == -1) { // No partial items found
+                    // Start adding items to leftovers if there are no partial and empty slots
                     // -1 means that there are no empty slots left.
                     if (lastEmpty != -1) lastEmpty = firstEmpty(inventory, lastEmpty, modifiableSlots);
                     if (lastEmpty == -1) {
@@ -1109,26 +1190,22 @@ public final class XItemStack {
 
                     // Avoid firstPartial() for checking again for no reason, since if we're already checking
                     // for free slots, that means there are no partials even left.
-                    lastPartial = invSize + 1;
+                    lastPartial = Integer.MAX_VALUE;
 
-                    int maxSize = split ? item.getMaxStackSize() : inventory.getMaxStackSize();
                     int amount = item.getAmount();
-                    if (amount <= maxSize) {
+                    if (amount <= maxAmount) {
                         inventory.setItem(lastEmpty, item);
                         break;
                     } else {
                         ItemStack copy = item.clone();
-                        copy.setAmount(maxSize);
+                        copy.setAmount(maxAmount);
                         inventory.setItem(lastEmpty, copy);
-                        item.setAmount(amount - maxSize);
+                        item.setAmount(amount - maxAmount);
                     }
                     if (++lastEmpty == invSize) lastEmpty = -1;
                 } else {
                     ItemStack partialItem = inventory.getItem(firstPartial);
-                    int maxAmount = split ? partialItem.getMaxStackSize() : inventory.getMaxStackSize();
-                    int partialAmount = partialItem.getAmount();
-                    int amount = item.getAmount();
-                    int sum = amount + partialAmount;
+                    int sum = item.getAmount() + partialItem.getAmount();
 
                     if (sum <= maxAmount) {
                         partialItem.setAmount(sum);

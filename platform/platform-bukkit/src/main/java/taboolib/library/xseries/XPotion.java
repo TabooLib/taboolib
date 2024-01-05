@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Crypto Morin
+ * Copyright (c) 2023 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,8 @@ import java.util.stream.Collectors;
  * Amplifier: The amplifier of the effect, with level I having value 0. Optional, and defaults to level I.
  * <p>
  * EssentialsX Potions: https://github.com/EssentialsX/Essentials/blob/2.x/Essentials/src/com/earth2me/essentials/Potions.java
- * Status Effect: https://minecraft.gamepedia.com/Status_effect
- * Potions: https://minecraft.gamepedia.com/Potion
+ * Status Effect: https://minecraft.wiki/w/Status_effect
+ * Potions: https://minecraft.wiki/w/Potion
  *
  * @author Crypto Morin
  * @version 3.1.0
@@ -56,8 +56,7 @@ import java.util.stream.Collectors;
  * @see PotionEffectType
  * @see PotionType
  */
-@SuppressWarnings("DuplicatedCode")
-@Isolated
+@Isolated // Edited
 public enum XPotion {
     ABSORPTION("ABSORB"),
     BAD_OMEN("OMEN_BAD", "PILLAGER"),
@@ -443,6 +442,21 @@ public enum XPotion {
      */
     public boolean isSupported() {
         return this.type != null;
+    }
+
+    /**
+     * Checks if this potion is supported in the current version and
+     * returns itself if yes.
+     * <p>
+     * In the other case, the alternate potion will get returned,
+     * no matter if it is supported or not.
+     *
+     * @param alternatePotion the potion to get if this one is not supported.
+     * @return this potion or the {@code alternatePotion} if not supported.
+     */
+    @Nullable
+    public XPotion or(@Nullable XPotion alternatePotion) {
+        return isSupported() ? this : alternatePotion;
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Crypto Morin
+ * Copyright (c) 2023 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,16 +40,15 @@ import java.util.stream.Collectors;
  * Uses EssentialsX enchantment list for aliases.
  * Enchantment levels do not start from 0, they start from 1
  * <p>
- * EssentialsX Enchantment: https://github.com/Bukkit/Bukkit/blob/master/src/main/java/org/bukkit/enchantments/Enchantment.java
- * Enchantment: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html
- * Enchanting: https://minecraft.gamepedia.com/Enchanting
+ * EssentialsX Enchantment: <a href="https://github.com/Bukkit/Bukkit/blob/master/src/main/java/org/bukkit/enchantments/Enchantment.java">...</a>
+ * Enchantment: <a href="https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html">...</a>
+ * Enchanting: <a href="https://minecraft.wiki/w/Enchanting">...</a>
  *
  * @author Crypto Morin
  * @version 2.3.0
  * @see Enchantment
  */
-@SuppressWarnings("DuplicatedCode")
-@Isolated
+@Isolated // Edited
 public enum XEnchantment {
     ARROW_DAMAGE("POWER", "ARROW_DAMAGE", "ARROW_POWER", "AD"),
     ARROW_FIRE("FLAME", "FLAME_ARROW", "FIRE_ARROW", "AF"),
@@ -295,6 +294,21 @@ public enum XEnchantment {
      */
     public boolean isSupported() {
         return enchantment != null;
+    }
+
+    /**
+     * Checks if this enchantment is supported in the current version and
+     * returns itself if yes.
+     * <p>
+     * In the other case, the alternate enchantment will get returned,
+     * no matter if it is supported or not.
+     *
+     * @param alternateEnchantment the enchantment to get if this one is not supported.
+     * @return this enchantment or the {@code alternateEnchantment} if not supported.
+     */
+    @Nullable
+    public XEnchantment or(@Nullable XEnchantment alternateEnchantment) {
+        return isSupported() ? this : alternateEnchantment;
     }
 
     /**
