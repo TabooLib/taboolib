@@ -34,6 +34,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tabooproject.reflex.Reflex;
 import taboolib.platform.util.ItemBuilder;
 
 import java.lang.invoke.MethodHandle;
@@ -111,7 +112,7 @@ public final class XSkull {
      * It gave the error: {@code Name and ID cannot both be blank}
      * Here, "blank" is null for UUID, and {@code Character.isWhitespace} for the name field.
      */
-    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.supports(20, 2);
+    private static final boolean NULLABILITY_RECORD_UPDATE = ReflectionUtils.VERSION.equals("v1_20_R2") || ReflectionUtils.supports(20);
     private static final UUID IDENTITY_UUID = new UUID(0, 0);
     private static final GameProfile NULL_PROFILE = new GameProfile(IDENTITY_UUID, "");
     /**
@@ -128,7 +129,16 @@ public final class XSkull {
      */
     private static final String TEXTURES = "https://textures.minecraft.net/texture/";
 
+    private static final Class<?> CLASS_PROPERTY; // Edited
+
     static {
+        // Edited
+        try {
+            CLASS_PROPERTY = Class.forName("com.mojang.authlib.properties.Property");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle profileSetter = null, profileGetter = null, blockSetter = null, propGetval = null;
 
@@ -160,10 +170,29 @@ public final class XSkull {
             e.printStackTrace();
         }
 
+        /* Edited:
+        CryptoMorin/XSeries:
         if (!ReflectionUtils.supports(20, 2)) {
+          propGetval = lookup.findVirtual(Property.class, "getValue", MethodType.methodType(String.class));
+        }
+        Taboolib:
+        if (NULLABILITY_RECORD_UPDATE) {
             try {
-                //noinspection JavaLangInvokeHandleSignature
-                propGetval = lookup.findVirtual(Property.class, "getValue", MethodType.methodType(String.class));
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "value", MethodType.methodType(String.class));
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        } else ...
+        */
+        if (NULLABILITY_RECORD_UPDATE) {
+            try {
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "value", MethodType.methodType(String.class));
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            try {
+                propGetval = lookup.findVirtual(CLASS_PROPERTY, "getValue", MethodType.methodType(String.class));
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }
@@ -373,12 +402,16 @@ public final class XSkull {
         SkullMeta meta = (SkullMeta) skull;
         GameProfile profile = null;
         try {
-            profile = (GameProfile) CRAFT_META_SKULL_PROFILE_GETTER.invoke(meta);
-        } catch (Throwable ex) {
-            ex.printStackTrace();
+            /* Edited:
+             CryptoMorin/XSeries: (GameProfile) CRAFT_META_SKULL_PROFILE_GETTER.invoke(meta)
+             Taboolib: Reflex.Companion.getProperty(skull, "profile", false, true, true)
+             */
+            profile = Reflex.Companion.getProperty(skull, "profile", false, true, true);
+        } catch (Exception ignored) {
         }
         if (profile != null && !profile.getProperties().get("textures").isEmpty()) {
-            for (Property property : profile.getProperties().get("textures")) {
+            // Edited: type "Property" to "Object"
+            for (Object property : profile.getProperties().get("textures")) {
                 String value = getPropertyValue(property);
                 // Edited: "value" to "new ItemBuilder.SkullTexture(value, profile.getId())"
                 if (!value.isEmpty()) new ItemBuilder.SkullTexture(value, profile.getId());
@@ -393,15 +426,13 @@ public final class XSkull {
      *
      * @since 4.0.1
      */
-    private static String getPropertyValue(Property property) {
-        if (NULLABILITY_RECORD_UPDATE) {
-            return property.getValue();
-        } else {
-            try {
-                return (String) PROPERTY_GETVALUE.invoke(property);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
+    // Edited: type "Property" to "Object"
+    private static String getPropertyValue(Object property) {
+        // Edited: remove "if (NULLABILITY_RECORD_UPDATE)"
+        try {
+            return (String) PROPERTY_GETVALUE.invoke(property);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
