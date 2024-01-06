@@ -4,9 +4,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.chat.RawMessage
-import taboolib.module.chat.parseToHexColor
-import taboolib.module.chat.toGradientColor
+import taboolib.module.chat.*
 
 /**
  * TabooLib
@@ -29,14 +27,20 @@ class TypeJson : Type {
         }
     }
 
+    fun formated(string: String, sender: ProxyCommandSender, vararg args: Any): String {
+        return string.translate(sender, *args).replaceWithOrder(*args).colored()
+    }
+
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
+       buildMessage(sender, *args).sendTo(sender)
+    }
+
+    fun buildMessage(sender: ProxyCommandSender, vararg args: Any): ComponentText {
         /** 转换文本 */
-        fun String.formatted(): String {
-            return translate(sender, *args).replaceWithOrder(*args)
-        }
-        /** 构建信息 */
-        RawMessage().sendTo(sender) {
-            var i = 0
+        val rawMessage = Components.empty()
+        var i = 0
+
+        return rawMessage.apply {
             text?.forEachIndexed { index, line ->
                 // 加载变量
                 parser.readToFlatten(line).forEach { part ->
@@ -47,8 +51,8 @@ class TypeJson : Type {
                         return@forEach
                     }
                     // 显示文字
-                    val showText = part.text.formatted()
-                    val showType = extra["type"].toString().formatted()
+                    val showText = formated(part.text, sender, *args)
+                    val showType = formated(extra["type"].toString(), sender, *args)
                     when {
                         // 快捷键
                         showType == "keybind" -> appendKeybind(showText)
@@ -58,7 +62,7 @@ class TypeJson : Type {
                         // text: '[commands.drop.success.single]'
                         // args:
                         // - type: translate:1:Stone
-                        showType == "translate" -> appendTranslatable(showText, *showType.substringAfter(':').split(':').toTypedArray())
+                        showType == "translate" -> appendTranslation(showText, *showType.substringAfter(':').split(':').toTypedArray())
                         // 分数
                         showType == "score" -> appendScore(showText.substringBefore(':'), showText.substringAfter(':'))
                         // 渐变颜色文本
@@ -69,32 +73,32 @@ class TypeJson : Type {
                             append(showText.toGradientColor(showType.substringAfter(':').split(':').map { it.parseToHexColor() }))
                         }
                         // 标准
-                        else -> append(showText)
+                        else -> append(showText.colored())
                     }
                     // 附加信息
                     if (extra.containsKey("hover")) {
-                        hoverText(extra["hover"].toString().formatted())
+                        hoverText(formated(extra["hover"].toString(), sender, *args))
                     }
                     if (extra.containsKey("command")) {
-                        runCommand(extra["command"].toString().formatted())
+                        clickRunCommand(formated(extra["command"].toString(), sender, *args))
                     }
                     if (extra.containsKey("suggest")) {
-                        suggestCommand(extra["suggest"].toString().formatted())
+                        clickSuggestCommand(formated(extra["suggest"].toString(), sender, *args))
                     }
                     if (extra.containsKey("insertion")) {
-                        insertion(extra["insertion"].toString().formatted())
+                        clickInsertText(formated(extra["insertion"].toString(), sender, *args))
                     }
                     if (extra.containsKey("copy")) {
-                        copyToClipboard(extra["copy"].toString().formatted())
+                        clickCopyToClipboard(formated(extra["copy"].toString(), sender, *args))
                     }
                     if (extra.containsKey("file")) {
-                        openFile(extra["file"].toString().formatted())
+                        clickOpenFile(formated(extra["file"].toString(), sender, *args))
                     }
                     if (extra.containsKey("url")) {
-                        openURL(extra["url"].toString().formatted())
+                        clickOpenURL(formated(extra["url"].toString(), sender, *args))
                     }
                     if (extra.containsKey("font")) {
-                        font(extra["font"].toString().formatted())
+                        font(formated(extra["font"].toString(), sender, *args))
                     }
                 }
                 if (index + 1 < text!!.size) {
