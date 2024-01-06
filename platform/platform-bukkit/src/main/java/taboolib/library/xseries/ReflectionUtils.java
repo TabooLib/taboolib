@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  * TabooLib
  * taboolib.library.xseries.ReflectionUtils
  *
- * @author 坏黑
+ * @author xseries, 坏黑
  * @since 2022/12/12 19:22
  */
 public class ReflectionUtils {
