@@ -577,14 +577,15 @@ public final class XItemStack {
                 if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
                 else throw unsupportedMaterialCondition;
             }
-            if (XMaterialUtil.INVENTORY_NOT_DISPLAYABLE.isTagged(material)) {
-                UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.NOT_DISPLAYABLE);
-                if (restart == null) throw unsupportedMaterialCondition;
-                restart.accept(unsupportedMaterialCondition);
-
-                if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
-                else throw unsupportedMaterialCondition;
-            }
+			// Edited: Remove to avoid expection
+//            if (XMaterialUtil.INVENTORY_NOT_DISPLAYABLE.isTagged(material)) {
+//                UnAcceptableMaterialCondition unsupportedMaterialCondition = new UnAcceptableMaterialCondition(material, UnAcceptableMaterialCondition.Reason.NOT_DISPLAYABLE);
+//                if (restart == null) throw unsupportedMaterialCondition;
+//                restart.accept(unsupportedMaterialCondition);
+//
+//                if (unsupportedMaterialCondition.hasSolution()) material = unsupportedMaterialCondition.solution;
+//                else throw unsupportedMaterialCondition;
+//            }
 
             material.setType(item);
         }
