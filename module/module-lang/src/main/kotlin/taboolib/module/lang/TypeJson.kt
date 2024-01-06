@@ -4,10 +4,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.util.VariableReader
 import taboolib.common.util.asList
 import taboolib.common.util.replaceWithOrder
-import taboolib.module.chat.Components
-import taboolib.module.chat.colored
-import taboolib.module.chat.parseToHexColor
-import taboolib.module.chat.toGradientColor
+import taboolib.module.chat.*
 
 /**
  * TabooLib
@@ -35,11 +32,15 @@ class TypeJson : Type {
     }
 
     override fun send(sender: ProxyCommandSender, vararg args: Any) {
+       buildMessage(sender, *args).sendTo(sender)
+    }
+
+    fun buildMessage(sender: ProxyCommandSender, vararg args: Any): ComponentText {
         /** 转换文本 */
         val rawMessage = Components.empty()
         var i = 0
 
-        rawMessage.apply {
+        return rawMessage.apply {
             text?.forEachIndexed { index, line ->
                 // 加载变量
                 parser.readToFlatten(line).forEach { part ->
@@ -105,7 +106,6 @@ class TypeJson : Type {
                 }
             }
         }
-        rawMessage.sendTo(sender)
     }
 
     companion object {
