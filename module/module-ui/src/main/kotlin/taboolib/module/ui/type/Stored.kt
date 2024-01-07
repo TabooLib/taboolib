@@ -14,11 +14,12 @@ import taboolib.platform.util.isNotAir
 open class Stored(title: String) : Basic(title) {
 
     /** 页面规则 **/
-    internal val rule = Rule()
+    internal val rule = EmptyRule
 
-    /** Stored 不支持虚拟页面 */
+    /** 被改写 Rule 的 Stored 不支持虚拟页面 */
     override fun virtualize(storageContents: List<ItemStack>?) {
-        throw UnsupportedOperationException("Stored does not support virtual pages.")
+        if (rule == EmptyRule) throw UnsupportedOperationException("Stored does not support virtual pages.")
+        else super.virtualize(storageContents)
     }
 
     /**
@@ -134,7 +135,7 @@ open class Stored(title: String) : Basic(title) {
     open class Rule {
 
         /** 检查判定位置回调 **/
-        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> true }
+        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> false }
 
         /** 获取可用位置回调 **/
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
@@ -204,4 +205,6 @@ open class Stored(title: String) : Basic(title) {
             this.readItem = readItem
         }
     }
+
+    object EmptyRule: Rule()
 }
