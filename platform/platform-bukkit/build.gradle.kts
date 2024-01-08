@@ -14,6 +14,7 @@ dependencies {
     compileOnly("com.google.guava:guava:21.0")
     compileOnly("com.google.code.gson:gson:2.8.7")
     compileOnly("org.apache.commons:commons-lang3:3.5")
+    compileOnly("ink.ptms.core:v12004:12004-minimize:universal")
     compileOnly("ink.ptms.core:v11701:11701-minimize:universal")
     compileOnly("ink.ptms.core:v11600:11600-minimize")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
