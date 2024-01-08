@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Crypto Morin
+ * Copyright (c) 2023 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ import java.util.function.Supplier;
 
 /**
  * <b>NoteBlockMusic</b> - Write music scripts for Minecraft.<br>
- * You can write small text scripts for Minecraft <a href="https://minecraft.gamepedia.com/Note_Block">note blocks</a>
+ * You can write small text scripts for Minecraft <a href="https://minecraft.wiki/w/Note_Block">note blocks</a>
  * without needing to use any redstone or building to make your music.
  * This class is independent of XSound.
  *
@@ -128,7 +128,7 @@ public final class NoteBlockMusic {
      * The character paseed to this method is assumed to be uppercase,
      * otherwise it needs to be {@code ch & 0x5f} manually.
      * <p>
-     * https://minecraft.gamepedia.com/Note_Block#Notes
+     * https://minecraft.wiki/w/Note_Block#Notes
      *
      * @param ch the character of the note tone.
      * @return the note tone or null if not found.

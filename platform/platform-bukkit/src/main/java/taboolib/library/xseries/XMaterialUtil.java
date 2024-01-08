@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Crypto Morin
+ * Copyright (c) 2023 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,15 @@
 package taboolib.library.xseries;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.Isolated;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("CommentedOutCode")
 @Isolated
@@ -317,6 +321,11 @@ public final class XMaterialUtil<T extends Enum<T>> {
      */
     @NotNull
     public static final XMaterialUtil<XMaterial> FENCES;
+    /**
+     * Tag representing all possible variants of filled cauldron
+     */
+    @NotNull
+    public static final XMaterialUtil<XMaterial> FILLED_CAULDRONS;
     /**
      * Tag representing all possible variants fire
      */
@@ -795,6 +804,11 @@ public final class XMaterialUtil<T extends Enum<T>> {
     @NotNull
     public static final XMaterialUtil<XMaterial> VALID_SPAWN;
     /**
+     * Tag representing all possible variants of wall hanging sign
+     */
+    @NotNull
+    public static final XMaterialUtil<XMaterial> WALL_HANGING_SIGNS;
+    /**
      * Tag representing all possible block types that can override a wall post creation
      */
     @NotNull
@@ -804,6 +818,11 @@ public final class XMaterialUtil<T extends Enum<T>> {
      */
     @NotNull
     public static final XMaterialUtil<XMaterial> WALL_SIGNS;
+    /**
+     * Tag representing all possible types of wall torches
+     */
+    @NotNull
+    public static final XMaterialUtil<XMaterial> WALL_TORCHES;
     /**
      * Tag representing all different types of walls
      */
@@ -1073,6 +1092,7 @@ public final class XMaterialUtil<T extends Enum<T>> {
     static { // wooded material
         STANDING_SIGNS = new XMaterialUtil<>(findAllWoodTypes("SIGN"));
         WALL_SIGNS = new XMaterialUtil<>(findAllWoodTypes("WALL_SIGN"));
+        WALL_HANGING_SIGNS = new XMaterialUtil<>(findAllWoodTypes("WALL_HANGING_SIGN"));
         HANGING_SIGNS = new XMaterialUtil<>(findAllWoodTypes("HANGING_SIGN"));
         WOODEN_PRESSURE_PLATES = new XMaterialUtil<>(findAllWoodTypes("PRESSURE_PLATE"));
         WOODEN_DOORS = new XMaterialUtil<>(findAllWoodTypes("DOOR"));
@@ -1130,6 +1150,9 @@ public final class XMaterialUtil<T extends Enum<T>> {
         WALL_HEADS = new XMaterialUtil<>(XMaterial.class, new XMaterialUtil<>(findMaterialsEndingWith("WALL_HEAD")),
                 new XMaterialUtil<>(XMaterial.WITHER_SKELETON_WALL_SKULL, XMaterial.SKELETON_WALL_SKULL));
 
+        WALL_TORCHES = new XMaterialUtil<>(XMaterial.WALL_TORCH,
+                XMaterial.SOUL_WALL_TORCH,
+                XMaterial.REDSTONE_WALL_TORCH);
         WALLS = new XMaterialUtil<>(XMaterial.POLISHED_DEEPSLATE_WALL,
                 XMaterial.NETHER_BRICK_WALL,
                 XMaterial.POLISHED_BLACKSTONE_WALL,
@@ -1200,6 +1223,9 @@ public final class XMaterialUtil<T extends Enum<T>> {
                 XMaterial.PUMPKIN_STEM);
         CAMPFIRES = new XMaterialUtil<>(XMaterial.CAMPFIRE,
                 XMaterial.SOUL_CAMPFIRE);
+        FILLED_CAULDRONS = new XMaterialUtil<>(XMaterial.LAVA_CAULDRON,
+                XMaterial.POWDER_SNOW_CAULDRON,
+                XMaterial.WATER_CAULDRON);
         CAULDRONS = new XMaterialUtil<>(XMaterial.CAULDRON,
                 XMaterial.LAVA_CAULDRON,
                 XMaterial.POWDER_SNOW_CAULDRON,
@@ -1308,7 +1334,8 @@ public final class XMaterialUtil<T extends Enum<T>> {
                 XMaterial.POTTED_JUNGLE_SAPLING,
                 XMaterial.POTTED_BIRCH_SAPLING,
                 XMaterial.POTTED_MANGROVE_PROPAGULE,
-                XMaterial.POTTED_CHERRY_SAPLING);
+                XMaterial.POTTED_CHERRY_SAPLING,
+                XMaterial.POTTED_TORCHFLOWER);
         FOX_FOOD = new XMaterialUtil<>(XMaterial.GLOW_BERRIES,
                 XMaterial.SWEET_BERRIES);
         FOXES_SPAWNABLE_ON = new XMaterialUtil<>(XMaterial.SNOW,
@@ -1554,7 +1581,7 @@ public final class XMaterialUtil<T extends Enum<T>> {
                 XMaterial.LARGE_FERN,
                 XMaterial.LILAC,
                 XMaterial.ROSE_BUSH,
-                XMaterial.GRASS);
+                XMaterial.SHORT_GRASS);
         SMALL_DRIPLEAF_PLACEABLE = new XMaterialUtil<>(XMaterial.CLAY,
                 XMaterial.MOSS_BLOCK);
         NON_FLAMMABLE_WOOD = new XMaterialUtil<>(XMaterial.CRIMSON_PLANKS,
@@ -2216,7 +2243,7 @@ public final class XMaterialUtil<T extends Enum<T>> {
                 XMaterial.SMALL_DRIPLEAF,
                 XMaterial.LOOM,
                 XMaterial.BEEHIVE,
-                XMaterial.GRASS,
+                XMaterial.SHORT_GRASS,
                 XMaterial.HANGING_ROOTS,
                 XMaterial.CHORUS_FLOWER,
                 XMaterial.ATTACHED_PUMPKIN_STEM,
@@ -2262,10 +2289,15 @@ public final class XMaterialUtil<T extends Enum<T>> {
         FIRE = new XMaterialUtil<>(XMaterial.FIRE, XMaterial.SOUL_FIRE);
         FLUID = new XMaterialUtil<>(XMaterial.LAVA, XMaterial.WATER);
 
-        INVENTORY_NOT_DISPLAYABLE = new XMaterialUtil<>(XMaterial.class, AIR, FIRE, FLUID, PORTALS, WALL_SIGNS,
-                CORAL_FANS, WALL_HEADS, CANDLE_CAKES, WALL_BANNERS, FLOWER_POTS,
-                new XMaterialUtil<>(XMaterial.SWEET_BERRY_BUSH, XMaterial.CHORUS_PLANT, XMaterial.KELP_PLANT,
-                        XMaterial.CAVE_VINES_PLANT, XMaterial.TWISTING_VINES_PLANT, XMaterial.WEEPING_VINES_PLANT));
+        INVENTORY_NOT_DISPLAYABLE = new XMaterialUtil<>(XMaterial.class, AIR, CAVE_VINES, FILLED_CAULDRONS, FIRE, FLUID, PORTALS,
+                WALL_SIGNS, WALL_HANGING_SIGNS, WALL_TORCHES, ALIVE_CORAL_WALL_FANS, DEAD_CORAL_WALL_FANS, WALL_HEADS,
+                CANDLE_CAKES, WALL_BANNERS, FLOWER_POTS.without(XMaterial.FLOWER_POT), CROPS.without(XMaterial.WHEAT),
+                new XMaterialUtil<>(XMaterial.BIG_DRIPLEAF_STEM, XMaterial.SWEET_BERRY_BUSH, XMaterial.KELP_PLANT,
+                        XMaterial.FROSTED_ICE, XMaterial.ATTACHED_MELON_STEM, XMaterial.ATTACHED_PUMPKIN_STEM,
+                        XMaterial.COCOA, XMaterial.MOVING_PISTON, XMaterial.PISTON_HEAD, XMaterial.PITCHER_CROP,
+                        XMaterial.POWDER_SNOW, XMaterial.REDSTONE_WIRE, XMaterial.TALL_SEAGRASS, XMaterial.TRIPWIRE,
+                        XMaterial.TORCHFLOWER_CROP, XMaterial.BUBBLE_COLUMN, XMaterial.TWISTING_VINES_PLANT,
+                        XMaterial.WEEPING_VINES_PLANT, XMaterial.BAMBOO_SAPLING));
     }
 
     @NotNull
@@ -2276,10 +2308,154 @@ public final class XMaterialUtil<T extends Enum<T>> {
         this.values = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(values)));
     }
 
+    /**
+     * Compiles a list of string checkers for various classes like {@link XMaterial}, {@link XSound}, etc.
+     * Mostly used for configs.
+     * <p>
+     * Supports {@link String#contains} {@code CONTAINS:NAME} and Regular Expression {@code REGEX:PATTERN} formats.
+     * <p>
+     * <b>Example:</b>
+     * <blockquote><pre>
+     *     XMaterial material = {@link XMaterial#matchXMaterial(ItemStack)};
+     *     if (XMaterialUtil.anyMatch(XMaterialUtil.stringMatcher(plugin.getConfig().getStringList("disabled-items"), null)) return;
+     * </pre></blockquote>
+     * <br>
+     * <b>{@code CONTAINS} Examples:</b>
+     * <pre>
+     *     {@code "CONTAINS:CHEST" -> CHEST, ENDERCHEST, TRAPPED_CHEST -> true}
+     *     {@code "cOnTaINS:dYe" -> GREEN_DYE, YELLOW_DYE, BLUE_DYE, INK_SACK -> true}
+     * </pre>
+     * <p>
+     * <b>{@code REGEX} Examples</b>
+     * <pre>
+     *     {@code "REGEX:^.+_.+_.+$" -> Every Material with 3 underlines or more: SHULKER_SPAWN_EGG, SILVERFISH_SPAWN_EGG, SKELETON_HORSE_SPAWN_EGG}
+     *     {@code "REGEX:^.{1,3}$" -> Material names that have 3 letters only: BED, MAP, AIR}
+     * </pre>
+     * <p>
+     * The reason that there are tags for {@code CONTAINS} and {@code REGEX} is for the performance.
+     * Server owners should be advised to avoid using {@code REGEX} tag if they can use the {@code CONTAINS} tag instead.
+     * <p>
+     * Want to learn RegEx? You can mess around in <a href="https://regexr.com/">RegExr</a> website.
+     *
+     * @param elements the material names to check base material on.
+     * @return a compiled list of enum matchers.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static <E> List<Matcher<E>> stringMatcher(@Nullable Collection<String> elements,
+                                                     @Nullable Collection<Matcher.Error> errors) {
+        if (elements == null || elements.isEmpty()) return new ArrayList<>();
+        List<Matcher<E>> matchers = new ArrayList<>(elements.size());
+
+        for (String comp : elements) {
+            String checker = comp.toUpperCase(Locale.ENGLISH);
+            if (checker.startsWith("CONTAINS:")) {
+                comp = XMaterial.format(checker.substring(9));
+                matchers.add(new Matcher.TextMatcher<>(comp, true));
+                continue;
+            }
+            if (checker.startsWith("REGEX:")) {
+                comp = comp.substring(6);
+                try {
+                    matchers.add(new Matcher.RegexMatcher<>(Pattern.compile(comp)));
+                } catch (Throwable e) {
+                    if (errors != null) errors.add(new Matcher.Error(comp, "REGEX", e));
+                }
+                continue;
+            }
+            if (checker.startsWith("TAG:")) {
+                comp = XMaterial.format(comp.substring(4));
+                try {
+                    Field field = XMaterialUtil.class.getField(comp);
+                    XMaterialUtil<?> obj = (XMaterialUtil<?>) field.get(null);
+                    matchers.add(new Matcher.XMaterialUtilMatcher(obj));
+                } catch (Throwable e) {
+                    if (errors != null) errors.add(new Matcher.Error(comp, "TAG", e));
+                }
+            }
+
+            matchers.add(new Matcher.TextMatcher<>(comp, false));
+        }
+
+        return matchers;
+    }
+
+    public static <T> boolean anyMatch(T target, Collection<Matcher<T>> matchers) {
+        return matchers.stream().anyMatch(x -> x.matches(target));
+    }
+
+    @Isolated
+    public abstract static class Matcher<T> {
+
+        @Isolated
+        public static final class Error extends RuntimeException {
+            public final String matcher;
+
+            public Error(String matcher, String message, Throwable cause) {
+                super(message, cause);
+                this.matcher = matcher;
+            }
+        }
+
+        public abstract boolean matches(T object);
+
+        @Isolated
+        public static final class TextMatcher<T> extends Matcher<T> {
+
+            public final String text;
+            public final boolean contains;
+
+            public TextMatcher(String text, boolean contains) {
+                this.text = text;
+                this.contains = contains;
+            }
+
+            @Override
+            public boolean matches(T object) {
+                String name = object instanceof Enum ? ((Enum<?>) object).name() : object.toString();
+                return contains ? name.contains(this.text) : name.equals(this.text);
+            }
+        }
+
+        @Isolated
+        public static final class RegexMatcher<T> extends Matcher<T> {
+
+            public final Pattern regex;
+
+            public RegexMatcher(Pattern regex) {
+                this.regex = regex;
+            }
+
+            @Override
+            public boolean matches(T object) {
+                String name = object instanceof Enum ? ((Enum<?>) object).name() : object.toString();
+                return regex.matcher(name).matches();
+            }
+        }
+
+        @Isolated
+        public static final class XMaterialUtilMatcher<T extends Enum<T>> extends Matcher<T> {
+
+            public final XMaterialUtil<T> matcher;
+
+            public XMaterialUtilMatcher(XMaterialUtil<T> matcher) {
+                this.matcher = matcher;
+            }
+
+            @Override
+            public boolean matches(T object) {
+                return matcher.isTagged(object);
+            }
+        }
+    }
+
     @SafeVarargs
     private XMaterialUtil(@NotNull Class<T> clazz, @NotNull XMaterialUtil<T>... values) {
         this.values = EnumSet.noneOf(clazz);
         this.inheritFrom(values);
+    }
+
+    private XMaterialUtil(@NotNull Set<T> values) {
+        this.values = Collections.unmodifiableSet(values);
     }
 
     private static XMaterial[] findAllColors(String material) {
@@ -2605,6 +2781,14 @@ public final class XMaterialUtil<T extends Enum<T>> {
 
     public boolean isTagged(@Nullable T value) {
         return value != null && this.values.contains(value);
+    }
+
+    @SafeVarargs
+    private final XMaterialUtil<T> without(T... without) {
+        Set<T> ignore = new HashSet<>();
+        Collections.addAll(ignore, without);
+        Set<T> newValues = values.stream().filter(t -> !ignore.contains(t)).collect(Collectors.toSet());
+        return new XMaterialUtil<>(newValues);
     }
 
     @SafeVarargs
