@@ -61,10 +61,10 @@ inline fun <reified T : Menu> HumanEntity.openMenu(title: String = "chest", buil
 /**
  * 打开一个构建后的菜单
  */
-fun HumanEntity.openMenu(buildMenu: Inventory) {
+fun HumanEntity.openMenu(buildMenu: Inventory, changeId: Boolean = true) {
     try {
         if (buildMenu is VirtualInventory) {
-            val remoteInventory = openVirtualInventory(buildMenu)
+            val remoteInventory = openVirtualInventory(buildMenu, changeId)
             val basic = MenuHolder.fromInventory(buildMenu)
             if (basic != null) {
                 remoteInventory.inject(basic)

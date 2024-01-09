@@ -29,7 +29,7 @@ abstract class InventoryHandler {
 
     abstract fun parseToCraftChatMessage(source: String): Any
     
-    abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor): RemoteInventory
+    abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor, updateId: Boolean = true): RemoteInventory
 
     @PlatformSide([Platform.BUKKIT])
     companion object {
@@ -40,11 +40,13 @@ abstract class InventoryHandler {
 
         val playerRemoteInventoryMap = ConcurrentHashMap<String, RemoteInventory>()
 
-        fun getContainerCounter(player: Player): Int {
+        fun getContainerCounter(player: Player, updateId: Boolean = true): Int {
             val id = playerContainerCounterMap.computeIfAbsent(player.name) { 0 }
-            val newId = id % 100 + 1
-            playerContainerCounterMap[player.name] = newId
-            return newId
+            return if (updateId) {
+                val newId = id % 100 + 1
+                playerContainerCounterMap[player.name] = newId
+                newId
+            } else id
         }
 
         @SubscribeEvent

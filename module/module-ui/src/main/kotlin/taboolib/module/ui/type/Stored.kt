@@ -18,7 +18,7 @@ open class Stored(title: String) : Basic(title) {
 
     /** 被改写 Rule 的 Stored 不支持虚拟页面 */
     override fun virtualize(storageContents: List<ItemStack>?) {
-        if (rule == EmptyRule) throw UnsupportedOperationException("Stored does not support virtual pages.")
+        if (rule != EmptyRule) throw UnsupportedOperationException("Stored does not support virtual pages.")
         else super.virtualize(storageContents)
     }
 

@@ -53,8 +53,8 @@ class InventoryHandlerImpl : InventoryHandler() {
         }
     }
 
-    override fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack): RemoteInventory {
-        val id = getContainerCounter(player)
+    override fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack, updateId: Boolean): RemoteInventory {
+        val id = getContainerCounter(player, updateId)
         when (major) {
             // 1.8 1.9, 1.10, 1.11, 1.12
             // public static String getNotchInventoryType(InventoryType type)

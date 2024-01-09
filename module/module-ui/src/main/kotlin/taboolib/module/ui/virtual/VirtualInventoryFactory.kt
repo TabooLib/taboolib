@@ -25,8 +25,8 @@ fun Inventory.virtualize(storageContents: List<ItemStack>? = null): VirtualInven
 /**
  * 使玩家打开虚拟页面
  */
-fun HumanEntity.openVirtualInventory(inventory: VirtualInventory): RemoteInventory {
-    val remoteInventory = InventoryHandler.instance.openInventory(this as Player, inventory, ItemStack(Material.AIR))
+fun HumanEntity.openVirtualInventory(inventory: VirtualInventory, updateId: Boolean = true): RemoteInventory {
+    val remoteInventory = InventoryHandler.instance.openInventory(this as Player, inventory, ItemStack(Material.AIR), updateId)
     inventory.remoteInventory = remoteInventory
     InventoryHandler.playerRemoteInventoryMap[name] = remoteInventory
     // 唤起事件

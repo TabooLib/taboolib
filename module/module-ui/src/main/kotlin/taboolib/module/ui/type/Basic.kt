@@ -346,7 +346,7 @@ open class Basic(title: String = "chest") : Menu(title) {
             // 重新构建页面
             build()
             // 重新打开页面
-            viewers.forEach { it.openMenu(lastInventory) }
+            viewers.forEach { it.openMenu(lastInventory, changeId = false) }
         } catch (ex: Throwable) {
             ex.printStackTrace()
         }
