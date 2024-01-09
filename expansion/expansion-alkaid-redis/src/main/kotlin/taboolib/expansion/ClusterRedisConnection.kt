@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection {
+class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection,IChannel {
 
     private val service: ExecutorService = Executors.newCachedThreadPool()
 
