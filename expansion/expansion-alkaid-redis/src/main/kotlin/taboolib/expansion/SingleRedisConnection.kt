@@ -19,6 +19,8 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import redis.clients.jedis.exceptions.JedisConnectionException
+import redis.clients.jedis.params.ScanParams
+import redis.clients.jedis.resps.ScanResult
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.severe
@@ -127,6 +129,24 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         return exec { it.exists(key) }
     }
 
+    override fun getList(key: String): Map<String, String> {
+        return exec {
+            var cursor = "0"
+            val scanParams = ScanParams().match(key)
+            val resultMap: MutableMap<String, String> = HashMap()
+
+            do {
+                val scanResult: ScanResult<String> = it.scan(cursor, scanParams)
+                val partialKeys = scanResult.result
+                for (partialKey in partialKeys) {
+                    val value = it.get(partialKey) ?: ""
+                    resultMap[partialKey] = value
+                }
+                cursor = scanResult.cursor
+            } while (cursor != "0")
+            resultMap
+        }
+    }
     /**
      * 推送信息
      *

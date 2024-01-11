@@ -16,6 +16,8 @@
 package taboolib.expansion
 
 import redis.clients.jedis.JedisPubSub
+import redis.clients.jedis.params.ScanParams
+import redis.clients.jedis.resps.ScanResult
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.module.configuration.Configuration
@@ -26,7 +28,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection,IChannel {
+
+class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, IRedisConnection, IChannel {
 
     private val service: ExecutorService = Executors.newCachedThreadPool()
 
@@ -92,6 +95,25 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
 
     override fun contains(key: String): Boolean {
         return connector.cluster.exists(key)
+    }
+
+    override fun getList(key: String): Map<String, String> {
+        val jedis = connector.cluster // 获取Jedis连接
+        var cursor = "0"
+        val scanParams = ScanParams().match(key) // 使用传入的key作为匹配模式
+        val resultMap: MutableMap<String, String> = HashMap()
+
+        do {
+            val scanResult: ScanResult<String> = jedis.scan(cursor, scanParams)
+            val partialKeys = scanResult.result
+            for (partialKey in partialKeys) {
+                val value = jedis.get(partialKey) ?: "" // 获取每个键的值，如果值不存在则用空字符串代替
+                resultMap[partialKey] = value
+            }
+            cursor = scanResult.cursor
+        } while (cursor != "0")
+
+        return resultMap
     }
 
     override fun publish(channel: String, message: Any) {

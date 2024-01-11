@@ -1,6 +1,5 @@
 package taboolib.expansion
 
-import redis.clients.jedis.JedisPubSub
 import taboolib.expansion.lock.Lock
 import java.util.concurrent.TimeUnit
 
@@ -72,4 +71,9 @@ interface IRedisConnection {
      * @return Boolean
      */
     fun contains(key: String): Boolean
+
+    /**
+     *  获取列表
+     */
+    fun getList(key: String): Map<String, String>
 }
