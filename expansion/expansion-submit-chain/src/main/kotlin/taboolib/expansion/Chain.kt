@@ -2,8 +2,6 @@ package taboolib.expansion
 
 import kotlinx.coroutines.*
 import taboolib.common.Isolated
-import taboolib.common.env.RuntimeDependencies
-import taboolib.common.env.RuntimeDependency
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
@@ -30,21 +28,12 @@ class ExecutorDispatch : CoroutineDispatcher(), Delay {
 
 val chainDispatch = ExecutorDispatch()
 
-@RuntimeDependencies(
-    RuntimeDependency(
-        "!org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4",
-        test = "!kotlinx.coroutines.GlobalScope",
-        relocate = ["!kotlin.", "!kotlin@kotlin_version_escape@.", "!kotlinx.", "!kotlinx_1_6_4."],
-        transitive = false
-    )
-)
-class ChainEnv
-
 @Isolated
 open class Chain(val block: suspend Chain.() -> Unit) {
 
     suspend fun wait(value: Long) {
         withContext(chainDispatch) {
+            // 50ms = 1 tick in Minecraft
             delay(value * 50)
         }
     }
