@@ -3,19 +3,19 @@ package taboolib.expansion
 import kotlinx.coroutines.CompletableDeferred
 import taboolib.common.platform.function.submit
 
-class AsynchronousRepeatChain<T>(
-    override val block: () -> T,
+class AsynchronousRepeatChain(
+    override val block: Cancellable.() -> Unit,
     private val period: Long,
-    private val delay: Long,
-    private val predicate: () -> Boolean
-) : Chainable<T> {
+    private val delay: Long
+) : RepeatChainable {
 
-    override suspend fun execute(): T {
-        val future = CompletableDeferred<T>()
+    override suspend fun execute() {
+        val future = CompletableDeferred<Unit>()
+        val cancellable = Cancellable()
         submit(async = true, period = period, delay = delay) {
-            val result = block()
-            if (predicate()) {
-                future.complete(result)
+            cancellable.apply(block)
+            if (cancellable.cancelled) {
+                future.complete(Unit)
                 cancel()
             }
         }
