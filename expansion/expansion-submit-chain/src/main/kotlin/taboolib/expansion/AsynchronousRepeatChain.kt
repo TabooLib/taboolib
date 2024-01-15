@@ -13,8 +13,9 @@ class AsynchronousRepeatChain<T>(
     override suspend fun execute(): T {
         val future = CompletableDeferred<T>()
         submit(async = true, period = period, delay = delay) {
+            val result = block()
             if (predicate()) {
-                future.complete(block())
+                future.complete(result)
                 cancel()
             }
         }
