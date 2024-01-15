@@ -2,69 +2,61 @@ package taboolib.expansion
 
 import kotlinx.coroutines.*
 import taboolib.common.Isolated
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import taboolib.common.platform.function.submit
 import kotlin.coroutines.CoroutineContext
 
 
-val CHAIN_EXECUTORS = Executors.newScheduledThreadPool(8)
-
-@OptIn(InternalCoroutinesApi::class)
-class ExecutorDispatch : CoroutineDispatcher(), Delay {
+object SyncDispatcher : CoroutineDispatcher() {
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        CHAIN_EXECUTORS.submit(block)
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun scheduleResumeAfterDelay(timeMillis: Long, continuation: CancellableContinuation<Unit>) {
-        CHAIN_EXECUTORS.schedule({
-            with(continuation) {
-                resumeUndispatched(Unit)
-            }
-        }, timeMillis, TimeUnit.MILLISECONDS)
+        submit { block.run() }
     }
 }
 
-val chainDispatch = ExecutorDispatch()
+object AsyncDispatcher : CoroutineDispatcher() {
+
+    override fun dispatch(context: CoroutineContext, block: Runnable) {
+        submit(async = true) { block.run() }
+    }
+}
 
 @Isolated
-open class Chain(val block: suspend Chain.() -> Unit) {
+open class Chain(val chain: suspend Chain.() -> Unit) {
 
     suspend fun wait(value: Long) {
-        withContext(chainDispatch) {
+        withContext(AsyncDispatcher) {
             // 50ms = 1 tick in Minecraft
             delay(value * 50)
         }
     }
 
     suspend fun <T> sync(func: () -> T): T {
-        return withContext(chainDispatch) {
-            SynchronousChain(func).execute()
+        return withContext(SyncDispatcher) {
+            func()
         }
     }
 
     suspend fun <T> async(func: () -> T): T {
-        return withContext(chainDispatch) {
-            AsynchronousChain(func).execute()
+        return withContext(AsyncDispatcher) {
+            func()
         }
     }
 
-    suspend fun sync(period: Long, delay: Long, block: Cancellable.() -> Unit) {
-        return withContext(chainDispatch) {
+    suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+        return withContext(SyncDispatcher) {
             SynchronousRepeatChain(block, period, delay).execute()
         }
     }
 
-    suspend fun async(period: Long, delay: Long, block: Cancellable.() -> Unit) {
-        return withContext(chainDispatch) {
+    suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+        return withContext(AsyncDispatcher) {
             AsynchronousRepeatChain(block, period, delay).execute()
         }
     }
 
     fun run() {
-        CoroutineScope(chainDispatch).launch {
-            block(this@Chain)
+        CoroutineScope(AsyncDispatcher).launch {
+            chain(this@Chain)
         }
     }
 }

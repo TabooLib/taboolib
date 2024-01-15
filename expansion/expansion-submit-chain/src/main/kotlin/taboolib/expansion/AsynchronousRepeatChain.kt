@@ -9,6 +9,7 @@ class AsynchronousRepeatChain(
     private val delay: Long
 ) : RepeatChainable {
 
+    // TODO: Make sync repeat task fully compat with Coroutine Dispatcher.
     override suspend fun execute() {
         val future = CompletableDeferred<Unit>()
         val cancellable = Cancellable()
