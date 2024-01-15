@@ -30,15 +30,15 @@ open class Chain(val chain: suspend Chain.() -> Unit) {
         }
     }
 
-    suspend fun <T> sync(func: () -> T): T {
+    suspend fun <T> sync(block: () -> T): T {
         return withContext(SyncDispatcher) {
-            func()
+            block()
         }
     }
 
-    suspend fun <T> async(func: () -> T): T {
+    suspend fun <T> async(block: () -> T): T {
         return withContext(AsyncDispatcher) {
-            func()
+            block()
         }
     }
 
@@ -55,15 +55,15 @@ open class Chain(val chain: suspend Chain.() -> Unit) {
     }
 
     suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
-         return withContext(SyncDispatcher) {
-             SynchronousRepeatChain(block, period, delay).execute()
-         }
+        withContext(SyncDispatcher) {
+            SynchronousRepeatChain(block, period, delay).execute()
+        }
     }
 
     suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
-         return withContext(AsyncDispatcher) {
-             AsynchronousRepeatChain(block, period, delay).execute()
-         }
+        withContext(AsyncDispatcher) {
+            AsynchronousRepeatChain(block, period, delay).execute()
+        }
     }
 
     fun run() {
