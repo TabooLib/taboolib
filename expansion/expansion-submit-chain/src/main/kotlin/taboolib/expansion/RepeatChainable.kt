@@ -1,8 +1,8 @@
 package taboolib.expansion
 
-interface RepeatChainable {
+interface RepeatChainable<T> {
 
-    val block: Cancellable.() -> Unit
+    val block: Cancellable.() -> T
 
-    suspend fun execute()
+    suspend fun execute(): T
 }

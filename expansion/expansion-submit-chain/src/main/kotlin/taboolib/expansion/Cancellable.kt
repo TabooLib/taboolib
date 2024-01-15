@@ -8,4 +8,8 @@ open class Cancellable {
     fun cancel() {
         cancelled = true
     }
+
+    fun <T> call(block: Cancellable.() -> T): T {
+        return block()
+    }
 }

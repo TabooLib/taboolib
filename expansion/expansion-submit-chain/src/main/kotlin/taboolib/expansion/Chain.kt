@@ -42,16 +42,28 @@ open class Chain(val chain: suspend Chain.() -> Unit) {
         }
     }
 
-    suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+    suspend fun <T> sync(period: Long, delay: Long = 0L, block: Cancellable.() -> T): T {
         return withContext(SyncDispatcher) {
             SynchronousRepeatChain(block, period, delay).execute()
         }
     }
 
-    suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+    suspend fun <T> async(period: Long, delay: Long = 0L, block: Cancellable.() -> T): T {
         return withContext(AsyncDispatcher) {
             AsynchronousRepeatChain(block, period, delay).execute()
         }
+    }
+
+    suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+         return withContext(SyncDispatcher) {
+             SynchronousRepeatChain(block, period, delay).execute()
+         }
+    }
+
+    suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+         return withContext(AsyncDispatcher) {
+             AsynchronousRepeatChain(block, period, delay).execute()
+         }
     }
 
     fun run() {

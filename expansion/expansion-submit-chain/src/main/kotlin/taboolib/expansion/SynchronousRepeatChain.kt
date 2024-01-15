@@ -1,25 +1,25 @@
 package taboolib.expansion
 
-import kotlinx.coroutines.CompletableDeferred
 import taboolib.common.platform.function.submit
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-class SynchronousRepeatChain(
-    override val block: Cancellable.() -> Unit,
+class SynchronousRepeatChain<T>(
+    override val block: Cancellable.() -> T,
     private val period: Long,
     private val delay: Long,
-) : RepeatChainable {
+) : RepeatChainable<T> {
 
-    // TODO: Make sync repeat task fully compat with Coroutine Dispatcher.
-    override suspend fun execute() {
-        val future = CompletableDeferred<Unit>()
-        val cancellable = Cancellable()
-        submit(period = period, delay = delay) {
-            cancellable.apply(block)
-            if (cancellable.cancelled) {
-                future.complete(Unit)
-                cancel()
+    override suspend fun execute(): T {
+        return suspendCoroutine { cont ->
+            val cancellable = Cancellable()
+            submit(period = period, delay = delay) {
+                val result = cancellable.call(block)
+                if (cancellable.cancelled) {
+                    cont.resume(result)
+                    cancel()
+                }
             }
         }
-        future.await()
     }
 }
