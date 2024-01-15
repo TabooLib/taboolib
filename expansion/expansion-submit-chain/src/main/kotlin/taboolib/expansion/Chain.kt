@@ -52,7 +52,7 @@ open class Chain(val block: suspend Chain.() -> Unit) {
 
     suspend fun <T> sync(predicate: () -> Boolean, period: Long, delay: Long, block: () -> T): T {
         return withContext(chainDispatch) {
-            SynchronizeRepeatTask(block, period, delay, predicate).execute()
+            SynchronousRepeatChain(block, period, delay, predicate).execute()
         }
     }
 

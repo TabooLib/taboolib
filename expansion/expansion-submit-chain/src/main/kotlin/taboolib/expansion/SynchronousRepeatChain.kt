@@ -3,7 +3,7 @@ package taboolib.expansion
 import kotlinx.coroutines.CompletableDeferred
 import taboolib.common.platform.function.submit
 
-class SynchronizeRepeatTask<T>(
+class SynchronousRepeatChain<T>(
     override val block: () -> T,
     private val period: Long,
     private val delay: Long,
