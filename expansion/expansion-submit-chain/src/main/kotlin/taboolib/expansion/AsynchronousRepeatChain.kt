@@ -15,6 +15,7 @@ class AsynchronousRepeatChain<T>(
         submit(async = true, period = period, delay = delay) {
             if (predicate()) {
                 future.complete(block())
+                cancel()
             }
         }
         return future.await()
