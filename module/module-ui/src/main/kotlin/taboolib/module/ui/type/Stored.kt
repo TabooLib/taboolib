@@ -135,7 +135,7 @@ open class Stored(title: String) : Basic(title) {
     open class Rule {
 
         /** 检查判定位置回调 **/
-        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> false }
+        internal var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> true }
 
         /** 获取可用位置回调 **/
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
