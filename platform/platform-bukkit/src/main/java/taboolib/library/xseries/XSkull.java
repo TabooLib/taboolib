@@ -23,8 +23,6 @@ package taboolib.library.xseries;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import java.lang.invoke.MethodType;
-
 import com.mojang.authlib.properties.Property;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -41,6 +39,7 @@ import taboolib.platform.util.ItemBuilder;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Base64;

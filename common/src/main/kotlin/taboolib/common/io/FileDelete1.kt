@@ -4,8 +4,6 @@ package taboolib.common.io
 
 import taboolib.common.Isolated
 import java.io.File
-import java.util.concurrent.Executors
-import java.util.concurrent.Future
 
 /**
  * 删除特定文件夹下的所有子文件

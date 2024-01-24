@@ -1,7 +1,5 @@
 package taboolib.module.nms
 
-import taboolib.common.util.unsafeLazy
-
 /**
  * Adyeshach
  * taboolib.module.nms.DataSerializerFactory

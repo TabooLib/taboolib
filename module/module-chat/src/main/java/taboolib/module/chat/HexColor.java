@@ -1,7 +1,6 @@
 package taboolib.module.chat;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.chat.BaseComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;

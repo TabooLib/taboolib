@@ -16,10 +16,6 @@ public class IsolatedClassLoader extends URLClassLoader {
 
 	private static boolean isEnabled = false;
 
-	public static boolean isEnabled() {
-		return isEnabled;
-	}
-
 	static {
 		try {
 			Class<SkipIsolatedClassLoader> clazz = SkipIsolatedClassLoader.class;
@@ -30,7 +26,7 @@ public class IsolatedClassLoader extends URLClassLoader {
 
 	private final Set<String> excludedClasses = new HashSet<>();
 	private final Set<String> excludedPackages = new HashSet<>();
-	
+
 	private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 	private MethodHandle methodHandleTaboolibCommonRun;
 
@@ -45,15 +41,16 @@ public class IsolatedClassLoader extends URLClassLoader {
 		ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);
 		for (IsolatedClassLoaderConfig config : serviceLoader) {
 			Set<String> configExcludedClasses = config.excludedClasses();
-			if (configExcludedClasses != null && !configExcludedClasses.isEmpty())
+			if (configExcludedClasses != null && !configExcludedClasses.isEmpty()) {
 				excludedClasses.addAll(configExcludedClasses);
-
+			}
 			Set<String> configExcludedPackages = config.excludedPackages();
-			if (configExcludedPackages != null && !configExcludedPackages.isEmpty())
+			if (configExcludedPackages != null && !configExcludedPackages.isEmpty()) {
 				excludedPackages.addAll(configExcludedPackages);
+			}
 		}
 	}
-	
+
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		return loadClass(name, resolve, true);
@@ -61,12 +58,11 @@ public class IsolatedClassLoader extends URLClassLoader {
 
 	public Class<?> loadClass(String name, boolean resolve, boolean checkParents) throws ClassNotFoundException {
 		synchronized (getClassLoadingLock(name)) {
-			Class<?> c = findLoadedClass(name);
-
+			Class<?> findClass = findLoadedClass(name);
 			// Check isolated classes and libraries before parent to:
 			//   - prevent accessing classes of other plugins
 			//   - prevent the usage of old patch classes (which stay in memory after reloading)
-			if (c == null && !excludedClasses.contains(name)) {
+			if (findClass == null && !excludedClasses.contains(name)) {
 				boolean flag = true;
 				for (String excludedPackage : excludedPackages) {
 					if (name.startsWith(excludedPackage)) {
@@ -74,22 +70,20 @@ public class IsolatedClassLoader extends URLClassLoader {
 						break;
 					}
 				}
-				if (flag) c = findClassOrNull(name);
+				if (flag) {
+					findClass = findClassOrNull(name);
+				}
 			}
-
-			if (c == null && checkParents) {
-				c = loadClassFromParentOrNull(name);
+			if (findClass == null && checkParents) {
+				findClass = loadClassFromParentOrNull(name);
 			}
-
-			if (c == null) {
+			if (findClass == null) {
 				throw new ClassNotFoundException(name);
 			}
-
 			if (resolve) {
-				resolveClass(c);
+				resolveClass(findClass);
 			}
-
-			return c;
+			return findClass;
 		}
 	}
 
@@ -128,16 +122,16 @@ public class IsolatedClassLoader extends URLClassLoader {
 	public void runIsolated(Runnable target) throws Throwable {
 		getMethodHandleTaboolibCommonRun().invoke(target);
 	}
-	
+
 	private MethodHandle getMethodHandleTaboolibCommonRun() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
 		if (methodHandleTaboolibCommonRun == null) {
-			methodHandleTaboolibCommonRun = lookup.findStatic(
-				loadClass("taboolib.common.TabooLibCommon"),
-				"run",
-				MethodType.methodType(void.class, Runnable.class)
-			);
+			methodHandleTaboolibCommonRun = lookup.findStatic(loadClass("taboolib.common.TabooLibCommon"), "run", MethodType.methodType(void.class, Runnable.class));
 		}
 		return methodHandleTaboolibCommonRun;
 	}
-	
+
+	public static boolean isEnabled() {
+		return isEnabled;
+	}
 }
+

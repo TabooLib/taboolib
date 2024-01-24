@@ -1,7 +1,6 @@
 package taboolib.platform
 
 import org.bukkit.scheduler.BukkitRunnable
-import taboolib.common.classloader.IsolatedClassLoader
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

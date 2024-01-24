@@ -1,6 +1,5 @@
 package taboolib.expansion
 
-import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic

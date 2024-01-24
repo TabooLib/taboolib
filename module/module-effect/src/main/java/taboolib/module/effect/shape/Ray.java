@@ -9,7 +9,6 @@ import taboolib.module.effect.ParticleSpawner;
 import taboolib.module.effect.Playable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 

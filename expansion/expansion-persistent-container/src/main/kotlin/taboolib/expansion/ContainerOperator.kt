@@ -1,7 +1,7 @@
 package taboolib.expansion
 
-import taboolib.module.database.Table
 import taboolib.module.database.Filter
+import taboolib.module.database.Table
 import java.util.*
 import javax.sql.DataSource
 

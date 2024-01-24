@@ -1,6 +1,5 @@
 package taboolib.test.nms
 
-import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Isolated

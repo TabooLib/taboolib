@@ -11,13 +11,6 @@ import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
 import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.Any
-import kotlin.Array
-import kotlin.Int
-import kotlin.String
-import kotlin.Throwable
-import kotlin.Unit
-import kotlin.arrayOf
 
 /**
  * 捕获玩家的牌子输入

@@ -6,7 +6,6 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
 import org.tabooproject.reflex.Reflex.Companion.getProperty
-import taboolib.common.classloader.IsolatedClassLoader
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide

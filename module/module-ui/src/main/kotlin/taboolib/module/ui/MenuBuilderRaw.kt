@@ -3,7 +3,6 @@
 package taboolib.module.ui
 
 import org.bukkit.entity.HumanEntity
-import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import taboolib.common.Isolated
 import taboolib.module.chat.Source

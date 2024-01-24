@@ -4,7 +4,9 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.ProxyCommandSender
-import taboolib.common.platform.command.*
+import taboolib.common.platform.command.CommandCompleter
+import taboolib.common.platform.command.CommandExecutor
+import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.service.PlatformCommand
 import taboolib.platform.AppConsole.logger

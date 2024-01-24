@@ -15,7 +15,7 @@ import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
 import java.io.File
 import java.net.URL
-import java.util.Properties
+import java.util.*
 
 /**
  * 获取玩家对应的语言文件
