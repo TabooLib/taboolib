@@ -6,7 +6,7 @@ import org.tabooproject.reflex.ClassField;
 import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
-import taboolib.common.PrimitiveIO;
+import taboolib.common.Public;
 import taboolib.common.TabooLib;
 import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
@@ -66,15 +66,11 @@ public class VisitorHandler {
      * @param lifeCycle 生命周期
      */
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
-        long time = System.currentTimeMillis();
-        if (TabooLib.isKotlinEnvironment() && !TabooLib.isStopped()) {
-            for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
-                for (Class<?> clazz : getClasses()) {
-                    inject(clazz, entry.getValue(), lifeCycle);
-                }
+        for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
+            for (Class<?> clazz : getClasses()) {
+                inject(clazz, entry.getValue(), lifeCycle);
             }
         }
-        PrimitiveIO.println("ClassVisitor inject %s in %sms.", lifeCycle, System.currentTimeMillis() - time);
     }
 
     /**
@@ -85,9 +81,6 @@ public class VisitorHandler {
      * @param lifeCycle 生命周期
      */
     public static void inject(@NotNull Class<?> clazz, @NotNull VisitorGroup group, @Nullable LifeCycle lifeCycle) {
-        if (TabooLib.isStopped()) {
-            return;
-        }
         // 跳过注入
         if (clazz.isAnnotationPresent(Ghost.class)) {
             return;
@@ -102,18 +95,18 @@ public class VisitorHandler {
         // 获取实例
         Supplier<?> instance = ProjectScannerKt.getInstance(clazz, false);
         // 获取结构
-        ReflexClass reflexClass;
+        ReflexClass rc;
         try {
-            reflexClass = ReflexClass.Companion.of(clazz, true);
+            rc = ReflexClass.Companion.of(clazz, true);
         } catch (Throwable ex) {
             new ClassVisitException(clazz, ex).printStackTrace();
             return;
         }
         // 依赖注入
-        visitStart(clazz, group, lifeCycle, reflexClass, instance);
-        visitField(clazz, group, lifeCycle, reflexClass, instance);
-        visitMethod(clazz, group, lifeCycle, reflexClass, instance);
-        visitEnd(clazz, group, lifeCycle, reflexClass, instance);
+        visitStart(clazz, group, lifeCycle, rc, instance);
+        visitField(clazz, group, lifeCycle, rc, instance);
+        visitMethod(clazz, group, lifeCycle, rc, instance);
+        visitEnd(clazz, group, lifeCycle, rc, instance);
     }
 
     private static void visitStart(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
@@ -160,18 +153,27 @@ public class VisitorHandler {
         }
     }
 
+    /**
+     * 获取能够被 ClassVisitor 访问到的所有类
+     */
     public static List<Class<?>> getClasses() {
         if (classes.isEmpty()) {
             // 获取所有类
             for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {
                 // 排除第三方库
                 // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
-                if (!it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") && !it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
-                    // 排除其他平台
-                    if (Platform.check(it.getValue())) {
-                        classes.add(it.getValue());
-                    }
+                if (it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") || it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
+                    continue;
                 }
+                // 排除 TabooLib 的非开放类
+                if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Public.class)) {
+                    continue;
+                }
+                // 排除其他平台
+                if (!Platform.check(it.getValue())) {
+                    continue;
+                }
+                classes.add(it.getValue());
             }
         }
         return classes;

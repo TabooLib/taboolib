@@ -125,11 +125,11 @@ abstract class Test {
                 len = message.maxOf { it.length }
                 val h1 = "=".repeat(len)
                 val h2 = "-".repeat(len)
-//                PrimitiveIO.println(h1)
-//                PrimitiveIO.println("[ TOTAL : ${results.size}, SUCCESS : $success, FAILURE : $failure, UNSUPPORTED : $unsupported ]")
-//                PrimitiveIO.println(h2)
-//                message.forEach { PrimitiveIO.println(it) }
-//                PrimitiveIO.println(h1)
+                PrimitiveIO.println(h1)
+                PrimitiveIO.println("[ TOTAL : ${results.size}, SUCCESS : $success, FAILURE : $failure, UNSUPPORTED : $unsupported ]")
+                PrimitiveIO.println(h2)
+                message.forEach { PrimitiveIO.println(it) }
+                PrimitiveIO.println(h1)
             }
         }
     }
