@@ -49,7 +49,7 @@ public class RuntimeEnv {
             if (TabooLib.isKotlinEnvironment()) {
                 return;
             }
-            rel = Collections.singletonList(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + "_" + KOTLIN_VERSION.replace('.', '_') + "."));
+            rel = Collections.singletonList(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."));
         }
         ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
         ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + KOTLIN_VERSION, rel);
