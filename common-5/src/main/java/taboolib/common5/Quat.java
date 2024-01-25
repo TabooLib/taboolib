@@ -1,10 +1,7 @@
 package taboolib.common5;
 
-import taboolib.common.Isolated;
-
 import java.util.Objects;
 
-@Isolated
 public class Quat {
 
     public static final double DBL_EPSILON = Double.longBitsToDouble(0x3cb0000000000000L);

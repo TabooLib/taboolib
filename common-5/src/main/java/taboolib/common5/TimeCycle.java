@@ -1,7 +1,6 @@
 package taboolib.common5;
 
 import com.google.common.collect.Maps;
-import taboolib.common.Isolated;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Map;
  * @author 坏黑
  * @since 2019-05-28 17:28
  */
-@Isolated
 public class TimeCycle {
 
     private static final Map<String, TimeCycle> cacheMap = Maps.newHashMap();

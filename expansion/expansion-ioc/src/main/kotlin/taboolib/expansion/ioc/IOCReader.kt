@@ -12,9 +12,6 @@ import taboolib.expansion.ioc.event.DataReadEvent
 import taboolib.expansion.ioc.serialization.SerializationManager
 import java.util.concurrent.ConcurrentHashMap
 
-@RuntimeDependencies(
-    RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
-)
 object IOCReader {
 
     val databaseMap = ConcurrentHashMap<String, IOCDatabase>()

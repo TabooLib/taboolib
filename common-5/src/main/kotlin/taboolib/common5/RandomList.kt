@@ -1,6 +1,5 @@
 package taboolib.common5
 
-import taboolib.common.Isolated
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -8,7 +7,6 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author sky
  * @since 2020-10-1 10:43
  */
-@Isolated
 class RandomList<T>(vararg element: Pair<T, Int>) {
 
     private val value = CopyOnWriteArrayList<Value<T>>()

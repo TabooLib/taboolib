@@ -4,7 +4,7 @@ import net.md_5.bungee.BungeeCord;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
@@ -35,7 +35,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
     private static IsolatedClassLoader isolatedClassLoader;
 
     static {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 IsolatedClassLoader loader = new IsolatedClassLoader(
                         new URL[]{BungeePlugin.class.getProtectionDomain().getCodeSource().getLocation()},
@@ -50,9 +50,9 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                 ex.printStackTrace();
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
+            TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
             // 搜索 Plugin 实现
-            if (TabooLibCommon.isKotlinEnvironment()) {
+            if (TabooLib.isKotlinEnvironment()) {
                 pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
         }
@@ -60,7 +60,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     public BungeePlugin() {
         instance = this;
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
@@ -68,26 +68,26 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             }
         } else {
             // 生命周期
-            TabooLibCommon.lifeCycle(LifeCycle.INIT);
+            TabooLib.lifeCycle(LifeCycle.INIT);
         }
     }
 
     @Override
     public void onLoad() {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onLoad").invoke(delegateObject);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+            TabooLib.lifeCycle(LifeCycle.LOAD);
             // 再次尝试搜索 Plugin 实现
             if (pluginInstance == null) {
                 pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
             // 调用 Plugin 实现的 onLoad() 方法
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+            if (pluginInstance != null && !TabooLib.isStopped()) {
                 pluginInstance.onLoad();
             }
         }
@@ -95,16 +95,16 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Override
     public void onEnable() {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onEnable").invoke(delegateObject);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+            TabooLib.lifeCycle(LifeCycle.ENABLE);
             // 判断插件是否关闭
-            if (!TabooLibCommon.isStopped()) {
+            if (!TabooLib.isStopped()) {
                 // 调用 onEnable() 方法
                 if (pluginInstance != null) {
                     pluginInstance.onEnable();
@@ -116,12 +116,12 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
                 }
             }
             // 再次判断插件是否关闭
-            if (!TabooLibCommon.isStopped()) {
+            if (!TabooLib.isStopped()) {
                 // 创建调度器，执行 onActive() 方法
                 BungeeCord.getInstance().getScheduler().schedule(this, new Runnable() {
                     @Override
                     public void run() {
-                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        TabooLib.lifeCycle(LifeCycle.ACTIVE);
                         if (pluginInstance != null) {
                             pluginInstance.onActive();
                         }
@@ -133,7 +133,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Override
     public void onDisable() {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
@@ -141,10 +141,10 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             }
         } else {
             // 在插件未关闭的前提下，执行 onDisable() 方法
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+            if (pluginInstance != null && !TabooLib.isStopped()) {
                 pluginInstance.onDisable();
             }
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+            TabooLib.lifeCycle(LifeCycle.DISABLE);
         }
     }
 

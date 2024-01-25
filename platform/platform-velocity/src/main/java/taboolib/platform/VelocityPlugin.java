@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
@@ -46,7 +46,7 @@ public class VelocityPlugin {
     private static IsolatedClassLoader isolatedClassLoader;
 
     static {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 IsolatedClassLoader loader = new IsolatedClassLoader(
                         new URL[]{VelocityPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
@@ -61,8 +61,8 @@ public class VelocityPlugin {
                 ex.printStackTrace();
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-            if (TabooLibCommon.isKotlinEnvironment()) {
+            TabooLib.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
+            if (TabooLib.isKotlinEnvironment()) {
                 pluginInstance = Project1Kt.findImplementation(Plugin.class);
             }
         }
@@ -79,28 +79,28 @@ public class VelocityPlugin {
         this.configDirectory = configDirectory;
         instance = this;
 
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onInit").invoke(delegateObject);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else {
-            TabooLibCommon.lifeCycle(LifeCycle.INIT);
+            TabooLib.lifeCycle(LifeCycle.INIT);
         }
     }
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onLoad").invoke(delegateObject);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else {
-            if (!TabooLibCommon.isStopped()) {
-                TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+            if (!TabooLib.isStopped()) {
+                TabooLib.lifeCycle(LifeCycle.LOAD);
                 if (pluginInstance == null) {
                     pluginInstance = Project1Kt.findImplementation(Plugin.class);
                 }
@@ -108,8 +108,8 @@ public class VelocityPlugin {
                     pluginInstance.onLoad();
                 }
             }
-            if (!TabooLibCommon.isStopped()) {
-                TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+            if (!TabooLib.isStopped()) {
+                TabooLib.lifeCycle(LifeCycle.ENABLE);
                 if (pluginInstance != null) {
                     pluginInstance.onEnable();
                 }
@@ -118,11 +118,11 @@ public class VelocityPlugin {
                 } catch (NoClassDefFoundError ignored) {
                 }
             }
-            if (!TabooLibCommon.isStopped()) {
+            if (!TabooLib.isStopped()) {
                 server.getScheduler().buildTask(this, new Runnable() {
                     @Override
                     public void run() {
-                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+                        TabooLib.lifeCycle(LifeCycle.ACTIVE);
                         if (pluginInstance != null) {
                             pluginInstance.onActive();
                         }
@@ -134,17 +134,17 @@ public class VelocityPlugin {
 
     @Subscribe
     public void e(ProxyShutdownEvent e) {
-        if (IsolatedClassLoader.isEnabled()) {
+        if (IsolatedClassLoader.IS_ENABLED) {
             try {
                 delegateClass.getMethod("onDisable").invoke(delegateObject);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         } else {
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
+            if (pluginInstance != null && !TabooLib.isStopped()) {
                 pluginInstance.onDisable();
             }
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+            TabooLib.lifeCycle(LifeCycle.DISABLE);
         }
     }
 

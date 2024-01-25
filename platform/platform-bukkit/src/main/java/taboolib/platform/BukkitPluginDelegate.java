@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.tabooproject.reflex.Reflex;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.Plugin;
@@ -27,9 +27,9 @@ public class BukkitPluginDelegate {
 
 
 	public void onConst() throws IllegalAccessException {
-		TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
+		TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUKKIT);
 		// 搜索 Plugin 实现
-		if (TabooLibCommon.isKotlinEnvironment()) {
+		if (TabooLib.isKotlinEnvironment()) {
 			pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 		}
 	}
@@ -38,25 +38,25 @@ public class BukkitPluginDelegate {
 		// 修改访问提示（似乎有用）
 		injectAccess();
 		// 生命周期
-		TabooLibCommon.lifeCycle(LifeCycle.INIT);
+		TabooLib.lifeCycle(LifeCycle.INIT);
 	}
 	
 	public void onLoad() throws IllegalAccessException {
-		TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+		TabooLib.lifeCycle(LifeCycle.LOAD);
 		// 再次尝试搜索 Plugin 实现
 		if (getPluginInstance() == null) {
 			pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 		}
 		// 调用 Plugin 实现的 onLoad() 方法
-		if (getPluginInstance() != null && !TabooLibCommon.isStopped()) {
+		if (getPluginInstance() != null && !TabooLib.isStopped()) {
 			getPluginInstance().onLoad();
 		}
 	}
 
 	public void onEnable() {
-		TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+		TabooLib.lifeCycle(LifeCycle.ENABLE);
 		// 判断插件是否关闭
-		if (!TabooLibCommon.isStopped()) {
+		if (!TabooLib.isStopped()) {
 			// 调用 onEnable() 方法
 			if (getPluginInstance() != null) {
 				getPluginInstance().onEnable();
@@ -69,12 +69,12 @@ public class BukkitPluginDelegate {
 		}
 		// 再次判断插件是否关闭
 		// 因为插件可能在 onEnable() 下关闭
-		if (!TabooLibCommon.isStopped()) {
+		if (!TabooLib.isStopped()) {
 			// 创建调度器，执行 onActive() 方法
 			Bukkit.getScheduler().runTask(BukkitPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+					TabooLib.lifeCycle(LifeCycle.ACTIVE);
 					if (getPluginInstance() != null) {
 						getPluginInstance().onActive();
 					}
@@ -84,9 +84,9 @@ public class BukkitPluginDelegate {
 	}
 
 	public void onDisable() {
-		TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+		TabooLib.lifeCycle(LifeCycle.DISABLE);
 		// 在插件未关闭的前提下，执行 onDisable() 方法
-		if (getPluginInstance() != null && !TabooLibCommon.isStopped()) {
+		if (getPluginInstance() != null && !TabooLib.isStopped()) {
 			getPluginInstance().onDisable();
 		}
 	}

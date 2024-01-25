@@ -1,9 +1,5 @@
-@file:Isolated
-@file:Suppress("NOTHING_TO_INLINE")
-
 package taboolib.common5.util
 
-import taboolib.common.Isolated
 import java.util.*
 
 /**
@@ -11,7 +7,7 @@ import java.util.*
  *
  * @return 时间跨度（单位：毫秒）
  */
-inline fun String.parseMillis(): Long {
+fun String.parseMillis(): Long {
     var time = 0L
     var num = ""
     lowercase(Locale.getDefault()).forEach {

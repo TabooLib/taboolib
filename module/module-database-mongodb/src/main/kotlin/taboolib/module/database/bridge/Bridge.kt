@@ -1,5 +1,4 @@
 @file:RuntimeDependencies(
-    RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement"),
     RuntimeDependency(
         value = "!com.mongodb:MongoDB:3.12.2",
         test = "!com.mongodb.client.MongoClient",

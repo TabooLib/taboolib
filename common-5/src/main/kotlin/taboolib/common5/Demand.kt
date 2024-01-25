@@ -1,12 +1,9 @@
 package taboolib.common5
 
-import taboolib.common.Isolated
-
 /**
  * @author bkm016
  * @since 2020/11/22 2:51 下午
  */
-@Isolated
 class Demand(val source: String) {
 
     val namespace: String

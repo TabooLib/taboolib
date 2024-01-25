@@ -1,7 +1,5 @@
 package taboolib.common5;
 
-import taboolib.common.Isolated;
-
 import java.util.regex.Pattern;
 
 /**
@@ -11,7 +9,6 @@ import java.util.regex.Pattern;
  * @version 1.0
  * Aug 13, 2021
  */
-@Isolated
 public class ColorRegex {
 
     /**

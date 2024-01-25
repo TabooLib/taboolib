@@ -1,9 +1,5 @@
-@file:Suppress("SpellCheckingInspection", "NOTHING_TO_INLINE")
-@file:Isolated
-
+@file:Suppress("SpellCheckingInspection")
 package taboolib.common5
-
-import taboolib.common.Isolated
 
 inline val Any?.cint: Int
     get() = Coerce.toInteger(this)
@@ -29,10 +25,10 @@ inline val Any?.cchar: Char
 inline val Any?.cbool: Boolean
     get() = Coerce.toBoolean(this)
 
-inline fun Double.format(digits: Int = 2): Double {
+fun Double.format(digits: Int = 2): Double {
     return Coerce.format(this, digits)
 }
 
-inline infix fun String.eqic(other: String): Boolean {
+infix fun String.eqic(other: String): Boolean {
     return this.equals(other, ignoreCase = true)
 }

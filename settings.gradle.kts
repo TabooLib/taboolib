@@ -22,12 +22,8 @@ fun importModules() {
 }
 
 fun importPlatforms() {
-    include("platform:platform-bukkit", /* "platform:platform-nukkit",*/ "platform:platform-bungee")
-    // include("platform:platform-minestom")
-    // include("platform:platform-sponge-api7", "platform:platform-sponge-api8")
-    // include("platform:platform-sponge-api9")
+    include("platform:platform-bukkit", "platform:platform-bungee")
     include("platform:platform-velocity")
-    // include("platform:platform-cloudnet-v3")
     include("platform:platform-application")
 }
 
@@ -48,8 +44,10 @@ fun importExtensions() {
     include("expansion:expansion-javascript")
 }
 
-include("common", "common-5")
+//include("common", "common-5", "common-env", "common-impl", "common-platform-api", "common-util", "common-test")
 
-importModules()
-importPlatforms()
-importExtensions()
+//importModules()
+//importPlatforms()
+//importExtensions()
+
+include("common", "common-env", "common-env-api", "common-util", "common-5", "common-reflex")

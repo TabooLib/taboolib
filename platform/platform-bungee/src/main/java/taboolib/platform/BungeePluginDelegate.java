@@ -2,7 +2,7 @@ package taboolib.platform;
 
 import net.md_5.bungee.BungeeCord;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.Plugin;
@@ -24,34 +24,34 @@ public class BungeePluginDelegate {
 	}
 
 	public void onConst() throws IllegalAccessException {
-		TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
+		TabooLib.lifeCycle(LifeCycle.CONST, Platform.BUNGEE);
 		// 搜索 Plugin 实现
-		if (TabooLibCommon.isKotlinEnvironment()) {
+		if (TabooLib.isKotlinEnvironment()) {
 			pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 		}
 	}
 
 	public void onInit() {
 		// 生命周期
-		TabooLibCommon.lifeCycle(LifeCycle.INIT);
+		TabooLib.lifeCycle(LifeCycle.INIT);
 	}
 
 	public void onLoad() throws IllegalAccessException {
-		TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+		TabooLib.lifeCycle(LifeCycle.LOAD);
 		// 再次尝试搜索 Plugin 实现
 		if (getPluginInstance() == null) {
 			pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 		}
 		// 调用 Plugin 实现的 onLoad() 方法
-		if (getPluginInstance() != null && !TabooLibCommon.isStopped()) {
+		if (getPluginInstance() != null && !TabooLib.isStopped()) {
 			getPluginInstance().onLoad();
 		}
 	}
 
 	public void onEnable() {
-		TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+		TabooLib.lifeCycle(LifeCycle.ENABLE);
 		// 判断插件是否关闭
-		if (!TabooLibCommon.isStopped()) {
+		if (!TabooLib.isStopped()) {
 			// 调用 onEnable() 方法
 			if (getPluginInstance() != null) {
 				getPluginInstance().onEnable();
@@ -63,12 +63,12 @@ public class BungeePluginDelegate {
 			}
 		}
 		// 再次判断插件是否关闭
-		if (!TabooLibCommon.isStopped()) {
+		if (!TabooLib.isStopped()) {
 			// 创建调度器，执行 onActive() 方法
 			BungeeCord.getInstance().getScheduler().schedule(BungeePlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+					TabooLib.lifeCycle(LifeCycle.ACTIVE);
 					if (getPluginInstance() != null) {
 						getPluginInstance().onActive();
 					}
@@ -78,9 +78,9 @@ public class BungeePluginDelegate {
 	}
 
 	public void onDisable() {
-		TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+		TabooLib.lifeCycle(LifeCycle.DISABLE);
 		// 在插件未关闭的前提下，执行 onDisable() 方法
-		if (getPluginInstance() != null && !TabooLibCommon.isStopped()) {
+		if (getPluginInstance() != null && !TabooLib.isStopped()) {
 			getPluginInstance().onDisable();
 		}
 	}

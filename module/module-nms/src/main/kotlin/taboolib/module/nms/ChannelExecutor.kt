@@ -5,7 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -116,7 +116,7 @@ object ChannelExecutor {
 
     @SubscribeEvent
     private fun onQuit(e: PlayerQuitEvent) {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         nmsProxy<ConnectionGetter>().release(e.player.address ?: return)
@@ -124,7 +124,7 @@ object ChannelExecutor {
 
     @Awake(LifeCycle.ACTIVE)
     private fun onEnable() {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         onlinePlayers.forEach {
@@ -139,7 +139,7 @@ object ChannelExecutor {
 
     @Awake(LifeCycle.DISABLE)
     private fun onDisable() {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         onlinePlayers.forEach { removePlayerChannel(it, async = false) }

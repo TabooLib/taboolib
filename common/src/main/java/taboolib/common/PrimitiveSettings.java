@@ -1,0 +1,104 @@
+package taboolib.common;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
+
+/**
+ * TabooLib
+ * taboolib.common.TabooLibSettings
+ *
+ * @author 坏黑
+ * @since 2024/1/25 15:07
+ */
+public class PrimitiveSettings {
+
+    public static final String ID = "!taboolib".substring(1);
+
+    /**
+     * 运行参数
+     */
+    public static final Properties RUNTIME_PROPERTIES = getProperties("env", true);
+
+    /**
+     * 版本信息
+     */
+    public static final Properties VERSION_PROPERTIES = getProperties("version", false);
+
+    /**
+     * Kotlin 版本
+     */
+    public static final String KOTLIN_VERSION = VERSION_PROPERTIES.getProperty("kotlin", "1.5.31");
+
+    /**
+     * TabooLib 版本
+     */
+    public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, "6.1.0-dev");
+
+    /**
+     * 调试模式
+     */
+    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", "false").equals("true");
+
+    /**
+     * 中央仓库
+     */
+    public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", "https://maven.aliyun.com/repository/central");
+
+    /**
+     * TabooLib 仓库
+     */
+    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", "http://ptms.ink:8081/repository/releases");
+
+    /**
+     * libs 位置
+     */
+    public static final String FILE_LIBS = RUNTIME_PROPERTIES.getProperty("file-libs", "libraries");
+
+    /**
+     * assets 位置
+     */
+    public static final String FILE_ASSETS = RUNTIME_PROPERTIES.getProperty("file-assets", "assets");
+
+    /**
+     * 是否启用完全隔离模式
+     */
+    public static boolean IS_ISOLATED_MODE = RUNTIME_PROPERTIES.getProperty("enable-isolated-classloader", "false").equals("true");
+
+    /**
+     * 使用模块
+     */
+    public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", "").split(",");
+
+    /**
+     * 获取配置文件
+     */
+    private static Properties getProperties(String name, boolean allowGlobal) {
+        // 是否允许全局配置
+        if (allowGlobal) {
+            // 从服务端根目录中提取配置文件
+            File globalFile = new File(name + ".properties");
+            if (globalFile.exists()) {
+                try (FileInputStream fis = new FileInputStream(globalFile)) {
+                    Properties prop = new Properties();
+                    prop.load(fis);
+                    return prop;
+                } catch (IOException ignored) {
+                }
+            }
+        }
+        // 从插件内部提取配置文件
+        URL url = PrimitiveSettings.class.getClassLoader().getResource("META-INF/taboolib/" + name + ".properties");
+        if (url != null) {
+            try {
+                Properties prop = new Properties();
+                prop.load(url.openStream());
+                return prop;
+            } catch (IOException ignored) {
+            }
+        }
+        throw new IllegalStateException("META-INF/taboolib/" + name + ".properties not found");
+    }
+}

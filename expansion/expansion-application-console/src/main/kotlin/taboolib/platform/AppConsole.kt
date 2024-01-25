@@ -8,7 +8,7 @@ import org.jline.reader.Candidate
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -52,7 +52,7 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
         }
         command("stop", aliases = listOf("shutdown"), description = "stop the server") {
             execute<ProxyCommandSender> { sender, context, argument ->
-                TabooLibCommon.testCancel()
+                TabooLib.testCancel()
             }
         }
     }
@@ -70,7 +70,7 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     }
 
     override fun isRunning(): Boolean {
-        return !TabooLibCommon.isStopped()
+        return !TabooLib.isStopped()
     }
 
     override fun buildReader(builder: LineReaderBuilder): LineReader {
@@ -93,7 +93,7 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     }
 
     override fun shutdown() {
-        TabooLibCommon.testCancel()
+        TabooLib.testCancel()
     }
 
     override fun hasPermission(permission: String): Boolean {

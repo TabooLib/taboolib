@@ -1,7 +1,5 @@
 package taboolib.common5;
 
-import taboolib.common.Isolated;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -51,7 +49,6 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author YiMiner
  **/
-@Isolated
 public class LoreMap<T> {
 
     private final TrieNode root = new TrieNode();

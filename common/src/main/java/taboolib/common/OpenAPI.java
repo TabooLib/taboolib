@@ -1,7 +1,6 @@
 package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.platform.PlatformFactory;
 
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public class OpenAPI {
 
     @NotNull
     public static OpenResult call(String name, Object[] data) {
-        for (Map.Entry<String, Object> entry : PlatformFactory.INSTANCE.getAwokenMap().entrySet()) {
+        for (Map.Entry<String, Object> entry : TabooLib.getAwakenedClasses().entrySet()) {
             if (entry.getValue() instanceof OpenListener) {
                 OpenResult result = ((OpenListener) entry.getValue()).call(name, data);
                 if (result.isSuccessful()) {

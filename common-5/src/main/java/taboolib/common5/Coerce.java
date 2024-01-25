@@ -27,7 +27,6 @@ package taboolib.common5;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.*;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.Isolated;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -46,7 +45,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Utility class for coercing unknown values to specific target types.
  */
 @SuppressWarnings("UnstableApiUsage")
-@Isolated
 public final class Coerce {
 
     private static final Pattern listPattern = Pattern.compile("^([(\\[{]?)(.+?)([)\\]}]?)$");
@@ -179,7 +177,7 @@ public final class Coerce {
             } else if (ofClass.equals(Integer.TYPE) || ofClass.equals(Integer.class)) {
                 filteredList.add((T) (Integer) Coerce.toInteger(o));
             } else if (ofClass.equals(Float.TYPE) || ofClass.equals(Float.class)) {
-                filteredList.add((T) new Float(Coerce.toDouble(o)));
+                filteredList.add((T) (Float) Coerce.toFloat(o));
             } else if (ofClass.equals(Double.TYPE) || ofClass.equals(Double.class)) {
                 filteredList.add((T) (Double) Coerce.toDouble(o));
             } else if (ofClass.equals(Boolean.TYPE) || ofClass.equals(Boolean.class)) {

@@ -1,7 +1,5 @@
 package taboolib.common5;
 
-import taboolib.common.Isolated;
-
 import java.util.Calendar;
 import java.util.function.Function;
 
@@ -9,7 +7,6 @@ import java.util.function.Function;
  * @author sky
  * @since 2020-02-18 14:13
  */
-@Isolated
 public enum RealTime {
 
     /**

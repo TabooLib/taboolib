@@ -2,7 +2,7 @@ package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
@@ -78,8 +78,8 @@ class ConfigLoader : ClassVisitor(1) {
                 }
                 files[name] = configFile
                 // 开发模式
-                if (TabooLibCommon.isDevelopmentMode()) {
-                    TabooLibCommon.print("Loaded config file: ${file.absolutePath}")
+                if (TabooLib.isDevelopmentMode()) {
+                    PrimitiveIO.println("Loaded config file: ${file.absolutePath}")
                 }
             }
         }

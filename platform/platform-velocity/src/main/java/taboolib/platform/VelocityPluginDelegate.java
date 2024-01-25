@@ -1,7 +1,7 @@
 package taboolib.platform;
 
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.TabooLib;
 import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.Plugin;
@@ -22,20 +22,20 @@ public class VelocityPluginDelegate {
 	}
 
 	public void onConst() throws IllegalAccessException {
-		TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-		if (TabooLibCommon.isKotlinEnvironment()) {
+		TabooLib.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
+		if (TabooLib.isKotlinEnvironment()) {
 			pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 		}
 	}
 
 	public void onInit() {
 		// 生命周期
-		TabooLibCommon.lifeCycle(LifeCycle.INIT);
+		TabooLib.lifeCycle(LifeCycle.INIT);
 	}
 
 	public void onLoad() throws IllegalAccessException {
-		if (!TabooLibCommon.isStopped()) {
-			TabooLibCommon.lifeCycle(LifeCycle.LOAD);
+		if (!TabooLib.isStopped()) {
+			TabooLib.lifeCycle(LifeCycle.LOAD);
 			if (getPluginInstance() == null) {
 				pluginInstance.set(null, Project1Kt.findImplementation(Plugin.class));
 			}
@@ -43,8 +43,8 @@ public class VelocityPluginDelegate {
 				getPluginInstance().onLoad();
 			}
 		}
-		if (!TabooLibCommon.isStopped()) {
-			TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
+		if (!TabooLib.isStopped()) {
+			TabooLib.lifeCycle(LifeCycle.ENABLE);
 			if (getPluginInstance() != null) {
 				getPluginInstance().onEnable();
 			}
@@ -53,11 +53,11 @@ public class VelocityPluginDelegate {
 			} catch (NoClassDefFoundError ignored) {
 			}
 		}
-		if (!TabooLibCommon.isStopped()) {
+		if (!TabooLib.isStopped()) {
 			VelocityPlugin.getInstance().getServer().getScheduler().buildTask(VelocityPlugin.getInstance(), new Runnable() {
 				@Override
 				public void run() {
-					TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
+					TabooLib.lifeCycle(LifeCycle.ACTIVE);
 					if (getPluginInstance() != null) {
 						getPluginInstance().onActive();
 					}
@@ -67,9 +67,9 @@ public class VelocityPluginDelegate {
 	}
 
 	public void onDisable() {
-		TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+		TabooLib.lifeCycle(LifeCycle.DISABLE);
 		// 在插件未关闭的前提下，执行 onDisable() 方法
-		if (getPluginInstance() != null && !TabooLibCommon.isStopped()) {
+		if (getPluginInstance() != null && !TabooLib.isStopped()) {
 			getPluginInstance().onDisable();
 		}
 	}

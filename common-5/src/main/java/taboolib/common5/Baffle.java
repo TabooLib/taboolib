@@ -1,11 +1,10 @@
 package taboolib.common5;
 
-import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import taboolib.common.Isolated;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author sky
  * @since 2020-10-02 04:35
  */
-@Isolated
 public abstract class Baffle {
 
     /**
@@ -106,7 +104,7 @@ public abstract class Baffle {
     public static class BaffleTime extends Baffle {
 
         private final long millis;
-        private final Map<String, Long> data = Maps.newConcurrentMap();
+        private final Map<String, Long> data = new ConcurrentHashMap<>();
         private long globalTime;
 
         public BaffleTime(long millis) {
@@ -174,7 +172,7 @@ public abstract class Baffle {
     public static class BaffleCounter extends Baffle {
 
         private final int count;
-        private final Map<String, Integer> data = Maps.newConcurrentMap();
+        private final Map<String, Integer> data = new ConcurrentHashMap<>();
         private final AtomicInteger globalCount = new AtomicInteger();
 
         public BaffleCounter(int count) {

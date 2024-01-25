@@ -1,13 +1,9 @@
-@file:Isolated
-@file:Suppress("NOTHING_TO_INLINE")
-
 package taboolib.common5.util
 
-import taboolib.common.Isolated
 import taboolib.common5.Coerce
 import taboolib.common5.TimeCycle
 
-inline fun String.parseTimeCycle(): TimeCycle {
+fun String.parseTimeCycle(): TimeCycle {
     val args = split(" ")
     return when (args[0]) {
         "day" -> TimeCycle(

@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -27,15 +28,21 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly("org.tabooproject.reflex:reflex:1.0.19")
+        compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     }
 
     java {
-         // withJavadocJar()
          withSourcesJar()
     }
 
-    tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    tasks.withType<ShadowJar> {
         archiveClassifier.set("")
+        relocate("org.tabooproject", "taboolib.library")
+    }
+
+    tasks.build {
+        dependsOn("shadowJar")
     }
 
     tasks.withType<JavaCompile> {
@@ -81,12 +88,8 @@ fun PublishingExtension.applyToSub(subProject: Project) {
         create<MavenPublication>("maven") {
             artifactId = subProject.name
             groupId = "io.izzel.taboolib"
-            version = (if (project.hasProperty("build")) {
-                var build = project.findProperty("build").toString()
-                if (build.startsWith("task ")) {
-                    build = "local"
-                }
-                "${project.version}-$build"
+            version = (if (project.hasProperty("dev")) {
+                "${project.version}-dev"
             } else {
                 "${project.version}"
             })
