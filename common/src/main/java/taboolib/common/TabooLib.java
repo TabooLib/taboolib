@@ -2,10 +2,7 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -56,7 +53,7 @@ public class TabooLib {
         // 记录生命周期
         currentLifeCycle = lifeCycle;
         // 运行生命周期任务
-        lifeCycleTask.remove(lifeCycle).forEach(LifeCycleTask::run);
+        Optional.ofNullable(lifeCycleTask.remove(lifeCycle)).ifPresent(tasks -> tasks.forEach(LifeCycleTask::run));
     }
 
     /**

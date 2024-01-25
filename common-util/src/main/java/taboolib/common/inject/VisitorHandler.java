@@ -6,6 +6,7 @@ import org.tabooproject.reflex.ClassField;
 import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
+import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
@@ -65,6 +66,7 @@ public class VisitorHandler {
      * @param lifeCycle 生命周期
      */
     public static void injectAll(@NotNull LifeCycle lifeCycle) {
+        long time = System.currentTimeMillis();
         if (TabooLib.isKotlinEnvironment() && !TabooLib.isStopped()) {
             for (Map.Entry<Byte, VisitorGroup> entry : propertyMap.entrySet()) {
                 for (Class<?> clazz : getClasses()) {
@@ -72,6 +74,7 @@ public class VisitorHandler {
                 }
             }
         }
+        PrimitiveIO.println("ClassVisitor inject %s in %sms.", lifeCycle, System.currentTimeMillis() - time);
     }
 
     /**
@@ -157,7 +160,7 @@ public class VisitorHandler {
         }
     }
 
-    private static List<Class<?>> getClasses() {
+    public static List<Class<?>> getClasses() {
         if (classes.isEmpty()) {
             // 获取所有类
             for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {
