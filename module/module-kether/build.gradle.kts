@@ -12,7 +12,7 @@ dependencies {
     compileOnly("org.apache.commons:commons-lang3:3.5")
     compileOnly("ink.ptms.core:v11800:11800:api")
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":common-legacy-api"))
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-lang"))
     compileOnly(project(":module:module-nms-util"))

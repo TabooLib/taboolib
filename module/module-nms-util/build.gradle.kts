@@ -12,7 +12,7 @@ dependencies {
     compileOnly("ink.ptms.core:v12002:12002-minimize:universal")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":common-legacy-api"))
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-nms"))
     compileOnly(project(":platform:platform-bukkit"))

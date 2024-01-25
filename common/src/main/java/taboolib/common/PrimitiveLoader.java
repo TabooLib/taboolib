@@ -131,7 +131,7 @@ public class PrimitiveLoader {
         // 加载 util 注册 ClassAppender Callback 回调函数
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // 加载剩余模块
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-5", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // 加载自选模块
         for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
@@ -146,7 +146,7 @@ public class PrimitiveLoader {
             if (!IS_ISOLATED_MODE) {
                 String kt = "!kotlin".substring(1);
                 String kv = KOTLIN_VERSION.replace('.', '_');
-                rel.add(new Relocation(kt + ".", kt + kv + "."));
+                rel.add(new Relocation(kt + ".", kt + "_" + kv + "."));
             }
             // 是否重定向
             if (!rel.isEmpty()) {

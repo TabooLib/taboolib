@@ -1,4 +1,4 @@
 dependencies {
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":common-legacy-api"))
 }

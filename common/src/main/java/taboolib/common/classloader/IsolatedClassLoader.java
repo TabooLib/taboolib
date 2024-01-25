@@ -1,7 +1,5 @@
 package taboolib.common.classloader;
 
-import taboolib.common.PrimitiveSettings;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -42,16 +40,12 @@ public class IsolatedClassLoader extends URLClassLoader {
         super(urls, parent);
 
         // 默认排除类
-        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
-        excludedClasses.add("taboolib.common.platform.Plugin");
+        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader"); // JavaPlugin 直接访问
+        excludedClasses.add("taboolib.common.ClassAppender"); // 储存数据
+        excludedClasses.add("taboolib.common.TabooLib"); // 储存数据
+        excludedClasses.add("taboolib.common.OpenAPI"); // 其他插件访问，同时访问 TabooLib 的 AwakenedClasses
+        excludedClasses.add("taboolib.common.platform.Plugin"); // 其他插件访问
         excludedPackages.add("java.");
-
-        // 在非隔离模式下排除 ClassAppender 和 TabooLib
-        // 因为这俩玩意需要缓存数据
-        if (!PrimitiveSettings.IS_ISOLATED_MODE) {
-            excludedClasses.add("taboolib.common.ClassAppender");
-            excludedClasses.add("taboolib.common.TabooLib");
-        }
 
         // Load excluded classes and packages by SPI
         ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);

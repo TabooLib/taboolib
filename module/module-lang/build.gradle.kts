@@ -1,6 +1,6 @@
 dependencies {
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":common-legacy-api"))
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-configuration"))
 //    compileOnly(project(":module:module-nms-util"))

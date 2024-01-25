@@ -1,6 +1,7 @@
 dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-env"))
+    compileOnly(project(":common-platform-api"))
     compileOnly(project(":common-util"))
     compileOnly("com.google.code.gson:gson:2.8.7")
     compileOnly("com.google.guava:guava:21.0")

@@ -1,6 +1,5 @@
 package taboolib.module.chat
 
-import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 
 @Deprecated("use Components instead.")
@@ -12,7 +11,6 @@ typealias TellrawJson = RawMessage
  */
 @Deprecated("use Components instead.")
 @Suppress("SpellCheckingInspection")
-@Isolated
 class RawMessage(val component: ComponentText = Components.empty()) {
 
     fun sendTo(target: ProxyCommandSender, builder: RawMessage.() -> Unit = {}) {

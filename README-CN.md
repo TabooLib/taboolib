@@ -101,7 +101,7 @@ fun ProxyPlayer.teleport(uuid: UUID) {
 ## 模块
 
 + __common__: TabooLib 的核心部分，环境部署以及跨平台接口
-+ __common-5__: TabooLib 5.0 版本保留下来的一些工具
++ __common-legacy-api__: TabooLib 5.0 版本保留下来的一些工具
 + __module-ai__: 管理与注册自定义实体 AI（Pathfinder）
 + __module-chat__: Component（Json）信息构建工具与 1.16 RGB 颜色转换
 + __module-configuration__: 配置文件解决方案（Yaml & Toml & Hocon & Json)

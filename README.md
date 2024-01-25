@@ -111,7 +111,7 @@ size of the repository.
 ## Modules
 
 + __common__: Core parts of TabooLib, the environment deployment and cross-platform interface
-+ __common-5__: Some tools retained from TabooLib v5.0
++ __common-legacy-api__: Some tools retained from TabooLib v5.0
 + __module-ai__: Manage and register custom entity AI (Pathfinder)
 + __module-chat__: Building Tools for Component (Json) Information & 1.16 RGB Color Transformations
 + __module-configuration__: Solutions for Configuration（Yaml & Toml & Hocon & Json)

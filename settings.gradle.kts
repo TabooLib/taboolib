@@ -40,14 +40,16 @@ fun importExtensions() {
     include("expansion:expansion-application-console")
     include("expansion:expansion-player-fake-op")
     include("expansion:expansion-submit-chain")
-    // 从 common-5 中移除
+    // 从 common-legacy-api 中移除
     include("expansion:expansion-javascript")
 }
-
-//include("common", "common-5", "common-env", "common-impl", "common-platform-api", "common-util", "common-test")
 
 //importModules()
 //importPlatforms()
 //importExtensions()
 
-include("common", "common-env", "common-util", "common-5", "common-reflex", "common-platform-api")
+include("common", "common-env", "common-util", "common-legacy-api", "common-reflex", "common-platform-api")
+include(
+    "module:module-chat",
+    "module:module-configuration"
+)

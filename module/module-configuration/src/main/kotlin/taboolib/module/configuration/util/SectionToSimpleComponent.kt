@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.module.configuration.util
 
-import taboolib.common.Isolated
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.chat.SimpleComponent
 import taboolib.module.chat.component

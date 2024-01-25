@@ -1,6 +1,6 @@
 dependencies {
     compileOnly(project(":common"))
-    compileOnly(project(":common-5"))
+    compileOnly(project(":common-legacy-api"))
     compileOnly(project(":module:module-database-core"))
     compileOnly(project(":module:module-configuration"))
     compileOnly("org.tabooproject.reflex:reflex:1.0.19")
