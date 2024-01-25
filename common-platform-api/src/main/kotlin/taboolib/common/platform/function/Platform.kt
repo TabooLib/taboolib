@@ -3,7 +3,6 @@ package taboolib.common.platform.function
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformFactory
 
 /**
  * 搜索该类的当前平台实现

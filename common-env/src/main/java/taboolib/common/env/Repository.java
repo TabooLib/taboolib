@@ -3,7 +3,6 @@ package taboolib.common.env;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import taboolib.common.PrimitiveIO;
-import taboolib.common.TabooLib;
 import taboolib.common.PrimitiveSettings;
 
 import javax.xml.parsers.DocumentBuilder;

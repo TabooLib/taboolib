@@ -1,7 +1,5 @@
 package taboolib.common5;
 
-import taboolib.common.TabooLib;
-import taboolib.common.platform.Platform;
 import taboolib.common.platform.ProxyPlayer;
 
 /**

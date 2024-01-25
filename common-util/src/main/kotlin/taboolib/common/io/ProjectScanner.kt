@@ -5,8 +5,8 @@ package taboolib.common.io
 import org.tabooproject.reflex.ReflexClass
 import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
-import taboolib.common.TabooLib
 import taboolib.common.PrimitiveSettings
+import taboolib.common.TabooLib
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
