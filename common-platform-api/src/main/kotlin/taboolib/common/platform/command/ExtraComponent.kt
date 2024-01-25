@@ -1,7 +1,5 @@
-@file:Isolated
 package taboolib.common.platform.command
 
-import taboolib.common.Isolated
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.CommandComponentDynamic
 

@@ -1,9 +1,5 @@
-@file:Isolated
-@file:Suppress("NOTHING_TO_INLINE")
-
 package taboolib.common.platform.function
 
-import taboolib.common.Isolated
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.Platform
@@ -18,7 +14,7 @@ inline val runningPlatform: Platform
 /**
  * 停用插件
  */
-inline fun disablePlugin() {
+fun disablePlugin() {
     TabooLib.setStopped(true)
 }
 
@@ -28,7 +24,7 @@ inline fun disablePlugin() {
  * @param lifeCycle 生命周期
  * @param runnable  任务
  */
-inline fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
+fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
     TabooLib.postpone(lifeCycle, runnable)
 }
 

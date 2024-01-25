@@ -1,7 +1,4 @@
-@file:Isolated
 package taboolib.common.platform.command
-
-import taboolib.common.Isolated
 
 /**
  * 根据节点名称获取输入参数并转换为整型

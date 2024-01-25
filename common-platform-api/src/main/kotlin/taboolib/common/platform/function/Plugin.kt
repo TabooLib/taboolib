@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.common.platform.function
 
-import taboolib.common.Isolated
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformIO
 

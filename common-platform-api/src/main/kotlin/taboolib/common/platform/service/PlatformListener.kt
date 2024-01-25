@@ -1,7 +1,6 @@
 package taboolib.common.platform.service
 
 import taboolib.common.platform.PlatformService
-import taboolib.common.platform.event.EventOrder
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.PostOrder
 import taboolib.common.platform.event.ProxyListener
@@ -24,23 +23,15 @@ interface PlatformListener {
     /**
      * bungeecord
      */
-    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
-    }
+    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener = error("unsupported")
 
     /**
      * velocity
      */
-    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
-    }
+    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener = error("unsupported")
 
     /**
-     * sponge
+     * 注销监听器
      */
-    fun <T> registerListener(event: Class<T>, order: EventOrder = EventOrder.DEFAULT, beforeModifications: Boolean = false, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
-    }
-
     fun unregisterListener(proxyListener: ProxyListener)
 }

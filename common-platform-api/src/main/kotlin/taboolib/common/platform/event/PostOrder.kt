@@ -4,6 +4,8 @@ package taboolib.common.platform.event
  * TabooLib
  * taboolib.common.platform.event.PostOrder
  *
+ * Velocity Only
+ *
  * @author sky
  * @since 2021/7/2 11:26 下午
  */

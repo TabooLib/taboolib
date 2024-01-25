@@ -132,12 +132,12 @@ public class TabooLib {
                 // 加载运行环境
                 // 初始化 RuntimeEnv 模块
 //                try {
-//                    if (TabooLib.isDevelopmentMode()) {
+//                    if (PrimitiveSettings.IS_DEBUG_MODE) {
 //                        PrimitiveIO.println("RuntimeEnv setup...");
 //                    }
 //                    // RuntimeEnv.ENV.setup();
 //                } catch (NoClassDefFoundError ignored) {
-//                    if (TabooLib.isDevelopmentMode()) {
+//                    if (PrimitiveSettings.IS_DEBUG_MODE) {
 //                        PrimitiveIO.println("RuntimeEnv not found.");
 //                    }
 //                }

@@ -43,21 +43,10 @@ class EventBus : ClassVisitor(0) {
                 val obj = instance?.get()
                 // 判定运行平台
                 when (runningPlatform) {
-                    // bk 平台与 nk 平台使用相同参数
-                    Platform.BUKKIT, Platform.NUKKIT -> {
-                        registerBukkit(method, optionalEvent, anno, obj)
-                    }
-                    Platform.BUNGEE -> {
-                        registerBungee(method, optionalEvent, anno, obj)
-                    }
-                    Platform.VELOCITY -> {
-                        registerVelocity(method, optionalEvent, anno, obj)
-                    }
-                    Platform.SPONGE_API_7, Platform.SPONGE_API_8 -> {
-                        postpone { registerSponge(method, optionalEvent, anno, obj) }
-                    }
-                    else -> {
-                    }
+                    Platform.BUKKIT -> registerBukkit(method, optionalEvent, anno, obj)
+                    Platform.BUNGEE -> registerBungee(method, optionalEvent, anno, obj)
+                    Platform.VELOCITY -> registerVelocity(method, optionalEvent, anno, obj)
+                    else -> {}
                 }
             }
         }
@@ -68,14 +57,10 @@ class EventBus : ClassVisitor(0) {
         val ignoreCancelled = event.property("ignoreCancelled", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerBukkitListener(optionalBind, priority, ignoreCancelled) {
-                    invoke(obj, method, it, true)
-                }
+                registerBukkitListener(optionalBind, priority, ignoreCancelled) { invoke(obj, method, it, true) }
             }
         } else {
-            registerBukkitListener(method.parameterTypes[0], priority, ignoreCancelled) {
-                invoke(obj, method, it)
-            }
+            registerBukkitListener(method.parameterTypes[0], priority, ignoreCancelled) { invoke(obj, method, it) }
         }
     }
 
@@ -85,14 +70,10 @@ class EventBus : ClassVisitor(0) {
         val ignoreCancelled = event.property("ignoreCancelled", false)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerBungeeListener(optionalBind, level, ignoreCancelled) {
-                    invoke(obj, method, it, true)
-                }
+                registerBungeeListener(optionalBind, level, ignoreCancelled) { invoke(obj, method, it, true) }
             }
         } else {
-            registerBungeeListener(method.parameterTypes[0], level, ignoreCancelled) {
-                invoke(obj, method, it)
-            }
+            registerBungeeListener(method.parameterTypes[0], level, ignoreCancelled) { invoke(obj, method, it) }
         }
     }
 
@@ -100,30 +81,10 @@ class EventBus : ClassVisitor(0) {
         val postOrder = event.enum<PostOrder>("postOrder", PostOrder.NORMAL)
         if (method.parameterTypes[0] == OptionalEvent::class.java) {
             if (optionalBind != null) {
-                registerVelocityListener(optionalBind, postOrder) {
-                    invoke(obj, method, it, true)
-                }
+                registerVelocityListener(optionalBind, postOrder) { invoke(obj, method, it, true) }
             }
         } else {
-            registerVelocityListener(method.parameterTypes[0], postOrder) {
-                invoke(obj, method, it)
-            }
-        }
-    }
-
-    private fun registerSponge(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
-        val order = event.enum<EventOrder>("order", EventOrder.DEFAULT)
-        val beforeModifications = event.property("beforeModifications", false)
-        if (method.parameterTypes[0] == OptionalEvent::class.java) {
-            if (optionalBind != null) {
-                registerSpongeListener(optionalBind, order, beforeModifications) {
-                    invoke(obj, method, it, true)
-                }
-            }
-        } else {
-            registerSpongeListener(method.parameterTypes[0], order, beforeModifications) {
-                invoke(obj, method, it)
-            }
+            registerVelocityListener(method.parameterTypes[0], postOrder) { invoke(obj, method, it) }
         }
     }
 

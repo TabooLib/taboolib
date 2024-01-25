@@ -1,6 +1,5 @@
 package taboolib.common.platform.function
 
-import taboolib.common.Isolated
 import taboolib.common.OpenContainer
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformOpenContainer

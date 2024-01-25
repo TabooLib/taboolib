@@ -1,7 +1,5 @@
-@file:Isolated
 package taboolib.common.platform.command
 
-import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.component.CommandComponentDynamic
 import taboolib.common.platform.function.allWorlds

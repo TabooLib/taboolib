@@ -78,7 +78,7 @@ class ConfigLoader : ClassVisitor(1) {
                 }
                 files[name] = configFile
                 // 开发模式
-                if (TabooLib.isDevelopmentMode()) {
+                if (PrimitiveSettings.IS_DEBUG_MODE) {
                     PrimitiveIO.println("Loaded config file: ${file.absolutePath}")
                 }
             }

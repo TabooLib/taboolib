@@ -9,9 +9,6 @@ annotation class SubscribeEvent(
     val level: Int = -1,
     // 仅限 Velocity 使用
     val postOrder: PostOrder = PostOrder.NORMAL,
-    // 仅限 Sponge 使用
-    val order: EventOrder = EventOrder.DEFAULT,
-    val beforeModifications: Boolean = false,
     // 用于 OptionalEvent
     val bind: String = ""
 )

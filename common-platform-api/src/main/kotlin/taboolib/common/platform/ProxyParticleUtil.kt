@@ -1,7 +1,5 @@
-@file:Isolated
 package taboolib.common.platform
 
-import taboolib.common.Isolated
 import taboolib.common.platform.function.onlinePlayers
 import taboolib.common.util.Location
 import taboolib.common.util.Vector

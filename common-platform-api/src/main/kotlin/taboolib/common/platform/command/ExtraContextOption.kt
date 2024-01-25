@@ -1,7 +1,4 @@
-@file:Isolated
 package taboolib.common.platform.command
-
-import taboolib.common.Isolated
 
 /**
  * 获取选项并转换为整形

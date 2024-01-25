@@ -219,4 +219,6 @@ private fun init() {
         extraLoadedClasses += file.toURI().toURL().getClasses(loader)
         extraLoadedResources += file.toURI().toURL().getResources()
     }
+    // PrimitiveIO.println("Kotlin Env: %s", TabooLib.isKotlinEnvironment())
+    // PrimitiveIO.println("Running Classes %s", runningClasses)
 }

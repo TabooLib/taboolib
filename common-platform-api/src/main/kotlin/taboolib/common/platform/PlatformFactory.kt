@@ -1,6 +1,8 @@
 package taboolib.common.platform
 
 import taboolib.common.LifeCycle
+import taboolib.common.PrimitiveIO
+import taboolib.common.PrimitiveSettings
 import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
@@ -30,7 +32,7 @@ object PlatformFactory {
             }
 
             // 开发环境
-            if (TabooLib.isDevelopmentMode()) {
+            if (PrimitiveSettings.IS_DEBUG_MODE) {
                 val time = System.currentTimeMillis()
                 PrimitiveIO.println("RunningClasses = ${runningClasses.size}")
                 PrimitiveIO.println("RunningClasses (Exact) = ${runningExactClasses.size}")
@@ -61,7 +63,7 @@ object PlatformFactory {
                     awokenMap[it.name] = instance
                 }
                 // 平台实现
-                if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == PlatformInformation.CURRENT) {
+                if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
@@ -70,7 +72,7 @@ object PlatformFactory {
             }
 
             // 开发环境
-            if (TabooLib.isDevelopmentMode()) {
+            if (PrimitiveSettings.IS_DEBUG_MODE) {
                 PrimitiveIO.println("Service = ${serviceMap.size}")
                 serviceMap.forEach { (k, v) ->
                     PrimitiveIO.println(" = $k -> $v")
@@ -100,7 +102,7 @@ object PlatformFactory {
      */
     fun checkPlatform(clazz: Class<*>): Boolean {
         val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true
-        return PlatformInformation.CURRENT in platformSide.value
+        return Platform.CURRENT in platformSide.value
     }
 
     /**
