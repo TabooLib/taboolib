@@ -53,7 +53,7 @@ public class PrimitiveLoader {
      * + taboolib -> {package}.taboolib
      * + org.tabooproject -> {package}.taboolib.library
      */
-    public static final String[][] DEF_RELOCATE = {{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {"org.tabooproject", TABOOLIB_PACKAGE_NAME + ".library"},};
+    public static final String[][] DEF_RELOCATE = {{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"},};
 
     /**
      * 初始化各模块
@@ -64,7 +64,7 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        if (TABOOLIB_VERSION.endsWith("-dev")) {
+        if (IS_FORCE_DOWNLOAD_IN_DEV_MODE && TABOOLIB_VERSION.endsWith("-dev")) {
             // 移除缓存
             File[] relocateFile = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME).listFiles();
             if (relocateFile != null) {
@@ -97,7 +97,7 @@ public class PrimitiveLoader {
         File envFile = new File(getSaveFolder(), name + "/" + version + "/" + name + "-" + version + ".jar");
         File shaFile = new File(getSaveFolder(), name + "/" + version + "/" + name + "-" + version + ".jar.sha1");
         // 检查文件有效性
-        if (version.endsWith("-dev") || !PrimitiveIO.validation(envFile, shaFile)) {
+        if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && version.endsWith("-dev"))) {
             try {
                 PrimitiveIO.println("Downloading library %s:%s:%s", group, name, version);
                 // 获取地址
@@ -114,8 +114,6 @@ public class PrimitiveLoader {
                 PrimitiveIO.println("[TabooLib] Failed to download " + name + "-" + version + ".jar");
                 return false;
             }
-        } else {
-            PrimitiveIO.println("Loading library %s:%s:%s", group, name, version);
         }
         // 加载
         loadFile(envFile, isIsolated, isExternal, relocate);
@@ -150,7 +148,7 @@ public class PrimitiveLoader {
             }
             // 是否重定向
             if (!rel.isEmpty()) {
-                int hash = Math.abs(rel.hashCode());
+                int hash = Math.abs(Arrays.deepHashCode(relocate));
                 jar = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME + "/" + file.getName() + ".rel-" + hash + ".jar");
                 if (!jar.exists() && jar.length() == 0) {
                     PrimitiveIO.println("Relocating ...");

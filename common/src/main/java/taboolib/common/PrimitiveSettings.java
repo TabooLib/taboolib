@@ -43,6 +43,11 @@ public class PrimitiveSettings {
     public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", "false").equals("true");
 
     /**
+     * 是否在开发模式强制下载依赖
+     */
+    public static final boolean IS_FORCE_DOWNLOAD_IN_DEV_MODE = RUNTIME_PROPERTIES.getProperty("force-download-in-dev", "true").equals("true");
+
+    /**
      * 中央仓库
      */
     public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", "https://maven.aliyun.com/repository/central");
