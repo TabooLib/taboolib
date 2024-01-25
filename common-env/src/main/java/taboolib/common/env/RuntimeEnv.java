@@ -1,19 +1,25 @@
 package taboolib.common.env;
 
+import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.ClassAppender;
 import taboolib.common.PrimitiveIO;
-import taboolib.common.TabooLib;
 import taboolib.common.PrimitiveSettings;
+import taboolib.common.TabooLib;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipFile;
+
+import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 
 /**
  * TabooLib
@@ -24,22 +30,30 @@ import java.util.zip.ZipFile;
  */
 public class RuntimeEnv {
 
+    public static final String KOTLIN_ID = "!kotlin".substring(1);
     public static final RuntimeEnv ENV = new RuntimeEnv();
 
     private final String defaultAssets = PrimitiveSettings.FILE_ASSETS;
     private final String defaultLibrary = PrimitiveSettings.FILE_LIBS;
     private final String defaultRepositoryCentral = PrimitiveSettings.REPO_CENTRAL;
 
-    public void setup() {
-//        try {
-//            loadDependency(KotlinEnv.class, true);
-//        } catch (NoClassDefFoundError ignored) {
-//            // 若开启 skip-kotlin-relocate 则加载原始版本
-//            try {
-//                loadDependency(KotlinEnvNoRelocate.class, true);
-//            } catch (NoClassDefFoundError ignored2) {
-//            }
-//        }
+    static void init() throws Throwable {
+        List<JarRelocation> rel;
+        // 如果启用隔离模式，则不再对 Kotlin 进行重定向
+        if (PrimitiveSettings.IS_ISOLATED_MODE) {
+            // 隔离模式下不做环境检察，避免版本冲突
+            rel = Collections.emptyList();
+        } else {
+            // 再非隔离模式下检查 Kotlin 环境是否有效
+            // 其他 TabooLib 插件可能加载了相同版本的 Kotlin 环境，因此无需重复加载
+            if (TabooLib.isKotlinEnvironment()) {
+                return;
+            }
+            rel = Collections.singletonList(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace('.', '_') + "."));
+        }
+        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + KOTLIN_VERSION, rel);
+        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:" + KOTLIN_VERSION, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {
@@ -47,7 +61,7 @@ public class RuntimeEnv {
         loadDependency(clazz);
     }
 
-    public void loadAssets(@NotNull Class<?> clazz) {
+    public void loadAssets(@NotNull Class<?> clazz) throws IOException {
         RuntimeResource[] resources = null;
         if (clazz.isAnnotationPresent(RuntimeResource.class)) {
             resources = clazz.getAnnotationsByType(RuntimeResource.class);
@@ -65,7 +79,7 @@ public class RuntimeEnv {
         }
     }
 
-    public void loadAssets(String name, String hash, String url, boolean zip) {
+    public void loadAssets(String name, String hash, String url, boolean zip) throws IOException {
         File file;
         if (name.isEmpty()) {
             file = new File(defaultAssets, hash.substring(0, 2) + "/" + hash);
@@ -79,23 +93,19 @@ public class RuntimeEnv {
             file.getParentFile().mkdirs();
         }
         PrimitiveIO.println("Downloading assets " + url.substring(url.lastIndexOf('/') + 1));
-        try {
-            if (zip) {
-                File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
-                PrimitiveIO.downloadFile(new URL(url + ".zip"), cacheFile);
-                try (ZipFile zipFile = new ZipFile(cacheFile)) {
-                    InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(url.substring(url.lastIndexOf('/') + 1)));
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                        fileOutputStream.write(PrimitiveIO.readFully(inputStream));
-                    }
-                } finally {
-                    cacheFile.delete();
+        if (zip) {
+            File cacheFile = new File(file.getParentFile(), file.getName() + ".zip");
+            PrimitiveIO.downloadFile(new URL(url + ".zip"), cacheFile);
+            try (ZipFile zipFile = new ZipFile(cacheFile)) {
+                InputStream inputStream = zipFile.getInputStream(zipFile.getEntry(url.substring(url.lastIndexOf('/') + 1)));
+                try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                    fileOutputStream.write(PrimitiveIO.readFully(inputStream));
                 }
-            } else {
-                PrimitiveIO.downloadFile(new URL(url), file);
+            } finally {
+                cacheFile.delete();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            PrimitiveIO.downloadFile(new URL(url), file);
         }
     }
 
@@ -137,12 +147,8 @@ public class RuntimeEnv {
                     String relocatePattern = relocate[i + 1].startsWith("!") ? relocate[i + 1].substring(1) : relocate[i + 1];
                     relocation.add(new JarRelocation(pattern, relocatePattern));
                 }
-                try {
-                    String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
-                    loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.isolated(), dependency.scopes());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
+                loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.isolated(), dependency.scopes());
             }
         }
     }
@@ -200,15 +206,8 @@ public class RuntimeEnv {
             downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
         } else {
             String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-            try {
-                PrimitiveIO.println("Downloading library %s:%s:%s %s", args[0], args[1], args[2], transitive ? "(transitive)" : "");
-                downloader.loadDependencyFromInputStream(new URL(pom).openStream());
-            } catch (FileNotFoundException ex) {
-                if (ex.toString().contains("@kotlin_version@")) {
-                    return;
-                }
-                throw ex;
-            }
+            PrimitiveIO.println("Downloading library %s:%s:%s %s", args[0], args[1], args[2], transitive ? "(transitive)" : "");
+            downloader.loadDependencyFromInputStream(new URL(pom).openStream());
         }
         // 加载自身
         Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);

@@ -53,7 +53,7 @@ public class PrimitiveLoader {
      * + taboolib -> {package}.taboolib
      * + org.tabooproject -> {package}.taboolib.library
      */
-    public static final String[][] DEF_RELOCATE = {{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {"org.tabooproject", TABOOLIB_PACKAGE_NAME + ".library"}};
+    public static final String[][] DEF_RELOCATE = {{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {"org.tabooproject", TABOOLIB_PACKAGE_NAME + ".library"},};
 
     /**
      * 初始化各模块
@@ -114,6 +114,8 @@ public class PrimitiveLoader {
                 PrimitiveIO.println("[TabooLib] Failed to download " + name + "-" + version + ".jar");
                 return false;
             }
+        } else {
+            PrimitiveIO.println("Loading library %s:%s:%s", group, name, version);
         }
         // 加载
         loadFile(envFile, isIsolated, isExternal, relocate);
@@ -130,7 +132,6 @@ public class PrimitiveLoader {
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // 加载剩余模块
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-5", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // TODO
         // load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // 加载自选模块
@@ -139,16 +140,24 @@ public class PrimitiveLoader {
 
     public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
         File jar = file;
-        // 是否重定向
+        // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
         if (relocate.length > 0) {
-            int hash = Math.abs(Arrays.deepHashCode(relocate));
-            jar = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME + "/" + file.getName() + ".rel-" + hash + ".jar");
-            if (!jar.exists() && jar.length() == 0) {
-                PrimitiveIO.println("Relocating ...");
-                File tempSourceFile = PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar"));
-                List<Relocation> rel = Arrays.stream(relocate).map(r -> new Relocation(r[0], r[1])).collect(Collectors.toList());
-                jar.getParentFile().mkdirs();
-                new JarRelocator(tempSourceFile, jar, rel).run();
+            List<Relocation> rel = Arrays.stream(relocate).map(r -> new Relocation(r[0], r[1])).collect(Collectors.toList());
+            // 在非隔离模式下进行 Kotlin 重定向
+            if (!IS_ISOLATED_MODE) {
+                String kt = "!kotlin".substring(1);
+                String kv = KOTLIN_VERSION.replace('.', '_');
+                rel.add(new Relocation(kt + ".", kt + kv + "."));
+            }
+            // 是否重定向
+            if (!rel.isEmpty()) {
+                int hash = Math.abs(rel.hashCode());
+                jar = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME + "/" + file.getName() + ".rel-" + hash + ".jar");
+                if (!jar.exists() && jar.length() == 0) {
+                    PrimitiveIO.println("Relocating ...");
+                    jar.getParentFile().mkdirs();
+                    new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
+                }
             }
         }
         ClassLoader loader = ClassAppender.addPath(jar.toPath(), isIsolated, isExternal);
