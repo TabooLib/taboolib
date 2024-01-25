@@ -68,7 +68,7 @@ interface PlaceholderExpansion {
     class PlaceholderRegister : ClassVisitor(0) {
 
         val hooked by unsafeLazy {
-            kotlin.runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
+            runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
         }
 
         override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {

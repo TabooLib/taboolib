@@ -2,6 +2,7 @@ package taboolib.common.util;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Random;
  * <code>clone()</code> in order to get a copy.
  */
 @SuppressWarnings("DuplicatedCode")
-public class Vector implements Cloneable {
+public class Vector implements Cloneable, Serializable {
 
     private static final long serialVersionUID = -2657651106777219169L;
 

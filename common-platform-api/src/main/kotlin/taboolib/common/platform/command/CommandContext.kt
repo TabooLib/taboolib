@@ -162,7 +162,7 @@ data class CommandContext<T>(
 
     @Deprecated("设计过于傻逼,令人智熄", ReplaceWith("get(id)"))
     fun getOrNull(index: Int): String? {
-        return kotlin.runCatching { get(index) }.getOrNull()
+        return runCatching { get(index) }.getOrNull()
     }
 
     @Deprecated("设计过于傻逼,令人智熄", ReplaceWith("get(id)"))
@@ -172,7 +172,7 @@ data class CommandContext<T>(
 
     @Deprecated("设计过于傻逼,令人智熄", ReplaceWith("get(id)"))
     fun argumentOrNull(offset: Int): String? {
-        return kotlin.runCatching { argument(offset) }.getOrNull()
+        return runCatching { argument(offset) }.getOrNull()
     }
 
     override fun equals(other: Any?): Boolean {

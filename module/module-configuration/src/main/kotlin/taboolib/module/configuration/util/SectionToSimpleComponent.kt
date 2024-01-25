@@ -11,7 +11,7 @@ import taboolib.module.chat.component
  * @return [SimpleComponent]
  */
 fun ConfigurationSection.getComponent(node: String): SimpleComponent? {
-    return kotlin.runCatching { getString(node)?.component() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
+    return runCatching { getString(node)?.component() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
 }
 
 /**
@@ -21,5 +21,5 @@ fun ConfigurationSection.getComponent(node: String): SimpleComponent? {
  * @return [SimpleComponent]
  */
 fun ConfigurationSection.getComponentToRaw(node: String): String? {
-    return kotlin.runCatching { getString(node)?.component()?.buildToRaw() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
+    return runCatching { getString(node)?.component()?.buildToRaw() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
 }

@@ -170,11 +170,13 @@ public class PrimitiveLoader {
                 String main = extraProps.getProperty("main");
                 String mainMethod = extraProps.getProperty("main-method");
                 if (main != null && mainMethod != null) {
-                    Class<?> mainClass = Class.forName(TABOOLIB_PACKAGE_NAME + "." + main, true, loader);
-                    // 反射调用初始化函数
-                    Method declaredMethod = mainClass.getDeclaredMethod(mainMethod);
-                    declaredMethod.setAccessible(true);
-                    declaredMethod.invoke(null);
+                    for (String cls : main.split(",")) {
+                        Class<?> mainClass = Class.forName(TABOOLIB_PACKAGE_NAME + "." + cls, true, loader);
+                        // 反射调用初始化函数
+                        Method declaredMethod = mainClass.getDeclaredMethod(mainMethod);
+                        declaredMethod.setAccessible(true);
+                        declaredMethod.invoke(null);
+                    }
                 }
             }
         }

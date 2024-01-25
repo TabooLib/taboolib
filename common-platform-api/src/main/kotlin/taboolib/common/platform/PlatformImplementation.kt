@@ -12,5 +12,5 @@ annotation class PlatformImplementation(val platform: Platform)
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && PlatformFactory.checkPlatform(it) }?.getInstance(true)?.get() as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && Platform.check(it) }?.getInstance(true)?.get() as? T
 }

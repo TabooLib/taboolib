@@ -195,7 +195,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
 
         @Awake(LifeCycle.DISABLE)
         private fun onDisable() {
-            resources.forEach { kotlin.runCatching { it.close() } }
+            resources.forEach { runCatching { it.close() } }
         }
     }
 }

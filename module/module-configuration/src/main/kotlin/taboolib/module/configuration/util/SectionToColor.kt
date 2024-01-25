@@ -10,7 +10,7 @@ import taboolib.module.chat.colored
  * @return 上色后的文本
  */
 fun ConfigurationSection.getStringColored(node: String): String? {
-    return kotlin.runCatching { getString(node)?.colored() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
+    return runCatching { getString(node)?.colored() }.getOrElse { error("missing chat module (install(\"module-chat\"))") }
 }
 
 /**

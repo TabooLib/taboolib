@@ -3,7 +3,6 @@ package taboolib.common.platform
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
-import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
@@ -11,6 +10,7 @@ import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
 import taboolib.common.io.runningClassesWithoutLibrary
 import taboolib.common.io.runningExactClasses
+import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
 import java.util.concurrent.ConcurrentHashMap
 
@@ -23,8 +23,10 @@ object PlatformFactory {
     /** 已注册的服务 */
     val serviceMap = ConcurrentHashMap<String, Any>()
 
-    fun init() {
-        if (TabooLib.isKotlinEnvironment()) {
+    @JvmStatic
+    private fun init() {
+        // 在 CONST 生命周期下注册优先级为 0 的任务
+        registerLifeCycleTask(LifeCycle.CONST) {
             // 注册 Awake 接口
             try {
                 LifeCycle.values().forEach { VisitorHandler.register(AwakeFunction(it)) }
@@ -42,12 +44,12 @@ object PlatformFactory {
 
             // 加载运行环境
             runningClassesWithoutLibrary.parallelStream().forEach {
-                kotlin.runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.takeIf { it !is NoClassDefFoundError }?.printStackTrace()
+                runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.takeIf { it !is NoClassDefFoundError }?.printStackTrace()
             }
 
             // 加载接口
             runningClassesWithoutLibrary.parallelStream().forEach {
-                if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
+                if (it.isAnnotationPresent(Awake::class.java) && Platform.check(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
                     // 依赖注入接口
@@ -79,36 +81,23 @@ object PlatformFactory {
                 }
             }
         }
-    }
-
-    /**
-     * 注销方法
-     */
-    fun cancel() {
-        kotlin.runCatching { unregisterCommands() }
-        kotlin.runCatching {
-            awokenMap.values.forEach {
-                if (it is Releasable) {
-                    it.release()
+        // 在 DISABLE 生命周期下注册优先级为 1 的任务
+        registerLifeCycleTask(LifeCycle.DISABLE, 1) {
+            runCatching { unregisterCommands() }
+            runCatching {
+                awokenMap.values.forEach {
+                    if (it is Releasable) {
+                        it.release()
+                    }
                 }
             }
         }
     }
 
     /**
-     * 检查指定类是否允许在当前平台运行
-     *
-     * @param clazz 类
-     */
-    fun checkPlatform(clazz: Class<*>): Boolean {
-        val platformSide = clazz.getAnnotation(PlatformSide::class.java) ?: return true
-        return Platform.CURRENT in platformSide.value
-    }
-
-    /**
      * 获取已被唤醒的 API 实例
      */
-    inline fun <reified T> getAPI() : T = getAPI(T::class.java.name)
+    inline fun <reified T> getAPI(): T = getAPI(T::class.java.name)
 
     /**
      * 获取已被唤醒的 API 实例（可能为空）
@@ -123,7 +112,7 @@ object PlatformFactory {
     /**
      * 获取已注册的跨平台服务
      */
-    inline fun <reified T> getService() : T = getService(T::class.java.name)
+    inline fun <reified T> getService(): T = getService(T::class.java.name)
 
     /**
      * 获取已注册的跨平台服务（可能为空）

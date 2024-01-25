@@ -8,8 +8,7 @@ import taboolib.common.platform.PlatformFactory
 /**
  * 当前运行平台
  */
-inline val runningPlatform: Platform
-    get() = TabooLib.getRunningPlatform()
+val runningPlatform: Platform = Platform.CURRENT
 
 /**
  * 停用插件
@@ -24,8 +23,13 @@ fun disablePlugin() {
  * @param lifeCycle 生命周期
  * @param runnable  任务
  */
-fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, runnable: Runnable) {
-    TabooLib.postpone(lifeCycle, runnable)
+fun registerLifeCycleTask(lifeCycle: LifeCycle = LifeCycle.ENABLE, priority: Int = 0, runnable: Runnable) {
+    TabooLib.registerLifeCycleTask(lifeCycle, priority, runnable)
+}
+
+@Deprecated("过时", ReplaceWith("registerLifeCycleTask(lifeCycle, priority, runnable)"))
+fun postpone(lifeCycle: LifeCycle = LifeCycle.ENABLE, priority: Int = 0, runnable: Runnable) {
+    TabooLib.registerLifeCycleTask(lifeCycle, priority, runnable)
 }
 
 /**

@@ -116,7 +116,7 @@ class BukkitCommand : PlatformCommand {
             }
             pluginCommand.register(commandMap)
             // 1.8 patch
-            kotlin.runCatching {
+            runCatching {
                 if (pluginCommand.getProperty<Any>("timings") == null) {
                     val timingsManager = Class.forName("co.aikar.timings.TimingsManager")
                     pluginCommand.setProperty("timings", timingsManager.invokeMethod("getCommandTiming", plugin.name, pluginCommand, isStatic = true))
@@ -164,7 +164,7 @@ class BukkitCommand : PlatformCommand {
 
     fun sync() {
         // 1.13 sync commands
-        kotlin.runCatching {
+        runCatching {
             Bukkit.getServer().invokeMethod<Void>("syncCommands")
             Bukkit.getOnlinePlayers().forEach { it.updateCommands() }
             isSupportedUnknownCommand = true

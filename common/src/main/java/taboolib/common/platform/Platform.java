@@ -3,6 +3,8 @@ package taboolib.common.platform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 /**
  * TabooLib
  * taboolib.common.platform.Platform
@@ -43,6 +45,14 @@ public enum Platform {
     @Nullable
     public String checkClass() {
         return checkClass;
+    }
+
+    /**
+     * 检查指定类是否允许在当前平台运行
+     */
+    public static boolean check(Class<?> cls) {
+        PlatformSide platformSide = cls.getAnnotation(PlatformSide.class);
+        return platformSide == null || Arrays.stream(platformSide.value()).anyMatch(i -> i == CURRENT);
     }
 
     /**

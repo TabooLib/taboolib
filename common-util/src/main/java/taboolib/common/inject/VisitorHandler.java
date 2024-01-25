@@ -10,6 +10,7 @@ import taboolib.common.TabooLib;
 import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
 import taboolib.common.platform.Ghost;
+import taboolib.common.platform.Platform;
 import taboolib.common.platform.SkipTo;
 
 import java.util.*;
@@ -27,6 +28,15 @@ public class VisitorHandler {
 
     private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
     private static final List<Class<?>> classes = new ArrayList<>();
+
+    static void init() {
+        for (LifeCycle lifeCycle : LifeCycle.values()) {
+            // 只有 CONST 生命周期下优先级为 1，因为要在 PlatformFactory 之后运行
+            int priority = lifeCycle == LifeCycle.CONST ? 1 : 0;
+            // 注册任务
+            TabooLib.registerLifeCycleTask(lifeCycle, priority, () -> VisitorHandler.injectAll(lifeCycle));
+        }
+    }
 
     /**
      * 注册依赖注入接口
@@ -154,10 +164,10 @@ public class VisitorHandler {
                 // 排除第三方库
                 // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
                 if (!it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") && !it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
-//                    // 排除其他平台
-//                    if (PlatformFactory.INSTANCE.checkPlatform(it.getValue())) {
-//                        classes.add(it.getValue());
-//                    }
+                    // 排除其他平台
+                    if (Platform.check(it.getValue())) {
+                        classes.add(it.getValue());
+                    }
                 }
             }
         }

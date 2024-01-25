@@ -12,7 +12,7 @@ fun <T> unsafeLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NO
 /**
  * 声明一个允许重置的延迟加载对象
  *
- * @param group 组
+ * @param groups 组
  * @param synchronized 是否线程安全
  * @param initializer 初始化函数
  */

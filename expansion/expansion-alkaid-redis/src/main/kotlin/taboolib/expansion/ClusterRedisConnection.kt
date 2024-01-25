@@ -36,7 +36,7 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
 
         @Awake(LifeCycle.DISABLE)
         private fun onDisable() {
-            resources.forEach { kotlin.runCatching { it.close() } }
+            resources.forEach { runCatching { it.close() } }
         }
     }
 
