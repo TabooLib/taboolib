@@ -5,7 +5,7 @@ import com.google.gson.JsonParser
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLib
+import taboolib.common.PrimitiveIO
 import taboolib.common.io.digest
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake

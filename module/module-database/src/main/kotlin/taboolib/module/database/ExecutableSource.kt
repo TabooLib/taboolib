@@ -30,6 +30,7 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
 
     /** 创建表 */
     open fun createTable(checkExists: Boolean = true) {
+        if (table.name.isBlank()) error("Table name is blank")
         executeUpdate(table.generateCreateQuery(checkExists))
     }
 

@@ -13,6 +13,9 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 interface InternalEventBus {
 
+    /** 判断一个事件是否被监听 */
+    fun isListening(cls: Class<*>): Boolean
+
     /** 唤起事件 */
     fun <T : InternalEvent> call(event: T)
 
@@ -20,6 +23,11 @@ interface InternalEventBus {
     fun <T : InternalEvent> listen(cls: Class<T>, priority: Int, ignoreCancelled: Boolean, listener: (event: T) -> Unit): InternalListener
 
     companion object {
+
+        /** 判断一个事件是否被监听 */
+        fun isListening(cls: Class<*>): Boolean {
+            return impl.isListening(cls)
+        }
 
         /** 唤起事件 */
         fun <T : InternalEvent> call(event: T) = impl.call(event)
@@ -39,6 +47,10 @@ interface InternalEventBus {
 
             /** 已注册的监听器 */
             val registeredListeners = ConcurrentHashMap<Class<*>, MutableMap<Int, MutableList<RegisteredListener>>>()
+
+            override fun isListening(cls: Class<*>): Boolean {
+                return registeredListeners.containsKey(cls) && registeredListeners[cls]!!.any { it.value.isNotEmpty() }
+            }
 
             override fun <T : InternalEvent> call(event: T) {
                 registeredListeners[event.javaClass]?.entries?.flatMap { it.value }?.forEach { listener ->

@@ -1,7 +1,7 @@
 package taboolib.module.nms
 
 import org.bukkit.entity.Player
-import taboolib.platform.type.BukkitProxyEvent
+import taboolib.common.event.CancelableInternalEvent
 
 /**
  * TabooLib
@@ -10,4 +10,4 @@ import taboolib.platform.type.BukkitProxyEvent
  * @author sky
  * @since 2021/6/24 5:38 下午
  */
-class PacketSendEvent(val player: Player, val packet: Packet) : BukkitProxyEvent()
+class PacketSendEvent(val player: Player, val packet: Packet) : CancelableInternalEvent()

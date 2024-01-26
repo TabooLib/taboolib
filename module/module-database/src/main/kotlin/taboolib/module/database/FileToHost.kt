@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.module.database
 
-import taboolib.common.Isolated
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import java.io.File

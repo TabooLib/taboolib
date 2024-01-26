@@ -1,7 +1,6 @@
 package taboolib.module.effect.shape;
 
 import kotlin.Unit;
-import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
  * @author Zoyn
  */
 @SuppressWarnings("DuplicatedCode")
-@Isolated
 public class ThreeRankBezierCurve extends ParticleObj implements Playable {
 
     private final List<Location> locations;

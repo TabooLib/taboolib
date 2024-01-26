@@ -1,6 +1,5 @@
 package taboolib.module.effect.utils;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
@@ -13,7 +12,6 @@ import java.util.function.BiFunction;
  * @author Zoyn
  * @since 2020/9/19
  */
-@Isolated
 public class TwoDProjector {
 
     private final Location origin;

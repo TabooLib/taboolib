@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Inject
+import taboolib.common.event.CancelableInternalEvent
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit
  * @author sky
  * @since 2021/7/18 12:11 下午
  */
-class PlayerJumpEvent(val player: Player) : BukkitProxyEvent() {
+class PlayerJumpEvent(val player: Player) : CancelableInternalEvent() {
 
     @Inject
     @PlatformSide(Platform.BUKKIT)
@@ -35,7 +36,7 @@ class PlayerJumpEvent(val player: Player) : BukkitProxyEvent() {
                 return
             }
             if (e.from.y + 0.5 != to.y && e.from.y + 0.419 < to.y && baffle.hasNext(e.player.name)) {
-                if (!PlayerJumpEvent(e.player).call()) {
+                if (!PlayerJumpEvent(e.player).callIf()) {
                     e.setTo(e.from)
                     baffle.reset(e.player.name)
                 }

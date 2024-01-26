@@ -1,9 +1,7 @@
-@file:Isolated
 @file:Suppress("SpellCheckingInspection")
 
 package taboolib.module.effect
 
-import taboolib.common.Isolated
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
 import taboolib.module.effect.shape.*

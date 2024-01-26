@@ -55,7 +55,10 @@ include(
     "module:module-lang",
     "module:module-bukkit-hook",
     "module:module-bukkit-util",
-    "module:module-bukkit-xseries"
+    "module:module-bukkit-xseries",
+    "module:module-database",
+    "module:module-effect",
+    "module:module-nms"
 )
 include(
     "platform:platform-bukkit",

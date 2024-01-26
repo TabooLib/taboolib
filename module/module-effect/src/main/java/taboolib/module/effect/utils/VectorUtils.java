@@ -1,6 +1,5 @@
 package taboolib.module.effect.utils;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 
@@ -10,7 +9,6 @@ import taboolib.common.util.Vector;
  * @author Zoyn
  */
 @SuppressWarnings("DuplicatedCode")
-@Isolated
 public class VectorUtils {
 
     /**

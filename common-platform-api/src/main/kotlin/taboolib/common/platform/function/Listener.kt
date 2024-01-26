@@ -1,5 +1,6 @@
 package taboolib.common.platform.function
 
+import taboolib.common.event.InternalEventBus
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.PostOrder
@@ -12,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * 判定一个类是否在当前插件内被监听
  */
 fun Class<*>.isListened(): Boolean {
-    return listenEvents.contains(this)
+    return listenEvents.contains(this) || InternalEventBus.isListening(this)
 }
 
 /**
