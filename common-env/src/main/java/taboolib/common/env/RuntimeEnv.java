@@ -1,6 +1,5 @@
 package taboolib.common.env;
 
-import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.ClassAppender;
@@ -41,25 +40,22 @@ public class RuntimeEnv {
     private final String defaultRepositoryCentral = PrimitiveSettings.REPO_CENTRAL;
 
     static void init() throws Throwable {
-        List<JarRelocation> rel;
-        // 如果启用隔离模式，则不再对 Kotlin 进行重定向
-        if (PrimitiveSettings.IS_ISOLATED_MODE) {
-            // 隔离模式下不做环境检察，避免版本冲突
-            rel = Collections.emptyList();
-        } else {
-            // 再非隔离模式下检查 Kotlin 环境是否有效
+        List<JarRelocation> rel = new ArrayList<>();
+        // 在非隔离模式对 Kotlin 进行重定向
+        if (!PrimitiveSettings.IS_ISOLATED_MODE) {
             // 其他 TabooLib 插件可能加载了相同版本的 Kotlin 环境，因此无需重复加载
             if (TabooLib.isKotlinEnvironment()) {
                 return;
             }
-            rel = Lists.newArrayList(
-                    new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."),
-                    new JarRelocation(KOTLINX_ID + ".", KOTLINX_ID + KOTLINX_VERSION.replace(".", "") + ".")
-            );
+            // 启用 Kotlin 重定向
+            if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
+                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."));
+                rel.add(new JarRelocation(KOTLINX_ID + ".", KOTLINX_ID + KOTLINX_VERSION.replace(".", "") + "."));
+            }
         }
         // 加载 Kotlin 环境
-        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, false, rel);
+        if (!KOTLIN_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+        if (!KOTLINX_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, false, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {

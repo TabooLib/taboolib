@@ -28,10 +28,13 @@ import java.util.function.Supplier;
 public class VisitorHandler {
 
     private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
-    private static final List<Class<?>> classes = new ArrayList<>();
+    private static final Set<Class<?>> classes = new HashSet<>();
 
     static void init() {
         for (LifeCycle lifeCycle : LifeCycle.values()) {
+            if (lifeCycle == LifeCycle.NONE) {
+                continue;
+            }
             // 只有 CONST 生命周期下优先级为 1，因为要在 PlatformFactory 之后运行
             int priority = lifeCycle == LifeCycle.CONST ? 1 : 0;
             // 注册任务
@@ -156,7 +159,7 @@ public class VisitorHandler {
     /**
      * 获取能够被 ClassVisitor 访问到的所有类
      */
-    public static List<Class<?>> getClasses() {
+    public static Set<Class<?>> getClasses() {
         if (classes.isEmpty()) {
             // 获取所有类
             for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {

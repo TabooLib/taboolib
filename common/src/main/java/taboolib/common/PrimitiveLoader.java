@@ -53,7 +53,13 @@ public class PrimitiveLoader {
      * + taboolib -> {package}.taboolib
      * + org.tabooproject -> {package}.taboolib.library
      */
-    public static final String[][] DEF_RELOCATE = {{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"},};
+    public static String[][] defaultRelocateRule() {
+        if (SKIP_TABOOLIB_RELOCATE) {
+            return new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}};
+        } else {
+            return new String[][]{{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}};
+        }
+    }
 
     /**
      * 初始化各模块
@@ -67,20 +73,12 @@ public class PrimitiveLoader {
         if (IS_DEBUG_MODE) {
             // 提示
             PrimitiveIO.println("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
-            // 是否在开发模式强制下载依赖
-            if (IS_FORCE_DOWNLOAD_IN_DEV_MODE) {
-                // 移除缓存
-                File[] files = new File("cache/" + PROJECT_PACKAGE_NAME).listFiles();
-                if (files != null) {
-                    Arrays.stream(files).forEach(File::delete);
-                }
-            }
         }
         // 加载基础依赖
         for (String[] i : DEPENDENCIES) load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
         // 加载反射模块
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, DEF_RELOCATE);
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.19", IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, defaultRelocateRule());
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.19", IS_ISOLATED_MODE, true, defaultRelocateRule());
         // 加载完整模块
         loadAll();
     }
@@ -127,15 +125,16 @@ public class PrimitiveLoader {
      * 加载完整模块
      */
     private static void loadAll() throws Throwable {
+        String[][] rule = defaultRelocateRule();
         // 加载 env 启动 Kotlin 环境
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
         // 加载 util 注册 ClassAppender Callback 回调函数
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
         // 加载剩余模块 >> 此时 isExternal 参数才有实际作用
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
         // 加载自选模块
-        for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
+        for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
     }
 
     public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
@@ -144,7 +143,7 @@ public class PrimitiveLoader {
         if (relocate.length > 0) {
             List<Relocation> rel = Arrays.stream(relocate).map(r -> new Relocation(r[0], r[1])).collect(Collectors.toList());
             // 在非隔离模式下进行 Kotlin 重定向
-            if (!IS_ISOLATED_MODE) {
+            if (!IS_ISOLATED_MODE && !SKIP_KOTLIN_RELOCATE) {
                 String kt = "!kotlin".substring(1);
                 String ktx = "!kotlinx.coroutines".substring(1);
                 String kv = KOTLIN_VERSION.replace(".", "");
@@ -156,7 +155,7 @@ public class PrimitiveLoader {
             if (!rel.isEmpty()) {
                 String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLINX_VERSION);
                 jar = new File(getCacheFile(), hash + ".jar");
-                if (!jar.exists() && jar.length() == 0) {
+                if ((!jar.exists() && jar.length() == 0) || IS_FORCE_DOWNLOAD_IN_DEV_MODE) {
                     PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
                     new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();

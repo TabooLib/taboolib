@@ -35,12 +35,22 @@ public class PrimitiveSettings {
     /**
      * Kotlinx 版本
      */
-    public static final String KOTLINX_VERSION = VERSION_PROPERTIES.getProperty("!kotlinx-coroutines".substring(1), "1.7.3");
+    public static final String KOTLINX_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), "1.7.3");
 
     /**
      * TabooLib 版本
      */
     public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, "6.1.0-dev");
+
+    /**
+     * 跳过 Kotlin 重定向
+     */
+    public static final boolean SKIP_KOTLIN_RELOCATE = RUNTIME_PROPERTIES.getProperty("skip-kotlin-relocate", "false").equals("true");
+
+    /**
+     * 跳过 TabooLib 重定向
+     */
+    public static final boolean SKIP_TABOOLIB_RELOCATE = RUNTIME_PROPERTIES.getProperty("skip-taboolib-relocate", "false").equals("true");
 
     /**
      * 调试模式
