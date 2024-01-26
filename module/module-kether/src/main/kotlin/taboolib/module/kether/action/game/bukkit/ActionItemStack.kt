@@ -5,6 +5,7 @@ package taboolib.module.kether.action.game.bukkit
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
+import taboolib.common.Inject
 import taboolib.common.OpenResult
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -12,7 +13,8 @@ import taboolib.common.util.asList
 import taboolib.common5.Coerce
 import taboolib.module.kether.*
 
-@PlatformSide([Platform.BUKKIT])
+@Inject
+@PlatformSide(Platform.BUKKIT)
 object ActionItemStack {
 
     @KetherParser(["itemstack"])

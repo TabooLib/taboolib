@@ -1,11 +1,13 @@
 package taboolib.module.kether.action.game.compat
 
 import me.clip.placeholderapi.PlaceholderAPI
+import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.module.kether.*
 
-@PlatformSide([Platform.BUKKIT])
+@Inject
+@PlatformSide(Platform.BUKKIT)
 object ActionPlaceholder {
 
     @KetherParser(["papi", "placeholder"])

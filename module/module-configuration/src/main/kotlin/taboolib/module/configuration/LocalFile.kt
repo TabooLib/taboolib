@@ -1,8 +1,6 @@
-@file:Isolated
-
 package taboolib.module.configuration
 
-import taboolib.common.Isolated
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
@@ -33,7 +31,7 @@ fun createLocal(path: String, saveTime: Long = 1200, type: Type? = null): Config
     return fileMap.computeIfAbsent(path) { Configuration.loadFromFile(newFile(getDataFolder(), path, create = true), type) }
 }
 
-@Isolated
+@Inject
 object Local {
 
     @Awake(LifeCycle.DISABLE)

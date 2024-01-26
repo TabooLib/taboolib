@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.module.configuration.util
 
-import taboolib.common.Isolated
 import taboolib.common.util.Location
 import taboolib.library.configuration.ConfigurationSection
 

@@ -1,7 +1,6 @@
 package taboolib.module.effect.shape;
 
 import kotlin.Unit;
-import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
@@ -17,7 +16,6 @@ import java.util.List;
  *
  * @author Zoyn
  */
-@Isolated
 public class Arc extends ParticleObj implements Playable {
 
     private double startAngle = 0D;

@@ -1,5 +1,6 @@
 package taboolib.module.kether.action
 
+import taboolib.common.Inject
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
@@ -11,7 +12,8 @@ class ActionGet<T>(val key: String) : QuestAction<T>() {
         return CompletableFuture.completedFuture(frame.variables().get<T?>(key).orElse(null))
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         /**
          * get xx

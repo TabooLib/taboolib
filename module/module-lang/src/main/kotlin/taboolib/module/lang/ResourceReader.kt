@@ -2,6 +2,7 @@
 
 package taboolib.module.lang
 
+import taboolib.common.io.runningResourcesInJar
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
@@ -9,6 +10,7 @@ import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
+import taboolib.module.configuration.Type.YAML
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -28,11 +30,11 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     init {
         Language.languageCode.forEach { code ->
-            val resourceAsStream = clazz.classLoader.getResourceAsStream("${Language.path}/$code.yml")
-            if (resourceAsStream != null) {
+            val bytes = runningResourcesInJar["${Language.path}/$code.yml"]
+            if (bytes != null) {
                 val nodes = HashMap<String, Type>()
-                val source = resourceAsStream.readBytes().toString(StandardCharsets.UTF_8)
-                val sourceFile = Configuration.loadFromString(source, taboolib.module.configuration.Type.YAML)
+                val source = bytes.toString(StandardCharsets.UTF_8)
+                val sourceFile = Configuration.loadFromString(source, YAML)
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
@@ -75,6 +77,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 is String -> {
                     nodesMap[node] = TypeText(obj)
                 }
+
                 is List<*> -> {
                     nodesMap[node] = TypeList(obj.mapNotNull { sub ->
                         if (sub is Map<*, *>) {
@@ -84,12 +87,14 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                         }
                     })
                 }
+
                 is ConfigurationSection -> {
                     val type = loadNode(obj.getValues(false).map { it.key to it.value!! }.toMap(), code, node)
                     if (type != null) {
                         nodesMap[node] = type
                     }
                 }
+
                 else -> {
                     warning("Unsupported language node: $node ($code)")
                 }
@@ -227,12 +232,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
     private fun Map<*, *>.toSection(root: ConfigurationSection): ConfigurationSection {
         forEach { (key, value) ->
             when (value) {
-                is Map<*, *> -> {
-                    root[key.toString()] = value.toSection(root.createSection(key.toString()))
-                }
-                else -> {
-                    root[key.toString()] = value
-                }
+                is Map<*, *> -> root[key.toString()] = value.toSection(root.createSection(key.toString()))
+                else -> root[key.toString()] = value
             }
         }
         return root

@@ -7,6 +7,6 @@ interface SerializeFunction {
     val name: String
 
     fun serialize(data: Any): String
-    fun deserialize(data: Any, target: Class<*>, type: Type): Any?
 
+    fun deserialize(data: Any, target: Class<*>, type: Type): Any?
 }

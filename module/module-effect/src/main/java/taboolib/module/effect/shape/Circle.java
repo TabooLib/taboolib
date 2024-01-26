@@ -1,6 +1,5 @@
 package taboolib.module.effect.shape;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.module.effect.ParticleSpawner;
 
@@ -9,7 +8,6 @@ import taboolib.module.effect.ParticleSpawner;
  *
  * @author Zoyn
  */
-@Isolated
 public class Circle extends Arc {
 
     public Circle(Location origin, ParticleSpawner spawner) {

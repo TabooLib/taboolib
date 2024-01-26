@@ -1,6 +1,5 @@
 package taboolib.module.effect.coordinate;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.module.effect.utils.LocationUtils;
 
@@ -10,7 +9,6 @@ import taboolib.module.effect.utils.LocationUtils;
  *
  * @author Zoyn
  */
-@Isolated
 public class PlayerFixedCoordinate {
 
     /**

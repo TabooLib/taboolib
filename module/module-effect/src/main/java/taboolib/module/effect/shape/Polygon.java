@@ -1,6 +1,5 @@
 package taboolib.module.effect.shape;
 
-import taboolib.common.Isolated;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
 import taboolib.module.effect.ParticleObj;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
  *
  * @author Zoyn
  */
-@Isolated
 public class Polygon extends ParticleObj {
 
     private final List<Location> locations;

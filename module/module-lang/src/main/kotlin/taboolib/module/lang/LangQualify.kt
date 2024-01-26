@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.module.lang
 
-import taboolib.common.Isolated
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.pluginId
 import taboolib.common.util.replaceWithOrder
@@ -53,7 +50,6 @@ fun ProxyCommandSender.asQualifyText(level: Level, message: String, vararg args:
     return "$prefix§r $message".replaceWithOrder(*args).colored()
 }
 
-@Isolated
 enum class Level {
 
     INFO, WARN, ERROR;

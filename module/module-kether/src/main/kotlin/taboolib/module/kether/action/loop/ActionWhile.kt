@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.loop
 
+import taboolib.common.Inject
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -29,7 +30,8 @@ class ActionWhile(val condition: ParsedAction<*>, val action: ParsedAction<*>) :
         return future
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         @KetherParser(["while"])
         fun parser() = scriptParser {

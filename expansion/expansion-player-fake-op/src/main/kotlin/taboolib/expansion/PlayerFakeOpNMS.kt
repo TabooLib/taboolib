@@ -24,9 +24,9 @@ abstract class PlayerFakeOpNMS {
     abstract fun playerFakeOp(player: Player): Player
     
     companion object {
+
         val INSTANCE by unsafeLazy { 
             nmsProxy<PlayerFakeOpNMS>()
         }
     }
-    
 }

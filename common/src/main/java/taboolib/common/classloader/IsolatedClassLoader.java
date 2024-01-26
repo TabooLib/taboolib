@@ -1,10 +1,5 @@
 package taboolib.common.classloader;
 
-import taboolib.common.SkipIsolatedClassLoader;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -14,124 +9,124 @@ import java.util.Set;
 
 public class IsolatedClassLoader extends URLClassLoader {
 
-	private static boolean isEnabled = false;
+    /**
+     * 当前项目正在使用的加载器
+     * 由 "插件主类" 初始化
+     */
+    public static IsolatedClassLoader INSTANCE;
 
-	static {
-		try {
-			Class<SkipIsolatedClassLoader> clazz = SkipIsolatedClassLoader.class;
-		} catch (NoClassDefFoundError ignored) {
-			isEnabled = true;
-		}
-	}
+    private final Set<String> excludedClasses = new HashSet<>();
+    private final Set<String> excludedPackages = new HashSet<>();
 
-	private final Set<String> excludedClasses = new HashSet<>();
-	private final Set<String> excludedPackages = new HashSet<>();
+    public static void init(Class<?> clazz) {
+        // 初始化隔离类加载器
+        INSTANCE = new IsolatedClassLoader(clazz);
+        // 加载启动类
+        try {
+            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", true, INSTANCE);
+            Object delegateObject = delegateClass.getConstructor().newInstance();
+            delegateClass.getMethod("init").invoke(delegateObject);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	private final MethodHandles.Lookup lookup = MethodHandles.lookup();
-	private MethodHandle methodHandleTaboolibCommonRun;
+    public IsolatedClassLoader(Class<?> clazz) {
+        this(new URL[]{clazz.getProtectionDomain().getCodeSource().getLocation()}, clazz.getClassLoader());
+        excludedClasses.add(clazz.getName());
+    }
 
-	public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
-		super(urls, parent);
+    public IsolatedClassLoader(URL[] urls, ClassLoader parent) {
+        super(urls, parent);
 
-		excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
-		excludedClasses.add("taboolib.common.platform.Plugin");
-		excludedPackages.add("java.");
+        // 默认排除类
+        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader"); // JavaPlugin 直接访问
+        excludedClasses.add("taboolib.common.ClassAppender"); // 储存数据
+        excludedClasses.add("taboolib.common.TabooLib"); // 储存数据
+        excludedClasses.add("taboolib.common.OpenAPI"); // 其他插件访问，同时访问 TabooLib 的 AwakenedClasses
+        excludedClasses.add("taboolib.common.platform.Plugin"); // 其他插件访问
+        excludedPackages.add("java.");
 
-		// Load excluded classes and packages by SPI
-		ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);
-		for (IsolatedClassLoaderConfig config : serviceLoader) {
-			Set<String> configExcludedClasses = config.excludedClasses();
-			if (configExcludedClasses != null && !configExcludedClasses.isEmpty()) {
-				excludedClasses.addAll(configExcludedClasses);
-			}
-			Set<String> configExcludedPackages = config.excludedPackages();
-			if (configExcludedPackages != null && !configExcludedPackages.isEmpty()) {
-				excludedPackages.addAll(configExcludedPackages);
-			}
-		}
-	}
+        // Load excluded classes and packages by SPI
+        ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);
+        for (IsolatedClassLoaderConfig config : serviceLoader) {
+            Set<String> configExcludedClasses = config.excludedClasses();
+            if (configExcludedClasses != null && !configExcludedClasses.isEmpty()) {
+                excludedClasses.addAll(configExcludedClasses);
+            }
+            Set<String> configExcludedPackages = config.excludedPackages();
+            if (configExcludedPackages != null && !configExcludedPackages.isEmpty()) {
+                excludedPackages.addAll(configExcludedPackages);
+            }
+        }
+    }
 
-	@Override
-	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-		return loadClass(name, resolve, true);
-	}
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
+        return loadClass(name, resolve, true);
+    }
 
-	public Class<?> loadClass(String name, boolean resolve, boolean checkParents) throws ClassNotFoundException {
-		synchronized (getClassLoadingLock(name)) {
-			Class<?> findClass = findLoadedClass(name);
-			// Check isolated classes and libraries before parent to:
-			//   - prevent accessing classes of other plugins
-			//   - prevent the usage of old patch classes (which stay in memory after reloading)
-			if (findClass == null && !excludedClasses.contains(name)) {
-				boolean flag = true;
-				for (String excludedPackage : excludedPackages) {
-					if (name.startsWith(excludedPackage)) {
-						flag = false;
-						break;
-					}
-				}
-				if (flag) {
-					findClass = findClassOrNull(name);
-				}
-			}
-			if (findClass == null && checkParents) {
-				findClass = loadClassFromParentOrNull(name);
-			}
-			if (findClass == null) {
-				throw new ClassNotFoundException(name);
-			}
-			if (resolve) {
-				resolveClass(findClass);
-			}
-			return findClass;
-		}
-	}
+    public Class<?> loadClass(String name, boolean resolve, boolean checkParents) throws ClassNotFoundException {
+        synchronized (getClassLoadingLock(name)) {
+            Class<?> findClass = findLoadedClass(name);
+            // Check isolated classes and libraries before parent to:
+            //   - prevent accessing classes of other plugins
+            //   - prevent the usage of old patch classes (which stay in memory after reloading)
+            if (findClass == null && !excludedClasses.contains(name)) {
+                boolean flag = true;
+                for (String excludedPackage : excludedPackages) {
+                    if (name.startsWith(excludedPackage)) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    findClass = findClassOrNull(name);
+                }
+            }
+            if (findClass == null && checkParents) {
+                findClass = loadClassFromParentOrNull(name);
+            }
+            if (findClass == null) {
+                throw new ClassNotFoundException(name);
+            }
+            if (resolve) {
+                resolveClass(findClass);
+            }
+            return findClass;
+        }
+    }
 
-	private Class<?> findClassOrNull(String name) {
-		try {
-			return findClass(name);
-		} catch (ClassNotFoundException ignored) {
-			return null;
-		}
-	}
+    private Class<?> findClassOrNull(String name) {
+        try {
+            return findClass(name);
+        } catch (ClassNotFoundException ignored) {
+            return null;
+        }
+    }
 
-	private Class<?> loadClassFromParentOrNull(String name) {
-		try {
-			return getParent().loadClass(name);
-		} catch (ClassNotFoundException ignored) {
-			return null;
-		}
-	}
+    private Class<?> loadClassFromParentOrNull(String name) {
+        try {
+            return getParent().loadClass(name);
+        } catch (ClassNotFoundException ignored) {
+            return null;
+        }
+    }
 
-	public void addExcludedClass(String name) {
-		excludedClasses.add(name);
-	}
+    public void addExcludedClass(String name) {
+        excludedClasses.add(name);
+    }
 
-	public void addExcludedClasses(Collection<String> names) {
-		excludedClasses.addAll(names);
-	}
+    public void addExcludedClasses(Collection<String> names) {
+        excludedClasses.addAll(names);
+    }
 
-	public void addExcludedPackage(String name) {
-		excludedPackages.add(name);
-	}
+    public void addExcludedPackage(String name) {
+        excludedPackages.add(name);
+    }
 
-	public void addExcludedPackages(Collection<String> names) {
-		excludedPackages.addAll(names);
-	}
-
-	public void runIsolated(Runnable target) throws Throwable {
-		getMethodHandleTaboolibCommonRun().invoke(target);
-	}
-
-	private MethodHandle getMethodHandleTaboolibCommonRun() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
-		if (methodHandleTaboolibCommonRun == null) {
-			methodHandleTaboolibCommonRun = lookup.findStatic(loadClass("taboolib.common.TabooLibCommon"), "run", MethodType.methodType(void.class, Runnable.class));
-		}
-		return methodHandleTaboolibCommonRun;
-	}
-
-	public static boolean isEnabled() {
-		return isEnabled;
-	}
+    public void addExcludedPackages(Collection<String> names) {
+        excludedPackages.addAll(names);
+    }
 }
 

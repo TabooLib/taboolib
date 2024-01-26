@@ -60,12 +60,12 @@ class Lock(val connection: IRedisConnection, lockName: String) {
         try {
             submit(async = true, period = 20) {
                 if (!connection.contains(lockName) || !watchDog) {
-                    this.cancel()
+                    cancel()
                 }
                 val luaScript = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('expire',KEYS[1],ARGV[2]) else return 0 end"
                 val eval = connection.eval(luaScript, listOf(lockName), listOf(LOCKED, internalLockLeaseTime.toString()))?.toString()
                 if (eval != "1") {
-                    this.cancel()
+                    cancel()
                 }
             }
         } catch (e: Exception) {

@@ -1,7 +1,6 @@
 package taboolib.module.effect.renderer;
 
 import kotlin.Unit;
-import taboolib.common.Isolated;
 import taboolib.common.platform.function.ExecutorKt;
 import taboolib.common.util.Location;
 import taboolib.common.util.Vector;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
  *
  * @author Zoyn
  */
-@Isolated
 public class ParametricEquationRenderer extends ParticleObj implements Playable {
 
     private final Function<Double, Double> xFunction;

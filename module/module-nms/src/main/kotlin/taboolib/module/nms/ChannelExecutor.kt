@@ -4,8 +4,9 @@ import io.netty.channel.Channel
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -22,10 +23,11 @@ import java.util.concurrent.Executors
  * @author 坏黑
  * @since 2018-10-28 14:34
  */
-@PlatformSide([Platform.BUKKIT])
+@Inject
+@PlatformSide(Platform.BUKKIT)
 object ChannelExecutor {
 
-    private val id = "taboolib_${pluginId}_packet_handler"
+    private val id = "!taboolib_${pluginId}_packet_handler".substring(1)
     private val pool = Executors.newSingleThreadExecutor()
     private var isDisabled = false
 
@@ -116,7 +118,7 @@ object ChannelExecutor {
 
     @SubscribeEvent
     private fun onQuit(e: PlayerQuitEvent) {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         nmsProxy<ConnectionGetter>().release(e.player.address ?: return)
@@ -124,7 +126,7 @@ object ChannelExecutor {
 
     @Awake(LifeCycle.ACTIVE)
     private fun onEnable() {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         onlinePlayers.forEach {
@@ -139,7 +141,7 @@ object ChannelExecutor {
 
     @Awake(LifeCycle.DISABLE)
     private fun onDisable() {
-        if (TabooLibCommon.isStopped()) {
+        if (TabooLib.isStopped()) {
             return
         }
         onlinePlayers.forEach { removePlayerChannel(it, async = false) }

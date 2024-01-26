@@ -10,7 +10,6 @@ interface IRedisConnection {
 
     fun eval(script: String, keyC: Int, args: List<String>): Any?
 
-
     fun getLock(lockName: String): Lock {
         return Lock(this, lockName)
     }
@@ -61,7 +60,6 @@ interface IRedisConnection {
      *
      * @param key 键
      * @param value 值
-     * @param seconds 过期时间
      */
     fun expire(key: String, value: Long, timeUnit: TimeUnit)
 
@@ -89,5 +87,6 @@ interface IRedisConnection {
      * @param func 信息处理函数
      */
     fun subscribe(vararg channel: String, patternMode: Boolean = false, func: RedisMessage.() -> Unit)
+
     fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub
 }

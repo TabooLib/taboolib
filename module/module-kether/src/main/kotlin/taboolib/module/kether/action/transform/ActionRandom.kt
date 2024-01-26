@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.common.util.random
 import taboolib.common5.Coerce
 import taboolib.library.kether.ParsedAction
@@ -46,7 +47,8 @@ internal class ActionRandom(val from: ParsedAction<*>, val to: ParsedAction<*>, 
         future.complete(if (i.isEmpty()) null else i[Random.nextInt(i.size)])
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         /**
          * random 1 to 10

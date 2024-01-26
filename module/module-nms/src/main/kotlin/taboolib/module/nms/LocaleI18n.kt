@@ -5,7 +5,7 @@ import com.google.gson.JsonParser
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.PrimitiveIO
 import taboolib.common.io.digest
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
@@ -65,7 +65,7 @@ data class LocaleKey(val type: String, val path: String, val extra: String? = nu
  * @author 坏黑
  * @since 2023/8/6 02:44
  */
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object LocaleI18n {
 
     /** 资源文件地址 */
@@ -134,7 +134,7 @@ object LocaleI18n {
                             if (file.exists() && file.length() > 0) {
                                 break
                             }
-                            TabooLibCommon.print("Downloading language ... $language")
+                            PrimitiveIO.println("Downloading language ... $language")
                             // 获取语言文件文本并写入本地文件
                             newFile(file).writeText(URL("$resourceUrl/${langHash.substring(0, 2)}/$langHash").readText())
                             break

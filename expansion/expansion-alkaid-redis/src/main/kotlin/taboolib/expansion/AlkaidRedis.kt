@@ -72,23 +72,6 @@ object AlkaidRedis {
         }
     }
 
-//    fun test() {
-//        val connection = linkCluster {
-//            addNode("127.0.0.1:3306")
-//        }.connection()
-//
-//        val lock = connection.getLock("测试Lock"){
-//            internalLockLeaseTime = 1000L
-//        }
-//        try {
-//            if (lock.tryLock()) {
-//                println("获取锁成功")
-//            }
-//        } finally {
-//            lock.unlock()
-//        }
-//    }
-
     /**
      * 创建 Redis 连接
      *

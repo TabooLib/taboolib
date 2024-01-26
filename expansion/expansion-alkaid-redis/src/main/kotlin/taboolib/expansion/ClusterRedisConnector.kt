@@ -21,8 +21,7 @@ import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.JedisCluster
 import java.io.Closeable
 
-
-class ClusterRedisConnector() : Closeable {
+class ClusterRedisConnector : Closeable {
 
     var auth: String? = null
     var pass: String? = null

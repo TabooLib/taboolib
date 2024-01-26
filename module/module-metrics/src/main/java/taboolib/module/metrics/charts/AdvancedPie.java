@@ -1,6 +1,5 @@
 package taboolib.module.metrics.charts;
 
-import taboolib.common.Isolated;
 import taboolib.module.metrics.CustomChart;
 import taboolib.module.metrics.JsonBuilder;
 
@@ -8,7 +7,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 @SuppressWarnings("DuplicatedCode")
-@Isolated
 public class AdvancedPie extends CustomChart {
 
     private final Callable<Map<String, Integer>> callable;

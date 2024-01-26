@@ -1,9 +1,6 @@
-@file:Isolated
-
 package taboolib.module.chat
 
 import net.md_5.bungee.api.ChatColor
-import taboolib.common.Isolated
 import taboolib.common.platform.function.warning
 import kotlin.math.ceil
 

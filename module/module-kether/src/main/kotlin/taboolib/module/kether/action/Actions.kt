@@ -1,6 +1,7 @@
 package taboolib.module.kether.action
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Inject
 import taboolib.common.platform.function.*
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -8,6 +9,7 @@ import taboolib.library.kether.QuestFuture
 import taboolib.module.kether.*
 import java.util.concurrent.CompletableFuture
 
+@Inject
 internal object Actions {
 
     @KetherParser(["import"])

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
@@ -31,8 +32,9 @@ abstract class InventoryHandler {
     
     abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor, updateId: Boolean = true): RemoteInventory
 
-    @PlatformSide([Platform.BUKKIT])
-    companion object {
+    @Inject
+    @PlatformSide(Platform.BUKKIT)
+    internal companion object {
 
         val instance by unsafeLazy { nmsProxy<InventoryHandler>() }
 

@@ -1,10 +1,7 @@
 package taboolib.module.effect.math;
 
-import taboolib.common.Isolated;
-
 import java.util.function.Function;
 
-@Isolated
 public class Equations {
 
     /**

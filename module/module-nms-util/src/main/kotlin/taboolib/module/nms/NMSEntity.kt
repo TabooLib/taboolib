@@ -91,11 +91,11 @@ class NMSEntityImpl : NMSEntity() {
             }
             // 1.14 .. 1.16
             in MinecraftVersion.V1_14..MinecraftVersion.V1_16 -> {
-                entity as org.bukkit.craftbukkit.v1_16_R2.entity.CraftEntity
+                entity as org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity
                 val nmsEntity = entity.handle
                 when {
                     // 对村民特殊处理
-                    nmsEntity is net.minecraft.server.v1_16_R2.EntityVillager -> getVillagerLocaleKey2(nmsEntity)
+                    nmsEntity is net.minecraft.server.v1_16_R3.EntityVillager -> getVillagerLocaleKey2(nmsEntity)
                     // 其他实体
                     else -> nmsEntity.entityType.f()
                 }

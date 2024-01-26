@@ -10,6 +10,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
@@ -21,7 +22,8 @@ import taboolib.common.platform.function.submitAsync
 import taboolib.platform.util.isNotAir
 import taboolib.platform.util.setMeta
 
-@PlatformSide([Platform.BUKKIT])
+@Inject
+@PlatformSide(Platform.BUKKIT)
 internal object ClickListener {
 
     @Awake(LifeCycle.DISABLE)

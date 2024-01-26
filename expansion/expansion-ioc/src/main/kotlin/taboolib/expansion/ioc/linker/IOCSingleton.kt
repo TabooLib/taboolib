@@ -1,7 +1,9 @@
 package taboolib.expansion.ioc.linker
 
+import taboolib.common.util.unsafeLazy
 import taboolib.expansion.ioc.IOCReader
 import taboolib.expansion.ioc.annotation.Component
+import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.concurrent.ConcurrentHashMap
 
@@ -12,14 +14,13 @@ inline fun <reified T : Any?> linkedIOCSingleton(): IOCSingleton {
     return IOCSingleton(T::class.java)
 }
 
-class IOCSingleton(
-    val dataType: Class<*>,
-) {
-    val IOC by lazy {
+class IOCSingleton(val dataType: Class<*>) {
+
+    val ioc: ConcurrentHashMap<String, Any> by unsafeLazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
     }
 
-    val DATABASE by lazy{
+    val database: IOCDatabase by unsafeLazy {
         IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
@@ -28,15 +29,14 @@ class IOCSingleton(
     }
 
     fun set(data: Any) {
-        IOC[getId()] = data
+        ioc[getId()] = data
     }
 
     fun get(): Any? {
-        return IOC[getId()]
+        return ioc[getId()]
     }
 
     fun remove() {
-        IOC.clear()
+        ioc.clear()
     }
-
 }

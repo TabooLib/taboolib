@@ -1,7 +1,6 @@
 package taboolib.module.metrics;
 
 import kotlin.Unit;
-import taboolib.common.TabooLibCommon;
 import taboolib.common.io.FileCreateKt;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.function.AdapterKt;
@@ -25,7 +24,7 @@ public class Metrics {
      *                  href="https://bstats.org/what-is-my-plugin-id">What is my plugin id?</a>
      */
     public Metrics(int serviceId, String pluginVersion, Platform runningPlatform) {
-        if (TabooLibCommon.getRunningPlatform() != runningPlatform) {
+        if (Platform.CURRENT != runningPlatform) {
             return;
         }
         // Get the config file
@@ -48,9 +47,7 @@ public class Metrics {
         boolean logResponseStatusText = config.getBoolean("logResponseStatusText", false);
         String platform;
         switch (runningPlatform) {
-            case UNKNOWN:
             case BUKKIT:
-            case NUKKIT:
                 platform = "bukkit";
                 break;
             case BUNGEE:
@@ -58,10 +55,6 @@ public class Metrics {
                 break;
             case VELOCITY:
                 platform = "velocity";
-                break;
-            case SPONGE_API_7:
-            case SPONGE_API_8:
-                platform = "sponge";
                 break;
             default:
                 throw new IllegalStateException("Unsupported");
@@ -104,17 +97,9 @@ public class Metrics {
         Map<String, Object> platformData = IOKt.getPlatformData();
         for (Map.Entry<String, Object> entry : platformData.entrySet()) {
             if (entry.getValue() instanceof Integer) {
-                if (platform == Platform.NUKKIT) {
-                    builder.appendField(entry.getKey().replace("nukkit", "bukkit"), (int) entry.getValue());
-                } else {
-                    builder.appendField(entry.getKey(), (int) entry.getValue());
-                }
+                builder.appendField(entry.getKey(), (int) entry.getValue());
             } else {
-                if (platform == Platform.NUKKIT) {
-                    builder.appendField(entry.getKey().replace("nukkit", "bukkit"), entry.getValue().toString());
-                } else {
-                    builder.appendField(entry.getKey(), entry.getValue().toString());
-                }
+                builder.appendField(entry.getKey(), entry.getValue().toString());
             }
         }
     }

@@ -18,14 +18,14 @@ class ChannelHandler(val player: Player) : ChannelDuplexHandler() {
 
     override fun write(channelHandlerContext: ChannelHandlerContext, packet: Any, channelPromise: ChannelPromise) {
         val event = PacketSendEvent(player, PacketImpl(packet))
-        if (event.call()) {
+        if (event.callIf()) {
             super.write(channelHandlerContext, event.packet.source, channelPromise)
         }
     }
 
     override fun channelRead(channelHandlerContext: ChannelHandlerContext, packet: Any) {
         val event = PacketReceiveEvent(player, PacketImpl(packet))
-        if (event.call()) {
+        if (event.callIf()) {
             super.channelRead(channelHandlerContext, event.packet.source)
         }
     }

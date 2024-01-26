@@ -3,7 +3,6 @@ package taboolib.test.nms_util
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Particle
-import taboolib.common.Isolated
 import taboolib.common.Test
 import taboolib.common.UnsupportedVersionException
 import taboolib.module.nms.createPacket
@@ -15,7 +14,6 @@ import taboolib.module.nms.createPacket
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
-@Isolated
 object TestNMSParticle : Test() {
 
     override fun check(): List<Result> {

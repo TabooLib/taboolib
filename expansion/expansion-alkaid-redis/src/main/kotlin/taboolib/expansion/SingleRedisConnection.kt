@@ -19,9 +19,10 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPubSub
 import redis.clients.jedis.exceptions.JedisConnectionException
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
+import taboolib.common.PrimitiveIO
 import taboolib.common.platform.Awake
-import taboolib.common.platform.function.severe
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.Type
 import java.io.Closeable
@@ -38,7 +39,7 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         return try {
             pool.resource.use { func(it) }
         } catch (ex: JedisConnectionException) {
-            severe("Redis connection failed: ${ex.message}")
+            PrimitiveIO.error("Redis connection failed: ${ex.message}")
             // 如果是循环模式则等待一段时间
             if (loop) {
                 Thread.sleep(connector.reconnectDelay)
@@ -111,7 +112,6 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      *
      * @param key 键
      * @param value 值
-     * @param seconds 过期时间
      */
     override fun expire(key: String, value: Long, timeUnit: TimeUnit) {
         exec { it.expire(key, timeUnit.toSeconds(value)) }
@@ -189,13 +189,14 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    companion object {
+    @Inject
+    internal companion object {
 
         val resources = CopyOnWriteArrayList<Closeable>()
 
         @Awake(LifeCycle.DISABLE)
         private fun onDisable() {
-            resources.forEach { kotlin.runCatching { it.close() } }
+            resources.forEach { runCatching { it.close() } }
         }
     }
 }

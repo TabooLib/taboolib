@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.game
 
+import taboolib.common.Inject
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -28,7 +29,8 @@ class ActionPlayer(val name: String, val operator: PlayerOperator, val method: P
         }
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         init {
             PlayerOperators.values().forEach { Kether.addPlayerOperator(it.name, it.build()) }

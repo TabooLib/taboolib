@@ -1,11 +1,13 @@
 package taboolib.module.kether.action.supplier
 
+import taboolib.common.Inject
 import taboolib.common.OpenResult
 import taboolib.module.kether.*
 
 /**
  * @author IzzelAliz
  */
+@Inject
 internal object Actions {
 
     @KetherParser(["null"])

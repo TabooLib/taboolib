@@ -1,5 +1,6 @@
 dependencies {
     compileOnly(project(":common"))
+    compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-lang"))
     compileOnly(project(":platform:platform-bukkit"))

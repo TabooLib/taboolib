@@ -1,8 +1,5 @@
-@file:Isolated
-
 package taboolib.module.effect
 
-import taboolib.common.Isolated
 import taboolib.common.util.Location
 import taboolib.module.effect.renderer.GeneralEquationRenderer
 import taboolib.module.effect.renderer.ParametricEquationRenderer

@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import org.tabooproject.reflex.ClassMethod
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.io.taboolibPath
@@ -39,6 +40,7 @@ class KetherLoader : ClassVisitor(0) {
         return LifeCycle.LOAD
     }
 
+    @Inject
     companion object {
 
         val sharedParser = ArrayList<Pair<Array<String>, String>>()

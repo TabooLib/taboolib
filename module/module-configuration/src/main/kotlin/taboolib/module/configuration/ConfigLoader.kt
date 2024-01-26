@@ -2,13 +2,15 @@ package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
 import taboolib.common.LifeCycle
-import taboolib.common.TabooLibCommon
+import taboolib.common.PrimitiveIO
+import taboolib.common.PrimitiveSettings
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.util.unsafeLazy
 import taboolib.common5.FileWatcher
 import java.util.function.Supplier
 
@@ -78,8 +80,8 @@ class ConfigLoader : ClassVisitor(1) {
                 }
                 files[name] = configFile
                 // 开发模式
-                if (TabooLibCommon.isDevelopmentMode()) {
-                    TabooLibCommon.print("Loaded config file: ${file.absolutePath}")
+                if (PrimitiveSettings.IS_DEBUG_MODE) {
+                    PrimitiveIO.println("Loaded config file: ${file.absolutePath}")
                 }
             }
         }
@@ -93,7 +95,7 @@ class ConfigLoader : ClassVisitor(1) {
 
         val files = HashMap<String, ConfigNodeFile>()
 
-        val isFileWatcherHook by lazy {
+        val isFileWatcherHook by unsafeLazy {
             try {
                 FileWatcher.INSTANCE
                 true

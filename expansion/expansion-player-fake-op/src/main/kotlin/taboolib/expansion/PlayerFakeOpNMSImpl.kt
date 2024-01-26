@@ -22,16 +22,18 @@ import java.lang.reflect.Constructor
 class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
 
     val playerFakeOpUtil: PlayerFakeOpUtil by unsafeLazy { PlayerFakeOpUtil() }
-    
+
     override fun playerFakeOp(player: Player): Player {
         return playerFakeOpUtil.createProxy(player as CraftPlayer)
     }
 
     class PlayerFakeOpUtil {
+
         val playerFakeOpClass: Class<out CraftPlayer>
         val playerFakeOpConstructor: Constructor<out CraftPlayer>
+
         private lateinit var tempCraftPlayer: CraftPlayer
-        
+
         init {
             // Generate the bytecode of the new class, which extends CraftPlayer
             val dynamicType = ByteBuddy()
@@ -65,12 +67,11 @@ class PlayerFakeOpNMSImpl : PlayerFakeOpNMS() {
                 .method(ElementMatchers.named("isOp"))
                 .intercept(FixedValue.value(true))
                 .make()
-            
             // Load the new class by injecting it into the given ClassLoader by reflective access
             playerFakeOpClass = dynamicType.load(javaClass.classLoader, ClassLoadingStrategy.Default.INJECTION).loaded
             playerFakeOpConstructor = playerFakeOpClass.getConstructor(CraftServer::class.java, EntityPlayer::class.java, CraftPlayer::class.java)
         }
-        
+
         @RuntimeType
         fun whatever(@Pipe pipe: Forwarder<Any, CraftPlayer>, @FieldValue("craftPlayer") craftPlayer: CraftPlayer?): Any {
             // When the object is being initialized, its field craftPlayer will be null, so using tempCraftPlayer instead

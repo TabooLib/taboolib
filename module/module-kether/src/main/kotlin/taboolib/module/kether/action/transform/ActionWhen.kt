@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -12,6 +13,7 @@ import java.util.concurrent.CompletableFuture
  * @author 坏黑
  * @since 2022/9/3 17:22
  */
+@Inject
 internal object ActionWhen {
 
     open class CaseAction(val checkType: CheckType, val condition: List<ParsedAction<*>>, val action: ParsedAction<*>) : ScriptAction<Any?>() {

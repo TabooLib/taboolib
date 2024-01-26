@@ -2,6 +2,7 @@ package taboolib.module.nms
 
 import org.bukkit.Bukkit
 import org.tabooproject.reflex.Reflex
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.io.isDevelopmentMode
@@ -13,7 +14,8 @@ import taboolib.common.platform.function.runningPlatform
 import taboolib.common.util.unsafeLazy
 import java.io.FileInputStream
 
-@PlatformSide([Platform.BUKKIT])
+@Inject
+@PlatformSide(Platform.BUKKIT)
 object MinecraftVersion {
 
     const val V1_8 = 0

@@ -55,7 +55,7 @@ enum class CheckType(val multi: Boolean, val check: (left: Any?, right: Any?) ->
     companion object {
 
         fun fromStringSafely(token: String): CheckType? {
-            return kotlin.runCatching { fromString(token) }.getOrNull()
+            return runCatching { fromString(token) }.getOrNull()
         }
 
         fun fromString(token: String): CheckType {

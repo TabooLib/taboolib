@@ -1,5 +1,6 @@
 package taboolib.module.kether
 
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
@@ -9,6 +10,7 @@ import taboolib.library.kether.QuestActionParser
 import taboolib.module.kether.action.ActionLiteral
 import taboolib.module.lang.Language
 
+@Inject
 @RuntimeDependencies(
     RuntimeDependency(
         "!org.apache.commons:commons-jexl3:3.2.1",

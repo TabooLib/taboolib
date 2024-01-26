@@ -12,5 +12,4 @@ public interface IsolatedClassLoaderConfig {
 	default Set<String> excludedPackages() {
 		return Collections.emptySet();
 	}
-	
 }

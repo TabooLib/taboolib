@@ -4,7 +4,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Villager
-import taboolib.common.Isolated
 import taboolib.common.Test
 import taboolib.module.ai.*
 
@@ -15,7 +14,6 @@ import taboolib.module.ai.*
  * @author 坏黑
  * @since 2023/8/4 02:32
  */
-@Isolated
 object TestSimpleAi : Test() {
 
     override fun check(): List<Result> {

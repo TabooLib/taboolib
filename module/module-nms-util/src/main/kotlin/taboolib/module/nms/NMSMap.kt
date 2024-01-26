@@ -1,4 +1,3 @@
-@file:Isolated
 @file:Suppress("DEPRECATION")
 
 package taboolib.module.nms
@@ -13,7 +12,6 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
-import taboolib.common.Isolated
 import taboolib.common.platform.function.submit
 import taboolib.common.util.unsafeLazy
 import taboolib.library.xseries.XMaterial
@@ -181,7 +179,6 @@ fun BufferedImage.zoomed(width: Int = 128, height: Int = 128): BufferedImage {
  * 支持 1.8 - 1.17.1
  * @author xbaimiao, sky
  */
-@Isolated
 class NMSMap(val image: BufferedImage, var hand: Hand = Hand.MAIN, val builder: ItemBuilder.() -> Unit = {}) {
 
     enum class Hand {

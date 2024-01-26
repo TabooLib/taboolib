@@ -1,10 +1,8 @@
 package taboolib.expansion
 
 import kotlinx.coroutines.*
-import taboolib.common.Isolated
 import taboolib.common.platform.function.submit
 import kotlin.coroutines.CoroutineContext
-
 
 object SyncDispatcher : CoroutineDispatcher() {
 
@@ -20,7 +18,6 @@ object AsyncDispatcher : CoroutineDispatcher() {
     }
 }
 
-@Isolated
 open class Chain(val chain: suspend Chain.() -> Unit) {
 
     suspend fun wait(value: Long) {
@@ -54,22 +51,20 @@ open class Chain(val chain: suspend Chain.() -> Unit) {
         }
     }
 
-    suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
-        withContext(SyncDispatcher) {
-            SynchronousRepeatChain(block, period, delay).execute()
-        }
-    }
-
-    suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
-        withContext(AsyncDispatcher) {
-            AsynchronousRepeatChain(block, period, delay).execute()
-        }
-    }
+//    suspend fun sync(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+//        withContext(SyncDispatcher) {
+//            SynchronousRepeatChain(block, period, delay).execute()
+//        }
+//    }
+//
+//    suspend fun async(period: Long, delay: Long = 0L, block: Cancellable.() -> Unit) {
+//        withContext(AsyncDispatcher) {
+//            AsynchronousRepeatChain(block, period, delay).execute()
+//        }
+//    }
 
     fun run() {
-        CoroutineScope(AsyncDispatcher).launch {
-            chain(this@Chain)
-        }
+        CoroutineScope(AsyncDispatcher).launch { chain(this@Chain) }
     }
 }
 

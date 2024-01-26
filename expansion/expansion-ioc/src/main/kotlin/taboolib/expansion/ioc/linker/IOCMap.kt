@@ -1,6 +1,8 @@
 package taboolib.expansion.ioc.linker
 
+import taboolib.common.util.unsafeLazy
 import taboolib.expansion.ioc.IOCReader
+import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -13,33 +15,32 @@ inline fun <reified V : Any?> linkedIOCMap(): IOCMap {
 
 class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
 
-
-    val IOC by lazy {
+    val ioc: ConcurrentHashMap<String, Any> by unsafeLazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
     }
 
-    val DATABASE by lazy{
+    val database: IOCDatabase by unsafeLazy {
         IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
     override fun clear() {
-        IOC.clear()
+        ioc.clear()
     }
 
     override fun isEmpty(): Boolean {
-        return IOC.isEmpty()
+        return ioc.isEmpty()
     }
 
     override fun equals(other: Any?): Boolean {
-        return IOC.equals(other)
+        return ioc.equals(other)
     }
 
     override fun hashCode(): Int {
-        return IOC.hashCode()
+        return ioc.hashCode()
     }
 
     override fun toString(): String {
-        return IOC.toString()
+        return ioc.toString()
     }
 
     override fun clone(): Any {
@@ -47,33 +48,36 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
     }
 
     fun cloneIOC(): Map<String, Any> {
-        return IOC.toMap()
+        return ioc.toMap()
     }
 
     override fun contains(value: Any?): Boolean {
-        return IOC.contains(value)
+        return ioc.contains(value)
     }
 
     override fun keys(): Enumeration<String> {
-        return IOC.keys()
+        return ioc.keys()
     }
 
     override fun elements(): Enumeration<Any> {
-        return IOC.elements()
+        return ioc.elements()
     }
 
     override fun mappingCount(): Long {
-        return IOC.mappingCount()
+        return ioc.mappingCount()
     }
 
     override val values: MutableCollection<Any>
-        get() = IOC.values
+        get() = ioc.values
+
     override val entries: MutableSet<MutableMap.MutableEntry<String, Any>>
-        get() = IOC.entries
+        get() = ioc.entries
+
     override val keys: KeySetView<String, Any>
-        get() = IOC.keys
+        get() = ioc.keys
+
     override val size: Int
-        get() = IOC.size
+        get() = ioc.size
 
     override fun reduceEntriesToInt(
         parallelismThreshold: Long,
@@ -81,7 +85,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Int,
         reducer: IntBinaryOperator?,
     ): Int {
-        return IOC.reduceEntriesToInt(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceEntriesToInt(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceEntriesToLong(
@@ -90,7 +94,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Long,
         reducer: LongBinaryOperator?,
     ): Long {
-        return IOC.reduceEntriesToLong(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceEntriesToLong(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceEntriesToDouble(
@@ -99,7 +103,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Double,
         reducer: DoubleBinaryOperator?,
     ): Double {
-        return IOC.reduceEntriesToDouble(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceEntriesToDouble(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun <U : Any?> reduceEntries(
@@ -107,21 +111,21 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<MutableMap.MutableEntry<String, Any>, out U>?,
         reducer: BiFunction<in U, in U, out U>?,
     ): U {
-        return IOC.reduceEntries(parallelismThreshold, transformer, reducer)
+        return ioc.reduceEntries(parallelismThreshold, transformer, reducer)
     }
 
     override fun reduceEntries(
         parallelismThreshold: Long,
         reducer: BiFunction<MutableMap.MutableEntry<String, Any>, MutableMap.MutableEntry<String, Any>, out MutableMap.MutableEntry<String, Any>>?,
     ): MutableMap.MutableEntry<String, Any> {
-        return IOC.reduceEntries(parallelismThreshold, reducer)
+        return ioc.reduceEntries(parallelismThreshold, reducer)
     }
 
     override fun <U : Any?> searchEntries(
         parallelismThreshold: Long,
         searchFunction: Function<MutableMap.MutableEntry<String, Any>, out U>?,
     ): U {
-        return IOC.searchEntries(parallelismThreshold, searchFunction)
+        return ioc.searchEntries(parallelismThreshold, searchFunction)
     }
 
     override fun <U : Any?> forEachEntry(
@@ -129,11 +133,11 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<MutableMap.MutableEntry<String, Any>, out U>?,
         action: Consumer<in U>?,
     ) {
-        IOC.forEachEntry(parallelismThreshold, transformer, action)
+        ioc.forEachEntry(parallelismThreshold, transformer, action)
     }
 
     override fun forEachEntry(parallelismThreshold: Long, action: Consumer<in MutableMap.MutableEntry<String, Any>>?) {
-        IOC.forEachEntry(parallelismThreshold, action)
+        ioc.forEachEntry(parallelismThreshold, action)
     }
 
     override fun reduceValuesToInt(
@@ -142,7 +146,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Int,
         reducer: IntBinaryOperator?,
     ): Int {
-        return IOC.reduceValuesToInt(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceValuesToInt(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceValuesToLong(
@@ -151,7 +155,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Long,
         reducer: LongBinaryOperator?,
     ): Long {
-        return IOC.reduceValuesToLong(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceValuesToLong(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceValuesToDouble(
@@ -160,7 +164,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Double,
         reducer: DoubleBinaryOperator?,
     ): Double {
-        return IOC.reduceValuesToDouble(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceValuesToDouble(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun <U : Any?> reduceValues(
@@ -168,15 +172,15 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<in Any, out U>?,
         reducer: BiFunction<in U, in U, out U>?,
     ): U {
-        return IOC.reduceValues(parallelismThreshold, transformer, reducer)
+        return ioc.reduceValues(parallelismThreshold, transformer, reducer)
     }
 
     override fun reduceValues(parallelismThreshold: Long, reducer: BiFunction<in Any, in Any, out Any>?): Any {
-        return IOC.reduceValues(parallelismThreshold, reducer)
+        return ioc.reduceValues(parallelismThreshold, reducer)
     }
 
     override fun <U : Any?> searchValues(parallelismThreshold: Long, searchFunction: Function<in Any, out U>?): U {
-        return IOC.searchValues(parallelismThreshold, searchFunction)
+        return ioc.searchValues(parallelismThreshold, searchFunction)
     }
 
     override fun <U : Any?> forEachValue(
@@ -184,11 +188,11 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<in Any, out U>?,
         action: Consumer<in U>?,
     ) {
-        IOC.forEachValue(parallelismThreshold, transformer, action)
+        ioc.forEachValue(parallelismThreshold, transformer, action)
     }
 
     override fun forEachValue(parallelismThreshold: Long, action: Consumer<in Any>?) {
-        IOC.forEachValue(parallelismThreshold, action)
+        ioc.forEachValue(parallelismThreshold, action)
     }
 
     override fun reduceKeysToInt(
@@ -197,7 +201,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Int,
         reducer: IntBinaryOperator?,
     ): Int {
-        return IOC.reduceKeysToInt(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceKeysToInt(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceKeysToLong(
@@ -206,7 +210,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Long,
         reducer: LongBinaryOperator?,
     ): Long {
-        return IOC.reduceKeysToLong(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceKeysToLong(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceKeysToDouble(
@@ -215,7 +219,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Double,
         reducer: DoubleBinaryOperator?,
     ): Double {
-        return IOC.reduceKeysToDouble(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceKeysToDouble(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun <U : Any?> reduceKeys(
@@ -223,18 +227,18 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<in String, out U>?,
         reducer: BiFunction<in U, in U, out U>?,
     ): U {
-        return IOC.reduceKeys(parallelismThreshold, transformer, reducer)
+        return ioc.reduceKeys(parallelismThreshold, transformer, reducer)
     }
 
     override fun reduceKeys(
         parallelismThreshold: Long,
         reducer: BiFunction<in String, in String, out String>?,
     ): String {
-        return IOC.reduceKeys(parallelismThreshold, reducer)
+        return ioc.reduceKeys(parallelismThreshold, reducer)
     }
 
     override fun <U : Any?> searchKeys(parallelismThreshold: Long, searchFunction: Function<in String, out U>?): U {
-        return IOC.searchKeys(parallelismThreshold, searchFunction)
+        return ioc.searchKeys(parallelismThreshold, searchFunction)
     }
 
     override fun <U : Any?> forEachKey(
@@ -242,11 +246,11 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: Function<in String, out U>?,
         action: Consumer<in U>?,
     ) {
-        IOC.forEachKey(parallelismThreshold, transformer, action)
+        ioc.forEachKey(parallelismThreshold, transformer, action)
     }
 
     override fun forEachKey(parallelismThreshold: Long, action: Consumer<in String>?) {
-        IOC.forEachKey(parallelismThreshold, action)
+        ioc.forEachKey(parallelismThreshold, action)
     }
 
     override fun reduceToInt(
@@ -255,7 +259,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Int,
         reducer: IntBinaryOperator?,
     ): Int {
-        return IOC.reduceToInt(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceToInt(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceToLong(
@@ -264,7 +268,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Long,
         reducer: LongBinaryOperator?,
     ): Long {
-        return IOC.reduceToLong(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceToLong(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun reduceToDouble(
@@ -273,7 +277,7 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         basis: Double,
         reducer: DoubleBinaryOperator?,
     ): Double {
-        return IOC.reduceToDouble(parallelismThreshold, transformer, basis, reducer)
+        return ioc.reduceToDouble(parallelismThreshold, transformer, basis, reducer)
     }
 
     override fun <U : Any?> reduce(
@@ -281,46 +285,46 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: BiFunction<in String, in Any, out U>?,
         reducer: BiFunction<in U, in U, out U>?,
     ): U {
-        return IOC.reduce(parallelismThreshold, transformer, reducer)
+        return ioc.reduce(parallelismThreshold, transformer, reducer)
     }
 
     override fun <U : Any?> search(
         parallelismThreshold: Long,
         searchFunction: BiFunction<in String, in Any, out U>?,
     ): U {
-        return IOC.search(parallelismThreshold, searchFunction)
+        return ioc.search(parallelismThreshold, searchFunction)
     }
 
     override fun merge(key: String, value: Any, remappingFunction: BiFunction<in Any, in Any, out Any?>): Any? {
-        return IOC.merge(key, value, remappingFunction)
+        return ioc.merge(key, value, remappingFunction)
     }
 
     override fun compute(key: String, remappingFunction: BiFunction<in String, in Any?, out Any?>): Any? {
-        return IOC.compute(key, remappingFunction)
+        return ioc.compute(key, remappingFunction)
     }
 
     override fun computeIfPresent(key: String, remappingFunction: BiFunction<in String, in Any, out Any?>): Any? {
-        return IOC.computeIfPresent(key, remappingFunction)
+        return ioc.computeIfPresent(key, remappingFunction)
     }
 
     override fun computeIfAbsent(key: String, mappingFunction: Function<in String, out Any>): Any {
-        return IOC.computeIfAbsent(key, mappingFunction)
+        return ioc.computeIfAbsent(key, mappingFunction)
     }
 
     override fun replace(key: String, value: Any): Any? {
-        return IOC.replace(key, value)
+        return ioc.replace(key, value)
     }
 
     override fun replace(key: String, oldValue: Any, newValue: Any): Boolean {
-        return IOC.replace(key, oldValue, newValue)
+        return ioc.replace(key, oldValue, newValue)
     }
 
     override fun putIfAbsent(key: String, value: Any): Any? {
-        return IOC.putIfAbsent(key, value)
+        return ioc.putIfAbsent(key, value)
     }
 
     override fun replaceAll(function: BiFunction<in String, in Any, out Any>) {
-        IOC.replaceAll(function)
+        ioc.replaceAll(function)
     }
 
     override fun <U : Any?> forEach(
@@ -328,51 +332,50 @@ class IOCMap(dataType: Class<*>) : ConcurrentHashMap<String, Any>() {
         transformer: BiFunction<in String, in Any, out U>?,
         action: Consumer<in U>?,
     ) {
-        IOC.forEach(parallelismThreshold, transformer, action)
+        ioc.forEach(parallelismThreshold, transformer, action)
     }
 
     override fun forEach(parallelismThreshold: Long, action: BiConsumer<in String, in Any>?) {
-        IOC.forEach(parallelismThreshold, action)
+        ioc.forEach(parallelismThreshold, action)
     }
 
     override fun forEach(action: BiConsumer<in String, in Any>) {
-        IOC.forEach(action)
+        ioc.forEach(action)
     }
 
     override fun keySet(mappedValue: Any?): KeySetView<String, Any> {
-        return IOC.keySet(mappedValue)
+        return ioc.keySet(mappedValue)
     }
 
     override fun getOrDefault(key: String, defaultValue: Any): Any {
-        return IOC.getOrDefault(key, defaultValue)
+        return ioc.getOrDefault(key, defaultValue)
     }
 
     override fun get(key: String): Any? {
-        return IOC.get(key)
+        return ioc.get(key)
     }
 
     override fun containsValue(value: Any): Boolean {
-        return IOC.containsValue(value)
+        return ioc.containsValue(value)
     }
 
     override fun containsKey(key: String): Boolean {
-        return IOC.containsKey(key)
+        return ioc.containsKey(key)
     }
 
     override fun remove(key: String, value: Any): Boolean {
-        return IOC.remove(key, value)
+        return ioc.remove(key, value)
     }
 
     override fun remove(key: String): Any? {
-        return IOC.remove(key)
+        return ioc.remove(key)
     }
 
     override fun putAll(from: Map<out String, Any>) {
-        IOC.putAll(from)
+        ioc.putAll(from)
     }
 
     override fun put(key: String, value: Any): Any? {
-        return IOC.put(key, value)
+        return ioc.put(key, value)
     }
-
 }

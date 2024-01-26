@@ -1,9 +1,10 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `maven-publish`
     java
-    id("org.jetbrains.kotlin.jvm") version "1.5.31" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
@@ -27,15 +28,25 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+        compileOnly("com.google.guava:guava:21.0")
+        compileOnly("com.google.code.gson:gson:2.8.7")
+        compileOnly("org.apache.commons:commons-lang3:3.5")
+        compileOnly("org.tabooproject.reflex:reflex:1.0.19")
+        compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     }
 
     java {
-         // withJavadocJar()
          withSourcesJar()
     }
 
-    tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+    tasks.withType<ShadowJar> {
         archiveClassifier.set("")
+        relocate("org.tabooproject", "taboolib.library")
+    }
+
+    tasks.build {
+        dependsOn("shadowJar")
     }
 
     tasks.withType<JavaCompile> {
@@ -58,7 +69,6 @@ subprojects {
 
 subprojects
     .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" }
-    .filter { it.name != "module-database-core" && it.name != "module-ui-legacy" }
     .forEach { proj ->
         proj.publishing { applyToSub(proj) }
     }
@@ -81,12 +91,8 @@ fun PublishingExtension.applyToSub(subProject: Project) {
         create<MavenPublication>("maven") {
             artifactId = subProject.name
             groupId = "io.izzel.taboolib"
-            version = (if (project.hasProperty("build")) {
-                var build = project.findProperty("build").toString()
-                if (build.startsWith("task ")) {
-                    build = "local"
-                }
-                "${project.version}-$build"
+            version = (if (project.hasProperty("dev")) {
+                "${project.version}-dev"
             } else {
                 "${project.version}"
             })

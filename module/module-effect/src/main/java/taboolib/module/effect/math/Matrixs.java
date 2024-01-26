@@ -1,13 +1,10 @@
 package taboolib.module.effect.math;
 
-import taboolib.common.Isolated;
-
 /**
  * 与 {@link Matrix} 相关的静态实用方法
  *
  * @author Zoyn
  */
-@Isolated
 public class Matrixs {
 
     /**

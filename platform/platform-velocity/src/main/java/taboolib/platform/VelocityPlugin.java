@@ -10,61 +10,58 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import taboolib.common.LifeCycle;
-import taboolib.common.TabooLibCommon;
+import taboolib.common.PrimitiveIO;
+import taboolib.common.PrimitiveSettings;
+import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
-import taboolib.common.io.Project1Kt;
 import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformImplementationKt;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
 
-import java.net.URL;
 import java.nio.file.Path;
 
 /**
  * TabooLib
- * taboolib.platform.VelocityPlugin
+ * taboolib.platform.BungeePlugin
  *
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
 @SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
+@PlatformSide(Platform.VELOCITY)
 @com.velocitypowered.api.plugin.Plugin(
         id = "@plugin_id@",
         name = "@plugin_name@",
         version = "@plugin_version@"
 )
-@PlatformSide(Platform.VELOCITY)
 public class VelocityPlugin {
 
     @Nullable
-    private static Plugin pluginInstance;
+    private static final Plugin pluginInstance;
     private static VelocityPlugin instance;
-    private static Class<?> delegateClass;
-    private static Object delegateObject;
-    @Nullable
-    private static IsolatedClassLoader isolatedClassLoader;
 
     static {
-        if (IsolatedClassLoader.isEnabled()) {
-            try {
-                IsolatedClassLoader loader = new IsolatedClassLoader(
-                        new URL[]{VelocityPlugin.class.getProtectionDomain().getCodeSource().getLocation()},
-                        VelocityPlugin.class.getClassLoader()
-                );
-                loader.addExcludedClass("taboolib.platform.VelocityPlugin");
-                isolatedClassLoader = loader;
-                delegateClass = Class.forName("taboolib.platform.VelocityPluginDelegate", true, loader);
-                delegateObject = delegateClass.getConstructor().newInstance();
-                delegateClass.getMethod("onConst").invoke(delegateObject);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            TabooLibCommon.lifeCycle(LifeCycle.CONST, Platform.VELOCITY);
-            if (TabooLibCommon.isKotlinEnvironment()) {
-                pluginInstance = Project1Kt.findImplementation(Plugin.class);
-            }
+        long time = System.currentTimeMillis();
+        // 初始化 IsolatedClassLoader
+        try {
+            IsolatedClassLoader.init(VelocityPlugin.class);
+        } catch (Throwable ex) {
+            // 关闭插件
+            TabooLib.setStopped(true);
+            // 提示信息
+            PrimitiveIO.error("[TabooLib] Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
+            // 打印错误信息
+            ex.printStackTrace();
+        }
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.CONST);
+        // 检索 TabooLib Plugin 实现
+        pluginInstance = PlatformImplementationKt.findImplementation(Plugin.class);
+        // 调试模式显示加载耗时
+        if (PrimitiveSettings.IS_DEV_MODE) {
+            PrimitiveIO.println("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
         }
     }
 
@@ -78,79 +75,55 @@ public class VelocityPlugin {
         this.server = server;
         this.configDirectory = configDirectory;
         instance = this;
-
-        if (IsolatedClassLoader.isEnabled()) {
-            try {
-                delegateClass.getMethod("onInit").invoke(delegateObject);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            TabooLibCommon.lifeCycle(LifeCycle.INIT);
-        }
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.INIT);
     }
 
     @Subscribe
     public void e(ProxyInitializeEvent e) {
-        if (IsolatedClassLoader.isEnabled()) {
-            try {
-                delegateClass.getMethod("onLoad").invoke(delegateObject);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.LOAD);
+        // 调用 Plugin 实现的 onLoad() 方法
+        if (pluginInstance != null && !TabooLib.isStopped()) {
+            pluginInstance.onLoad();
+        }
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.ENABLE);
+        // 判断插件是否关闭
+        if (!TabooLib.isStopped()) {
+            // 调用 Plugin 实现的 onEnable() 方法
+            if (pluginInstance != null) {
+                pluginInstance.onEnable();
             }
-        } else {
-            if (!TabooLibCommon.isStopped()) {
-                TabooLibCommon.lifeCycle(LifeCycle.LOAD);
-                if (pluginInstance == null) {
-                    pluginInstance = Project1Kt.findImplementation(Plugin.class);
-                }
-                if (pluginInstance != null) {
-                    pluginInstance.onLoad();
-                }
-            }
-            if (!TabooLibCommon.isStopped()) {
-                TabooLibCommon.lifeCycle(LifeCycle.ENABLE);
-                if (pluginInstance != null) {
-                    pluginInstance.onEnable();
-                }
-                try {
-                    ExecutorKt.startExecutor();
-                } catch (NoClassDefFoundError ignored) {
-                }
-            }
-            if (!TabooLibCommon.isStopped()) {
-                server.getScheduler().buildTask(this, new Runnable() {
-                    @Override
-                    public void run() {
-                        TabooLibCommon.lifeCycle(LifeCycle.ACTIVE);
-                        if (pluginInstance != null) {
-                            pluginInstance.onActive();
-                        }
+            // 启动调度器
+            ExecutorKt.startExecutor();
+        }
+        // 再次判断插件是否关闭
+        // 因为插件可能在 onEnable() 下关闭
+        if (!TabooLib.isStopped()) {
+            // 创建调度器，执行 onActive() 方法
+            server.getScheduler().buildTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    // 生命周期任务
+                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
+                    // 调用 Plugin 实现的 onActive() 方法
+                    if (pluginInstance != null) {
+                        pluginInstance.onActive();
                     }
-                }).schedule();
-            }
+                }
+            }).schedule();
         }
     }
 
     @Subscribe
     public void e(ProxyShutdownEvent e) {
-        if (IsolatedClassLoader.isEnabled()) {
-            try {
-                delegateClass.getMethod("onDisable").invoke(delegateObject);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        } else {
-            if (pluginInstance != null && !TabooLibCommon.isStopped()) {
-                pluginInstance.onDisable();
-            }
-            TabooLibCommon.lifeCycle(LifeCycle.DISABLE);
+        // 在插件未关闭的前提下，执行 onDisable() 方法
+        if (pluginInstance != null && !TabooLib.isStopped()) {
+            pluginInstance.onDisable();
         }
-    }
-
-    @NotNull
-    public static VelocityPlugin getInstance() {
-        return instance;
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.DISABLE);
     }
 
     @Nullable
@@ -159,22 +132,19 @@ public class VelocityPlugin {
     }
 
     @NotNull
+    public static VelocityPlugin getInstance() {
+        return instance;
+    }
+
     public ProxyServer getServer() {
         return server;
     }
 
-    @NotNull
     public Logger getLogger() {
         return logger;
     }
 
-    @NotNull
     public Path getConfigDirectory() {
         return configDirectory;
-    }
-
-    @Nullable
-    public static IsolatedClassLoader getIsolatedClassLoader() {
-        return isolatedClassLoader;
     }
 }

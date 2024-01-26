@@ -1,5 +1,6 @@
 package taboolib.expansion
 
+import taboolib.common.Inject
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.submitAsync
 import java.util.concurrent.ConcurrentHashMap
@@ -58,7 +59,8 @@ class DataContainer(val user: String, val database: Database) {
         return "DataContainer(user='$user', source=$source)"
     }
 
-    companion object {
+    @Inject
+    internal companion object {
 
         @Schedule(period = 20)
         private fun checkUpdate() {

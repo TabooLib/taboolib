@@ -1,6 +1,7 @@
 package taboolib.module.kether.action.supplier
 
 import org.apache.commons.lang3.time.DateFormatUtils
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.module.kether.*
@@ -62,7 +63,8 @@ class ActionDate(val type: Type, val format: String? = null) : ScriptAction<Any>
         }
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         @Awake(LifeCycle.LOAD)
         fun parser() {

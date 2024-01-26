@@ -15,6 +15,7 @@ import taboolib.module.nms.MinecraftVersion
  * @author sky
  * @since 2021/2/21 11:57 下午
  */
+@Suppress("DuplicatedCode")
 class NMSImpl : NMS() {
 
     val version = MinecraftVersion.major
@@ -54,10 +55,10 @@ class NMSImpl : NMS() {
         } else {
             when {
                 majorLegacy > 11200 -> {
-                    val p = net.minecraft.server.v1_12_R1.BlockPosition(block.x, block.y, block.z)
-                    val b = (block.world as org.bukkit.craftbukkit.v1_12_R1.CraftWorld).handle.getType(p)
+                    val p = BlockPosition(block.x, block.y, block.z)
+                    val b = (block.world as CraftWorld).handle.getType(p)
                     if (block.type.isSolid) {
-                        val a = b.d((block.world as org.bukkit.craftbukkit.v1_12_R1.CraftWorld).handle, p)
+                        val a = b.d((block.world as CraftWorld).handle, p)
                         a?.e ?: 0.0
                     } else {
                         0.0

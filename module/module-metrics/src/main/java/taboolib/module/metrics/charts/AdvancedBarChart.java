@@ -1,13 +1,11 @@
 package taboolib.module.metrics.charts;
 
-import taboolib.common.Isolated;
 import taboolib.module.metrics.CustomChart;
 import taboolib.module.metrics.JsonBuilder;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-@Isolated
 public class AdvancedBarChart extends CustomChart {
 
     private final Callable<Map<String, int[]>> callable;

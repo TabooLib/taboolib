@@ -71,9 +71,9 @@ object RefRemapper : ReflexRemapper {
             descriptorTypeCacheMap[descriptor]!!
         } else {
             val classes = LinkedList<Class<*>>()
-            SignatureReader(descriptor).accept(object : SignatureVisitor(Opcodes.ASM9) {
+            SignatureReader(descriptor).accept(object : SignatureVisitor(Opcodes.ASM7) {
                 override fun visitParameterType(): SignatureVisitor {
-                    return object : SignatureVisitor(Opcodes.ASM9) {
+                    return object : SignatureVisitor(Opcodes.ASM7) {
                         override fun visitClassType(name: String) {
                             classes += Class.forName(name.replace('/', '.'))
                             super.visitClassType(name)

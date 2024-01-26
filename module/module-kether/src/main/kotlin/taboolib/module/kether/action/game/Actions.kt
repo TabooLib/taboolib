@@ -1,7 +1,6 @@
 package taboolib.module.kether.action.game
 
-import taboolib.common.platform.Platform
-import taboolib.common.platform.PlatformSide
+import taboolib.common.Inject
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getProxyPlayer
 import taboolib.common.platform.function.onlinePlayers
@@ -12,6 +11,7 @@ import taboolib.module.chat.colored
 import taboolib.module.chat.uncolored
 import taboolib.module.kether.*
 
+@Inject
 internal object Actions {
 
     @KetherParser(["tell", "send", "message"])
@@ -104,7 +104,6 @@ internal object Actions {
         }
     }
 
-    @PlatformSide([Platform.BUKKIT])
     @KetherParser(["sound"])
     fun actionSound() = combinationParser {
         it.group(
@@ -122,7 +121,6 @@ internal object Actions {
         }
     }
 
-    @PlatformSide([Platform.BUKKIT])
     @KetherParser(["stopsound"])
     fun actionStopSound() = combinationParser {
         it.group(

@@ -1,10 +1,11 @@
 package taboolib.module.lang
 
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
+import taboolib.common.io.runningResourcesInJar
 import taboolib.common.platform.Awake
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
-import taboolib.common.platform.function.getJarFile
 import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
@@ -14,7 +15,6 @@ import taboolib.module.lang.gameside.TypeCommand
 import taboolib.module.lang.gameside.TypeSound
 import taboolib.module.lang.gameside.TypeTitle
 import java.util.*
-import java.util.jar.JarFile
 
 /**
  * TabooLib
@@ -23,9 +23,11 @@ import java.util.jar.JarFile
  * @author sky
  * @since 2021/6/18 10:43 下午
  */
+@Inject
 object Language {
 
-    private var firstLoaded = false
+    /** 是否完成了首次加载 */
+    private var isFirstLoaded = false
 
     /** 语言文件路径 */
     var path = "lang"
@@ -73,7 +75,7 @@ object Language {
     /** 添加新的语言文件 */
     fun addLanguage(vararg code: String) {
         languageCode += code
-        if (firstLoaded) {
+        if (isFirstLoaded) {
             reload()
         }
     }
@@ -98,13 +100,7 @@ object Language {
     @Awake(LifeCycle.INIT)
     fun reload() {
         // 加载语言文件类型
-        JarFile(getJarFile()).use { jar ->
-            jar.entries().iterator().forEachRemaining {
-                if (it.name.startsWith("$path/") && it.name.endsWith(".yml")) {
-                    languageCode += it.name.substringAfterLast('/').substringBeforeLast('.')
-                }
-            }
-        }
+        runningResourcesInJar.keys.filter { it.startsWith("$path/") && it.endsWith(".yml") }.forEach { languageCode += it.substringAfterLast('/').substringBeforeLast('.') }
         // 加载颜色字符模块
         try {
             HexColor.translate("")
@@ -116,7 +112,7 @@ object Language {
         } catch (_: NoClassDefFoundError) {
         }
         // 加载语言文件
-        firstLoaded = true
+        isFirstLoaded = true
         languageFile.clear()
         languageFile.putAll(ResourceReader(Language::class.java).files)
     }
