@@ -1,11 +1,10 @@
 name: build
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [created]
 jobs:
   build:
-    if: "contains(github.event.head_commit.message, 'publish')"
+    # if: "contains(github.event.head_commit.message, 'publish')"
     runs-on: ubuntu-latest
     steps:
       # 环境配置
@@ -37,7 +36,7 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+        run: ./gradlew publish -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
 
       # 发布到仓库: 重试-1
       - name: publish (retry 1)
@@ -47,7 +46,7 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+        run: ./gradlew publish -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
 
       # 发布到仓库: 重试-2
       - name: publish (retry 2)
@@ -57,7 +56,7 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
+        run: ./gradlew publish -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
 
       # 发布到仓库: 重试-3
       - name: publish (retry 3)
@@ -66,23 +65,4 @@ jobs:
         env:
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publish -Pbuild=$GITHUB_RUN_NUMBER -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
-
-      # 获取 commit 信息
-      - name: get commit messages
-        id: get_commits
-        run: |
-          commit_messages=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s")
-          echo "::set-output name=messages::$commit_messages"
-
-      # 发布到 GitHub
-      - name: create release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: 6.0.12-${{ github.run_number }}
-          release_name: 6.0.12-${{ github.run_number }}
-          body: |
-            ## 🤨 本次更新都有哪些主要改动？
-            ${{ steps.get_commits.outputs.messages }}
+        run: ./gradlew publish -PtaboolibUsername=$NEXUS_USERNAME -PtaboolibPassword=$NEXUS_PASSWORD
