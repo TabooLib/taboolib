@@ -165,7 +165,7 @@ fun Player.sendPacketBlocking(packet: Any) {
 /**
  * 监听器
  */
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 private object PoolListener {
 
     @SubscribeEvent

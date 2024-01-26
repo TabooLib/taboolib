@@ -28,7 +28,7 @@ import taboolib.common.platform.service.PlatformCommand
  * @since 2021/7/3 1:03 上午
  */
 @Awake
-@PlatformSide([Platform.BUNGEE])
+@PlatformSide(Platform.BUNGEE)
 class BungeeCommand : PlatformCommand {
 
     val plugin: BungeePlugin

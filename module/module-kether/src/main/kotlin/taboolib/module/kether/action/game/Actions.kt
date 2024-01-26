@@ -104,7 +104,7 @@ internal object Actions {
         }
     }
 
-    @PlatformSide([Platform.BUKKIT])
+    @PlatformSide(Platform.BUKKIT)
     @KetherParser(["sound"])
     fun actionSound() = combinationParser {
         it.group(
@@ -122,7 +122,7 @@ internal object Actions {
         }
     }
 
-    @PlatformSide([Platform.BUKKIT])
+    @PlatformSide(Platform.BUKKIT)
     @KetherParser(["stopsound"])
     fun actionStopSound() = combinationParser {
         it.group(

@@ -22,7 +22,7 @@ import java.util.concurrent.Executors
  * @author 坏黑
  * @since 2018-10-28 14:34
  */
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object ChannelExecutor {
 
     private val id = "taboolib_${pluginId}_packet_handler"

@@ -17,7 +17,7 @@ import taboolib.platform.type.VelocityPlayer
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityAdapter : PlatformAdapter {
 
     val plugin by unsafeLazy { VelocityPlugin.getInstance() }

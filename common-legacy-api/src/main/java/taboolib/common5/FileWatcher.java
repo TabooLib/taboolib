@@ -105,6 +105,7 @@ public class FileWatcher implements Releasable {
         }
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
     public void unregisterAll() {
         service.shutdown();
         map.forEach((service, pair) -> {

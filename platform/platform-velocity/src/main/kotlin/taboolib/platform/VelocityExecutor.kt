@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:43
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()

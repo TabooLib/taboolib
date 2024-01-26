@@ -59,6 +59,17 @@ public class PrimitiveIO {
     }
 
     /**
+     * 控制台输出
+     */
+    public static void error(Object message, Object... args) {
+        if (isSysoutCatcherFound) {
+            Logger.getLogger(runningFileName).severe(String.format(Objects.toString(message), args));
+        } else {
+            System.err.printf(message + "%n", args);
+        }
+    }
+
+    /**
      * 验证文件完整性
      *
      * @param file     文件

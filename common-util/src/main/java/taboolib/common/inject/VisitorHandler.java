@@ -6,7 +6,7 @@ import org.tabooproject.reflex.ClassField;
 import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
-import taboolib.common.Public;
+import taboolib.common.Inject;
 import taboolib.common.TabooLib;
 import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
@@ -166,7 +166,7 @@ public class VisitorHandler {
                     continue;
                 }
                 // 排除 TabooLib 的非开放类
-                if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Public.class)) {
+                if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Inject.class)) {
                     continue;
                 }
                 // 排除其他平台

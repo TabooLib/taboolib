@@ -65,7 +65,7 @@ data class LocaleKey(val type: String, val path: String, val extra: String? = nu
  * @author 坏黑
  * @since 2023/8/6 02:44
  */
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object LocaleI18n {
 
     /** 资源文件地址 */

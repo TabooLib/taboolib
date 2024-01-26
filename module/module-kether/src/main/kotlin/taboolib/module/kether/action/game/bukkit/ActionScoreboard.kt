@@ -7,7 +7,7 @@ import taboolib.common.util.asList
 import taboolib.module.kether.*
 import taboolib.module.nms.sendScoreboard
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object ActionScoreboard {
 
     @KetherParser(["scoreboard"])

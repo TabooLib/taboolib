@@ -24,7 +24,7 @@ import taboolib.common.platform.service.PlatformCommand
  * @since 2021/7/4 2:39 下午
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityCommand : PlatformCommand {
 
     val registeredCommands = ArrayList<String>()

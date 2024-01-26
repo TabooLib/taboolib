@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:13
  */
 @Awake
-@PlatformSide([Platform.BUNGEE])
+@PlatformSide(Platform.BUNGEE)
 class BungeeExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()

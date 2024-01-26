@@ -17,7 +17,7 @@ import taboolib.platform.type.BungeePlayer
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.BUNGEE])
+@PlatformSide(Platform.BUNGEE)
 class BungeeAdapter : PlatformAdapter {
 
     val plugin by unsafeLazy { BungeePlugin.getInstance() }

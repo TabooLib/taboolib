@@ -21,7 +21,7 @@ import taboolib.common.platform.function.submitAsync
 import taboolib.platform.util.isNotAir
 import taboolib.platform.util.setMeta
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 internal object ClickListener {
 
     @Awake(LifeCycle.DISABLE)

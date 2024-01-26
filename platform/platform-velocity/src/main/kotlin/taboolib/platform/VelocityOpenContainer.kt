@@ -15,7 +15,7 @@ import taboolib.platform.type.VelocityOpenContainer
  * @since 2021/6/14 11:10 下午
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityOpenContainer : PlatformOpenContainer {
 
     val pluginContainer = HashMap<String, OpenContainer>()

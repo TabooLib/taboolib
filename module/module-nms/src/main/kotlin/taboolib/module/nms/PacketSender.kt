@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2022/7/19 16:02
  */
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object PacketSender {
 
     private val playerConnectionMap = ConcurrentHashMap<String, Any>()

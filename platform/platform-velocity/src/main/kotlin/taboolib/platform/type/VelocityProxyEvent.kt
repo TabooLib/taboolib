@@ -26,7 +26,7 @@ open class VelocityProxyEvent(val proxyEvent: ProxyEvent? = null) : ResultedEven
         } else if (allowCancelled) {
             isCancelled = !result.isAllowed
         } else {
-            error("unsupported")
+            error("Event cannot be cancelled.")
         }
     }
 

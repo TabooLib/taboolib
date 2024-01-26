@@ -16,7 +16,7 @@ import taboolib.platform.type.VelocityProxyEvent
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityEvent : PlatformEvent {
 
     val plugin by unsafeLazy { VelocityPlugin.getInstance() }

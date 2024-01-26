@@ -12,7 +12,7 @@ import taboolib.common.util.asList
 import taboolib.common5.Coerce
 import taboolib.module.kether.*
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object ActionItemStack {
 
     @KetherParser(["itemstack"])

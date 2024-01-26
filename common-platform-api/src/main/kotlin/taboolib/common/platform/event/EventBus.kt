@@ -4,6 +4,8 @@ import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.Unknown
 import taboolib.common.LifeCycle
+import taboolib.common.event.InternalEvent
+import taboolib.common.event.InternalEventBus
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Ghost
@@ -15,6 +17,7 @@ import java.util.function.Supplier
 @Awake
 class EventBus : ClassVisitor(0) {
 
+    @Suppress("UNCHECKED_CAST")
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
         if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameter.size == 1) {
             val anno = method.getAnnotation(SubscribeEvent::class.java)
@@ -41,6 +44,14 @@ class EventBus : ClassVisitor(0) {
             }
             optional(anno) {
                 val obj = instance?.get()
+                val listenType = method.parameterTypes[0]
+                // 内部事件处理
+                if (InternalEvent::class.java.isAssignableFrom(listenType)) {
+                    val priority = anno.enum<EventPriority>("priority", EventPriority.NORMAL)
+                    val ignoreCancelled = anno.property("ignoreCancelled", false)
+                    InternalEventBus.listen(listenType as Class<InternalEvent>, priority.level, ignoreCancelled) { invoke(obj, method, it) }
+                    return
+                }
                 // 判定运行平台
                 when (runningPlatform) {
                     Platform.BUKKIT -> registerBukkit(method, optionalEvent, anno, obj)
@@ -55,12 +66,13 @@ class EventBus : ClassVisitor(0) {
     private fun registerBukkit(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
         val priority = event.enum<EventPriority>("priority", EventPriority.NORMAL)
         val ignoreCancelled = event.property("ignoreCancelled", false)
-        if (method.parameterTypes[0] == OptionalEvent::class.java) {
+        val listenType = method.parameterTypes[0]
+        if (listenType == OptionalEvent::class.java) {
             if (optionalBind != null) {
                 registerBukkitListener(optionalBind, priority, ignoreCancelled) { invoke(obj, method, it, true) }
             }
         } else {
-            registerBukkitListener(method.parameterTypes[0], priority, ignoreCancelled) { invoke(obj, method, it) }
+            registerBukkitListener(listenType, priority, ignoreCancelled) { invoke(obj, method, it) }
         }
     }
 
@@ -68,23 +80,25 @@ class EventBus : ClassVisitor(0) {
         val annoLevel = event.property("level", -1)
         val level = if (annoLevel != 0) annoLevel else event.enum<EventPriority>("priority", EventPriority.NORMAL).level
         val ignoreCancelled = event.property("ignoreCancelled", false)
-        if (method.parameterTypes[0] == OptionalEvent::class.java) {
+        val listenType = method.parameterTypes[0]
+        if (listenType == OptionalEvent::class.java) {
             if (optionalBind != null) {
                 registerBungeeListener(optionalBind, level, ignoreCancelled) { invoke(obj, method, it, true) }
             }
         } else {
-            registerBungeeListener(method.parameterTypes[0], level, ignoreCancelled) { invoke(obj, method, it) }
+            registerBungeeListener(listenType, level, ignoreCancelled) { invoke(obj, method, it) }
         }
     }
 
     private fun registerVelocity(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
         val postOrder = event.enum<PostOrder>("postOrder", PostOrder.NORMAL)
-        if (method.parameterTypes[0] == OptionalEvent::class.java) {
+        val listenType = method.parameterTypes[0]
+        if (listenType == OptionalEvent::class.java) {
             if (optionalBind != null) {
                 registerVelocityListener(optionalBind, postOrder) { invoke(obj, method, it, true) }
             }
         } else {
-            registerVelocityListener(method.parameterTypes[0], postOrder) { invoke(obj, method, it) }
+            registerVelocityListener(listenType, postOrder) { invoke(obj, method, it) }
         }
     }
 

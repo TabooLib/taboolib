@@ -17,7 +17,7 @@ import java.util.logging.Logger
  * @since 2021/6/14 11:10 下午
  */
 @Awake
-@PlatformSide([Platform.BUNGEE])
+@PlatformSide(Platform.BUNGEE)
 class BungeeIO : PlatformIO {
 
     val plugin by unsafeLazy { BungeePlugin.getInstance() }

@@ -9,7 +9,7 @@ import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.ui.receptacle.operates.OperateWindowClose
 import taboolib.module.ui.receptacle.operates.OperateWindowSetSlot
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object ReceptacleListener {
 
     @SubscribeEvent

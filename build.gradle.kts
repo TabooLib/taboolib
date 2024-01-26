@@ -28,6 +28,9 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly("com.google.guava:guava:21.0")
+        compileOnly("com.google.code.gson:gson:2.8.7")
+        compileOnly("org.apache.commons:commons-lang3:3.5")
         compileOnly("org.tabooproject.reflex:reflex:1.0.19")
         compileOnly("org.tabooproject.reflex:analyser:1.0.19")
     }

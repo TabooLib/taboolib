@@ -21,7 +21,7 @@ import taboolib.common.util.unsafeLazy
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.VELOCITY])
+@PlatformSide(Platform.VELOCITY)
 class VelocityListener : PlatformListener {
 
     val plugin by unsafeLazy { VelocityPlugin.getInstance() }

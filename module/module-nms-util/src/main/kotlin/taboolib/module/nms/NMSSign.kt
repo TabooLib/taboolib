@@ -108,7 +108,7 @@ class NMSSignImpl : NMSSign() {
     }
 }
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 private object NMSSignListener {
 
     /** 用户输入 */

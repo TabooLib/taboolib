@@ -5,7 +5,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.module.kether.*
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object ActionPlaceholder {
 
     @KetherParser(["papi", "placeholder"])

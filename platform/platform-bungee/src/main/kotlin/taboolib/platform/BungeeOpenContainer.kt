@@ -16,7 +16,7 @@ import taboolib.platform.type.BungeeOpenContainer
  * @since 2021/6/21 14:28
  */
 @Awake
-@PlatformSide([Platform.BUNGEE])
+@PlatformSide(Platform.BUNGEE)
 class BungeeOpenContainer : PlatformOpenContainer {
 
     val pluginContainer = HashMap<String, OpenContainer>()

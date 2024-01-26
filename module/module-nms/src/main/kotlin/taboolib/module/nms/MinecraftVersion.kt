@@ -13,7 +13,7 @@ import taboolib.common.platform.function.runningPlatform
 import taboolib.common.util.unsafeLazy
 import java.io.FileInputStream
 
-@PlatformSide([Platform.BUKKIT])
+@PlatformSide(Platform.BUKKIT)
 object MinecraftVersion {
 
     const val V1_8 = 0

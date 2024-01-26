@@ -51,5 +51,13 @@ fun importExtensions() {
 include("common", "common-env", "common-util", "common-legacy-api", "common-reflex", "common-platform-api")
 include(
     "module:module-chat",
-    "module:module-configuration"
+    "module:module-configuration",
+    "module:module-lang",
+    "module:module-bukkit-hook",
+    "module:module-bukkit-util",
+    "module:module-bukkit-xseries"
+)
+include(
+    "platform:platform-bukkit",
+    "platform:platform-bukkit-impl"
 )
