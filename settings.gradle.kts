@@ -72,6 +72,11 @@ include(
     "expansion:expansion-javascript"
 )
 include(
+    "platform:platform-application",
     "platform:platform-bukkit",
-    "platform:platform-bukkit-impl"
+    "platform:platform-bukkit-impl",
+    "platform:platform-bungee",
+    "platform:platform-bungee-impl",
+    "platform:platform-velocity",
+    "platform:platform-velocity-impl"
 )

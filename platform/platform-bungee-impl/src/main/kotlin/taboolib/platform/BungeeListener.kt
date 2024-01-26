@@ -3,7 +3,6 @@ package taboolib.platform
 import net.md_5.bungee.BungeeCord
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventBus
-import net.md_5.bungee.event.EventHandlerMethod
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.platform.Awake
@@ -11,8 +10,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
-import taboolib.common.platform.function.getUsableEvent
-import taboolib.common.platform.function.isPlatformEvent
 import taboolib.common.platform.service.PlatformListener
 import taboolib.common.util.unsafeLazy
 import java.lang.reflect.Method
@@ -38,10 +35,6 @@ class BungeeListener : PlatformListener {
         eventBus.getProperty<MutableMap<Class<*>, MutableMap<Byte, MutableMap<Any, Array<Method>>>>>("byListenerAndPriority")!!
     }
 
-    val byEventBaked by unsafeLazy {
-        eventBus.getProperty<MutableMap<Class<*>, Array<EventHandlerMethod>>>("byEventBaked")!!
-    }
-
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         error("unsupported")
     }
@@ -49,35 +42,32 @@ class BungeeListener : PlatformListener {
     @Suppress("UNCHECKED_CAST")
     override fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
         val listener = BungeeListener(event, level) { func(it as T) }
-        val eventClass = event.getUsableEvent()
-        val priority = byListenerAndPriority.computeIfAbsent(eventClass) { HashMap() }
+        val priority = byListenerAndPriority.computeIfAbsent(event) { HashMap() }
         val listenerMap = priority.computeIfAbsent(level.toByte()) { HashMap() }
-        listenerMap[listener] = arrayOf(BungeeListener.method)
-        eventBus.invokeMethod<Void>("bakeHandlers", eventClass)
+        listenerMap[listener] = arrayOf(BungeeListener.handleMethod)
+        eventBus.invokeMethod<Void>("bakeHandlers", event)
         return listener
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
         val listener = proxyListener as BungeeListener
-        val eventClass = listener.clazz.getUsableEvent()
-        val priority = byListenerAndPriority[eventClass] ?: return
+        val priority = byListenerAndPriority[listener.cls] ?: return
         val listenerMap = priority[listener.level.toByte()] ?: return
         listenerMap.remove(listener)
-        eventBus.invokeMethod<Void>("bakeHandlers", eventClass)
+        eventBus.invokeMethod<Void>("bakeHandlers", listener.cls)
     }
 
-    class BungeeListener(val clazz: Class<*>, val level: Int, val consumer: (Any) -> Unit) : Listener, ProxyListener {
+    class BungeeListener(val cls: Class<*>, val level: Int, val consumer: (Any) -> Unit) : Listener, ProxyListener {
 
         fun handle(event: Any) {
-            val origin = if (event::class.java.isPlatformEvent) event.getProperty<Any>("proxyEvent") ?: event else event
-            if (clazz.isAssignableFrom(origin.javaClass)) {
-                consumer(origin)
+            if (cls.isAssignableFrom(event.javaClass)) {
+                consumer(event)
             }
         }
 
         companion object {
 
-            val method: Method = BungeeListener::class.java.getDeclaredMethod("handle", Any::class.java).also {
+            val handleMethod: Method = BungeeListener::class.java.getDeclaredMethod("handle", Any::class.java).also {
                 it.isAccessible = true
             }
         }

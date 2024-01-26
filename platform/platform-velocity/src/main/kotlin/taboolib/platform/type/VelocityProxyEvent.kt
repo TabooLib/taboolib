@@ -2,10 +2,9 @@ package taboolib.platform.type
 
 import com.velocitypowered.api.event.ResultedEvent
 import com.velocitypowered.api.event.ResultedEvent.GenericResult
-import taboolib.common.platform.event.ProxyEvent
 import taboolib.platform.VelocityPlugin
 
-open class VelocityProxyEvent(val proxyEvent: ProxyEvent? = null) : ResultedEvent<GenericResult> {
+open class VelocityProxyEvent : ResultedEvent<GenericResult> {
 
     private var isCancelled = false
 
@@ -13,17 +12,11 @@ open class VelocityProxyEvent(val proxyEvent: ProxyEvent? = null) : ResultedEven
         get() = true
 
     override fun getResult(): GenericResult {
-        return if (proxyEvent?.isCancelled ?: isCancelled) GenericResult.denied() else GenericResult.allowed()
+        return if (isCancelled) GenericResult.denied() else GenericResult.allowed()
     }
 
     override fun setResult(result: GenericResult) {
-        if (proxyEvent != null) {
-            if (proxyEvent.allowCancelled) {
-                proxyEvent.isCancelled = !result.isAllowed
-            } else {
-                error("Unsupported")
-            }
-        } else if (allowCancelled) {
+        if (allowCancelled) {
             isCancelled = !result.isAllowed
         } else {
             error("Event cannot be cancelled.")

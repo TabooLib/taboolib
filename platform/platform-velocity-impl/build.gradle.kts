@@ -5,6 +5,8 @@ repositories {
 
 dependencies {
     compileOnly(project(":common"))
+    compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
+    compileOnly(project(":platform:platform-velocity"))
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
 }

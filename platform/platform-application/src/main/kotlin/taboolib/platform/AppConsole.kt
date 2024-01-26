@@ -3,10 +3,12 @@ package taboolib.platform
 import net.minecrell.terminalconsole.SimpleTerminalConsole
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.io.IoBuilder
 import org.jline.reader.Candidate
 import org.jline.reader.LineReader
 import org.jline.reader.LineReaderBuilder
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
@@ -22,10 +24,11 @@ import taboolib.common.platform.function.pluginVersion
  * @since 2022/06/08 13:37
  */
 @Awake
-@PlatformSide([Platform.APPLICATION])
+@Inject
+@PlatformSide(Platform.APPLICATION)
 object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
 
-    val logger = LogManager.getLogger(AppConsole::class.java)
+    val logger: Logger = LogManager.getLogger(AppConsole::class.java)
 
     override var isOp = true
     override val name = "CONSOLE"
@@ -35,15 +38,15 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     fun load() {
         System.setOut(IoBuilder.forLogger(logger).setLevel(Level.INFO).buildPrintStream())
         System.setErr(IoBuilder.forLogger(logger).setLevel(Level.WARN).buildPrintStream())
-
+        // 注册命令
         command("about", description = "about this server") {
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { sender, _, _ ->
                 sender.sendMessage("§r$pluginId v$pluginVersion")
                 sender.sendMessage("§rThere are console application booting by §cTabooLib")
             }
         }
         command("help", aliases = listOf("?"), description = "suggest commands") {
-            execute<ProxyCommandSender> { sender, context, argument ->
+            execute<ProxyCommandSender> { sender, _, _ ->
                 sender.sendMessage("§rRegisted §a${AppCommand.commands.size} §rcommands, list:")
                 AppCommand.commands.forEach {
                     sender.sendMessage("§r✦ §a${it.command.name}§r<${it.command.aliases.joinToString()}> §8- §2${it.command.description}")
@@ -51,8 +54,8 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
             }
         }
         command("stop", aliases = listOf("shutdown"), description = "stop the server") {
-            execute<ProxyCommandSender> { sender, context, argument ->
-                TabooLib.testCancel()
+            execute<ProxyCommandSender> { _, _, _ ->
+                App.shutdown()
             }
         }
     }
@@ -76,15 +79,10 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     override fun buildReader(builder: LineReaderBuilder): LineReader {
         builder
             .appName(pluginId)
-            .completer { reader, line, candidates ->
+            .completer { _, line, candidates ->
                 val buffer = line.line()
-                AppCommand.suggest(buffer).forEach {
-                    candidates.add(Candidate(it))
-                }
-
-            }
-            .option(LineReader.Option.COMPLETE_IN_WORD, true);
-
+                AppCommand.suggest(buffer).forEach { candidates.add(Candidate(it)) }
+            }.option(LineReader.Option.COMPLETE_IN_WORD, true);
         return super.buildReader(builder)
     }
 
@@ -93,7 +91,7 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
     }
 
     override fun shutdown() {
-        TabooLib.testCancel()
+        App.shutdown()
     }
 
     override fun hasPermission(permission: String): Boolean {

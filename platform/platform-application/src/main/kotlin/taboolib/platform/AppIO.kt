@@ -17,7 +17,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
-@PlatformSide([Platform.APPLICATION])
+@PlatformSide(Platform.APPLICATION)
 @RuntimeDependency(value = "!org.apache.commons:commons-lang3:3.5", test = "!org.apache.commons.lang3.concurrent.BasicThreadFactory")
 class AppIO : PlatformIO {
 
