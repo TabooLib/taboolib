@@ -100,7 +100,7 @@ open class Stored(title: String) : Basic(title) {
                     // 防止覆盖物品
                     if (firstSlot >= 0 && rule.readItem(it.inventory, firstSlot).isAir) {
                         // 设置物品
-                        rule.writeItem(it.inventory, currentItem, firstSlot)
+                        rule.writeItem(it.inventory, currentItem, firstSlot, it.clickEvent().click)
                         // 移除物品
                         it.currentItem?.type = Material.AIR
                         it.currentItem = null
@@ -119,7 +119,7 @@ open class Stored(title: String) : Basic(title) {
                         // 提取物品
                         action.setCursor(it, rule.readItem(it.inventory, action.getCurrentSlot(it)))
                         // 写入物品
-                        rule.writeItem(it.inventory, cursor, action.getCurrentSlot(it))
+                        rule.writeItem(it.inventory, cursor, action.getCurrentSlot(it), it.clickEvent().click)
                     } else if (it.rawSlot >= 0 && it.rawSlot < it.inventory.size) {
                         it.isCancelled = true
                     }
@@ -139,7 +139,7 @@ open class Stored(title: String) : Basic(title) {
         internal var firstSlot: ((inventory: Inventory, itemStack: ItemStack) -> Int) = { _, _ -> -1 }
 
         /** 写入物品回调 **/
-        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) = { inventory, item, slot ->
+        internal var writeItem: ((inventory: Inventory, itemStack: ItemStack, slot: Int, type: BukkitClickType) -> Unit) = { inventory, item, slot, _ ->
             if (slot in 0 until inventory.size) inventory.setItem(slot, item)
         }
 
@@ -193,6 +193,13 @@ open class Stored(title: String) : Basic(title) {
          * 物品写入回调
          */
         open fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack, slot: Int) -> Unit) {
+            this.writeItem = { inventory, itemStack, slot, _ -> writeItem(inventory, itemStack, slot) }
+        }
+
+        /**
+         * 物品写入回调
+         */
+        open fun writeItem(writeItem: (inventory: Inventory, itemStack: ItemStack, slot: Int, type: BukkitClickType) -> Unit) {
             this.writeItem = writeItem
         }
 
@@ -204,5 +211,7 @@ open class Stored(title: String) : Basic(title) {
         }
     }
 
-    object EmptyRule: Rule()
+    object EmptyRule : Rule()
 }
+
+typealias BukkitClickType = org.bukkit.event.inventory.ClickType
