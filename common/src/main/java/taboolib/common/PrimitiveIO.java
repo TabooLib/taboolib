@@ -30,9 +30,9 @@ public class PrimitiveIO {
     private static String runningFileName = "TabooLib";
 
     /**
-     * 是否被 Paper 核心拦截控制台打印
+     * 是否再用 Logger 输出
      **/
-    private static boolean isSysoutCatcherFound = false;
+    private static boolean useJavaLogger = false;
 
     static {
         // 获取插件文件
@@ -43,7 +43,13 @@ public class PrimitiveIO {
         // 检查 Paper 核心控制台拦截工具
         try {
             Class.forName("io.papermc.paper.logging.SysoutCatcher");
-            isSysoutCatcherFound = true;
+            useJavaLogger = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+        // 检查 BungeeCord 环境
+        try {
+            Class.forName("net.md_5.bungee.BungeeCord");
+            useJavaLogger = true;
         } catch (ClassNotFoundException ignored) {
         }
     }
@@ -52,7 +58,7 @@ public class PrimitiveIO {
      * 控制台输出
      */
     public static void println(Object message, Object... args) {
-        if (isSysoutCatcherFound) {
+        if (useJavaLogger) {
             Logger.getLogger(runningFileName).info(String.format(Objects.toString(message), args));
         } else {
             System.out.printf(message + "%n", args);
@@ -63,7 +69,7 @@ public class PrimitiveIO {
      * 控制台输出
      */
     public static void error(Object message, Object... args) {
-        if (isSysoutCatcherFound) {
+        if (useJavaLogger) {
             Logger.getLogger(runningFileName).severe(String.format(Objects.toString(message), args));
         } else {
             System.err.printf(message + "%n", args);

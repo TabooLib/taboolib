@@ -153,13 +153,13 @@ class ConnectionGetterImpl : ConnectionGetter() {
 
 private typealias CraftServer8 = org.bukkit.craftbukkit.v1_8_R3.CraftServer
 
-private typealias CraftServer16 = org.bukkit.craftbukkit.v1_16_R2.CraftServer
+private typealias CraftServer16 = org.bukkit.craftbukkit.v1_16_R3.CraftServer
 
 private typealias CraftServer19 = org.bukkit.craftbukkit.v1_19_R3.CraftServer
 
 private typealias NMSMinecraftServer8 = net.minecraft.server.v1_8_R3.MinecraftServer
 
-private typealias NMSMinecraftServer16 = net.minecraft.server.v1_16_R2.MinecraftServer
+private typealias NMSMinecraftServer16 = net.minecraft.server.v1_16_R3.MinecraftServer
 
 private typealias NMSMinecraftServer = net.minecraft.server.MinecraftServer
 

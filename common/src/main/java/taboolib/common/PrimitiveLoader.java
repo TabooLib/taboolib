@@ -41,9 +41,9 @@ public class PrimitiveLoader {
      */
     public static final String[][] DEPENDENCIES = {
             {"me.lucko", "jar-relocator", "1.5"},
-            {"org.ow2.asm", "asm", "9.4"},
-            {"org.ow2.asm", "asm-util", "9.4"},
-            {"org.ow2.asm", "asm-commons", "9.4"}
+            {"org.ow2.asm", "asm", "9.6"},
+            {"org.ow2.asm", "asm-util", "9.6"},
+            {"org.ow2.asm", "asm-commons", "9.6"}
     };
 
     /**

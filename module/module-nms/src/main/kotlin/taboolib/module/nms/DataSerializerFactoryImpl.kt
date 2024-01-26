@@ -12,7 +12,6 @@ import net.minecraft.server.v1_9_R2.PacketDataSerializer
  * @author 坏黑
  * @since 2022/12/12 23:30
  */
-@Suppress("UNCHECKED_CAST")
 class DataSerializerFactoryImpl(val buf: ByteBuf) : DataSerializerFactory, DataSerializer {
 
     constructor() : this(Unpooled.buffer())
