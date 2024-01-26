@@ -57,6 +57,7 @@ public class RuntimeEnv {
                     new JarRelocation(KOTLINX_ID + ".", KOTLINX_ID + KOTLINX_VERSION.replace(".", "") + ".")
             );
         }
+        // 加载 Kotlin 环境
         ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
         ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, rel);
     }
