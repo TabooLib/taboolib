@@ -16,6 +16,7 @@
 package taboolib.expansion
 
 import redis.clients.jedis.JedisPubSub
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.module.configuration.Configuration
@@ -30,7 +31,8 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
 
     private val service: ExecutorService = Executors.newCachedThreadPool()
 
-    companion object {
+    @Inject
+    internal companion object {
 
         val resources = CopyOnWriteArrayList<Closeable>()
 

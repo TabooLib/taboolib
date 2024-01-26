@@ -88,7 +88,7 @@ public class TabooLib {
      */
     public static boolean isKotlinEnvironment() {
         try {
-            Class.forName("kotlin.Lazy", false, ClassAppender.getClassLoader(PrimitiveSettings.IS_ISOLATED_MODE));
+            Class.forName("kotlin.Lazy", false, ClassAppender.getClassLoader());
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;

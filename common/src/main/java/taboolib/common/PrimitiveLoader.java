@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -145,7 +147,9 @@ public class PrimitiveLoader {
             if (!IS_ISOLATED_MODE) {
                 String kt = "!kotlin".substring(1);
                 String kv = KOTLIN_VERSION.replace(".", "");
+                String kx = KOTLINX_VERSION.replace(".", "");
                 rel.add(new Relocation(kt + ".", kt + kv + "."));
+                rel.add(new Relocation(kt + "x.", kt + "x" + kx + "."));
             }
             // 是否重定向
             if (!rel.isEmpty()) {

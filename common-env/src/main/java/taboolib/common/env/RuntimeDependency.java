@@ -35,9 +35,4 @@ public @interface RuntimeDependency {
 
     /** 依赖重定向 */
     String[] relocate() default {};
-
-    /**
-     * 是否隔离，需要启用 "enable-isolated-classloader" 选项，隔离后有严格的开发规范，请勿在不了解的情况下使用
-     */
-    boolean isolated() default false;
 }

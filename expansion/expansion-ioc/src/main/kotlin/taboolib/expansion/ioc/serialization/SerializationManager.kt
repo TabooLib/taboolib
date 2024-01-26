@@ -15,6 +15,7 @@ object SerializationManager {
             val target = function[clazz.function]
             if (target == null) {
                 val event = SerializationGetFunctionEvent(data, clazz.function, function["Gson"]!!)
+                event.call()
                 return event.function
             } else {
                 target

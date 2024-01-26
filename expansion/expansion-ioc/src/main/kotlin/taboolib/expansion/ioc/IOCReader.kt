@@ -1,8 +1,7 @@
 package taboolib.expansion.ioc
 
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
-import taboolib.common.env.RuntimeDependencies
-import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
 import taboolib.expansion.ioc.annotation.Component
@@ -12,6 +11,7 @@ import taboolib.expansion.ioc.event.DataReadEvent
 import taboolib.expansion.ioc.serialization.SerializationManager
 import java.util.concurrent.ConcurrentHashMap
 
+@Inject
 object IOCReader {
 
     val databaseMap = ConcurrentHashMap<String, IOCDatabase>()
@@ -24,7 +24,7 @@ object IOCReader {
                 return@forEach
             }
             val event = DataReadEvent(clazz, defaultIOCDatabase)
-            if (event.isCancelled) {
+            if (event.callIf()) {
                 return@forEach
             }
             val database = this.databaseMap.getOrPut(event.data.name) {

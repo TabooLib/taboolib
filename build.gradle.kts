@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     `maven-publish`
     java
-    id("org.jetbrains.kotlin.jvm") version "1.5.31" apply false
+    id("org.jetbrains.kotlin.jvm") version "1.8.22" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2" apply false
 }
 
@@ -28,6 +28,7 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
         compileOnly("com.google.guava:guava:21.0")
         compileOnly("com.google.code.gson:gson:2.8.7")
         compileOnly("org.apache.commons:commons-lang3:3.5")

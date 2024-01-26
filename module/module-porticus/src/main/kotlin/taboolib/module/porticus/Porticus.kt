@@ -2,6 +2,7 @@ package taboolib.module.porticus
 
 import net.md_5.bungee.BungeeCord
 import org.bukkit.Bukkit
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.platform.Awake
@@ -17,8 +18,9 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @author 坏黑
  * @since 2020-10-15
  */
-@RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
+@Inject
 @PlatformSide(Platform.BUKKIT, Platform.BUNGEE)
+@RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
 object Porticus {
 
     val channelId by unsafeLazy {

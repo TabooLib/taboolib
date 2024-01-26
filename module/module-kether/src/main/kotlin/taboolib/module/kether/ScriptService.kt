@@ -2,6 +2,7 @@ package taboolib.module.kether
 
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Multimap
+import taboolib.common.Inject
 import taboolib.common.platform.function.getDataFolder
 import taboolib.common.util.replaceWithOrder
 import taboolib.library.kether.DefaultRegistry
@@ -19,6 +20,7 @@ import java.util.concurrent.ScheduledExecutorService
 /**
  * @author IzzelAliz
  */
+@Inject
 object ScriptService : QuestService<ScriptContext> {
 
     init {

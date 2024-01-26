@@ -2,12 +2,14 @@ package taboolib.module.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import taboolib.common.Inject
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
 import javax.sql.DataSource
 
+@Inject
 @RuntimeDependencies(
     RuntimeDependency(
         "!org.slf4j:slf4j-api:2.0.8",

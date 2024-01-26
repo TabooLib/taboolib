@@ -11,6 +11,7 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.util.unsafeLazy
 import taboolib.common5.FileWatcher
 import java.util.function.Supplier
 
@@ -95,7 +96,7 @@ class ConfigLoader : ClassVisitor(1) {
 
         val files = HashMap<String, ConfigNodeFile>()
 
-        val isFileWatcherHook by lazy {
+        val isFileWatcherHook by unsafeLazy {
             try {
                 FileWatcher.INSTANCE
                 true

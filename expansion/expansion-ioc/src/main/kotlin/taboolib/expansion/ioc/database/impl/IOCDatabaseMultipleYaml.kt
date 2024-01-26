@@ -42,8 +42,8 @@ open class IOCDatabaseMultipleYaml : IOCDatabase {
 
     override fun init(clazz: Class<*>): IOCDatabase {
         this.clazz = clazz.name
-        //不在这里进行构建
-        //config = createLocal("data-ioc/${clazz.name}/data.yml", type = Type.YAML)
+        // 不在这里进行构建
+        // config = createLocal("data-ioc/${clazz.name}/data.yml", type = Type.YAML)
         loadFile(File(getDataFolder(), "data-ioc/${clazz.name}/"))
         loadConfig()
         return this
@@ -77,5 +77,4 @@ open class IOCDatabaseMultipleYaml : IOCDatabase {
     override fun resetDatabase() {
         return
     }
-
 }

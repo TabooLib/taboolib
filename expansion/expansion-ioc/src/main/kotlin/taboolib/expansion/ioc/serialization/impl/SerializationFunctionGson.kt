@@ -9,6 +9,7 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.expansion.ioc.serialization.SerializationManager
@@ -125,14 +126,13 @@ open class SerializationFunctionGson : SerializeFunction {
         return gson.fromJson(data.toString(), type)
     }
 
-    companion object {
+    @Inject
+    internal companion object {
 
         @Awake(LifeCycle.CONST)
         fun init() {
             val data = SerializationFunctionGson()
             SerializationManager.function[data.name] = data
         }
-
     }
-
 }

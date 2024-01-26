@@ -2,6 +2,7 @@ package taboolib.expansion.ioc.linker
 
 import taboolib.expansion.ioc.IOCReader
 import taboolib.expansion.ioc.IndexReader
+import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -10,20 +11,18 @@ import java.util.function.Predicate
 import java.util.function.UnaryOperator
 import java.util.stream.Stream
 
-//创建一个IOCList 进行连接IOC容器
+// 创建一个IOCList 进行连接IOC容器
 inline fun <reified T : Any?> linkedIOCList(): IOCList<T> {
     return IOCList(T::class.java)
 }
 
-class IOCList<E : Any?>(
-    dataType: Class<*>,
-) : ArrayList<E>() {
+class IOCList<E : Any?>(dataType: Class<*>) : ArrayList<E>() {
 
-    val IOC by lazy {
+    val ioc: ConcurrentHashMap<String, Any> by lazy {
         IOCReader.dataMap.getOrPut(dataType.name) { ConcurrentHashMap() }
     }
 
-    val DATABASE by lazy{
+    val database: IOCDatabase by lazy {
         IOCReader.databaseMap.getOrPut(dataType.name) { IOCDatabaseYaml() }
     }
 
@@ -35,7 +34,7 @@ class IOCList<E : Any?>(
      */
     override fun add(element: E): Boolean {
         element?.let {
-            IOC[IndexReader.getIndexId(it)] = it
+            ioc[IndexReader.getIndexId(it)] = it
         }
         return true
     }
@@ -47,7 +46,7 @@ class IOCList<E : Any?>(
      */
     override fun add(index: Int, element: E) {
         element?.let {
-            IOC[IndexReader.getIndexId(it)] = it
+            ioc[IndexReader.getIndexId(it)] = it
         }
     }
 
@@ -58,7 +57,7 @@ class IOCList<E : Any?>(
     override fun addAll(elements: Collection<E>): Boolean {
         elements.forEach { data ->
             data?.let {
-                IOC[IndexReader.getIndexId(it)] = it
+                ioc[IndexReader.getIndexId(it)] = it
             }
         }
         return true
@@ -72,7 +71,7 @@ class IOCList<E : Any?>(
     override fun addAll(index: Int, elements: Collection<E>): Boolean {
         elements.forEach { data ->
             data?.let {
-                IOC[IndexReader.getIndexId(it)] = it
+                ioc[IndexReader.getIndexId(it)] = it
             }
         }
         return true
@@ -83,7 +82,7 @@ class IOCList<E : Any?>(
      * be empty after this call returns.
      */
     override fun clear() {
-        IOC.clear()
+        ioc.clear()
     }
 
     /**
@@ -98,7 +97,7 @@ class IOCList<E : Any?>(
      * Returns an iterator over the elements in this list in proper sequence.
      */
     fun iteratorIOC(): MutableIterator<Any> {
-        return IOC.values.iterator()
+        return ioc.values.iterator()
     }
 
     /**
@@ -108,7 +107,7 @@ class IOCList<E : Any?>(
      */
     override fun remove(element: E): Boolean {
         element?.let {
-            IOC.remove(IndexReader.getIndexId(it))
+            ioc.remove(IndexReader.getIndexId(it))
         }
         return true
     }
@@ -121,7 +120,7 @@ class IOCList<E : Any?>(
     override fun removeAll(elements: Collection<E>): Boolean {
         elements.forEach { element ->
             element?.let {
-                IOC.remove(IndexReader.getIndexId(it))
+                ioc.remove(IndexReader.getIndexId(it))
             }
         }
         return true
@@ -139,9 +138,9 @@ class IOCList<E : Any?>(
                 IndexReader.getIndexId(it)
             }
         }
-        IOC.toMap().forEach { t, u ->
+        ioc.toMap().forEach { t, u ->
             if (!ids.contains(t)) {
-                IOC.remove(t)
+                ioc.remove(t)
             }
         }
         return true
@@ -157,7 +156,7 @@ class IOCList<E : Any?>(
      * @return <tt>true</tt> if this list contains the specified element
      */
     override fun contains(element: E): Boolean {
-        return IOC.containsKey(IndexReader.getIndexId(element ?: return false))
+        return ioc.containsKey(IndexReader.getIndexId(element ?: return false))
     }
 
     /**
@@ -175,7 +174,7 @@ class IOCList<E : Any?>(
      */
     override fun containsAll(elements: Collection<E>): Boolean {
         elements.filterNotNull().forEach {
-            if (!IOC.containsKey(IndexReader.getIndexId(it))) {
+            if (!ioc.containsKey(IndexReader.getIndexId(it))) {
                 return false
             }
         }
@@ -188,7 +187,7 @@ class IOCList<E : Any?>(
      * @return <tt>true</tt> if this list contains no elements
      */
     override fun isEmpty(): Boolean {
-        return IOC.isEmpty()
+        return ioc.isEmpty()
     }
 
     /**
@@ -215,7 +214,7 @@ class IOCList<E : Any?>(
      * @return `true` if the specified object is equal to this list
      */
     override fun equals(other: Any?): Boolean {
-        return IOC.equals(other)
+        return ioc.equals(other)
     }
 
     /**
@@ -229,7 +228,7 @@ class IOCList<E : Any?>(
      * @return the hash code value for this list
      */
     override fun hashCode(): Int {
-        return IOC.hashCode()
+        return ioc.hashCode()
     }
 
     /**
@@ -243,10 +242,9 @@ class IOCList<E : Any?>(
      * @return a string representation of this collection
      */
     override fun toString(): String {
-        return IOC.toString()
+        return ioc.toString()
     }
 
-    @Suppress("UNREACHABLE_CODE")
     @Deprecated("请不要用这个迭代方法", ReplaceWith("forEachIOC(action: Pair<String, Any>.() -> Unit)"))
     override fun forEach(action: Consumer<in E>) {
         error("不要用这个迭代方法")
@@ -258,7 +256,7 @@ class IOCList<E : Any?>(
      * last 是这个对象的Data
      */
     fun forEachIOC(action: Pair<String, Any>.() -> Unit) {
-        IOC.forEach { (t, u) ->
+        ioc.forEach { (t, u) ->
             action.invoke(t to u)
         }
     }
@@ -277,7 +275,6 @@ class IOCList<E : Any?>(
      * @return a `Spliterator` over the elements in this list
      * @since 1.8
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun spliterator(): Spliterator<E> {
         error("无法使用这个方法")
     }
@@ -287,10 +284,9 @@ class IOCList<E : Any?>(
      * 但是此Array会失去对IOC的绑定
      */
     override fun toArray(): Array<Any> {
-        return IOC.values.toTypedArray()
+        return ioc.values.toTypedArray()
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun <T : Any?> toArray(a: Array<out T>): Array<T> {
         error("无法使用这个方法")
     }
@@ -308,9 +304,9 @@ class IOCList<E : Any?>(
      */
     fun removeIfIOC(filter: Pair<String, Any>.() -> Boolean): Boolean {
         var temp = false
-        IOC.toMap().forEach { (t, u) ->
+        ioc.toMap().forEach { (t, u) ->
             if (filter.invoke(t to u)) {
-                IOC.remove(t)
+                ioc.remove(t)
                 temp = true
             }
         }
@@ -330,20 +326,17 @@ class IOCList<E : Any?>(
      * 不确定
      */
     fun streamIOC(): Sequence<Map.Entry<String, Any>> {
-        return IOC.asSequence()
+        return ioc.asSequence()
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun parallelStream(): Stream<E> {
         error("无法使用这个方法")
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun listIterator(index: Int): MutableListIterator<E> {
         error("无法使用这个方法")
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun listIterator(): MutableListIterator<E> {
         error("无法使用这个方法")
     }
@@ -352,30 +345,27 @@ class IOCList<E : Any?>(
      * IOC容器的实现是一个链表 无法删除第几个
      * 提供了删除某个ID的同名方法
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun removeAt(index: Int): E {
         error("无法使用这个方法")
     }
 
     fun removeAt(index: String): Any? {
-        return IOC.remove(index)
+        return ioc.remove(index)
     }
 
     /**
      * IOC容器的实现是一个链表 无法修改第几个
      *  提供了修改某个ID的同名方法
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun set(index: Int, element: E): E {
         error("无法使用这个方法")
     }
 
     fun set(index: String, element: Any): Any? {
-        IOC[index] = element
-        return IOC[index]
+        ioc[index] = element
+        return ioc[index]
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<E> {
         error("无法切割list")
     }
@@ -383,19 +373,17 @@ class IOCList<E : Any?>(
     /**
      * 因为链表的设计无法get第几个数据 但是提供了get某个ID的数据
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun get(index: Int): E {
         error("无法使用这个方法")
     }
 
     fun get(index: String): Any? {
-        return IOC[index]
+        return ioc[index]
     }
 
     /**
      * IOC容器是链表结构 无法返回下标
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun indexOf(element: E): Int {
         error("无法使用这个方法")
     }
@@ -403,17 +391,14 @@ class IOCList<E : Any?>(
     /**
      * IOC容器是链表结构 无法返回下标
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun lastIndexOf(element: E): Int {
         error("无法使用这个方法")
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun replaceAll(operator: UnaryOperator<E>) {
         error("无法使用这个方法")
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun sort(c: Comparator<in E>?) {
         error("无法使用这个方法")
     }
@@ -432,7 +417,6 @@ class IOCList<E : Any?>(
      * toIndex > size() ||
      * toIndex < fromIndex`)
      */
-    @Suppress("UNREACHABLE_CODE")
     override fun removeRange(fromIndex: Int, toIndex: Int) {
         error("无法使用这个方法")
     }
@@ -445,11 +429,9 @@ class IOCList<E : Any?>(
         return this.clone()
     }
 
-    @Suppress("UNREACHABLE_CODE")
     override fun trimToSize() {
         error("不允许使用此方法")
     }
-
 
     /**
      * Returns the number of elements in this list.
@@ -457,5 +439,5 @@ class IOCList<E : Any?>(
      * @return the number of elements in this list
      */
     override val size: Int
-        get() = IOC.size
+        get() = ioc.size
 }

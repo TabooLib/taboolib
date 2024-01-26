@@ -1,6 +1,7 @@
 package taboolib.module.database
 
 import com.zaxxer.hikari.HikariDataSource
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import java.util.concurrent.CopyOnWriteArrayList
@@ -29,7 +30,8 @@ abstract class Host<T : ColumnBuilder> {
         }
     }
 
-    companion object {
+    @Inject
+    internal companion object {
 
         internal val dataSources = CopyOnWriteArrayList<HikariDataSource>()
         internal val callbackClose = CopyOnWriteArrayList<Runnable>()

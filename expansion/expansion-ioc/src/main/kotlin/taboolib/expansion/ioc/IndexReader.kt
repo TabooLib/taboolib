@@ -9,7 +9,7 @@ object IndexReader {
     fun getIndexId(instance: Any): String {
         val preset = UUID.randomUUID().toString()
         val annotation = instance::class.java.getAnnotation(Component::class.java) ?: return preset
-        if (annotation.singleton == true) {
+        if (annotation.singleton) {
             return "${instance::class.java.name}_Singleton"
         }
         val id = annotation.index

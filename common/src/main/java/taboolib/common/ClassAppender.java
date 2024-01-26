@@ -79,10 +79,10 @@ public class ClassAppender {
     /**
      * 获取 addPath 函数所使用的 ClassLoader（原函数为：judgeAddPathClassLoader）
      */
-    public static ClassLoader getClassLoader(boolean isIsolated) {
+    public static ClassLoader getClassLoader() {
         ClassLoader loader = TabooLib.class.getClassLoader();
         if (loader instanceof IsolatedClassLoader) {
-            if (isIsolated) {
+            if (PrimitiveSettings.IS_ISOLATED_MODE) {
                 return loader;
             }
             return loader.getParent();
@@ -93,9 +93,9 @@ public class ClassAppender {
     /**
      * 判断类是否粗在
      */
-    public static boolean isExists(String path, boolean isIsolated) {
+    public static boolean isExists(String path) {
         try {
-            Class.forName(path, false, getClassLoader(isIsolated));
+            Class.forName(path, false, getClassLoader());
             return true;
         } catch (ClassNotFoundException ignored) {
             return false;

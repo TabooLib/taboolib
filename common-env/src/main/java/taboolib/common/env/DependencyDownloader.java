@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import taboolib.common.ClassAppender;
 import taboolib.common.PrimitiveIO;
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -76,11 +77,6 @@ public class DependencyDownloader extends AbstractXmlParser {
      */
     private boolean isTransitive = true;
 
-    /**
-     * 是否隔离
-     */
-    private boolean isIsolated = false;
-
     public DependencyDownloader(@Nullable File baseDir) {
         this.baseDir = baseDir;
     }
@@ -110,7 +106,7 @@ public class DependencyDownloader extends AbstractXmlParser {
         for (Dependency dep : dependencies) {
             // 如果已经注入过了，就跳过
             Set<ClassLoader> injectedDependencyClassLoaders = injectedDependencies.get(dep);
-            if (injectedDependencyClassLoaders != null && injectedDependencyClassLoaders.contains(ClassAppender.getClassLoader(isIsolated))) {
+            if (injectedDependencyClassLoaders != null && injectedDependencyClassLoaders.contains(ClassAppender.getClassLoader())) {
                 continue;
             }
             // 获取依赖项的文件
@@ -121,7 +117,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                 PrimitiveIO.println("Loading library %s:%s:%s", dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
                 // 如果没有重定向规则，直接注入
                 if (relocation.isEmpty()) {
-                    ClassLoader loader = ClassAppender.addPath(file.toPath(), isIsolated, true);
+                    ClassLoader loader = ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, true);
                     injectedDependencies.computeIfAbsent(dep, dependency -> new HashSet<>()).add(loader);
                 } else {
                     // 获取重定向后的文件
@@ -143,7 +139,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                         }
                     }
                     // 注入重定向后的文件
-                    ClassLoader loader = ClassAppender.addPath(rel.toPath(), isIsolated, true);
+                    ClassLoader loader = ClassAppender.addPath(rel.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, true);
                     injectedDependencies.computeIfAbsent(dep, dependency -> new HashSet<>()).add(loader);
                 }
             } else {
@@ -348,13 +344,5 @@ public class DependencyDownloader extends AbstractXmlParser {
 
     public void setTransitive(boolean transitive) {
         isTransitive = transitive;
-    }
-
-    public boolean isIsolated() {
-        return isIsolated;
-    }
-
-    public void setIsolated(boolean isolated) {
-        isIsolated = isolated;
     }
 }

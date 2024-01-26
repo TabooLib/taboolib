@@ -1,5 +1,6 @@
 package taboolib.common.env;
 
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.ClassAppender;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipFile;
 
+import static taboolib.common.PrimitiveSettings.KOTLINX_VERSION;
 import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 
 /**
@@ -30,6 +32,8 @@ import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 public class RuntimeEnv {
 
     public static final String KOTLIN_ID = "!kotlin".substring(1);
+    public static final String KOTLINX_ID = "!kotlinx".substring(1);
+
     public static final RuntimeEnv ENV = new RuntimeEnv();
 
     private final String defaultAssets = PrimitiveSettings.FILE_ASSETS;
@@ -48,11 +52,13 @@ public class RuntimeEnv {
             if (TabooLib.isKotlinEnvironment()) {
                 return;
             }
-            rel = Collections.singletonList(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."));
+            rel = Lists.newArrayList(
+                    new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."),
+                    new JarRelocation(KOTLINX_ID + ".", KOTLINX_ID + KOTLINX_VERSION.replace(".", "") + ".")
+            );
         }
         ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:" + KOTLIN_VERSION, rel);
-        ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:" + KOTLIN_VERSION, rel);
+        ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {
@@ -108,9 +114,9 @@ public class RuntimeEnv {
         }
     }
 
-    private boolean test(String path, boolean isIsolated) {
+    private boolean test(String path) {
         String test = path.startsWith("!") ? path.substring(1) : path;
-        return !test.isEmpty() && ClassAppender.isExists(test, isIsolated);
+        return !test.isEmpty() && ClassAppender.isExists(test);
     }
 
     public void loadDependency(@NotNull Class<?> clazz) throws Throwable {
@@ -133,7 +139,7 @@ public class RuntimeEnv {
                 } else {
                     tests.add(allTest);
                 }
-                if (tests.stream().allMatch(path -> test(path, dependency.isolated()))) {
+                if (tests.stream().allMatch(this::test)) {
                     continue;
                 }
                 List<JarRelocation> relocation = new ArrayList<>();
@@ -147,7 +153,7 @@ public class RuntimeEnv {
                     relocation.add(new JarRelocation(pattern, relocatePattern));
                 }
                 String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
-                loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.isolated(), dependency.scopes());
+                loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
             }
         }
     }
@@ -161,7 +167,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws Throwable {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, false, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws Throwable {
@@ -169,7 +175,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir, @Nullable String repository) throws Throwable {
-        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, false, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
     public void loadDependency(
@@ -180,7 +186,6 @@ public class RuntimeEnv {
             boolean ignoreOptional,
             boolean ignoreException,
             boolean transitive,
-            boolean isolated,
             @NotNull DependencyScope[] dependencyScopes
     ) throws Throwable {
         String[] args = url.split(":");
@@ -196,7 +201,6 @@ public class RuntimeEnv {
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(dependencyScopes);
         downloader.setTransitive(transitive);
-        downloader.setIsolated(isolated);
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
         File pomFile1 = new File(pomFile.getPath() + ".sha1");
