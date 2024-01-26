@@ -112,7 +112,6 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
      *
      * @param key 键
      * @param value 值
-     * @param seconds 过期时间
      */
     override fun expire(key: String, value: Long, timeUnit: TimeUnit) {
         exec { it.expire(key, timeUnit.toSeconds(value)) }

@@ -48,6 +48,7 @@ class DataSerializerFactoryImpl(val buf: ByteBuf) : DataSerializerFactory, DataS
         return buf.writeBoolean(boolean).let { this }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun writeMetadata(meta: List<Any>): DataSerializer {
         return DataWatcher.a(meta.map { it } as List<DataWatcher.Item<*>>, buf as PacketDataSerializer).let { this }
     }

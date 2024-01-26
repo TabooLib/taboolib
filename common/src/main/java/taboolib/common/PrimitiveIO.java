@@ -158,7 +158,6 @@ public class PrimitiveIO {
      *
      * @param inputStream 输入流
      */
-    @NotNull
     public static byte[] readFully(InputStream inputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];

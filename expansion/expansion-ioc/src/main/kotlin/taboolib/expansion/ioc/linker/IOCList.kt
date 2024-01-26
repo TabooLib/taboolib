@@ -29,7 +29,6 @@ class IOCList<E : Any?>(dataType: Class<*>) : ArrayList<E>() {
     /**
      * 向IOC容器中添加一个数据
      *
-     * @param 添加的内容
      * @return 返回ture或者false
      */
     override fun add(element: E): Boolean {
@@ -152,7 +151,7 @@ class IOCList<E : Any?>(dataType: Class<*>) : ArrayList<E>() {
      * at least one element <tt>e</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
      *
-     * @param o element whose presence in this list is to be tested
+     * @param element element whose presence in this list is to be tested
      * @return <tt>true</tt> if this list contains the specified element
      */
     override fun contains(element: E): Boolean {
@@ -210,11 +209,11 @@ class IOCList<E : Any?>(dataType: Class<*>) : ArrayList<E>() {
      * other it returns `false` (as the lists are of unequal length);
      * otherwise it returns `true` when the iterations complete.
      *
-     * @param o the object to be compared for equality with this list
+     * @param other the object to be compared for equality with this list
      * @return `true` if the specified object is equal to this list
      */
     override fun equals(other: Any?): Boolean {
-        return ioc.equals(other)
+        return ioc == other
     }
 
     /**
@@ -237,7 +236,6 @@ class IOCList<E : Any?>(dataType: Class<*>) : ArrayList<E>() {
      * order they are returned by its iterator, enclosed in square brackets
      * (<tt>"[]"</tt>).  Adjacent elements are separated by the characters
      * <tt>", "</tt> (comma and space).  Elements are converted to strings as
-     * by [String.valueOf].
      *
      * @return a string representation of this collection
      */

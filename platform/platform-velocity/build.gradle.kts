@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 repositories {
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
 }

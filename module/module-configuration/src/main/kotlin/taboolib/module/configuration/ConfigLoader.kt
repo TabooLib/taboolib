@@ -4,7 +4,6 @@ import org.tabooproject.reflex.ClassField
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
-import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.inject.ClassVisitor

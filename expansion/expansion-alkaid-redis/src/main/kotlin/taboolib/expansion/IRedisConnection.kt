@@ -60,7 +60,6 @@ interface IRedisConnection {
      *
      * @param key 键
      * @param value 值
-     * @param seconds 过期时间
      */
     fun expire(key: String, value: Long, timeUnit: TimeUnit)
 
