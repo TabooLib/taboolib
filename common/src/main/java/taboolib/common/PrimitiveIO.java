@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  * @author 坏黑
  * @since 2023/3/31 14:59
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public class PrimitiveIO {
 
     /**
@@ -102,6 +103,24 @@ public class PrimitiveIO {
             ex.printStackTrace();
         }
         return "null (" + UUID.randomUUID() + ")";
+    }
+
+    /**
+     * 获取字符串哈希
+     */
+    public static String getHash(String data) {
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("sha-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        digest.update(data.getBytes(StandardCharsets.UTF_8));
+        StringBuilder result = new StringBuilder();
+        for (byte b : digest.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 
     /**

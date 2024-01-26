@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.tabooproject.reflex.Reflex;
 import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveIO;
+import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.platform.Platform;
@@ -37,6 +38,7 @@ public class BukkitPlugin extends JavaPlugin {
     private static BukkitPlugin instance;
 
     static {
+        long time = System.currentTimeMillis();
         // 初始化 IsolatedClassLoader
         try {
             IsolatedClassLoader.init(BukkitPlugin.class);
@@ -52,6 +54,10 @@ public class BukkitPlugin extends JavaPlugin {
         TabooLib.lifeCycle(LifeCycle.CONST);
         // 检索 TabooLib Plugin 实现
         pluginInstance = PlatformImplementationKt.findImplementation(Plugin.class);
+        // 调试模式显示加载耗时
+        if (PrimitiveSettings.IS_DEV_MODE) {
+            PrimitiveIO.println("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        }
     }
 
     public BukkitPlugin() {

@@ -8,9 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -64,14 +62,17 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        if (IS_FORCE_DOWNLOAD_IN_DEV_MODE && TABOOLIB_VERSION.endsWith("-dev")) {
-            // 移除缓存
-            File[] relocateFile = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME).listFiles();
-            if (relocateFile != null) {
-                Arrays.stream(relocateFile).forEach(File::delete);
-            }
+        if (IS_DEBUG_MODE) {
             // 提示
             PrimitiveIO.println("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
+            // 是否在开发模式强制下载依赖
+            if (IS_FORCE_DOWNLOAD_IN_DEV_MODE) {
+                // 移除缓存
+                File[] files = new File("cache/" + PROJECT_PACKAGE_NAME).listFiles();
+                if (files != null) {
+                    Arrays.stream(files).forEach(File::delete);
+                }
+            }
         }
         // 加载基础依赖
         for (String[] i : DEPENDENCIES) load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
@@ -94,10 +95,10 @@ public class PrimitiveLoader {
      */
     public static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
         if (name.isEmpty()) return false;
-        File envFile = new File(getSaveFolder(), name + "/" + version + "/" + name + "-" + version + ".jar");
-        File shaFile = new File(getSaveFolder(), name + "/" + version + "/" + name + "-" + version + ".jar.sha1");
+        File envFile = new File(getLibraryFile(), String.format("%s/%s/%s-%s.jar", group.replace(".", "/"), name, name, version));
+        File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s-%s.jar.sha1", group.replace(".", "/"), name, name, version));
         // 检查文件有效性
-        if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && version.endsWith("-dev"))) {
+        if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE)) {
             try {
                 PrimitiveIO.println("Downloading library %s:%s:%s", group, name, version);
                 // 获取地址
@@ -128,11 +129,11 @@ public class PrimitiveLoader {
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
         // 加载 util 注册 ClassAppender Callback 回调函数
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
-        // 加载剩余模块
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        // 加载剩余模块 >> 此时 isExternal 参数才有实际作用
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
+        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
         // 加载自选模块
-        for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, true, DEF_RELOCATE);
+        for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, DEF_RELOCATE);
     }
 
     public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
@@ -148,8 +149,7 @@ public class PrimitiveLoader {
             }
             // 是否重定向
             if (!rel.isEmpty()) {
-                int hash = Math.abs(Arrays.deepHashCode(relocate));
-                jar = new File(getSaveFolder(), "cache/" + PROJECT_PACKAGE_NAME + "/" + file.getName() + ".rel-" + hash + ".jar");
+                jar = new File(getCacheFile(), PrimitiveIO.getHash(file.getName() + "." + Arrays.deepHashCode(relocate) + ".jar"));
                 if (!jar.exists() && jar.length() == 0) {
                     PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
@@ -181,10 +181,21 @@ public class PrimitiveLoader {
     }
 
     /**
+     * 获取缓存路径
+     */
+    private static File getCacheFile() {
+        File file = new File("cache/taboolib/" + PROJECT_PACKAGE_NAME);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    /**
      * 获取文件保存路径
      */
-    private static File getSaveFolder() {
-        File file = new File(FILE_LIBS + "/" + PrimitiveSettings.ID);
+    private static File getLibraryFile() {
+        File file = new File(FILE_LIBS);
         if (!file.exists()) {
             file.mkdirs();
         }

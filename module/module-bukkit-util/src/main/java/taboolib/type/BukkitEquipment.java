@@ -9,7 +9,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.Isolated;
 
 import java.util.Arrays;
 import java.util.Locale;
@@ -21,7 +20,6 @@ import java.util.Map;
  * @author 坏黑
  * @since 2019-04-25 22:01
  */
-@Isolated
 public enum BukkitEquipment {
 
     /**

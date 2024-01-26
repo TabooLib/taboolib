@@ -43,7 +43,7 @@ object PlatformFactory {
             }
 
             // 加载运行环境
-            runningClassesWithoutLibrary.parallelStream().forEach {
+            runningClassesWithoutLibrary.forEach {
                 runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.takeIf { it !is NoClassDefFoundError }?.printStackTrace()
             }
 

@@ -40,6 +40,11 @@ public class PrimitiveSettings {
     /**
      * 调试模式
      */
+    public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev");
+
+    /**
+     * 调试模式
+     */
     public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", "false").equals("true");
 
     /**
@@ -81,29 +86,34 @@ public class PrimitiveSettings {
      * 获取配置文件
      */
     private static Properties getProperties(String name, boolean allowGlobal) {
-        // 是否允许全局配置
+        boolean loaded = false;
+        Properties prop = new Properties();
+        // 从插件内部提取配置文件
+        URL url = PrimitiveSettings.class.getClassLoader().getResource("META-INF/taboolib/" + name + ".properties");
+        if (url != null) {
+            try {
+                prop.load(url.openStream());
+                loaded = true;
+            } catch (IOException ignored) {
+            }
+        }
+        // 全局覆盖
         if (allowGlobal) {
             // 从服务端根目录中提取配置文件
             File globalFile = new File(name + ".properties");
             if (globalFile.exists()) {
                 try (FileInputStream fis = new FileInputStream(globalFile)) {
-                    Properties prop = new Properties();
                     prop.load(fis);
-                    return prop;
+                    loaded = true;
                 } catch (IOException ignored) {
                 }
             }
         }
-        // 从插件内部提取配置文件
-        URL url = PrimitiveSettings.class.getClassLoader().getResource("META-INF/taboolib/" + name + ".properties");
-        if (url != null) {
-            try {
-                Properties prop = new Properties();
-                prop.load(url.openStream());
-                return prop;
-            } catch (IOException ignored) {
-            }
+        // 如果加载成功
+        if (loaded) {
+            return prop;
+        } else {
+            throw new IllegalStateException("META-INF/taboolib/" + name + ".properties not found");
         }
-        throw new IllegalStateException("META-INF/taboolib/" + name + ".properties not found");
     }
 }

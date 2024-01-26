@@ -1,7 +1,6 @@
 package taboolib.platform.util;
 
 import org.bukkit.Material;
-import taboolib.common.Isolated;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,6 @@ import java.util.Map;
  * @version 1.1
  * Jun 25, 2021
  */
-@Isolated
 public class DefaultAttribute {
 
     private static final HashMap<String, Double> ATTACK_SPEED = new HashMap<>();

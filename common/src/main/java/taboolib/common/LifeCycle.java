@@ -10,6 +10,11 @@ package taboolib.common;
 public enum LifeCycle {
 
     /**
+     * 未启动
+     */
+    NONE,
+
+    /**
      * 插件初始化（静态代码块被执行时）时
      **/
     CONST,

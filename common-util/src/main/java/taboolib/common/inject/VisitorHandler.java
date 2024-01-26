@@ -160,20 +160,23 @@ public class VisitorHandler {
         if (classes.isEmpty()) {
             // 获取所有类
             for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {
-                // 排除第三方库
-                // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
-                if (it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") || it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
-                    continue;
+                // 只扫自己
+                if (it.getKey().startsWith(ProjectIdKt.getGroupId())) {
+                    // 排除第三方库
+                    // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
+                    if (it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") || it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
+                        continue;
+                    }
+                    // 排除 TabooLib 的非开放类
+                    if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Inject.class)) {
+                        continue;
+                    }
+                    // 排除其他平台
+                    if (!Platform.check(it.getValue())) {
+                        continue;
+                    }
+                    classes.add(it.getValue());
                 }
-                // 排除 TabooLib 的非开放类
-                if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Inject.class)) {
-                    continue;
-                }
-                // 排除其他平台
-                if (!Platform.check(it.getValue())) {
-                    continue;
-                }
-                classes.add(it.getValue());
             }
         }
         return classes;

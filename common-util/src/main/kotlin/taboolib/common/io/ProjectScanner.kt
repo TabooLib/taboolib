@@ -216,8 +216,11 @@ private fun <T> sup(supplier: () -> T): Supplier<T> {
  */
 private fun init() {
     ClassAppender.registerCallback { loader, file, isExternal ->
-        extraLoadedClasses += file.toURI().toURL().getClasses(loader)
-        extraLoadedResources += file.toURI().toURL().getResources()
+        // 只有内部库会被收录
+        if (!isExternal) {
+            extraLoadedClasses += file.toURI().toURL().getClasses(loader)
+            extraLoadedResources += file.toURI().toURL().getResources()
+        }
     }
     // PrimitiveIO.println("Kotlin Env: %s", TabooLib.isKotlinEnvironment())
     // PrimitiveIO.println("Running Classes %s", runningClasses)

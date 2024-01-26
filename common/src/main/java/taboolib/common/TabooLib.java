@@ -22,7 +22,7 @@ public class TabooLib {
     /**
      * 当前生命周期
      **/
-    private static LifeCycle currentLifeCycle = LifeCycle.CONST;
+    private static LifeCycle currentLifeCycle = LifeCycle.NONE;
 
     /**
      * 当前插件所有被唤醒的类
