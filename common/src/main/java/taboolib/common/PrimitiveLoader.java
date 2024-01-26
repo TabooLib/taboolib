@@ -146,10 +146,11 @@ public class PrimitiveLoader {
             // 在非隔离模式下进行 Kotlin 重定向
             if (!IS_ISOLATED_MODE) {
                 String kt = "!kotlin".substring(1);
+                String ktx = "!kotlinx.coroutines".substring(1);
                 String kv = KOTLIN_VERSION.replace(".", "");
-                String kx = KOTLINX_VERSION.replace(".", "");
+                String kvx = KOTLINX_VERSION.replace(".", "");
                 rel.add(new Relocation(kt + ".", kt + kv + "."));
-                rel.add(new Relocation(kt + "x.", kt + "x" + kx + "."));
+                rel.add(new Relocation(ktx + ".", ktx + kvx + "."));
             }
             // 是否重定向
             if (!rel.isEmpty()) {

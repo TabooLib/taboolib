@@ -27,7 +27,7 @@ import java.util.concurrent.Executors
 @PlatformSide(Platform.BUKKIT)
 object ChannelExecutor {
 
-    private val id = "taboolib_${pluginId}_packet_handler"
+    private val id = "!taboolib_${pluginId}_packet_handler".substring(1)
     private val pool = Executors.newSingleThreadExecutor()
     private var isDisabled = false
 

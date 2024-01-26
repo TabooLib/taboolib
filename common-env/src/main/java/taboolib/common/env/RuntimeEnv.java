@@ -32,7 +32,7 @@ import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 public class RuntimeEnv {
 
     public static final String KOTLIN_ID = "!kotlin".substring(1);
-    public static final String KOTLINX_ID = "!kotlinx".substring(1);
+    public static final String KOTLINX_ID = "!kotlinx.coroutines".substring(1);
 
     public static final RuntimeEnv ENV = new RuntimeEnv();
 
