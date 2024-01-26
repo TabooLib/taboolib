@@ -5,7 +5,6 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import taboolib.common.Isolated;
 import taboolib.platform.util.ItemModifierKt;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.List;
  * @author 坏黑
  * @since 2019-02-07 23:53
  */
-@Isolated
 public abstract class ItemStacker {
 
     public static final ItemStacker MINECRAFT = new ItemStacker() {

@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.module.kether.*
 
 /**
@@ -9,6 +10,7 @@ import taboolib.module.kether.*
  * @author sky
  * @since 2021/3/16 2:56 下午
  */
+@Inject
 internal object ActionArray {
 
     /**

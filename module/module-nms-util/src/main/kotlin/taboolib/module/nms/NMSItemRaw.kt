@@ -1,9 +1,7 @@
-@file:Isolated
 package taboolib.module.nms
 
 import org.bukkit.inventory.meta.ItemMeta
 import org.tabooproject.reflex.Reflex.Companion.setProperty
-import taboolib.common.Isolated
 import taboolib.common.UnsupportedVersionException
 import taboolib.module.chat.Source
 

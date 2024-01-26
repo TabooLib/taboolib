@@ -5,6 +5,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Inject
 import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -165,6 +166,7 @@ fun Player.sendPacketBlocking(packet: Any) {
 /**
  * 监听器
  */
+@Inject
 @PlatformSide(Platform.BUKKIT)
 private object PoolListener {
 

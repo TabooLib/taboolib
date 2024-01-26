@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.common.OpenResult
 import taboolib.module.kether.*
 import java.util.regex.Matcher
@@ -12,6 +13,7 @@ import java.util.regex.Pattern
  * @author 坏黑
  * @since 2022/9/3 17:22
  */
+@Inject
 internal object ActionMatcher {
 
     @KetherParser(["match"])

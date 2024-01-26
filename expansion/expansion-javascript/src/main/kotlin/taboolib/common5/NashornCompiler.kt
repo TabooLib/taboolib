@@ -1,4 +1,3 @@
-@file:Isolated
 @file:RuntimeDependencies(
     RuntimeDependency(
         "!org.openjdk.nashorn:nashorn-core:15.4",
@@ -9,7 +8,6 @@
 package taboolib.common5
 
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory
-import taboolib.common.Isolated
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
 import javax.script.Compilable

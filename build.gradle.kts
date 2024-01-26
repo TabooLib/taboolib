@@ -68,7 +68,6 @@ subprojects {
 
 subprojects
     .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" }
-    .filter { it.name != "module-database-core" && it.name != "module-ui-legacy" }
     .forEach { proj ->
         proj.publishing { applyToSub(proj) }
     }

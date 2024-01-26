@@ -1,12 +1,10 @@
 package taboolib.module.metrics.charts;
 
-import taboolib.common.Isolated;
 import taboolib.module.metrics.CustomChart;
 import taboolib.module.metrics.JsonBuilder;
 
 import java.util.concurrent.Callable;
 
-@Isolated
 public class SingleLineChart extends CustomChart {
 
     private final Callable<Integer> callable;

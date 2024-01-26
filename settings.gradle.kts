@@ -50,15 +50,26 @@ fun importExtensions() {
 
 include("common", "common-env", "common-util", "common-legacy-api", "common-reflex", "common-platform-api")
 include(
+    "module:module-ai",
     "module:module-chat",
     "module:module-configuration",
     "module:module-lang",
+    "module:module-metrics",
+    "module:module-navigation",
     "module:module-bukkit-hook",
     "module:module-bukkit-util",
     "module:module-bukkit-xseries",
     "module:module-database",
     "module:module-effect",
-    "module:module-nms"
+    "module:module-kether",
+    "module:module-nms",
+    "module:module-nms-util",
+    "module:module-porticus",
+    "module:module-ui",
+    "module:module-ui-legacy"
+)
+include(
+    "expansion:expansion-javascript"
 )
 include(
     "platform:platform-bukkit",

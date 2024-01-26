@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.game
 
+import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.console
@@ -12,6 +13,7 @@ import taboolib.module.chat.colored
 import taboolib.module.chat.uncolored
 import taboolib.module.kether.*
 
+@Inject
 internal object Actions {
 
     @KetherParser(["tell", "send", "message"])

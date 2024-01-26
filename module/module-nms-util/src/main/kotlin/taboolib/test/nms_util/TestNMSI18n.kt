@@ -8,7 +8,6 @@ import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.potion.PotionType
-import taboolib.common.Isolated
 import taboolib.common.Test
 import taboolib.library.xseries.XMaterial
 import taboolib.module.nms.getI18nName
@@ -22,7 +21,6 @@ import taboolib.platform.util.modifyMeta
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
-@Isolated
 object TestNMSI18n : Test() {
 
     override fun check(): List<Result> {

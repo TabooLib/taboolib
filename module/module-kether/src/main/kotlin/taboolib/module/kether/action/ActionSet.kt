@@ -1,5 +1,6 @@
 package taboolib.module.kether.action
 
+import taboolib.common.Inject
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestAction
 import taboolib.library.kether.QuestContext
@@ -27,7 +28,8 @@ class ActionSet {
         }
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         /**
          * set xx to xx

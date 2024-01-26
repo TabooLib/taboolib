@@ -1,12 +1,10 @@
 package taboolib.module.ui.type
 
 import org.bukkit.inventory.ItemStack
-import taboolib.common.Isolated
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ItemStacker
 import taboolib.platform.util.isNotAir
 
-@Isolated
 class ActionQuickTake : Action() {
 
     override fun getCursor(e: ClickEvent): ItemStack {

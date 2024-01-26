@@ -1,5 +1,4 @@
 @file:Suppress("DEPRECATION")
-@file:Isolated
 
 package taboolib.module.nms
 
@@ -11,7 +10,6 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
-import taboolib.common.Isolated
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning

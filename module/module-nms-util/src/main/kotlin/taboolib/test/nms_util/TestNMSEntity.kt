@@ -3,7 +3,6 @@ package taboolib.test.nms_util
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Villager
-import taboolib.common.Isolated
 import taboolib.common.Test
 import taboolib.module.nms.spawnEntity
 
@@ -14,7 +13,6 @@ import taboolib.module.nms.spawnEntity
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
-@Isolated
 object TestNMSEntity : Test() {
 
     override fun check(): List<Result> {

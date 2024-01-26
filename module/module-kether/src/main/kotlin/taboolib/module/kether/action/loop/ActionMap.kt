@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.loop
 
+import taboolib.common.Inject
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -57,7 +58,8 @@ class ActionMap(val key: String, val values: ParsedAction<*>, val action: Parsed
         return future
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         @KetherParser(["map"])
         fun parser() = scriptParser {

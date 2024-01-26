@@ -2,7 +2,6 @@ package taboolib.module.nms
 
 import org.bukkit.attribute.Attribute
 import org.tabooproject.reflex.ReflexClass
-import taboolib.common.Isolated
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
 
@@ -12,7 +11,6 @@ import taboolib.common.util.unsafeLazy
  * @author 坏黑
  * @since 2023/8/10 02:12
  */
-@Isolated
 enum class BukkitAttribute(val minecraftKey: String, val simplifiedKey: Array<String>) {
 
     /**

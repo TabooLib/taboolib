@@ -1,11 +1,13 @@
 package taboolib.module.kether.action.transform
 
 import org.apache.commons.lang3.time.DateFormatUtils
+import taboolib.common.Inject
 import taboolib.common5.Coerce
 import taboolib.common5.util.printed
 import taboolib.module.kether.*
 import kotlin.math.roundToInt
 
+@Inject
 internal object Actions {
 
     /**

@@ -2,7 +2,6 @@ package taboolib.test.nms_util
 
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
-import taboolib.common.Isolated
 import taboolib.common.Test
 import taboolib.module.nms.ItemTagSerializer
 import taboolib.module.nms.getItemTag
@@ -15,7 +14,6 @@ import taboolib.platform.util.buildItem
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
-@Isolated
 object TestItemTag : Test() {
 
     override fun check(): List<Result> {

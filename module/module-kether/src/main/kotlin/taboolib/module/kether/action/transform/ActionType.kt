@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -47,7 +48,8 @@ class ActionType {
         BOOLEAN({ Coerce.toBoolean(it) })
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         val types = TypeTo.values().map { it.name.lowercase(Locale.getDefault()) }.toTypedArray()
 

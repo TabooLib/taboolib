@@ -1,6 +1,6 @@
 package taboolib.module.kether.action.transform
 
-import taboolib.common.platform.event.ProxyEvent
+import taboolib.common.Inject
 import taboolib.common.platform.function.server
 import taboolib.common5.compileJS
 import taboolib.module.kether.*
@@ -18,20 +18,15 @@ internal class ActionJavaScript(val script: CompiledScript) : ScriptAction<Any>(
         val r = try {
             val bindings: MutableMap<String, Any?> = hashMapOf("sender" to s.sender, "server" to server())
             bindings.putAll(frame.deepVars())
-            script.eval(SimpleBindings(Event(bindings, s).bindings))
+            script.eval(SimpleBindings(bindings))
         } catch (e: Throwable) {
             e.printStackTrace()
         }
         return CompletableFuture.completedFuture(r)
     }
 
-    class Event(val bindings: MutableMap<String, Any?>, val context: ScriptContext) : ProxyEvent() {
-
-        override val allowCancelled: Boolean
-            get() = false
-    }
-
-    object Parser {
+    @Inject
+    internal companion object {
 
         @KetherParser(["$", "js", "javascript"])
         fun parser() = scriptParser {

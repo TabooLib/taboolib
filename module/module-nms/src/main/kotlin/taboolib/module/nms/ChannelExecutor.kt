@@ -4,6 +4,7 @@ import io.netty.channel.Channel
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.TabooLib
 import taboolib.common.platform.Awake
@@ -22,6 +23,7 @@ import java.util.concurrent.Executors
  * @author 坏黑
  * @since 2018-10-28 14:34
  */
+@Inject
 @PlatformSide(Platform.BUKKIT)
 object ChannelExecutor {
 

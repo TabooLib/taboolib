@@ -18,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * @since 2020-10-15
  */
 @RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
-@PlatformSide([Platform.BUKKIT, Platform.BUNGEE])
+@PlatformSide(Platform.BUKKIT, Platform.BUNGEE)
 object Porticus {
 
     val channelId by unsafeLazy {

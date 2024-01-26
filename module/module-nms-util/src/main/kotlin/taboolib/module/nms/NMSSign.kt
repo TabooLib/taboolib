@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
+import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
@@ -108,6 +109,7 @@ class NMSSignImpl : NMSSign() {
     }
 }
 
+@Inject
 @PlatformSide(Platform.BUKKIT)
 private object NMSSignListener {
 

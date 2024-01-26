@@ -3,6 +3,7 @@ package taboolib.module.kether.action.transform
 import org.apache.commons.jexl3.JexlBuilder
 import org.apache.commons.jexl3.JexlEngine
 import org.apache.commons.jexl3.MapContext
+import taboolib.common.Inject
 import taboolib.common.platform.function.console
 import taboolib.common.util.unsafeLazy
 import taboolib.library.kether.QuestContext.Frame
@@ -15,6 +16,7 @@ import taboolib.module.kether.*
  * @author 坏黑
  * @since 2022/9/3 16:03
  */
+@Inject
 internal object ActionJexl3 {
 
     val jexl: JexlEngine by unsafeLazy { JexlBuilder().create() }

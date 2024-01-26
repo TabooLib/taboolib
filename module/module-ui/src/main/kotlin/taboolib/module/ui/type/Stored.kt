@@ -4,13 +4,11 @@ import org.bukkit.Material
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.common.Isolated
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
 
-@Isolated
 open class Stored(title: String) : Basic(title) {
 
     /** 页面规则 **/

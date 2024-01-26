@@ -1,3 +1,5 @@
+@file:Inject
+
 package taboolib.module.nms
 
 import net.minecraft.world.scores.DisplaySlot
@@ -8,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.Inject
 import taboolib.common.platform.Ghost
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent

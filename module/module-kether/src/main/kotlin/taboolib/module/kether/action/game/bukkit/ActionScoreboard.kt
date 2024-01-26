@@ -1,12 +1,14 @@
 package taboolib.module.kether.action.game.bukkit
 
 import org.bukkit.entity.Player
+import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.util.asList
 import taboolib.module.kether.*
 import taboolib.module.nms.sendScoreboard
 
+@Inject
 @PlatformSide(Platform.BUKKIT)
 object ActionScoreboard {
 

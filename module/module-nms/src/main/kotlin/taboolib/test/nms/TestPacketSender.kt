@@ -2,6 +2,7 @@ package taboolib.test.nms
 
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
+import taboolib.common.Inject
 import taboolib.common.Test
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.module.nms.*
@@ -14,6 +15,7 @@ import taboolib.platform.util.onlinePlayers
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
+@Inject
 object TestPacketSender : Test() {
 
     var testSend = false

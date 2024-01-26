@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.game
 
+import taboolib.common.Inject
 import taboolib.common.platform.function.console
 import taboolib.library.kether.ParsedAction
 import taboolib.module.kether.*
@@ -19,10 +20,12 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
         return frame.run(command).thenAcceptAsync({
             val command = it.toString().trimIndent()
             when (type) {
+                // 玩家
                 Type.PLAYER -> {
                     val viewer = frame.player()
                     viewer.performCommand(command.replace("@sender", viewer.name))
                 }
+                // 管理员
                 Type.OPERATOR -> {
                     val viewer = frame.player()
                     val isOp = viewer.isOp
@@ -34,6 +37,7 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
                     }
                     viewer.isOp = isOp
                 }
+                // 控制台
                 Type.CONSOLE -> {
                     console().performCommand(command.replace("@sender", "console"))
                 }
@@ -41,7 +45,8 @@ class ActionCommand(val command: ParsedAction<*>, val type: Type) : ScriptAction
         }, frame.context().executor)
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         @KetherParser(["command"])
         fun parser() = scriptParser {

@@ -1,5 +1,6 @@
 package taboolib.module.kether.action.transform
 
+import taboolib.common.Inject
 import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
@@ -86,7 +87,8 @@ class ActionMath(val type: Type, val array: List<ParsedAction<*>>) : ScriptActio
         return future
     }
 
-    object Parser {
+    @Inject
+    internal companion object {
 
         val math = arrayOf(arrayOf("add", "+"), arrayOf("sub", "-"), arrayOf("mul", "*"), arrayOf("div", "/"))
         val mathGroup = math.flatten().toTypedArray()
