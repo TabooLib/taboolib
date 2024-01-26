@@ -154,7 +154,8 @@ public class PrimitiveLoader {
             }
             // 是否重定向
             if (!rel.isEmpty()) {
-                jar = new File(getCacheFile(), PrimitiveIO.getHash(file.getName() + "." + rel.hashCode() + ".jar"));
+                String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLINX_VERSION);
+                jar = new File(getCacheFile(), hash + ".jar");
                 if (!jar.exists() && jar.length() == 0) {
                     PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
