@@ -28,7 +28,7 @@ subprojects {
 
     dependencies {
         compileOnly(kotlin("stdlib"))
-        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0-RC")
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
         compileOnly("com.google.guava:guava:21.0")
         compileOnly("com.google.code.gson:gson:2.8.7")
         compileOnly("org.apache.commons:commons-lang3:3.5")

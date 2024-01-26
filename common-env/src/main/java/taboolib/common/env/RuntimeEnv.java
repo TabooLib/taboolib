@@ -59,7 +59,7 @@ public class RuntimeEnv {
         }
         // 加载 Kotlin 环境
         ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, rel);
+        ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, false, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {
@@ -169,6 +169,10 @@ public class RuntimeEnv {
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws Throwable {
         loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+    }
+
+    public void loadDependency(@NotNull String url, boolean transitive, @NotNull List<JarRelocation> relocation) throws Throwable {
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, transitive, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws Throwable {
