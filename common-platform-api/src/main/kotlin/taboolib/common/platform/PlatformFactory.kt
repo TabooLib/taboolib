@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap
 object PlatformFactory {
 
     /** 已被唤醒的类 */
-    val awokenMap: MutableMap<String, Any>
-        get() = TabooLib.getAwakenedClasses()
+    val awokenMap: ConcurrentHashMap<String, Any>
+        get() = TabooLib.getAwakenedClasses() as ConcurrentHashMap
 
     /** 已注册的服务 */
     val serviceMap = ConcurrentHashMap<String, Any>()

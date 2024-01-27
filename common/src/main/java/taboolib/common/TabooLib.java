@@ -27,12 +27,12 @@ public class TabooLib {
     /**
      * 当前插件所有被唤醒的类
      */
-    private static final Map<String, Object> awakenedClasses = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Object> awakenedClasses = new ConcurrentHashMap<>();
 
     /**
      * 生命周期任务
      **/
-    private static final Map<LifeCycle, List<LifeCycleTask>> lifeCycleTask = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<LifeCycle, List<LifeCycleTask>> lifeCycleTask = new ConcurrentHashMap<>();
 
     /**
      * 执行生命周期任务

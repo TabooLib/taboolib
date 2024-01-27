@@ -33,8 +33,14 @@ object StandardChannel : OpenListener {
     override fun call(name: String, data: Array<Any>): OpenResult {
         return when (name) {
             REMOTE_RESOLVE -> {
-                val reader = RemoteQuestReader(getOpenContainer(data[0].toString())!!, data[1])
+                // PrimitiveIO.println("REMOTE_RESOLVE ${data.contentDeepToString()}")
+                val container = getOpenContainer(data[0].toString())!!
+                val reader = RemoteQuestReader(container, data[1])
+                // PrimitiveIO.println("container $container, source = ${data[1]}, reader = $reader")
+                // PrimitiveIO.println("getParser ${data[2]}, ${data[3]}")
                 val parser = Kether.scriptRegistry.getParser(data[2].toString(), data[3].toString())
+                // PrimitiveIO.println("parser = $parser")
+                // PrimitiveIO.println("parsers = ${(Kether.scriptRegistry as DefaultRegistry).parsers}")
                 if (parser.isPresent) {
                     OpenResult.successful(parser.get().resolve<Any>(reader))
                 } else {
