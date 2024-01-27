@@ -98,7 +98,7 @@ public class PrimitiveLoader {
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s-%s.jar", group.replace(".", "/"), name, name, version));
         File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s-%s.jar.sha1", group.replace(".", "/"), name, name, version));
         // 检查文件有效性
-        if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE)) {
+        if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE && group.equals(TABOOLIB_GROUP))) {
             try {
                 PrimitiveIO.println("Downloading library %s:%s:%s", group, name, version);
                 // 获取地址
