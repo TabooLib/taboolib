@@ -46,8 +46,8 @@ public class RuntimeEnv {
             }
             // 启用 Kotlin 重定向
             if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
-                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveLoader.formatVersion(KOTLIN_VERSION) + "."));
-                rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveLoader.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
+                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveSettings.formatVersion(KOTLIN_VERSION) + "."));
+                rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveSettings.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
             }
         }
         // 加载 Kotlin 环境

@@ -98,6 +98,13 @@ public class PrimitiveSettings {
     public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", "").split(",");
 
     /**
+     * 格式化版本号
+     */
+    public static String formatVersion(String str) {
+        return str.replaceAll("[._-]", "");
+    }
+
+    /**
      * 获取配置文件
      */
     private static Properties getProperties(String name, boolean allowGlobal) {

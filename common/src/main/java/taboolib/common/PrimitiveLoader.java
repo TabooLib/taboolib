@@ -95,6 +95,7 @@ public class PrimitiveLoader {
      */
     public static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
         if (name.isEmpty()) return false;
+        boolean downloaded = false;
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
         File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar.sha1", group.replace(".", "/"), name, version, name, version));
         // 检查文件有效性
@@ -106,6 +107,7 @@ public class PrimitiveLoader {
                 // 下载资源
                 PrimitiveIO.downloadFile(new URL(url), envFile);
                 PrimitiveIO.downloadFile(new URL(url + ".sha1"), shaFile);
+                downloaded = true;
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -117,7 +119,7 @@ public class PrimitiveLoader {
             }
         }
         // 加载
-        loadFile(envFile, isIsolated, isExternal, relocate);
+        loadFile(envFile, isIsolated, isExternal, relocate, downloaded);
         return true;
     }
 
@@ -137,7 +139,7 @@ public class PrimitiveLoader {
         for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
     }
 
-    public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
+    public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate, boolean forceRelocate) throws Throwable {
         File jar = file;
         // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
         if (relocate.length > 0) {
@@ -155,7 +157,7 @@ public class PrimitiveLoader {
             if (!rel.isEmpty()) {
                 String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
                 jar = new File(getCacheFile(), hash + ".jar");
-                if ((!jar.exists() && jar.length() == 0) || IS_FORCE_DOWNLOAD_IN_DEV_MODE) {
+                if ((!jar.exists() && jar.length() == 0) || IS_FORCE_DOWNLOAD_IN_DEV_MODE || forceRelocate) {
                     PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
                     new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
@@ -205,9 +207,5 @@ public class PrimitiveLoader {
             file.mkdirs();
         }
         return file;
-    }
-
-    public static String formatVersion(String str) {
-        return str.replaceAll("[._-]", "");
     }
 }
