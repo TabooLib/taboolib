@@ -2,10 +2,7 @@ package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.ClassAppender;
-import taboolib.common.PrimitiveIO;
-import taboolib.common.PrimitiveSettings;
-import taboolib.common.TabooLib;
+import taboolib.common.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipFile;
 
-import static taboolib.common.PrimitiveSettings.KOTLINX_VERSION;
+import static taboolib.common.PrimitiveSettings.KOTLIN_COROUTINES_VERSION;
 import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 
 /**
@@ -31,7 +28,7 @@ import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
 public class RuntimeEnv {
 
     public static final String KOTLIN_ID = "!kotlin".substring(1);
-    public static final String KOTLINX_ID = "!kotlinx.coroutines".substring(1);
+    public static final String KOTLIN_COROUTINES_ID = "!kotlinx.coroutines".substring(1);
 
     public static final RuntimeEnv ENV = new RuntimeEnv();
 
@@ -49,13 +46,13 @@ public class RuntimeEnv {
             }
             // 启用 Kotlin 重定向
             if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
-                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + KOTLIN_VERSION.replace(".", "") + "."));
-                rel.add(new JarRelocation(KOTLINX_ID + ".", KOTLINX_ID + KOTLINX_VERSION.replace(".", "") + "."));
+                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveLoader.formatVersion(KOTLIN_VERSION) + "."));
+                rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveLoader.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
             }
         }
         // 加载 Kotlin 环境
         if (!KOTLIN_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        if (!KOTLINX_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLINX_VERSION, false, rel);
+        if (!KOTLIN_COROUTINES_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {

@@ -35,7 +35,7 @@ public class PrimitiveSettings {
     /**
      * Kotlinx 版本
      */
-    public static final String KOTLINX_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), "1.7.3");
+    public static final String KOTLIN_COROUTINES_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), "1.7.3");
 
     /**
      * TabooLib 版本

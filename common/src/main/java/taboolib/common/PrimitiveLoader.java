@@ -145,15 +145,15 @@ public class PrimitiveLoader {
             // 在非隔离模式下进行 Kotlin 重定向
             if (!IS_ISOLATED_MODE && !SKIP_KOTLIN_RELOCATE) {
                 String kt = "!kotlin".substring(1);
-                String ktx = "!kotlinx.coroutines".substring(1);
-                String kv = KOTLIN_VERSION.replace(".", "");
-                String kvx = KOTLINX_VERSION.replace(".", "");
+                String ktc = "!kotlinx.coroutines".substring(1);
+                String kv = formatVersion(KOTLIN_VERSION);
+                String kvc = formatVersion(KOTLIN_COROUTINES_VERSION);
                 rel.add(new Relocation(kt + ".", kt + kv + "."));
-                rel.add(new Relocation(ktx + ".", ktx + kvx + "."));
+                rel.add(new Relocation(ktc + ".", ktc + kvc + "."));
             }
             // 是否重定向
             if (!rel.isEmpty()) {
-                String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLINX_VERSION);
+                String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
                 jar = new File(getCacheFile(), hash + ".jar");
                 if ((!jar.exists() && jar.length() == 0) || IS_FORCE_DOWNLOAD_IN_DEV_MODE) {
                     PrimitiveIO.println("Relocating ...");
@@ -205,5 +205,9 @@ public class PrimitiveLoader {
             file.mkdirs();
         }
         return file;
+    }
+
+    public static String formatVersion(String str) {
+        return str.replaceAll("[._-]", "");
     }
 }
