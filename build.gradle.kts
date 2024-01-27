@@ -91,7 +91,9 @@ fun PublishingExtension.applyToSub(subProject: Project) {
         create<MavenPublication>("maven") {
             artifactId = subProject.name
             groupId = "io.izzel.taboolib"
-            version = (if (project.hasProperty("dev")) {
+            version = (if (project.hasProperty("devLocal")) {
+                "${project.version}-local-dev"
+            } else if (project.hasProperty("dev")) {
                 "${project.version}-dev"
             } else {
                 "${project.version}"
