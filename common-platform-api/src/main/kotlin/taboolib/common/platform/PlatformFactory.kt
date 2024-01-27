@@ -3,6 +3,7 @@ package taboolib.common.platform
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
+import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
@@ -18,7 +19,8 @@ import java.util.concurrent.ConcurrentHashMap
 object PlatformFactory {
 
     /** 已被唤醒的类 */
-    val awokenMap = ConcurrentHashMap<String, Any>()
+    val awokenMap: MutableMap<String, Any>
+        get() = TabooLib.getAwakenedClasses()
 
     /** 已注册的服务 */
     val serviceMap = ConcurrentHashMap<String, Any>()

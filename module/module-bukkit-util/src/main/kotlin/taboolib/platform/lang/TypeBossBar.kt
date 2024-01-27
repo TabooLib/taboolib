@@ -71,15 +71,18 @@ class TypeBossBar : Type {
     override fun toString(): String {
         return "TypeBossBar(text=$text, color=$color, style=$style, step=$step, period=$period, method='$method')"
     }
+}
 
-    @Inject
-    @PlatformSide(Platform.BUKKIT)
-    internal companion object {
+@Inject
+@PlatformSide(Platform.BUKKIT)
+internal object TypeBossBarLoader {
 
-        @Awake(LifeCycle.CONST)
-        fun init() {
+    @Awake(LifeCycle.CONST)
+    fun init() {
+        try {
             Language.languageType["boss"] = TypeBossBar::class.java
             Language.languageType["bossbar"] = TypeBossBar::class.java
+        } catch (_: Throwable) {
         }
     }
 }
