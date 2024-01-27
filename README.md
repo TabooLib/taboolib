@@ -10,14 +10,14 @@
 TabooLib 正式创建于 2018/02/06, 为 Minecraft（Java 版）提供一个跨平台的插件开发框架，旨在替代频繁的操作，以及解决一些令人头疼的问题。
 
 + 基于 `Kotlin` 独特的语法。
++ 仅占 `35 KB` 插件体积。
 + 魔术般的工具。
-+ 仅占 `35 KB` 插件体积<sup><a>[1]</a></sup>。
 
-## 6.1 发生了什么?
+### 6.1 发生了什么?
 
 随着 `6.1` 的巨大结构更新, TabooLib 的加载模式发生了一些转变。
 
-...
+[[版本迁移]](https://docs.tabooproject.org/migration)
 
 ## 版本信息
 
@@ -27,4 +27,7 @@ TabooLib 正式创建于 2018/02/06, 为 Minecraft（Java 版）提供一个跨�
 
 ## 相关链接
 
-...
++ [TabooLib Home](https://tabooproject.org)
++ [TabooLib Docs](https://docs.tabooproject.org)
++ [TabooLib Repository](https://repo.tabooproject.org)
++ [Kether Docs](https://kether.tabooproject.org)
