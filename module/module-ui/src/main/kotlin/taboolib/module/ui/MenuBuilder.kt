@@ -5,6 +5,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.common.event.InternalEventBus
 import taboolib.common.platform.function.registerBukkitListener
 import taboolib.module.nms.PacketSendEvent
 import taboolib.module.ui.virtual.InventoryHandler
@@ -27,7 +28,7 @@ var isRawTitleInVanillaInventoryEnabled = false
  */
 fun enableRawTitleInVanillaInventory() {
     isRawTitleInVanillaInventoryEnabled = true
-    registerBukkitListener(PacketSendEvent::class.java) { e ->
+    InternalEventBus.listen<PacketSendEvent> { e ->
         if (e.packet.name == "PacketPlayOutOpenWindow") {
             // 全版本都是 c，不错
             val plain = InventoryHandler.instance.craftChatMessageToPlain(e.packet.read("c", remap = false)!!)
