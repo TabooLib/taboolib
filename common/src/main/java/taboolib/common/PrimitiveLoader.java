@@ -157,7 +157,8 @@ public class PrimitiveLoader {
             if (!rel.isEmpty()) {
                 String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
                 jar = new File(getCacheFile(), hash + ".jar");
-                if ((!jar.exists() && jar.length() == 0) || IS_FORCE_DOWNLOAD_IN_DEV_MODE || forceRelocate) {
+                // 文件为空 || 开发模式 || 强制重定向
+                if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
                     PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
                     new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
