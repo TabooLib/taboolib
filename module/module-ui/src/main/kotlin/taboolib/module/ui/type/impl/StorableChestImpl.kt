@@ -10,7 +10,7 @@ import taboolib.module.ui.type.*
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
 
-open class StoredImpl(title: String) : BasicImpl(title), Stored {
+open class StorableChestImpl(title: String) : ChestImpl(title), StorableChest {
 
     /** 页面规则 **/
     val rule = RuleImpl
@@ -18,7 +18,7 @@ open class StoredImpl(title: String) : BasicImpl(title), Stored {
     /**
      * 定义页面规则
      */
-    override fun rule(rule: Stored.Rule.() -> Unit) {
+    override fun rule(rule: StorableChest.Rule.() -> Unit) {
         if (virtualized) error("cannot change rule when virtualized")
         rule(this.rule)
     }
@@ -126,7 +126,7 @@ open class StoredImpl(title: String) : BasicImpl(title), Stored {
         return super.build()
     }
 
-    object RuleImpl : Stored.Rule {
+    object RuleImpl : StorableChest.Rule {
 
         /** 检查判定位置回调 **/
         var checkSlot: ((inventory: Inventory, itemStack: ItemStack, slot: Int) -> Boolean) = { _, _, _ -> true }

@@ -13,7 +13,9 @@ import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
-import taboolib.module.ui.type.impl.BasicImpl
+import taboolib.module.ui.type.Basic
+import taboolib.module.ui.type.Chest
+import taboolib.module.ui.type.impl.ChestImpl
 
 /**
  * 将背包转换为 VirtualInventory 实例
@@ -38,10 +40,14 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory, updateId: Bool
     return remoteInventory
 }
 
+fun RemoteInventory.inject(menu: Basic) = inject(menu as ChestImpl)
+
+fun RemoteInventory.inject(menu: Chest) = inject(menu as ChestImpl)
+
 /**
  * 注入事件到 Basic 页面
  */
-fun RemoteInventory.inject(menu: BasicImpl) {
+fun <T : ChestImpl> RemoteInventory.inject(menu: T) {
     onClick {
         // 处理事件
         try {

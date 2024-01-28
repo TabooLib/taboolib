@@ -6,14 +6,14 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.util.subList
 import taboolib.module.ui.ClickEvent
-import taboolib.module.ui.type.Linked
+import taboolib.module.ui.type.PageableChest
 import taboolib.module.ui.virtual.VirtualInventory
 import taboolib.module.ui.virtual.inject
 import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
 import java.util.concurrent.CopyOnWriteArrayList
 
-open class LinkedImpl<T>(title: String) : BasicImpl(title), Linked<T> {
+open class PageableChestImpl<T>(title: String) : ChestImpl(title), PageableChest<T> {
 
     /** 页数 **/
     override var page = 0

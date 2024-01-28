@@ -5,8 +5,9 @@ import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.BungeeOpenContainer
+import taboolib.platform.type.BungeeContainer
 
 /**
  * TabooLib
@@ -22,8 +23,8 @@ class BungeeOpenContainer : PlatformOpenContainer {
     val pluginContainer = HashMap<String, OpenContainer>()
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("platform.BungeePlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.description.name) { _ -> BungeeOpenContainer(it) }
+        return BungeeCord.getInstance().pluginManager.plugins.filter { it.javaClass.name.endsWith("platform.BungeePlugin") && it.description.name != pluginId }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.description.name) { _ -> BungeeContainer(it) }
         }
     }
 }

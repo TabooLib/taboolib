@@ -3,4 +3,4 @@ package taboolib.module.ui.type
 /**
  * 漏斗容器
  */
-interface Hopper : Basic
+interface Hopper : Chest

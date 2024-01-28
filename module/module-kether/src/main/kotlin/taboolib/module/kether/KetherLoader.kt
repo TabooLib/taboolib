@@ -60,10 +60,12 @@ class KetherLoader : ClassVisitor(0) {
 
         /** 注册 Parser */
         fun registerParser(parser: ScriptActionParser<*>, name: Array<String>, namespace: String = "kether", shared: Boolean = false) {
+            // 共享 Parser 到所有 TabooLib 插件
             if (shared) {
                 sharedParser += name to namespace
                 getOpenContainers().forEach { it.call(StandardChannel.REMOTE_ADD_ACTION, arrayOf(pluginId, name, namespace)) }
             }
+            // 注册到自己
             name.forEach { Kether.addAction(it, parser, namespace) }
         }
 

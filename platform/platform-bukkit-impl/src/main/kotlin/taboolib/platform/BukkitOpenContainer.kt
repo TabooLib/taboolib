@@ -5,8 +5,9 @@ import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.service.PlatformOpenContainer
-import taboolib.platform.type.BukkitOpenContainer
+import taboolib.platform.type.BukkitContainer
 
 /**
  * TabooLib
@@ -22,8 +23,8 @@ class BukkitOpenContainer : PlatformOpenContainer {
     val pluginContainer = HashMap<String, OpenContainer>()
 
     override fun getOpenContainers(): List<OpenContainer> {
-        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") }.mapNotNull {
-            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitOpenContainer(it) }
+        return Bukkit.getPluginManager().plugins.filter { it.javaClass.name.endsWith("platform.BukkitPlugin") && it.name != pluginId }.mapNotNull {
+            pluginContainer.computeIfAbsent(it.name) { _ -> BukkitContainer(it) }
         }
     }
 }

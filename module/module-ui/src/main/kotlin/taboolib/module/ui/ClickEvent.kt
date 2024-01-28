@@ -7,7 +7,7 @@ import org.bukkit.event.inventory.InventoryDragEvent
 import org.bukkit.event.inventory.InventoryInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import taboolib.module.ui.type.Basic
+import taboolib.module.ui.type.Chest
 import taboolib.module.ui.virtual.RemoteInventory
 import taboolib.module.ui.virtual.VirtualInventoryInteractEvent
 
@@ -15,7 +15,7 @@ import taboolib.module.ui.virtual.VirtualInventoryInteractEvent
  * @author 坏黑
  * @since 2019-05-21 18:09
  */
-class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType: ClickType, val slot: Char, val builder: Basic) {
+class ClickEvent(private val bukkitEvent: InventoryInteractEvent, val clickType: ClickType, val slot: Char, val builder: Chest) {
 
     val clicker: Player
         get() = bukkitEvent.whoClicked as Player

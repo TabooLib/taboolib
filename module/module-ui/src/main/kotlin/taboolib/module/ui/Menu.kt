@@ -19,10 +19,10 @@ interface Menu {
 
         init {
             impl[Anvil::class.java] = AnvilImpl::class.java
-            impl[Basic::class.java] = BasicImpl::class.java
+            impl[Chest::class.java] = ChestImpl::class.java
             impl[Hopper::class.java] = HopperImpl::class.java
-            impl[Linked::class.java] = LinkedImpl::class.java
-            impl[Stored::class.java] = StoredImpl::class.java
+            impl[PageableChest::class.java] = PageableChestImpl::class.java
+            impl[StorableChest::class.java] = StorableChestImpl::class.java
         }
 
         /** 注册实现 */

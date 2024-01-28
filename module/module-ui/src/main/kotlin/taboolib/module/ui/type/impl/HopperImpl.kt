@@ -7,7 +7,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.module.ui.virtual.virtualize
 
-open class HopperImpl(title: String = "chest") : BasicImpl(title) {
+open class HopperImpl(title: String) : ChestImpl(title) {
 
     override fun build(): Inventory {
         var inventory = Bukkit.createInventory(holderCallback(this), InventoryType.HOPPER, title)

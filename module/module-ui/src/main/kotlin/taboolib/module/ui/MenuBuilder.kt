@@ -5,15 +5,22 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.common.OpenListener
+import taboolib.common.OpenResult
 import taboolib.common.event.InternalEventBus
+import taboolib.common.platform.Awake
+import taboolib.common.platform.function.getOpenContainers
 import taboolib.module.nms.PacketSendEvent
-import taboolib.module.ui.type.impl.BasicImpl
+import taboolib.module.ui.type.impl.ChestImpl
 import taboolib.module.ui.virtual.InventoryHandler
 import taboolib.module.ui.virtual.VirtualInventory
 import taboolib.module.ui.virtual.inject
 import taboolib.module.ui.virtual.openVirtualInventory
 import taboolib.platform.util.isNotAir
 
+/**
+ * 允许在 Vanilla Inventory 中使用 Raw Title
+ */
 var isRawTitleInVanillaInventoryEnabled = false
     private set
 
@@ -27,7 +34,12 @@ var isRawTitleInVanillaInventoryEnabled = false
  * 虚拟菜单不需要开启该选项
  */
 fun enableRawTitleInVanillaInventory() {
+    // 防止重复注册
+    if (isRawTitleInVanillaInventoryEnabled) {
+        return
+    }
     isRawTitleInVanillaInventoryEnabled = true
+    // 监听数据包
     InternalEventBus.listen<PacketSendEvent> { e ->
         if (e.packet.name == "PacketPlayOutOpenWindow") {
             // 全版本都是 c，不错
@@ -36,6 +48,20 @@ fun enableRawTitleInVanillaInventory() {
                 e.packet.write("c", InventoryHandler.instance.parseToCraftChatMessage(plain))
             }
         }
+    }
+    // 告知所有 TabooLib 插件，该监听器已被注册
+    getOpenContainers().forEach { it.call("LISTEN_RAW_TITLE_IN_VANILLA_INVENTORY", emptyArray()) }
+}
+
+@Awake
+class RawTitleOpenListener : OpenListener {
+
+    override fun call(name: String, data: Array<out Any>?): OpenResult {
+        if (name == "LISTEN_RAW_TITLE_IN_VANILLA_INVENTORY") {
+            isRawTitleInVanillaInventoryEnabled = true
+            return OpenResult.successful()
+        }
+        return OpenResult.failed()
     }
 }
 
@@ -67,7 +93,7 @@ fun HumanEntity.openMenu(buildMenu: Inventory, changeId: Boolean = true) {
         if (buildMenu is VirtualInventory) {
             val remoteInventory = openVirtualInventory(buildMenu, changeId)
             val basic = MenuHolder.fromInventory(buildMenu)
-            if (basic is BasicImpl) {
+            if (basic is ChestImpl) {
                 remoteInventory.inject(basic)
             }
         } else {

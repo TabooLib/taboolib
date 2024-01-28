@@ -12,7 +12,7 @@ import taboolib.common.OpenResult
  * @author sky
  * @since 2021/7/3 1:44 上午
  */
-class BukkitOpenContainer(plugin: Plugin) : OpenContainer {
+class BukkitContainer(plugin: Plugin) : OpenContainer {
 
     private val name = plugin.name
     private val main = plugin.description.main

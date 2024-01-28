@@ -11,14 +11,14 @@ import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.openMenu
-import taboolib.module.ui.type.Basic
+import taboolib.module.ui.type.Chest
 import taboolib.module.ui.virtual.virtualize
 import taboolib.platform.util.ItemBuilder
 import taboolib.platform.util.buildItem
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-open class BasicImpl(override var title: String = "chest") : Basic {
+open class ChestImpl(override var title: String) : Chest {
 
     /** 最后一次构建的页面 */
     lateinit var lastInventory: Inventory
@@ -45,7 +45,7 @@ open class BasicImpl(override var title: String = "chest") : Basic {
     override var isOpened = false
 
     /** MenuHolder 回调 **/
-    var holderCallback: ((menu: BasicImpl) -> MenuHolder) = { MenuHolder(it) }
+    var holderCallback: ((menu: ChestImpl) -> MenuHolder) = { MenuHolder(it) }
 
     /** 点击回调 **/
     val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
@@ -114,7 +114,7 @@ open class BasicImpl(override var title: String = "chest") : Basic {
     /**
      * 设置 MenuHolder 创建回调
      */
-    override fun holder(func: (menu: Basic) -> MenuHolder) {
+    override fun holder(func: (menu: Chest) -> MenuHolder) {
         this.holderCallback = func
     }
 

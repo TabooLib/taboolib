@@ -17,7 +17,7 @@ import taboolib.module.ui.virtual.virtualize
  * @author arasple
  * @since 2023/11/18 16:50
  */
-open class AnvilImpl(title: String) : BasicImpl(title), Anvil, AnvilCallback {
+open class AnvilImpl(title: String) : ChestImpl(title), Anvil, AnvilCallback {
 
     internal var renameCallback: ((Player, String, Inventory) -> Unit)? = null
 
