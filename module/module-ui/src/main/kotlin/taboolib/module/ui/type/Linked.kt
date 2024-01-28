@@ -19,31 +19,31 @@ open class Linked<T>(title: String) : Basic(title) {
         private set
 
     /** 锁定所有位置 **/
-    internal var menuLocked = true
+    protected var menuLocked = true
 
     /** 页面可用位置 **/
-    internal val menuSlots = CopyOnWriteArrayList<Int>()
+    protected val menuSlots = CopyOnWriteArrayList<Int>()
 
     /** 页面可用元素回调 **/
-    internal var elementsCallback: (() -> List<T>) = { CopyOnWriteArrayList() }
+    protected var elementsCallback: (() -> List<T>) = { CopyOnWriteArrayList() }
 
     /** 页面可用元素缓存 **/
-    internal var elementsCache = emptyList<T>()
+    protected var elementsCache = emptyList<T>()
 
     /** 点击事件回调 **/
-    internal var elementClickCallback: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
+    protected var elementClickCallback: ((event: ClickEvent, element: T) -> Unit) = { _, _ -> }
 
     /** 元素生成回调 **/
-    internal var generateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
+    protected var generateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
 
     /** 异步元素生成回调 **/
-    internal var asyncGenerateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
+    protected var asyncGenerateCallback: ((player: Player, element: T, index: Int, slot: Int) -> ItemStack) = { _, _, _, _ -> ItemStack(Material.AIR) }
 
     /** 页面切换回调 */
-    internal var pageChangeCallback: ((player: Player) -> Unit) = { _ -> }
+    protected var pageChangeCallback: ((player: Player) -> Unit) = { _ -> }
 
     /** 页面玩家 **/
-    private lateinit var player: Player
+    private lateinit var viewer: Player
 
     /**
      * 是否锁定所有位置
@@ -119,11 +119,11 @@ open class Linked<T>(title: String) : Basic(title) {
                 page++
                 // 刷新页面
                 if (virtual) {
-                    player.openVirtualInventory(build() as VirtualInventory).inject(this)
+                    viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
                 } else {
-                    player.openInventory(build())
+                    viewer.openInventory(build())
                 }
-                pageChangeCallback(player)
+                pageChangeCallback(viewer)
             }
         }
     }
@@ -140,11 +140,11 @@ open class Linked<T>(title: String) : Basic(title) {
                 page--
                 // 刷新页面
                 if (virtual) {
-                    player.openVirtualInventory(build() as VirtualInventory).inject(this)
+                    viewer.openVirtualInventory(build() as VirtualInventory).inject(this)
                 } else {
-                    player.openInventory(build())
+                    viewer.openInventory(build())
                 }
-                pageChangeCallback(player)
+                pageChangeCallback(viewer)
             }
         }
     }
@@ -193,13 +193,13 @@ open class Linked<T>(title: String) : Basic(title) {
          * 构建事件处理函数
          */
         fun processBuild(p: Player, inventory: Inventory, async: Boolean) {
-            player = p
+            viewer = p
             elementItems.forEachIndexed { index, item ->
                 val slot = menuSlots.getOrNull(index) ?: 0
                 elementMap[slot] = item
                 // 生成元素对应物品
                 val callback = if (async) asyncGenerateCallback else generateCallback
-                val itemStack = callback(player, item, index, slot)
+                val itemStack = callback(viewer, item, index, slot)
                 if (itemStack.isNotAir()) {
                     inventory.setItem(slot, itemStack)
                 }

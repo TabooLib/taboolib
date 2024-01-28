@@ -17,13 +17,17 @@ import taboolib.module.ui.virtual.virtualize
  * @author arasple
  * @since 2023/11/18 16:50
  */
-open class Anvil(title: String = "...") : Basic(title) {
+open class Anvil(title: String = "...") : Basic(title), AnvilCallback {
 
     internal var renameCallback: ((Player, String, Inventory) -> Unit)? = null
 
     /** 当物品被重命名时 */
-    fun onRename(callback: (Player, String, Inventory) -> Unit) {
+    open fun onRename(callback: (Player, String, Inventory) -> Unit) {
         renameCallback = callback
+    }
+
+    override fun invoke(player: Player, text: String, inventory: Inventory) {
+        renameCallback?.invoke(player, text, inventory)
     }
 
     override fun build(): Inventory {

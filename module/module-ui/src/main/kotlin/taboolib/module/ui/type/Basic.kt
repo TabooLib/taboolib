@@ -18,52 +18,52 @@ import java.util.concurrent.CopyOnWriteArrayList
 open class Basic(title: String = "chest") : Menu(title) {
 
     /** 虚拟化 */
-    internal var virtual = false
+    protected var virtual = false
 
     /** 最后一次构建的页面 */
-    internal lateinit var lastInventory: Inventory
+    protected lateinit var lastInventory: Inventory
 
     /** 虚拟化时玩家背包内容 */
-    internal var storageContents: List<ItemStack>? = null
+    protected var storageContents: List<ItemStack>? = null
 
     /** 行数 **/
-    internal var rows = 1
+    protected var rows = 1
 
     /** 锁定主手 **/
-    internal var handLocked = true
+    protected var handLocked = true
 
     /** MenuHolder 回调 **/
-    internal var holderCallback: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
+    protected var holderCallback: ((menu: Basic) -> MenuHolder) = { MenuHolder(it) }
 
     /** 点击回调 **/
-    internal val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
+    protected val clickCallback = CopyOnWriteArrayList<(event: ClickEvent) -> Unit>()
 
     /** 点击回调 **/
-    internal var selfClickCallback: (event: ClickEvent) -> Unit = {}
+    protected var selfClickCallback: (event: ClickEvent) -> Unit = {}
 
     /** 关闭回调 **/
-    internal var closeCallback: ((event: InventoryCloseEvent) -> Unit) = { isOpened = false }
+    protected var closeCallback: ((event: InventoryCloseEvent) -> Unit) = { isOpened = false }
 
     /** 只触发一次关闭回调 **/
-    internal var onceCloseCallback = false
+    protected var onceCloseCallback = false
 
     /** 忽略 updateTitle 的关闭回调 **/
-    internal var skipCloseCallbackOnUpdateTitle = true
+    protected var skipCloseCallbackOnUpdateTitle = true
 
     /** 是否刷新标题 */
-    internal var isUpdateTitle = false
+    protected var isUpdateTitle = false
 
     /** 构建回调 **/
-    internal var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> isOpened = true }
+    protected var buildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> isOpened = true }
 
     /** 异步构建回调 **/
-    internal var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    protected var asyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
     /** 构建回调 **/
-    internal var selfBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    protected var selfBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
     /** 异步构建回调 **/
-    internal var selfAsyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
+    protected var selfAsyncBuildCallback: ((player: Player, inventory: Inventory) -> Unit) = { _, _ -> }
 
     /** 物品与对应抽象字符关系 **/
     var items = ConcurrentHashMap<Char, ItemStack>()

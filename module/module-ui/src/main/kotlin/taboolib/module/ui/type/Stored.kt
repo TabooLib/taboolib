@@ -12,7 +12,7 @@ import taboolib.platform.util.isNotAir
 open class Stored(title: String) : Basic(title) {
 
     /** 页面规则 **/
-    internal val rule: Rule = EmptyRule
+    protected val rule: Rule = EmptyRule
 
     /** 被改写 Rule 的 Stored 不支持虚拟页面 */
     override fun virtualize(storageContents: List<ItemStack>?) {

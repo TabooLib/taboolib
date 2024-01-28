@@ -17,6 +17,7 @@ import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.Anvil
+import taboolib.module.ui.type.AnvilCallback
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -112,16 +113,16 @@ abstract class InventoryHandler {
                     val virtualInventory = playerRemoteInventoryMap[player.name]?.inventory
                     if (virtualInventory != null) {
                         val builder = MenuHolder.fromInventory(virtualInventory)
-                        if (builder is Anvil) {
-                            builder.renameCallback?.invoke(player, text, virtualInventory)
+                        if (builder is AnvilCallback) {
+                            builder.invoke(player, text, virtualInventory)
                         }
                     }
                     // 普通容器处理
                     else {
                         val openInventory = player.openInventory.topInventory
                         val builder = MenuHolder.fromInventory(openInventory)
-                        if (builder is Anvil) {
-                            builder.renameCallback?.invoke(player, text, openInventory)
+                        if (builder is AnvilCallback) {
+                            builder.invoke(player, text, openInventory)
                         }
                     }
                 }
