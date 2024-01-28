@@ -19,6 +19,7 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.submitAsync
+import taboolib.module.ui.type.impl.BasicImpl
 import taboolib.platform.util.isNotAir
 import taboolib.platform.util.setMeta
 
@@ -37,7 +38,7 @@ internal object ClickListener {
 
     @SubscribeEvent
     fun onOpen(e: InventoryOpenEvent) {
-        val builder = MenuHolder.fromInventory(e.inventory) ?: return
+        val builder = MenuHolder.fromInventory(e.inventory) as? BasicImpl ?: return
         // 构建回调
         submit {
             builder.buildCallback(e.player as Player, e.inventory)
@@ -50,9 +51,10 @@ internal object ClickListener {
         }
     }
 
+    @Suppress("DuplicatedCode")
     @SubscribeEvent
     fun onClick(e: InventoryClickEvent) {
-        val builder = MenuHolder.fromInventory(e.inventory) ?: return
+        val builder = MenuHolder.fromInventory(e.inventory) as? BasicImpl ?: return
         // 锁定主手
         if (builder.handLocked && (e.rawSlot - e.inventory.size - 27 == e.whoClicked.inventory.heldItemSlot || e.click == org.bukkit.event.inventory.ClickType.NUMBER_KEY && e.hotbarButton == e.whoClicked.inventory.heldItemSlot)) {
             e.isCancelled = true
@@ -99,7 +101,7 @@ internal object ClickListener {
 
     @SubscribeEvent
     fun onDrag(e: InventoryDragEvent) {
-        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        val menu = MenuHolder.fromInventory(e.inventory) as? BasicImpl ?: return
         val clickEvent = ClickEvent(e, ClickType.DRAG, ' ', menu)
         menu.clickCallback.forEach { it.invoke(clickEvent) }
         menu.selfClickCallback(clickEvent)
@@ -107,9 +109,9 @@ internal object ClickListener {
 
     @SubscribeEvent
     fun onClose(e: InventoryCloseEvent) {
-        val menu = MenuHolder.fromInventory(e.inventory) ?: return
+        val menu = MenuHolder.fromInventory(e.inventory) as? BasicImpl ?: return
         // 标题更新 && 跳过关闭回调
-        if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+        if (menu.isUpdateTitle && menu.isSkipCloseCallbackOnUpdateTitle) {
             return
         }
         menu.closeCallback.invoke(e)

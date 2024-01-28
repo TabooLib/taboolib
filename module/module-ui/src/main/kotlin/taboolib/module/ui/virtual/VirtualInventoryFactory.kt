@@ -13,7 +13,7 @@ import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
-import taboolib.module.ui.type.Basic
+import taboolib.module.ui.type.impl.BasicImpl
 
 /**
  * 将背包转换为 VirtualInventory 实例
@@ -41,7 +41,7 @@ fun HumanEntity.openVirtualInventory(inventory: VirtualInventory, updateId: Bool
 /**
  * 注入事件到 Basic 页面
  */
-fun RemoteInventory.inject(menu: Basic) {
+fun RemoteInventory.inject(menu: BasicImpl) {
     onClick {
         // 处理事件
         try {
@@ -56,7 +56,7 @@ fun RemoteInventory.inject(menu: Basic) {
     onClose {
         try {
             // 标题更新 && 跳过关闭回调
-            if (menu.isUpdateTitle && menu.skipCloseCallbackOnUpdateTitle) {
+            if (menu.isUpdateTitle && menu.isSkipCloseCallbackOnUpdateTitle) {
                 return@onClose
             }
             menu.closeCallback.invoke(InventoryCloseEvent(createInventoryView()))

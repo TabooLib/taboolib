@@ -6,8 +6,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import taboolib.common.event.InternalEventBus
-import taboolib.common.platform.function.registerBukkitListener
 import taboolib.module.nms.PacketSendEvent
+import taboolib.module.ui.type.impl.BasicImpl
 import taboolib.module.ui.virtual.InventoryHandler
 import taboolib.module.ui.virtual.VirtualInventory
 import taboolib.module.ui.virtual.inject
@@ -43,7 +43,9 @@ fun enableRawTitleInVanillaInventory() {
  * 构建一个菜单
  */
 inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -> Unit): Inventory {
-    return T::class.java.getDeclaredConstructor(String::class.java).newInstance(title).also(builder).build()
+    val impl = Menu.getImplementation(T::class.java)
+    val instance = impl.getDeclaredConstructor(String::class.java).newInstance(title) as T
+    return instance.also(builder).build()
 }
 
 /**
@@ -65,7 +67,7 @@ fun HumanEntity.openMenu(buildMenu: Inventory, changeId: Boolean = true) {
         if (buildMenu is VirtualInventory) {
             val remoteInventory = openVirtualInventory(buildMenu, changeId)
             val basic = MenuHolder.fromInventory(buildMenu)
-            if (basic != null) {
+            if (basic is BasicImpl) {
                 remoteInventory.inject(basic)
             }
         } else {

@@ -16,7 +16,6 @@ import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
 import taboolib.module.ui.MenuHolder
-import taboolib.module.ui.type.Anvil
 import taboolib.module.ui.type.AnvilCallback
 import java.util.concurrent.ConcurrentHashMap
 
