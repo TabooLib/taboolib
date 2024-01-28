@@ -27,7 +27,7 @@ open class Basic(title: String = "chest") : Menu(title) {
     internal var storageContents: List<ItemStack>? = null
 
     /** 行数 **/
-    internal var rows = -1
+    internal var rows = 1
 
     /** 锁定主手 **/
     internal var handLocked = true

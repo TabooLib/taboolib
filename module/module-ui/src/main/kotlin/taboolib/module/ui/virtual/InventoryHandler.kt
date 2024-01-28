@@ -15,6 +15,8 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
+import taboolib.module.ui.MenuHolder
+import taboolib.module.ui.type.Anvil
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -29,12 +31,12 @@ abstract class InventoryHandler {
     abstract fun craftChatMessageToPlain(message: Any): String
 
     abstract fun parseToCraftChatMessage(source: String): Any
-    
+
     abstract fun openInventory(player: Player, inventory: VirtualInventory, cursorItem: ItemStack = player.itemOnCursor, updateId: Boolean = true): RemoteInventory
 
     @Inject
     @PlatformSide(Platform.BUKKIT)
-    internal companion object {
+    companion object {
 
         val instance by unsafeLazy { nmsProxy<InventoryHandler>() }
 
@@ -75,6 +77,7 @@ abstract class InventoryHandler {
                 return
             }
             when (e.packet.name) {
+                // 关闭窗口
                 "PacketPlayInCloseWindow" -> {
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "id")!!
                     val player = e.player
@@ -88,12 +91,34 @@ abstract class InventoryHandler {
                         }
                     }
                 }
+                // 点击
                 "PacketPlayInWindowClick" -> {
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "a")!!
                     val player = e.player
                     val remoteInventory = playerRemoteInventoryMap[player.name]
                     if (remoteInventory != null && remoteInventory.id == id) {
                         remoteInventory.handleClick(e.packet)
+                    }
+                }
+                // 重命名
+                "PacketPlayInItemName" -> {
+                    val text = e.packet.read<String?>("a") ?: return
+                    val player = e.player
+                    // 虚拟容器处理
+                    val virtualInventory = playerRemoteInventoryMap[player.name]?.inventory
+                    if (virtualInventory != null) {
+                        val builder = MenuHolder.fromInventory(virtualInventory)
+                        if (builder is Anvil) {
+                            builder.renameCallback?.invoke(player, text, virtualInventory)
+                        }
+                    }
+                    // 普通容器处理
+                    else {
+                        val openInventory = player.openInventory.topInventory
+                        val builder = MenuHolder.fromInventory(openInventory)
+                        if (builder is Anvil) {
+                            builder.renameCallback?.invoke(player, text, openInventory)
+                        }
                     }
                 }
             }
