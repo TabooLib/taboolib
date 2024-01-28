@@ -43,8 +43,8 @@ fun enableRawTitleInVanillaInventory() {
  * 构建一个菜单
  */
 inline fun <reified T : Menu> buildMenu(title: String = "chest", builder: T.() -> Unit): Inventory {
-    val impl = Menu.getImplementation(T::class.java)
-    val instance = impl.getDeclaredConstructor(String::class.java).newInstance(title) as T
+    val type = if (T::class.java.isInterface) Menu.getImplementation(T::class.java) else T::class.java
+    val instance = type.getDeclaredConstructor(String::class.java).newInstance(title) as T
     return instance.also(builder).build()
 }
 
