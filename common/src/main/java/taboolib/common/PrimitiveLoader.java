@@ -38,10 +38,12 @@ public class PrimitiveLoader {
 
     public static final String TABOOPROJECT_GROUP = "!org.tabooproject".substring(1);
 
+    public static final String ASM_GROUP = "!org.objectweb.asm".substring(1);
+
     /**
      * 基础依赖（隔离加载）
      */
-    public static final String[][] DEPENDENCIES = {
+    public static final String[][] DEPS = {
             {"me.lucko", "jar-relocator", "1.5"},
             {"org.ow2.asm", "asm", "9.6"},
             {"org.ow2.asm", "asm-util", "9.6"},
@@ -50,14 +52,15 @@ public class PrimitiveLoader {
 
     /**
      * 默认的重定向规则
-     * + taboolib -> {package}.taboolib
-     * + org.tabooproject -> {package}.taboolib.library
      */
-    public static String[][] defaultRelocateRule() {
+    static String[][] rule() {
+        String[][] rule = new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}, {ASM_GROUP + ".", ASM_GROUP + "9."}};
+        // 是否跳过 TabooLib 重定向
         if (SKIP_TABOOLIB_RELOCATE) {
-            return new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}};
+            // 采用全局重定向规则
+            return rule;
         } else {
-            return new String[][]{{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, {TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}};
+            return new String[][]{{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, rule[0], rule[1]};
         }
     }
 
@@ -75,10 +78,16 @@ public class PrimitiveLoader {
             PrimitiveIO.println("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
         }
         // 加载基础依赖
-        for (String[] i : DEPENDENCIES) load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
+        for (String[] i : DEPS) {
+            load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
+        }
+        // 重新加载 asm9 用于 reflex 使用
+        for (int i = 1; i < DEPS.length; i++) {
+            load(REPO_CENTRAL, DEPS[i][0], DEPS[i][1], DEPS[i][2], IS_ISOLATED_MODE, true, rule());
+        }
         // 加载反射模块
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, defaultRelocateRule());
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.19", IS_ISOLATED_MODE, true, defaultRelocateRule());
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, rule());
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.19", IS_ISOLATED_MODE, true, rule());
         // 加载完整模块
         loadAll();
     }
@@ -93,7 +102,7 @@ public class PrimitiveLoader {
      * @param isIsolated 是否进入沙盒
      * @param isExternal 是否属于外部库（不会扫描类）
      */
-    public static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
+    static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
         if (name.isEmpty()) return false;
         boolean downloaded = false;
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
@@ -126,8 +135,8 @@ public class PrimitiveLoader {
     /**
      * 加载完整模块
      */
-    private static void loadAll() throws Throwable {
-        String[][] rule = defaultRelocateRule();
+    static void loadAll() throws Throwable {
+        String[][] rule = rule();
         // 加载 env 启动 Kotlin 环境
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
         // 加载 util 注册 ClassAppender Callback 回调函数
@@ -139,7 +148,16 @@ public class PrimitiveLoader {
         for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
     }
 
-    public static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate, boolean forceRelocate) throws Throwable {
+    /**
+     * 加载文件
+     *
+     * @param file          文件
+     * @param isIsolated    是否进入沙盒
+     * @param isExternal    是否属于外部库（不会扫描类）
+     * @param relocate      重定向规则
+     * @param forceRelocate 是否强制重定向
+     */
+    static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate, boolean forceRelocate) throws Throwable {
         File jar = file;
         // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
         if (relocate.length > 0) {
@@ -191,7 +209,7 @@ public class PrimitiveLoader {
     /**
      * 获取缓存路径
      */
-    private static File getCacheFile() {
+    static File getCacheFile() {
         File file = new File("cache/taboolib/" + PROJECT_PACKAGE_NAME);
         if (!file.exists()) {
             file.mkdirs();
@@ -202,7 +220,7 @@ public class PrimitiveLoader {
     /**
      * 获取文件保存路径
      */
-    private static File getLibraryFile() {
+    static File getLibraryFile() {
         File file = new File(FILE_LIBS);
         if (!file.exists()) {
             file.mkdirs();
