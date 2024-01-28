@@ -72,13 +72,13 @@ abstract class InventoryHandler {
         @Ghost
         @SubscribeEvent
         private fun onReceive(e: PacketReceiveEvent) {
-            // 如果没有正在开启的页面则不处理
-            if (playerRemoteInventoryMap.isEmpty()) {
-                return
-            }
             when (e.packet.name) {
                 // 关闭窗口
                 "PacketPlayInCloseWindow" -> {
+                    // 如果没有正在开启的页面则不处理
+                    if (playerRemoteInventoryMap.isEmpty()) {
+                        return
+                    }
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "id")!!
                     val player = e.player
                     val remoteInventory = playerRemoteInventoryMap[player.name]
@@ -93,6 +93,10 @@ abstract class InventoryHandler {
                 }
                 // 点击
                 "PacketPlayInWindowClick" -> {
+                    // 如果没有正在开启的页面则不处理
+                    if (playerRemoteInventoryMap.isEmpty()) {
+                        return
+                    }
                     val id = e.packet.read<Int>(if (MinecraftVersion.isUniversal) "containerId" else "a")!!
                     val player = e.player
                     val remoteInventory = playerRemoteInventoryMap[player.name]
