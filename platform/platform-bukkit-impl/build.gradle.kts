@@ -2,6 +2,7 @@
 
 repositories {
     maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://libraries.minecraft.net") }
 }
 
 dependencies {
@@ -15,4 +16,6 @@ dependencies {
     // 用于处理命令
     // ClassCastException: Cannot cast java.lang.String to net.kyori.adventure.text.Component
     compileOnly("net.kyori:adventure-api:4.9.2")
+    // Mojang API
+    compileOnly("com.mojang:brigadier:1.0.18")
 }

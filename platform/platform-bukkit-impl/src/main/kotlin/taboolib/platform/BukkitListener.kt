@@ -45,7 +45,6 @@ class BukkitListener : PlatformListener {
 
     class BukkitListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : Listener, EventExecutor, ProxyListener {
 
-        val isVanillaEvent = Event::class.java.isAssignableFrom(clazz)
         val ignored = CopyOnWriteArraySet<Class<*>>()
 
         override fun execute(listener: Listener, event: Event) {
