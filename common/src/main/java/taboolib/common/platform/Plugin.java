@@ -1,6 +1,8 @@
-package taboolib.common.platform
+package taboolib.common.platform;
 
-import java.io.File
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 /**
  * TabooLib
@@ -9,39 +11,41 @@ import java.io.File
  * @author sky
  * @since 2021/6/15 6:19 下午
  */
-abstract class Plugin {
+public abstract class Plugin {
 
     /**
      * 当加载插件时调用
      */
-    open fun onLoad() = Unit
+    public void onLoad() {}
 
     /**
      * 当启用插件时调用
      */
-    open fun onEnable() = Unit
+    public void onEnable() {}
 
     /**
      * 当服务器启动完成时调用
      */
-    open fun onActive() = Unit
+    public void onActive() {}
 
     /**
      * 当卸载插件时调用
      */
-    open fun onDisable() = Unit
+    public void onDisable() {}
 
     /**
      * 重定向插件文件（用于改变 TabooLib 逻辑）
      */
-    open fun nativeJarFile(): File? {
-        return null
+    @Nullable
+    public File nativeJarFile() {
+        return null;
     }
 
     /**
      * 重定向插件目录（用于改变 TabooLib 逻辑）
      */
-    open fun nativeDataFolder(): File? {
-        return null
+    @Nullable
+    public File nativeDataFolder() {
+        return null;
     }
 }
