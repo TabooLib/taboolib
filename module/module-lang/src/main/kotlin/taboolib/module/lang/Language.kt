@@ -8,6 +8,8 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.ProxyPlayer
 import taboolib.module.chat.HexColor
 import taboolib.module.chat.colored
+import taboolib.module.configuration.Configuration
+import taboolib.module.configuration.Type
 import taboolib.module.lang.event.PlayerSelectLocaleEvent
 import taboolib.module.lang.event.SystemSelectLocaleEvent
 import taboolib.module.lang.gameside.TypeActionBar
@@ -100,7 +102,11 @@ object Language {
     @Awake(LifeCycle.INIT)
     fun reload() {
         // 加载语言文件类型
-        runningResourcesInJar.keys.filter { it.startsWith("$path/") && it.endsWith(".yml") }.forEach { languageCode += it.substringAfterLast('/').substringBeforeLast('.') }
+        runningResourcesInJar.keys.filter { it.startsWith("$path/") }.filter {
+            val extension = it.substringAfterLast('.')
+            val type = Configuration.getTypeFromExtension(extension)
+            type in listOf(Type.YAML, Type.JSON, Type.TOML, Type.HOCON)
+        }.forEach { languageCode += it.substringAfterLast('/').substringBeforeLast('.') }
         // 加载颜色字符模块
         try {
             HexColor.translate("")

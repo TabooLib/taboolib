@@ -10,7 +10,6 @@ import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
 import taboolib.module.configuration.SecuredFile
-import taboolib.module.configuration.Type.YAML
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
@@ -30,15 +29,17 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     init {
         Language.languageCode.forEach { code ->
-            val bytes = runningResourcesInJar["${Language.path}/$code.yml"]
+            val fileName = runningResourcesInJar.keys.first { it.startsWith("${Language.path}/$code") }
+            val bytes = runningResourcesInJar[fileName]
             if (bytes != null) {
                 val nodes = HashMap<String, Type>()
                 val source = bytes.toString(StandardCharsets.UTF_8)
-                val sourceFile = Configuration.loadFromString(source, YAML)
+                val fileType = Configuration.getTypeFromExtension(fileName.split(".").last())
+                val sourceFile = Configuration.loadFromString(source, fileType)
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = releaseResourceFile("${Language.path}/$code.yml")
+                val file = releaseResourceFile(fileName)
                 // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
@@ -65,7 +66,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     }
                 }
             } else {
-                warning("Missing language file: $code.yml")
+                warning("Missing language file: $code.${fileName.split(".").last()}")
             }
         }
     }
@@ -151,7 +152,9 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     is List<*> -> {
                         obj.map { element ->
                             when (element) {
-                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }.toSection(Configuration.empty()))
+                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }
+                                    .toSection(Configuration.empty()))
+
                                 is String -> element.ifEmpty { "&r" }
                                 else -> element
                             }
@@ -179,7 +182,8 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         val argSection = section.getConfigurationSection("args") ?: return section
         // 对已有的变量进行转义
         text = text.replace("[", "\\[").replace("]", "\\]")
-        val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }.associate { it.name to it.getValues(false) }
+        val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }
+            .associate { it.name to it.getValues(false) }
         val newArgs = ArrayList<Map<String, Any?>>()
         val matcher = legacyArgsRegex.matcher(text)
         while (matcher.find()) {
