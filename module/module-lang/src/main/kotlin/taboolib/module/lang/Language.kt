@@ -103,10 +103,10 @@ object Language {
     fun reload() {
         // 加载语言文件类型
         runningResourcesInJar.keys.filter { it.startsWith("$path/") }.filter {
-            val extension = it.substringAfterLast('.')
-            val type = Configuration.getTypeFromExtension(extension)
-            type in listOf(Type.YAML, Type.JSON, Type.TOML, Type.HOCON)
-        }.forEach { languageCode += it.substringAfterLast('/').substringBeforeLast('.') }
+            Configuration.getTypeFromExtension(it.substringAfterLast('.')) in Type.values()
+        }.forEach {
+            languageCode += it.substringAfterLast('/').substringBeforeLast('.')
+        }
         // 加载颜色字符模块
         try {
             HexColor.translate("")

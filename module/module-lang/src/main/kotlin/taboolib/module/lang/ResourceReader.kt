@@ -34,7 +34,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
             if (bytes != null) {
                 val nodes = HashMap<String, Type>()
                 val source = bytes.toString(StandardCharsets.UTF_8)
-                val fileType = Configuration.getTypeFromExtension(fileName.split(".").last())
+                val fileType = Configuration.getTypeFromExtension(fileName.substringAfterLast('.'))
                 val sourceFile = Configuration.loadFromString(source, fileType)
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
@@ -66,7 +66,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     }
                 }
             } else {
-                warning("Missing language file: $code.${fileName.split(".").last()}")
+                warning("Missing language file: $code.${fileName.substringAfterLast('.')}")
             }
         }
     }
@@ -75,10 +75,11 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         migrateLegacyVersion(file)
         file.getKeys(false).forEach { node ->
             when (val obj = file[node]) {
+                // 标准文本
                 is String -> {
                     nodesMap[node] = TypeText(obj)
                 }
-
+                // 列表
                 is List<*> -> {
                     nodesMap[node] = TypeList(obj.mapNotNull { sub ->
                         if (sub is Map<*, *>) {
@@ -88,17 +89,15 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                         }
                     })
                 }
-
+                // 嵌套
                 is ConfigurationSection -> {
                     val type = loadNode(obj.getValues(false).map { it.key to it.value!! }.toMap(), code, node)
                     if (type != null) {
                         nodesMap[node] = type
                     }
                 }
-
-                else -> {
-                    warning("Unsupported language node: $node ($code)")
-                }
+                // 其他
+                else -> warning("Unsupported language node: $node ($code)")
             }
         }
     }
@@ -152,15 +151,12 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     is List<*> -> {
                         obj.map { element ->
                             when (element) {
-                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }
-                                    .toSection(Configuration.empty()))
-
+                                is Map<*, *> -> migrateLegacyJsonType(element.mapKeys { entry -> entry.key.toString() }.toSection(Configuration.empty()))
                                 is String -> element.ifEmpty { "&r" }
                                 else -> element
                             }
                         }
                     }
-
                     else -> obj
                 }
             }
@@ -182,8 +178,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         val argSection = section.getConfigurationSection("args") ?: return section
         // 对已有的变量进行转义
         text = text.replace("[", "\\[").replace("]", "\\]")
-        val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }
-            .associate { it.name to it.getValues(false) }
+        val args = argSection.getKeys(false).mapNotNull { argSection.getConfigurationSection(it) }.associate { it.name to it.getValues(false) }
         val newArgs = ArrayList<Map<String, Any?>>()
         val matcher = legacyArgsRegex.matcher(text)
         while (matcher.find()) {
