@@ -1,8 +1,8 @@
 package taboolib.module.nms
 
-import taboolib.common.TabooLib
+import taboolib.common.ClassAppender
 
-object AsmClassLoader : ClassLoader(TabooLib::class.java.classLoader) {
+object AsmClassLoader : ClassLoader(ClassAppender.getClassLoader()) {
 
     override fun findClass(name: String?): Class<*> {
         try {

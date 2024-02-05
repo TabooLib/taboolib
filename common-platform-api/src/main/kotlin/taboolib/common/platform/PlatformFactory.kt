@@ -51,7 +51,7 @@ object PlatformFactory {
 
             // 加载接口
             runningClassesWithoutLibrary.parallelStream().forEach {
-                if (it.isAnnotationPresent(Awake::class.java) && Platform.check(it)) {
+                if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
                     // 依赖注入接口

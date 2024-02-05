@@ -7,6 +7,9 @@ import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
 import taboolib.common.TabooLib
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.Plugin
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
@@ -94,6 +97,31 @@ var extraLoadedClasses = ConcurrentHashMap<String, Class<*>>()
 var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
 
 /**
+ * 获取 Plugin 实现
+ */
+fun findPluginImpl(): Plugin? {
+    // 从 Jar 中获取类
+    val cls = runningClassMapInJar.values.firstOrNull { Plugin::class.java != it && Plugin::class.java.isAssignableFrom(it) && checkPlatform(it) }
+    return if (cls != null) {
+        try {
+            val declaredField = cls.getDeclaredField("INSTANCE")
+            declaredField.isAccessible = true
+            declaredField.get(null) as Plugin
+        } catch (ex: NoSuchFieldException) {
+            cls.getDeclaredConstructor().newInstance() as Plugin
+        }
+    } else null
+}
+
+/**
+ * 判断平台实现
+ */
+fun checkPlatform(cls: Class<*>): Boolean {
+    val platformSide = cls.getAnnotation(PlatformSide::class.java)
+    return platformSide == null || platformSide.value.any { i -> i == Platform.CURRENT }
+}
+
+/**
  * 取该类在当前项目中被加载的任何实例
  * 例如：@Awake 自唤醒类，或是 Kotlin Companion Object、Kotlin Object 对象
  *
@@ -122,7 +150,7 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
     return try {
         // 伴生类
         val instanceObj = if (simpleName == "Companion") {
-            ReflexClass.of(getClass(name.substringBeforeLast('$'))).getField("Companion", findToParent = false, remap = false)
+            ReflexClass.of(classOf(name.substringBeforeLast('$'))).getField("Companion", findToParent = false, remap = false)
         } else {
             ReflexClass.of(this).getField("INSTANCE", findToParent = false, remap = false)
         }
@@ -150,7 +178,7 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
 /**
  * 获取 URL 下的所有类
  */
-fun URL.getClasses(classLoader: ClassLoader = TabooLib::class.java.classLoader): Map<String, Class<*>> {
+fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, Class<*>> {
     val classes = LinkedHashMap<String, Class<*>>()
     val srcFile = try {
         File(toURI())
@@ -193,11 +221,8 @@ fun URL.getResources(): Map<String, ByteArray> {
     return resources
 }
 
-/**
- * 从 TabooLib 的 ClassLoader 中获取类，且不触发类的初始化
- */
-private fun getClass(name: String): Class<*> {
-    return Class.forName(name, false, TabooLib::class.java.classLoader)
+private fun classOf(name: String): Class<*> {
+    return Class.forName(name, false, ClassAppender.getClassLoader())
 }
 
 private fun <T> sup(supplier: () -> T): Supplier<T> {
@@ -222,6 +247,4 @@ private fun init() {
             extraLoadedResources += file.toURI().toURL().getResources()
         }
     }
-    // PrimitiveIO.println("Kotlin Env: %s", TabooLib.isKotlinEnvironment())
-    // PrimitiveIO.println("Running Classes %s", runningClasses)
 }

@@ -2,7 +2,10 @@ package taboolib.common.env;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.*;
+import taboolib.common.ClassAppender;
+import taboolib.common.PrimitiveIO;
+import taboolib.common.PrimitiveSettings;
+import taboolib.common.TabooLib;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,17 +41,14 @@ public class RuntimeEnv {
 
     static void init() throws Throwable {
         List<JarRelocation> rel = new ArrayList<>();
-        // 在非隔离模式对 Kotlin 进行重定向
-        if (!PrimitiveSettings.IS_ISOLATED_MODE) {
-            // 其他 TabooLib 插件可能加载了相同版本的 Kotlin 环境，因此无需重复加载
-            if (TabooLib.isKotlinEnvironment()) {
-                return;
-            }
-            // 启用 Kotlin 重定向
-            if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
-                rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveSettings.formatVersion(KOTLIN_VERSION) + "."));
-                rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveSettings.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
-            }
+        // 在非隔离模式下检查 Kotlin 环境
+        if (!PrimitiveSettings.IS_ISOLATED_MODE && TabooLib.isKotlinEnvironment()) {
+            return;
+        }
+        // 启用 Kotlin 重定向
+        if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
+            rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveSettings.formatVersion(KOTLIN_VERSION) + "."));
+            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveSettings.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
         }
         // 加载 Kotlin 环境
         if (!KOTLIN_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);

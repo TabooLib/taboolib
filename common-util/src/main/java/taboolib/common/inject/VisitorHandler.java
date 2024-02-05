@@ -12,6 +12,7 @@ import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
 import taboolib.common.platform.Ghost;
 import taboolib.common.platform.Platform;
+import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.SkipTo;
 
 import java.util.*;
@@ -175,7 +176,7 @@ public class VisitorHandler {
                         continue;
                     }
                     // 排除其他平台
-                    if (!Platform.check(it.getValue())) {
+                    if (!checkPlatform(it.getValue())) {
                         continue;
                     }
                     classes.add(it.getValue());
@@ -183,5 +184,13 @@ public class VisitorHandler {
             }
         }
         return classes;
+    }
+
+    /**
+     * 检查指定类是否允许在当前平台运行
+     */
+    public static boolean checkPlatform(Class<?> cls) {
+        PlatformSide platformSide = cls.getAnnotation(PlatformSide.class);
+        return platformSide == null || Arrays.stream(platformSide.value()).anyMatch(i -> i == Platform.CURRENT);
     }
 }

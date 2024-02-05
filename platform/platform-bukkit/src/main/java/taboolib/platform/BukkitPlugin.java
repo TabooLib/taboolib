@@ -38,22 +38,23 @@ public class BukkitPlugin extends JavaPlugin {
     private static BukkitPlugin instance;
 
     static {
-        long time = System.currentTimeMillis();
         // 初始化 IsolatedClassLoader
+        long time = System.currentTimeMillis();
         try {
             IsolatedClassLoader.init(BukkitPlugin.class);
+            // 排除两个接口
+            IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitWorldGenerator");
+            IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitBiomeProvider");
         } catch (Throwable ex) {
-            // 关闭插件
-            TabooLib.setStopped(true);
             // 提示信息
             PrimitiveIO.error("[TabooLib] Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            // 打印错误信息
-            ex.printStackTrace();
+            // 重抛错误
+            throw ex;
         }
         // 生命周期任务
         TabooLib.lifeCycle(LifeCycle.CONST);
         // 检索 TabooLib Plugin 实现
-        pluginInstance = PlatformImplementationKt.findImplementation(Plugin.class);
+        pluginInstance = Plugin.findImpl();
         // 调试模式显示加载耗时
         if (PrimitiveSettings.IS_DEV_MODE) {
             PrimitiveIO.println("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
@@ -89,7 +90,12 @@ public class BukkitPlugin extends JavaPlugin {
                 pluginInstance.onEnable();
             }
             // 启动调度器
-            ExecutorKt.startExecutor();
+            try {
+                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BukkitExecutor");
+                o.getClass().getDeclaredMethod("start").invoke(o);
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
         }
         // 再次判断插件是否关闭
         // 因为插件可能在 onEnable() 下关闭

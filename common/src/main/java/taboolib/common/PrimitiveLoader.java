@@ -162,8 +162,8 @@ public class PrimitiveLoader {
         // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
         if (relocate.length > 0) {
             List<Relocation> rel = Arrays.stream(relocate).map(r -> new Relocation(r[0], r[1])).collect(Collectors.toList());
-            // 在非隔离模式下进行 Kotlin 重定向
-            if (!IS_ISOLATED_MODE && !SKIP_KOTLIN_RELOCATE) {
+            // 启用 Kotlin 重定向
+            if (!SKIP_KOTLIN_RELOCATE) {
                 String kt = "!kotlin".substring(1);
                 String ktc = "!kotlinx.coroutines".substring(1);
                 String kv = formatVersion(KOTLIN_VERSION);

@@ -48,14 +48,6 @@ public enum Platform {
     }
 
     /**
-     * 检查指定类是否允许在当前平台运行
-     */
-    public static boolean check(Class<?> cls) {
-        PlatformSide platformSide = cls.getAnnotation(PlatformSide.class);
-        return platformSide == null || Arrays.stream(platformSide.value()).anyMatch(i -> i == CURRENT);
-    }
-
-    /**
      * 获取属于 Minecraft 的平台类型
      */
     public static Platform[] minecraft() {

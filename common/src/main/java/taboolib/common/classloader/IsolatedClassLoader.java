@@ -1,5 +1,8 @@
 package taboolib.common.classloader;
 
+import jdk.internal.loader.URLClassPath;
+import taboolib.common.PrimitiveIO;
+
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
@@ -40,12 +43,26 @@ public class IsolatedClassLoader extends URLClassLoader {
         super(urls, parent);
 
         // 默认排除类
-        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader"); // JavaPlugin 直接访问
-        excludedClasses.add("taboolib.common.ClassAppender"); // 储存数据
-        excludedClasses.add("taboolib.common.TabooLib"); // 储存数据
-        excludedClasses.add("taboolib.common.OpenAPI"); // 其他插件访问，同时访问 TabooLib 的 AwakenedClasses
-        excludedClasses.add("taboolib.common.platform.Plugin"); // 其他插件访问
         excludedPackages.add("java.");
+        // JavaPlugin 直接访问
+        excludedClasses.add("taboolib.common.classloader.IsolatedClassLoader");
+
+        // 储存数据
+        excludedClasses.add("taboolib.common.TabooLib");
+        excludedClasses.add("taboolib.common.ClassAppender");
+        excludedClasses.add("taboolib.common.ClassAppender$Callback");
+
+        // 其他插件访问
+        excludedClasses.add("taboolib.common.OpenAPI");
+        excludedClasses.add("taboolib.common.platform.Plugin");
+
+        // 交叉访问
+        excludedClasses.add("taboolib.common.LifeCycle");
+        excludedClasses.add("taboolib.common.LifeCycleTask");
+        excludedClasses.add("taboolib.common.PrimitiveIO");
+        excludedClasses.add("taboolib.common.PrimitiveSettings");
+        excludedClasses.add("taboolib.common.platform.Platform");
+        excludedClasses.add("taboolib.common.platform.PlatformSide");
 
         // Load excluded classes and packages by SPI
         ServiceLoader<IsolatedClassLoaderConfig> serviceLoader = ServiceLoader.load(IsolatedClassLoaderConfig.class, parent);
@@ -59,6 +76,11 @@ public class IsolatedClassLoader extends URLClassLoader {
                 excludedPackages.addAll(configExcludedPackages);
             }
         }
+    }
+
+    @Override
+    public void addURL(URL url) {
+        super.addURL(url);
     }
 
     @Override

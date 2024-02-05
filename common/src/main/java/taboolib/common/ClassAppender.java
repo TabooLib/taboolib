@@ -37,9 +37,6 @@ public class ClassAppender {
         }
     }
 
-    ClassAppender() {
-    }
-
     /**
      * 加载一个文件到 ClassLoader
      *
@@ -49,17 +46,14 @@ public class ClassAppender {
      */
     public static ClassLoader addPath(Path path, boolean isIsolated, boolean isExternal) throws Throwable {
         File file = new File(path.toUri().getPath());
-
         // IsolatedClassLoader
-        ClassLoader loader = TabooLib.class.getClassLoader();
-        if (loader instanceof IsolatedClassLoader) {
-            if (isIsolated) {
-                addURL(loader, ucp(loader), file, isExternal);
-                return loader;
-            }
-            loader = loader.getParent();
+        if (isIsolated) {
+            IsolatedClassLoader loader = IsolatedClassLoader.INSTANCE;
+            loader.addURL(file.toURI().toURL());
+            callbacks.forEach(i -> i.add(loader, file, isExternal));
+            return loader;
         }
-
+        ClassLoader loader = TabooLib.class.getClassLoader();
         // Application
         if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
             addURL(loader, ucp(loader.getClass()), file, isExternal);
@@ -80,14 +74,7 @@ public class ClassAppender {
      * 获取 addPath 函数所使用的 ClassLoader（原函数为：judgeAddPathClassLoader）
      */
     public static ClassLoader getClassLoader() {
-        ClassLoader loader = TabooLib.class.getClassLoader();
-        if (loader instanceof IsolatedClassLoader) {
-            if (PrimitiveSettings.IS_ISOLATED_MODE) {
-                return loader;
-            }
-            return loader.getParent();
-        }
-        return loader;
+        return PrimitiveSettings.IS_ISOLATED_MODE ? IsolatedClassLoader.INSTANCE : TabooLib.class.getClassLoader();
     }
 
     /**

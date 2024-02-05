@@ -12,5 +12,13 @@ annotation class PlatformImplementation(val platform: Platform)
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && Platform.check(it) }?.getInstance(true)?.get() as? T
+    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && checkPlatform(it) }?.getInstance(true)?.get() as? T
+}
+
+/**
+ * 判断平台实现
+ */
+fun checkPlatform(cls: Class<*>): Boolean {
+    val platformSide = cls.getAnnotation(PlatformSide::class.java)
+    return platformSide == null || platformSide.value.any { i -> i == Platform.CURRENT }
 }
