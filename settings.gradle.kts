@@ -25,7 +25,6 @@ include(
     "expansion:expansion-geek-tool",
     "expansion:expansion-ioc",
     "expansion:expansion-javascript",
-    "expansion:expansion-lang-tools",
     "expansion:expansion-persistent-container",
     "expansion:expansion-persistent-container-object",
     "expansion:expansion-player-database",
