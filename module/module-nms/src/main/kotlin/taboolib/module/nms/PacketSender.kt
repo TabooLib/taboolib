@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.ReflexClass
+import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
@@ -19,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2022/7/19 16:02
  */
+@Inject
 @PlatformSide(Platform.BUKKIT)
 object PacketSender {
 
