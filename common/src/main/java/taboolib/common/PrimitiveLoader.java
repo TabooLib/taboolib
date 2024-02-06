@@ -40,6 +40,8 @@ public class PrimitiveLoader {
 
     public static final String ASM_GROUP = "!org.objectweb.asm".substring(1);
 
+    public static final String JR_GROUP = "!me.lucko.jarrelocator".substring(1);
+
     /**
      * 基础依赖（隔离加载）
      */
@@ -54,7 +56,7 @@ public class PrimitiveLoader {
      * 默认的重定向规则
      */
     static String[][] rule() {
-        String[][] rule = new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}, {ASM_GROUP + ".", ASM_GROUP + "9."}};
+        String[][] rule = new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}, {ASM_GROUP + ".", ASM_GROUP + "9."}, {JR_GROUP + ".", JR_GROUP + "15."}};
         // 是否跳过 TabooLib 重定向
         if (SKIP_TABOOLIB_RELOCATE) {
             // 采用全局重定向规则
@@ -81,9 +83,9 @@ public class PrimitiveLoader {
         for (String[] i : DEPS) {
             load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
         }
-        // 重新加载 asm9 用于 reflex 使用
-        for (int i = 1; i < DEPS.length; i++) {
-            load(REPO_CENTRAL, DEPS[i][0], DEPS[i][1], DEPS[i][2], IS_ISOLATED_MODE, true, rule());
+        // 重新加载基础依赖用于正式使用
+        for (String[] i : DEPS) {
+            load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
         }
         // 加载反射模块
         load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, rule());
