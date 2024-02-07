@@ -97,7 +97,7 @@ public class VelocityPlugin {
             }
             // 启动调度器
             try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BukkitExecutor");
+                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.VelocityExecutor");
                 o.getClass().getDeclaredMethod("start").invoke(o);
             } catch (Throwable ex) {
                 ex.printStackTrace();

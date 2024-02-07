@@ -81,7 +81,7 @@ public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
             }
             // 启动调度器
             try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BukkitExecutor");
+                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BungeeExecutor");
                 o.getClass().getDeclaredMethod("start").invoke(o);
             } catch (Throwable ex) {
                 ex.printStackTrace();
