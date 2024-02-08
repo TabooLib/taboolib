@@ -26,21 +26,26 @@ import static taboolib.common.PrimitiveSettings.*;
 @SuppressWarnings({"DataFlowIssue", "CallToPrintStackTrace"})
 public class PrimitiveLoader {
 
-    static {
-        Precondition.onlyIsolated(PrimitiveLoader.class);
-    }
-
     public static final String TABOOLIB_GROUP = "!io.izzel.taboolib".substring(1);
 
     public static final String TABOOLIB_PACKAGE_NAME = "taboolib";
-
-    public static final String PROJECT_PACKAGE_NAME = "taboolib".substring(0, "taboolib".length() - 9);
 
     public static final String TABOOPROJECT_GROUP = "!org.tabooproject".substring(1);
 
     public static final String ASM_GROUP = "!org.objectweb.asm".substring(1);
 
     public static final String JR_GROUP = "!me.lucko.jarrelocator".substring(1);
+
+    private static String projectPackageName;
+
+    static {
+        Precondition.onlyIsolated(PrimitiveLoader.class);
+        try {
+            projectPackageName = "taboolib".substring(0, "taboolib".length() - 9);
+        } catch (Throwable ex) {
+            projectPackageName = "taboolib";
+        }
+    }
 
     /**
      * 基础依赖（隔离加载）
@@ -212,7 +217,7 @@ public class PrimitiveLoader {
      * 获取缓存路径
      */
     static File getCacheFile() {
-        File file = new File("cache/taboolib/" + PROJECT_PACKAGE_NAME);
+        File file = new File("cache/taboolib/" + projectPackageName);
         if (!file.exists()) {
             file.mkdirs();
         }
