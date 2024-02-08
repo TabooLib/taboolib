@@ -45,12 +45,12 @@ public class PrimitiveSettings {
     /**
      * 跳过 Kotlin 重定向
      */
-    public static final boolean SKIP_KOTLIN_RELOCATE = RUNTIME_PROPERTIES.getProperty("skip-kotlin-relocate", "false").equals("true");
+    public static final boolean SKIP_KOTLIN_RELOCATE = VERSION_PROPERTIES.getProperty("skip-kotlin-relocate", "false").equals("true");
 
     /**
      * 跳过 TabooLib 重定向
      */
-    public static final boolean SKIP_TABOOLIB_RELOCATE = RUNTIME_PROPERTIES.getProperty("skip-taboolib-relocate", "false").equals("true");
+    public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", "false").equals("true");
 
     /**
      * 调试模式
