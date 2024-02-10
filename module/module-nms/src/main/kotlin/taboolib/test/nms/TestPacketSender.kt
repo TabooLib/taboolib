@@ -48,13 +48,13 @@ object TestPacketSender : Test() {
         return result
     }
 
-    @SubscribeEvent
-    private fun onSend(e: PacketSendEvent) {
-        testSend = true
-    }
-
-    @SubscribeEvent
-    private fun onReceive(e: PacketReceiveEvent) {
-        testReceive = true
-    }
+//    @SubscribeEvent
+//    private fun onSend(e: PacketSendEvent) {
+//        testSend = true
+//    }
+//
+//    @SubscribeEvent
+//    private fun onReceive(e: PacketReceiveEvent) {
+//        testReceive = true
+//    }
 }
