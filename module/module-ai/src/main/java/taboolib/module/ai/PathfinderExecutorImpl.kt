@@ -200,7 +200,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun navigationMove(entity: LivingEntity, location: Location, speed: Double): Boolean {
-        return (getNavigation(entity) as Navigation).a(location.x, location.y, location.z, speed)
+        return (getNavigation(entity) as NavigationAbstract).a(location.x, location.y, location.z, speed)
     }
 
     override fun navigationMove(entity: LivingEntity, target: LivingEntity): Boolean {
@@ -208,7 +208,7 @@ class PathfinderExecutorImpl : PathfinderExecutor() {
     }
 
     override fun navigationMove(entity: LivingEntity, target: LivingEntity, speed: Double): Boolean {
-        return (getNavigation(entity) as Navigation).a((target as CraftEntity).handle, speed)
+        return (getNavigation(entity) as NavigationAbstract).a((target as CraftEntity).handle, speed)
     }
 
     override fun navigationReach(entity: LivingEntity): Boolean {
