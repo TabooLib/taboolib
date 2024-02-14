@@ -117,7 +117,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                 PrimitiveIO.println("Loading library %s:%s:%s", dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
                 // 如果没有重定向规则，直接注入
                 if (relocation.isEmpty()) {
-                    ClassLoader loader = ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, true);
+                    ClassLoader loader = ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, dep.isExternal());
                     injectedDependencies.computeIfAbsent(dep, dependency -> new HashSet<>()).add(loader);
                 } else {
                     // 获取重定向后的文件
@@ -139,7 +139,7 @@ public class DependencyDownloader extends AbstractXmlParser {
                         }
                     }
                     // 注入重定向后的文件
-                    ClassLoader loader = ClassAppender.addPath(rel.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, true);
+                    ClassLoader loader = ClassAppender.addPath(rel.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, dep.isExternal());
                     injectedDependencies.computeIfAbsent(dep, dependency -> new HashSet<>()).add(loader);
                 }
             } else {

@@ -45,6 +45,11 @@ public class Dependency extends AbstractXmlParser {
      */
     private String version;
 
+    /**
+     * 是否外部库（不加入 loadedClasses）
+     */
+    private boolean isExternal;
+
     public Dependency(String groupId, String artifactId, String version, DependencyScope scope) {
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -185,6 +190,14 @@ public class Dependency extends AbstractXmlParser {
 
     public String getVersion() {
         return version.equals(LATEST_VERSION) ? null : version;
+    }
+
+    public boolean isExternal() {
+        return isExternal;
+    }
+
+    public void setExternal(boolean external) {
+        isExternal = external;
     }
 
     public DependencyScope getScope() {

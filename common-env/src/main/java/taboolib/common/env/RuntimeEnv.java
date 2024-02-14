@@ -125,8 +125,8 @@ public class RuntimeEnv {
             }
         }
         if (dependencies != null) {
-            for (RuntimeDependency dependency : dependencies) {
-                String allTest = dependency.test();
+            for (RuntimeDependency dep : dependencies) {
+                String allTest = dep.test();
                 List<String> tests = new ArrayList<>();
                 if (allTest.contains(",")) {
                     tests.addAll(Arrays.asList(allTest.split(",")));
@@ -137,7 +137,7 @@ public class RuntimeEnv {
                     continue;
                 }
                 List<JarRelocation> relocation = new ArrayList<>();
-                String[] relocate = dependency.relocate();
+                String[] relocate = dep.relocate();
                 if (relocate.length % 2 != 0) {
                     throw new IllegalStateException("invalid relocate format");
                 }
@@ -146,8 +146,8 @@ public class RuntimeEnv {
                     String relocatePattern = relocate[i + 1].startsWith("!") ? relocate[i + 1].substring(1) : relocate[i + 1];
                     relocation.add(new JarRelocation(pattern, relocatePattern));
                 }
-                String url = dependency.value().startsWith("!") ? dependency.value().substring(1) : dependency.value();
-                loadDependency(url, baseFile, relocation, dependency.repository(), dependency.ignoreOptional(), dependency.ignoreException(), dependency.transitive(), dependency.scopes());
+                String url = dep.value().startsWith("!") ? dep.value().substring(1) : dep.value();
+                loadDependency(url, baseFile, relocation, dep.repository(), dep.ignoreOptional(), dep.ignoreException(), dep.transitive(), dep.scopes(), dep.external());
             }
         }
     }
@@ -184,7 +184,21 @@ public class RuntimeEnv {
             boolean ignoreOptional,
             boolean ignoreException,
             boolean transitive,
-            @NotNull DependencyScope[] dependencyScopes
+            @NotNull DependencyScope[] scope
+    ) throws Throwable {
+        loadDependency(url, baseDir, relocation, repository, ignoreOptional, ignoreException, transitive, scope, true);
+    }
+
+    public void loadDependency(
+            @NotNull String url,
+            @NotNull File baseDir,
+            @NotNull List<JarRelocation> relocation,
+            @Nullable String repository,
+            boolean ignoreOptional,
+            boolean ignoreException,
+            boolean transitive,
+            @NotNull DependencyScope[] scope,
+            boolean external
     ) throws Throwable {
         String[] args = url.split(":");
         DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
@@ -197,7 +211,7 @@ public class RuntimeEnv {
         downloader.addRepository(new Repository(repository));
         downloader.setIgnoreOptional(ignoreOptional);
         downloader.setIgnoreException(ignoreException);
-        downloader.setDependencyScopes(dependencyScopes);
+        downloader.setDependencyScopes(scope);
         downloader.setTransitive(transitive);
         // 解析依赖
         File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
@@ -211,11 +225,12 @@ public class RuntimeEnv {
             downloader.loadDependencyFromInputStream(new URL(pom).openStream());
         }
         // 加载自身
-        Dependency current = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+        Dependency dep = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+        dep.setExternal(external);
         if (transitive) {
-            downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), current));
+            downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), dep));
         } else {
-            downloader.injectClasspath(Collections.singleton(current));
+            downloader.injectClasspath(Collections.singleton(dep));
         }
     }
 }
