@@ -39,6 +39,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     override fun loadFromFile(file: File) {
         this.file = file
         try {
+            clear()
             parser().parse(file, root, ParsingMode.REPLACE, FileNotFoundAction.THROW_ERROR)
         } catch (ex: Exception) {
             if (file.extension != "bak") {
@@ -52,6 +53,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override fun loadFromString(contents: String) {
         try {
+            clear()
             parser().parse(contents, root, ParsingMode.REPLACE)
         } catch (t: Exception) {
             warning("Source: \n$contents")
@@ -61,11 +63,13 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     }
 
     override fun loadFromReader(reader: Reader) {
+        clear()
         parser().parse(reader, root, ParsingMode.REPLACE)
         reloadCallback.forEach { it.run() }
     }
 
     override fun loadFromInputStream(inputStream: InputStream) {
+        clear()
         parser().parse(inputStream, root, ParsingMode.REPLACE)
         reloadCallback.forEach { it.run() }
     }
