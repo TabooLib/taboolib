@@ -72,7 +72,7 @@ object Language {
     )
 
     /** 是否在语言文件中启用 SimpleComponent 格式化 */
-    val enableSimpleComponent = false
+    var enableSimpleComponent = false
 
     /** 添加新的语言文件 */
     fun addLanguage(vararg code: String) {
