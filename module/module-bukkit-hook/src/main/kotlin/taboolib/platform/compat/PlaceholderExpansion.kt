@@ -29,6 +29,22 @@ fun List<String>.replacePlaceholder(player: Player): List<String> {
     }
 }
 
+fun String.replacePlaceholder(player: OfflinePlayer): String {
+    return try {
+        PlaceholderAPI.setPlaceholders(player, this)
+    } catch (ex: NoClassDefFoundError) {
+        this
+    }
+}
+
+fun List<String>.replacePlaceholder(player: OfflinePlayer): List<String> {
+    return try {
+        PlaceholderAPI.setPlaceholders(player, this)
+    } catch (ex: NoClassDefFoundError) {
+        this
+    }
+}
+
 /**
  * TabooLib
  * taboolib.platform.compat.PlaceholderExpansion
