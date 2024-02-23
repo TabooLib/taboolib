@@ -62,7 +62,11 @@ class ConfigLoader : ClassVisitor(1) {
             } else {
                 val file = releaseResourceFile(name, target = target)
                 // 兼容模式加载
-                val conf = if (field.fieldType == SecuredFile::class.java) SecuredFile.loadConfiguration(file) else Configuration.loadFromFile(file)
+                val conf = if (field.fieldType == SecuredFile::class.java) {
+                    SecuredFile.loadConfiguration(file)
+                } else {
+                    Configuration.loadFromFile(file, concurrent = configAnno.property("concurrent", true))
+                }
                 // 赋值
                 field.set(instance?.get(), conf)
                 // 自动重载
