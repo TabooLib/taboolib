@@ -1,9 +1,11 @@
 package taboolib.platform
 
 import org.bukkit.scheduler.BukkitRunnable
+import taboolib.common.PrimitiveSettings
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
+import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.service.PlatformExecutor
 
 /**
@@ -26,6 +28,14 @@ class BukkitExecutor : PlatformExecutor {
     override fun start() {
         started = true
         tasks.forEach { submit(it) }
+        // 启动插件统计
+        runCatching {
+            val metrics = BukkitMetrics(plugin, "TabooLib-6", 21108, PrimitiveSettings.TABOOLIB_VERSION)
+            metrics.addCustomChart(BukkitMetrics.SimplePie("project") { pluginId })
+            metrics.addCustomChart(BukkitMetrics.SimplePie("kotlin_version") { PrimitiveSettings.KOTLIN_VERSION })
+            metrics.addCustomChart(BukkitMetrics.SimplePie("taboolib_version") { PrimitiveSettings.TABOOLIB_VERSION })
+            metrics.addCustomChart(BukkitMetrics.AdvancedPie("install_module") { PrimitiveSettings.INSTALL_MODULES.associateWith { 1 } })
+        }
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
