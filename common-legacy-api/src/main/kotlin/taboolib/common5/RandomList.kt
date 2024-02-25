@@ -9,6 +9,9 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 class RandomList<T>(vararg element: Pair<T, Int>) {
 
+    constructor(element: Collection<Pair<T, Int>>) : this(*element.toTypedArray())
+
+    /** 随机列表 */
     private val value = CopyOnWriteArrayList<Value<T>>()
 
     init {
@@ -34,13 +37,31 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
     }
 
     /**
+     * 获取随机元素并移除
+     */
+    fun take(): T? {
+        val element = random()
+        if (element != null) {
+            remove(element)
+        }
+        return element
+    }
+
+    /**
      * 添加元素
      *
      * @param element 元素
-     * @param index 权重
+     * @param weight 权重
      */
-    fun add(element: T, index: Int = 1) {
-        value.add(Value(element, index))
+    fun add(element: T, weight: Int = 1) {
+        value.add(Value(element, weight))
+    }
+
+    /**
+     * 添加元素
+     */
+    fun addAll(elements: Collection<Pair<T, Int>>) {
+        elements.forEach { add(it.first, it.second) }
     }
 
     /**
@@ -66,5 +87,17 @@ class RandomList<T>(vararg element: Pair<T, Int>) {
         return value.size
     }
 
+    /**
+     * 清空元素
+     */
+    fun clear() {
+        value.clear()
+    }
+
     data class Value<T>(val element: T, val index: Int)
+}
+
+/** 转换为随机列表 */
+fun <T> Collection<Pair<T, Int>>.toRandomList(): RandomList<T> {
+    return RandomList(this)
 }
