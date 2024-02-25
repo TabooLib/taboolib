@@ -1,5 +1,7 @@
 package taboolib.module.configuration
 
+import kotlin.reflect.KProperty
+
 /**
  * TabooLib
  * taboolib.module.configuration.ConfigNodeTransfer
@@ -10,15 +12,52 @@ package taboolib.module.configuration
 @Suppress("UNCHECKED_CAST")
 class ConfigNodeTransfer<T, R>(internal val transfer: T.() -> R) {
 
-    internal var value: Any? = null
+    /** 懒加载模式 */
+    internal var lazy = false
         private set
 
-    // 外部业务调用
-    fun update(value: Any?) {
-        this.value = transfer(value as T)
+    /** 配置文件值 */
+    internal var configValue: Any? = null
+        private set
+
+    /** 缓存值 */
+    internal var cachedValue: Any? = null
+        private set
+
+    constructor(lazy: Boolean, transfer: T.() -> R) : this(transfer) {
+        this.lazy = lazy
     }
 
+    /** 获取转换后的值 */
     fun get(): R {
-        return value!! as R
+        // 懒加载模式
+        if (lazy && cachedValue == null && configValue != null) {
+            cachedValue = transfer(configValue as T)
+        }
+        return cachedValue as? R ?: error("No value")
     }
+
+    /** 刷新缓存 */
+    internal fun reset(configValue: Any) {
+        // 懒加载模式
+        if (lazy) {
+            this.cachedValue = null
+            this.configValue = configValue
+        } else {
+            this.cachedValue = transfer(configValue as T)
+        }
+    }
+
+    /** 代理属性 */
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): R {
+        return get()
+    }
+}
+
+fun <T, R> conversion(lazy: Boolean = false, block: T.() -> R): ConfigNodeTransfer<T, R> {
+    return ConfigNodeTransfer(lazy, block)
+}
+
+fun <T, R> lazyConversion(block: T.() -> R): ConfigNodeTransfer<T, R> {
+    return ConfigNodeTransfer(true, block)
 }

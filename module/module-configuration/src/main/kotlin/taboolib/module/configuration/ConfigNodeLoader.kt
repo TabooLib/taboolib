@@ -15,22 +15,27 @@ class ConfigNodeLoader : ClassVisitor(2) {
     override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
         if (field.isAnnotationPresent(ConfigNode::class.java)) {
             val node = field.getAnnotation(ConfigNode::class.java)
-            val bind = node.property("bind", "config.yml")
+            var bind = node.property("bind", "config.yml")
+            // 自动补全后缀
+            if (!bind.contains('.')) {
+                bind = "$bind.yml"
+            }
             val file = ConfigLoader.files[bind]
             if (file == null) {
                 warning("$bind not defined: $field")
                 return
             }
             file.nodes += field
-            val value = node.property("value", "")
-            var data = file.configuration[value.ifEmpty { field.name.toNode() }]
+            // 绑定的节点
+            val bindNode = node.property("value", "").ifEmpty { field.name.substringBefore('$').toNode() }
+            var data = file.configuration[bindNode]
             if (data == null) {
-                warning("$value not found in $bind")
+                warning("$bindNode not found in $bind")
                 return
             }
             if (field.fieldType == ConfigNodeTransfer::class.java) {
                 val transfer = field.get(instance?.get()) as ConfigNodeTransfer<*, *>
-                transfer.update(data)
+                transfer.reset(data)
             } else {
                 when (field.fieldType.nonPrimitive()) {
                     Integer::class.java -> data = Coerce.toInteger(data)

@@ -33,7 +33,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
     }
 
     override fun saveToFile(file: File?) {
-        (file ?: this.file)?.writeText(saveToString()) ?: error("No file")
+        (file ?: this.file)?.writeText(saveToString()) ?: error("File not specified")
     }
 
     override fun loadFromFile(file: File) {
