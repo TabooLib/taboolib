@@ -3,7 +3,7 @@ package taboolib.module.nms
 import org.objectweb.asm.commons.Remapper
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureWriter
-import taboolib.common.util.unsafeLazy
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -22,9 +22,10 @@ open class MinecraftRemapper : Remapper() {
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
 
-    val mapping by unsafeLazy {
-        MinecraftVersion.mapping
-    }
+    /**
+     * 缓存类的父类和接口
+     */
+    val parentsCacheMap = ConcurrentHashMap<String, List<String>>()
 
     /**
      * 在 1.17 版本下进行字段转换
@@ -34,8 +35,10 @@ open class MinecraftRemapper : Remapper() {
      */
     override fun mapFieldName(owner: String, name: String, descriptor: String): String {
         if (MinecraftVersion.isUniversal) {
-            val universal = translate(owner).replace('/', '.')
-            return mapping.fields.firstOrNull { it.path == universal && it.translateName == name }?.mojangName ?: name
+            // 当前运行时的 Owner 名称
+            val runningOwner = translate(owner).replace('/', '.')
+            val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
+            return MinecraftVersion.mapping.fields.find { it.path in findPath && it.translateName == name }?.mojangName ?: name
         }
         return name
     }
@@ -50,8 +53,10 @@ open class MinecraftRemapper : Remapper() {
             }
             SignatureReader(descriptor).accept(signatureWriter)
             val desc = signatureWriter.toString()
-            val universal = translate(owner).replace('/', '.')
-            return mapping.methods.firstOrNull { it.path == universal && it.translateName == name && it.descriptor == desc }?.mojangName ?: name
+            // 当前运行时的 Owner 名称
+            val runningOwner = translate(owner).replace('/', '.')
+            val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
+            return MinecraftVersion.mapping.methods.find { it.path in findPath && it.translateName == name && it.descriptor == desc }?.mojangName ?: name
         }
         return name
     }
@@ -77,18 +82,39 @@ open class MinecraftRemapper : Remapper() {
             // 将低版本包名替换为高版本包名
             // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
             if (key.startsWith("net/minecraft/server/v1_")) {
-                mapping.classMap[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
+                MinecraftVersion.mapping.classMap[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
             } else {
                 key
             }
         } else {
             // 将高版本包名替换为低版本包名
             // net/minecraft/server/level/EntityPlayer -> net/minecraft/server/v1_17_R1/EntityPlayer
-            if (mapping.classMap.containsValue(key.replace('.', '/'))) {
+            if (MinecraftVersion.mapping.classMap.containsValue(key.replace('.', '/'))) {
                 "net/minecraft/server/${MinecraftVersion.minecraftVersion}/${key.substringAfterLast('/', "")}"
             } else {
                 key.replace(nms1, nms2)
             }
         }
+    }
+
+    /**
+     * 获取类的所有父类和接口
+     */
+    fun findParents(owner: String): Set<String> {
+        if (owner.startsWith("net.minecraft") || owner.startsWith("com.mojang")) {
+            try {
+                val find = hashSetOf<String>()
+                find += owner
+                val forName = Class.forName(owner)
+                find += forName.interfaces.map { it.name }
+                val superclass = forName.superclass
+                if (superclass != null && superclass.name != "java.lang.Object") {
+                    find += findParents(superclass.name)
+                }
+                return find
+            } catch (_: Throwable) {
+            }
+        }
+        return hashSetOf(owner)
     }
 }

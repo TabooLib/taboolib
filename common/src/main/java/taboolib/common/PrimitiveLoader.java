@@ -184,7 +184,7 @@ public class PrimitiveLoader {
                 jar = new File(getCacheFile(), hash + ".jar");
                 // 文件为空 || 开发模式 || 强制重定向
                 if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
-                    PrimitiveIO.println("Relocating ...");
+                    // PrimitiveIO.println("Relocating ...");
                     jar.getParentFile().mkdirs();
                     new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
                 }
