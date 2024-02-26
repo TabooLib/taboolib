@@ -36,9 +36,9 @@ class PathFinder(val nodeReader: NodeReader) {
     }
 
     private fun findPath(begin: Node, list: List<Pair<NodeTarget, Vector>>, distance: Float, distanceManhattan: Int, deep: Float): Path? {
-        begin.g = 0.0f
-        begin.f = getBestHeuristic(begin, list)
-        begin.cost = begin.f
+        begin.actualCost = 0.0f
+        begin.totalCost = getBestHeuristic(begin, list)
+        begin.cost = begin.totalCost
         openSet.clear()
         openSet.insert(begin)
         var heap = 0
@@ -50,7 +50,7 @@ class PathFinder(val nodeReader: NodeReader) {
                 break
             }
             val pop = openSet.pop()
-            pop.closed = true
+            pop.isClosed = true
             var neighbors = 0
             while (neighbors < list.size) {
                 val entry = list[neighbors]
@@ -71,14 +71,14 @@ class PathFinder(val nodeReader: NodeReader) {
                     val f2 = pop.distanceTo(node2)
                     node2.walkedDistance = pop.walkedDistance + f2
                     val f3 = pop.cost + f2 + node2.costMalus
-                    if (node2.walkedDistance < distance && (!node2.inOpenSet() || f3 < node2.g)) {
-                        node2.cameFrom = pop
+                    if (node2.walkedDistance < distance && (!node2.inOpenSet() || f3 < node2.actualCost)) {
+                        node2.parent = pop
                         node2.cost = f3
-                        node2.f = getBestHeuristic(node2, list) * 1.5f
+                        node2.totalCost = getBestHeuristic(node2, list) * 1.5f
                         if (node2.inOpenSet()) {
-                            openSet.changeCost(node2, node2.cost + node2.f)
+                            openSet.changeCost(node2, node2.cost + node2.totalCost)
                         } else {
-                            node2.g = node2.cost + node2.f
+                            node2.actualCost = node2.cost + node2.totalCost
                             openSet.insert(node2)
                         }
                     }
@@ -124,8 +124,8 @@ class PathFinder(val nodeReader: NodeReader) {
         val list = Lists.newArrayList<Node>()
         var node0 = node
         list.add(0, node)
-        while (node0.cameFrom != null) {
-            node0 = node0.cameFrom!!
+        while (node0.parent != null) {
+            node0 = node0.parent!!
             list.add(0, node0)
         }
         return Path(list, position, flag)

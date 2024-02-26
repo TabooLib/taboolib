@@ -12,9 +12,11 @@ class NodeTarget(node: Node) : Node(node.x, node.y, node.z) {
 
     var bestHeuristic = 3.4028235E38f
         private set
+
     // d()
     var bestNode: Node? = null
         private set
+
     var reached = false
 
     fun updateBest(bestHeuristic: Float, node: Node?) {

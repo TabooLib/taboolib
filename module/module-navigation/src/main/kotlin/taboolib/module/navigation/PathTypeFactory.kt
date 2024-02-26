@@ -112,7 +112,7 @@ open class PathTypeFactory(val entity: NodeEntity) {
         // 获取原始类型
         var rawType = getRawType(world, position)
         // 当方块可以通过且高度 > 1
-        if (rawType == PathType.OPEN && position.y >= 1) {
+        if (rawType == PathType.OPEN) {
             // 获取下方方块
             val down = getRawType(world, position.down())
             // 对下方方块进行一个初步的判断

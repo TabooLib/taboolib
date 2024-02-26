@@ -69,66 +69,67 @@ class BinaryHeap {
      * a
      */
     fun upHeap(value: Int) {
-        var heapIdx = value
-        val node = heap[heapIdx]
-        var var3: Int
-        val var2 = node!!.g
-        while (heapIdx > 0) {
-            var3 = heapIdx - 1 shr 1
-            val var4 = heap[var3]
-            if (var2 >= var4!!.g) {
+        var currentIndex = value
+        val currentNode = heap[currentIndex]
+        val currentCost = currentNode!!.actualCost
+        while (currentIndex > 0) {
+            val parentIndex = (currentIndex - 1) shr 1
+            val parentNode = heap[parentIndex]
+            if (currentCost >= parentNode!!.actualCost) {
                 break
             }
-            heap[heapIdx] = var4
-            var4.heapIdx = heapIdx
-            heapIdx = var3
+            heap[currentIndex] = parentNode
+            parentNode.heapIdx = currentIndex
+            currentIndex = parentIndex
         }
-        heap[heapIdx] = node
-        node.heapIdx = heapIdx
+        heap[currentIndex] = currentNode
+        currentNode.heapIdx = currentIndex
     }
 
     /**
      * b
      */
     fun downHeap(value: Int) {
-        var var0 = value
-        val node = heap[var0]!!
-        val cost = node.cost
+        var currentIndex = value
+        val currentNode = heap[currentIndex]!!
+        val currentCost = currentNode.cost
         while (true) {
-            val var3: Int = 1 + (var0 shl 1)
-            val var4 = var3 + 1
-            if (var3 >= size) {
+            val leftChildIndex = 1 + (currentIndex shl 1)
+            val rightChildIndex = leftChildIndex + 1
+            // 检查左子节点索引是否超出范围
+            if (leftChildIndex >= size) {
                 break
             }
-            val var5 = heap[var3]!!
-            val var6 = var5.cost
-            var var7: Node?
-            var var8: Float
-            if (var4 >= size) {
-                var7 = null
-                var8 = Float.POSITIVE_INFINITY
+            val leftChildNode = heap[leftChildIndex]!!
+            val leftChildCost = leftChildNode.cost
+            // 确定右子节点的节点和成本
+            val (rightChildNode, rightChildCost) = if (rightChildIndex >= size) {
+                null to Float.POSITIVE_INFINITY
             } else {
-                var7 = heap[var4]!!
-                var8 = var7.cost
+                heap[rightChildIndex]!! to heap[rightChildIndex]!!.cost
             }
-            if (var6 < var8) {
-                if (var6 >= cost) {
+            // 比较左右子节点的成本
+            if (leftChildCost < rightChildCost) {
+                if (leftChildCost >= currentCost) {
                     break
                 }
-                heap[var0] = var5
-                var5.heapIdx = var0
-                var0 = var3
+                // 将左子节点上移
+                heap[currentIndex] = leftChildNode
+                leftChildNode.heapIdx = currentIndex
+                currentIndex = leftChildIndex
             } else {
-                if (var8 >= cost) {
+                if (rightChildCost >= currentCost) {
                     break
                 }
-                heap[var0] = var7!!
-                var7.heapIdx = var0
-                var0 = var4
+                // 将右子节点上移
+                heap[currentIndex] = rightChildNode!!
+                rightChildNode.heapIdx = currentIndex
+                currentIndex = rightChildIndex
             }
         }
-        heap[var0] = node
-        node.heapIdx = var0
+        // 将当前节点放置在正确的位置
+        heap[currentIndex] = currentNode
+        currentNode.heapIdx = currentIndex
     }
 
     /**

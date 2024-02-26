@@ -12,7 +12,6 @@ import kotlin.math.abs
  * @author sky
  * @since 2021/2/21 11:57 下午
  */
-@Suppress("LiftReturnOrAssignment")
 open class NodeReader(val entity: NodeEntity) {
 
     val nodes = HashMap<Int, Node>()
@@ -219,7 +218,7 @@ open class NodeReader(val entity: NodeEntity) {
             }
             if (pathTypes == PathType.FENCE) {
                 node = getNode(x, h, z)
-                node.closed = true
+                node.isClosed = true
                 node.type = pathTypes
                 node.costMalus = pathTypes.malus
             }
@@ -238,7 +237,7 @@ open class NodeReader(val entity: NodeEntity) {
      * 临近合法
      */
     open fun isNeighborValid(neighbor: Node?, node: Node): Boolean {
-        if (neighbor != null && !neighbor.closed && (neighbor.costMalus >= 0.0f || node.costMalus < 0.0f)) {
+        if (neighbor != null && !neighbor.isClosed && (neighbor.costMalus >= 0.0f || node.costMalus < 0.0f)) {
             val blockHeight = NMS.instance.getBlockHeight(node.asBlockPos().down().toBlock(world)) + node.y - 1
             val neighborHeight = NMS.instance.getBlockHeight(neighbor.asBlockPos().down().toBlock(world)) + neighbor.y - 1
             return abs(blockHeight - neighborHeight) < 1.25
@@ -251,7 +250,7 @@ open class NodeReader(val entity: NodeEntity) {
      */
     open fun isDiagonalValid(diagonal: Node, nodeLeft: Node?, nodeRight: Node?, node: Node?): Boolean {
         return if (node != null && nodeRight != null && nodeLeft != null) {
-            if (node.closed) {
+            if (node.isClosed) {
                 false
             } else if (nodeRight.y <= diagonal.y && nodeLeft.y <= diagonal.y) {
                 if (nodeLeft.type != PathType.WALKABLE_DOOR && nodeRight.type != PathType.WALKABLE_DOOR && node.type != PathType.WALKABLE_DOOR) {

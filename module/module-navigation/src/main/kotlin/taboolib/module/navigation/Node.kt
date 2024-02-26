@@ -17,25 +17,25 @@ import kotlin.math.sqrt
  */
 open class Node(val x: Int, val y: Int, val z: Int) {
 
-    // m
+    // 哈希值
     val hash = createHash(x, y, z)
-    // d
+    // 堆索引
     var heapIdx = -1
-    // e
-    var g = 0f
-    // f
-    var f = 0f
-    // g
+    // 起点到当前节点的实际代价
+    var actualCost = 0f
+    // 估计总代价
+    var totalCost = 0f
+    // 代价
     var cost = 0f
-    // h
-    var cameFrom: Node? = null
-    // i
-    var closed = false
-    // j
+    // 父节点
+    var parent: Node? = null
+    // 是否关闭
+    var isClosed = false
+    // 走过的距离
     var walkedDistance = 0f
-    // k
+    // 代价惩罚
     var costMalus = 0f
-    // l
+    // 节点类型
     var type = PathType.BLOCKED
 
     /**
@@ -44,11 +44,11 @@ open class Node(val x: Int, val y: Int, val z: Int) {
     fun cloneAndMove(x: Int, y: Int, z: Int): Node {
         return Node(x, y, z).also { node ->
             node.heapIdx = heapIdx
-            node.g = g
-            node.f = f
+            node.actualCost = actualCost
+            node.totalCost = totalCost
             node.cost = cost
-            node.cameFrom = cameFrom
-            node.closed = closed
+            node.parent = parent
+            node.isClosed = isClosed
             node.walkedDistance = walkedDistance
             node.costMalus = costMalus
             node.type = type
@@ -59,40 +59,40 @@ open class Node(val x: Int, val y: Int, val z: Int) {
      * a
      */
     fun distanceTo(node: Node): Float {
-        val f = (node.x - x).toFloat()
-        val f1 = (node.y - y).toFloat()
-        val f2 = (node.z - z).toFloat()
-        return sqrt((f * f + f1 * f1 + f2 * f2).toDouble()).toFloat()
+        val deltaX = (node.x - x).toFloat()
+        val deltaY = (node.y - y).toFloat()
+        val deltaZ = (node.z - z).toFloat()
+        return sqrt((deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ).toDouble()).toFloat()
     }
 
     /**
      * b
      */
     fun distanceToSqr(node: Node): Float {
-        val f = (node.x - x).toFloat()
-        val f1 = (node.y - y).toFloat()
-        val f2 = (node.z - z).toFloat()
-        return f * f + f1 * f1 + f2 * f2
+        val deltaX = (node.x - x).toFloat()
+        val deltaY = (node.y - y).toFloat()
+        val deltaZ = (node.z - z).toFloat()
+        return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ
     }
 
     /**
      * c
      */
     fun distanceManhattan(node: Node): Float {
-        val f = abs(node.x - x).toFloat()
-        val f1 = abs(node.y - y).toFloat()
-        val f2 = abs(node.z - z).toFloat()
-        return f + f1 + f2
+        val deltaX = abs(node.x - x).toFloat()
+        val deltaY = abs(node.y - y).toFloat()
+        val deltaZ = abs(node.z - z).toFloat()
+        return deltaX + deltaY + deltaZ
     }
 
     /**
      * c
      */
     fun distanceManhattan(position: Vector): Float {
-        val f = abs(position.x - x).toFloat()
-        val f1 = abs(position.y - y).toFloat()
-        val f2 = abs(position.z - z).toFloat()
-        return f + f1 + f2
+        val deltaX = abs(position.x - x).toFloat()
+        val deltaY = abs(position.y - y).toFloat()
+        val deltaZ = abs(position.z - z).toFloat()
+        return deltaX + deltaY + deltaZ
     }
 
     fun asBlockPos(): Vector {

@@ -47,10 +47,6 @@ open class NodeEntity(
         location.z + width / 2
     )
 
-    /**
-     * 不知道是什么东西
-     */
-    var G: Float = 0.6f
     val pathfindingMalus: EnumMap<PathType, Float> = Maps.newEnumMap(PathType::class.java)
 
     open fun getPathfindingMalus(pathType: PathType): Float {
