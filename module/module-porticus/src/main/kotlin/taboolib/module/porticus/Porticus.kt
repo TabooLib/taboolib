@@ -46,12 +46,12 @@ object Porticus {
         try {
             Bukkit.getServer()
             API = taboolib.module.porticus.bukkitside.PorticusAPI()
-        } catch (ignored: NoClassDefFoundError) {
+        } catch (ignored: Throwable) {
         }
         try {
             BungeeCord.getInstance()
             API = taboolib.module.porticus.bungeeside.PorticusAPI()
-        } catch (ignored: NoClassDefFoundError) {
+        } catch (ignored: Throwable) {
         }
     }
 }
