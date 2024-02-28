@@ -12,8 +12,8 @@ import kotlin.reflect.KProperty
 @Suppress("UNCHECKED_CAST")
 class ConfigNodeTransfer<T, R>(internal val transfer: T.() -> R) {
 
-    /** 懒加载模式 */
-    internal var lazy = false
+    /** 是否为懒加载模式 */
+    var isLazyMode = false
         private set
 
     /** 配置文件值 */
@@ -25,22 +25,22 @@ class ConfigNodeTransfer<T, R>(internal val transfer: T.() -> R) {
         private set
 
     constructor(lazy: Boolean, transfer: T.() -> R) : this(transfer) {
-        this.lazy = lazy
+        this.isLazyMode = lazy
     }
 
     /** 获取转换后的值 */
     fun get(): R {
         // 懒加载模式
-        if (lazy && cachedValue == null && configValue != null) {
+        if (isLazyMode && cachedValue == null && configValue != null) {
             cachedValue = transfer(configValue as T)
         }
         return cachedValue as? R ?: error("No value")
     }
 
     /** 刷新缓存 */
-    internal fun reset(configValue: Any) {
+    fun reset(configValue: Any) {
         // 懒加载模式
-        if (lazy) {
+        if (isLazyMode) {
             this.cachedValue = null
             this.configValue = configValue
         } else {
