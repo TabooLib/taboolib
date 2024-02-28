@@ -66,7 +66,7 @@ public class Metrics {
                 enabled,
                 json -> appendPlatformData(json, runningPlatform),
                 json -> appendServiceData(json, pluginVersion),
-                task -> ExecutorKt.submit(false, false, 0, 0, "", r -> {
+                task -> ExecutorKt.submit(false, false, 0, 0, r -> {
                     task.run();
                     return Unit.INSTANCE;
                 }),

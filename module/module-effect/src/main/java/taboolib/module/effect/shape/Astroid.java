@@ -97,7 +97,7 @@ public class Astroid extends ParticleObj implements Playable {
 
     @Override
     public void play() {
-        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+        ExecutorKt.submit(false, false, 0, getPeriod(), task -> {
             // 进行关闭
             // 重置
             if (currentT > 360D) {

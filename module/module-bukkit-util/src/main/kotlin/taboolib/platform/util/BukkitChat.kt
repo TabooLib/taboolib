@@ -8,6 +8,7 @@ import taboolib.common.Inject
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.submit
 import taboolib.platform.BukkitPlugin
 import java.util.concurrent.ConcurrentHashMap
 
@@ -37,12 +38,12 @@ fun Player.nextChatInTick(tick: Long, func: (message: String) -> Unit, timeout: 
         reuse(this)
     } else {
         ChatListener.inputs[name] = func
-        Bukkit.getScheduler().runTaskLater(BukkitPlugin.getInstance(), Runnable {
+        submit(delay = tick) {
             if (ChatListener.inputs.containsKey(name)) {
                 timeout(this@nextChatInTick)
                 ChatListener.inputs.remove(name)
             }
-        }, tick)
+        }
     }
 }
 

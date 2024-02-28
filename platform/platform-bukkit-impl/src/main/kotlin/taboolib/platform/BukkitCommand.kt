@@ -166,7 +166,7 @@ class BukkitCommand : PlatformCommand {
         // 1.13 sync commands
         runCatching {
             Bukkit.getServer().invokeMethod<Void>("syncCommands")
-            Bukkit.getOnlinePlayers().forEach { it.updateCommands() }
+            Bukkit.getOnlinePlayers().forEach { it.invokeMethod<Void>("updateCommands") }
             isSupportedUnknownCommand = true
         }
     }

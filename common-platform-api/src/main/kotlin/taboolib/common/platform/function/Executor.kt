@@ -18,7 +18,6 @@ fun startExecutor() {
  * @param async 是否异步执行
  * @param delay 延迟执行时间
  * @param period 重复执行时间
- * @param comment 注释（无用）
  * @param executor 调度器具体行为
  */
 @JvmOverloads
@@ -27,10 +26,9 @@ fun submit(
     async: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
-    comment: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, comment, executor))
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, async, delay, period, executor))
 }
 
 /**
@@ -39,7 +37,6 @@ fun submit(
  * @param now 是否立即执行
  * @param delay 延迟执行时间
  * @param period 重复执行时间
- * @param comment 注释（无用）
  * @param executor 调度器具体行为
  */
 @JvmOverloads
@@ -47,8 +44,7 @@ fun submitAsync(
     now: Boolean = false,
     delay: Long = 0,
     period: Long = 0,
-    comment: String? = null,
     executor: PlatformExecutor.PlatformTask.() -> Unit,
 ): PlatformExecutor.PlatformTask {
-    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, true, delay, period, comment, executor))
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now, true, delay, period, executor))
 }

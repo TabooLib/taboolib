@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.scheduler.BukkitRunnable
 import taboolib.common.PrimitiveSettings
 import taboolib.common.platform.Awake
@@ -7,6 +8,8 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.service.PlatformExecutor
+import java.io.Closeable
+import java.util.concurrent.TimeUnit
 
 /**
  * TabooLib
@@ -27,6 +30,7 @@ class BukkitExecutor : PlatformExecutor {
 
     override fun start() {
         started = true
+        // 提交列队中的任务
         tasks.forEach { submit(it) }
         // 启动插件统计
         runCatching {
@@ -39,81 +43,18 @@ class BukkitExecutor : PlatformExecutor {
     }
 
     override fun submit(runnable: PlatformExecutor.PlatformRunnable): PlatformExecutor.PlatformTask {
-        if (started) {
-            val task: BukkitPlatformTask
-            when {
-                runnable.now -> {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                            runnable.executor(task)
-                        }
-                        override fun run() {
-                        }
-                    }
-                }
-                runnable.period > 0 -> if (runnable.async) {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTaskTimerAsynchronously(plugin, runnable.delay, runnable.period)
-                } else {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTaskTimer(plugin, runnable.delay, runnable.period)
-                }
-                runnable.delay > 0 -> if (runnable.async) {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTaskLaterAsynchronously(plugin, runnable.delay)
-                } else {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTaskLater(plugin, runnable.delay)
-                }
-                else -> if (runnable.async) {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTaskAsynchronously(plugin)
-                } else {
-                    object : BukkitRunnable() {
-                        init {
-                            task = BukkitPlatformTask(this)
-                        }
-                        override fun run() {
-                            runnable.executor(task)
-                        }
-                    }.runTask(plugin)
-                }
+        // 服务器已启动
+        return if (started) {
+            val runningTask = createRunningTask(runnable)
+            if (runnable.now) {
+                runningTask.execute()
+            } else {
+                runningTask.execute(runnable.async, runnable.delay, runnable.period)
             }
-            return task
+            runningTask.platformTask()
         } else {
             tasks += runnable
-            return object : PlatformExecutor.PlatformTask {
+            object : PlatformExecutor.PlatformTask {
 
                 override fun cancel() {
                     tasks -= runnable
@@ -122,10 +63,110 @@ class BukkitExecutor : PlatformExecutor {
         }
     }
 
-    class BukkitPlatformTask(val runnable: BukkitRunnable) : PlatformExecutor.PlatformTask {
+    fun createRunningTask(runnable: PlatformExecutor.PlatformRunnable): RunningTask {
+        return if (Folia.isFolia) FoliaRunningTask(runnable) else BukkitRunningTask(runnable)
+    }
+
+    abstract class RunningTask(val runnable: PlatformExecutor.PlatformRunnable) {
+
+        /** 运行 */
+        abstract fun execute()
+
+        /** 运行 */
+        abstract fun execute(async: Boolean, delay: Long, period: Long)
+
+        /** 获取跨平台接口 */
+        abstract fun platformTask(): PlatformExecutor.PlatformTask
+    }
+
+    class BukkitRunningTask(runnable: PlatformExecutor.PlatformRunnable) : RunningTask(runnable) {
+
+        val instance = object : BukkitRunnable() {
+
+            override fun run() {
+                runnable.executor(BukkitPlatformTask { cancel() })
+            }
+        }
+
+        override fun execute() {
+            runnable.executor(BukkitPlatformTask { })
+        }
+
+        override fun execute(async: Boolean, delay: Long, period: Long) {
+            if (async) {
+                if (period < 1) {
+                    instance.runTaskLaterAsynchronously(BukkitPlugin.getInstance(), delay)
+                } else {
+                    instance.runTaskTimerAsynchronously(BukkitPlugin.getInstance(), delay, period)
+                }
+            } else {
+                if (period < 1) {
+                    instance.runTaskLater(BukkitPlugin.getInstance(), delay)
+                } else {
+                    instance.runTaskTimer(BukkitPlugin.getInstance(), delay, period)
+                }
+            }
+        }
+
+        override fun platformTask(): PlatformExecutor.PlatformTask {
+            return BukkitPlatformTask { instance.cancel() }
+        }
+    }
+
+    class FoliaRunningTask(runnable: PlatformExecutor.PlatformRunnable) : RunningTask(runnable) {
+
+        var scheduledTask: ScheduledTask? = null
+
+        override fun execute() {
+            runnable.executor(BukkitPlatformTask { })
+        }
+
+        override fun execute(async: Boolean, delay: Long, period: Long) {
+            scheduledTask = if (async) {
+                if (period < 1) {
+                    if (delay < 1) {
+                        FoliaExecutor.asyncScheduler.runNow(BukkitPlugin.getInstance()) { task ->
+                            runnable.executor(BukkitPlatformTask { task.cancel() })
+                        }
+                    } else {
+                        FoliaExecutor.asyncScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
+                            runnable.executor(BukkitPlatformTask { task.cancel() })
+                        }, delay * 50, TimeUnit.MILLISECONDS)
+                    }
+                } else {
+                    FoliaExecutor.asyncScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                        runnable.executor(BukkitPlatformTask { task.cancel() })
+                    }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
+                }
+            } else {
+                if (period < 1) {
+                    // Delay ticks may not be <= 0, 蠢
+                    if (delay < 1) {
+                        FoliaExecutor.globalRegionScheduler.run(BukkitPlugin.getInstance()) { task ->
+                            runnable.executor(BukkitPlatformTask { task.cancel() })
+                        }
+                    } else {
+                        FoliaExecutor.globalRegionScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
+                            runnable.executor(BukkitPlatformTask { task.cancel() })
+                        }, delay)
+                    }
+                } else {
+                    FoliaExecutor.globalRegionScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                        runnable.executor(BukkitPlatformTask { task.cancel() })
+                    }, delay, period)
+                }
+            }
+        }
+
+        override fun platformTask(): PlatformExecutor.PlatformTask {
+            return BukkitPlatformTask { scheduledTask?.cancel() }
+        }
+    }
+
+    class BukkitPlatformTask(val runnable: Closeable) : PlatformExecutor.PlatformTask {
 
         override fun cancel() {
-            runnable.cancel()
+            runnable.close()
         }
     }
 }

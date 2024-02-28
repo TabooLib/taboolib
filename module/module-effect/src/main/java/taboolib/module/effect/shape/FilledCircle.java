@@ -104,7 +104,7 @@ public class FilledCircle extends ParticleObj implements Playable {
 
     @Override
     public void play() {
-        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+        ExecutorKt.submit(false, false, 0, getPeriod(), task -> {
             if (currentCount > sample) {
                 task.cancel();
                 return Unit.INSTANCE;
@@ -163,7 +163,7 @@ public class FilledCircle extends ParticleObj implements Playable {
         final int[] frame = {0};
         final int[] sample = {0};
 
-        ExecutorKt.submit(false, true, 0, 1, null, task -> {
+        ExecutorKt.submit(false, true, 0, 1, task -> {
             if (frame[0] >= time) {
                 task.cancel();
                 return Unit.INSTANCE;

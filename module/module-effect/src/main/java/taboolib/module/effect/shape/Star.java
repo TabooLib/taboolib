@@ -30,11 +30,11 @@ public class Star extends ParticleObj implements Playable {
     private Vector changeableStart;
     private Location changeableEnd;
 
-    public Star(Location origin , ParticleSpawner spawner) {
-        this(origin, 1, 0.05, 20L ,spawner);
+    public Star(Location origin, ParticleSpawner spawner) {
+        this(origin, 1, 0.05, 20L, spawner);
     }
 
-    public Star(Location origin, double radius, double step , long period , ParticleSpawner spawner) {
+    public Star(Location origin, double radius, double step, long period, ParticleSpawner spawner) {
         super(spawner);
         setOrigin(origin);
         setPeriod(period);
@@ -121,7 +121,7 @@ public class Star extends ParticleObj implements Playable {
 
     @Override
     public void play() {
-        ExecutorKt.submit(false , false , 0 , getPeriod() , null , platformTask -> {
+        ExecutorKt.submit(false, false, 0, getPeriod(), platformTask -> {
             // 转弧度制
             final double radians = Math.toRadians(72);
             final double x = radius * Math.cos(radians);

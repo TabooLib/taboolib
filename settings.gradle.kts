@@ -22,9 +22,11 @@ include(
 include(
     "expansion:expansion-alkaid-redis",
     "expansion:expansion-command-helper",
+    "expansion:expansion-folia",
     "expansion:expansion-geek-tool",
     "expansion:expansion-ioc",
     "expansion:expansion-javascript",
+    "expansion:expansion-jexl",
     "expansion:expansion-persistent-container",
     "expansion:expansion-persistent-container-object",
     "expansion:expansion-player-database",

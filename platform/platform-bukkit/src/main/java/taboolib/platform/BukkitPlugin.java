@@ -1,5 +1,6 @@
 package taboolib.platform;
 
+import kotlin.Unit;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
@@ -14,7 +15,6 @@ import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.platform.Platform;
-import taboolib.common.platform.PlatformImplementationKt;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 import taboolib.common.platform.function.ExecutorKt;
@@ -101,16 +101,14 @@ public class BukkitPlugin extends JavaPlugin {
         // 因为插件可能在 onEnable() 下关闭
         if (!TabooLib.isStopped()) {
             // 创建调度器，执行 onActive() 方法
-            Bukkit.getScheduler().runTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    // 生命周期任务
-                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
-                    // 调用 Plugin 实现的 onActive() 方法
-                    if (pluginInstance != null) {
-                        pluginInstance.onActive();
-                    }
+            ExecutorKt.submit(false, false, 0, 0, task -> {
+                // 生命周期任务
+                TabooLib.lifeCycle(LifeCycle.ACTIVE);
+                // 调用 Plugin 实现的 onActive() 方法
+                if (pluginInstance != null) {
+                    pluginInstance.onActive();
                 }
+                return Unit.INSTANCE;
             });
         }
     }

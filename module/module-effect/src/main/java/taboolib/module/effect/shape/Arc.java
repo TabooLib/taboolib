@@ -123,7 +123,7 @@ public class Arc extends ParticleObj implements Playable {
     public void play() {
         currentAngle = startAngle;
 
-        ExecutorKt.submit(false, false, 0, getPeriod(), null, task -> {
+        ExecutorKt.submit(false, false, 0, getPeriod(), task -> {
             // 进行关闭
             if (currentAngle > angle) {
                 task.cancel();
