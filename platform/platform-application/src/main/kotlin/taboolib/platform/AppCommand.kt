@@ -8,8 +8,8 @@ import taboolib.common.platform.command.CommandCompleter
 import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.command.component.CommandBase
+import taboolib.common.platform.function.info
 import taboolib.common.platform.service.PlatformCommand
-import taboolib.platform.AppConsole.logger
 
 /**
  * @author Score2
@@ -23,7 +23,7 @@ class AppCommand : PlatformCommand {
 
         val unknownCommandMessage
             get() = System.getProperty("taboolib.application.command.unknown.message")
-                ?: "§cUnknown command.".apply { System.setProperty("taboolib.application.command.unknown.message", this) }
+                ?: "Unknown command.".apply { System.setProperty("taboolib.application.command.unknown.message", this) }
 
         val commands = mutableSetOf<Command>()
 
@@ -45,7 +45,7 @@ class AppCommand : PlatformCommand {
                 return
             }
             val label = if (content.contains(" ")) content.substringBefore(" ") else content
-            val command = commands.find { it.aliases.contains(label) } ?: return logger.info(unknownCommandMessage)
+            val command = commands.find { it.aliases.contains(label) } ?: return info(unknownCommandMessage)
             val args = if (content.contains(" ")) content.substringAfter(" ").split(" ") else listOf()
             command.executor.execute(AppConsole, command.command, label, args.toTypedArray())
         }
@@ -81,7 +81,7 @@ class AppCommand : PlatformCommand {
     }
 
     override fun unknownCommand(sender: ProxyCommandSender, command: String, state: Int) {
-        sender.sendMessage("§7$command§r§c§o<--[HERE]")
+        sender.sendMessage("$command<--[HERE]")
     }
 
     override fun unregisterCommand(command: String) {
