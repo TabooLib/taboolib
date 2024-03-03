@@ -25,7 +25,7 @@ open class ResultProcessor(val query: String, val executor: Executable<ResultSet
 
     /** 运行并返回结果 */
     open fun run(): Int {
-        return if (isExecuted) {
+        return if (!isExecuted) {
             isExecuted = true
             executor.invoke { fetchSize }
         } else {
