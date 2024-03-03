@@ -131,12 +131,12 @@ class BukkitExecutor : PlatformExecutor {
                     } else {
                         FoliaExecutor.asyncScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }, delay * 50, TimeUnit.MILLISECONDS)
+                        }, delay.coerceAtLeast(1) * 50, TimeUnit.MILLISECONDS)
                     }
                 } else {
                     FoliaExecutor.asyncScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
                         runnable.executor(BukkitPlatformTask { task.cancel() })
-                    }, delay * 50, period * 50, TimeUnit.MILLISECONDS)
+                    }, delay.coerceAtLeast(1) * 50, period * 50, TimeUnit.MILLISECONDS)
                 }
             } else {
                 if (period < 1) {
@@ -148,12 +148,12 @@ class BukkitExecutor : PlatformExecutor {
                     } else {
                         FoliaExecutor.globalRegionScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
-                        }, delay)
+                        }, delay.coerceAtLeast(1))
                     }
                 } else {
                     FoliaExecutor.globalRegionScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
                         runnable.executor(BukkitPlatformTask { task.cancel() })
-                    }, delay, period)
+                    }, delay.coerceAtLeast(1), period)
                 }
             }
         }
