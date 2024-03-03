@@ -10,6 +10,7 @@ import taboolib.common.TabooLib
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin
+import taboolib.common.reflect.getAnnotationIfPresent
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
@@ -117,7 +118,7 @@ fun findPluginImpl(): Plugin? {
  * 判断平台实现
  */
 fun checkPlatform(cls: Class<*>): Boolean {
-    val platformSide = cls.getAnnotation(PlatformSide::class.java)
+    val platformSide = cls.getAnnotationIfPresent(PlatformSide::class.java)
     return platformSide == null || platformSide.value.any { i -> i == Platform.CURRENT }
 }
 

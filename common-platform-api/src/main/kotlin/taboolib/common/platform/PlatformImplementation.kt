@@ -2,6 +2,7 @@ package taboolib.common.platform
 
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
+import taboolib.common.reflect.getAnnotationIfPresent
 
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -19,6 +20,6 @@ fun <T> Class<T>.findImplementation(): T? {
  * 判断平台实现
  */
 fun checkPlatform(cls: Class<*>): Boolean {
-    val platformSide = cls.getAnnotation(PlatformSide::class.java)
+    val platformSide = cls.getAnnotationIfPresent(PlatformSide::class.java)
     return platformSide == null || platformSide.value.any { i -> i == Platform.CURRENT }
 }

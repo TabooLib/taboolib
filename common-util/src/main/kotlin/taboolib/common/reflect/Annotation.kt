@@ -11,3 +11,15 @@ fun <T : Annotation> Class<*>.getAnnotationIfPresent(annotationClass: Class<T>):
         null
     }
 }
+
+/**
+ * 安全的判断是否存在指定注解
+ * java.lang.ArrayStoreException: sun.reflect.annotation.AnnotationTypeMismatchExceptionProxy
+ */
+fun <T : Annotation> Class<*>.hasAnnotation(annotationClass: Class<T>): Boolean {
+    return try {
+        isAnnotationPresent(annotationClass)
+    } catch (ex: Throwable) {
+        false
+    }
+}

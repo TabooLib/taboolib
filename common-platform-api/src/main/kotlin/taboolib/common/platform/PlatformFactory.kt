@@ -13,6 +13,7 @@ import taboolib.common.io.runningClassesWithoutLibrary
 import taboolib.common.io.runningExactClasses
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
+import taboolib.common.reflect.hasAnnotation
 import java.util.concurrent.ConcurrentHashMap
 
 @Suppress("UNCHECKED_CAST")
@@ -50,8 +51,8 @@ object PlatformFactory {
             }
 
             // 加载接口
-            runningClassesWithoutLibrary.parallelStream().forEach {
-                if (it.isAnnotationPresent(Awake::class.java) && checkPlatform(it)) {
+            runningClassesWithoutLibrary.forEach {
+                if (it.hasAnnotation(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
                     // 依赖注入接口
@@ -60,14 +61,14 @@ object PlatformFactory {
                     }
                     // 平台服务
                     interfaces.forEach { int ->
-                        if (int.isAnnotationPresent(PlatformService::class.java)) {
+                        if (int.hasAnnotation(PlatformService::class.java)) {
                             serviceMap[int.name] = instance
                         }
                     }
                     awokenMap[it.name] = instance
                 }
                 // 平台实现
-                if (it.isAnnotationPresent(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
+                if (it.hasAnnotation(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
