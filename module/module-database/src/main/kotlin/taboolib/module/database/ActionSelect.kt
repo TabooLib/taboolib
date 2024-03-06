@@ -61,8 +61,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
             }
             .addSegmentIfTrue(limit > 0) {
                 addSegment("LIMIT $limit")
-            }.addSegmentIfTrue(offset > 0) {
-                addSegment("OFFSET $offset")
+                    .addSegmentIfTrue(offset > 0) {
+                        addSegment("OFFSET $offset")
+                    }
             }.build()
 
     /** 元素 */
