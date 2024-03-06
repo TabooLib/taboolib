@@ -5,6 +5,16 @@ import org.bukkit.metadata.MetadataValue
 import org.bukkit.metadata.Metadatable
 import taboolib.platform.BukkitPlugin
 
+/** 以标记执行 */
+fun Metadatable.runMeta(key: String, value: Any = true, func: () -> Unit) {
+    setMeta(key, value)
+    try {
+        func()
+    } finally {
+        removeMeta(key)
+    }
+}
+
 fun Metadatable.setMeta(key: String, value: Any) {
     setMetadata(key, FixedMetadataValue(BukkitPlugin.getInstance(), value))
 }
