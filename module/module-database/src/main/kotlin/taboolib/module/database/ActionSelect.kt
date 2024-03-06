@@ -30,6 +30,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
     /** 限制 */
     private var limit = -1
 
+    /** 偏移 */
+    private var offset = -1
+
     /** 语句 */
     override val query: String
         get() = Statement("SELECT")
@@ -58,6 +61,9 @@ class ActionSelect(val table: String) : ActionFilterable() {
             }
             .addSegmentIfTrue(limit > 0) {
                 addSegment("LIMIT $limit")
+                    .addSegmentIfTrue(offset > 0) {
+                        addSegment("OFFSET $offset")
+                    }
             }.build()
 
     /** 元素 */
@@ -127,6 +133,13 @@ class ActionSelect(val table: String) : ActionFilterable() {
      */
     fun limit(limit: Int) {
         this.limit = limit
+    }
+
+    /**
+     * 偏移量
+     */
+    fun offset(offset: Int) {
+        this.offset = offset
     }
 
     /**
