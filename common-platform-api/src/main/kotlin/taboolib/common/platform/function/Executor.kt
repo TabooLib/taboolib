@@ -12,6 +12,13 @@ fun startExecutor() {
 }
 
 /**
+ * 执行一个任务
+ */
+fun runTask(executor: Runnable): PlatformExecutor.PlatformTask {
+    return PlatformFactory.getService<PlatformExecutor>().submit(PlatformExecutor.PlatformRunnable(now = false, async = false, delay = 0, period = 0) { executor.run() })
+}
+
+/**
  * 注册一个调度器
  *
  * @param now 是否立即执行

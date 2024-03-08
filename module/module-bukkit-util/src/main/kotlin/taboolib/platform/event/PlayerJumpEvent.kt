@@ -11,7 +11,6 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common5.Baffle
-import taboolib.platform.type.BukkitProxyEvent
 import java.util.concurrent.TimeUnit
 
 /**

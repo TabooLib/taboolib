@@ -1,6 +1,5 @@
 package taboolib.common.env;
 
-import kotlinx.coroutines.internal.InternalAnnotationsKt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import taboolib.common.ClassAppender;

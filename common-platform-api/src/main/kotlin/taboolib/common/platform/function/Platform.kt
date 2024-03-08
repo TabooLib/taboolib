@@ -2,7 +2,6 @@ package taboolib.common.platform.function
 
 import taboolib.common.io.getInstance
 import taboolib.common.io.runningClasses
-import taboolib.common.platform.Platform
 import taboolib.common.platform.checkPlatform
 
 /**

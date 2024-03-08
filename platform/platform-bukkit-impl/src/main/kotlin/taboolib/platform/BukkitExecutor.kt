@@ -125,16 +125,16 @@ class BukkitExecutor : PlatformExecutor {
             scheduledTask = if (async) {
                 if (period < 1) {
                     if (delay < 1) {
-                        FoliaExecutor.asyncScheduler.runNow(BukkitPlugin.getInstance()) { task ->
+                        FoliaExecutor.ASYNC_SCHEDULER.runNow(BukkitPlugin.getInstance()) { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
                         }
                     } else {
-                        FoliaExecutor.asyncScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
+                        FoliaExecutor.ASYNC_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
                         }, delay.coerceAtLeast(1) * 50, TimeUnit.MILLISECONDS)
                     }
                 } else {
-                    FoliaExecutor.asyncScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                    FoliaExecutor.ASYNC_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
                         runnable.executor(BukkitPlatformTask { task.cancel() })
                     }, delay.coerceAtLeast(1) * 50, period * 50, TimeUnit.MILLISECONDS)
                 }
@@ -142,16 +142,16 @@ class BukkitExecutor : PlatformExecutor {
                 if (period < 1) {
                     // Delay ticks may not be <= 0, 蠢
                     if (delay < 1) {
-                        FoliaExecutor.globalRegionScheduler.run(BukkitPlugin.getInstance()) { task ->
+                        FoliaExecutor.GLOBAL_REGION_SCHEDULER.run(BukkitPlugin.getInstance()) { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
                         }
                     } else {
-                        FoliaExecutor.globalRegionScheduler.runDelayed(BukkitPlugin.getInstance(), { task ->
+                        FoliaExecutor.GLOBAL_REGION_SCHEDULER.runDelayed(BukkitPlugin.getInstance(), { task ->
                             runnable.executor(BukkitPlatformTask { task.cancel() })
                         }, delay.coerceAtLeast(1))
                     }
                 } else {
-                    FoliaExecutor.globalRegionScheduler.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
+                    FoliaExecutor.GLOBAL_REGION_SCHEDULER.runAtFixedRate(BukkitPlugin.getInstance(), { task ->
                         runnable.executor(BukkitPlatformTask { task.cancel() })
                     }, delay.coerceAtLeast(1), period)
                 }

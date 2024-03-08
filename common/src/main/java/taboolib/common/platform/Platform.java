@@ -3,8 +3,6 @@ package taboolib.common.platform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-
 /**
  * TabooLib
  * taboolib.common.platform.Platform

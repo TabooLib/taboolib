@@ -1,6 +1,5 @@
 package taboolib.platform;
 
-import kotlin.Unit;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
@@ -17,7 +16,6 @@ import taboolib.common.classloader.IsolatedClassLoader;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
-import taboolib.common.platform.function.ExecutorKt;
 
 import java.io.File;
 import java.util.Set;
@@ -29,7 +27,7 @@ import java.util.Set;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
+@SuppressWarnings({"DuplicatedCode", "CallToPrintStackTrace"})
 @PlatformSide(Platform.BUKKIT)
 public class BukkitPlugin extends JavaPlugin {
 
@@ -101,15 +99,11 @@ public class BukkitPlugin extends JavaPlugin {
         // 因为插件可能在 onEnable() 下关闭
         if (!TabooLib.isStopped()) {
             // 创建调度器，执行 onActive() 方法
-            ExecutorKt.submit(false, false, 0, 0, task -> {
-                // 生命周期任务
-                TabooLib.lifeCycle(LifeCycle.ACTIVE);
-                // 调用 Plugin 实现的 onActive() 方法
-                if (pluginInstance != null) {
-                    pluginInstance.onActive();
-                }
-                return Unit.INSTANCE;
-            });
+            if (Folia.isFolia) {
+                FoliaExecutor.ASYNC_SCHEDULER.runNow(this, task -> invokeActive());
+            } else {
+                Bukkit.getScheduler().runTask(this, this::invokeActive);
+            }
         }
     }
 
@@ -154,6 +148,18 @@ public class BukkitPlugin extends JavaPlugin {
     @NotNull
     public static BukkitPlugin getInstance() {
         return instance;
+    }
+
+    /**
+     * 运行 onActive() 方法
+     */
+    private void invokeActive() {
+        // 生命周期任务
+        TabooLib.lifeCycle(LifeCycle.ACTIVE);
+        // 调用 Plugin 实现的 onActive() 方法
+        if (pluginInstance != null) {
+            pluginInstance.onActive();
+        }
     }
 
     /**

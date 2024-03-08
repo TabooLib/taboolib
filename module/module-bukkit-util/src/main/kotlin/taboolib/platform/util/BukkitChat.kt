@@ -1,6 +1,5 @@
 package taboolib.platform.util
 
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -9,7 +8,6 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
-import taboolib.platform.BukkitPlugin
 import java.util.concurrent.ConcurrentHashMap
 
 /**
