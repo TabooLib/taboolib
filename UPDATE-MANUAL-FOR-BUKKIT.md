@@ -199,7 +199,7 @@ javax.annotation.Nullable -> org.jetbrains.annotations.Nullable
 默认情况下，TabooLib 在推送后会自动发布到 **坏黑** 的个人仓库供大家下载：
 
 ```
-gradlew publish -Pbuild=BUILD_NUMBER
+gradlew publish
 ```
 
 如果 **坏黑** 的个人仓库无法访问，便需要您在 `build.gradle.kts` 中更改发布地址：
