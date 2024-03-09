@@ -13,7 +13,7 @@ public class Folia {
 
     static {
         try {
-            Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
             isFolia = true;
         } catch (Throwable ignored) {
         }
