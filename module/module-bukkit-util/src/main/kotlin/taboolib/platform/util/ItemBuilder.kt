@@ -251,7 +251,7 @@ open class ItemBuilder {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    XSkull.applySkin(itemMeta, skullTexture!!.textures)
+                    XSkull.applySkin(itemMeta, skullTexture!!.texture)
                 }
             }
         }

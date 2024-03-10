@@ -21,10 +21,7 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.type.ChatColorFormat
 import taboolib.module.nms.type.PlayerScoreboard
 import taboolib.platform.BukkitPlugin
-import taboolib.platform.util.hasMeta
-import taboolib.platform.util.onlinePlayers
-import taboolib.platform.util.removeMeta
-import taboolib.platform.util.setMeta
+import taboolib.platform.util.*
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -90,6 +87,7 @@ private val playerScoreboardMap = ConcurrentHashMap<UUID, PlayerScoreboard>()
 @Ghost
 @SubscribeEvent(priority = EventPriority.LOWEST)
 private fun onJoin(e: PlayerJoinEvent) {
+    e.player.setMeta("t_scoreboard_objective_name", UUID.randomUUID().toString().substring(0..7))
     e.player.removeMeta("t_scoreboard_init")
 }
 
@@ -119,26 +117,28 @@ abstract class NMSScoreboard {
     abstract fun updateTeam(player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?)
 }
 
-@Suppress("unused", "DuplicatedCode", "SpellCheckingInspection")
+@Suppress("unused", "DuplicatedCode")
 class NMSScoreboardImpl : NMSScoreboard() {
 
     val uniqueOwner = listOf("§黒", "§黓", "§黔", "§黕", "§黖", "§黗", "§默", "§黙", "§黚", "§黛", "§黜", "§黝", "§點", "§黟", "§黠", "§黡", "§黢", "§黣", "§黤", "§黥", "§黦")
-
-    val objectiveName = UUID.randomUUID().toString().substring(0..7)
 
     val universalTeamData: Class<*> by unsafeLazy {
         Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam\$b")
     }
 
+    fun getObjectiveName(player: Player): String {
+        return player.getMetaFirstOrNull("t_scoreboard_objective_name")?.asString() ?: player.uniqueId.toString().substring(0..7)
+    }
+
     override fun setupScoreboard(player: Player, color: Boolean, title: String) {
         val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("objectiveName", objectiveName)
+            packet.setProperty("objectiveName", getObjectiveName(player))
             packet.setProperty("displayName", component(title))
             packet.setProperty("renderType", net.minecraft.server.v1_16_R3.IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 0)
         } else {
-            handle2DuplicatedPacket(packet, title)
+            handle2DuplicatedPacket(player, packet, title)
             packet.setProperty("d", 0)
         }
         player.sendPacket(packet)
@@ -153,6 +153,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
      *     public static final int METHOD_CHANGE = 2;
      */
     override fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean {
+        val objectiveName = getObjectiveName(player)
         if (content.isEmpty()) {
             val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
             if (MinecraftVersion.isUniversal) {
@@ -186,6 +187,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
     }
 
     override fun display(player: Player) {
+        val objectiveName = getObjectiveName(player)
         val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardDisplayObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
             // 1.12.2
@@ -206,12 +208,12 @@ class NMSScoreboardImpl : NMSScoreboard() {
     override fun setDisplayName(player: Player, title: String) {
         val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
         if (MinecraftVersion.isUniversal) {
-            packet.setProperty("objectiveName", objectiveName)
+            packet.setProperty("objectiveName", getObjectiveName(player))
             packet.setProperty("displayName", component(title))
             packet.setProperty("renderType", net.minecraft.server.v1_16_R3.IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER)
             packet.setProperty("method", 2)
         } else {
-            handle2DuplicatedPacket(packet, title)
+            handle2DuplicatedPacket(player, packet, title)
             packet.setProperty("d", 2)
         }
         player.sendPacket(packet)
@@ -450,6 +452,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
     }
 
     private fun updateLineCount(player: Player, line: Int, lastLineCount: Int) {
+        val objectiveName = getObjectiveName(player)
         validateLineCount(line)
         if (line > lastLineCount) {
             (lastLineCount until line).forEach { i ->
@@ -528,8 +531,8 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
-    private fun handle2DuplicatedPacket(packet: Any, title: String) {
-        packet.setProperty("a", objectiveName)
+    private fun handle2DuplicatedPacket(player: Player, packet: Any, title: String) {
+        packet.setProperty("a", getObjectiveName(player))
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             packet.setProperty("b", component(title))
         } else {
