@@ -17,10 +17,9 @@ internal object ActionArray {
      * size &array
      */
     @KetherParser(["size", "length"])
-    fun parser0() = scriptParser {
-        val arr = it.nextParsedAction()
-        actionNow {
-            run(arr).thenApply { arr ->
+    fun actionSize() = combinationParser {
+        it.group(any()).apply(it) { arr ->
+            now {
                 when (arr) {
                     is Collection<*> -> arr.size
                     is Array<*> -> arr.size
