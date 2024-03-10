@@ -19,7 +19,7 @@ import taboolib.module.kether.*
 @Inject
 internal object ActionJexl3 {
 
-    val jexl: JexlEngine by unsafeLazy { JexlBuilder().create() }
+    val jexl: JexlEngine by unsafeLazy { JexlBuilder().cache(256).create() }
     var autoContext = true
 
     /**

@@ -2,11 +2,14 @@
 
 package taboolib.module.nms
 
+import net.minecraft.network.protocol.game.ClientboundResetScorePacket
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore
 import net.minecraft.world.scores.DisplaySlot
 import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
@@ -144,6 +147,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
         }
     }
 
+    /**
+     *     public static final int METHOD_ADD = 0;
+     *     public static final int METHOD_REMOVE = 1;
+     *     public static final int METHOD_CHANGE = 2;
+     */
     override fun changeContent(player: Player, content: List<String>, lastContent: Map<Int, String>): Boolean {
         if (content.isEmpty()) {
             val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardObjective::class.java.unsafeInstance()
@@ -213,8 +221,11 @@ class NMSScoreboardImpl : NMSScoreboard() {
      * player -> 需要设置前缀或后缀的玩家
      * p -> 向该玩家发包,如果为Null则为全体发包
      *
-     * @see EnumChatFormat
-     * @see PacketPlayOutScoreboardTeam
+     *     private static final int METHOD_ADD = 0;
+     *     private static final int METHOD_REMOVE = 1;
+     *     private static final int METHOD_CHANGE = 2;
+     *     private static final int METHOD_JOIN = 3;
+     *     private static final int METHOD_LEAVE = 4;
      */
     override fun updateTeam(player: Player, prefix: String, suffix: String, color: ChatColorFormat, created: Boolean, target: Player?) {
         if (created) {
@@ -252,7 +263,9 @@ class NMSScoreboardImpl : NMSScoreboard() {
         packet.setProperty("d", suffix)
         if (target == null) {
             onlinePlayers.forEach { pp -> pp.sendPacket(packet) }
-        } else target.sendPacket(packet)
+        } else {
+            target.sendPacket(packet)
+        }
     }
 
     private fun component(text: String): Any {
@@ -440,24 +453,23 @@ class NMSScoreboardImpl : NMSScoreboard() {
         validateLineCount(line)
         if (line > lastLineCount) {
             (lastLineCount until line).forEach { i ->
-                if (MinecraftVersion.major >= 9) {
-                    val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore::class.java.unsafeInstance()
-                    packet.setProperty("owner", uniqueOwner[i])
-                    packet.setProperty("objectiveName", objectiveName)
-                    packet.setProperty("score", i)
-                    packet.setProperty("method", net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE)
-                    player.sendPacket(packet)
+                // 1.20.4 改为 Record
+                // String owner, String objectiveName, int score, @Nullable IChatBaseComponent display, @Nullable NumberFormat numberFormat
+                if (MinecraftVersion.majorLegacy > 12002) {
+                    player.sendPacket(PacketPlayOutScoreboardScore::class.java.invokeConstructor(uniqueOwner[i], objectiveName, i, null, null))
                     return@forEach
                 }
+                // 1.13+ 直接实例化
                 if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-                    val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore()
-                    packet.setProperty("a", uniqueOwner[i])
-                    packet.setProperty("b", objectiveName)
-                    packet.setProperty("c", i)
-                    packet.setProperty("d", net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE)
-                    player.sendPacket(packet)
+                    player.sendPacket(net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
+                        net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE,
+                        uniqueOwner[i],
+                        objectiveName,
+                        i
+                    ))
                     return@forEach
                 }
+                // 1.12 反射处理
                 val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore()
                 packet.setProperty("a", uniqueOwner[i])
                 packet.setProperty("b", objectiveName)
@@ -469,20 +481,20 @@ class NMSScoreboardImpl : NMSScoreboard() {
             }
         } else {
             (line until lastLineCount).forEach { i ->
-                if (MinecraftVersion.major >= 9) {
-                    val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore::class.java.unsafeInstance()
-                    packet.setProperty("owner", uniqueOwner[i])
-                    packet.setProperty("objectiveName", objectiveName)
-                    packet.setProperty("method", net.minecraft.server.v1_16_R3.ScoreboardServer.Action.REMOVE)
-                    player.sendPacket(packet)
+                // 1.20.4
+                // 变成单独一个包了 -> ClientboundResetScorePacket
+                if (MinecraftVersion.majorLegacy > 12002) {
+                    player.sendPacket(ClientboundResetScorePacket::class.java.invokeConstructor(uniqueOwner[i], objectiveName))
                     return@forEach
                 }
+                // 1.13+
                 if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
-                    val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore()
-                    packet.setProperty("a", uniqueOwner[i])
-                    packet.setProperty("b", objectiveName)
-                    packet.setProperty("d", net.minecraft.server.v1_16_R3.ScoreboardServer.Action.REMOVE)
-                    player.sendPacket(packet)
+                    player.sendPacket(net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
+                        net.minecraft.server.v1_16_R3.ScoreboardServer.Action.REMOVE,
+                        uniqueOwner[i],
+                        objectiveName,
+                        i
+                    ))
                     return@forEach
                 }
                 val packet = net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore()

@@ -15,6 +15,7 @@ dependencies {
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v12002:12002-minimize:mapped")
     compileOnly("ink.ptms.core:v12002:12002-minimize:universal")
+    compileOnly("ink.ptms.core:v12004:12004-minimize:universal")
     // Mojang
     compileOnly("com.mojang:brigadier:1.0.18")
     // DataSerializer
