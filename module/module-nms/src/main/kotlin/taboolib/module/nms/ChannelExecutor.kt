@@ -12,6 +12,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.isListened
 import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.warning
@@ -48,8 +49,8 @@ object ChannelExecutor {
     /**
      * 获取玩家的 [Channel]
      */
-    fun getPlayerChannel(address: InetAddress, isFirst: Boolean): Channel {
-        return nmsProxy<ConnectionGetter>().getChannel(address, isFirst)
+    fun getPlayerChannel(player: Player, address: InetAddress, isFirst: Boolean): List<Channel> {
+        return nmsProxy<ConnectionGetter>().getChannel(player, address, isFirst)
     }
 
     /**
@@ -64,15 +65,17 @@ object ChannelExecutor {
             return
         }
         try {
-            val pipeline = getPlayerChannel(address, true).pipeline()
-            try {
-                pipeline.remove(id)
-            } catch (_: NoSuchElementException) {
-            }
-            if (pipeline["packet_handler"] == null) {
-                pipeline.addLast(id, ChannelHandler(player))
-            } else {
-                pipeline.addBefore("packet_handler", id, ChannelHandler(player))
+            getPlayerChannel(player, address, true).forEach { channel ->
+                val pipeline = channel.pipeline()
+                try {
+                    pipeline.remove(id)
+                } catch (_: NoSuchElementException) {
+                }
+                if (pipeline["packet_handler"] == null) {
+                    pipeline.addLast(id, ChannelHandler(player))
+                } else {
+                    pipeline.addBefore("packet_handler", id, ChannelHandler(player))
+                }
             }
         } catch (ex: Throwable) {
             ex.printStackTrace()
@@ -94,9 +97,11 @@ object ChannelExecutor {
         val address = player.address?.address ?: return
         fun process() {
             try {
-                val pipeline = getPlayerChannel(address, false).pipeline()
-                if (pipeline[id] != null) {
-                    pipeline.remove(id)
+                getPlayerChannel(player, address, false).forEach { channel ->
+                    val pipeline = channel.pipeline()
+                    if (pipeline[id] != null) {
+                        pipeline.remove(id)
+                    }
                 }
             } catch (ex: Throwable) {
                 ex.printStackTrace()
@@ -112,16 +117,17 @@ object ChannelExecutor {
     @SubscribeEvent(EventPriority.MONITOR)
     private fun onJoin(e: PlayerLoginEvent) {
         if (e.result == PlayerLoginEvent.Result.ALLOWED) {
+            info("player ${e.player.name} login -> ${e.address} / ${e.realAddress} / ${e.hostname} / ${e.player.address}")
+
             addPlayerChannel(e.player, e.address)
         }
     }
 
     @SubscribeEvent
     private fun onQuit(e: PlayerQuitEvent) {
-        if (TabooLib.isStopped()) {
-            return
+        if (!TabooLib.isStopped()) {
+            nmsProxy<ConnectionGetter>().release(e.player.address ?: return)
         }
-        nmsProxy<ConnectionGetter>().release(e.player.address ?: return)
     }
 
     @Awake(LifeCycle.ACTIVE)
