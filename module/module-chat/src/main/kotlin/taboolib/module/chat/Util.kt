@@ -95,3 +95,34 @@ fun String.toGradientColor(colors: List<Int>): String {
     }
     return gradientText.toString()
 }
+
+/**
+ * 渐变色处理
+ */
+fun List<Int>.gradientColor(position: Double): Int {
+    if (isEmpty()) throw IllegalArgumentException("Color list must not be empty")
+    if (size == 1) return first()
+    // 确保 position 在 0 和 1 之间
+    val pos = position.coerceIn(0.0, 1.0) * (size - 1)
+    val index = pos.toInt()
+    val fractionalPart = pos - index
+    // 处理边界情况
+    if (index >= size - 1) {
+        return last()
+    }
+    // 解析当前颜色和下一个颜色的 RGB 分量
+    val startColor = this[index]
+    val endColor = this[index + 1]
+    val startR = (startColor shr 16) and 0xFF
+    val startG = (startColor shr 8) and 0xFF
+    val startB = startColor and 0xFF
+    val endR = (endColor shr 16) and 0xFF
+    val endG = (endColor shr 8) and 0xFF
+    val endB = endColor and 0xFF
+    // 计算渐变色的 RGB 分量
+    val r = (startR + (endR - startR) * fractionalPart).toInt()
+    val g = (startG + (endG - startG) * fractionalPart).toInt()
+    val b = (startB + (endB - startB) * fractionalPart).toInt()
+    // 将 RGB 分量转换回整数形式的颜色值
+    return (r shl 16) + (g shl 8) + b
+}
