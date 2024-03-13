@@ -18,7 +18,7 @@ class ConfigNodeLoader : ClassVisitor(2) {
             val node = field.getAnnotation(ConfigNode::class.java)
             var bind = node.property("bind", "")
             // 获取默认文件名称
-            if (bind.isEmpty()) {
+            if (bind.isEmpty() || bind == "config.yml") {
                 bind = clazz.getAnnotationIfPresent(ConfigNode::class.java)?.bind ?: "config.yml"
             }
             // 自动补全后缀
