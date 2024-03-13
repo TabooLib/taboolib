@@ -117,8 +117,6 @@ object ChannelExecutor {
     @SubscribeEvent(EventPriority.MONITOR)
     private fun onJoin(e: PlayerLoginEvent) {
         if (e.result == PlayerLoginEvent.Result.ALLOWED) {
-            info("player ${e.player.name} login -> ${e.address} / ${e.realAddress} / ${e.hostname} / ${e.player.address}")
-
             addPlayerChannel(e.player, e.address)
         }
     }
