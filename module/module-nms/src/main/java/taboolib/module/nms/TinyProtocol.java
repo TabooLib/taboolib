@@ -467,7 +467,6 @@ public class TinyProtocol {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            IOKt.info("channelRead " + msg.getClass().getSimpleName());
             // Intercept channel
             final Channel channel = ctx.channel();
             handleLoginStart(channel, msg);
