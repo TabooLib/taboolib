@@ -15,7 +15,7 @@ import taboolib.common.util.optional
 import java.util.function.Supplier
 
 @Awake
-class EventBus : ClassVisitor(0) {
+class EventBus : ClassVisitor(-1) {
 
     @Suppress("UNCHECKED_CAST")
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {

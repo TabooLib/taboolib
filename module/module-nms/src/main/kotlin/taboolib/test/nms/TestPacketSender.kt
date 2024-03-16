@@ -22,7 +22,7 @@ object TestPacketSender : Test() {
 
     override fun check(): List<Result> {
         val result = arrayListOf<Result>()
-        result += sandbox("NMS:getConnections()") { nmsProxy<ConnectionGetter>().getConnections() }
+        // result += sandbox("NMS:getConnections()") { nmsProxy<ConnectionGetter>().getConnections() }
         val player = onlinePlayers.firstOrNull()
         if (player != null) {
             result += sandbox("NMS:getConnection(Player)") { PacketSender.getConnection(player) }

@@ -26,4 +26,8 @@ abstract class Packet {
 
     /** 覆盖原始数据包 */
     abstract fun overwrite(newPacket: Any)
+
+    override fun toString(): String {
+        return name
+    }
 }

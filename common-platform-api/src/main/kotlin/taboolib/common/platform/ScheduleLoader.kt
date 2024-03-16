@@ -8,7 +8,7 @@ import taboolib.common.util.optional
 import java.util.function.Supplier
 
 @Awake
-class ScheduleLoader : ClassVisitor(0) {
+class ScheduleLoader : ClassVisitor(1) {
 
     override fun getLifeCycle(): LifeCycle {
         return LifeCycle.ACTIVE
