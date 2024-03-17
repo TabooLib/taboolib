@@ -30,12 +30,7 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         return this
     }
 
-    open fun index(
-        name: String,
-        columns: List<String>,
-        unique: Boolean = false,
-        checkExists: Boolean = true
-    ): Table<T, E> {
+    open fun index(name: String, columns: List<String>, unique: Boolean = false, checkExists: Boolean = true): Table<T, E> {
         indices += Index(name, columns, unique, checkExists)
         return this
     }
@@ -44,13 +39,7 @@ open class Table<T : Host<E>, E : ColumnBuilder>(val name: String, val host: Hos
         workspace(dataSource) { createTable(checkExists) }.run()
     }
 
-    open fun createIndex(
-        dataSource: DataSource,
-        name: String,
-        columns: List<String>,
-        unique: Boolean = false,
-        checkExists: Boolean = true
-    ) {
+    open fun createIndex(dataSource: DataSource, name: String, columns: List<String>, unique: Boolean = false, checkExists: Boolean = true) {
         workspace(dataSource) { createIndex(Index(name, columns, unique, checkExists)) }.run()
     }
 
