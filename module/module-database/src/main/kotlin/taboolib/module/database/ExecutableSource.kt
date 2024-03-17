@@ -33,7 +33,7 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
     open fun createTable(checkExists: Boolean = true) {
         if (table.name.isBlank()) error("Table name is blank")
         executeUpdate(table.generateCreateQuery(checkExists))
-
+        // 创建表的同时创建索引
         table.indices.forEach { createIndex(it) }
     }
 
@@ -202,9 +202,8 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
      * 生成索引创建语句
      */
     open fun Table<*, *>.generateCreateIndexQuery(index: Index): String? {
-        if ((host is HostSQL) && index.checkExists) {
-            val sql =
-                "select count(*) from information_schema.STATISTICS where table_schema = DATABASE() and TABLE_NAME = ? and INDEX_NAME = ?"
+        if (host is HostSQL && index.checkExists) {
+            val sql = "select count(*) from information_schema.STATISTICS where table_schema = DATABASE() and TABLE_NAME = ? and INDEX_NAME = ?"
             ResultProcessor(sql, object : Executable<ResultSet> {
                 override fun <C> invoke(func: ResultSet.() -> C): C {
                     return try {
@@ -228,12 +227,11 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
                 index.checkExists = false
             }
         }
-
-
         return Statement("CREATE")
             .addSegmentIfTrue(index.unique) {
                 addSegment("UNIQUE")
-            }.addSegment("INDEX")
+            }
+            .addSegment("INDEX")
             .addSegmentIfTrue(index.checkExists) {
                 addSegment("IF NOT EXISTS")
             }
