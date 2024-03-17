@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 // 文档参考: https://www.cnblogs.com/throwable/p/11601538.html
 // LettuceGithub： https://github.com/lettuce-io/lettuce-core
@@ -11,10 +10,4 @@ dependencies {
     compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:module-configuration"))
-}
-
-tasks {
-    withType<ShadowJar> {
-        relocate("io.lettuce.core.", "io.lettuce.core_6_3_2.")
-    }
 }

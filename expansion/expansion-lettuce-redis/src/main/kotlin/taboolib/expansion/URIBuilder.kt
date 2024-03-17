@@ -2,6 +2,7 @@ package taboolib.expansion
 
 import io.lettuce.core.RedisURI
 import io.lettuce.core.pubsub.RedisPubSubListener
+import org.reactivestreams.Publisher
 import reactor.core.scheduler.Schedulers
 import taboolib.expansion.client.ClusterClient
 import taboolib.expansion.client.LettuceClientConverter

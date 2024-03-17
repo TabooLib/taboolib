@@ -3,12 +3,9 @@ package taboolib.expansion.client
 import io.lettuce.core.RedisClient
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.async.RedisAsyncCommands
-import io.lettuce.core.api.push.PushListener
-import io.lettuce.core.api.push.PushMessage
 import io.lettuce.core.api.reactive.RedisReactiveCommands
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.codec.StringCodec
-import io.lettuce.core.pubsub.RedisPubSubAdapter
 import io.lettuce.core.support.AsyncConnectionPoolSupport
 import io.lettuce.core.support.BoundedAsyncPool
 import io.lettuce.core.support.BoundedPoolConfig
@@ -22,7 +19,7 @@ import taboolib.expansion.URIBuilder
 import java.io.Closeable
 
 
-data class SingleClient(
+open class SingleClient(
     val redisURI: URIBuilder,
     val pool: PoolType,
 ) : IRedisClient, IRedisCommand, IPubSubConnection, Closeable {

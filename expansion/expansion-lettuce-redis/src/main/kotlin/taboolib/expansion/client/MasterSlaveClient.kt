@@ -22,7 +22,7 @@ import taboolib.expansion.PoolType.*
 import taboolib.expansion.URIBuilder
 import java.io.Closeable
 
-data class MasterSlaveClient(
+open class MasterSlaveClient(
     val redisURI: URIBuilder,
     val pool: PoolType
 ) : IRedisClient, IRedisMultiple, IRedisCommand, IPubSubConnection, Closeable {

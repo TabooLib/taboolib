@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 
 
-data class ClusterClient(
+open class ClusterClient(
     val redisURI: URIBuilder,
     val pool: PoolType,
 ) : IRedisClient, IPubSubConnection, Closeable {
@@ -37,7 +37,7 @@ data class ClusterClient(
     var poolObj: GenericObjectPool<StatefulRedisClusterConnection<String, String>>? = null
     var asyncPool: CompletionStage<BoundedAsyncPool<StatefulRedisClusterConnection<String, String>>>? = null
 
-    fun connect(vararg uriBuilder: Pair<String, RedisURI>) {
+    open fun connect(vararg uriBuilder: Pair<String, RedisURI>) {
         val list = uriBuilder.toMutableList()
         list.add(0, "default" to redisURI.getURI())
         list.forEach {
@@ -67,16 +67,16 @@ data class ClusterClient(
         }
     }
 
-    fun getSubCluster(host: String, port: Int): StatefulRedisConnection<String, String>? {
+    open fun getSubCluster(host: String, port: Int): StatefulRedisConnection<String, String>? {
         return connection.getConnection(host, port)
     }
 
-    fun getSubCluster(name: String): StatefulRedisConnection<String, String>? {
+    open fun getSubCluster(name: String): StatefulRedisConnection<String, String>? {
         return clusterMap[name]?.let { (host, port) -> connection.getConnection(host, port) }
     }
 
 
-    fun enableTopologyRefresh(time: Duration) {
+    open fun enableTopologyRefresh(time: Duration) {
         val topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
             .enablePeriodicRefresh(time)
             .build()
@@ -88,7 +88,7 @@ data class ClusterClient(
     }
 
     // 启用自适应拓扑更新
-    fun enableAdaptiveTopologyRefresh(time: Duration) {
+    open fun enableAdaptiveTopologyRefresh(time: Duration) {
         val topologyRefreshOptions = ClusterTopologyRefreshOptions.builder()
             .enableAdaptiveRefreshTrigger(RefreshTrigger.MOVED_REDIRECT, RefreshTrigger.PERSISTENT_RECONNECTS)
             .adaptiveRefreshTriggersTimeout(time)
@@ -100,41 +100,41 @@ data class ClusterClient(
         )
     }
 
-    fun async(block: RedisAdvancedClusterAsyncCommands<String, String>.() -> Any): Any {
+    open fun async(block: RedisAdvancedClusterAsyncCommands<String, String>.() -> Any): Any {
         return connection.async().let(block)
     }
 
-    fun async(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun async(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return connection.getConnection(host, port).let(block)
     }
 
-    fun async(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun async(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return clusterMap[name]?.let { (host, port) -> connection.getConnection(host, port) }?.let(block)
             ?: error("Cluster $name not found.")
     }
 
-    fun sync(block: RedisAdvancedClusterCommands<String, String>.() -> Any): Any {
+    open fun sync(block: RedisAdvancedClusterCommands<String, String>.() -> Any): Any {
         return connection.sync().let(block)
     }
 
-    fun sync(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun sync(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return connection.getConnection(host, port).let(block)
     }
 
-    fun sync(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun sync(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return clusterMap[name]?.let { (host, port) -> connection.getConnection(host, port) }?.let(block)
             ?: error("Cluster $name not found.")
     }
 
-    fun reactive(block: RedisAdvancedClusterReactiveCommands<String, String>.() -> Any): Any {
+    open fun reactive(block: RedisAdvancedClusterReactiveCommands<String, String>.() -> Any): Any {
         return connection.reactive().let(block)
     }
 
-    fun reactive(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun reactive(host: String, port: Int, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return connection.getConnection(host, port).let(block)
     }
 
-    fun reactive(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
+    open fun reactive(name: String, block: StatefulRedisConnection<String, String>.() -> Any): Any {
         return clusterMap[name]?.let { (host, port) -> connection.getConnection(host, port) }?.let(block)
             ?: error("Cluster $name not found.")
     }

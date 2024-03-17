@@ -7,8 +7,20 @@ import taboolib.common.env.RuntimeDependency
 @RuntimeDependencies(
     RuntimeDependency(
         "!io.lettuce:lettuce-core:6.3.2.RELEASE",
-        test = "!io.lettuce.core_6_3_2.RedisURI",
-        relocate = ["!io.lettuce.core", "!io.lettuce.core_6_3_2"],
+        test = "!io.lettuce.core.RedisURI",
+        transitive = false
+    ),
+    RuntimeDependency(
+        "!io.projectreactor:reactor-core:3.6.4",
+    ),
+    RuntimeDependency(
+        "!org.reactivestreams:reactive-streams:1.0.4",
+        test = "!org.reactivestreams.Publisher"
+    ),
+    //implementation("io.netty:netty-resolver-dns:4.1.107.Final")
+    RuntimeDependency(
+        "!io.netty:netty-resolver-dns:4.1.107.Final",
+        test = "!io.netty.resolver.dns.DnsCnameCache",
         transitive = false
     ),
     RuntimeDependency(
@@ -20,6 +32,7 @@ import taboolib.common.env.RuntimeDependency
 @Inject
 object LettuceRedis {
 
-
+    fun test(){
+    }
 
 }
