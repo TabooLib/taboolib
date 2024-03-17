@@ -8,6 +8,7 @@ import taboolib.common.env.RuntimeDependency
     RuntimeDependency(
         "!io.lettuce:lettuce-core:6.3.2.RELEASE",
         test = "!io.lettuce.core.RedisURI",
+        relocate = ["!io.netty.resolver.dns","!io.netty.resolver.dns_4_1_107_final"],
         transitive = false
     ),
     RuntimeDependency(
@@ -19,9 +20,10 @@ import taboolib.common.env.RuntimeDependency
     ),
     //implementation("io.netty:netty-resolver-dns:4.1.107.Final")
     RuntimeDependency(
-        "!io.netty:netty-resolver-dns:4.1.107.Final",
-        test = "!io.netty.resolver.dns.DnsCnameCache",
-        transitive = false
+        value = "!io.netty:netty-resolver-dns:4.1.107.Final",
+        test = "!io.netty.resolver.dns_4_1_107_final.DnsNameResolverBuilder",
+        transitive = false,
+        relocate = ["!io.netty.resolver.dns","!io.netty.resolver.dns_4_1_107_final"]
     ),
     RuntimeDependency(
         "!org.apache.commons:commons-pool2:2.11.1",
