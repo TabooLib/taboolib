@@ -1,5 +1,8 @@
+@file: Inject
+
 package taboolib.module.nms
 
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import java.util.concurrent.CompletableFuture
