@@ -9,5 +9,4 @@ data class Index(
     val columns: List<String>,
     var unique: Boolean = false,
     var checkExists: Boolean = true
-) {
-}
+)
