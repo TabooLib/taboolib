@@ -1,4 +1,4 @@
-rootProject.name = "TabooLib"
+rootProject.name = "taboolib"
 include("common", "common-env", "common-util", "common-legacy-api", "common-reflex", "common-platform-api")
 include(
     "module:module-ai",
@@ -21,6 +21,7 @@ include(
 )
 include(
     "expansion:expansion-alkaid-redis",
+    "expansion:expansion-lettuce-redis",
     "expansion:expansion-command-helper",
     "expansion:expansion-folia",
     "expansion:expansion-geek-tool",

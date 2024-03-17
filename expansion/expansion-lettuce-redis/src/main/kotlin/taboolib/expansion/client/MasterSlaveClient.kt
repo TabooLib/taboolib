@@ -1,0 +1,94 @@
+package taboolib.expansion.client
+
+import io.lettuce.core.ReadFrom
+import io.lettuce.core.RedisClient
+import io.lettuce.core.RedisURI
+import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.api.async.RedisAsyncCommands
+import io.lettuce.core.api.reactive.RedisReactiveCommands
+import io.lettuce.core.api.sync.RedisCommands
+import io.lettuce.core.codec.StringCodec
+import io.lettuce.core.masterreplica.MasterReplica
+import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection
+import io.lettuce.core.support.AsyncConnectionPoolSupport
+import io.lettuce.core.support.BoundedAsyncPool
+import io.lettuce.core.support.BoundedPoolConfig
+import io.lettuce.core.support.ConnectionPoolSupport
+import org.apache.commons.pool2.impl.GenericObjectPool
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig
+import taboolib.expansion.LettucePubSubListener
+import taboolib.expansion.PoolType
+import taboolib.expansion.PoolType.*
+import taboolib.expansion.URIBuilder
+import java.io.Closeable
+
+data class MasterSlaveClient(
+    val redisURI: URIBuilder,
+    val pool: PoolType
+) : IRedisClient, IRedisMultiple, IRedisCommand, IPubSubConnection, Closeable {
+
+    override lateinit var sync: RedisCommands<String, String>
+    override lateinit var async: RedisAsyncCommands<String, String>
+    override lateinit var reactive: RedisReactiveCommands<String, String>
+
+    private val client = RedisClient.create(redisURI.getURI())
+
+    lateinit var connection: StatefulRedisMasterReplicaConnection<String, String>
+
+    var poolObj: GenericObjectPool<StatefulRedisConnection<String, String>>? = null
+    var asyncPool: BoundedAsyncPool<StatefulRedisConnection<String, String>>? = null
+
+    override fun connect(vararg uri: RedisURI) {
+        // 无论那种池都需要创建一个主从连接
+        connection = MasterReplica.connect(client, StringCodec.UTF8, uri.toList())
+
+        when (pool) {
+            NONE -> {
+                sync = connection.sync()
+                async = connection.async()
+                reactive = connection.reactive()
+            }
+
+            SYNC -> {
+                poolObj = ConnectionPoolSupport.createGenericObjectPool({ connection }, GenericObjectPoolConfig())
+                poolObj?.let {
+                    val borrowObject = it.borrowObject()
+                    sync = borrowObject.sync()
+                    async = borrowObject.async()
+                    reactive = borrowObject.reactive()
+                }
+            }
+
+            ASYNC -> {
+                // MasterSlaveClient 使用异步连接池是不合理的 但你仍可以使用并操作主连接
+                asyncPool = AsyncConnectionPoolSupport.createBoundedObjectPool(
+                    { client.connectAsync(StringCodec.UTF8, redisURI.getURI()) }, BoundedPoolConfig.create()
+                )
+            }
+        }
+    }
+
+    fun readForm(form: ReadFrom) {
+        connection.readFrom = form
+    }
+
+    override fun close() {
+        connection.close()
+        poolObj?.close()
+        if (pool == ASYNC) {
+            asyncPool?.closeAsync()
+            client.shutdownAsync()
+        } else {
+            client.shutdown()
+        }
+    }
+
+    override fun addListener(action: LettucePubSubListener) {
+        client.connectPubSub().addListener(action)
+    }
+
+    override fun removeListener(action: LettucePubSubListener) {
+        client.connectPubSub().removeListener(action)
+    }
+
+}
