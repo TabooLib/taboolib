@@ -14,6 +14,7 @@ import taboolib.common.platform.command.CommandExecutor
 import taboolib.common.platform.command.CommandStructure
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.function.adaptCommandSender
+import taboolib.common.platform.function.info
 import taboolib.common.platform.service.PlatformCommand
 
 /**
@@ -43,7 +44,8 @@ class VelocityCommand : PlatformCommand {
             }
 
             override fun suggest(invocation: SimpleCommand.Invocation): MutableList<String> {
-                return completer.execute(adaptCommandSender(invocation.source()), command, command.name, invocation.arguments())?.toMutableList() ?: ArrayList()
+                val args = invocation.arguments().toMutableList().takeIf { it.isNotEmpty() } ?: mutableListOf("")
+                return completer.execute(adaptCommandSender(invocation.source()), command, command.name, args.toTypedArray())?.toMutableList() ?: mutableListOf()
             }
         }, *command.aliases.toTypedArray())
     }
