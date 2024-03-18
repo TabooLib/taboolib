@@ -21,6 +21,7 @@ include(
 )
 include(
     "expansion:expansion-alkaid-redis",
+    "expansion:expansion-lettuce-redis",
     "expansion:expansion-command-helper",
     "expansion:expansion-folia",
     "expansion:expansion-geek-tool",
