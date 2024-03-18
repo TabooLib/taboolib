@@ -7,9 +7,12 @@ redis:
   # 时间使用的是 Duration
   timeout: PT15S
   database: 0
-  # 单机模式忽略此条目
-  master: master
+  # 也可以使用  uri 来设置你的数据
+  #uri: "redis://mypassword@localhost:6379/0?timeout=10s"
   pool:
+    # 连接池分三种 NONE 不使用连接池 SYNC 同步连接池 ASYNC 异步连接池
+    # Lettuce的优越性 其实更推荐不用连接池
+    type: NONE
     maxTotal: 8
     maxIdle: 8
     minIdle: 0
@@ -19,12 +22,16 @@ redis:
   mode: single
   cluster:
     # 默认节点的 Id是 default
-    # 
     nodes:
       - "id to redis://mypassword@127.0.0.2:6379/0?timeout=10s"
   master_slave:
+    # 传入一个uri，那么Lettuce会进行拓扑发现机制，自动获取Redis主从节点信息
+    # 如果要求传入多个uri，那么对于普通主从模式来说所有节点信息是静态的，不会进行发现和更新。
     slave:
       - "redis://mypassword@127.0.0.2:6379/0?timeout=10s"
+    # 哨兵模式提供的masterId
+    # 没试验过具体应该怎么写
+    master: "127.0.0.1:6379"
 
 #  DurationExamples:
 #      "PT20.345S" -- parses as "20.345 seconds"

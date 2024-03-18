@@ -1,14 +1,20 @@
 package taboolib.expansion
 
+import io.lettuce.core.RedisURI
 import taboolib.common.Inject
 import taboolib.common.env.RuntimeDependencies
 import taboolib.common.env.RuntimeDependency
+import taboolib.expansion.client.PoolType
+import taboolib.expansion.client.impl.ClusterClient
+import taboolib.expansion.client.impl.MasterSlaveClient
+import taboolib.expansion.client.impl.SingleClient
+import taboolib.library.configuration.ConfigurationSection
 
 @RuntimeDependencies(
     RuntimeDependency(
         "!io.lettuce:lettuce-core:6.3.2.RELEASE",
         test = "!io.lettuce.core.RedisURI",
-        relocate = ["!io.netty.resolver.dns","!io.netty.resolver.dns_4_1_107_final"],
+        relocate = ["!io.netty.resolver.dns", "!io.netty.resolver.dns_4_1_107_final"],
         transitive = false
     ),
     RuntimeDependency(
@@ -24,7 +30,7 @@ import taboolib.common.env.RuntimeDependency
         value = "!io.netty:netty-resolver-dns:4.1.107.Final",
         test = "!io.netty.resolver.dns_4_1_107_final.DnsNameResolverBuilder",
         transitive = false,
-        relocate = ["!io.netty.resolver.dns","!io.netty.resolver.dns_4_1_107_final"]
+        relocate = ["!io.netty.resolver.dns", "!io.netty.resolver.dns_4_1_107_final"]
     ),
     RuntimeDependency(
         "!org.apache.commons:commons-pool2:2.11.1",
@@ -34,6 +40,41 @@ import taboolib.common.env.RuntimeDependency
 )
 @Inject
 object LettuceRedis {
+
+    // 快速创建单机客户端
+    fun fastCreateSingleClient(config: ConfigurationSection): SingleClient {
+        val poolType = config.getString("pool.type") ?: "NONE"
+        return URIBuilder.formConfig(config).link<SingleClient>(PoolType.valueOf(poolType))
+    }
+
+    // 主从
+    fun fastCreateMasterSlaveClient(config: ConfigurationSection): MasterSlaveClient {
+        val poolType = config.getString("pool.type") ?: "NONE"
+        val type = PoolType.valueOf(poolType)
+        val client = URIBuilder.formConfig(config).link<MasterSlaveClient>(type)
+
+        val uriList = mutableListOf<RedisURI>()
+        config.getStringList("master_slave.slave").forEach {
+            uriList.add(buildURI { this input it })
+        }
+        client.connect(*uriList.toTypedArray())
+        return client
+    }
+
+    // 集群
+    fun fastCreateClusterClient(config: ConfigurationSection): ClusterClient {
+        val poolType = config.getString("pool.type") ?: "NONE"
+        val type = PoolType.valueOf(poolType)
+        val client = URIBuilder.formConfig(config).link<ClusterClient>(type)
+
+        val uriList = mutableListOf<Pair<String, RedisURI>>()
+        config.getStringList("cluster.nodes").forEach {
+            val args = it.split(" to ")
+            uriList.add(args[0] to buildURI { this input args[1] })
+        }
+        client.connect(*uriList.toTypedArray())
+        return client
+    }
 
 //    fun test() {
 //        val client = buildClient {
@@ -98,9 +139,9 @@ object LettuceRedis {
 //        }.link<MasterSlaveClient> {
 //            // 添加从节点
 //            connect(
-//                getURI { "localhost" link 6379 },
-//                getURI { "localhost" link 6380 },
-//                getURI { "localhost" link 6381 }
+//                buildURI { "localhost" link 6379 },
+//                buildURI { "localhost" link 6380 },
+//                buildURI { "localhost" link 6381 }
 //            )
 //        }
 //
@@ -112,9 +153,9 @@ object LettuceRedis {
 //            "localhost" link 6379 password "password" ssl true
 //        }.link<ClusterClient> {
 //            connect(
-//                "sub1" to getURI { "localhost" link 6379 },
-//                "sub2" to getURI { "localhost" link 6380 },
-//                "sub3" to getURI { "localhost" link 6381 }
+//                "sub1" to buildURI { "localhost" link 6379 },
+//                "sub2" to buildURI { "localhost" link 6380 },
+//                "sub3" to buildURI { "localhost" link 6381 }
 //            )
 //            enableTopologyRefresh(Duration.ofMinutes(50L))
 //        }

@@ -12,13 +12,15 @@ fun buildClient(action: URIBuilder.() -> Unit): LettuceClientConverter {
     return URIBuilder().apply(action).build()
 }
 
-fun getURI(action: URIBuilder.() -> Unit): RedisURI {
+fun buildURI(action: URIBuilder.() -> Unit): RedisURI {
     return URIBuilder().apply(action).getURI()
 }
 
 class URIBuilder {
 
     companion object {
+        // 因为Redis节点的复杂程度 虽然规定了配置文件应该如何写 但是还是推荐自己定义
+        // 这里给出的配置是给单机模式快速创建使用的
         fun formConfig(config: ConfigurationSection): LettuceClientConverter {
             val builder = URIBuilder()
             config.getString("host")?.let { builder.host(it) } ?: error("Host not found.")
@@ -27,7 +29,12 @@ class URIBuilder {
             config.getBoolean("ssl").let { builder.ssl(it) }
             config.getString("timeout")?.let { builder.timeout(Duration.parse(it)) }
             config.getInt("database").let { builder.database(it) }
-            config.getString("master")?.let { builder.setMasterHost(it) }
+
+            // uri优先级最高会覆盖掉其他配置
+            config.getString("uri")?.let { builder.input(it) }
+
+            config.getString("master_slave.master")?.let { builder.setMasterHost(it) }
+
             // 连接池
             config.getConfigurationSection("pool")?.let {
                 builder.maxTotal(it.getInt("maxTotal"))
