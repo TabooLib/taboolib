@@ -1,114 +1,12 @@
 package taboolib.expansion
 
 import io.lettuce.core.RedisURI
-import io.lettuce.core.pubsub.RedisPubSubListener
-import org.reactivestreams.Publisher
-import reactor.core.scheduler.Schedulers
-import taboolib.expansion.client.ClusterClient
+import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.support.BoundedPoolConfig
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import taboolib.expansion.client.LettuceClientConverter
-import taboolib.expansion.client.MasterSlaveClient
-import taboolib.expansion.client.SingleClient
 import taboolib.library.configuration.ConfigurationSection
 import java.time.Duration
-
-
-fun test() {
-    val client = buildClient {
-        "localhost" link 6379 password "password" ssl true
-        // or
-        host("localhost")
-        port(6379)
-        password("password")
-        ssl(true)
-    }.link<SingleClient>(pool = PoolType.SYNC) {
-        // do something
-
-        val listener = pubSubListener {
-            onSubscribed = { channel, count ->
-                println("Subscribed to $channel. Total count is $count")
-            }
-            onPSubscribed = { pattern, count ->
-                println("PSubscribed to $pattern. Total count is $count")
-            }
-        }
-        addListener(listener)
-        // ....
-        removeListener(listener)
-    }
-
-    client.async {
-        set("key", "value")
-    }
-
-    val test = client.sync {
-        get("key")
-    }
-
-    // 如果 Pool是Async 应该采用异步的方式操作
-    client.asyncPool?.let { pool ->
-        pool.acquire().thenApply {
-            it.sync().get("key")
-        }
-    }
-
-    client.sync {
-        get("key")
-    }
-
-    client.reactive {
-        multi().publishOn(Schedulers.boundedElastic()).doOnSuccess {
-            set("key", "value").subscribe()
-        }.flatMap {
-            get("key")
-        }.subscribe()
-    }
-
-    // 面对更复杂的需求可以使用字符串手动写连接
-    val moreClient = buildClient {
-        this input "redis://localhost:6379"
-    }.link<SingleClient> {
-        // do something
-    }
-
-    val masterSlaveClient = buildClient {
-        "localhost" link 6379 password "password" ssl true
-    }.link<MasterSlaveClient> {
-        // 添加从节点
-        connect(
-            getURI { "localhost" link 6379 },
-            getURI { "localhost" link 6380 },
-            getURI { "localhost" link 6381 }
-        )
-    }
-
-    masterSlaveClient.async {
-        set("key", "value")
-    }
-
-    val cluster = buildClient {
-        "localhost" link 6379 password "password" ssl true
-    }.link<ClusterClient> {
-        connect(
-            "sub1" to getURI { "localhost" link 6379 },
-            "sub2" to getURI { "localhost" link 6380 },
-            "sub3" to getURI { "localhost" link 6381 }
-        )
-        enableTopologyRefresh(Duration.ofMinutes(50L))
-    }
-
-    cluster.sync {
-        set("key", "value")
-    }
-
-    cluster.asyncPool?.let { pool ->
-        pool.thenAccept { poolA ->
-            poolA.acquire().thenApply {
-                it.sync().get("key")
-            }
-        }
-    }
-
-}
 
 fun buildClient(action: URIBuilder.() -> Unit): LettuceClientConverter {
     return URIBuilder().apply(action).build()
@@ -118,7 +16,7 @@ fun getURI(action: URIBuilder.() -> Unit): RedisURI {
     return URIBuilder().apply(action).getURI()
 }
 
-class URIBuilder(id: String = "") {
+class URIBuilder {
 
     companion object {
         fun formConfig(config: ConfigurationSection): LettuceClientConverter {
@@ -128,6 +26,15 @@ class URIBuilder(id: String = "") {
             config.getString("password")?.let { builder.password(it) }
             config.getBoolean("ssl").let { builder.ssl(it) }
             config.getString("timeout")?.let { builder.timeout(Duration.parse(it)) }
+            config.getInt("database").let { builder.database(it) }
+            config.getString("master")?.let { builder.setMasterHost(it) }
+            // 连接池
+            config.getConfigurationSection("pool")?.let {
+                builder.maxTotal(it.getInt("maxTotal"))
+                builder.maxIdle(it.getInt("maxIdle"))
+                builder.minIdle(it.getInt("minIdle"))
+                it.getString("maxWait")?.let { maxWait -> builder.maxWait(Duration.parse(maxWait)) }
+            }
             return builder.build()
         }
     }
@@ -135,6 +42,7 @@ class URIBuilder(id: String = "") {
     private var redisURI = RedisURI.builder()
 
     private var urlObj: RedisURI? = null
+
 
     infix fun input(value: String) {
         urlObj = RedisURI.create(value)
@@ -195,5 +103,40 @@ class URIBuilder(id: String = "") {
         }
         return redisURI.build()
     }
+
+
+    // pool2的配置文件 在使用 SYNC 阻塞式连接池的时候用到
+    var poolTwoConfig = GenericObjectPoolConfig<StatefulRedisConnection<String, String>>()
+
+    // lettuce的连接池配置 在使用 ASYNC 非阻塞连接池的时候用到
+    var poolLettuceConfig = BoundedPoolConfig.builder()
+
+    // 默认 8
+    infix fun maxTotal(maxTotal: Int): URIBuilder {
+        poolTwoConfig.maxTotal = maxTotal
+        poolLettuceConfig.maxTotal(maxTotal)
+        return this
+    }
+
+    // 默认 8
+    infix fun maxIdle(maxIdle: Int): URIBuilder {
+        poolTwoConfig.maxIdle = maxIdle
+        poolLettuceConfig.maxIdle(maxIdle)
+        return this
+    }
+
+    // 默认 0
+    infix fun minIdle(minIdle: Int): URIBuilder {
+        poolTwoConfig.minIdle = minIdle
+        poolLettuceConfig.minIdle(minIdle)
+        return this
+    }
+
+    infix fun maxWait(maxWait: Duration): URIBuilder {
+        poolTwoConfig.setMaxWait(maxWait)
+        // lettuce异步连接池不存在等待时间
+        return this
+    }
+
 
 }

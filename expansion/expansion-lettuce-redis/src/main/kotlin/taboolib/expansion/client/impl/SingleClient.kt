@@ -1,56 +1,49 @@
-package taboolib.expansion.client
+package taboolib.expansion.client.impl
 
-import io.lettuce.core.ReadFrom
 import io.lettuce.core.RedisClient
-import io.lettuce.core.RedisURI
 import io.lettuce.core.api.StatefulRedisConnection
 import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.reactive.RedisReactiveCommands
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.codec.StringCodec
-import io.lettuce.core.masterreplica.MasterReplica
-import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection
 import io.lettuce.core.support.AsyncConnectionPoolSupport
 import io.lettuce.core.support.BoundedAsyncPool
-import io.lettuce.core.support.BoundedPoolConfig
 import io.lettuce.core.support.ConnectionPoolSupport
 import org.apache.commons.pool2.impl.GenericObjectPool
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import taboolib.expansion.LettucePubSubListener
-import taboolib.expansion.PoolType
-import taboolib.expansion.PoolType.*
+import taboolib.expansion.client.PoolType
+import taboolib.expansion.client.PoolType.*
 import taboolib.expansion.URIBuilder
+import taboolib.expansion.client.IPubSubConnection
+import taboolib.expansion.client.IRedisClient
+import taboolib.expansion.client.IRedisCommand
 import java.io.Closeable
 
-open class MasterSlaveClient(
+
+class SingleClient(
     val redisURI: URIBuilder,
-    val pool: PoolType
-) : IRedisClient, IRedisMultiple, IRedisCommand, IPubSubConnection, Closeable {
+    val pool: PoolType,
+) : IRedisClient, IRedisCommand, IPubSubConnection, Closeable {
 
     override lateinit var sync: RedisCommands<String, String>
     override lateinit var async: RedisAsyncCommands<String, String>
     override lateinit var reactive: RedisReactiveCommands<String, String>
 
-    private val client = RedisClient.create(redisURI.getURI())
-
-    lateinit var connection: StatefulRedisMasterReplicaConnection<String, String>
+    val client = RedisClient.create(redisURI.getURI())
 
     var poolObj: GenericObjectPool<StatefulRedisConnection<String, String>>? = null
     var asyncPool: BoundedAsyncPool<StatefulRedisConnection<String, String>>? = null
 
-    override fun connect(vararg uri: RedisURI) {
-        // 无论那种池都需要创建一个主从连接
-        connection = MasterReplica.connect(client, StringCodec.UTF8, uri.toList())
-
+    init {
         when (pool) {
             NONE -> {
-                sync = connection.sync()
-                async = connection.async()
-                reactive = connection.reactive()
+                sync = client.connect().sync()
+                async = client.connect().async()
+                reactive = client.connect().reactive()
             }
 
             SYNC -> {
-                poolObj = ConnectionPoolSupport.createGenericObjectPool({ connection }, GenericObjectPoolConfig())
+                poolObj = ConnectionPoolSupport.createGenericObjectPool({ client.connect() }, redisURI.poolTwoConfig)
                 poolObj?.let {
                     val borrowObject = it.borrowObject()
                     sync = borrowObject.sync()
@@ -60,26 +53,10 @@ open class MasterSlaveClient(
             }
 
             ASYNC -> {
-                // MasterSlaveClient 使用异步连接池是不合理的 但你仍可以使用并操作主连接
                 asyncPool = AsyncConnectionPoolSupport.createBoundedObjectPool(
-                    { client.connectAsync(StringCodec.UTF8, redisURI.getURI()) }, BoundedPoolConfig.create()
+                    { client.connectAsync(StringCodec.UTF8, redisURI.getURI()) }, redisURI.poolLettuceConfig.build()
                 )
             }
-        }
-    }
-
-    fun readForm(form: ReadFrom) {
-        connection.readFrom = form
-    }
-
-    override fun close() {
-        connection.close()
-        poolObj?.close()
-        if (pool == ASYNC) {
-            asyncPool?.closeAsync()
-            client.shutdownAsync()
-        } else {
-            client.shutdown()
         }
     }
 
@@ -90,5 +67,17 @@ open class MasterSlaveClient(
     override fun removeListener(action: LettucePubSubListener) {
         client.connectPubSub().removeListener(action)
     }
+
+    override fun close() {
+        poolObj?.close()
+        if (pool == ASYNC) {
+            asyncPool?.closeAsync()
+            client.shutdownAsync()
+        } else {
+            client.shutdown()
+        }
+
+    }
+
 
 }

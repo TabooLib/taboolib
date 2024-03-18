@@ -1,7 +1,5 @@
 package taboolib.expansion.client
 
-import io.lettuce.core.RedisURI
-import taboolib.expansion.PoolType
 import taboolib.expansion.URIBuilder
 
 data class LettuceClientConverter(val redisURI: URIBuilder) {

@@ -1,0 +1,37 @@
+# 根节点自行设置
+redis:
+  host: localhost
+  port: 6379
+  password: password
+  ssl: false
+  # 时间使用的是 Duration
+  timeout: PT15S
+  database: 0
+  # 单机模式忽略此条目
+  master: master
+  pool:
+    maxTotal: 8
+    maxIdle: 8
+    minIdle: 0
+    maxWait: PT15S
+  # mode: single (单机) / cluster (集群) / master_slave (主从)
+  # 连接写法: redis://[password@]host[:port][/databaseNumber][?[timeout=timeout[d|h|m|s|ms|us|ns]]
+  mode: single
+  cluster:
+    # 默认节点的 Id是 default
+    # 
+    nodes:
+      - "id to redis://mypassword@127.0.0.2:6379/0?timeout=10s"
+  master_slave:
+    slave:
+      - "redis://mypassword@127.0.0.2:6379/0?timeout=10s"
+
+#  DurationExamples:
+#      "PT20.345S" -- parses as "20.345 seconds"
+#        "PT15M"     -- parses as "15 minutes" (where a minute is 60 seconds)
+#        "PT10H"     -- parses as "10 hours" (where an hour is 3600 seconds)
+#        "P2D"       -- parses as "2 days" (where a day is 24 hours or 86400 seconds)
+#        "P2DT3H4M"  -- parses as "2 days, 3 hours and 4 minutes"
+#        "PT-6H3M"    -- parses as "-6 hours and +3 minutes"
+#        "-PT6H3M"    -- parses as "-6 hours and -3 minutes"
+#        "-PT-6H+3M"  -- parses as "+6 hours and -3 minutes"

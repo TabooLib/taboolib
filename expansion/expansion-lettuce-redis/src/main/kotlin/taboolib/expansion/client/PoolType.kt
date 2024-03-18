@@ -1,4 +1,4 @@
-package taboolib.expansion
+package taboolib.expansion.client
 
 enum class PoolType {
 
