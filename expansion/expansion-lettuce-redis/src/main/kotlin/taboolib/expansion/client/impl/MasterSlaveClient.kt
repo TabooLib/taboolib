@@ -10,6 +10,7 @@ import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.codec.StringCodec
 import io.lettuce.core.masterreplica.MasterReplica
 import io.lettuce.core.masterreplica.StatefulRedisMasterReplicaConnection
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
 import io.lettuce.core.support.AsyncConnectionPoolSupport
 import io.lettuce.core.support.BoundedAsyncPool
 import io.lettuce.core.support.ConnectionPoolSupport
@@ -40,6 +41,7 @@ class MasterSlaveClient(
     var poolObj: GenericObjectPool<StatefulRedisConnection<String, String>>? = null
     var asyncPool: BoundedAsyncPool<StatefulRedisConnection<String, String>>? = null
 
+    lateinit var connectionPubSub: StatefulRedisPubSubConnection<String, String>
     override fun connect(vararg uri: RedisURI) {
         // 无论那种池都需要创建一个主从连接
         connection = MasterReplica.connect(client, StringCodec.UTF8, uri.toList())
@@ -68,6 +70,7 @@ class MasterSlaveClient(
                 )
             }
         }
+        connectionPubSub = client.connectPubSub()
     }
 
     fun readForm(form: ReadFrom) {
@@ -83,6 +86,18 @@ class MasterSlaveClient(
         } else {
             client.shutdown()
         }
+    }
+
+    override fun subscribeSync(vararg channels: String) {
+        connectionPubSub.sync().subscribe(*channels)
+    }
+
+    override fun subscribeAsync(vararg channels: String) {
+        connectionPubSub.async().subscribe(*channels)
+    }
+
+    override fun subscribeReactive(vararg channels: String) {
+        connectionPubSub.reactive().subscribe(*channels).subscribe()
     }
 
     override fun addListener(action: LettucePubSubListener) {

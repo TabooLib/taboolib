@@ -159,6 +159,18 @@ class ClusterClient(
         }
     }
 
+    override fun subscribeSync(vararg channels: String) {
+        clusterClient.connectPubSub().sync().subscribe(*channels)
+    }
+
+    override fun subscribeAsync(vararg channels: String) {
+        clusterClient.connectPubSub().async().subscribe(*channels)
+    }
+
+    override fun subscribeReactive(vararg channels: String) {
+        clusterClient.connectPubSub().reactive().subscribe(*channels).subscribe()
+    }
+
     override fun addListener(action: LettucePubSubListener) {
         clusterClient.connectPubSub().addListener(action)
     }

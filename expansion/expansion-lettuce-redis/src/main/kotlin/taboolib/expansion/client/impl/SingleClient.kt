@@ -6,17 +6,19 @@ import io.lettuce.core.api.async.RedisAsyncCommands
 import io.lettuce.core.api.reactive.RedisReactiveCommands
 import io.lettuce.core.api.sync.RedisCommands
 import io.lettuce.core.codec.StringCodec
+import io.lettuce.core.pubsub.StatefulRedisPubSubConnection
+import io.lettuce.core.pubsub.api.sync.RedisPubSubCommands
 import io.lettuce.core.support.AsyncConnectionPoolSupport
 import io.lettuce.core.support.BoundedAsyncPool
 import io.lettuce.core.support.ConnectionPoolSupport
 import org.apache.commons.pool2.impl.GenericObjectPool
 import taboolib.expansion.LettucePubSubListener
-import taboolib.expansion.client.PoolType
-import taboolib.expansion.client.PoolType.*
 import taboolib.expansion.URIBuilder
 import taboolib.expansion.client.IPubSubConnection
 import taboolib.expansion.client.IRedisClient
 import taboolib.expansion.client.IRedisCommand
+import taboolib.expansion.client.PoolType
+import taboolib.expansion.client.PoolType.*
 import java.io.Closeable
 
 
@@ -33,6 +35,8 @@ class SingleClient(
 
     var poolObj: GenericObjectPool<StatefulRedisConnection<String, String>>? = null
     var asyncPool: BoundedAsyncPool<StatefulRedisConnection<String, String>>? = null
+
+    var connectionPubSub: StatefulRedisPubSubConnection<String, String>
 
     init {
         when (pool) {
@@ -58,6 +62,19 @@ class SingleClient(
                 )
             }
         }
+        connectionPubSub = client.connectPubSub()
+    }
+
+    override fun subscribeSync(vararg channels: String) {
+        connectionPubSub.sync().subscribe(*channels)
+    }
+
+    override fun subscribeAsync(vararg channels: String) {
+        connectionPubSub.async().subscribe(*channels)
+    }
+
+    override fun subscribeReactive(vararg channels: String) {
+        connectionPubSub.reactive().subscribe(*channels).subscribe()
     }
 
     override fun addListener(action: LettucePubSubListener) {
