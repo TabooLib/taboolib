@@ -1,4 +1,4 @@
-rootProject.name = "taboolib"
+rootProject.name = "TabooLib"
 include("common", "common-env", "common-util", "common-legacy-api", "common-reflex", "common-platform-api")
 include(
     "module:module-ai",
