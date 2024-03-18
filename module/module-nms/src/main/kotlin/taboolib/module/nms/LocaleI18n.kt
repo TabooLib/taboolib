@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
 import taboolib.common.io.digest
@@ -65,6 +66,7 @@ data class LocaleKey(val type: String, val path: String, val extra: String? = nu
  * @author 坏黑
  * @since 2023/8/6 02:44
  */
+@Inject
 @PlatformSide(Platform.BUKKIT)
 object LocaleI18n {
 
