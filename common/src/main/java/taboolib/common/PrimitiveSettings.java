@@ -104,6 +104,21 @@ public class PrimitiveSettings {
         return str.replaceAll("[._-]", "");
     }
 
+    /** 获取重定向后的 Kotlin 版本 */
+    public static String getRelocatedKotlinVersion() {
+        String kt = "!kotlin".substring(1);
+        String kv = formatVersion(KOTLIN_VERSION);
+        return kt + kv;
+    }
+
+    /** 获取重定向后的 Kotlin Coroutines 版本 */
+    public static String getRelocatedKotlinCoroutinesVersion() {
+        String kt = "!kotlin".substring(1);
+        String kv = formatVersion(KOTLIN_VERSION);
+        String kvc = formatVersion(KOTLIN_COROUTINES_VERSION);
+        return kt + kv + "x.coroutines" + kvc;
+    }
+
     /**
      * 获取配置文件
      */

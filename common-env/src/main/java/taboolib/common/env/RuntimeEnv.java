@@ -41,18 +41,22 @@ public class RuntimeEnv {
 
     static void init() throws Throwable {
         List<JarRelocation> rel = new ArrayList<>();
-        // 在非隔离模式下检查 Kotlin 环境
-        if (!PrimitiveSettings.IS_ISOLATED_MODE && TabooLib.isKotlinEnvironment()) {
-            return;
-        }
         // 启用 Kotlin 重定向
         if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
-            rel.add(new JarRelocation(KOTLIN_ID + ".", KOTLIN_ID + PrimitiveSettings.formatVersion(KOTLIN_VERSION) + "."));
-            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", KOTLIN_COROUTINES_ID + PrimitiveSettings.formatVersion(KOTLIN_COROUTINES_VERSION) + "."));
+            rel.add(new JarRelocation(KOTLIN_ID + ".", PrimitiveSettings.getRelocatedKotlinVersion() + "."));
+            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
         }
-        // 加载 Kotlin 环境
-        if (!KOTLIN_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        if (!KOTLIN_COROUTINES_VERSION.equals("null")) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
+        // 在非隔离模式下检查 Kotlin 环境
+        if (!PrimitiveSettings.IS_ISOLATED_MODE) {
+            // 加载 Kotlin 环境
+            if (!KOTLIN_VERSION.equals("null") && !TabooLib.isKotlinEnvironment()) {
+                ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+            }
+            // 加载 Kotlin Coroutines 环境
+            if (!KOTLIN_COROUTINES_VERSION.equals("null") && !TabooLib.isKotlinCoroutinesEnvironment()) {
+                ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
+            }
+        }
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {

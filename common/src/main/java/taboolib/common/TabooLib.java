@@ -96,6 +96,18 @@ public class TabooLib {
     }
 
     /**
+     * 检查当前 Kotlin Coroutines 环境是否有效
+     */
+    public static boolean isKotlinCoroutinesEnvironment() {
+        try {
+            Class.forName("kotlinx.coroutines.CoroutineScope", false, ClassAppender.getClassLoader());
+            return true;
+        } catch (ClassNotFoundException ignored) {
+            return false;
+        }
+    }
+
+    /**
      * 获取当前生命周期
      */
     @NotNull
