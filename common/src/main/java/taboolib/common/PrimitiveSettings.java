@@ -75,7 +75,7 @@ public class PrimitiveSettings {
     /**
      * TabooLib 仓库
      */
-    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", "http://ptms.ink:8081/repository/releases");
+    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", "http://sacredcraft.cn:8081/repository/releases");
 
     /**
      * libs 位置
