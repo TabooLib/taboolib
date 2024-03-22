@@ -73,8 +73,13 @@ public final class TinyReflection {
     }
 
     // Deduce the net.minecraft.server.v* package
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     private static final String OBC_PREFIX = Bukkit.getServer().getClass().getPackage().getName();
+
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     private static final String NMS_PREFIX = OBC_PREFIX.replace("org.bukkit.craftbukkit", "net.minecraft.server");
+
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     private static final String VERSION = OBC_PREFIX.replace("org.bukkit.craftbukkit", "").replace(".", "");
 
     // Variable replacement
@@ -442,6 +447,7 @@ public final class TinyReflection {
      * @param name - the name of the class, excluding the package.
      * @throws IllegalArgumentException If the class doesn't exist.
      */
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     public static Class<?> getCraftBukkitClass(String name) {
         return getCanonicalClass(OBC_PREFIX + "." + name);
     }

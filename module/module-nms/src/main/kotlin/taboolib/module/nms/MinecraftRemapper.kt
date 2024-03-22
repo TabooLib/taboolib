@@ -19,7 +19,11 @@ open class MinecraftRemapper : Remapper() {
      */
     val nms1 = "net/minecraft/server/v1_.*?/".toRegex()
     val nms2 = "net/minecraft/server/${MinecraftVersion.minecraftVersion}/"
+
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
+
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
 
     /**
@@ -74,6 +78,7 @@ open class MinecraftRemapper : Remapper() {
      */
     fun translate(key: String): String {
         // obc
+        // FIXME 此方式将在 Paper 1.20.5 中失效
         if (key.startsWith("org/bukkit/craftbukkit")) {
             return key.replace(obc1, obc2)
         }

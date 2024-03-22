@@ -39,6 +39,7 @@ val minecraftServerObject: Any by unsafeLazy {
 /**
  * 获取 OBC 类
  */
+// FIXME 此方式将在 Paper 1.20.5 中失效
 fun obcClass(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
 }

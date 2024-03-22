@@ -82,6 +82,11 @@ interface Configuration : ConfigurationSection {
      */
     fun changeType(type: Type)
 
+    /**
+     * 变更路径分隔符
+     */
+    fun changePathSeparator(separator: Char)
+
     companion object {
 
         /**

@@ -30,6 +30,7 @@ public class ReflectionUtils {
         for (Package pack : Package.getPackages()) {
             String name = pack.getName();
 
+            // FIXME 此方式将在 Paper 1.20.5 中失效
             // .v because there are other packages.
             if (name.startsWith("org.bukkit.craftbukkit.v")) {
                 found = pack.getName().split("\\.")[3];
@@ -57,10 +58,13 @@ public class ReflectionUtils {
      *
      * @since 4.0.0
      */
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     public static final int VER = Integer.parseInt(VERSION.substring(1).split("_")[1]);
 
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     public static final String CRAFTBUKKIT = "org.bukkit.craftbukkit." + VERSION + '.';
 
+    // FIXME 此方式将在 Paper 1.20.5 中失效
     public static Class<?> getCraftClass(@NotNull String name) {
         try {
             return Class.forName(CRAFTBUKKIT + name);

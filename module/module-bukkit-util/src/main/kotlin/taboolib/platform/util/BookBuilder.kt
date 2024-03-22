@@ -52,29 +52,27 @@ fun Player.sendBook(itemStack: ItemStack) {
     }
 }
 
-private val isUniversal = try {
-    nmsClassLegacy("IChatBaseComponent\$ChatSerializer")
-    false
-} catch (ignored: ClassNotFoundException) {
-    true
-}
-
+// NOTICE 无需兼容 Paper 1.20.5
 private val classCraftItemStack by unsafeLazy {
     obcClassLegacy("inventory.CraftItemStack")
 }
 
+// NOTICE 无需兼容 Paper 1.20.5
 private val classChatSerializer by unsafeLazy {
     nmsClassLegacy("IChatBaseComponent\$ChatSerializer")
 }
 
+// NOTICE 无需兼容 Paper 1.20.5
 private val enumHandMainHand by unsafeLazy {
     nmsClassLegacy("EnumHand").enumConstants[0]
 }
 
+// NOTICE 无需兼容 Paper 1.20.5
 private fun obcClassLegacy(name: String): Class<*> {
     return Class.forName("org.bukkit.craftbukkit.${Bukkit.getServer().javaClass.name.split('.')[3]}.$name")
 }
 
+// NOTICE 无需兼容 Paper 1.20.5
 private fun nmsClassLegacy(name: String): Class<*> {
     return Class.forName("net.minecraft.server.${Bukkit.getServer().javaClass.name.split('.')[3]}.$name")
 }
