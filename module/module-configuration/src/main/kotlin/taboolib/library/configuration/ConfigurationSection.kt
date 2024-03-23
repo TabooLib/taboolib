@@ -7,40 +7,33 @@ import taboolib.module.configuration.Type
  */
 interface ConfigurationSection {
 
-    /** 父节点 */
     val parent: ConfigurationSection?
 
-    /** 节点名称 */
     val name: String
 
-    /** 配置类型 */
     val type: Type
-
-    /** 路径分隔符号 */
-    var pathSeparator: Char
 
     /**
      * Gets a set containing all keys in this section.
+     *
      *
      * If deep is set to true, then this will contain all the keys within any
      * child [ConfigurationSection]s (and their children, etc). These
      * will be in a valid path notation for you to use.
      *
+     *
      * If deep is set to false, then this will contain only the keys of any
      * direct children, and not their own children.
      *
-     * @param deep Whether or not to get a deep list, as opposed to a shallow list.
+     * @param deep Whether or not to get a deep list, as opposed to a shallow
+     * list.
      * @return Set of keys contained within this ConfigurationSection.
      */
     fun getKeys(deep: Boolean): Set<String>
 
     /**
-     * Gets a Map containing all keys and their values for this section.
-     */
-    fun getValues(deep: Boolean): Map<String, Any?>
-
-    /**
      * Checks if this [ConfigurationSection] contains the given path.
+     *
      *
      * If the value for the requested path does not exist but a default value
      * has been specified, this will return true.
@@ -54,6 +47,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested Object by path.
+     *
      *
      * If the Object does not exist but a default value has been specified,
      * this will return the default value. If the Object does not exist and no
@@ -77,6 +71,7 @@ interface ConfigurationSection {
     /**
      * Sets the specified path to the given value.
      *
+     *
      * If value is null, the entry will be removed. Any existing entry will be
      * replaced, regardless of what the new value is.
      *
@@ -87,6 +82,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested String by path.
+     *
      *
      * If the String does not exist but a default value has been specified,
      * this will return the default value. If the String does not exist and no
@@ -111,6 +107,7 @@ interface ConfigurationSection {
     /**
      * Checks if the specified path is a String.
      *
+     *
      * If the path exists but is not a String, this will return false. If the
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
@@ -123,6 +120,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested int by path.
+     *
      *
      * If the int does not exist but a default value has been specified, this
      * will return the default value. If the int does not exist and no default
@@ -146,6 +144,7 @@ interface ConfigurationSection {
     /**
      * Checks if the specified path is an int.
      *
+     *
      * If the path exists but is not a int, this will return false. If the
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
@@ -158,6 +157,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested boolean by path.
+     *
      *
      * If the boolean does not exist but a default value has been specified,
      * this will return the default value. If the boolean does not exist and
@@ -182,6 +182,7 @@ interface ConfigurationSection {
     /**
      * Checks if the specified path is a boolean.
      *
+     *
      * If the path exists but is not a boolean, this will return false. If the
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
@@ -194,6 +195,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested double by path.
+     *
      *
      * If the double does not exist but a default value has been specified,
      * this will return the default value. If the double does not exist and no
@@ -256,6 +258,7 @@ interface ConfigurationSection {
     /**
      * Checks if the specified path is a long.
      *
+     *
      * If the path exists but is not a long, this will return false. If the
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
@@ -268,6 +271,7 @@ interface ConfigurationSection {
 
     /**
      * Gets the requested List by path.
+     *
      *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
@@ -292,6 +296,7 @@ interface ConfigurationSection {
     /**
      * Checks if the specified path is a List.
      *
+     *
      * If the path exists but is not a List, this will return false. If the
      * path does not exist, this will return false. If the path does not exist
      * but a default value has been specified, this will check if that default
@@ -305,9 +310,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of String by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a String if possible,
      * but may miss any values out if they are not compatible.
@@ -320,9 +327,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Integer by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Integer if possible,
      * but may miss any values out if they are not compatible.
@@ -335,9 +344,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Boolean by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Boolean if possible,
      * but may miss any values out if they are not compatible.
@@ -350,9 +361,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Double by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Double if possible,
      * but may miss any values out if they are not compatible.
@@ -365,9 +378,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Float by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Float if possible,
      * but may miss any values out if they are not compatible.
@@ -380,9 +395,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Long by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Long if possible,
      * but may miss any values out if they are not compatible.
@@ -395,9 +412,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Byte by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Byte if possible,
      * but may miss any values out if they are not compatible.
@@ -410,9 +429,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Character by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Character if
      * possible, but may miss any values out if they are not compatible.
@@ -425,9 +446,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Short by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Short if possible,
      * but may miss any values out if they are not compatible.
@@ -440,9 +463,11 @@ interface ConfigurationSection {
     /**
      * Gets the requested List of Maps by path.
      *
+     *
      * If the List does not exist but a default value has been specified, this
      * will return the default value. If the List does not exist and no
      * default value was specified, this will return an empty List.
+     *
      *
      * This method will attempt to cast any values into a Map if possible, but
      * may miss any values out if they are not compatible.
@@ -453,73 +478,53 @@ interface ConfigurationSection {
     fun getMapList(path: String): List<Map<*, *>>
 
     /**
-     * Gets the requested [ConfigurationSection] by path.
+     * Gets the requested ConfigurationSection by path.
      *
-     * @param path Path of the [ConfigurationSection] to get.
-     * @return Requested [ConfigurationSection].
+     *
+     * If the ConfigurationSection does not exist but a default value has been
+     * specified, this will return the default value. If the
+     * ConfigurationSection does not exist and no default value was specified,
+     * this will return null.
+     *
+     * @param path Path of the ConfigurationSection to get.
+     * @return Requested ConfigurationSection.
      */
     fun getConfigurationSection(path: String): ConfigurationSection?
 
     /**
-     * Checks if the specified path is a [ConfigurationSection].
+     * Checks if the specified path is a ConfigurationSection.
      *
-     * + If the path exists but is not a [ConfigurationSection], this will return false.
-     * + If the path does not exist, this will return false.
-     * + If the path does not exist but a default value has been specified, this will check if that default value is a [ConfigurationSection] and return appropriately.
      *
-     * @param path Path of the [ConfigurationSection] to check.
-     * @return Whether the specified path is a ConfigurationSection.
+     * If the path exists but is not a ConfigurationSection, this will return
+     * false. If the path does not exist, this will return false. If the path
+     * does not exist but a default value has been specified, this will check
+     * if that default value is a ConfigurationSection and return
+     * appropriately.
+     *
+     * @param path Path of the ConfigurationSection to check.
+     * @return Whether or not the specified path is a ConfigurationSection.
      */
     fun isConfigurationSection(path: String): Boolean
 
-    /**
-     * 获取枚举类型
-     */
     fun <T : Enum<T>> getEnum(path: String, type: Class<T>): T?
 
-    /**
-     * 获取枚举类型列表
-     */
     fun <T : Enum<T>> getEnumList(path: String, type: Class<T>): List<T>
 
-    /**
-     * 创建一个新的 [ConfigurationSection]
-     */
     fun createSection(path: String): ConfigurationSection
 
-    /**
-     * 转换为 Map
-     */
     fun toMap(): Map<String, Any?>
 
-    /**
-     * 获取注释
-     */
     fun getComment(path: String): String?
 
-    /**
-     * 获取多行注释
-     */
     fun getComments(path: String): List<String>
 
-    /**
-     * 设置注释
-     */
     fun setComment(path: String, comment: String?)
 
-    /**
-     * 设置多行注释
-
-     */
     fun setComments(path: String, comments: List<String>)
 
-    /**
-     * 添加注释
-     */
     fun addComments(path: String, comments: List<String>)
 
-    /**
-     * 清除所有内容
-     */
+    fun getValues(deep: Boolean): Map<String, Any?>
+
     fun clear()
 }

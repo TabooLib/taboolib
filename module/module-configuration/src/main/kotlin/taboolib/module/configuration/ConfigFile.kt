@@ -93,10 +93,6 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
         process(root)
     }
 
-    override fun changePathSeparator(separator: Char) {
-        pathSeparator = separator
-    }
-
     private fun parser(): ConfigParser<out Config> {
         return root.configFormat().createParser()
     }

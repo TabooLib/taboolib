@@ -17,12 +17,7 @@ import taboolib.module.configuration.util.CommentedList
  * @author mac
  * @since 2021/11/21 11:00 下午
  */
-open class ConfigSection(
-    var root: Config,
-    override val name: String = "",
-    override val parent: ConfigurationSection? = null,
-    override var pathSeparator: Char = parent?.pathSeparator ?: '.'
-) : ConfigurationSection {
+open class ConfigSection(var root: Config, override val name: String = "", override val parent: ConfigurationSection? = null) : ConfigurationSection {
 
     private val configType = Type.getType(root.configFormat())
 
@@ -35,7 +30,7 @@ open class ConfigSection(
             map.forEach { (k, v) ->
                 if (v is Config) {
                     if (deep) {
-                        process(v.valueMap(), "$parent$k$pathSeparator")
+                        process(v.valueMap(), "$parent$k.")
                     } else {
                         keys += "$parent$k"
                     }
@@ -46,25 +41,6 @@ open class ConfigSection(
         }
         process(root.valueMap())
         return keys
-    }
-
-    override fun getValues(deep: Boolean): Map<String, Any?> {
-        val values = LinkedHashMap<String, Any?>()
-        fun process(map: Map<String, Any?>, parent: String = "") {
-            map.forEach { (k, v) ->
-                if (v is Config) {
-                    if (deep) {
-                        process(v.valueMap(), "$parent$k$pathSeparator")
-                    } else {
-                        values["$parent$k"] = v
-                    }
-                } else {
-                    values["$parent$k"] = v
-                }
-            }
-        }
-        process(root.valueMap())
-        return values
     }
 
     override fun contains(path: String): Boolean {
@@ -83,18 +59,18 @@ open class ConfigSection(
         }
         var name = path
         var parent: ConfigurationSection? = null
-        if (path.contains(pathSeparator)) {
-            name = path.substringAfterLast(pathSeparator)
-            parent = getConfigurationSection(path.substringBeforeLast(pathSeparator).substringAfterLast(pathSeparator))
+        if (path.contains('.')) {
+            name = path.substringAfterLast('.')
+            parent = getConfigurationSection(path.substringBeforeLast('.').substringAfterLast('.'))
         }
         return when (val value = root.getOrElse(path, def)) {
-            is Config -> ConfigSection(value, name, parent, pathSeparator)
+            is Config -> ConfigSection(value, name, parent)
             // 理论是无法获取到 Map 类型
             // 因为在 set 方法中 Map 会被转换为 Config 类型
             is Map<*, *> -> {
                 val subConfig = root.createSubConfig()
                 subConfig.setProperty("map", value)
-                ConfigSection(subConfig, name, parent, pathSeparator)
+                ConfigSection(subConfig, name, parent)
             }
             else -> unwrap(value)
         }
@@ -103,25 +79,18 @@ open class ConfigSection(
     override fun set(path: String, value: Any?) {
         when {
             value == null -> root.remove(path)
-            // 列表
             value is List<*> -> root.set<Any>(path, unwrap(value, this))
-            // 集合
             value is Collection<*> && value !is List<*> -> set(path, value.toList())
-            // Section
             value is ConfigurationSection -> set(path, value.getConfig())
-            // Map
             value is Map<*, *> -> set(path, value.toConfig(this))
-            // 注释
             value is Commented -> {
                 set(path, value.value)
                 setComment(path, value.comment)
             }
-            // 多行注释
             value is CommentedList -> {
                 set(path, value.value)
                 setComments(path, value.comment)
             }
-            // 其他
             else -> root.set<Any>(path, value)
         }
     }
@@ -261,11 +230,11 @@ open class ConfigSection(
         set(path, subConfig)
         var name = path
         var parent: ConfigurationSection? = null
-        if (path.contains(pathSeparator)) {
-            name = path.substringAfterLast(pathSeparator)
-            parent = getConfigurationSection(path.substringBeforeLast(pathSeparator).substringAfterLast(pathSeparator))
+        if (path.contains('.')) {
+            name = path.substringAfterLast('.')
+            parent = getConfigurationSection(path.substringBeforeLast('.').substringAfterLast('.'))
         }
-        return ConfigSection(subConfig, name, parent, pathSeparator)
+        return ConfigSection(subConfig, name, parent)
     }
 
     override fun toMap(): Map<String, Any?> {
@@ -300,6 +269,10 @@ open class ConfigSection(
         }
     }
 
+    override fun getValues(deep: Boolean): Map<String, Any?> {
+        return getKeys(deep).associateWith { get(it) }
+    }
+
     override fun toString(): String {
         return root.configFormat().createWriter().writeToString(root)
     }
@@ -315,7 +288,7 @@ open class ConfigSection(
         }
 
         private fun Map<*, *>.toConfig(parent: ConfigSection): Config {
-            val section = ConfigSection(parent.root.createSubConfig(), pathSeparator = parent.pathSeparator)
+            val section = ConfigSection(parent.root.createSubConfig())
             forEach { (k, v) -> section[k.toString()] = v }
             return section.root
         }
