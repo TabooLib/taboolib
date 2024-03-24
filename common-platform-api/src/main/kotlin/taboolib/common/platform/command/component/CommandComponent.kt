@@ -53,6 +53,15 @@ abstract class CommandComponent(val index: Int, var optional: Boolean, val permi
     }
 
     /**
+     * 创建当前节点下的简化执行器
+     *
+     * @param function 执行函数
+     */
+    inline fun <reified T> exec(noinline function: ExecuteContext<T>.() -> Unit) {
+        execute(T::class.java) { sender, context, argument -> ExecuteContext(sender, context, argument).function() }
+    }
+
+    /**
      * 创建当前节点下的执行器
      *
      * @param bind 执行者类

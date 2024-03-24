@@ -7,6 +7,7 @@ import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.command.component.CommandComponent
+import taboolib.common.platform.command.component.ExecuteContext
 import java.util.function.Supplier
 
 @Target(AnnotationTarget.CLASS)
@@ -38,6 +39,10 @@ fun mainCommand(func: CommandBase.() -> Unit): SimpleCommandMain {
 
 fun subCommand(func: CommandComponent.() -> Unit): SimpleCommandBody {
     return SimpleCommandBody(func)
+}
+
+inline fun <reified T> subCommandExec(crossinline func: ExecuteContext<T>.() -> Unit): SimpleCommandBody {
+    return SimpleCommandBody { exec<T> { func() } }
 }
 
 class SimpleCommandMain(val func: CommandBase.() -> Unit = {})
