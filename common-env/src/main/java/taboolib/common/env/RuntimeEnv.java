@@ -41,22 +41,21 @@ public class RuntimeEnv {
 
     static void init() throws Throwable {
         List<JarRelocation> rel = new ArrayList<>();
-        // 启用 Kotlin 重定向
-        if (!PrimitiveSettings.SKIP_KOTLIN_RELOCATE) {
-            rel.add(new JarRelocation(KOTLIN_ID + ".", PrimitiveSettings.getRelocatedKotlinVersion() + "."));
-            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
-        }
+        boolean loadKotlin = !KOTLIN_VERSION.equals("null");
+        boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");
         // 在非隔离模式下检查 Kotlin 环境
         if (!PrimitiveSettings.IS_ISOLATED_MODE) {
-            // 加载 Kotlin 环境
-            if (!KOTLIN_VERSION.equals("null") && !TabooLib.isKotlinEnvironment()) {
-                ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-            }
-            // 加载 Kotlin Coroutines 环境
-            if (!KOTLIN_COROUTINES_VERSION.equals("null") && !TabooLib.isKotlinCoroutinesEnvironment()) {
-                ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
-            }
+            // 非隔离模式下的重定向规则
+            rel.add(new JarRelocation(KOTLIN_ID + ".", PrimitiveSettings.getRelocatedKotlinVersion() + "."));
+            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
+            // 环境检查
+            if (TabooLib.isKotlinEnvironment()) loadKotlin = false;
+            if (TabooLib.isKotlinCoroutinesEnvironment()) loadKotlinCoroutines = false;
         }
+        // 加载 Kotlin 环境
+        if (loadKotlin) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+        // 加载 Kotlin Coroutines 环境
+        if (loadKotlinCoroutines) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
     }
 
     public void inject(@NotNull Class<?> clazz) throws Throwable {
