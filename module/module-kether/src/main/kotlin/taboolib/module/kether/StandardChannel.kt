@@ -33,14 +33,9 @@ object StandardChannel : OpenListener {
     override fun call(name: String, data: Array<Any>): OpenResult {
         return when (name) {
             REMOTE_RESOLVE -> {
-                // PrimitiveIO.println("REMOTE_RESOLVE ${data.contentDeepToString()}")
-                val container = getOpenContainer(data[0].toString())!!
+                val container = getOpenContainer(data[0].toString()) ?: error("Unknown container ${data[0]} (${data.contentDeepToString()})")
                 val reader = RemoteQuestReader(container, data[1])
-                // PrimitiveIO.println("container $container, source = ${data[1]}, reader = $reader")
-                // PrimitiveIO.println("getParser ${data[2]}, ${data[3]}")
                 val parser = Kether.scriptRegistry.getParser(data[2].toString(), data[3].toString())
-                // PrimitiveIO.println("parser = $parser")
-                // PrimitiveIO.println("parsers = ${(Kether.scriptRegistry as DefaultRegistry).parsers}")
                 if (parser.isPresent) {
                     OpenResult.successful(parser.get().resolve<Any>(reader))
                 } else {
@@ -48,18 +43,19 @@ object StandardChannel : OpenListener {
                 }
             }
             REMOTE_CREATE_FLAME -> {
-                OpenResult.successful(RemoteQuestContext.RemoteFrame(getOpenContainer(data[0].toString())!!, data[1]))
+                val container = getOpenContainer(data[0].toString()) ?: error("Unknown container ${data[0]} (${data.contentDeepToString()})")
+                OpenResult.successful(RemoteQuestContext.RemoteFrame(container, data[1]))
             }
             REMOTE_CREATE_EXIT_STATUS -> {
                 OpenResult.successful(ExitStatus(data[0] as Boolean, data[1] as Boolean, data[2] as Long))
             }
             REMOTE_CREATE_PARSED_ACTION -> {
-                val remote = getOpenContainer(data[0].toString())!!
+                val remote = getOpenContainer(data[0].toString()) ?: error("Unknown container ${data[0]} (${data.contentDeepToString()})")
                 val action = RemoteQuestAction<Any>(remote, data[1])
                 OpenResult.successful(ParsedAction(action, data[2] as MutableMap<String, Any>))
             }
             REMOTE_ADD_ACTION -> {
-                val remote = getOpenContainer(data[0].toString())!!
+                val remote = getOpenContainer(data[0].toString()) ?: error("Unknown container ${data[0]} (${data.contentDeepToString()})")
                 data[1].asList().forEach { Kether.addAction(it, RemoteActionParser(remote, it, data[2].toString()), data[2].toString()) }
                 OpenResult.successful()
             }
@@ -68,7 +64,7 @@ object StandardChannel : OpenListener {
                 OpenResult.successful()
             }
             REMOTE_ADD_PROPERTY -> {
-                val remote = getOpenContainer(data[0].toString())!!
+                val remote = getOpenContainer(data[0].toString()) ?: error("Unknown container ${data[0]} (${data.contentDeepToString()})")
                 var bind = data[1].toString()
                 bind = if (bind.startsWith("@")) "$groupId${bind.substring(1)}" else bind
                 try {
