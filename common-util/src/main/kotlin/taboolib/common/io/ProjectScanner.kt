@@ -42,10 +42,10 @@ val runningClassMap: Map<String, Class<*>>
     }
 
 /**
- * 当前插件的所有类（排除 TabooLib 第三方库）
+ * 当前插件的所有类（排除第三方库）
  */
 val runningClassMapWithoutLibrary: Map<String, Class<*>>
-    get() = runningClassMap.filterKeys { !it.contains("$taboolibId.library") }
+    get() = runningClassMap.filterKeys { !it.contains(".library.") && !it.contains(".libs.") }
 
 /**
  * 当前插件的所有类的集合
