@@ -4,13 +4,16 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.ConfigFormat;
 import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.electronwill.nightconfig.core.UnmodifiableConfig;
+import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.Reflex;
+import org.tabooproject.reflex.ReflexClass;
+import org.tabooproject.reflex.UnsafeAccess;
+import taboolib.module.configuration.ConvertResult;
+import taboolib.module.configuration.InnerConverter;
+import taboolib.module.configuration.UUIDConverter;
 
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -138,6 +141,9 @@ public final class ObjectConverter {
     private void convertToConfig(Object object, Class<?> clazz, Config destination) {
         // This loop walks through the class hierarchy, see clazz = clazz.getSuperclass(); at the end
         while (clazz != Object.class) {
+            // 获取内置转换器
+            InnerConverter innerConverter = getInnerConverter(clazz);
+            // This loop walks through the fields of the class
             for (Field field : clazz.getDeclaredFields()) {
                 // --- Checks modifiers ---
                 final int fieldModifiers = field.getModifiers();
@@ -158,13 +164,30 @@ public final class ObjectConverter {
                 } catch (IllegalAccessException e) {// Unexpected: setAccessible is called if needed
                     throw new ReflectionException("Unable to parse the field " + field, e);
                 }
-                AnnotationUtils.checkField(field, value);/* Checks that the value is conform to an
-																eventual @SpecSometing annotation */
-                Converter<Object, Object> converter = AnnotationUtils.getConverter(field);
+                //  Checks that the value is conform to an eventual @SpecSometing annotation
+                AnnotationUtils.checkField(field, value);
+
+                // 自定义路径
+                List<String> path = AnnotationUtils.getPath(field);
+
+                // 内置转换器
+                if (innerConverter != null) {
+                    Converter<Object, Object> ic = innerConverter.getConverter(field);
+                    ConvertResult result = (ConvertResult) ic.convertToField(value);
+                    if (result instanceof ConvertResult.Success) {
+                        destination.set(path, ((ConvertResult.Success) result).getValue());
+                        continue;
+                    } else if (result instanceof ConvertResult.Failure) {
+                        ((ConvertResult.Failure) result).getException().printStackTrace();
+                        continue;
+                    }
+                }
+
+                // 自定义 @Converter
+                Converter<Object, Object> converter = getConverter(field);
                 if (converter != null) {
                     value = converter.convertFromField(value);
                 }
-                List<String> path = AnnotationUtils.getPath(field);
                 ConfigFormat<?> format = destination.configFormat();
 
                 // --- Writes the value to the configuration ---
@@ -216,6 +239,9 @@ public final class ObjectConverter {
     private void convertToObject(UnmodifiableConfig config, Object object, Class<?> clazz) {
         // This loop walks through the class hierarchy, see clazz = clazz.getSuperclass(); at the end
         while (clazz != Object.class) {
+            // 获取内置转换器
+            InnerConverter innerConverter = getInnerConverter(clazz);
+            // This loop walks through the fields of the class
             for (Field field : clazz.getDeclaredFields()) {
                 // --- Checks modifiers ---
                 final int fieldModifiers = field.getModifiers();
@@ -234,7 +260,22 @@ public final class ObjectConverter {
                 // --- Applies annotations ---
                 List<String> path = AnnotationUtils.getPath(field);
                 Object value = config.get(path);
-                Converter<Object, Object> converter = AnnotationUtils.getConverter(field);
+
+                // 内置转换器
+                if (innerConverter != null) {
+                    Converter<Object, Object> ic = innerConverter.getConverter(field);
+                    ConvertResult result = (ConvertResult) ic.convertToField(value);
+                    if (result instanceof ConvertResult.Success) {
+                        UnsafeAccess.INSTANCE.put(object, field, ((ConvertResult.Success) result).getValue());
+                        continue;
+                    } else if (result instanceof ConvertResult.Failure) {
+                        ((ConvertResult.Failure) result).getException().printStackTrace();
+                        continue;
+                    }
+                }
+
+                // 自定义 @Converter
+                Converter<Object, Object> converter = getConverter(field);
                 if (converter != null) {
                     value = converter.convertToField(value);
                 }
@@ -248,7 +289,6 @@ public final class ObjectConverter {
                     if (value instanceof UnmodifiableConfig && !(fieldType.isAssignableFrom(value.getClass()))) {
                         // --- Read as a sub-object ---
                         final UnmodifiableConfig cfg = (UnmodifiableConfig) value;
-
                         // Gets or creates the field and convert it (if null OR not preserved)
                         Object fieldValue = field.get(object);
                         if (fieldValue == null) {
@@ -258,7 +298,6 @@ public final class ObjectConverter {
                         } else if (!AnnotationUtils.mustPreserve(field, clazz)) {
                             convertToObject(cfg, fieldValue, field.getType());
                         }
-
                     } else if (value instanceof Collection && Collection.class.isAssignableFrom(fieldType)) {
                         // --- Reads as a collection, maybe a list of objects with conversion ---
                         final Collection<?> src = (Collection<?>) value;
@@ -268,33 +307,24 @@ public final class ObjectConverter {
                         final List<Class<?>> dstTypes = elementTypes(genericType);
                         final Class<?> dstBottomType = dstTypes.get(dstTypes.size() - 1);
 
-                        if (srcBottomType == null
-                                || dstBottomType == null
-                                || dstBottomType.isAssignableFrom(srcBottomType)) {
-
+                        if (srcBottomType == null || dstBottomType == null || dstBottomType.isAssignableFrom(srcBottomType)) {
                             // Simple list, no conversion needed
                             AnnotationUtils.checkField(field, value);
                             field.set(object, value);
-
                         } else {
                             // List of objects => the bottom elements need conversion
-
                             // Uses the current field value if there is one, or create a new list
                             Collection<Object> dst = (Collection<Object>) field.get(object);
                             if (dst == null) {
-                                if (fieldType == ArrayList.class
-                                        || fieldType.isInterface()
-                                        || Modifier.isAbstract(fieldType.getModifiers())) {
+                                if (fieldType == ArrayList.class || fieldType.isInterface() || Modifier.isAbstract(fieldType.getModifiers())) {
                                     dst = new ArrayList<>(src.size());// allocates the right size
                                 } else {
                                     dst = (Collection<Object>) createInstance(fieldType);
                                 }
                                 field.set(object, dst);
                             }
-
                             // Converts the elements of the list
                             convertConfigsToObject(src, dst, dstTypes, 0);
-
                             // Applies the checks
                             AnnotationUtils.checkField(field, dst);
                         }
@@ -486,5 +516,34 @@ public final class ObjectConverter {
         } catch (ReflectiveOperationException ex) {
             throw new ReflectionException("Unable to create an instance of " + tClass, ex);
         }
+    }
+
+    /**
+     * 获取字段的转换器
+     */
+    private Converter getConverter(Field field) {
+        // 已知的包装类型
+        if (field.getType() == UUID.class) {
+            return new UUIDConverter();
+        }
+        Converter converter = AnnotationUtils.getConverter(field);
+        if (converter != null) return converter;
+        return null;
+    }
+
+    /**
+     * 获取内置转换器
+     */
+    private InnerConverter getInnerConverter(Class<?> type) {
+        ReflexClass reflexClass = ReflexClass.Companion.of(type, true);
+        ClassMethod toField = reflexClass.getStructure().getMethodByTypeSilently("toField", Field.class, Object.class);
+        ClassMethod fromField = reflexClass.getStructure().getMethodByTypeSilently("fromField", Field.class, Object.class);
+        if (toField != null && toField.getResult().getInstance() != ConvertResult.class) {
+            throw new IllegalStateException("InnerConverter method must return ConvertResult");
+        }
+        if (fromField != null && fromField.getResult().getInstance() != ConvertResult.class) {
+            throw new IllegalStateException("InnerConverter method must return ConvertResult");
+        }
+        return new InnerConverter(toField, fromField);
     }
 }

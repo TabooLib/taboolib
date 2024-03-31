@@ -93,8 +93,8 @@ public class PrimitiveLoader {
             load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
         }
         // 加载反射模块
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.19", IS_ISOLATED_MODE, true, rule());
-        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.19", IS_ISOLATED_MODE, true, rule());
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.22", IS_ISOLATED_MODE, true, rule());
+        load(REPO_TABOOLIB, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.22", IS_ISOLATED_MODE, true, rule());
         // 加载完整模块
         loadAll();
     }
