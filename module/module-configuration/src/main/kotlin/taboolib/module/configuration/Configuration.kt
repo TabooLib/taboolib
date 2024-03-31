@@ -85,6 +85,17 @@ interface Configuration : ConfigurationSection {
     companion object {
 
         /**
+         * 识别可能的 [ConfigurationSection] 类型
+         */
+        fun parse(any: Any, type: Type = Type.YAML, concurrent: Boolean = true): ConfigurationSection {
+            val unwrapped = ConfigSection.unwrap(any)
+            if (unwrapped is Map<*, *>) {
+                return fromMap(unwrapped, type, concurrent)
+            }
+            return empty(type, concurrent)
+        }
+
+        /**
          * 创建空配置
          * 
          * @param type 类型

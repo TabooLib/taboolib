@@ -8,11 +8,11 @@ import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.Reflex;
 import org.tabooproject.reflex.ReflexClass;
 import org.tabooproject.reflex.UnsafeAccess;
-import taboolib.module.configuration.ConvertResult;
-import taboolib.module.configuration.InnerConverter;
-import taboolib.module.configuration.UUIDConverter;
+import taboolib.library.configuration.ConfigurationSection;
+import taboolib.module.configuration.*;
 
 import java.lang.reflect.*;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -164,16 +164,20 @@ public final class ObjectConverter {
                 } catch (IllegalAccessException e) {// Unexpected: setAccessible is called if needed
                     throw new ReflectionException("Unable to parse the field " + field, e);
                 }
-                //  Checks that the value is conform to an eventual @SpecSometing annotation
+                // Checks that the value is conform to an eventual @SpecSometing annotation
                 AnnotationUtils.checkField(field, value);
-
                 // 自定义路径
                 List<String> path = AnnotationUtils.getPath(field);
+                // 该字段获取到的值为 null
+                if (value == null) {
+                    destination.set(path, null);
+                    continue;
+                }
 
                 // 内置转换器
                 if (innerConverter != null) {
-                    Converter<Object, Object> ic = innerConverter.getConverter(field);
-                    ConvertResult result = (ConvertResult) ic.convertToField(value);
+                    Converter<Object, Object> ic = innerConverter.getConverter(field, object);
+                    ConvertResult result = (ConvertResult) ic.convertFromField(value);
                     if (result instanceof ConvertResult.Success) {
                         destination.set(path, ((ConvertResult.Success) result).getValue());
                         continue;
@@ -260,10 +264,14 @@ public final class ObjectConverter {
                 // --- Applies annotations ---
                 List<String> path = AnnotationUtils.getPath(field);
                 Object value = config.get(path);
+                // 配置文件中不存在该字段
+                if (value == null) {
+                    continue;
+                }
 
                 // 内置转换器
                 if (innerConverter != null) {
-                    Converter<Object, Object> ic = innerConverter.getConverter(field);
+                    Converter<Object, Object> ic = innerConverter.getConverter(field, new ConfigSection((Config) config, "", null));
                     ConvertResult result = (ConvertResult) ic.convertToField(value);
                     if (result instanceof ConvertResult.Success) {
                         UnsafeAccess.INSTANCE.put(object, field, ((ConvertResult.Success) result).getValue());
@@ -279,6 +287,7 @@ public final class ObjectConverter {
                 if (converter != null) {
                     value = converter.convertToField(value);
                 }
+                // 转换后的值为 null
                 if (value == null) {
                     continue;
                 }
@@ -526,6 +535,9 @@ public final class ObjectConverter {
         if (field.getType() == UUID.class) {
             return new UUIDConverter();
         }
+        if (Map.class.isAssignableFrom(field.getType())) {
+            return new MapConverter();
+        }
         Converter converter = AnnotationUtils.getConverter(field);
         if (converter != null) return converter;
         return null;
@@ -536,8 +548,11 @@ public final class ObjectConverter {
      */
     private InnerConverter getInnerConverter(Class<?> type) {
         ReflexClass reflexClass = ReflexClass.Companion.of(type, true);
-        ClassMethod toField = reflexClass.getStructure().getMethodByTypeSilently("toField", Field.class, Object.class);
-        ClassMethod fromField = reflexClass.getStructure().getMethodByTypeSilently("fromField", Field.class, Object.class);
+        ClassMethod toField = reflexClass.getStructure().getMethodByTypeSilently("toField", Field.class, Object.class, ConfigurationSection.class);
+        ClassMethod fromField = reflexClass.getStructure().getMethodByTypeSilently("fromField", Field.class, Object.class, type);
+        if (toField == null || fromField == null) {
+            return null;
+        }
         if (toField != null && toField.getResult().getInstance() != ConvertResult.class) {
             throw new IllegalStateException("InnerConverter method must return ConvertResult");
         }

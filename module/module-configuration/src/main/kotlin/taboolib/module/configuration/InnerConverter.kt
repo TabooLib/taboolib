@@ -13,15 +13,15 @@ import java.lang.reflect.Field
  */
 class InnerConverter(val toField: ClassMethod, val fromField: ClassMethod) {
 
-    fun getConverter(field: Field): Converter<Any, Any> {
+    fun getConverter(field: Field, root: Any): Converter<Any, Any> {
         return object : Converter<Any, Any> {
 
             override fun convertToField(value: Any): Any {
-                return toField.invokeStatic(field, value)!!
+                return toField.invokeStatic(field, value, root)!! // root => ConfigurationSection
             }
 
             override fun convertFromField(value: Any): Any {
-                return fromField.invokeStatic(field, value)!!
+                return fromField.invokeStatic(field, value, root)!! // root => Object
             }
         }
     }

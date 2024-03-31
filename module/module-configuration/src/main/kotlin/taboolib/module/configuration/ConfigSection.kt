@@ -21,6 +21,9 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
 
     private val configType = Type.getType(root.configFormat())
 
+    override val primitiveConfig: Any
+        get() = root
+
     override val type: Type
         get() = configType
 
@@ -293,6 +296,10 @@ open class ConfigSection(var root: Config, override val name: String = "", overr
             return section.root
         }
 
+        /**
+         * 解包
+         * 要么变为原始类型，要么变成 Map
+         */
         fun unwrap(v: Any?): Any? {
             return when (v) {
                 "~", "null" -> null

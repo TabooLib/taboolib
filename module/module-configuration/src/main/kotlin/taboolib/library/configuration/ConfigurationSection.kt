@@ -7,10 +7,16 @@ import taboolib.module.configuration.Type
  */
 interface ConfigurationSection {
 
+    /** 原始类型 */
+    val primitiveConfig: Any
+
+    /** 父节点 */
     val parent: ConfigurationSection?
 
+    /** 节点名 */
     val name: String
 
+    /** 节点类型 */
     val type: Type
 
     /**
