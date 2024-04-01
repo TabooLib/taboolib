@@ -1,5 +1,6 @@
 package taboolib.expansion
 
+import taboolib.common.reflect.getAnnotationIfPresent
 import java.lang.reflect.Parameter
 
 /**
@@ -113,10 +114,7 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
 
         /** 获取注解 */
         inline fun <reified T : Annotation> Parameter.findAnnotation(): T? {
-            if (isAnnotationPresent(T::class.java)) {
-                return getAnnotation(T::class.java)
-            }
-            return null
+            return getAnnotationIfPresent(T::class.java)
         }
     }
 }

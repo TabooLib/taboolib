@@ -14,6 +14,8 @@ import taboolib.common.platform.Ghost;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.SkipTo;
+import taboolib.common.reflect.AnnotationKt;
+import taboolib.common.util.JavaAnnotation;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -190,7 +192,7 @@ public class VisitorHandler {
      * 检查指定类是否允许在当前平台运行
      */
     public static boolean checkPlatform(Class<?> cls) {
-        PlatformSide platformSide = cls.getAnnotation(PlatformSide.class);
+        PlatformSide platformSide = JavaAnnotation.getAnnotationIfPresent(cls, PlatformSide.class);
         return platformSide == null || Arrays.stream(platformSide.value()).anyMatch(i -> i == Platform.CURRENT);
     }
 }

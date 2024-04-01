@@ -146,6 +146,10 @@ public class PrimitiveLoader {
         String[][] rule = rule();
         // 加载 env 启动 Kotlin 环境
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
+        // 如果 Kotlin 环境启动失败
+        if (!TabooLib.isKotlinEnvironment()) {
+            throw new IllegalStateException("Failed to setup Kotlin environment.");
+        }
         // 加载 util 注册 ClassAppender Callback 回调函数
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
         // 加载剩余模块 >> 此时 isExternal 参数才有实际作用

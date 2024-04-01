@@ -68,7 +68,7 @@ public class RuntimeEnv {
         if (clazz.isAnnotationPresent(RuntimeResource.class)) {
             resources = clazz.getAnnotationsByType(RuntimeResource.class);
         } else {
-            RuntimeResources annotation = clazz.getAnnotation(RuntimeResources.class);
+            RuntimeResources annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeResources.class);
             if (annotation != null) {
                 resources = annotation.value();
             }
@@ -122,7 +122,7 @@ public class RuntimeEnv {
         if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
         } else {
-            RuntimeDependencies annotation = clazz.getAnnotation(RuntimeDependencies.class);
+            RuntimeDependencies annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeDependencies.class);
             if (annotation != null) {
                 dependencies = annotation.value();
             }
