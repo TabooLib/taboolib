@@ -8,6 +8,8 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.ExecuteContext
+import taboolib.common.reflect.getAnnotationIfPresent
+import taboolib.common.reflect.hasAnnotation
 import java.util.function.Supplier
 
 @Target(AnnotationTarget.CLASS)
@@ -115,8 +117,8 @@ class SimpleCommandRegister : ClassVisitor(0) {
     }
 
     override fun visitEnd(clazz: Class<*>, instance: Supplier<*>?) {
-        if (clazz.isAnnotationPresent(CommandHeader::class.java)) {
-            val annotation = clazz.getAnnotation(CommandHeader::class.java)
+        if (clazz.hasAnnotation(CommandHeader::class.java)) {
+            val annotation = clazz.getAnnotationIfPresent(CommandHeader::class.java)!!
             command(annotation.name,
                 annotation.aliases.toList(),
                 annotation.description,

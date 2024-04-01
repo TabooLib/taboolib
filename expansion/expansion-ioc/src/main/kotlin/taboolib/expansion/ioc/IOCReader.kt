@@ -4,6 +4,7 @@ import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Schedule
+import taboolib.common.reflect.hasAnnotation
 import taboolib.expansion.ioc.annotation.Component
 import taboolib.expansion.ioc.database.IOCDatabase
 import taboolib.expansion.ioc.database.impl.IOCDatabaseYaml
@@ -20,7 +21,7 @@ object IOCReader {
 
     fun readRegister(classes: List<Class<*>>, defaultIOCDatabase: IOCDatabase = IOCDatabaseYaml()) {
         classes.forEach { clazz: Class<*> ->
-            if (!clazz.isAnnotationPresent(Component::class.java)) {
+            if (!clazz.hasAnnotation(Component::class.java)) {
                 return@forEach
             }
             val event = DataReadEvent(clazz, defaultIOCDatabase)

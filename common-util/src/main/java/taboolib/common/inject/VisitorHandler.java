@@ -88,11 +88,11 @@ public class VisitorHandler {
      */
     public static void inject(@NotNull Class<?> clazz, @NotNull VisitorGroup group, @Nullable LifeCycle lifeCycle) {
         // 跳过注入
-        if (clazz.isAnnotationPresent(Ghost.class)) {
+        if (JavaAnnotation.hasAnnotation(clazz, Ghost.class)) {
             return;
         }
         // 检查 SkipTo
-        if (lifeCycle != null && clazz.isAnnotationPresent(SkipTo.class)) {
+        if (lifeCycle != null && JavaAnnotation.hasAnnotation(clazz, SkipTo.class)) {
             int skip = clazz.getAnnotation(SkipTo.class).value().ordinal();
             if (skip > lifeCycle.ordinal()) {
                 return;
@@ -174,7 +174,7 @@ public class VisitorHandler {
                         continue;
                     }
                     // 排除 TabooLib 的非开放类
-                    if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !it.getValue().isAnnotationPresent(Inject.class)) {
+                    if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !JavaAnnotation.hasAnnotation(it.getValue(), Inject.class)) {
                         continue;
                     }
                     // 排除其他平台

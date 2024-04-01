@@ -65,7 +65,7 @@ public class RuntimeEnv {
 
     public void loadAssets(@NotNull Class<?> clazz) throws IOException {
         RuntimeResource[] resources = null;
-        if (clazz.isAnnotationPresent(RuntimeResource.class)) {
+        if (JavaAnnotation.hasAnnotation(clazz, RuntimeResource.class)) {
             resources = clazz.getAnnotationsByType(RuntimeResource.class);
         } else {
             RuntimeResources annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeResources.class);
@@ -119,7 +119,7 @@ public class RuntimeEnv {
     public void loadDependency(@NotNull Class<?> clazz) throws Throwable {
         File baseFile = new File(defaultLibrary);
         RuntimeDependency[] dependencies = null;
-        if (clazz.isAnnotationPresent(RuntimeDependency.class)) {
+        if (JavaAnnotation.hasAnnotation(clazz, RuntimeDependency.class)) {
             dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
         } else {
             RuntimeDependencies annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeDependencies.class);
