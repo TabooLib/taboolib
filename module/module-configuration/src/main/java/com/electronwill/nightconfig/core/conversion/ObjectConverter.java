@@ -550,14 +550,14 @@ public final class ObjectConverter {
         ReflexClass reflexClass = ReflexClass.Companion.of(type, true);
         ClassMethod toField = reflexClass.getStructure().getMethodByTypeSilently("toField", Field.class, Object.class, ConfigurationSection.class);
         ClassMethod fromField = reflexClass.getStructure().getMethodByTypeSilently("fromField", Field.class, Object.class, type);
-        if (toField == null || fromField == null) {
-            return null;
-        }
         if (toField != null && toField.getResult().getInstance() != ConvertResult.class) {
             throw new IllegalStateException("InnerConverter method must return ConvertResult");
         }
         if (fromField != null && fromField.getResult().getInstance() != ConvertResult.class) {
             throw new IllegalStateException("InnerConverter method must return ConvertResult");
+        }
+        if ((toField == null && fromField != null) || (toField != null && fromField == null)) {
+            throw new IllegalStateException("InnerConverter method must have two methods toField and fromField");
         }
         return new InnerConverter(toField, fromField);
     }

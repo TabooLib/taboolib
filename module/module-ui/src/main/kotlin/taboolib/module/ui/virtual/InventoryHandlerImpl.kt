@@ -11,6 +11,7 @@ import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.Packet
+import taboolib.module.nms.sendBundlePacket
 import taboolib.module.nms.sendPacket
 import taboolib.platform.util.isAir
 import taboolib.platform.util.isNotAir
@@ -75,9 +76,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 } else {
                     NMS9ChatComponentText(title)
                 }
-                val packet = NMS9PacketPlayOutOpenWindow(container.windowId, windowType, component, size)
-                player.sendPacket(packet)
-                return VInventory(inventory, id, player, container, cursorItem, title)
+                return VInventory(inventory, id, player, container, cursorItem, title, NMS9PacketPlayOutOpenWindow(container.windowId, windowType, component, size))
             }
             // 1.13, 1.14, 1.15, 1.16, 1.17, 1.18, 1.19, 1.20
             // public static Containers getNotchInventoryType(InventoryType type)
@@ -90,9 +89,7 @@ class InventoryHandlerImpl : InventoryHandler() {
                 } else {
                     Craft16ChatMessage.fromString(title)[0]
                 }
-                val packet = NMS16PacketPlayOutOpenWindow(id, windowType, component)
-                player.sendPacket(packet)
-                return VInventory(inventory, id, player, container, cursorItem, title)
+                return VInventory(inventory, id, player, container, cursorItem, title, NMS16PacketPlayOutOpenWindow(id, windowType, component))
             }
             // 不支持
             else -> throw UnsupportedVersionException()
@@ -106,12 +103,14 @@ class InventoryHandlerImpl : InventoryHandler() {
         val container: Any,
         val cursorItem: ItemStack,
         override val title: String,
+        val openPacket: Any,
     ) : RemoteInventory {
 
         val air = ItemStack(Material.AIR)
         val major = MinecraftVersion.major
         var stateId = 0
 
+        var isOpened = false
         var isClosed = false
         var onCloseCallback: (() -> Unit)? = null
         var onClickCallback: (RemoteInventory.ClickEvent.() -> Unit)? = null
@@ -125,18 +124,18 @@ class InventoryHandlerImpl : InventoryHandler() {
             if (isClosed) {
                 return
             }
-            when (major) {
+            val initPacket: Any = when (major) {
                 // 1.8 1.9, 1.10
                 // public PacketPlayOutWindowItems(int var1, List<ItemStack> var2)
                 in MinecraftVersion.V1_8..MinecraftVersion.V1_10 -> {
-                    viewer.sendPacket(NMS9PacketPlayOutWindowItems(id, windowItems.map { Craft9ItemStack.asNMSCopy(it) }))
+                    NMS9PacketPlayOutWindowItems(id, windowItems.map { Craft9ItemStack.asNMSCopy(it) })
                 }
                 // 1.11, 1.12, 1.13, 1.14, 1.15, 1.16
                 // public PacketPlayOutWindowItems(int var1, NonNullList<ItemStack> var2)
                 in MinecraftVersion.V1_11..MinecraftVersion.V1_16 -> {
                     val nmsWindowItems = NMS16NonNullList.a<NMS16ItemStack>()
                     nmsWindowItems.addAll(windowItems.map { Craft16ItemStack.asNMSCopy(it) })
-                    viewer.sendPacket(NMS16PacketPlayOutWindowItems(id, nmsWindowItems))
+                    NMS16PacketPlayOutWindowItems(id, nmsWindowItems)
                 }
                 // 1.17, 1.18, 1.19, 1.20
                 // public PacketPlayOutWindowItems(int var0, int var1, NonNullList<ItemStack> var2, ItemStack var3)
@@ -144,10 +143,15 @@ class InventoryHandlerImpl : InventoryHandler() {
                     val nmsWindowItems = NMS16NonNullList.a<NMSItemStack>() as NonNullList<NMSItemStack>
                     nmsWindowItems.addAll(windowItems.map { Craft19ItemStack.asNMSCopy(it) })
                     val nmsCursorItem = Craft19ItemStack.asNMSCopy(cursorItem)
-                    viewer.sendPacket(NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem))
+                    NMSPacketPlayOutWindowItems(id, incrementStateId(), nmsWindowItems, nmsCursorItem)
                 }
                 // 不支持
                 else -> throw UnsupportedVersionException()
+            }
+            if (isOpened) {
+                viewer.sendPacket(initPacket)
+            } else {
+                viewer.sendBundlePacket(openPacket, initPacket)
             }
         }
 
@@ -264,12 +268,13 @@ class InventoryHandlerImpl : InventoryHandler() {
                     val clickType = packet.read<Any>("clickType").toString()
                     handle(slotNum, buttonNum, clickType)
                 }
+
                 MinecraftVersion.V1_8 -> {
                     val slot = packet.read<Int>("slot")!!
                     val button = packet.read<Int>("button")!!
                     // val d = packet.read<Short>("d")!!
                     val shift = packet.read<Int>("shift")
-                    val translatedShift = when(shift) {
+                    val translatedShift = when (shift) {
                         0 -> "PICKUP"
                         1 -> "QUICK_MOVE"
                         2 -> "SWAP"
