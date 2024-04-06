@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author Ling556
  */
 @SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
-@PlatformSide(Platform.BUNGEE)
+@PlatformSide(Platform.APPLICATION)
 public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
 
     @Nullable
@@ -78,7 +78,7 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             }
             // 启动调度器
             try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BungeeExecutor");
+                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.AfyBrokerExecutor");
                 o.getClass().getDeclaredMethod("start").invoke(o);
             } catch (Throwable ex) {
                 ex.printStackTrace();
