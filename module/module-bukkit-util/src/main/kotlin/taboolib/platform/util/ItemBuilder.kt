@@ -19,8 +19,8 @@ import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
+import java.util.*
 
 /**
  * 判定材质是否为空气
@@ -79,6 +79,11 @@ fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemSta
 }
 
 open class ItemBuilder {
+
+    /**
+     * 头颅材质信息
+     */
+    class SkullTexture(val textures: String, val uuid: UUID? = UUID.randomUUID())
 
     /**
      * 物品材质
@@ -148,7 +153,7 @@ open class ItemBuilder {
     /**
      * 头颅材质信息
      */
-    var skullTexture: XSkull.SkullTexture? = null
+    var skullTexture: SkullTexture? = null
 
     /**
      * 无法破坏
@@ -215,6 +220,22 @@ open class ItemBuilder {
         }
     }
 
+    open fun getSkinValue(skull: ItemMeta): SkullTexture? {
+        var profile: GameProfile? = null
+        try {
+            profile = skull.getProperty("profile")
+        } catch (ignored: Exception) {
+        }
+        if (profile != null && !profile.properties["textures"].isEmpty()) {
+            for (property in profile.properties["textures"]) {
+                if (property.value.isNotEmpty()) {
+                    return SkullTexture(property.value, profile.id)
+                }
+            }
+        }
+        return null
+    }
+
     /**
      * 构建物品
      */
@@ -237,6 +258,7 @@ open class ItemBuilder {
             is LeatherArmorMeta -> {
                 itemMeta.setColor(color)
             }
+
             is PotionMeta -> {
                 potions.forEach { itemMeta.addCustomEffect(it, true) }
                 if (color != null) {
@@ -246,12 +268,15 @@ open class ItemBuilder {
                     itemMeta.basePotionData = potionData!!
                 }
             }
+
             is SkullMeta -> {
                 if (skullOwner != null) {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    XSkull.applySkin(itemMeta, skullTexture!!.texture)
+                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, null).also {
+                        it.properties.put("textures", Property("textures", skullTexture!!.textures))
+                    })
                 }
             }
         }
@@ -290,7 +315,7 @@ open class ItemBuilder {
         this.material = material
     }
 
-    constructor(material: XMaterial): this(material.parseMaterial() ?: Material.STONE) {
+    constructor(material: XMaterial) : this(material.parseMaterial() ?: Material.STONE) {
         if (!XMaterial.supports(13)) {
             this.damage = material.data.toInt()
         }
@@ -319,16 +344,18 @@ open class ItemBuilder {
             is LeatherArmorMeta -> {
                 color = itemMeta.color
             }
+
             is PotionMeta -> {
                 color = itemMeta.color
                 potions += itemMeta.customEffects
                 potionData = itemMeta.basePotionData
             }
+
             is SkullMeta -> {
                 if (itemMeta.owner != null) {
                     skullOwner = itemMeta.owner
                 }
-                XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
+                skullTexture = getSkinValue(itemMeta)
             }
         }
         try {
@@ -358,4 +385,5 @@ open class ItemBuilder {
         } catch (ignored: NoClassDefFoundError) {
         }
     }
+
 }
