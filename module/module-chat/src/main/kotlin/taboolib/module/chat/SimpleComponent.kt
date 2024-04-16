@@ -12,12 +12,21 @@ import taboolib.common.platform.ProxyCommandSender
 interface SimpleComponent {
 
     /** 构建为 RawMessage */
-    fun build(transfer: TextTransfer.() -> Unit = {}): ComponentText
+    fun build() = build { }
+
+    /** 构建为 RawMessage */
+    fun build(transfer: TextTransfer.() -> Unit): ComponentText
 
     /** 构建为 RawMessage，并上色 */
-    fun buildColored(transfer: TextTransfer.() -> Unit = {}): ComponentText {
+    fun buildColored() = build { colored() }
+
+    /** 构建为 RawMessage，并上色 */
+    fun buildColored(transfer: TextTransfer.() -> Unit): ComponentText {
         return build { colored() }
     }
+
+    /** 直接构建为 RawMessage */
+    fun buildToRaw() = buildToRaw { }
 
     /** 直接构建为 RawMessage */
     fun buildToRaw(transfer: TextTransfer.() -> Unit = {}): String {
