@@ -2,6 +2,8 @@ package taboolib.common.platform.command
 
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.component.CommandComponentDynamic
+import taboolib.common.platform.command.component.ExecuteContext
+import taboolib.common.platform.command.component.SuggestContext
 import taboolib.common.platform.function.allWorlds
 import taboolib.common.platform.function.onlinePlayers
 
@@ -10,8 +12,8 @@ import taboolib.common.platform.function.onlinePlayers
  *
  * @param suggest 补全表达式
  */
-fun CommandComponentDynamic.suggest(suggest: () -> List<String>?): CommandComponentDynamic {
-    return suggestion<ProxyCommandSender> { _, _ -> suggest() }
+fun CommandComponentDynamic.suggest(suggest: SuggestContext<ProxyCommandSender>.() -> List<String>?): CommandComponentDynamic {
+    return suggestion<ProxyCommandSender> { sender, ctx -> suggest(SuggestContext(sender, ctx)) }
 }
 
 /**
@@ -19,8 +21,8 @@ fun CommandComponentDynamic.suggest(suggest: () -> List<String>?): CommandCompon
  *
  * @param suggest 补全表达式
  */
-fun CommandComponentDynamic.suggestUncheck(suggest: () -> List<String>?): CommandComponentDynamic {
-    return suggestion<ProxyCommandSender>(uncheck = true) { _, _ -> suggest() }
+fun CommandComponentDynamic.suggestUncheck(suggest: SuggestContext<ProxyCommandSender>.() -> List<String>?): CommandComponentDynamic {
+    return suggestion<ProxyCommandSender>(uncheck = true) { sender, ctx -> suggest(SuggestContext(sender, ctx)) }
 }
 
 /**

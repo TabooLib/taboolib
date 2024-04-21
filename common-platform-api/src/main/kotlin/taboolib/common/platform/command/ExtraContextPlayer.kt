@@ -12,7 +12,7 @@ import taboolib.common.platform.function.onlinePlayers
  * @throws IllegalStateException 参数不存在，或者玩家不存在
  */
 fun <T> CommandContext<T>.player(id: String): ProxyPlayer {
-    return getProxyPlayer(get(id))!!
+    return getProxyPlayer(get(id).substringBefore(' '))!!
 }
 
 /**
@@ -22,7 +22,7 @@ fun <T> CommandContext<T>.player(id: String): ProxyPlayer {
  * @return 指定位置的输入参数
  */
 fun <T> CommandContext<T>.playerOrNull(id: String): ProxyPlayer? {
-    return getProxyPlayer(getOrNull(id) ?: return null)
+    return getProxyPlayer(getOrNull(id)?.substringBefore(' ') ?: return null)
 }
 
 /**
@@ -34,7 +34,7 @@ fun <T> CommandContext<T>.playerOrNull(id: String): ProxyPlayer? {
  * @throws IllegalStateException 参数不存在，或者玩家不存在
  */
 fun <T> CommandContext<T>.players(id: String): List<ProxyPlayer> {
-    val text = get(id)
+    val text = get(id).substringBefore(' ')
     return if (text == "*") onlinePlayers() else listOf(getProxyPlayer(text)!!)
 }
 
@@ -45,6 +45,6 @@ fun <T> CommandContext<T>.players(id: String): List<ProxyPlayer> {
  * @return 指定位置的输入参数
  */
 fun <T> CommandContext<T>.playersOrNull(id: String): List<ProxyPlayer>? {
-    val text = getOrNull(id) ?: return null
+    val text = getOrNull(id)?.substringBefore(' ') ?: return null
     return if (text == "*") onlinePlayers() else listOf(getProxyPlayer(text) ?: return null)
 }

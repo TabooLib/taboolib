@@ -53,8 +53,27 @@ class SafeEntity<T : Entity>(private var entity: T) {
      */
     fun get(): T {
         if (entity is Player && !entity.isValid) {
-            entity = Bukkit.getPlayerExact(entity.name) as T
+            val playerExact = Bukkit.getPlayerExact(entity.name)
+            if (playerExact != null) {
+                entity = playerExact as T
+            } else {
+                error("Player ${entity.name} is offline.")
+            }
         }
         return entity
+    }
+
+    /**
+     * 获取实体，如果实体失效则返回 null
+     */
+    fun getOrNull(): T? {
+        return runCatching { get() }.getOrNull()
+    }
+
+    /**
+     * 是否有效
+     */
+    fun isValid(): Boolean {
+        return getOrNull() != null
     }
 }
