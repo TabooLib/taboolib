@@ -83,7 +83,7 @@ open class ItemBuilder {
     /**
      * 头颅材质信息
      */
-    class SkullTexture(val textures: String, val uuid: UUID? = UUID.randomUUID())
+    class SkullTexture(val textures: String, val uuid: UUID? = UUID(0, 0))
 
     /**
      * 物品材质
@@ -274,7 +274,7 @@ open class ItemBuilder {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, null).also {
+                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, "skull").also { // 谁让你 null 了
                         it.properties.put("textures", Property("textures", skullTexture!!.textures))
                     })
                 }
