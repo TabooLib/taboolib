@@ -6,7 +6,7 @@ dependencies {
     compileOnly(project(":module:module-bukkit-util"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
-    compileOnly("ink.ptms.core:v12000:12000-minimize:mapped")
+    compileOnly("ink.ptms.core:v12005:12005:mapped")
     compileOnly("ink.ptms.core:v11904:11904-minimize:mapped")
     compileOnly("ink.ptms.core:v11800:11800-minimize:mapped")
     compileOnly("ink.ptms.core:v11604:11604")

@@ -12,7 +12,7 @@ fun nmsPreheat(): CompletableFuture<Void> {
     return CompletableFuture.runAsync {
         nmsProxy<NMSEntity>()
         nmsProxy<NMSItem>()
-        nmsProxy<NMSItemTag>()
+        NMSItemTag.instance
         nmsProxy<NMSLight>()
         nmsProxy<NMSMessage>()
         nmsProxy<NMSParticle>()

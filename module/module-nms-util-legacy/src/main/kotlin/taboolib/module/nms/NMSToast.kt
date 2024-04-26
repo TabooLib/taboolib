@@ -83,6 +83,7 @@ private val advancementsMap by unsafeLazy {
  * @param frame 成就框架
  * @param background 成就背景图片
  */
+@Deprecated("停止维护")
 fun Player.sendToast(icon: Material, message: String, frame: ToastFrame = ToastFrame.TASK, background: ToastBackground = ToastBackground.ADVENTURE) {
     if (MinecraftVersion.majorLegacy >= 12002) {
         warning("\"sendToast\" is not supported in Minecraft 1.20.2")

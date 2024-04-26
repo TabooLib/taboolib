@@ -1,61 +1,14 @@
 package taboolib.module.nms
 
-import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
 import java.lang.invoke.MethodHandle
 
 /**
- * 获取物品 [ItemTag]
- */
-fun ItemStack.getItemTag(): ItemTag {
-    return nmsProxy<NMSItemTag>().getItemTag(validation())
-}
-
-/**
- * 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品
- */
-fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
-    return nmsProxy<NMSItemTag>().setItemTag(validation(), itemTag)
-}
-
-/**
- * 将 [ItemTagData] 转换为字符串
- */
-fun ItemTagData.saveToString(): String {
-    return nmsProxy<NMSItemTag>().itemTagToString(this)
-}
-
-/**
- * TabooLib
- * taboolib.module.nms.NMSItemTag
- *
- * @author 坏黑
- * @since 2023/8/5 03:47
- */
-abstract class NMSItemTag {
-
-    /** 获取物品 [ItemTag] */
-    abstract fun getItemTag(itemStack: ItemStack): ItemTag
-
-    /** 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
-    abstract fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack
-
-    /** 将 [ItemTag] 转换为字符串 */
-    abstract fun itemTagToString(itemTagData: ItemTagData): String
-
-    /** 将 [ItemTagData] 转换为 [net.minecraft.server] 下的 NBTTagCompound */
-    abstract fun itemTagToNMSCopy(itemTagData: ItemTagData): Any
-
-    /** 将 [net.minecraft.server] 下的 NBTTag 转换为 [ItemTagData] */
-    abstract fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData
-}
-
-/**
  * [NMSItemTag] 的实现类
  */
 @Suppress("SpellCheckingInspection", "UNCHECKED_CAST")
-class NMSItemTagImpl : NMSItemTag() {
+open class NMSItemTagImpl1 : NMSItemTag() {
 
     val nbtTagCompoundGetter = unreflectGetter<NBTTagCompound12>(if (MinecraftVersion.isUniversal) "x" else "map")
     val nbtTagListGetter = unreflectGetter<NBTTagList12>(if (MinecraftVersion.isUniversal) "c" else "list")
@@ -71,15 +24,23 @@ class NMSItemTagImpl : NMSItemTag() {
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagLongArrayGetter = unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
 
+    private fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {
+        return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(itemStack)
+    }
+
+    private fun getBukkitCopy(itemStack: net.minecraft.server.v1_12_R1.ItemStack): ItemStack {
+        return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack)
+    }
+
     override fun getItemTag(itemStack: ItemStack): ItemTag {
-        val nmsItem = NMSItem.asNMSCopy(itemStack) as NMSItemStack12
+        val nmsItem = getNMSCopy(itemStack)
         return if (nmsItem.hasTag()) itemTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
     }
 
     override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
-        val nmsItem = NMSItem.asNMSCopy(itemStack) as NMSItemStack12
+        val nmsItem = getNMSCopy(itemStack)
         nmsItem.tag = itemTagToNMSCopy(itemTag) as NBTTagCompound12
-        return NMSItem.asBukkitCopy(nmsItem)
+        return getBukkitCopy(nmsItem)
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {
@@ -178,17 +139,6 @@ class NMSItemTagImpl : NMSItemTag() {
 
     private fun <T> MethodHandle.set(src: Any, value: T) {
         bindTo(src).invoke(value)
-    }
-}
-
-/**
- * 判断物品是否为空
- */
-private fun ItemStack?.validation(): ItemStack {
-    if (this == null || type == Material.AIR || type.name.endsWith("_AIR")) {
-        error("ItemStack must be not null.")
-    } else {
-        return this
     }
 }
 

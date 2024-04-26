@@ -183,12 +183,25 @@ import taboolib.common.env.RuntimeResources
     // 1.20.4
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.4-cl.csrg",
-        hash = "4cf1c21c1b0e91556f12f846accc3f69826fb682",
+        hash = "c5d9057ad5fdfe37dce29169c36c837e1d4ec410",
         zip = true,
         tag = "1.20.4:combined"
     ),
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-c13d4d77-members.csrg",
+        hash = "c02598ec39d18e87cc2d391a71bc53a72101d425",
+        zip = true,
+        tag = "1.20.4:fields"
+    ),
+    // 1.20.5
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.5-cl.csrg",
+        hash = "4cf1c21c1b0e91556f12f846accc3f69826fb682",
+        zip = true,
+        tag = "1.20.4:combined"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-4b466d94-members.csrg",
         hash = "5f5890b12c92f10af6d2770c0dd599ae21f7890f",
         zip = true,
         tag = "1.20.4:fields"

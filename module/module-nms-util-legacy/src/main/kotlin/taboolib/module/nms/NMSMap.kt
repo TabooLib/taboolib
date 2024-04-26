@@ -50,6 +50,7 @@ fun buildMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun buildMap(
     url: URL,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -69,6 +70,7 @@ fun buildMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun buildMap(
     file: File,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -86,6 +88,7 @@ fun buildMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun buildMap(
     image: BufferedImage,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -103,6 +106,7 @@ fun buildMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun Player.sendMap(
     url: String,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -120,6 +124,7 @@ fun Player.sendMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun Player.sendMap(
     url: URL,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -137,6 +142,7 @@ fun Player.sendMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun Player.sendMap(
     file: File,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -154,6 +160,7 @@ fun Player.sendMap(
  * @param width 图像宽度
  * @param height 图像高度
  */
+@Deprecated("停止维护")
 fun Player.sendMap(
     image: BufferedImage,
     hand: NMSMap.Hand = NMSMap.Hand.MAIN,
@@ -168,6 +175,7 @@ fun Player.sendMap(
  * 调整图片分辨率
  * 地图最佳显示分辨率为128*128
  */
+@Deprecated("停止维护")
 fun BufferedImage.zoomed(width: Int = 128, height: Int = 128): BufferedImage {
     val tag = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
     tag.graphics.drawImage(this, 0, 0, width, height, null)

@@ -15,6 +15,7 @@ import taboolib.module.nms.type.LightType
  * @param update 是否更新区块光照
  * @param viewers 可见玩家
  */
+@Deprecated("停止维护")
 fun Block.createLight(
     lightLevel: Int,
     lightType: LightType = LightType.ALL,
@@ -41,6 +42,7 @@ fun Block.createLight(
  * @param update 是否更新区块光照
  * @param viewers 可见玩家
  */
+@Deprecated("停止维护")
 fun Block.deleteLight(
     lightType: LightType = LightType.ALL,
     update: Boolean = true,
@@ -59,6 +61,7 @@ fun Block.deleteLight(
 /**
  * 更新光照
  */
+@Deprecated("停止维护")
 fun Block.updateLight(lightType: LightType, viewers: Collection<Player>) {
     if (MinecraftVersion.isUniversal) {
         nmsProxy<NMSLight>().updateLightUniversal(this, lightType, viewers)
