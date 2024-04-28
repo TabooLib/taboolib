@@ -548,8 +548,8 @@ public final class ObjectConverter {
      */
     private InnerConverter getInnerConverter(Class<?> type) {
         ReflexClass reflexClass = ReflexClass.Companion.of(type, true);
-        ClassMethod toField = reflexClass.getStructure().getMethodByTypeSilently("toField", Field.class, Object.class, ConfigurationSection.class);
-        ClassMethod fromField = reflexClass.getStructure().getMethodByTypeSilently("fromField", Field.class, Object.class, type);
+        ClassMethod toField = reflexClass.getStructure().getMethods().stream().filter(it -> it.getName().equals("toField")).findFirst().orElse(null);
+        ClassMethod fromField = reflexClass.getStructure().getMethods().stream().filter(it -> it.getName().equals("fromField")).findFirst().orElse(null);
         if (toField != null && toField.getResult().getInstance() != ConvertResult.class) {
             throw new IllegalStateException("InnerConverter method must return ConvertResult");
         }
