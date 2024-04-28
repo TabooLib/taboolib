@@ -3,6 +3,7 @@ package taboolib.test.nms_util
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import taboolib.common.Test
+import taboolib.library.xseries.XEnchantment
 import taboolib.module.nms.ItemTagSerializer
 import taboolib.module.nms.getItemTag
 import taboolib.platform.util.buildItem
@@ -20,7 +21,7 @@ object TestItemTag : Test() {
         val item = buildItem(Material.DIAMOND_SWORD) {
             name = "你妈死了"
             lore += "测试"
-            enchants[Enchantment.DAMAGE_ALL] = 1
+            enchants[Enchantment.THORNS] = 1
         }
         return listOf(
             sandbox("ItemTag:getItemTag()") { item.getItemTag() },

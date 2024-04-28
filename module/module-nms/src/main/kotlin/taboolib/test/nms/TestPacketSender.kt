@@ -4,6 +4,8 @@ import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Inject
 import taboolib.common.Test
+import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.registerBukkitListener
 import taboolib.module.nms.*
 import taboolib.platform.util.onlinePlayers
 
@@ -19,6 +21,18 @@ object TestPacketSender : Test() {
 
     var testSend = false
     var testReceive = false
+
+    /**
+     * 初始化监听器
+     */
+    fun setup() {
+        registerBukkitListener(PacketSendEvent::class.java) {
+            testSend = true
+        }
+        registerBukkitListener(PacketReceiveEvent::class.java) {
+            testReceive = true
+        }
+    }
 
     override fun check(): List<Result> {
         val result = arrayListOf<Result>()
@@ -46,14 +60,4 @@ object TestPacketSender : Test() {
         }
         return result
     }
-
-//    @SubscribeEvent
-//    private fun onSend(e: PacketSendEvent) {
-//        testSend = true
-//    }
-//
-//    @SubscribeEvent
-//    private fun onReceive(e: PacketReceiveEvent) {
-//        testReceive = true
-//    }
 }

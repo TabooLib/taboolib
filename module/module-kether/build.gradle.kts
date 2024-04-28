@@ -15,6 +15,7 @@ dependencies {
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-lang"))
     compileOnly(project(":module:module-nms-util"))
+    compileOnly(project(":module:module-nms-util-unstable"))
     compileOnly(project(":module:module-configuration"))
     compileOnly(project(":expansion:expansion-javascript"))
     // 扩展
