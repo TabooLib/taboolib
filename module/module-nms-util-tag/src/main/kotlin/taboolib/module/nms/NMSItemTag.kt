@@ -55,7 +55,7 @@ abstract class NMSItemTag {
 
         val instance by unsafeLazy {
             if (MinecraftVersion.majorLegacy >= 12005) {
-                nmsProxy<NMSItemTag>("{name}Impl2")
+                nmsProxy<NMSItemTag>("{name}Impl2", listOf("{name}Impl1"))
             } else {
                 nmsProxy<NMSItemTag>("{name}Impl1")
             }

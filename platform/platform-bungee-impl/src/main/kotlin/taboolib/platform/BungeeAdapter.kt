@@ -39,11 +39,11 @@ class BungeeAdapter : PlatformAdapter {
     }
 
     override fun adaptLocation(any: Any): Location {
-        error("unsupported")
+        error("Unsupported")
     }
 
     override fun platformLocation(location: Location): Any {
-        error("unsupported")
+        error("Unsupported")
     }
 
     override fun allWorlds(): List<String> {

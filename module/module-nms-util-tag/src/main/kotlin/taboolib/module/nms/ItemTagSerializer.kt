@@ -81,7 +81,7 @@ object ItemTagSerializer {
                         "b" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toByte(it) }.toByteArray())
                         "i" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toInt(it) }.toIntArray())
                         "l" -> ItemTagData(str.substring(0, str.length - 2).split(",").map { NumberConversions.toLong(it) }.toLongArray())
-                        else -> error("unsupported array $json ($i)")
+                        else -> error("Unsupported array $json ($i)")
                     }
                 } else {
                     when (val i = str.substring(str.length - 1, str.length)) {
@@ -92,11 +92,11 @@ object ItemTagSerializer {
                         "f" -> ItemTagData(NumberConversions.toFloat(str.substring(0, str.length - 1)))
                         "d" -> ItemTagData(NumberConversions.toDouble(str.substring(0, str.length - 1)))
                         "t" -> ItemTagData(str.substring(0, str.length - 1))
-                        else -> error("unsupported type $json ($i)")
+                        else -> error("Unsupported type $json ($i)")
                     }
                 }
             }
-            else -> error("unsupported json $json (${json.javaClass.simpleName})")
+            else -> error("Unsupported json $json (${json.javaClass.simpleName})")
         }
     }
 }

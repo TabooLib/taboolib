@@ -25,6 +25,13 @@ private val nmsProxyInstanceMap = ConcurrentHashMap<String, Any>()
 private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 
 /**
+ * 是否为 universal obc 版本（paper 1.10.5+）
+ */
+val isUniversalCraftBukkit by unsafeLazy {
+    runCatching { Class.forName("org.bukkit.craftbukkit.CraftServer") }.getOrNull() != null
+}
+
+/**
  * 获取 MinecraftServer 实例
  */
 val minecraftServerObject: Any by unsafeLazy {
@@ -43,9 +50,12 @@ val minecraftServerObject: Any by unsafeLazy {
 /**
  * 获取 OBC 类
  */
-// FIXME 此方式将在 Paper 1.20.5 中失效
 fun obcClass(name: String): Class<*> {
-    return Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
+    return if (isUniversalCraftBukkit) {
+        Class.forName("org.bukkit.craftbukkit.$name")
+    } else {
+        Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
+    }
 }
 
 /**
@@ -72,34 +82,35 @@ fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", vararg parameter:
 }
 
 @Synchronized
-fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", link: List<String> = emptyList(), vararg parameter: Any): T {
+fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", parent: List<String> = emptyList(), vararg parameter: Any): T {
     val key = "${clazz.name}:$bind:${parameter.joinToString(",") { it.javaClass.name.toString() }}"
     // 从缓存中获取
     if (nmsProxyInstanceMap.containsKey(key)) {
         return nmsProxyInstanceMap[key] as T
     }
     // 获取代理类并实例化
-    val newInstance = nmsProxyClass(clazz, bind).getDeclaredConstructor(*parameter.map { it.javaClass }.toTypedArray()).newInstance(*parameter)
+    val newInstance = nmsProxyClass(clazz, bind, parent).getDeclaredConstructor(*parameter.map { it.javaClass }.toTypedArray()).newInstance(*parameter)
     // 缓存实例
     nmsProxyInstanceMap[key] = newInstance!!
     return newInstance
 }
 
 inline fun <reified T> nmsProxy(bind: String = "{name}Impl", vararg parameter: Any): T {
-    return nmsProxy(T::class.java, bind, *parameter)
+    return nmsProxy(T::class.java, bind, emptyList(), *parameter)
 }
 
-inline fun <reified T> nmsProxy(bind: String = "{name}Impl", link: List<String> = emptyList(), vararg parameter: Any): T {
-    return nmsProxy(T::class.java, bind, link, *parameter)
+inline fun <reified T> nmsProxy(bind: String = "{name}Impl", parent: List<String> = emptyList(), vararg parameter: Any): T {
+    return nmsProxy(T::class.java, bind, parent, *parameter)
 }
 
 @Synchronized
-fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl"): Class<T> {
+fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl", parent: List<String> = emptyList()): Class<T> {
+    parent.forEach { nmsProxyClass(clazz, it) }
     return nmsProxyClass(clazz, bind)
 }
 
 @Synchronized
-fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl", link: List<String> = emptyList()): Class<T> {
+fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl"): Class<T> {
     val key = "${clazz.name}:$bind"
     // 从缓存中获取
     if (nmsProxyClassMap.containsKey(key)) {
@@ -115,8 +126,8 @@ fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl", link: List<S
     return newClass as Class<T>
 }
 
-inline fun <reified T> nmsProxyClass(bind: String = "{name}Impl", link: List<String> = emptyList()): Class<T> {
-    return nmsProxyClass(T::class.java, bind, link)
+inline fun <reified T> nmsProxyClass(bind: String = "{name}Impl", parent: List<String> = emptyList()): Class<T> {
+    return nmsProxyClass(T::class.java, bind, parent)
 }
 
 /**

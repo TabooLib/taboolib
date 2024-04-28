@@ -4,8 +4,7 @@ import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
 import taboolib.common.Inject
 import taboolib.common.Test
-import taboolib.common.platform.event.SubscribeEvent
-import taboolib.common.platform.function.registerBukkitListener
+import taboolib.common.event.InternalEventBus
 import taboolib.module.nms.*
 import taboolib.platform.util.onlinePlayers
 
@@ -26,10 +25,10 @@ object TestPacketSender : Test() {
      * 初始化监听器
      */
     fun setup() {
-        registerBukkitListener(PacketSendEvent::class.java) {
+        InternalEventBus.listen(PacketSendEvent::class.java) {
             testSend = true
         }
-        registerBukkitListener(PacketReceiveEvent::class.java) {
+        InternalEventBus.listen(PacketReceiveEvent::class.java) {
             testReceive = true
         }
     }

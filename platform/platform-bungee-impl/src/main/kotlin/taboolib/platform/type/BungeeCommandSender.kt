@@ -21,9 +21,9 @@ class BungeeCommandSender(val sender: CommandSender) : ProxyCommandSender {
         get() = sender.name
 
     override var isOp: Boolean
-        get() = error("unsupported")
+        get() = error("Unsupported")
         set(_) {
-            error("unsupported")
+            error("Unsupported")
         }
 
     override fun isOnline(): Boolean {

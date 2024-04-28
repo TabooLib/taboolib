@@ -24,7 +24,7 @@ class VelocityListener : PlatformListener {
     val plugin by unsafeLazy { VelocityPlugin.getInstance() }
 
     override fun <T> registerListener(event: Class<T>, priority: EventPriority, ignoreCancelled: Boolean, func: (T) -> Unit): ProxyListener {
-        error("unsupported")
+        error("Unsupported")
     }
 
     @Suppress("UNCHECKED_CAST")

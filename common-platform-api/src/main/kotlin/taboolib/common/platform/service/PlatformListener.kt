@@ -23,12 +23,12 @@ interface PlatformListener {
     /**
      * bungeecord
      */
-    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener = error("unsupported")
+    fun <T> registerListener(event: Class<T>, level: Int, ignoreCancelled: Boolean = false, func: (T) -> Unit): ProxyListener = error("Unsupported")
 
     /**
      * velocity
      */
-    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener = error("unsupported")
+    fun <T> registerListener(event: Class<T>, postOrder: PostOrder = PostOrder.NORMAL, func: (T) -> Unit): ProxyListener = error("Unsupported")
 
     /**
      * 注销监听器

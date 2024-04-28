@@ -36,7 +36,7 @@ class BukkitListener : PlatformListener {
             Bukkit.getPluginManager().registerEvent(event as Class<Event>, listener, bukkitPriority, listener, plugin, ignoreCancelled)
             return listener
         }
-        error("unsupported event type: ${event.name}")
+        error("Unsupported event type: ${event.name}")
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {

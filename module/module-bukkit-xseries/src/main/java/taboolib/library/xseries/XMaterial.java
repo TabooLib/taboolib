@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
  * Material Source Code: https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/Material.java
  * XMaterial v1: https://www.spigotmc.org/threads/329630/
  * <p>
- * This class will throw an "unsupported material" error if someone tries to use an item with an invalid data value which can only happen in 1.12 servers and below or when the
+ * This class will throw an "Unsupported material" error if someone tries to use an item with an invalid data value which can only happen in 1.12 servers and below or when the
  * utility is missing a new material in that specific version.
  * To get an invalid item, (aka <a href="https://minecraft.wiki/w/Missing_Texture_Block">Missing Texture Block</a>) you can use the command
  * <b>/give @p minecraft:dirt 1 10</b> where 1 is the item amount, and 10 is the data value. The material {@link #DIRT} with a data value of {@code 10} doesn't exist.
