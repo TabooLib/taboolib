@@ -18,6 +18,8 @@ public enum Platform {
 
     VELOCITY("Velocity", "com.velocitypowered.api.plugin.Plugin"),
 
+    AFYBROKER("AfyBroker", "net.afyer.afybroker.server.Broker"),
+
     APPLICATION("Application", null);
 
     /**
