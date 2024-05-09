@@ -51,7 +51,7 @@ public enum Platform {
      * 获取属于 Minecraft 的平台类型
      */
     public static Platform[] minecraft() {
-        return new Platform[]{BUKKIT, BUNGEE, VELOCITY};
+        return new Platform[]{BUKKIT, BUNGEE, VELOCITY, AFYBROKER};
     }
 
     /**

@@ -31,12 +31,15 @@ class AfyBrokerIO : PlatformIO {
         get() = DateFormatUtils.format(System.currentTimeMillis(), "HH:mm:ss")
 
     private val logger: Logger by lazy {
-        LoggerFactory.getLogger(pluginId);
+        LoggerFactory.getLogger(pluginId)
+
     }
-
-    override var pluginId = AfyBrokerPlugin.getInstance().description.name
-
-    override var pluginVersion = AfyBrokerPlugin.getInstance().description.version
+    override val pluginId: String by lazy {
+        AfyBrokerPlugin.getInstance().description.name
+    }
+    override val pluginVersion: String by lazy {
+        AfyBrokerPlugin.getInstance().description.version
+    }
 
     override val isPrimaryThread: Boolean
         get() = true
@@ -63,7 +66,10 @@ class AfyBrokerIO : PlatformIO {
         if (file.exists() && !replace) {
             return file
         }
-        newFile(file).writeBytes(AfyBrokerPlugin.getInstance().getResourceAsStream(source)?.readBytes() ?: error("resource not found: $source"))
+        newFile(file).writeBytes(
+            AfyBrokerPlugin.getInstance().getResourceAsStream(source)?.readBytes()
+                ?: error("resource not found: $source")
+        )
         return file
     }
 
