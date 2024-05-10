@@ -37,8 +37,7 @@ class AfyBrokerCommand : PlatformCommand {
         completer: CommandCompleter,
         commandBuilder: CommandBase.() -> Unit,
     ) {
-        val permission = command.permission.ifEmpty { "${plugin.description.name}.command.use" }
-        Broker.getPluginManager().registerCommand(plugin, object : Command(command.name, permission), TabExecutor {
+        Broker.getPluginManager().registerCommand(plugin, object : Command(command.name,*command.aliases.toTypedArray()), TabExecutor {
             override fun execute(args: Array<String>) {
                 executor.execute(adaptCommandSender(AfyBrokerCommandSender), command, command.name, args)
             }

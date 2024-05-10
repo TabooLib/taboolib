@@ -5,6 +5,7 @@ import net.afyer.afybroker.server.proxy.BrokerPlayer
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
+import taboolib.platform.type.AfyBrokerCommandSender
 import taboolib.platform.type.AfyBrokerPlayer
 
 /**
@@ -20,7 +21,7 @@ class AfyBrokerAdapter : PlatformAdapter {
 
 
     override fun console(): ProxyCommandSender {
-        error("Unsupported")
+        return AfyBrokerCommandSender
     }
 
     override fun onlinePlayers(): List<ProxyPlayer> {
@@ -32,7 +33,7 @@ class AfyBrokerAdapter : PlatformAdapter {
     }
 
     override fun adaptCommandSender(any: Any): ProxyCommandSender {
-        error("Unsupported")
+        return AfyBrokerCommandSender
     }
 
     override fun adaptLocation(any: Any): Location {
