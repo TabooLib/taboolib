@@ -18,6 +18,8 @@ public enum Platform {
 
     VELOCITY("Velocity", "com.velocitypowered.api.plugin.Plugin"),
 
+    AFYBROKER("AfyBroker", "net.afyer.afybroker.server.Broker"),
+
     APPLICATION("Application", null);
 
     /**
@@ -49,7 +51,7 @@ public enum Platform {
      * 获取属于 Minecraft 的平台类型
      */
     public static Platform[] minecraft() {
-        return new Platform[]{BUKKIT, BUNGEE, VELOCITY};
+        return new Platform[]{BUKKIT, BUNGEE, VELOCITY, AFYBROKER};
     }
 
     /**
