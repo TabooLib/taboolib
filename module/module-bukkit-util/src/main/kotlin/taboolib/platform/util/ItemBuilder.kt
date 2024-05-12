@@ -2,8 +2,6 @@
 
 package taboolib.platform.util
 
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import org.bukkit.ChatColor
 import org.bukkit.Color
 import org.bukkit.Material
@@ -17,10 +15,9 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.library.xseries.XMaterial
+import taboolib.library.xseries.XSkull
 import taboolib.module.chat.colored
-import java.util.*
 
 /**
  * 判定材质是否为空气
@@ -79,11 +76,6 @@ fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemSta
 }
 
 open class ItemBuilder {
-
-    /**
-     * 头颅材质信息
-     */
-    class SkullTexture(val textures: String, val uuid: UUID? = UUID(0, 0))
 
     /**
      * 物品材质
@@ -153,7 +145,7 @@ open class ItemBuilder {
     /**
      * 头颅材质信息
      */
-    var skullTexture: SkullTexture? = null
+    var skullTexture: XSkull.SkullTexture? = null
 
     /**
      * 无法破坏
@@ -220,22 +212,6 @@ open class ItemBuilder {
         }
     }
 
-    open fun getSkinValue(skull: ItemMeta): SkullTexture? {
-        var profile: GameProfile? = null
-        try {
-            profile = skull.getProperty("profile")
-        } catch (ignored: Exception) {
-        }
-        if (profile != null && !profile.properties["textures"].isEmpty()) {
-            for (property in profile.properties["textures"]) {
-                if (property.value.isNotEmpty()) {
-                    return SkullTexture(property.value, profile.id)
-                }
-            }
-        }
-        return null
-    }
-
     /**
      * 构建物品
      */
@@ -274,9 +250,7 @@ open class ItemBuilder {
                     itemMeta.owner = skullOwner
                 }
                 if (skullTexture != null) {
-                    itemMeta.setProperty("profile", GameProfile(skullTexture!!.uuid, "skull").also { // 谁让你 null 了
-                        it.properties.put("textures", Property("textures", skullTexture!!.textures))
-                    })
+                    XSkull.applySkin(itemMeta, skullTexture!!.texture)
                 }
             }
         }
@@ -355,7 +329,7 @@ open class ItemBuilder {
                 if (itemMeta.owner != null) {
                     skullOwner = itemMeta.owner
                 }
-                skullTexture = getSkinValue(itemMeta)
+                XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
             }
         }
         try {
