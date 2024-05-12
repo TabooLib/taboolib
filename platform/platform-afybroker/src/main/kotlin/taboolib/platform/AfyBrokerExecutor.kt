@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:43
  */
 @Awake
-@PlatformSide(Platform.APPLICATION)
+@PlatformSide(Platform.AFYBROKER)
 class AfyBrokerExecutor : PlatformExecutor {
 
     private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
