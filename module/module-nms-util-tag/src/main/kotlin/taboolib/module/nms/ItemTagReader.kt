@@ -33,7 +33,30 @@ fun ItemStack?.itemTagReader(reader: ItemTagReader.() -> Unit) {
     item.getItemTag().reader(reader)
 }
 
-data class ItemTagReader(val itemTag: ItemTag) {
+data class ItemTagReader(var itemTag: ItemTag) {
+
+    /**
+     * 获取到子节点的所有key
+     * parent: 父节点 默认为main
+     */
+    fun getKeys(parent: String = "main"): Set<String> {
+        if (parent == "main") {
+            return itemTag.keys
+        }
+        return itemTag.getDeep(parent)?.asCompound()?.keys ?: setOf()
+    }
+
+    fun toJson(): String {
+        return itemTag.toJson()
+    }
+
+    fun formatJson(): String {
+        return itemTag.toJsonFormatted()
+    }
+
+    fun loadFormJson(json: String) {
+        itemTag = ItemTag.fromJson(json)
+    }
 
     fun getString(key: String, def: String): String {
         return itemTag.getDeepOrElse(key, ItemTagData(def)).asString()
