@@ -28,6 +28,7 @@ object PacketSender {
     private val playerConnectionMap = ConcurrentHashMap<String, Any>()
     private var sendPacketMethod: ClassMethod? = null
     private var newPacketBundlePacket: ConstructorInvoker? = null
+    private var useMinecraftMethod = false
 
     init {
         try {
@@ -35,6 +36,13 @@ object PacketSender {
             newPacketBundlePacket = TinyReflection.getConstructor(bundlePacketClass, Iterable::class.java)
         } catch (ignored: Exception) {
         }
+    }
+
+    /**
+     * 使用 Minecraft 方法发送数据包
+     */
+    fun useMinecraftMethod() {
+        useMinecraftMethod = true
     }
 
     /**
@@ -51,7 +59,7 @@ object PacketSender {
      */
     fun sendPacket(player: Player, packet: Any) {
         // 如果 TinyProtocol 已经被初始化，则使用 TinyProtocol 发送数据包
-        if (ProtocolHandler.instance != null) {
+        if (ProtocolHandler.instance != null && !useMinecraftMethod) {
             ProtocolHandler.instance!!.sendPacket(player, packet)
             return
         }
