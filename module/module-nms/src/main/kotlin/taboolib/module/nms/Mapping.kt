@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import taboolib.common.PrimitiveIO
 import taboolib.common.util.join
 import java.io.InputStream
 import java.nio.charset.StandardCharsets
@@ -21,32 +22,31 @@ class Mapping(inputStreamCombined: InputStream, inputStreamFields: InputStream) 
     init {
         // 解析类名映射
         inputStreamCombined.use {
-            it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
+            it.bufferedReader().readLines().forEach { line ->
                 if (line.startsWith('#')) {
                     return@forEach
                 }
-                val args = line.split(' ')
-                if (args.size == 2) {
-                    classMap[args[1].substringAfterLast('/', "")] = args[1]
+                if (line.contains(' ')) {
+                    val name = line.substringAfterLast(' ')
+                    classMap[name.substringAfterLast('/', "")] = name
                 }
             }
         }
         // 解析字段映射
         inputStreamFields.use {
-            it.readBytes().toString(StandardCharsets.UTF_8).lines().forEach { line ->
+            it.bufferedReader().readLines().forEach { line ->
                 if (line.startsWith('#')) {
                     return@forEach
                 }
                 val args = line.split(' ')
                 if (args.size >= 3) {
                     // 1.18 开始支持方法映射
-                    if (args[2].startsWith("(")) {
-                        val info = join(args.toTypedArray(), 2)
-                        val name = info.substringAfterLast(' ')
-                        val parameter = info.substringBeforeLast(' ')
-                        methods += Method(args[0].replace("/", "."), args[1], name, parameter)
+                    if (args[2].startsWith('(')) {
+                        val name = args.last()
+                        val parameter = args[args.size - 2]
+                        methods += Method(args[0].replace('/', '.'), args[1], name, parameter)
                     } else {
-                        fields += Field(args[0].replace("/", "."), args[1], args[2])
+                        fields += Field(args[0].replace('/', '.'), args[1], args[2])
                     }
                 }
             }

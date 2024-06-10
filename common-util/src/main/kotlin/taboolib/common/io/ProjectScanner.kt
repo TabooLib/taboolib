@@ -180,7 +180,7 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
  * 获取 URL 下的所有类
  */
 fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, Class<*>> {
-    val classes = LinkedHashMap<String, Class<*>>()
+    val classes = ConcurrentHashMap<String, Class<*>>()
     val srcFile = try {
         File(toURI())
     } catch (ex: IllegalArgumentException) {
@@ -190,9 +190,13 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
     }
     // 是文件
     if (srcFile.isFile) {
-        JarFile(srcFile).stream().filter { it.name.endsWith(".class") }.forEach {
-            val className = it.name.replace('/', '.').substringBeforeLast(".class")
-            runCatching { classes[className] = Class.forName(className, false, classLoader) }
+        JarFile(srcFile).use { jar ->
+            jar.stream().parallel().forEach {
+                if (it.name.endsWith(".class")) {
+                    val className = it.name.replace('/', '.').substringBeforeLast('.')
+                    runCatching { classes[className] = Class.forName(className, false, classLoader) }
+                }
+            }
         }
     } else {
         srcFile.walkTopDown().filter { it.extension == "class" }.forEach {

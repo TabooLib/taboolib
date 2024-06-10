@@ -25,6 +25,18 @@ public class JavaAnnotation {
     }
 
     /**
+     * 获取指定注解的注解实例
+     * 如果不存在则返回 null
+     */
+    public static <T extends Annotation> T[] getAnnotationsIfPresent(AnnotatedElement ae, Class<T> annotationClass) {
+        try {
+            return ae.getAnnotationsByType(annotationClass);
+        } catch (Throwable ex) {
+            return null;
+        }
+    }
+
+    /**
      * 安全的判断是否存在指定注解
      * 防止java.lang.ArrayStoreException: sun.reflect.annotation.AnnotationTypeMismatchExceptionProxy异常
      */

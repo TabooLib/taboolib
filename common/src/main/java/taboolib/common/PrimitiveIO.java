@@ -24,6 +24,15 @@ import java.util.logging.Logger;
 @SuppressWarnings("CallToPrintStackTrace")
 public class PrimitiveIO {
 
+    private static final int BUFFER_SIZE = 8192;
+    private static final ThreadLocal<MessageDigest> DIGEST_THREAD_LOCAL = ThreadLocal.withInitial(() -> {
+        try {
+            return MessageDigest.getInstance("SHA-1");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    });
+
     /**
      * 当前运行的文件名
      **/
@@ -91,21 +100,22 @@ public class PrimitiveIO {
      */
     @NotNull
     public static String getHash(File file) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("sha-1");
-            try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-                byte[] buffer = new byte[1024];
-                int total;
-                while ((total = inputStream.read(buffer)) != -1) {
-                    digest.update(buffer, 0, total);
-                }
+        MessageDigest digest = DIGEST_THREAD_LOCAL.get();
+        digest.reset(); // Ensure the MessageDigest is reset before each use
+        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int total;
+            while ((total = inputStream.read(buffer)) != -1) {
+                digest.update(buffer, 0, total);
             }
-            StringBuilder result = new StringBuilder();
-            for (byte b : digest.digest()) {
+            byte[] hashBytes = digest.digest();
+            // Convert byte array to hex string
+            StringBuilder result = new StringBuilder(hashBytes.length * 2);
+            for (byte b : hashBytes) {
                 result.append(String.format("%02x", b));
             }
             return result.toString();
-        } catch (IOException | NoSuchAlgorithmException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         return "null (" + UUID.randomUUID() + ")";
@@ -115,15 +125,12 @@ public class PrimitiveIO {
      * 获取字符串哈希
      */
     public static String getHash(String data) {
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("sha-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        MessageDigest digest = DIGEST_THREAD_LOCAL.get();
+        digest.reset(); // Ensure the MessageDigest is reset before each use
         digest.update(data.getBytes(StandardCharsets.UTF_8));
-        StringBuilder result = new StringBuilder();
-        for (byte b : digest.digest()) {
+        byte[] hashBytes = digest.digest();
+        StringBuilder result = new StringBuilder(hashBytes.length * 2);
+        for (byte b : hashBytes) {
             result.append(String.format("%02x", b));
         }
         return result.toString();

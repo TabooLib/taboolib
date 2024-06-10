@@ -63,21 +63,24 @@ public class RuntimeEnv {
         loadDependency(clazz);
     }
 
-    public void loadAssets(@NotNull Class<?> clazz) throws IOException {
-        RuntimeResource[] resources = null;
-        if (JavaAnnotation.hasAnnotation(clazz, RuntimeResource.class)) {
-            resources = clazz.getAnnotationsByType(RuntimeResource.class);
-        } else {
+    @Nullable
+    public RuntimeResource[] getAssets(@NotNull Class<?> clazz) {
+        RuntimeResource[] resources = JavaAnnotation.getAnnotationsIfPresent(clazz, RuntimeResource.class);
+        if (resources == null && JavaAnnotation.hasAnnotation(clazz, RuntimeResources.class)) {
             RuntimeResources annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeResources.class);
             if (annotation != null) {
                 resources = annotation.value();
             }
         }
-        if (resources == null) {
-            return;
-        }
-        for (RuntimeResource resource : resources) {
-            loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+        return resources;
+    }
+
+    public void loadAssets(@NotNull Class<?> clazz) throws IOException {
+        RuntimeResource[] resources = getAssets(clazz);
+        if (resources != null) {
+            for (RuntimeResource resource : resources) {
+                loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+            }
         }
     }
 
@@ -111,23 +114,21 @@ public class RuntimeEnv {
         }
     }
 
-    private boolean test(String path) {
-        String test = path.startsWith("!") ? path.substring(1) : path;
-        return !test.isEmpty() && ClassAppender.isExists(test);
-    }
-
-    public void loadDependency(@NotNull Class<?> clazz) throws Throwable {
-        File baseFile = new File(defaultLibrary);
-        RuntimeDependency[] dependencies = null;
-        if (JavaAnnotation.hasAnnotation(clazz, RuntimeDependency.class)) {
-            dependencies = clazz.getAnnotationsByType(RuntimeDependency.class);
-        } else {
+    public RuntimeDependency[] getDependency(@NotNull Class<?> clazz) {
+        RuntimeDependency[] dependencies = JavaAnnotation.getAnnotationsIfPresent(clazz, RuntimeDependency.class);
+        if (dependencies == null && JavaAnnotation.hasAnnotation(clazz, RuntimeDependencies.class)) {
             RuntimeDependencies annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeDependencies.class);
             if (annotation != null) {
                 dependencies = annotation.value();
             }
         }
+        return dependencies;
+    }
+
+    public void loadDependency(@NotNull Class<?> clazz) throws Throwable {
+        RuntimeDependency[] dependencies = getDependency(clazz);
         if (dependencies != null) {
+            File baseFile = new File(defaultLibrary);
             for (RuntimeDependency dep : dependencies) {
                 String allTest = dep.test();
                 List<String> tests = new ArrayList<>();
@@ -235,5 +236,10 @@ public class RuntimeEnv {
         } else {
             downloader.injectClasspath(Collections.singleton(dep));
         }
+    }
+
+    private boolean test(String path) {
+        String test = path.startsWith("!") ? path.substring(1) : path;
+        return !test.isEmpty() && ClassAppender.isExists(test);
     }
 }

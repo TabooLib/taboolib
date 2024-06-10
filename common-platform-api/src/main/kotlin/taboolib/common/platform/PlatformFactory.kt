@@ -46,8 +46,13 @@ object PlatformFactory {
             }
 
             // 加载运行环境
-            runningClassesWithoutLibrary.forEach {
-                runCatching { RuntimeEnv.ENV.inject(it) }.exceptionOrNull()?.takeIf { it !is NoClassDefFoundError }?.printStackTrace()
+            runningClassesWithoutLibrary.parallelStream().forEach {
+                try {
+                    RuntimeEnv.ENV.inject(it)
+                } catch (_: NoClassDefFoundError) {
+                } catch (ex: Throwable) {
+                    ex.printStackTrace()
+                }
             }
 
             // 加载接口

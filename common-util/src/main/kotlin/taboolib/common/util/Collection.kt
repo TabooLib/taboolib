@@ -1,5 +1,9 @@
 package taboolib.common.util
 
+fun join(args: List<String>, start: Int = 0, separator: String = " "): String {
+    return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)
+}
+
 fun join(args: Array<String>, start: Int = 0, separator: String = " "): String {
     return args.filterIndexed { index, _ -> index >= start }.joinToString(separator)
 }
