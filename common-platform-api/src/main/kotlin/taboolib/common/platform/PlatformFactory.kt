@@ -7,10 +7,7 @@ import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.inject.VisitorHandler
-import taboolib.common.io.getInstance
-import taboolib.common.io.runningClasses
-import taboolib.common.io.runningClassesWithoutLibrary
-import taboolib.common.io.runningExactClasses
+import taboolib.common.io.*
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
 import taboolib.common.reflect.hasAnnotation
@@ -36,17 +33,20 @@ object PlatformFactory {
             } catch (_: NoClassDefFoundError) {
             }
 
+            // 获取当前插件的所有类
+            val runningClasses = runningClassesWithoutLibrary
+
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
                 val time = System.currentTimeMillis()
-                PrimitiveIO.println("RunningClasses = ${runningClasses.size}")
+                PrimitiveIO.println("RunningClasses = ${taboolib.common.io.runningClasses.size}")
                 PrimitiveIO.println("RunningClasses (Exact) = ${runningExactClasses.size}")
-                PrimitiveIO.println("RunningClasses (WithoutLibrary) = ${runningClassesWithoutLibrary.size}")
+                PrimitiveIO.println("RunningClasses (WithoutLibrary) = ${runningClasses.size}")
                 PrimitiveIO.println("${System.currentTimeMillis() - time}ms")
             }
 
             // 加载运行环境
-            runningClassesWithoutLibrary.parallelStream().forEach {
+            runningClasses.parallelStream().forEach {
                 try {
                     RuntimeEnv.ENV.inject(it)
                 } catch (_: NoClassDefFoundError) {
@@ -56,7 +56,7 @@ object PlatformFactory {
             }
 
             // 加载接口
-            runningClassesWithoutLibrary.forEach {
+            runningClasses.parallelStream().forEach {
                 if (it.hasAnnotation(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach

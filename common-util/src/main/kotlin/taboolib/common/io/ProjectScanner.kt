@@ -45,7 +45,7 @@ val runningClassMap: Map<String, Class<*>>
  * 当前插件的所有类（排除第三方库）
  */
 val runningClassMapWithoutLibrary: Map<String, Class<*>>
-    get() = runningClassMap.filterKeys { !it.contains(".library.") && !it.contains(".libs.") }
+    get() = runningClassMap.filterKeys { !it.contains(".library.") && !it.contains(".libs.") && it.startsWith(groupId) }
 
 /**
  * 当前插件的所有类的集合

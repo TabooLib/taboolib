@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 /**
@@ -35,22 +37,22 @@ public class DependencyDownloader extends AbstractXmlParser {
     /**
      * 已注入的依赖
      */
-    private static final Map<Dependency, Set<ClassLoader>> injectedDependencies = new HashMap<>();
+    private static final Map<Dependency, Set<ClassLoader>> injectedDependencies = new ConcurrentHashMap<>();
 
     /**
      * 已下载的依赖
      */
-    private static final Set<Dependency> downloadedDependencies = new HashSet<>();
+    private static final Set<Dependency> downloadedDependencies = new CopyOnWriteArraySet<>();
 
     /**
      * 仓库
      */
-    private final Set<Repository> repositories = new HashSet<>();
+    private final Set<Repository> repositories = new CopyOnWriteArraySet<>();
 
     /**
      * 重定向规则
      */
-    private final Set<JarRelocation> relocation = new HashSet<>();
+    private final Set<JarRelocation> relocation = new CopyOnWriteArraySet<>();
 
     /**
      * 本地依赖目录
