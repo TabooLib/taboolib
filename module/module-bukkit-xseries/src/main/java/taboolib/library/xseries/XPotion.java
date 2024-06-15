@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2022 Crypto Morin
+ * Copyright (c) 2024 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,9 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -46,49 +46,54 @@ import java.util.stream.Collectors;
  * Amplifier: The amplifier of the effect, with level I having value 0. Optional, and defaults to level I.
  * <p>
  * EssentialsX Potions: https://github.com/EssentialsX/Essentials/blob/2.x/Essentials/src/com/earth2me/essentials/Potions.java
- * Status Effect: https://minecraft.gamepedia.com/Status_effect
- * Potions: https://minecraft.gamepedia.com/Potion
+ * Status Effect: https://minecraft.wiki/w/Status_effect
+ * Potions: https://minecraft.wiki/w/Potion
  *
  * @author Crypto Morin
- * @version 3.1.0
+ * @version 4.0.0
  * @see PotionEffect
  * @see PotionEffectType
  * @see PotionType
  */
-@SuppressWarnings("DuplicatedCode")
 public enum XPotion {
     ABSORPTION("ABSORB"),
     BAD_OMEN("OMEN_BAD", "PILLAGER"),
     BLINDNESS("BLIND"),
     CONDUIT_POWER("CONDUIT", "POWER_CONDUIT"),
-    CONFUSION("NAUSEA", "SICKNESS", "SICK"),
-    DAMAGE_RESISTANCE("RESISTANCE", "ARMOR", "DMG_RESIST", "DMG_RESISTANCE"),
     DARKNESS,
     DOLPHINS_GRACE("DOLPHIN", "GRACE"),
-    FAST_DIGGING("HASTE", "SUPER_PICK", "DIGFAST", "DIG_SPEED", "QUICK_MINE", "SHARP"),
     FIRE_RESISTANCE("FIRE_RESIST", "RESIST_FIRE", "FIRE_RESISTANCE"),
     GLOWING("GLOW", "SHINE", "SHINY"),
-    HARM("INJURE", "DAMAGE", "HARMING", "INFLICT", "INSTANT_DAMAGE"),
-    HEAL("HEALTH", "INSTA_HEAL", "INSTANT_HEAL", "INSTA_HEALTH", "INSTANT_HEALTH"),
+    HASTE("FAST_DIGGING", "SUPER_PICK", "DIGFAST", "DIG_SPEED", "QUICK_MINE", "SHARP"),
     HEALTH_BOOST("BOOST_HEALTH", "BOOST", "HP"),
     HERO_OF_THE_VILLAGE("HERO", "VILLAGE_HERO"),
     HUNGER("STARVE", "HUNGRY"),
-    INCREASE_DAMAGE("STRENGTH", "BULL", "STRONG", "ATTACK"),
+    INFESTED,
+    INSTANT_DAMAGE("INJURE", "DAMAGE", "HARMING", "INFLICT", "HARM"),
+    INSTANT_HEALTH("HEALTH", "INSTA_HEAL", "INSTANT_HEAL", "INSTA_HEALTH", "HEAL"),
     INVISIBILITY("INVISIBLE", "VANISH", "INVIS", "DISAPPEAR", "HIDE"),
-    JUMP("LEAP", "JUMP_BOOST"),
+    JUMP_BOOST("LEAP", "JUMP"),
     LEVITATION("LEVITATE"),
     LUCK("LUCKY"),
+    MINING_FATIGUE("SLOW_DIGGING", "FATIGUE", "DULL", "DIGGING", "SLOW_DIG", "DIG_SLOW"),
+    NAUSEA("CONFUSION", "SICKNESS", "SICK"),
     NIGHT_VISION("VISION", "VISION_NIGHT"),
+    OOZING,
     POISON("VENOM"),
+    RAID_OMEN,
     REGENERATION("REGEN"),
+    RESISTANCE("DAMAGE_RESISTANCE", "ARMOR", "DMG_RESIST", "DMG_RESISTANCE"),
     SATURATION("FOOD"),
-    SLOW("SLOWNESS", "SLUGGISH"),
-    SLOW_DIGGING("FATIGUE", "DULL", "DIGGING", "SLOW_DIG", "DIG_SLOW"),
+    SLOWNESS("SLOW", "SLUGGISH"),
     SLOW_FALLING("SLOW_FALL", "FALL_SLOW"),
     SPEED("SPRINT", "RUNFAST", "SWIFT", "FAST"),
+    STRENGTH("INCREASE_DAMAGE", "BULL", "STRONG", "ATTACK"),
+    TRIAL_OMEN,
     UNLUCK("UNLUCKY"),
     WATER_BREATHING("WATER_BREATH", "UNDERWATER_BREATHING", "UNDERWATER_BREATH", "AIR"),
     WEAKNESS("WEAK"),
+    WEAVING,
+    WIND_CHARGED,
     WITHER("DECAY");
 
     /**
@@ -105,8 +110,8 @@ public enum XPotion {
      * @since 1.1.0
      */
     public static final Set<XPotion> DEBUFFS = Collections.unmodifiableSet(EnumSet.of(
-            BAD_OMEN, BLINDNESS, CONFUSION, HARM, HUNGER, LEVITATION, POISON,
-            SLOW, SLOW_DIGGING, UNLUCK, WEAKNESS, WITHER)
+            BAD_OMEN, BLINDNESS, NAUSEA, INSTANT_DAMAGE, HUNGER, LEVITATION, POISON,
+            SLOWNESS, MINING_FATIGUE, UNLUCK, WEAKNESS, WITHER)
     );
 
     /**
@@ -117,16 +122,20 @@ public enum XPotion {
 
     static {
         for (XPotion pot : VALUES)
-            if (pot.type != null) //noinspection deprecation
+            if (pot.type != null)
                 POTIONEFFECTTYPE_MAPPING[pot.type.getId()] = pot;
     }
 
     private final PotionEffectType type;
 
-    XPotion(@NotNull String... aliases) {
-        this.type = PotionEffectType.getByName(this.name());
+    XPotion(@Nonnull String... aliases) {
+        PotionEffectType tempType = PotionEffectType.getByName(this.name());
         Data.NAMES.put(this.name(), this);
-        for (String legacy : aliases) Data.NAMES.put(legacy, this);
+        for (String legacy : aliases) {
+            Data.NAMES.put(legacy, this);
+            if (tempType == null) tempType = PotionEffectType.getByName(legacy);
+        }
+        this.type = tempType;
     }
 
     /**
@@ -139,8 +148,8 @@ public enum XPotion {
      * @return an enum name.
      * @since 1.0.0
      */
-    @NotNull
-    private static String format(@NotNull String name) {
+    @Nonnull
+    private static String format(@Nonnull String name) {
         int len = name.length();
         char[] chs = new char[len];
         int count = 0;
@@ -173,8 +182,8 @@ public enum XPotion {
      * @return a potion effect type.
      * @since 1.0.0
      */
-    @NotNull
-    public static Optional<XPotion> matchXPotion(@NotNull String potion) {
+    @Nonnull
+    public static Optional<XPotion> matchXPotion(@Nonnull String potion) {
         if (potion == null || potion.isEmpty())
             throw new IllegalArgumentException("Cannot match XPotion of a null or empty potion effect type");
         PotionEffectType idType = fromId(potion);
@@ -186,6 +195,10 @@ public enum XPotion {
         return Optional.ofNullable(Data.NAMES.get(format(potion)));
     }
 
+    public static XPotion matchXPotion(@Nonnull PotionType type) {
+        return matchXPotion(type.name()).orElseThrow(() -> new UnsupportedOperationException("PotionType " + type.name()));
+    }
+
     /**
      * Parses the XPotion for this potion effect.
      *
@@ -195,8 +208,8 @@ public enum XPotion {
      * @since 1.0.0
      */
     @SuppressWarnings("deprecation")
-    @NotNull
-    public static XPotion matchXPotion(@NotNull PotionEffectType type) {
+    @Nonnull
+    public static XPotion matchXPotion(@Nonnull PotionEffectType type) {
         Objects.requireNonNull(type, "Cannot match XPotion of a null potion effect type");
         return POTIONEFFECTTYPE_MAPPING[type.getId()];
     }
@@ -210,7 +223,7 @@ public enum XPotion {
      */
     @Nullable
     @SuppressWarnings("deprecation")
-    private static PotionEffectType fromId(@NotNull String type) {
+    private static PotionEffectType fromId(@Nonnull String type) {
         try {
             int id = Integer.parseInt(type);
             return PotionEffectType.getById(id);
@@ -219,7 +232,7 @@ public enum XPotion {
         }
     }
 
-    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+    private static List<String> split(@Nonnull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
         List<String> list = new ArrayList<>(5);
         boolean match = false, lastMatch = false;
         int len = str.length();
@@ -316,7 +329,7 @@ public enum XPotion {
      * @see #parseEffect(String)
      * @since 1.0.0
      */
-    public static void addEffects(@NotNull LivingEntity entity, @Nullable List<String> effects) {
+    public static void addEffects(@Nonnull LivingEntity entity, @Nullable List<String> effects) {
         Objects.requireNonNull(entity, "Cannot add potion effects to null entity");
         for (Effect effect : parseEffects(effects)) effect.apply(entity);
     }
@@ -348,8 +361,8 @@ public enum XPotion {
      * @return a thrown splash potion.
      * @since 1.0.0
      */
-    @NotNull
-    public static ThrownPotion throwPotion(@NotNull LivingEntity entity, @Nullable Color color, @Nullable PotionEffect... effects) {
+    @Nonnull
+    public static ThrownPotion throwPotion(@Nonnull LivingEntity entity, @Nullable Color color, @Nullable PotionEffect... effects) {
         Objects.requireNonNull(entity, "Cannot throw potion from null entity");
         @SuppressWarnings("deprecation")
         ItemStack potion = Material.getMaterial("SPLASH_POTION") == null ?
@@ -385,8 +398,8 @@ public enum XPotion {
      * @return an item with the specified effects.
      * @since 1.0.0
      */
-    @NotNull
-    public static ItemStack buildItemWithEffects(@NotNull Material type, @Nullable Color color, @Nullable PotionEffect... effects) {
+    @Nonnull
+    public static ItemStack buildItemWithEffects(@Nonnull Material type, @Nullable Color color, @Nullable PotionEffect... effects) {
         Objects.requireNonNull(type, "Cannot build an effected item with null type");
         if (!canHaveEffects(type))
             throw new IllegalArgumentException("Cannot build item with " + type.name() + " potion type");
@@ -444,16 +457,29 @@ public enum XPotion {
     }
 
     /**
+     * Checks if this potion is supported in the current version and
+     * returns itself if yes.
+     * <p>
+     * In the other case, the alternate potion will get returned,
+     * no matter if it is supported or not.
+     *
+     * @param alternatePotion the potion to get if this one is not supported.
+     * @return this potion or the {@code alternatePotion} if not supported.
+     */
+    @Nullable
+    public XPotion or(@Nullable XPotion alternatePotion) {
+        return isSupported() ? this : alternatePotion;
+    }
+
+    /**
      * Gets the PotionType from this PotionEffectType.
      * Usually for potion items.
      *
      * @return a potion type for potions.
      * @see #getPotionEffectType()
      * @since 1.0.0
-     * @deprecated not for removal, but use {@link PotionEffectType} instead.
      */
     @Nullable
-    @Deprecated
     public PotionType getPotionType() {
         return type == null ? null : PotionType.getByEffect(type);
     }
@@ -462,7 +488,7 @@ public enum XPotion {
      * Builds a potion effect with the given duration and amplifier.
      *
      * @param duration  the duration of the potion effect in ticks.
-     * @param amplifier the amplifier of the potion effect (starting from 1).
+     * @param amplifier the level of the potion effect (starting from 1).
      * @return a potion effect.
      * @see #parseEffect(String)
      * @since 1.0.0
