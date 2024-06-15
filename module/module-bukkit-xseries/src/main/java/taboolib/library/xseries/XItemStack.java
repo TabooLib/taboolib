@@ -33,8 +33,6 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.EntityType;
@@ -53,6 +51,9 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import taboolib.library.configuration.ConfigurationSection;
+import taboolib.module.configuration.Configuration;
+import taboolib.module.configuration.Type;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -436,7 +437,7 @@ public final class XItemStack {
      */
     public static Map<String, Object> serialize(@Nonnull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
-        ConfigurationSection config = new MemoryConfiguration();
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
         serialize(item, config);
         return configSectionToMap(config);
     }
@@ -812,8 +813,8 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
-                    if (mapSection.isSet("location")) map.setLocationName(mapSection.getString("location"));
-                    if (mapSection.isSet("color")) {
+                    if (mapSection.contains("location")) map.setLocationName(mapSection.getString("location"));
+                    if (mapSection.contains("color")) {
                         Color color = parseColor(mapSection.getString("color"));
                         map.setColor(color);
                     }
@@ -846,7 +847,7 @@ public final class XItemStack {
             if (supports(20)) {
                 if (meta instanceof ArmorMeta) {
                     ArmorMeta armorMeta = (ArmorMeta) meta;
-                    if (config.isSet("trim")) {
+                    if (config.contains("trim")) {
                         ConfigurationSection trim = config.getConfigurationSection("trim");
                         TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(NamespacedKey.fromString(trim.getString("material")));
                         TrimPattern trimPattern = Registry.TRIM_PATTERN.get(NamespacedKey.fromString(trim.getString("pattern")));
@@ -950,7 +951,7 @@ public final class XItemStack {
             meta.setDisplayName(" "); // For GUI easy access configuration purposes
 
         // Unbreakable
-        if (supports(11) && config.isSet("unbreakable")) meta.setUnbreakable(config.getBoolean("unbreakable"));
+        if (supports(11) && config.contains("unbreakable")) meta.setUnbreakable(config.getBoolean("unbreakable"));
 
         // Custom Model Data
         if (supports(14)) {
@@ -959,7 +960,7 @@ public final class XItemStack {
         }
 
         // Lore
-        if (config.isSet("lore")) {
+        if (config.contains("lore")) {
             List<String> translatedLore;
             List<String> lores = config.getStringList("lore");
             if (!lores.isEmpty()) {
@@ -1077,7 +1078,7 @@ public final class XItemStack {
      */
     @Nonnull
     private static ConfigurationSection mapToConfigSection(@Nonnull Map<?, ?> map) {
-        ConfigurationSection config = new MemoryConfiguration();
+        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
