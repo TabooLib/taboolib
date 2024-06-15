@@ -41,6 +41,7 @@ object PacketSender {
     /**
      * 使用 Minecraft 方法发送数据包
      */
+    @Deprecated("没啥用了")
     fun useMinecraftMethod() {
         useMinecraftMethod = true
     }
@@ -58,11 +59,6 @@ object PacketSender {
      * @param packet 数据包实例
      */
     fun sendPacket(player: Player, packet: Any) {
-        // 如果 TinyProtocol 已经被初始化，则使用 TinyProtocol 发送数据包
-        if (ProtocolHandler.instance != null && !useMinecraftMethod) {
-            ProtocolHandler.instance!!.sendPacket(player, packet)
-            return
-        }
         // 否则使用反射发送数据包
         val connection = getConnection(player)
         if (sendPacketMethod == null) {

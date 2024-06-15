@@ -193,24 +193,37 @@ import taboolib.common.env.RuntimeResources
         zip = true,
         tag = "1.20.4:fields"
     ),
-    // 1.20.5
+    // 1.20.6
     RuntimeResource(
         value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.20.5-cl.csrg",
-        hash = "c5d9057ad5fdfe37dce29169c36c837e1d4ec410",
+        hash = "83ed7109c295cda6f7526c36edc854d022b29465",
         zip = true,
-        tag = "1.20.5:combined"
+        tag = "1.20.6:combined"
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-4b466d94-members.csrg",
-        hash = "c02598ec39d18e87cc2d391a71bc53a72101d425",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3600f5e0-members.crg",
+        hash = "d97a3e4269981fe29833739af2398505ed8bba63",
         zip = true,
-        tag = "1.20.5:fields"
+        tag = "1.20.6:fields"
+    ),
+    // 1.21
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-1.21-cl.csrg",
+        hash = "2033fa9a5919cb6af433584d67ed318f8ea3c08b",
+        zip = true,
+        tag = "1.21:combined"
+    ),
+    RuntimeResource(
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3e3bd0ca-members.crg",
+        hash = "e3d4992c72783da557d3ff230d0b288e9886c0d3",
+        zip = true,
+        tag = "1.21:fields"
     )
 )
 class MappingFile(val combined: String, val fields: String) {
 
     companion object {
-        
+
         val files = MappingFile::class.java.getDeclaredAnnotation(RuntimeResources::class.java).value
             .groupBy { it.tag.split(':')[0] }
             .map {
