@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Crypto Morin
+ * Copyright (c) 2024 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,13 @@ package taboolib.library.xseries;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("CommentedOutCode")
 public final class XMaterialUtil<T extends Enum<T>> {
 
     @NotNull
@@ -2122,18 +2121,18 @@ public final class XMaterialUtil<T extends Enum<T>> {
                 DIRT,
                 BASE_STONE_OVERWORLD);
 
-        ARMOR_ENCHANTS = new XMaterialUtil<>(XEnchantment.PROTECTION_EXPLOSIONS,
+        ARMOR_ENCHANTS = new XMaterialUtil<>(XEnchantment.BLAST_PROTECTION,
                 XEnchantment.BINDING_CURSE,
                 XEnchantment.VANISHING_CURSE,
-                XEnchantment.PROTECTION_FIRE,
+                XEnchantment.FIRE_PROTECTION,
                 XEnchantment.MENDING,
-                XEnchantment.PROTECTION_PROJECTILE,
-                XEnchantment.PROTECTION_ENVIRONMENTAL,
+                XEnchantment.PROJECTILE_PROTECTION,
+                XEnchantment.PROTECTION,
                 XEnchantment.THORNS,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
-        HELEMT_ENCHANTS = new XMaterialUtil<>(XEnchantment.WATER_WORKER,
-                XEnchantment.OXYGEN);
+        HELEMT_ENCHANTS = new XMaterialUtil<>(XEnchantment.AQUA_AFFINITY,
+                XEnchantment.RESPIRATION);
         HELEMT_ENCHANTS.inheritFrom(ARMOR_ENCHANTS);
 
         CHESTPLATE_ENCHANTS = new XMaterialUtil<>(XEnchantment.class, ARMOR_ENCHANTS);
@@ -2141,75 +2140,75 @@ public final class XMaterialUtil<T extends Enum<T>> {
         LEGGINGS_ENCHANTS = new XMaterialUtil<>(XEnchantment.class, ARMOR_ENCHANTS);
 
         BOOTS_ENCHANTS = new XMaterialUtil<>(XEnchantment.DEPTH_STRIDER,
-                XEnchantment.PROTECTION_FALL,
+                XEnchantment.FEATHER_FALLING,
                 XEnchantment.FROST_WALKER);
         BOOTS_ENCHANTS.inheritFrom(ARMOR_ENCHANTS);
 
         ELYTRA_ENCHANTS = new XMaterialUtil<>(XEnchantment.BINDING_CURSE,
                 XEnchantment.VANISHING_CURSE,
                 XEnchantment.MENDING,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
-        SWORD_ENCHANTS = new XMaterialUtil<>(XEnchantment.DAMAGE_ARTHROPODS,
+        SWORD_ENCHANTS = new XMaterialUtil<>(XEnchantment.BANE_OF_ARTHROPODS,
                 XEnchantment.VANISHING_CURSE,
                 XEnchantment.FIRE_ASPECT,
                 XEnchantment.KNOCKBACK,
-                XEnchantment.LOOT_BONUS_MOBS,
+                XEnchantment.LOOTING,
                 XEnchantment.MENDING,
-                XEnchantment.DAMAGE_ALL,
-                XEnchantment.DAMAGE_UNDEAD,
+                XEnchantment.SHARPNESS,
+                XEnchantment.SMITE,
                 XEnchantment.SWEEPING_EDGE,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
-        AXE_ENCHANTS = new XMaterialUtil<>(XEnchantment.DAMAGE_ARTHROPODS,
+        AXE_ENCHANTS = new XMaterialUtil<>(XEnchantment.BANE_OF_ARTHROPODS,
                 XEnchantment.VANISHING_CURSE,
-                XEnchantment.DIG_SPEED,
-                XEnchantment.LOOT_BONUS_BLOCKS,
+                XEnchantment.EFFICIENCY,
+                XEnchantment.FORTUNE,
                 XEnchantment.MENDING,
-                XEnchantment.DAMAGE_ALL,
+                XEnchantment.SHARPNESS,
                 XEnchantment.SILK_TOUCH,
-                XEnchantment.DAMAGE_UNDEAD,
-                XEnchantment.DURABILITY);
+                XEnchantment.SMITE,
+                XEnchantment.UNBREAKING);
 
         HOE_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
-                XEnchantment.DIG_SPEED,
-                XEnchantment.LOOT_BONUS_BLOCKS,
+                XEnchantment.EFFICIENCY,
+                XEnchantment.FORTUNE,
                 XEnchantment.MENDING,
                 XEnchantment.SILK_TOUCH,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
         PICKAXE_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
-                XEnchantment.DIG_SPEED,
-                XEnchantment.LOOT_BONUS_BLOCKS,
+                XEnchantment.EFFICIENCY,
+                XEnchantment.FORTUNE,
                 XEnchantment.MENDING,
                 XEnchantment.SILK_TOUCH,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
         SHOVEL_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
-                XEnchantment.DIG_SPEED,
-                XEnchantment.LOOT_BONUS_BLOCKS,
+                XEnchantment.EFFICIENCY,
+                XEnchantment.FORTUNE,
                 XEnchantment.MENDING,
                 XEnchantment.SILK_TOUCH,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
         SHEARS_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
-                XEnchantment.DIG_SPEED,
+                XEnchantment.EFFICIENCY,
                 XEnchantment.MENDING,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
         BOW_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
-                XEnchantment.ARROW_FIRE,
-                XEnchantment.ARROW_INFINITE,
+                XEnchantment.FLAME,
+                XEnchantment.INFINITY,
                 XEnchantment.MENDING,
-                XEnchantment.ARROW_KNOCKBACK,
-                XEnchantment.DURABILITY);
+                XEnchantment.PUNCH,
+                XEnchantment.UNBREAKING);
 
         CROSSBOW_ENCHANTS = new XMaterialUtil<>(XEnchantment.VANISHING_CURSE,
                 XEnchantment.MENDING,
                 XEnchantment.MULTISHOT,
                 XEnchantment.PIERCING,
                 XEnchantment.QUICK_CHARGE,
-                XEnchantment.DURABILITY);
+                XEnchantment.UNBREAKING);
 
 
         MINEABLE_AXE = new XMaterialUtil<>(XMaterial.COMPOSTER,
@@ -2306,6 +2305,10 @@ public final class XMaterialUtil<T extends Enum<T>> {
         this.values = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(values)));
     }
 
+    public static <E> List<Matcher<E>> stringMatcher(@Nullable Collection<String> elements) {
+        return stringMatcher(elements, null);
+    }
+
     /**
      * Compiles a list of string checkers for various classes like {@link XMaterial}, {@link XSound}, etc.
      * Mostly used for configs.
@@ -2377,12 +2380,15 @@ public final class XMaterialUtil<T extends Enum<T>> {
         return matchers;
     }
 
+    public static <T> boolean anyMatchString(T target, Collection<String> matchers) {
+        return anyMatch(target, stringMatcher(matchers));
+    }
+
     public static <T> boolean anyMatch(T target, Collection<Matcher<T>> matchers) {
         return matchers.stream().anyMatch(x -> x.matches(target));
     }
 
     public abstract static class Matcher<T> {
-
         public static final class Error extends RuntimeException {
             public final String matcher;
 
@@ -2395,7 +2401,6 @@ public final class XMaterialUtil<T extends Enum<T>> {
         public abstract boolean matches(T object);
 
         public static final class TextMatcher<T> extends Matcher<T> {
-
             public final String text;
             public final boolean contains;
 
@@ -2412,7 +2417,6 @@ public final class XMaterialUtil<T extends Enum<T>> {
         }
 
         public static final class RegexMatcher<T> extends Matcher<T> {
-
             public final Pattern regex;
 
             public RegexMatcher(Pattern regex) {
@@ -2427,7 +2431,6 @@ public final class XMaterialUtil<T extends Enum<T>> {
         }
 
         public static final class XMaterialUtilMatcher<T extends Enum<T>> extends Matcher<T> {
-
             public final XMaterialUtil<T> matcher;
 
             public XMaterialUtilMatcher(XMaterialUtil<T> matcher) {

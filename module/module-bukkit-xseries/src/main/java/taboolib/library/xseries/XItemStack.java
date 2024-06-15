@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  *
- * Copyright (c) 2023 Crypto Morin
+ * Copyright (c) 2024 Crypto Morin
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,6 +33,8 @@ import org.bukkit.block.CreatureSpawner;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.block.banner.Pattern;
 import org.bukkit.block.banner.PatternType;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Axolotl;
 import org.bukkit.entity.EntityType;
@@ -49,21 +51,17 @@ import org.bukkit.inventory.meta.trim.TrimPattern;
 import org.bukkit.map.MapView;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
-import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import taboolib.library.configuration.ConfigurationSection;
-import taboolib.module.configuration.Configuration;
-import taboolib.module.configuration.Type;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static taboolib.library.xseries.XMaterial.supports;
 
@@ -77,14 +75,13 @@ import static taboolib.library.xseries.XMaterial.supports;
  * <a href="https://hub.spigotmc.org/javadocs/spigot/org/bukkit/inventory/ItemStack.html">ItemStack</a>
  *
  * @author Crypto Morin
- * @version 7.3.3
+ * @version 7.5.0
  * @see XMaterial
  * @see XPotion
- * @see SkullUtils
+ * @see XSkull
  * @see XEnchantment
  * @see ItemStack
  */
-@SuppressWarnings("ALL")
 public final class XItemStack {
     public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
 
@@ -92,6 +89,18 @@ public final class XItemStack {
      * Because item metas cannot be applied to AIR, apparently.
      */
     private static final XMaterial DEFAULT_MATERIAL = XMaterial.NETHER_PORTAL;
+    private static final boolean SUPPORTS_POTION_COLOR;
+
+    static {
+        boolean supportsPotionColor = false;
+        try {
+            Class.forName("org.bukkit.inventory.meta.PotionMeta").getMethod("setColor", Color.class);
+            supportsPotionColor = true;
+        } catch (Throwable ignored) {
+        }
+
+        SUPPORTS_POTION_COLOR = supportsPotionColor;
+    }
 
     private XItemStack() {
     }
@@ -101,31 +110,44 @@ public final class XItemStack {
     }
 
     private static BlockState safeBlockState(BlockStateMeta meta) {
-        // Due to a bug in the latest paper v1.9-1.10 (and some older v1.11) versions.
-        // java.lang.IllegalStateException: Missing blockState for BREWING_STAND_ITEM
-        // BREWING_STAND_ITEM, ENCHANTMENT_TABLE, REDSTONE_COMPARATOR
-        // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java?until=b6ad714e853042def52620befe9bc85d0137cd71
         try {
             return meta.getBlockState();
         } catch (IllegalStateException ex) {
+            // Due to a bug in the latest paper v1.9-1.10 (and some older v1.11) versions.
+            // java.lang.IllegalStateException: Missing blockState for BREWING_STAND_ITEM
+            // BREWING_STAND_ITEM, ENCHANTMENT_TABLE, REDSTONE_COMPARATOR
+            // https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/diff/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java?until=b6ad714e853042def52620befe9bc85d0137cd71
             if (ex.getMessage().toLowerCase(Locale.ENGLISH).contains("missing blockstate")) {
                 return null;
             } else {
                 throw ex;
             }
+        } catch (ClassCastException ex) {
+            // java.lang.ClassCastException: net.minecraft.server.v1_9_R2.TileEntityDispenser cannot be cast to net.minecraft.server.v1_9_R2.TileEntityDropper
+            return null;
         }
+    }
+
+    /**
+     * @see #serialize(ItemStack, ConfigurationSection, Function)
+     * @since 1.0.0
+     */
+    public static void serialize(@Nonnull ItemStack item, @Nonnull ConfigurationSection config) {
+        serialize(item, config, Function.identity());
     }
 
     /**
      * Writes an ItemStack object into a config.
      * The config file will not save after the object is written.
      *
-     * @param item   the ItemStack to serialize.
-     * @param config the config section to write this item to.
-     * @since 1.0.0
+     * @param item       the ItemStack to serialize.
+     * @param config     the config section to write this item to.
+     * @param translator the function applied to item name and each lore lines.
+     * @since 7.4.0
      */
     @SuppressWarnings("deprecation")
-    public static void serialize(@NotNull ItemStack item, @NotNull ConfigurationSection config) {
+    public static void serialize(@Nonnull ItemStack item, @Nonnull ConfigurationSection config,
+                                 @Nonnull Function<String, String> translator) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
         Objects.requireNonNull(config, "Cannot serialize item from a null configuration section.");
 
@@ -149,8 +171,8 @@ public final class XItemStack {
         }
 
         // Display Name & Lore
-        if (meta.hasDisplayName()) config.set("name", meta.getDisplayName());
-        if (meta.hasLore()) config.set("lore", meta.getLore());
+        if (meta.hasDisplayName()) config.set("name", translator.apply(meta.getDisplayName()));
+        if (meta.hasLore()) config.set("lore", meta.getLore().stream().map(translator).collect(Collectors.toList()));
 
         if (supports(14)) {
             if (meta.hasCustomModelData()) config.set("custom-model-data", meta.getCustomModelData());
@@ -198,7 +220,7 @@ public final class XItemStack {
                 ConfigurationSection shulker = config.createSection("contents");
                 int i = 0;
                 for (ItemStack itemInBox : box.getInventory().getContents()) {
-                    if (itemInBox != null) serialize(itemInBox, shulker.createSection(Integer.toString(i)));
+                    if (itemInBox != null) serialize(itemInBox, shulker.createSection(Integer.toString(i)), translator);
                     i++;
                 }
             } else if (state instanceof CreatureSpawner) {
@@ -234,18 +256,27 @@ public final class XItemStack {
                 }
 
                 if (!effects.isEmpty()) config.set("effects", effects);
-                PotionData potionData = potion.getBasePotionData();
-                config.set("base-effect", potionData.getType().name() + ", " + potionData.isExtended() + ", " + potionData.isUpgraded());
+                PotionType basePotionType = potion.getBasePotionType();
+                // PotionData potionData = potion.getBasePotionData();
+                // config.set("base-effect", potionData.getType().name() + ", " + potionData.isExtended() + ", " + potionData.isUpgraded());
 
-                if (potion.hasColor()) config.set("color", potion.getColor().asRGB());
+                config.set("base-type", basePotionType.name());
 
+                config.set("effects", potion.getCustomEffects().stream().map(x -> {
+                    NamespacedKey type = x.getType().getKey();
+                    String typeStr = type.getNamespace() + ':' + type.getKey();
+                    return typeStr + ", " + x.getDuration() + ", " + x.getAmplifier();
+                }));
+
+                if (SUPPORTS_POTION_COLOR && potion.hasColor()) config.set("color", potion.getColor().asRGB());
             } else {
                 // Check for water bottles in 1.8
-                if (item.getDurability() != 0) {
-                    Potion potion = Potion.fromItemStack(item);
-                    config.set("level", potion.getLevel());
-                    config.set("base-effect", potion.getType().name() + ", " + potion.hasExtendedDuration() + ", " + potion.isSplash());
-                }
+                // Potion class is now removed...
+                // if (item.getDurability() != 0) {
+                //     Potion potion = Potion.fromItemStack(item);
+                //     config.set("level", potion.getLevel());
+                //     config.set("base-effect", potion.getType().name() + ", " + potion.hasExtendedDuration() + ", " + potion.isSplash());
+                // }
             }
         } else if (meta instanceof FireworkMeta) {
             FireworkMeta firework = (FireworkMeta) meta;
@@ -358,7 +389,7 @@ public final class XItemStack {
                     CrossbowMeta crossbow = (CrossbowMeta) meta;
                     int i = 0;
                     for (ItemStack projectiles : crossbow.getChargedProjectiles()) {
-                        serialize(projectiles, config.getConfigurationSection("projectiles." + i));
+                        serialize(projectiles, config.getConfigurationSection("projectiles." + i), translator);
                         i++;
                     }
                 } else if (meta instanceof TropicalFishBucketMeta) {
@@ -403,9 +434,9 @@ public final class XItemStack {
      * @param item the ItemStack to serialize.
      * @return a Map containing the serialized ItemStack properties.
      */
-    public static Map<String, Object> serialize(@NotNull ItemStack item) {
+    public static Map<String, Object> serialize(@Nonnull ItemStack item) {
         Objects.requireNonNull(item, "Cannot serialize a null item");
-        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
+        ConfigurationSection config = new MemoryConfiguration();
         serialize(item, config);
         return configSectionToMap(config);
     }
@@ -417,8 +448,8 @@ public final class XItemStack {
      * @return a deserialized ItemStack.
      * @since 1.0.0
      */
-    @NotNull
-    public static ItemStack deserialize(@NotNull ConfigurationSection config) {
+    @Nonnull
+    public static ItemStack deserialize(@Nonnull ConfigurationSection config) {
         return edit(new ItemStack(DEFAULT_MATERIAL.parseMaterial()), config, Function.identity(), null);
     }
 
@@ -429,15 +460,15 @@ public final class XItemStack {
      *                       the ItemStack object from.
      * @return a deserialized ItemStack.
      */
-    @NotNull
-    public static ItemStack deserialize(@NotNull Map<String, Object> serializedItem) {
+    @Nonnull
+    public static ItemStack deserialize(@Nonnull Map<String, Object> serializedItem) {
         Objects.requireNonNull(serializedItem, "serializedItem cannot be null.");
         return deserialize(mapToConfigSection(serializedItem));
     }
 
-    @NotNull
-    public static ItemStack deserialize(@NotNull ConfigurationSection config,
-                                        @NotNull Function<String, String> translator) {
+    @Nonnull
+    public static ItemStack deserialize(@Nonnull ConfigurationSection config,
+                                        @Nonnull Function<String, String> translator) {
         return deserialize(config, translator, null);
     }
 
@@ -448,9 +479,9 @@ public final class XItemStack {
      * @return an edited ItemStack.
      * @since 7.2.0
      */
-    @NotNull
-    public static ItemStack deserialize(@NotNull ConfigurationSection config,
-                                        @NotNull Function<String, String> translator,
+    @Nonnull
+    public static ItemStack deserialize(@Nonnull ConfigurationSection config,
+                                        @Nonnull Function<String, String> translator,
                                         @Nullable Consumer<Exception> restart) {
         return edit(new ItemStack(DEFAULT_MATERIAL.parseMaterial()), config, translator, restart);
     }
@@ -464,8 +495,8 @@ public final class XItemStack {
      * @param translator     the translator to use for translating the item's name.
      * @return a deserialized ItemStack.
      */
-    @NotNull
-    public static ItemStack deserialize(@NotNull Map<String, Object> serializedItem, @NotNull Function<String, String> translator) {
+    @Nonnull
+    public static ItemStack deserialize(@Nonnull Map<String, Object> serializedItem, @Nonnull Function<String, String> translator) {
         Objects.requireNonNull(serializedItem, "serializedItem cannot be null.");
         Objects.requireNonNull(translator, "translator cannot be null.");
         return deserialize(mapToConfigSection(serializedItem), translator);
@@ -479,7 +510,7 @@ public final class XItemStack {
         }
     }
 
-    private static List<String> split(@NotNull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
+    private static List<String> split(@Nonnull String str, @SuppressWarnings("SameParameterValue") char separatorChar) {
         List<String> list = new ArrayList<>(5);
         boolean match = false, lastMatch = false;
         int len = str.length();
@@ -539,15 +570,17 @@ public final class XItemStack {
     /**
      * Deserialize an ItemStack from the config.
      *
-     * @param config the config section to deserialize the ItemStack object from.
+     * @param config     the config section to deserialize the ItemStack object from.
+     * @param translator the function applied to item name and each lore line.
+     * @param restart    the function called when an error occurs while deserializing one of the properties.
      * @return an edited ItemStack.
      * @since 1.0.0
      */
     @SuppressWarnings("deprecation")
-    @NotNull
-    public static ItemStack edit(@NotNull ItemStack item,
-                                 @NotNull final ConfigurationSection config,
-                                 @NotNull final Function<String, String> translator,
+    @Nonnull
+    public static ItemStack edit(@Nonnull ItemStack item,
+                                 @Nonnull final ConfigurationSection config,
+                                 @Nonnull final Function<String, String> translator,
                                  @Nullable final Consumer<Exception> restart) {
         Objects.requireNonNull(item, "Cannot operate on null ItemStack, considering using an AIR ItemStack instead");
         Objects.requireNonNull(config, "Cannot deserialize item to a null configuration section.");
@@ -626,7 +659,7 @@ public final class XItemStack {
 
             if (patterns != null) {
                 for (String pattern : patterns.getKeys(false)) {
-                    PatternType type = PatternType.getByIdentifier(pattern);
+                    PatternType type = Enums.getIfPresent(PatternType.class, pattern).orNull();
                     if (type == null)
                         type = Enums.getIfPresent(PatternType.class, pattern.toUpperCase(Locale.ENGLISH)).or(PatternType.BASE);
                     DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
@@ -649,33 +682,32 @@ public final class XItemStack {
                     if (effect.hasChance()) potion.addCustomEffect(effect.getEffect(), true);
                 }
 
-                String baseEffect = config.getString("base-effect");
-                if (!Strings.isNullOrEmpty(baseEffect)) {
-                    List<String> split = split(baseEffect, ',');
-                    PotionType type = Enums.getIfPresent(PotionType.class, split.get(0).trim().toUpperCase(Locale.ENGLISH)).or(PotionType.UNCRAFTABLE);
-                    boolean extended = split.size() != 1 && Boolean.parseBoolean(split.get(1).trim());
-                    boolean upgraded = split.size() > 2 && Boolean.parseBoolean(split.get(2).trim());
-                    PotionData potionData = new PotionData(type, extended, upgraded);
-                    potion.setBasePotionData(potionData);
+                String baseType = config.getString("base-type");
+                if (!Strings.isNullOrEmpty(baseType)) {
+                    XPotion.matchXPotion(baseType).ifPresent(x -> potion.setBasePotionType(x.getPotionType()));
                 }
 
-                if (config.contains("color")) {
+                if (SUPPORTS_POTION_COLOR && config.contains("color")) {
                     potion.setColor(Color.fromRGB(config.getInt("color")));
                 }
             } else {
-
-                if (config.contains("level")) {
-                    int level = config.getInt("level");
-                    String baseEffect = config.getString("base-effect");
-                    if (!Strings.isNullOrEmpty(baseEffect)) {
-                        List<String> split = split(baseEffect, ',');
-                        PotionType type = Enums.getIfPresent(PotionType.class, split.get(0).trim().toUpperCase(Locale.ENGLISH)).or(PotionType.SLOWNESS);
-                        boolean extended = split.size() != 1 && Boolean.parseBoolean(split.get(1).trim());
-                        boolean splash = split.size() > 2 && Boolean.parseBoolean(split.get(2).trim());
-
-                        item = (new Potion(type, level, splash, extended)).toItemStack(1);
-                    }
-                }
+                // What do we do for 1.8?
+                // if (config.contains("level")) {
+                //     int level = config.getInt("level");
+                //     String baseEffect = config.getString("base-effect");
+                //     if (!Strings.isNullOrEmpty(baseEffect)) {
+                //         List<String> split = split(baseEffect, ',');
+                //         PotionType type = Enums.getIfPresent(PotionType.class, split.get(0).trim().toUpperCase(Locale.ENGLISH)).or(PotionType.SLOWNESS);
+                //         boolean extended = split.size() != 1 && Boolean.parseBoolean(split.get(1).trim());
+                //         boolean splash = split.size() > 2 && Boolean.parseBoolean(split.get(2).trim());
+                //
+                //         item = (splash ? XMaterial.SPLASH_POTION : XMaterial.POTION).parseItem();
+                //         PotionMeta potion = (PotionMeta) item.getItemMeta();
+                //         // potion.addCustomEffect(XPotion.matchXPotion(type).buildPotionEffect(extended ? 3 : 1, level), true);
+                //         item.setItemMeta(potion);
+                //         item = (new Potion(type, level, splash, extended)).toItemStack(1);
+                //     }
+                // }
             }
         } else if (meta instanceof BlockStateMeta) {
             BlockStateMeta bsm = (BlockStateMeta) meta;
@@ -712,7 +744,7 @@ public final class XItemStack {
 
                 if (patterns != null) {
                     for (String pattern : patterns.getKeys(false)) {
-                        PatternType type = PatternType.getByIdentifier(pattern);
+                        PatternType type = Enums.getIfPresent(PatternType.class, pattern).orNull();
                         if (type == null)
                             type = Enums.getIfPresent(PatternType.class, pattern.toUpperCase(Locale.ENGLISH)).or(PatternType.BASE);
                         DyeColor color = Enums.getIfPresent(DyeColor.class, patterns.getString(pattern).toUpperCase(Locale.ENGLISH)).or(DyeColor.WHITE);
@@ -780,8 +812,8 @@ public final class XItemStack {
             if (mapSection != null) {
                 map.setScaling(mapSection.getBoolean("scaling"));
                 if (supports(11)) {
-                    if (mapSection.contains("location")) map.setLocationName(mapSection.getString("location"));
-                    if (mapSection.contains("color")) {
+                    if (mapSection.isSet("location")) map.setLocationName(mapSection.getString("location"));
+                    if (mapSection.isSet("color")) {
                         Color color = parseColor(mapSection.getString("color"));
                         map.setColor(color);
                     }
@@ -814,7 +846,7 @@ public final class XItemStack {
             if (supports(20)) {
                 if (meta instanceof ArmorMeta) {
                     ArmorMeta armorMeta = (ArmorMeta) meta;
-                    if (config.contains("trim")) {
+                    if (config.isSet("trim")) {
                         ConfigurationSection trim = config.getConfigurationSection("trim");
                         TrimMaterial trimMaterial = Registry.TRIM_MATERIAL.get(NamespacedKey.fromString(trim.getString("material")));
                         TrimPattern trimPattern = Registry.TRIM_PATTERN.get(NamespacedKey.fromString(trim.getString("pattern")));
@@ -918,7 +950,7 @@ public final class XItemStack {
             meta.setDisplayName(" "); // For GUI easy access configuration purposes
 
         // Unbreakable
-        if (supports(11)) meta.setUnbreakable(config.getBoolean("unbreakable"));
+        if (supports(11) && config.isSet("unbreakable")) meta.setUnbreakable(config.getBoolean("unbreakable"));
 
         // Custom Model Data
         if (supports(14)) {
@@ -927,7 +959,7 @@ public final class XItemStack {
         }
 
         // Lore
-        if (config.contains("lore")) {
+        if (config.isSet("lore")) {
             List<String> translatedLore;
             List<String> lores = config.getStringList("lore");
             if (!lores.isEmpty()) {
@@ -973,7 +1005,7 @@ public final class XItemStack {
                 enchant.ifPresent(xEnchantment -> meta.addEnchant(xEnchantment.getEnchant(), enchants.getInt(ench), true));
             }
         } else if (config.getBoolean("glow")) {
-            meta.addEnchant(XEnchantment.DURABILITY.getEnchant(), 1, false);
+            meta.addEnchant(XEnchantment.UNBREAKING.getEnchant(), 1, false);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS); // HIDE_UNBREAKABLE is not for UNBREAKING enchant.
         }
 
@@ -1043,9 +1075,9 @@ public final class XItemStack {
      * @param map the map to convert.
      * @return a {@code ConfigurationSection} containing the map values.
      */
-    @NotNull
-    private static ConfigurationSection mapToConfigSection(@NotNull Map<?, ?> map) {
-        ConfigurationSection config = Configuration.Companion.empty(Type.YAML, false);
+    @Nonnull
+    private static ConfigurationSection mapToConfigSection(@Nonnull Map<?, ?> map) {
+        ConfigurationSection config = new MemoryConfiguration();
 
         for (Map.Entry<?, ?> entry : map.entrySet()) {
             String key = entry.getKey().toString();
@@ -1068,8 +1100,8 @@ public final class XItemStack {
      * @param config the configuration section to convert.
      * @return a {@code Map<String, Object>} containing the configuration section values.
      */
-    @NotNull
-    private static Map<String, Object> configSectionToMap(@NotNull ConfigurationSection config) {
+    @Nonnull
+    private static Map<String, Object> configSectionToMap(@Nonnull ConfigurationSection config) {
         Map<String, Object> map = new LinkedHashMap<>();
 
         for (String key : config.getKeys(false)) {
@@ -1094,7 +1126,7 @@ public final class XItemStack {
      * @return a color based on the RGB.
      * @since 1.1.0
      */
-    @NotNull
+    @Nonnull
     public static Color parseColor(@Nullable String str) {
         if (Strings.isNullOrEmpty(str)) return Color.BLACK;
         List<String> rgb = split(str.replace(" ", ""), ',');
@@ -1110,8 +1142,8 @@ public final class XItemStack {
      * @return the items that did not fit and were dropped.
      * @since 2.0.1
      */
-    @NotNull
-    public static List<ItemStack> giveOrDrop(@NotNull Player player, @Nullable ItemStack... items) {
+    @Nonnull
+    public static List<ItemStack> giveOrDrop(@Nonnull Player player, @Nullable ItemStack... items) {
         return giveOrDrop(player, false, items);
     }
 
@@ -1124,8 +1156,8 @@ public final class XItemStack {
      * @return the items that did not fit and were dropped.
      * @since 2.0.1
      */
-    @NotNull
-    public static List<ItemStack> giveOrDrop(@NotNull Player player, boolean split, @Nullable ItemStack... items) {
+    @Nonnull
+    public static List<ItemStack> giveOrDrop(@Nonnull Player player, boolean split, @Nullable ItemStack... items) {
         if (items == null || items.length == 0) return new ArrayList<>();
         List<ItemStack> leftOvers = addItems(player.getInventory(), split, items);
         World world = player.getWorld();
@@ -1135,7 +1167,7 @@ public final class XItemStack {
         return leftOvers;
     }
 
-    public static List<ItemStack> addItems(@NotNull Inventory inventory, boolean split, @NotNull ItemStack... items) {
+    public static List<ItemStack> addItems(@Nonnull Inventory inventory, boolean split, @Nonnull ItemStack... items) {
         return addItems(inventory, split, null, items);
     }
 
@@ -1152,9 +1184,9 @@ public final class XItemStack {
      * @return items that didn't fit in the inventory.
      * @since 4.0.0
      */
-    @NotNull
-    public static List<ItemStack> addItems(@NotNull Inventory inventory, boolean split,
-                                           @Nullable Predicate<Integer> modifiableSlots, @NotNull ItemStack... items) {
+    @Nonnull
+    public static List<ItemStack> addItems(@Nonnull Inventory inventory, boolean split,
+                                           @Nullable Predicate<Integer> modifiableSlots, @Nonnull ItemStack... items) {
         Objects.requireNonNull(inventory, "Cannot add items to null inventory");
         Objects.requireNonNull(items, "Cannot add null items to inventory");
 
@@ -1219,7 +1251,7 @@ public final class XItemStack {
         return leftOvers;
     }
 
-    public static int firstPartial(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
+    public static int firstPartial(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
         return firstPartial(inventory, item, beginIndex, null);
     }
 
@@ -1236,7 +1268,7 @@ public final class XItemStack {
      * @throws IndexOutOfBoundsException if the beginning index is less than 0 or greater than the inventory storage size.
      * @since 4.0.0
      */
-    public static int firstPartial(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
+    public static int firstPartial(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
         if (item != null) {
             ItemStack[] items = inventory.getStorageContents();
             int invSize = items.length;
@@ -1253,7 +1285,7 @@ public final class XItemStack {
         return -1;
     }
 
-    public static List<ItemStack> stack(@NotNull Collection<ItemStack> items) {
+    public static List<ItemStack> stack(@Nonnull Collection<ItemStack> items) {
         return stack(items, ItemStack::isSimilar);
     }
 
@@ -1270,8 +1302,8 @@ public final class XItemStack {
      * @return stacked up items.
      * @since 4.0.0
      */
-    @NotNull
-    public static List<ItemStack> stack(@NotNull Collection<ItemStack> items, @NotNull BiPredicate<ItemStack, ItemStack> similarity) {
+    @Nonnull
+    public static List<ItemStack> stack(@Nonnull Collection<ItemStack> items, @Nonnull BiPredicate<ItemStack, ItemStack> similarity) {
         Objects.requireNonNull(items, "Cannot stack null items");
         Objects.requireNonNull(similarity, "Similarity check cannot be null");
         List<ItemStack> stacked = new ArrayList<>(items.size());
@@ -1293,7 +1325,7 @@ public final class XItemStack {
         return stacked;
     }
 
-    public static int firstEmpty(@NotNull Inventory inventory, int beginIndex) {
+    public static int firstEmpty(@Nonnull Inventory inventory, int beginIndex) {
         return firstEmpty(inventory, beginIndex, null);
     }
 
@@ -1309,7 +1341,7 @@ public final class XItemStack {
      * @throws IndexOutOfBoundsException if the beginning index is less than 0 or greater than the inventory storage size.
      * @since 4.0.0
      */
-    public static int firstEmpty(@NotNull Inventory inventory, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
+    public static int firstEmpty(@Nonnull Inventory inventory, int beginIndex, @Nullable Predicate<Integer> modifiableSlots) {
         ItemStack[] items = inventory.getStorageContents();
         int invSize = items.length;
         if (beginIndex < 0 || beginIndex >= invSize)
@@ -1333,7 +1365,7 @@ public final class XItemStack {
      * @see #firstPartial(Inventory, ItemStack, int)
      * @since 4.2.0
      */
-    public static int firstPartialOrEmpty(@NotNull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
+    public static int firstPartialOrEmpty(@Nonnull Inventory inventory, @Nullable ItemStack item, int beginIndex) {
         if (item != null) {
             ItemStack[] items = inventory.getStorageContents();
             int len = items.length;
