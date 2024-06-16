@@ -34,6 +34,11 @@ object Language {
     /** 语言文件路径 */
     var path = "lang"
 
+    /**
+     * 语言文件释放路径
+     */
+    var releasePath = "plugins/{0}/lang/{1}"
+
     /** 默认语言文件 */
     var default = "zh_CN"
 

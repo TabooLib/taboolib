@@ -2,10 +2,12 @@
 
 package taboolib.module.lang
 
+import taboolib.common.io.newFile
 import taboolib.common.io.runningResourcesInJar
-import taboolib.common.platform.function.releaseResourceFile
+import taboolib.common.platform.function.pluginId
 import taboolib.common.platform.function.submit
 import taboolib.common.platform.function.warning
+import taboolib.common.util.replaceWithOrder
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.Configuration
@@ -39,7 +41,10 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = releaseResourceFile(fileName)
+                val file = newFile(Language.releasePath.replaceWithOrder(pluginId, fileName))
+                if (file.length() == 0L) {
+                    file.writeBytes(bytes)
+                }
                 // 移除文件监听
                 if (isFileWatcherHook) {
                     FileWatcher.INSTANCE.removeListener(file)
