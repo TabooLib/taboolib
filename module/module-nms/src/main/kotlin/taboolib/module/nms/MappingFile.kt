@@ -201,7 +201,7 @@ import taboolib.common.env.RuntimeResources
         tag = "1.20.6:combined"
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3600f5e0-members.crg",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3600f5e0-members.csrg",
         hash = "d97a3e4269981fe29833739af2398505ed8bba63",
         zip = true,
         tag = "1.20.6:fields"
@@ -214,7 +214,7 @@ import taboolib.common.env.RuntimeResources
         tag = "1.21:combined"
     ),
     RuntimeResource(
-        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3e3bd0ca-members.crg",
+        value = "https://skymc.oss-cn-shanghai.aliyuncs.com/taboolib/resources/bukkit-3e3bd0ca-members.csrg",
         hash = "e3d4992c72783da557d3ff230d0b288e9886c0d3",
         zip = true,
         tag = "1.21:fields"
