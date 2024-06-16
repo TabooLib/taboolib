@@ -1,6 +1,8 @@
 package taboolib.module.lang.inline
 
+import taboolib.common.platform.function.dev
 import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.util.getStringColored
 
 /**
  * 内嵌语言文件，配合 Configuration 使用。
@@ -21,5 +23,24 @@ import taboolib.library.configuration.ConfigurationSection
  * ```
  */
 fun ConfigurationSection.getTranslatedString(path: String): TranslatedString? {
+    val node = getLanguageNode(path) ?: return null
+    val defaultValue = getStringColored(path) ?: return null
+    return TranslatedString(node, defaultValue)
+}
+
+fun ConfigurationSection.getTranslatedStringList(path: String): TranslatedStringList? {
+    val node = getLanguageNode(path) ?: return null
+    val defaultValue = getStringList(path)
+    return TranslatedStringList(node, defaultValue)
+}
+
+fun ConfigurationSection.getLanguageNode(path: String): String? {
+    val comments = getComments(path)
+    for (comment in comments) {
+        val line = comment.trim()
+        if (line.startsWith("@lang:")) {
+            return line.substring(6)
+        }
+    }
     return null
 }
