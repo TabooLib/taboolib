@@ -11,7 +11,7 @@ import taboolib.module.lang.TypeText
  * @author 坏黑
  * @since 2024/6/15 20:47
  */
-class TranslatedString(node: String, default: String) : Translated<String>(node, default) {
+open class TranslatedString(node: String, default: String) : Translated<String>(node, default) {
 
     override fun get(locale: String): String {
         val type = Language.languageCodeTransfer[locale] ?: locale
@@ -21,5 +21,16 @@ class TranslatedString(node: String, default: String) : Translated<String>(node,
             ?: return default
         val node = file.nodes[node] as? TypeText ?: return default
         return node.text ?: default
+    }
+
+    companion object {
+
+        fun of(value: String): TranslatedString {
+            return object : TranslatedString("", value) {
+                override fun get(locale: String): String {
+                    return value
+                }
+            }
+        }
     }
 }

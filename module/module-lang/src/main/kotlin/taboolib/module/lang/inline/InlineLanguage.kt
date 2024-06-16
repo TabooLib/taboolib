@@ -3,6 +3,7 @@ package taboolib.module.lang.inline
 import taboolib.common.platform.function.dev
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.util.getStringColored
+import taboolib.module.configuration.util.getStringListColored
 
 /**
  * 内嵌语言文件，配合 Configuration 使用。
@@ -30,7 +31,7 @@ fun ConfigurationSection.getTranslatedString(path: String): TranslatedString? {
 
 fun ConfigurationSection.getTranslatedStringList(path: String): TranslatedStringList? {
     val node = getLanguageNode(path) ?: return null
-    val defaultValue = getStringList(path)
+    val defaultValue = if (isList(path)) getStringListColored(path) else getStringColored(path)?.lines() ?: emptyList()
     return TranslatedStringList(node, defaultValue)
 }
 

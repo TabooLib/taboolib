@@ -12,7 +12,7 @@ import taboolib.module.lang.TypeText
  * @author 坏黑
  * @since 2024/6/15 20:47
  */
-class TranslatedStringList(node: String, default: List<String>) : Translated<List<String>>(node, default) {
+open class TranslatedStringList(node: String, default: List<String>) : Translated<List<String>>(node, default) {
 
     override fun get(locale: String): List<String> {
         val type = Language.languageCodeTransfer[locale] ?: locale
@@ -24,6 +24,17 @@ class TranslatedStringList(node: String, default: List<String>) : Translated<Lis
             is TypeText -> node.text?.let { listOf(it) } ?: default
             is TypeList -> node.list.filterIsInstance<TypeText>().map { it.text ?: "" }
             else -> default
+        }
+    }
+
+    companion object {
+
+        fun of(value: List<String>): TranslatedStringList {
+            return object : TranslatedStringList("", value) {
+                override fun get(locale: String): List<String> {
+                    return value
+                }
+            }
         }
     }
 }
