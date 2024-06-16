@@ -41,7 +41,7 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                 // 加载内存中的原件
                 loadNodes(sourceFile, nodes, code)
                 // 释放文件
-                val file = newFile(Language.releasePath.replaceWithOrder(pluginId, fileName))
+                val file = newFile(Language.releasePath.replaceWithOrder(pluginId, fileName.substringAfterLast('/')))
                 if (file.length() == 0L) {
                     file.writeBytes(bytes)
                 }
