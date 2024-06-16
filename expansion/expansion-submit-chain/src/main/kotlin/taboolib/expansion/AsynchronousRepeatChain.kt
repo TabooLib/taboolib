@@ -7,13 +7,14 @@ import kotlin.coroutines.suspendCoroutine
 class AsynchronousRepeatChain<T>(
     override val block: Cancellable.() -> T,
     private val period: Long,
+    private val now: Boolean,
     private val delay: Long,
 ) : RepeatChainable<T> {
 
     override suspend fun execute(): T {
         return suspendCoroutine { cont ->
             val cancellable = Cancellable()
-            submit(async = true, period = period, delay = delay) {
+            submit(async = true, period = period, now = now, delay = delay) {
                 val result = cancellable.call(block)
                 if (cancellable.cancelled) {
                     cancel()
