@@ -30,6 +30,9 @@ class AnalyzedClassMember(private val root: Parameter, name: String, val isFinal
     /** 是否建立唯一索引 */
     val isUniqueKey = root.findAnnotation<UniqueKey>() != null
 
+    /** 是否不为空 */
+    val isNotNull = root.findAnnotation<NotNull>() != null
+
     /** 长度 */
     val length = root.findAnnotation<Length>()?.value ?: 64
 
