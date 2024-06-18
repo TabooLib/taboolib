@@ -1,4 +1,4 @@
-package taboolib.test.nms_util
+package taboolib.test
 
 import org.bukkit.Bukkit
 import org.bukkit.enchantments.Enchantment
@@ -23,6 +23,7 @@ import taboolib.platform.util.modifyMeta
  */
 object TestNMSI18n : Test() {
 
+    @Suppress("removal")
     override fun check(): List<Result> {
         val worlds = Bukkit.getWorlds()
         if (worlds.isEmpty()) {
@@ -41,10 +42,10 @@ object TestNMSI18n : Test() {
                 skullOwner = "bukkitObj"
             },
             buildItem(XMaterial.POTION) {  // 药水
-                runCatching { potionData = PotionData(PotionType.SPEED, false, false) }.getOrElse { damage = 1 }
+                runCatching { potionData = PotionData(PotionType.FIRE_RESISTANCE, false, false) }.getOrElse { damage = 1 }
             },
             buildItem(XMaterial.SPLASH_POTION) { // 药水（喷溅）
-                runCatching { potionData = PotionData(PotionType.SPEED, false, false) }.getOrElse { damage = 1 }
+                runCatching { potionData = PotionData(PotionType.FIRE_RESISTANCE, false, false) }.getOrElse { damage = 1 }
             },
             XMaterial.WRITTEN_BOOK.parseItem()!!.modifyMeta<BookMeta> { // 成书
                 title = "测试书"
@@ -63,7 +64,7 @@ object TestNMSI18n : Test() {
                 assert(PotionEffectType.values().filterNotNull().count { it.getI18nName() == "NO_LOCALE" })
             },
             sandbox("NMSI18n:getI18nName(Entity)") {
-                val entity1 = world.spawnEntity(world.spawnLocation, EntityType.SNOWMAN)
+                val entity1 = world.spawnEntity(world.spawnLocation, EntityType.ZOMBIE)
                 val entity2 = world.spawnEntity(world.spawnLocation, EntityType.VILLAGER) as Villager
                 val entity3 = world.spawnEntity(world.spawnLocation, EntityType.VILLAGER) as Villager
                 entity3.profession = Villager.Profession.FARMER

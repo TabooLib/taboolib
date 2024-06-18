@@ -1,4 +1,4 @@
-package taboolib.test.nms
+package taboolib.test
 
 import taboolib.common.Test
 import taboolib.module.nms.minecraftServerObject

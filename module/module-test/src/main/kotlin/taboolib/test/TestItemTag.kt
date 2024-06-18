@@ -1,4 +1,4 @@
-package taboolib.test.nms_util
+package taboolib.test
 
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment

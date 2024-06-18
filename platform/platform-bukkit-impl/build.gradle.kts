@@ -12,7 +12,7 @@ dependencies {
     compileOnly(project(":platform:platform-bukkit"))
     compileOnly(project(":expansion:expansion-folia"))
     // 服务端
-    compileOnly("ink.ptms.core:v12004:12004-minimize:universal")
+    compileOnly("ink.ptms.core:v12100:12100-minimize:universal")
     compileOnly("io.paper:folia-api:1.20.4")
     compileOnly("net.md-5:bungeecord-chat:1.20")
     // 用于处理命令

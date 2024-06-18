@@ -1,4 +1,4 @@
-package taboolib.test.nms_util
+package taboolib.test
 
 import taboolib.common.Test
 import taboolib.module.nms.BukkitAttribute

@@ -1,4 +1,4 @@
-package taboolib.test.nms
+package taboolib.test
 
 import org.tabooproject.reflex.Reflex.Companion.invokeConstructor
 import org.tabooproject.reflex.Reflex.Companion.unsafeInstance
