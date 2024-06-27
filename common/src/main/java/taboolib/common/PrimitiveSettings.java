@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+import static java.lang.System.getProperty;
+
 /**
  * TabooLib
  * taboolib.common.TabooLibSettings
@@ -14,8 +16,6 @@ import java.util.Properties;
  * @since 2024/1/25 15:07
  */
 public class PrimitiveSettings {
-
-    // @formatter:off
 
     public static final String ID = "!taboolib".substring(1);
 
@@ -32,37 +32,37 @@ public class PrimitiveSettings {
     /**
      * Kotlin 版本
      */
-    public static final String KOTLIN_VERSION = VERSION_PROPERTIES.getProperty("!kotlin".substring(1), System.getProperty("taboolib.kotlin.stdlib", "1.8.22"));
+    public static final String KOTLIN_VERSION = VERSION_PROPERTIES.getProperty("!kotlin".substring(1), getProperty("taboolib.kotlin.stdlib", "1.8.22"));
 
     /**
      * Kotlinx 版本
      */
-    public static final String KOTLIN_COROUTINES_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), System.getProperty("taboolib.kotlin.coroutines", "1.7.3"));
+    public static final String KOTLIN_COROUTINES_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), getProperty("taboolib.kotlin.coroutines", "1.7.3"));
 
     /**
      * TabooLib 版本
      */
-    public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, System.getProperty("taboolib.version", "skip"));
+    public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, getProperty("taboolib.version", "skip"));
 
     /**
      * 跳过 Kotlin 重定向
      */
-    public static final boolean SKIP_KOTLIN_RELOCATE = VERSION_PROPERTIES.getProperty("skip-kotlin-relocate", System.getProperty("taboolib.skip-relocate.kotlin", "false")).equals("true");
+    public static final boolean SKIP_KOTLIN_RELOCATE = VERSION_PROPERTIES.getProperty("skip-kotlin-relocate", getProperty("taboolib.skip-relocate.kotlin", "false")).equals("true");
 
     /**
      * 跳过 TabooLib 重定向
      */
-    public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", System.getProperty("taboolib.skip-relocate.self", "false")).equals("true");
+    public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", getProperty("taboolib.skip-relocate.self", "false")).equals("true");
 
     /**
      * 调试模式
      */
-    public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev") || System.getProperty("taboolib.dev", "false").equals("true");
+    public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev") || getProperty("taboolib.dev", "false").equals("true");
 
     /**
      * 调试模式
      */
-    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", System.getProperty("taboolib.debug", "false")).equals("true");
+    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", getProperty("taboolib.debug", "false")).equals("true");
 
     /**
      * 是否在开发模式强制下载依赖
@@ -72,12 +72,12 @@ public class PrimitiveSettings {
     /**
      * 中央仓库
      */
-    public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", System.getProperty("taboolib.repo.central", "https://maven.aliyun.com/repository/central"));
+    public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", getProperty("taboolib.repo.central", "https://maven.aliyun.com/repository/central"));
 
     /**
      * TabooLib 仓库
      */
-    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", System.getProperty("taboolib.repo.self", "http://sacredcraft.cn:8081/repository/releases"));
+    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", getProperty("taboolib.repo.self", "http://sacredcraft.cn:8081/repository/releases"));
 
     /**
      * libs 位置
@@ -98,8 +98,6 @@ public class PrimitiveSettings {
      * 使用模块
      */
     public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", "").split(",");
-
-    // @formatter:on
 
     /**
      * 格式化版本号
