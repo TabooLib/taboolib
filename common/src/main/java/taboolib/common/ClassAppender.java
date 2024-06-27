@@ -55,7 +55,7 @@ public class ClassAppender {
         }
         ClassLoader loader = TabooLib.class.getClassLoader();
         // Application
-        if (loader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
+        if (loader.getClass().getSimpleName().equals("AppClassLoader")) {
             addURL(loader, ucp(loader.getClass()), file, isExternal);
         }
         // Hybrid

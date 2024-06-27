@@ -47,9 +47,7 @@ public class TabooLib {
             throw new RuntimeException("Runtime environment setup failed, please feedback! (Kotlin Environment Not Found)");
         }
         // 开发者模式下打印生命周期
-        if (PrimitiveSettings.IS_DEBUG_MODE) {
-            PrimitiveIO.println("LifeCycle: " + lifeCycle);
-        }
+        PrimitiveIO.debug("LifeCycle: " + lifeCycle);
         // 记录生命周期
         currentLifeCycle = lifeCycle;
         // 运行生命周期任务

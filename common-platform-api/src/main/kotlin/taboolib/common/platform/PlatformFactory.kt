@@ -39,10 +39,10 @@ object PlatformFactory {
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
                 val time = System.currentTimeMillis()
-                PrimitiveIO.println("RunningClasses = ${taboolib.common.io.runningClasses.size}")
-                PrimitiveIO.println("RunningClasses (Exact) = ${runningExactClasses.size}")
-                PrimitiveIO.println("RunningClasses (WithoutLibrary) = ${runningClasses.size}")
-                PrimitiveIO.println("${System.currentTimeMillis() - time}ms")
+                PrimitiveIO.debug("RunningClasses = ${taboolib.common.io.runningClasses.size}")
+                PrimitiveIO.debug("RunningClasses (Exact) = ${runningExactClasses.size}")
+                PrimitiveIO.debug("RunningClasses (WithoutLibrary) = ${runningClasses.size}")
+                PrimitiveIO.debug("${System.currentTimeMillis() - time}ms")
             }
 
             // 加载运行环境
@@ -83,9 +83,9 @@ object PlatformFactory {
 
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
-                PrimitiveIO.println("Service = ${serviceMap.size}")
+                PrimitiveIO.debug("Service = ${serviceMap.size}")
                 serviceMap.forEach { (k, v) ->
-                    PrimitiveIO.println(" = $k -> $v")
+                    PrimitiveIO.debug(" = $k -> $v")
                 }
             }
         }

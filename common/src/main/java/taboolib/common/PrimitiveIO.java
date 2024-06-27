@@ -47,6 +47,10 @@ public class PrimitiveIO {
         // 获取插件文件
         try {
             runningFileName = new File(PrimitiveIO.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName();
+            // 如果这个玩意叫 Common
+            if (runningFileName.startsWith("common-")) {
+                runningFileName = "App";
+            }
         } catch (Throwable ignored) {
         }
         // 检查 Paper 核心控制台拦截工具
@@ -60,6 +64,24 @@ public class PrimitiveIO {
             Class.forName("net.md_5.bungee.BungeeCord");
             useJavaLogger = true;
         } catch (ClassNotFoundException ignored) {
+        }
+    }
+
+    /**
+     * 开发模式输出
+     */
+    public static void dev(Object message, Object... args) {
+        if (PrimitiveSettings.IS_DEV_MODE) {
+            println("[DEV] " + message, args);
+        }
+    }
+
+    /**
+     * 调试模式输出
+     */
+    public static void debug(Object message, Object... args) {
+        if (PrimitiveSettings.IS_DEBUG_MODE) {
+            println("[DEBUG] " + message, args);
         }
     }
 

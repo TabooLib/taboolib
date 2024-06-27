@@ -23,12 +23,20 @@ import java.util.jar.JarFile
 /**
  * 是否为开发模式
  */
-val isDevelopmentMode by lazy(LazyThreadSafetyMode.NONE) { PrimitiveSettings.IS_DEBUG_MODE }
+val isDevelopmentMode: Boolean
+    get() = PrimitiveSettings.IS_DEBUG_MODE
 
 /**
  * 当前插件的所有类（在本体中）
  */
-val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) { TabooLib::class.java.protectionDomain.codeSource.location.getClasses() }
+val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
+    val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
+    // 额外扫描入口
+    System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
+        map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
+    }
+    map
+}
 
 /**
  * 当前插件的所有类
@@ -179,7 +187,7 @@ fun <T> Class<T>.getInstance(newInstance: Boolean = false): Supplier<T>? {
 /**
  * 获取 URL 下的所有类
  */
-fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): Map<String, Class<*>> {
+fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): MutableMap<String, Class<*>> {
     val classes = ConcurrentHashMap<String, Class<*>>()
     val srcFile = try {
         File(toURI())

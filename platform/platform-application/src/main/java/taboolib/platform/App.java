@@ -2,7 +2,6 @@ package taboolib.platform;
 
 import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveIO;
-import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 
@@ -14,6 +13,17 @@ import taboolib.common.classloader.IsolatedClassLoader;
  * @since 2024/1/26 21:43
  */
 public class App {
+
+    static {
+        env().skipSelfRelocate(true).skipKotlinRelocate(true).scan(App.class.getName());
+    }
+
+    /**
+     * 环境变量设置
+     */
+    public static AppEnv env() {
+        return new AppEnv();
+    }
 
     /**
      * 启动
@@ -28,9 +38,7 @@ public class App {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         TabooLib.lifeCycle(LifeCycle.ENABLE);
         // 调试模式显示加载耗时
-        if (PrimitiveSettings.IS_DEV_MODE) {
-            PrimitiveIO.println("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
-        }
+        PrimitiveIO.dev("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
     }
 
     /**

@@ -1,5 +1,6 @@
 package taboolib.common.platform.function
 
+import taboolib.common.PrimitiveIO
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformIO
@@ -21,7 +22,7 @@ fun <T> server(): T {
  */
 fun dev(vararg message: Any?) {
     if (isDevelopmentMode) {
-        info(*message)
+        message.filterNotNull().forEach { PrimitiveIO.dev(it) }
     }
 }
 

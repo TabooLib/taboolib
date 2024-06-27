@@ -2,7 +2,7 @@ package taboolib.common;
 
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
-import taboolib.common.classloader.Precondition;
+import taboolib.common.classloader.IsolatedClassLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import static taboolib.common.PrimitiveSettings.*;
  * @author 坏黑
  * @since 2024/1/24 20:29
  */
-@SuppressWarnings({"DataFlowIssue", "CallToPrintStackTrace"})
+@SuppressWarnings({"DataFlowIssue"})
 public class PrimitiveLoader {
 
     public static final String TABOOLIB_GROUP = "!io.izzel.taboolib".substring(1);
@@ -39,7 +39,6 @@ public class PrimitiveLoader {
     private static String projectPackageName;
 
     static {
-        Precondition.onlyIsolated(PrimitiveLoader.class);
         try {
             projectPackageName = "taboolib".substring(0, "taboolib".length() - 9);
         } catch (Throwable ex) {
@@ -80,13 +79,12 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        if (IS_DEBUG_MODE) {
-            // 提示
-            PrimitiveIO.println("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
-        }
+        PrimitiveIO.dev("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
+        // 基础依赖是否隔离加载
+        boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
         // 加载基础依赖
         for (String[] i : DEPS) {
-            load(REPO_CENTRAL, i[0], i[1], i[2], true, true, new String[][]{});
+            load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, new String[][]{});
         }
         // 重新加载基础依赖用于正式使用
         for (String[] i : DEPS) {
@@ -143,6 +141,11 @@ public class PrimitiveLoader {
      * 加载完整模块
      */
     static void loadAll() throws Throwable {
+        // 若未指定 TabooLib 版本，则跳过加载
+        if (TABOOLIB_VERSION.equals("skip")) {
+            PrimitiveIO.println("[TabooLib] TabooLib version is not specified, skip loading.");
+            return;
+        }
         String[][] rule = rule();
         // 加载 env 启动 Kotlin 环境
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
@@ -183,7 +186,8 @@ public class PrimitiveLoader {
             // 是否重定向
             if (!rel.isEmpty()) {
                 String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
-                jar = new File(getCacheFile(), hash + ".jar");
+                String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
+                jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
                 // 文件为空 || 开发模式 || 强制重定向
                 if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
                     jar.getParentFile().mkdirs();
@@ -196,6 +200,7 @@ public class PrimitiveLoader {
         try (JarFile jarFile = new JarFile(jar)) {
             JarEntry extra = jarFile.getJarEntry("META-INF/taboolib/extra.properties");
             if (extra != null) {
+                PrimitiveIO.debug("[TabooLib] Loading extra properties from " + jar.getName());
                 Properties extraProps = new Properties();
                 extraProps.load(jarFile.getInputStream(extra));
                 // 获取主类

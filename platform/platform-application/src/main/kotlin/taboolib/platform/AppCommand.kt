@@ -21,9 +21,8 @@ class AppCommand : PlatformCommand {
 
     companion object {
 
-        val unknownCommandMessage
-            get() = System.getProperty("taboolib.application.command.unknown.message")
-                ?: "Unknown command.".apply { System.setProperty("taboolib.application.command.unknown.message", this) }
+        val unknownCommandMessage: String
+            get() = System.getProperty("taboolib.application.command.unknown.message") ?: "Unknown command."
 
         val commands = mutableSetOf<Command>()
 
@@ -73,7 +72,6 @@ class AppCommand : PlatformCommand {
         fun register() = register(this)
 
         fun unregister() = unregister(this)
-
     }
 
     override fun registerCommand(command: CommandStructure, executor: CommandExecutor, completer: CommandCompleter, commandBuilder: CommandBase.() -> Unit) {

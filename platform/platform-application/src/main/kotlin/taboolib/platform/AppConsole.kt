@@ -44,9 +44,14 @@ object AppConsole : SimpleTerminalConsole(), ProxyCommandSender {
         }
         command("help", aliases = listOf("?"), description = "suggest commands") {
             execute<ProxyCommandSender> { sender, _, _ ->
-                sender.sendMessage("Registed ${AppCommand.commands.size} commands, list:")
+                sender.sendMessage("Commands:")
                 AppCommand.commands.forEach {
-                    sender.sendMessage("✦ ${it.command.name}<${it.command.aliases.joinToString()}> - ${it.command.description}")
+                    // 别名
+                    val alias = if (it.command.aliases.isNotEmpty()) " (${it.command.aliases.joinToString(",")})" else ""
+                    // 描述
+                    val desc = if (it.command.description.isNotBlank()) " - ${it.command.description}" else ""
+                    // 发送帮助信息
+                    sender.sendMessage("✦ ${it.command.name}$alias$desc")
                 }
             }
         }

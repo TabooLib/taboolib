@@ -15,6 +15,8 @@ import java.util.Properties;
  */
 public class PrimitiveSettings {
 
+    // @formatter:off
+
     public static final String ID = "!taboolib".substring(1);
 
     /**
@@ -30,37 +32,37 @@ public class PrimitiveSettings {
     /**
      * Kotlin 版本
      */
-    public static final String KOTLIN_VERSION = VERSION_PROPERTIES.getProperty("!kotlin".substring(1), "1.8.22");
+    public static final String KOTLIN_VERSION = VERSION_PROPERTIES.getProperty("!kotlin".substring(1), System.getProperty("taboolib.kotlin.stdlib", "1.8.22"));
 
     /**
      * Kotlinx 版本
      */
-    public static final String KOTLIN_COROUTINES_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), "1.7.3");
+    public static final String KOTLIN_COROUTINES_VERSION = VERSION_PROPERTIES.getProperty("!kotlin-coroutines".substring(1), System.getProperty("taboolib.kotlin.coroutines", "1.7.3"));
 
     /**
      * TabooLib 版本
      */
-    public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, "6.1.0-dev");
+    public static final String TABOOLIB_VERSION = VERSION_PROPERTIES.getProperty(ID, System.getProperty("taboolib.version", "skip"));
 
     /**
      * 跳过 Kotlin 重定向
      */
-    public static final boolean SKIP_KOTLIN_RELOCATE = VERSION_PROPERTIES.getProperty("skip-kotlin-relocate", "false").equals("true");
+    public static final boolean SKIP_KOTLIN_RELOCATE = VERSION_PROPERTIES.getProperty("skip-kotlin-relocate", System.getProperty("taboolib.skip-relocate.kotlin", "false")).equals("true");
 
     /**
      * 跳过 TabooLib 重定向
      */
-    public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", "false").equals("true");
+    public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", System.getProperty("taboolib.skip-relocate.self", "false")).equals("true");
 
     /**
      * 调试模式
      */
-    public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev");
+    public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev") || System.getProperty("taboolib.dev", "false").equals("true");
 
     /**
      * 调试模式
      */
-    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", "false").equals("true");
+    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", System.getProperty("taboolib.debug", "false")).equals("true");
 
     /**
      * 是否在开发模式强制下载依赖
@@ -70,12 +72,12 @@ public class PrimitiveSettings {
     /**
      * 中央仓库
      */
-    public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", "https://maven.aliyun.com/repository/central");
+    public static final String REPO_CENTRAL = RUNTIME_PROPERTIES.getProperty("repo-central", System.getProperty("taboolib.repo.central", "https://maven.aliyun.com/repository/central"));
 
     /**
      * TabooLib 仓库
      */
-    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", "http://sacredcraft.cn:8081/repository/releases");
+    public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", System.getProperty("taboolib.repo.self", "http://sacredcraft.cn:8081/repository/releases"));
 
     /**
      * libs 位置
@@ -97,6 +99,8 @@ public class PrimitiveSettings {
      */
     public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", "").split(",");
 
+    // @formatter:on
+
     /**
      * 格式化版本号
      */
@@ -104,14 +108,18 @@ public class PrimitiveSettings {
         return str.replaceAll("[._-]", "");
     }
 
-    /** 获取重定向后的 Kotlin 版本 */
+    /**
+     * 获取重定向后的 Kotlin 版本
+     */
     public static String getRelocatedKotlinVersion() {
         String kt = "!kotlin".substring(1);
         String kv = formatVersion(KOTLIN_VERSION);
         return kt + kv;
     }
 
-    /** 获取重定向后的 Kotlin Coroutines 版本 */
+    /**
+     * 获取重定向后的 Kotlin Coroutines 版本
+     */
     public static String getRelocatedKotlinCoroutinesVersion() {
         String kt = "!kotlin".substring(1);
         String kv = formatVersion(KOTLIN_VERSION);
@@ -123,14 +131,12 @@ public class PrimitiveSettings {
      * 获取配置文件
      */
     private static Properties getProperties(String name, boolean allowGlobal) {
-        boolean loaded = false;
         Properties prop = new Properties();
         // 从插件内部提取配置文件
         URL url = PrimitiveSettings.class.getClassLoader().getResource("META-INF/taboolib/" + name + ".properties");
         if (url != null) {
             try {
                 prop.load(url.openStream());
-                loaded = true;
             } catch (IOException ignored) {
             }
         }
@@ -141,16 +147,10 @@ public class PrimitiveSettings {
             if (globalFile.exists()) {
                 try (FileInputStream fis = new FileInputStream(globalFile)) {
                     prop.load(fis);
-                    loaded = true;
                 } catch (IOException ignored) {
                 }
             }
         }
-        // 如果加载成功
-        if (loaded) {
-            return prop;
-        } else {
-            throw new IllegalStateException("META-INF/taboolib/" + name + ".properties not found");
-        }
+        return prop;
     }
 }

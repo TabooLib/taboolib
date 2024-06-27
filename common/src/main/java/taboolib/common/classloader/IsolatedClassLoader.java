@@ -23,7 +23,7 @@ public class IsolatedClassLoader extends URLClassLoader {
         INSTANCE = new IsolatedClassLoader(clazz);
         // 加载启动类
         try {
-            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", true, INSTANCE);
+            Class<?> delegateClass = Class.forName("taboolib.common.PrimitiveLoader", false, INSTANCE);
             Object delegateObject = delegateClass.getConstructor().newInstance();
             delegateClass.getMethod("init").invoke(delegateObject);
         } catch (Exception e) {
