@@ -8,12 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 
 import static taboolib.common.PrimitiveSettings.*;
 
@@ -175,7 +175,10 @@ public class PrimitiveLoader {
         File jar = file;
         // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
         if (relocate.length > 0) {
-            List<Relocation> rel = Arrays.stream(relocate).map(r -> new Relocation(r[0], r[1])).collect(Collectors.toList());
+            List<Relocation> rel = new ArrayList<>();
+            for (String[] r : relocate) {
+                rel.add(new Relocation(r[0], r[1]));
+            }
             // 启用 Kotlin 重定向
             if (!SKIP_KOTLIN_RELOCATE) {
                 String kt = "!kotlin".substring(1);
@@ -184,15 +187,13 @@ public class PrimitiveLoader {
                 rel.add(new Relocation(ktc + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
             }
             // 是否重定向
-            if (!rel.isEmpty()) {
-                String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
-                String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
-                jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
-                // 文件为空 || 开发模式 || 强制重定向
-                if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
-                    jar.getParentFile().mkdirs();
-                    new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
-                }
+            String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
+            String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
+            jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
+            // 文件为空 || 开发模式 || 强制重定向
+            if ((!jar.exists() && jar.length() == 0) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE) || forceRelocate) {
+                jar.getParentFile().mkdirs();
+                new JarRelocator(PrimitiveIO.copyFile(file, File.createTempFile(file.getName(), ".jar")), jar, rel).run();
             }
         }
         ClassLoader loader = ClassAppender.addPath(jar.toPath(), isIsolated, isExternal);

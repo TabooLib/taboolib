@@ -33,7 +33,11 @@ public class ClassAppender {
             Object lookupBase = unsafe.staticFieldBase(lookupField);
             long lookupOffset = unsafe.staticFieldOffset(lookupField);
             lookup = (MethodHandles.Lookup) unsafe.getObject(lookupBase, lookupOffset);
-        } catch (Throwable ignore) {
+            // 如果第二个 IMPL_LOOKUP 没有找到，提示无法加载
+            if (lookup == null) {
+                PrimitiveIO.println("Unsafe lookup not found, TabooLib will not work properly.");
+            }
+        } catch (Throwable ignored) {
         }
     }
 
@@ -50,7 +54,9 @@ public class ClassAppender {
         if (isIsolated) {
             IsolatedClassLoader loader = IsolatedClassLoader.INSTANCE;
             loader.addURL(file.toURI().toURL());
-            callbacks.forEach(i -> i.add(loader, file, isExternal));
+            for (Callback i : callbacks) {
+                i.add(loader, file, isExternal);
+            }
             return loader;
         }
         ClassLoader loader = TabooLib.class.getClassLoader();
@@ -93,11 +99,16 @@ public class ClassAppender {
         if (ucpField == null) {
             throw new IllegalStateException("ucp field not found");
         }
+        if (lookup == null) {
+            throw new IllegalStateException("lookup not found");
+        }
         Object ucp = unsafe.getObject(loader, unsafe.objectFieldOffset(ucpField));
         try {
             MethodHandle methodHandle = lookup.findVirtual(ucp.getClass(), "addURL", MethodType.methodType(void.class, URL.class));
             methodHandle.invoke(ucp, file.toURI().toURL());
-            callbacks.forEach(i -> i.add(loader, file, isExternal));
+            for (Callback i : callbacks) {
+                i.add(loader, file, isExternal);
+            }
         } catch (NoSuchMethodError e) {
             throw new IllegalStateException("Unsupported (classloader: " + loader.getClass().getName() + ", ucp: " + ucp.getClass().getName() + ")", e);
         }
