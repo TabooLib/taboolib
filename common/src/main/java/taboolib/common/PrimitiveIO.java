@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("CallToPrintStackTrace")
 public class PrimitiveIO {
 
+    private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
     private static final int BUFFER_SIZE = 8192;
     private static final ThreadLocal<MessageDigest> DIGEST_THREAD_LOCAL = ThreadLocal.withInitial(new Supplier<MessageDigest>() {
         @Override
@@ -135,12 +136,7 @@ public class PrimitiveIO {
                 digest.update(buffer, 0, total);
             }
             byte[] hashBytes = digest.digest();
-            // Convert byte array to hex string
-            StringBuilder result = new StringBuilder(hashBytes.length * 2);
-            for (byte b : hashBytes) {
-                result.append(String.format("%02x", b));
-            }
-            return result.toString();
+            return bytesToHex(hashBytes);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -155,11 +151,17 @@ public class PrimitiveIO {
         digest.reset(); // Ensure the MessageDigest is reset before each use
         digest.update(data.getBytes(StandardCharsets.UTF_8));
         byte[] hashBytes = digest.digest();
-        StringBuilder result = new StringBuilder(hashBytes.length * 2);
-        for (byte b : hashBytes) {
-            result.append(String.format("%02x", b));
+        return bytesToHex(hashBytes);
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
         }
-        return result.toString();
+        return new String(hexChars);
     }
 
     /**
@@ -193,7 +195,7 @@ public class PrimitiveIO {
      */
     public static byte[] readFully(InputStream inputStream) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
+        byte[] buf = new byte[BUFFER_SIZE];
         int len;
         while ((len = inputStream.read(buf)) > 0) {
             stream.write(buf, 0, len);
@@ -225,7 +227,7 @@ public class PrimitiveIO {
         out.getParentFile().mkdirs();
         InputStream ins = url.openStream();
         OutputStream outs = Files.newOutputStream(out.toPath());
-        byte[] buffer = new byte[4096];
+        byte[] buffer = new byte[BUFFER_SIZE];
         for (int len; (len = ins.read(buffer)) > 0; outs.write(buffer, 0, len))
             ;
         outs.close();

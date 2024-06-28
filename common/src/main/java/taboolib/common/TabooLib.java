@@ -55,8 +55,10 @@ public class TabooLib {
         currentLifeCycle = lifeCycle;
         // 运行生命周期任务
         List<LifeCycleTask> taskList = lifeCycleTask.remove(lifeCycle);
-        for (LifeCycleTask task : taskList) {
-            task.run();
+        if (taskList != null) {
+            for (LifeCycleTask task : taskList) {
+                task.run();
+            }
         }
     }
 

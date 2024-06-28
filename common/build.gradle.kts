@@ -1,3 +1,3 @@
 dependencies {
-    compileOnly("me.lucko:jar-relocator:1.5")
+    compileOnly("me.lucko:jar-relocator:1.7")
 }

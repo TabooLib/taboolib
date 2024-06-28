@@ -50,7 +50,7 @@ public class PrimitiveLoader {
      * 基础依赖（隔离加载）
      */
     public static final String[][] DEPS = {
-            {"me.lucko", "jar-relocator", "1.5"},
+            {"me.lucko", "jar-relocator", "1.7"},
             {"org.ow2.asm", "asm", "9.6"},
             {"org.ow2.asm", "asm-util", "9.6"},
             {"org.ow2.asm", "asm-commons", "9.6"}
@@ -109,6 +109,7 @@ public class PrimitiveLoader {
      */
     static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
         if (name.isEmpty()) return false;
+        long time = System.currentTimeMillis();
         boolean downloaded = false;
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
         File shaFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar.sha1", group.replace(".", "/"), name, version, name, version));
@@ -132,6 +133,7 @@ public class PrimitiveLoader {
                 return false;
             }
         }
+        System.out.println("    validation " + envFile.getName() + " " + (System.currentTimeMillis() - time) + "ms");
         // 加载
         loadFile(envFile, isIsolated, isExternal, relocate, downloaded);
         return true;
