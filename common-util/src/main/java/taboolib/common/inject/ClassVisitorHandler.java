@@ -170,29 +170,32 @@ public class ClassVisitorHandler {
             long time = System.currentTimeMillis();
             // 获取所有类
             ProjectScannerKt.getRunningClassMap().entrySet().parallelStream().forEach(entry -> {
-                String key = entry.getKey();
-                // 只扫自己
-                if (key.startsWith(ProjectIdKt.getGroupId()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
-                    // 排除第三方库
-                    // 包名中含有 "library" 或 "libs" 不会被扫描
-                    if (key.contains(".library.") || key.contains(".libs.")) {
-                        return;
-                    }
-                    // 排除匿名内部类
-                    if (isAnonymousInnerClass(key)) {
-                        return;
-                    }
-                    // 属于 TabooLib 的类
-                    if (key.startsWith(ProjectIdKt.getTaboolibPath()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
-                        // 没有 Inject 注解的类不会被扫描
-                        if (!JavaAnnotation.hasAnnotation(entry.getValue(), Inject.class)) {
-                            return;
+                // 有效注入判定
+                if (ProjectScannerKt.getClassMarkers().match("inject", entry.getValue(), () -> {
+                    String key = entry.getKey();
+                    // 只扫自己
+                    if (key.startsWith(ProjectIdKt.getGroupId()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
+                        // 排除第三方库
+                        // 包名中含有 "library" 或 "libs" 不会被扫描
+                        if (key.contains(".library.") || key.contains(".libs.")) {
+                            return false;
                         }
+                        // 排除匿名内部类
+                        if (isAnonymousInnerClass(key)) {
+                            return false;
+                        }
+                        // 属于 TabooLib 的类
+                        if (key.startsWith(ProjectIdKt.getTaboolibPath()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
+                            // 没有 Inject 注解的类不会被扫描
+                            if (!JavaAnnotation.hasAnnotation(entry.getValue(), Inject.class)) {
+                                return false;
+                            }
+                        }
+                        // 平台检测
+                        return checkPlatform(entry.getValue());
                     }
-                    // 排除其他平台
-                    if (!checkPlatform(entry.getValue())) {
-                        return;
-                    }
+                    return false;
+                })) {
                     cache.add(entry.getValue());
                 }
             });

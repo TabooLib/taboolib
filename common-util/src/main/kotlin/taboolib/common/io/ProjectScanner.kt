@@ -11,7 +11,7 @@ import taboolib.common.inject.ClassVisitorHandler
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin
-import taboolib.common.reflect.ClassMarkers
+import taboolib.common.util.ClassMarkers
 import taboolib.common.reflect.getAnnotationIfPresent
 import java.io.File
 import java.net.JarURLConnection
@@ -22,7 +22,6 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
 import java.util.jar.JarFile
-import kotlin.math.abs
 
 /**
  * 是否为开发模式

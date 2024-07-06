@@ -10,6 +10,7 @@ import taboolib.common.inject.ClassVisitorHandler
 import taboolib.common.io.*
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
+import taboolib.common.reflect.getAnnotationIfPresent
 import taboolib.common.reflect.hasAnnotation
 import java.util.concurrent.ConcurrentHashMap
 
@@ -49,44 +50,42 @@ object PlatformFactory {
 
             val time = System.currentTimeMillis()
             // 加载运行环境
-            markedClasses.parallelStream().filter { classMarkers.match("env", it) }.forEach {
-                try {
-                    val total = RuntimeEnv.ENV.inject(it)
-                    if (total > 0) {
-                        classMarkers.mark("env", it)
-                    }
-                } catch (_: NoClassDefFoundError) {
-                } catch (ex: Throwable) {
-                    ex.printStackTrace()
+            markedClasses.parallelStream().forEach {
+                if (classMarkers.match("env", it) {
+                        try {
+                            return@match RuntimeEnv.ENV.inject(it) > 0
+                        } catch (_: NoClassDefFoundError) {
+                        } catch (ex: Throwable) {
+                            ex.printStackTrace()
+                        }
+                        false
+                    }) {
+                    RuntimeEnv.ENV.inject(it)
                 }
             }
-
             // 加载接口
-            val platformLabel = "platform-${Platform.CURRENT}"
-            markedClasses.parallelStream().filter { classMarkers.match(platformLabel, it) }.forEach {
+            markedClasses.parallelStream().forEach {
                 // 自唤醒类
-                if (it.hasAnnotation(Awake::class.java)) {
+                if (classMarkers.match("awake", it) { it.hasAnnotation(Awake::class.java) }) {
                     val interfaces = it.interfaces
-                    val instance = it.getInstance(true)?.get() ?: return@forEach
-                    // 依赖注入接口
-                    if (ClassVisitor::class.java.isAssignableFrom(it)) {
-                        ClassVisitorHandler.register(instance as ClassVisitor)
-                    }
-                    // 平台服务
-                    interfaces.forEach { int ->
-                        if (int.hasAnnotation(PlatformService::class.java)) {
-                            serviceMap[int.name] = instance
+                    val instance = it.getInstance(newInstance = true)?.get()
+                    if (instance != null) {
+                        // 依赖注入接口
+                        if (ClassVisitor::class.java.isAssignableFrom(it)) {
+                            ClassVisitorHandler.register(instance as ClassVisitor)
                         }
+                        // 注册平台服务
+                        interfaces.filter { i -> i.hasAnnotation(PlatformService::class.java) }.forEach { i ->
+                            serviceMap[i.name] = instance
+                        }
+                        awokenMap[it.name] = instance
                     }
-                    awokenMap[it.name] = instance
-                    classMarkers.mark(platformLabel, it)
                 }
                 // 平台实现
-                if (it.hasAnnotation(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
+                if (classMarkers.match("platform-impl", it) { it.getAnnotationIfPresent(PlatformImplementation::class.java)?.platform == Platform.CURRENT }) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
-                        awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
-                        classMarkers.mark(platformLabel, it)
+                        awokenMap[interfaces[0].name] = it.getInstance(newInstance = true)?.get() ?: return@forEach
                     }
                 }
             }

@@ -1,4 +1,6 @@
-package taboolib.common.reflect
+package taboolib.common.util
+
+import java.util.function.Supplier
 
 /**
  * TabooLib
@@ -9,10 +11,7 @@ package taboolib.common.reflect
  */
 class ClassMarkers(val version: String) {
 
-    fun match(group: String, it: Class<*>): Boolean {
+    fun match(group: String, it: Class<*>, process: Supplier<Boolean>): Boolean {
         return true
-    }
-
-    fun mark(group: String, it: Class<*>) {
     }
 }
