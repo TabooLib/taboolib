@@ -58,9 +58,11 @@ public class RuntimeEnv {
         if (loadKotlinCoroutines) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
     }
 
-    public void inject(@NotNull Class<?> clazz) throws Throwable {
-        loadAssets(clazz);
-        loadDependency(clazz);
+    public int inject(@NotNull Class<?> clazz) throws Throwable {
+        int total = 0;
+        total += loadAssets(clazz);
+        total += loadDependency(clazz);
+        return total;
     }
 
     @Nullable
@@ -75,13 +77,16 @@ public class RuntimeEnv {
         return resources;
     }
 
-    public void loadAssets(@NotNull Class<?> clazz) throws IOException {
+    public int loadAssets(@NotNull Class<?> clazz) throws IOException {
+        int total = 0;
         RuntimeResource[] resources = getAssets(clazz);
         if (resources != null) {
             for (RuntimeResource resource : resources) {
                 loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+                total++;
             }
         }
+        return total;
     }
 
     public void loadAssets(String name, String hash, String url, boolean zip) throws IOException {
@@ -125,7 +130,8 @@ public class RuntimeEnv {
         return dependencies;
     }
 
-    public void loadDependency(@NotNull Class<?> clazz) throws Throwable {
+    public int loadDependency(@NotNull Class<?> clazz) throws Throwable {
+        int total = 0;
         RuntimeDependency[] dependencies = getDependency(clazz);
         if (dependencies != null) {
             File baseFile = new File(defaultLibrary);
@@ -152,8 +158,10 @@ public class RuntimeEnv {
                 }
                 String url = dep.value().startsWith("!") ? dep.value().substring(1) : dep.value();
                 loadDependency(url, baseFile, relocation, dep.repository(), dep.ignoreOptional(), dep.ignoreException(), dep.transitive(), dep.scopes(), dep.external());
+                total++;
             }
         }
+        return total;
     }
 
     public void loadDependency(@NotNull String url) throws Throwable {

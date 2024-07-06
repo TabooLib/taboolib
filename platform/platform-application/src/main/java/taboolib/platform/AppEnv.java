@@ -62,4 +62,11 @@ public class AppEnv {
         System.setProperty("taboolib.scan", name);
         return this;
     }
+
+    /**
+     * 使用本地仓库
+     */
+    public AppEnv local() {
+        return repoSelf("file:/" + System.getProperty("user.home") + "/.m2/repository");
+    }
 }

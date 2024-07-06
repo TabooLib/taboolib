@@ -33,22 +33,27 @@ object PlatformFactory {
             } catch (_: NoClassDefFoundError) {
             }
 
-            // 获取当前插件的所有类
-            val runningClasses = runningClassesWithoutLibrary
+            // 获取所有运行类
+            val markedClasses = VisitorHandler.getClasses().filter { classMarkers.match(it) }
 
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
                 val time = System.currentTimeMillis()
-                PrimitiveIO.debug("RunningClasses = ${taboolib.common.io.runningClasses.size}")
-                PrimitiveIO.debug("RunningClasses (Exact) = ${runningExactClasses.size}")
-                PrimitiveIO.debug("RunningClasses (WithoutLibrary) = ${runningClasses.size}")
+                PrimitiveIO.debug("RunningClasses = ${runningClasses.size}")
+                PrimitiveIO.debug("RunningClasses (Jar) = ${runningClassMapInJar.size}")
+                PrimitiveIO.debug("RunningClasses (Public) = ${runningExactClasses.size}")
+                PrimitiveIO.debug("RunningClasses (WithoutLibrary) = ${runningClassesWithoutLibrary.size}")
+                PrimitiveIO.debug("RunningClasses (Marked) = ${markedClasses.size}")
                 PrimitiveIO.debug("${System.currentTimeMillis() - time}ms")
             }
 
             // 加载运行环境
-            runningClasses.parallelStream().forEach {
+            markedClasses.parallelStream().forEach {
                 try {
-                    RuntimeEnv.ENV.inject(it)
+                    val total = RuntimeEnv.ENV.inject(it)
+                    if (total > 0) {
+                        classMarkers.mark(it)
+                    }
                 } catch (_: NoClassDefFoundError) {
                 } catch (ex: Throwable) {
                     ex.printStackTrace()
@@ -56,7 +61,7 @@ object PlatformFactory {
             }
 
             // 加载接口
-            runningClasses.parallelStream().forEach {
+            markedClasses.parallelStream().forEach {
                 if (it.hasAnnotation(Awake::class.java) && checkPlatform(it)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
@@ -71,12 +76,14 @@ object PlatformFactory {
                         }
                     }
                     awokenMap[it.name] = instance
+                    classMarkers.mark(it)
                 }
                 // 平台实现
                 if (it.hasAnnotation(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
+                        classMarkers.mark(it)
                     }
                 }
             }

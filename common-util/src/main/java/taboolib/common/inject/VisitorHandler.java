@@ -7,6 +7,7 @@ import org.tabooproject.reflex.ClassMethod;
 import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.Inject;
 import taboolib.common.LifeCycle;
+import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.io.ProjectIdKt;
 import taboolib.common.io.ProjectScannerKt;
@@ -164,17 +165,24 @@ public class VisitorHandler {
      */
     public static Set<Class<?>> getClasses() {
         if (classes.isEmpty()) {
+            long time = System.currentTimeMillis();
             // 获取所有类
             for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {
                 // 只扫自己
                 if (it.getKey().startsWith(ProjectIdKt.getGroupId())) {
+                    String key = it.getKey();
                     // 排除第三方库
                     // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
-                    if (it.getKey().startsWith(ProjectIdKt.getGroupId() + ".library") || it.getKey().startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
+                    if (key.startsWith(ProjectIdKt.getGroupId() + ".library") || key.startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
                         continue;
                     }
                     // 排除 TabooLib 的非开放类
-                    if (it.getKey().startsWith(ProjectIdKt.getTaboolibPath()) && !JavaAnnotation.hasAnnotation(it.getValue(), Inject.class)) {
+                    if (key.startsWith(ProjectIdKt.getTaboolibPath()) && !JavaAnnotation.hasAnnotation(it.getValue(), Inject.class)) {
+                        continue;
+                    }
+                    // 排除匿名内部类
+                    int lastSpectator = key.lastIndexOf("$");
+                    if (lastSpectator != -1 && key.substring(lastSpectator + 1).chars().allMatch(Character::isDigit)) {
                         continue;
                     }
                     // 排除其他平台
@@ -184,6 +192,7 @@ public class VisitorHandler {
                     classes.add(it.getValue());
                 }
             }
+            PrimitiveIO.debug("ClassVisitor loaded %s classes. (%sms)", classes.size(), System.currentTimeMillis() - time);
         }
         return classes;
     }

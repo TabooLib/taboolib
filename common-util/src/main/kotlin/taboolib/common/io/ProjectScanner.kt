@@ -10,6 +10,7 @@ import taboolib.common.TabooLib
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin
+import taboolib.common.reflect.ClassMarkers
 import taboolib.common.reflect.getAnnotationIfPresent
 import java.io.File
 import java.net.JarURLConnection
@@ -19,6 +20,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 import java.util.jar.JarFile
+import kotlin.math.abs
 
 /**
  * 是否为开发模式
@@ -82,7 +84,14 @@ val runningExactClasses: List<Class<*>>
 /**
  * 当前插件的所有资源文件（在本体中）
  */
-val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) { TabooLib::class.java.protectionDomain.codeSource.location.getResources() }
+val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) {
+    val map = TabooLib::class.java.protectionDomain.codeSource.location.getResources()
+    // 额外扫描入口
+    System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
+        map += Class.forName(name).protectionDomain.codeSource.location.getResources()
+    }
+    map
+}
 
 /**
  * 当前插件的所有资源文件
@@ -104,6 +113,13 @@ var extraLoadedClasses = ConcurrentHashMap<String, Class<*>>()
  * 由 ClassAppender 加载的资源文件
  */
 var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
+
+/**
+ * 标记当前插件可以被注入的有效类
+ */
+val classMarkers by lazy(LazyThreadSafetyMode.NONE) {
+    ClassMarkers(abs(runningClassMap.hashCode()))
+}
 
 /**
  * 获取 Plugin 实现
@@ -218,7 +234,7 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
 /**
  * 获取 URL 下的所有文件
  */
-fun URL.getResources(): Map<String, ByteArray> {
+fun URL.getResources(): MutableMap<String, ByteArray> {
     val resources = LinkedHashMap<String, ByteArray>()
     val srcFile = try {
         File(toURI())
