@@ -1,5 +1,7 @@
 package taboolib.platform;
 
+import taboolib.common.io.ProjectIdKt;
+
 /**
  * TabooLib
  * taboolib.platform.AppEnv
@@ -58,8 +60,18 @@ public class AppEnv {
         return this;
     }
 
-    public AppEnv scan(String name) {
-        System.setProperty("taboolib.scan", name);
+    public AppEnv scan(String... name) {
+        String exists = System.getProperty("taboolib.scan", "");
+        if (exists.isEmpty()) {
+            System.setProperty("taboolib.scan", String.join(",", name));
+        } else {
+            System.setProperty("taboolib.scan", exists + "," + String.join(",", name));
+        }
+        return this;
+    }
+
+    public AppEnv main(String name) {
+        System.setProperty("taboolib.main", name);
         return this;
     }
 
@@ -68,5 +80,10 @@ public class AppEnv {
      */
     public AppEnv local() {
         return repoSelf("file:/" + System.getProperty("user.home") + "/.m2/repository");
+    }
+
+    public AppEnv group(String group) {
+        ProjectIdKt.setGroupId(group);
+        return this;
     }
 }

@@ -3,6 +3,7 @@ package taboolib.platform
 import com.velocitypowered.api.plugin.Plugin
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import taboolib.common.Inject
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -19,6 +20,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.VELOCITY)
 class VelocityIO : PlatformIO {
 

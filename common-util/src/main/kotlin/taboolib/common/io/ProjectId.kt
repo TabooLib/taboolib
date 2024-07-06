@@ -10,14 +10,14 @@ val taboolibId: String
  * 组名（项目标识）
  * 例如：org.tabooproject
  */
-val groupId = "taboolib".substringBefore(".$taboolibId")
+var groupId = "taboolib".substringBefore(".$taboolibId")
 
 /**
  * taboolib 路径
  * 例如：org.tabooproject.taboolib
  */
 val taboolibPath: String
-    get() = "taboolib"
+    get() = "$groupId.$taboolibId"
 
 /**
  * 特定类的组名

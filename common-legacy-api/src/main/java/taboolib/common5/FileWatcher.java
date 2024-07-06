@@ -2,6 +2,7 @@ package taboolib.common5;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.commons.lang3.tuple.Triple;
+import taboolib.common.Inject;
 import taboolib.common.LifeCycle;
 import taboolib.common.platform.Awake;
 import taboolib.common.platform.Releasable;
@@ -24,6 +25,7 @@ import java.util.function.Consumer;
  * @author lzzelAliz
  */
 @Awake
+@Inject
 @SkipTo(LifeCycle.ENABLE)
 public class FileWatcher implements Releasable {
 

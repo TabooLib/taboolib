@@ -15,7 +15,12 @@ import taboolib.common.classloader.IsolatedClassLoader;
 public class App {
 
     static {
-        env().skipSelfRelocate(true).skipKotlinRelocate(true).scan(App.class.getName());
+        // 如果是 Application 启动，则跳过重定向
+        env().skipSelfRelocate(true).skipKotlinRelocate(true);
+        // 如果 App 和 TabooLib 不在一个文件里
+        if (!App.class.getProtectionDomain().getCodeSource().getLocation().sameFile(TabooLib.class.getProtectionDomain().getCodeSource().getLocation())) {
+            env().scan(App.class.getName());
+        }
     }
 
     /**

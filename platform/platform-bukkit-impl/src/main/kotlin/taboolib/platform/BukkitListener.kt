@@ -5,6 +5,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.plugin.EventExecutor
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -21,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArraySet
  * @since 2021/6/17 12:22 上午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUKKIT)
 class BukkitListener : PlatformListener {
 

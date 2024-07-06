@@ -7,12 +7,12 @@ package taboolib.common.reflect
  * @author 坏黑
  * @since 2024/7/6 09:35
  */
-class ClassMarkers(val hashCode: Int) {
+class ClassMarkers(val version: String) {
 
-    fun match(it: Class<*>): Boolean {
+    fun match(group: String, it: Class<*>): Boolean {
         return true
     }
 
-    fun mark(it: Class<*>) {
+    fun mark(group: String, it: Class<*>) {
     }
 }

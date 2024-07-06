@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import org.bukkit.Bukkit
+import taboolib.common.Inject
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -16,6 +17,7 @@ import java.io.File
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUKKIT)
 class BukkitIO : PlatformIO {
 

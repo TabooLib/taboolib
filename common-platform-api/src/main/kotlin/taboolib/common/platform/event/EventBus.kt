@@ -3,6 +3,7 @@ package taboolib.common.platform.event
 import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.Unknown
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.event.InternalEvent
 import taboolib.common.event.InternalEventBus
@@ -15,6 +16,7 @@ import taboolib.common.util.optional
 import java.util.function.Supplier
 
 @Awake
+@Inject
 class EventBus : ClassVisitor(-1) {
 
     @Suppress("UNCHECKED_CAST")

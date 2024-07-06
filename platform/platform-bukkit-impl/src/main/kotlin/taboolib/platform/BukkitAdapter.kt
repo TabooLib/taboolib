@@ -3,6 +3,7 @@ package taboolib.platform
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import taboolib.common.Inject
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
@@ -17,6 +18,7 @@ import taboolib.platform.type.BukkitPlayer
  * @since 2021/6/17 12:22 上午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUKKIT)
 class BukkitAdapter : PlatformAdapter {
 

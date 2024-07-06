@@ -15,6 +15,7 @@ import org.bukkit.plugin.Plugin
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -38,6 +39,7 @@ import java.lang.reflect.Constructor
  * @since 2021/6/26 2:33 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUKKIT)
 class BukkitCommand : PlatformCommand {
 

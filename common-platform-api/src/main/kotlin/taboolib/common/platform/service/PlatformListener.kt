@@ -1,5 +1,6 @@
 package taboolib.common.platform.service
 
+import taboolib.common.Inject
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.PostOrder
@@ -12,6 +13,7 @@ import taboolib.common.platform.event.ProxyListener
  * @author sky
  * @since 2021/6/17 12:04 上午
  */
+@Inject
 @PlatformService
 interface PlatformListener {
 

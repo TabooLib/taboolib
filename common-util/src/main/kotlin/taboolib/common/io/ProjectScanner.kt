@@ -7,6 +7,7 @@ import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.PrimitiveSettings
 import taboolib.common.TabooLib
+import taboolib.common.inject.ClassVisitorHandler
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.Plugin
@@ -18,6 +19,7 @@ import java.net.URISyntaxException
 import java.net.URL
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.function.Supplier
 import java.util.jar.JarFile
 import kotlin.math.abs
@@ -34,7 +36,8 @@ val isDevelopmentMode: Boolean
 val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
     val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
     // 额外扫描入口
-    System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
+    System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
+        if (name.isEmpty()) return@forEach
         map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
     }
     map
@@ -88,6 +91,7 @@ val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) {
     val map = TabooLib::class.java.protectionDomain.codeSource.location.getResources()
     // 额外扫描入口
     System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
+        if (name.isEmpty()) return@forEach
         map += Class.forName(name).protectionDomain.codeSource.location.getResources()
     }
     map
@@ -105,6 +109,30 @@ val runningResources: Map<String, ByteArray>
     }
 
 /**
+ * 运行签名
+ */
+val runningSignature by lazy(LazyThreadSafetyMode.NONE) {
+    // 如果在 IDE 中运行
+    val main = System.getProperty("taboolib.main")
+    if (main != null) {
+        val builder = StringBuilder()
+        File(Class.forName(main).protectionDomain.codeSource.location.file).walk().forEach { file ->
+            if (file.isFile && file.extension == "class") {
+                builder.append(file.digest("sha-1"))
+            }
+        }
+        builder.toString().digest("sha-1")
+    } else {
+        File(TabooLib::class.java.protectionDomain.codeSource.location.file).digest("sha-1")
+    }
+}
+
+/**
+ * 由 ClassAppender 加载的文件
+ */
+val extraLoadedFiles = CopyOnWriteArrayList<File>()
+
+/**
  * 由 ClassAppender 加载的类
  */
 var extraLoadedClasses = ConcurrentHashMap<String, Class<*>>()
@@ -118,7 +146,7 @@ var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
  * 标记当前插件可以被注入的有效类
  */
 val classMarkers by lazy(LazyThreadSafetyMode.NONE) {
-    ClassMarkers(abs(runningClassMap.hashCode()))
+    ClassMarkers(runningSignature)
 }
 
 /**
@@ -126,7 +154,7 @@ val classMarkers by lazy(LazyThreadSafetyMode.NONE) {
  */
 fun findPluginImpl(): Plugin? {
     // 从 Jar 中获取类
-    val cls = runningClassMapInJar.values.firstOrNull { Plugin::class.java != it && Plugin::class.java.isAssignableFrom(it) && checkPlatform(it) }
+    val cls = ClassVisitorHandler.getClasses().firstOrNull { Plugin::class.java != it && Plugin::class.java.isAssignableFrom(it) }
     return if (cls != null) {
         try {
             val declaredField = cls.getDeclaredField("INSTANCE")
@@ -272,6 +300,7 @@ private fun init() {
     ClassAppender.registerCallback { loader, file, isExternal ->
         // 只有内部库会被收录
         if (!isExternal) {
+            extraLoadedFiles += file
             extraLoadedClasses += file.toURI().toURL().getClasses(loader)
             extraLoadedResources += file.toURI().toURL().getResources()
         }

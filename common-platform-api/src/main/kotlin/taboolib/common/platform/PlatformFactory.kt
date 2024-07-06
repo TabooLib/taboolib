@@ -6,7 +6,7 @@ import taboolib.common.PrimitiveSettings
 import taboolib.common.TabooLib
 import taboolib.common.env.RuntimeEnv
 import taboolib.common.inject.ClassVisitor
-import taboolib.common.inject.VisitorHandler
+import taboolib.common.inject.ClassVisitorHandler
 import taboolib.common.io.*
 import taboolib.common.platform.function.registerLifeCycleTask
 import taboolib.common.platform.function.unregisterCommands
@@ -29,12 +29,12 @@ object PlatformFactory {
         registerLifeCycleTask(LifeCycle.CONST) {
             // 注册 Awake 接口
             try {
-                LifeCycle.values().forEach { VisitorHandler.register(AwakeFunction(it)) }
+                LifeCycle.values().forEach { ClassVisitorHandler.register(AwakeFunction(it)) }
             } catch (_: NoClassDefFoundError) {
             }
 
             // 获取所有运行类
-            val markedClasses = VisitorHandler.getClasses().filter { classMarkers.match(it) }
+            val markedClasses = ClassVisitorHandler.getClasses()
 
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {
@@ -47,12 +47,13 @@ object PlatformFactory {
                 PrimitiveIO.debug("${System.currentTimeMillis() - time}ms")
             }
 
+            val time = System.currentTimeMillis()
             // 加载运行环境
-            markedClasses.parallelStream().forEach {
+            markedClasses.parallelStream().filter { classMarkers.match("env", it) }.forEach {
                 try {
                     val total = RuntimeEnv.ENV.inject(it)
                     if (total > 0) {
-                        classMarkers.mark(it)
+                        classMarkers.mark("env", it)
                     }
                 } catch (_: NoClassDefFoundError) {
                 } catch (ex: Throwable) {
@@ -61,13 +62,15 @@ object PlatformFactory {
             }
 
             // 加载接口
-            markedClasses.parallelStream().forEach {
-                if (it.hasAnnotation(Awake::class.java) && checkPlatform(it)) {
+            val platformLabel = "platform-${Platform.CURRENT}"
+            markedClasses.parallelStream().filter { classMarkers.match(platformLabel, it) }.forEach {
+                // 自唤醒类
+                if (it.hasAnnotation(Awake::class.java)) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(true)?.get() ?: return@forEach
                     // 依赖注入接口
                     if (ClassVisitor::class.java.isAssignableFrom(it)) {
-                        VisitorHandler.register(instance as ClassVisitor)
+                        ClassVisitorHandler.register(instance as ClassVisitor)
                     }
                     // 平台服务
                     interfaces.forEach { int ->
@@ -76,17 +79,18 @@ object PlatformFactory {
                         }
                     }
                     awokenMap[it.name] = instance
-                    classMarkers.mark(it)
+                    classMarkers.mark(platformLabel, it)
                 }
                 // 平台实现
                 if (it.hasAnnotation(PlatformImplementation::class.java) && it.getAnnotation(PlatformImplementation::class.java).platform == Platform.CURRENT) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(true)?.get() ?: return@forEach
-                        classMarkers.mark(it)
+                        classMarkers.mark(platformLabel, it)
                     }
                 }
             }
+            PrimitiveIO.debug("PlatformFactory initialized. (%sms)", System.currentTimeMillis() - time)
 
             // 开发环境
             if (PrimitiveSettings.IS_DEBUG_MODE) {

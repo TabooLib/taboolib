@@ -1,6 +1,7 @@
 package taboolib.common.platform
 
 import org.tabooproject.reflex.ClassMethod
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.function.submit
@@ -8,6 +9,7 @@ import taboolib.common.util.optional
 import java.util.function.Supplier
 
 @Awake
+@Inject
 class ScheduleLoader : ClassVisitor(1) {
 
     override fun getLifeCycle(): LifeCycle {

@@ -1,5 +1,6 @@
 package taboolib.common.platform.service
 
+import taboolib.common.Inject
 import taboolib.common.platform.PlatformService
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandCompleter
@@ -14,6 +15,7 @@ import taboolib.common.platform.command.component.CommandBase
  * @author sky
  * @since 2021/6/24 11:46 下午
  */
+@Inject
 @PlatformService
 interface PlatformCommand {
 

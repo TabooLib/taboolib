@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import com.velocitypowered.api.event.EventHandler
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -18,6 +19,7 @@ import taboolib.common.util.unsafeLazy
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.VELOCITY)
 class VelocityListener : PlatformListener {
 

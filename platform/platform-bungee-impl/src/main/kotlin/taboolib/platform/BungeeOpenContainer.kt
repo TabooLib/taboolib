@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import net.md_5.bungee.BungeeCord
+import taboolib.common.Inject
 import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -17,6 +18,7 @@ import taboolib.platform.type.BungeeContainer
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUNGEE)
 class BungeeOpenContainer : PlatformOpenContainer {
 

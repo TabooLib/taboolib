@@ -2,6 +2,7 @@ package taboolib.platform
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.scheduler.BukkitRunnable
+import taboolib.common.Inject
 import taboolib.common.PrimitiveSettings
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/15 11:17 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUKKIT)
 class BukkitExecutor : PlatformExecutor {
 

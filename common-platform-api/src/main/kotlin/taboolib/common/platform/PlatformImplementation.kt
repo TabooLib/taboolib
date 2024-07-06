@@ -1,7 +1,7 @@
 package taboolib.common.platform
 
+import taboolib.common.inject.ClassVisitorHandler
 import taboolib.common.io.getInstance
-import taboolib.common.io.runningClasses
 import taboolib.common.reflect.getAnnotationIfPresent
 
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
@@ -13,7 +13,7 @@ annotation class PlatformImplementation(val platform: Platform)
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> Class<T>.findImplementation(): T? {
-    return runningClasses.firstOrNull { isAssignableFrom(it) && it != this && checkPlatform(it) }?.getInstance(true)?.get() as? T
+    return ClassVisitorHandler.getClasses().firstOrNull { isAssignableFrom(it) && it != this }?.getInstance(true)?.get() as? T
 }
 
 /**

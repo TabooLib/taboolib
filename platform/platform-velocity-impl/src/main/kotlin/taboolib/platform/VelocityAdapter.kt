@@ -2,6 +2,7 @@ package taboolib.platform
 
 import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
+import taboolib.common.Inject
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
@@ -17,6 +18,7 @@ import taboolib.platform.type.VelocityPlayer
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.VELOCITY)
 class VelocityAdapter : PlatformAdapter {
 

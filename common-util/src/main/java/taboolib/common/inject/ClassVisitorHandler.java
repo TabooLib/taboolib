@@ -15,7 +15,6 @@ import taboolib.common.platform.Ghost;
 import taboolib.common.platform.Platform;
 import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.SkipTo;
-import taboolib.common.reflect.AnnotationKt;
 import taboolib.common.util.JavaAnnotation;
 
 import java.util.*;
@@ -29,10 +28,10 @@ import java.util.function.Supplier;
  * @since 2021/8/14 12:18 上午
  */
 @SuppressWarnings("CallToPrintStackTrace")
-public class VisitorHandler {
+public class ClassVisitorHandler {
 
     private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
-    private static final Set<Class<?>> classes = new HashSet<>();
+    private static Set<Class<?>> classes = null;
 
     static void init() {
         for (LifeCycle lifeCycle : LifeCycle.values()) {
@@ -42,7 +41,7 @@ public class VisitorHandler {
             // 只有 CONST 生命周期下优先级为 1，因为要在 PlatformFactory 之后运行
             int priority = lifeCycle == LifeCycle.CONST ? 1 : 0;
             // 注册任务
-            TabooLib.registerLifeCycleTask(lifeCycle, priority, () -> VisitorHandler.injectAll(lifeCycle));
+            TabooLib.registerLifeCycleTask(lifeCycle, priority, () -> ClassVisitorHandler.injectAll(lifeCycle));
         }
     }
 
@@ -162,36 +161,42 @@ public class VisitorHandler {
 
     /**
      * 获取能够被 ClassVisitor 访问到的所有类
+     * <p>
+     * TODO 此方法首次运行会耗费较长时间
      */
     public static Set<Class<?>> getClasses() {
-        if (classes.isEmpty()) {
+        if (classes == null) {
+            HashSet<Class<?>> cache = new LinkedHashSet<>();
             long time = System.currentTimeMillis();
             // 获取所有类
-            for (Map.Entry<String, Class<?>> it : ProjectScannerKt.getRunningClassMap().entrySet()) {
+            ProjectScannerKt.getRunningClassMap().entrySet().parallelStream().forEach(entry -> {
+                String key = entry.getKey();
                 // 只扫自己
-                if (it.getKey().startsWith(ProjectIdKt.getGroupId())) {
-                    String key = it.getKey();
+                if (key.startsWith(ProjectIdKt.getGroupId()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
                     // 排除第三方库
-                    // 位于 com.example.plugin.library.* 或 com.example.plugin.taboolib.library.* 下的包不会被检查
-                    if (key.startsWith(ProjectIdKt.getGroupId() + ".library") || key.startsWith(ProjectIdKt.getTaboolibPath() + ".library")) {
-                        continue;
-                    }
-                    // 排除 TabooLib 的非开放类
-                    if (key.startsWith(ProjectIdKt.getTaboolibPath()) && !JavaAnnotation.hasAnnotation(it.getValue(), Inject.class)) {
-                        continue;
+                    // 包名中含有 "library" 或 "libs" 不会被扫描
+                    if (key.contains(".library.") || key.contains(".libs.")) {
+                        return;
                     }
                     // 排除匿名内部类
-                    int lastSpectator = key.lastIndexOf("$");
-                    if (lastSpectator != -1 && key.substring(lastSpectator + 1).chars().allMatch(Character::isDigit)) {
-                        continue;
+                    if (isAnonymousInnerClass(key)) {
+                        return;
+                    }
+                    // 属于 TabooLib 的类
+                    if (key.startsWith(ProjectIdKt.getTaboolibPath()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
+                        // 没有 Inject 注解的类不会被扫描
+                        if (!JavaAnnotation.hasAnnotation(entry.getValue(), Inject.class)) {
+                            return;
+                        }
                     }
                     // 排除其他平台
-                    if (!checkPlatform(it.getValue())) {
-                        continue;
+                    if (!checkPlatform(entry.getValue())) {
+                        return;
                     }
-                    classes.add(it.getValue());
+                    cache.add(entry.getValue());
                 }
-            }
+            });
+            classes = cache;
             PrimitiveIO.debug("ClassVisitor loaded %s classes. (%sms)", classes.size(), System.currentTimeMillis() - time);
         }
         return classes;
@@ -202,6 +207,27 @@ public class VisitorHandler {
      */
     public static boolean checkPlatform(Class<?> cls) {
         PlatformSide platformSide = JavaAnnotation.getAnnotationIfPresent(cls, PlatformSide.class);
-        return platformSide == null || Arrays.stream(platformSide.value()).anyMatch(i -> i == Platform.CURRENT);
+        if (platformSide == null) return true;
+        for (Platform platform : platformSide.value()) {
+            if (platform == Platform.CURRENT) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 是否为匿名内部类
+     */
+    static boolean isAnonymousInnerClass(String name) {
+        int lastSpectator = name.lastIndexOf("$");
+        if (lastSpectator == -1) return false;
+        String className = name.substring(lastSpectator + 1);
+        for (int i = 0; i < className.length(); i++) {
+            if (!Character.isDigit(className.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

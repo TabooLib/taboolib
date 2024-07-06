@@ -5,6 +5,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -25,6 +26,7 @@ import taboolib.common.platform.service.PlatformCommand
  * @since 2021/7/4 2:39 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.VELOCITY)
 class VelocityCommand : PlatformCommand {
 

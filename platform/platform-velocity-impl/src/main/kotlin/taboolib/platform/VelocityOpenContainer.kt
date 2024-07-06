@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.Inject
 import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -17,6 +18,7 @@ import taboolib.platform.type.VelocityContainer
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.VELOCITY)
 class VelocityOpenContainer : PlatformOpenContainer {
 

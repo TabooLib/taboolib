@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -16,6 +17,7 @@ import taboolib.common.platform.service.PlatformCommand
  * @since 2022/06/07 23:43
  */
 @Awake
+@Inject
 @PlatformSide(Platform.APPLICATION)
 class AppCommand : PlatformCommand {
 

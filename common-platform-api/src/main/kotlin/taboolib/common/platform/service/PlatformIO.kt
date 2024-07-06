@@ -1,8 +1,10 @@
 package taboolib.common.platform.service
 
+import taboolib.common.Inject
 import taboolib.common.platform.PlatformService
 import java.io.File
 
+@Inject
 @PlatformService
 interface PlatformIO {
 

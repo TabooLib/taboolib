@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.Inject
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -17,6 +18,7 @@ import java.util.logging.Logger
  * @since 2021/6/14 11:10 下午
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUNGEE)
 class BungeeIO : PlatformIO {
 

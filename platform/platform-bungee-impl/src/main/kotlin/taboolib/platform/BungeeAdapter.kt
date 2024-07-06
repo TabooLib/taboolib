@@ -2,6 +2,7 @@ package taboolib.platform
 
 import net.md_5.bungee.api.CommandSender
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import taboolib.common.Inject
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
@@ -17,6 +18,7 @@ import taboolib.platform.type.BungeePlayer
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUNGEE)
 class BungeeAdapter : PlatformAdapter {
 

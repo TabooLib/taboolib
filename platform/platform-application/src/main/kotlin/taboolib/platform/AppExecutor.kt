@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit
  * @since 2021/6/16 0:43
  */
 @Awake
+@Inject
 @PlatformSide(Platform.APPLICATION)
 class AppExecutor : PlatformExecutor {
 

@@ -5,6 +5,7 @@ import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventBus
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -22,6 +23,7 @@ import java.lang.reflect.Method
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.BUNGEE)
 class BungeeListener : PlatformListener {
 
