@@ -39,6 +39,11 @@ val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
         if (name.isEmpty()) return@forEach
         map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
     }
+    // 扫描额外主类
+    val main = System.getProperty("taboolib.main")
+    if (main != null) {
+        map += Class.forName(main).protectionDomain.codeSource.location.getClasses()
+    }
     map
 }
 
@@ -93,6 +98,11 @@ val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) {
         if (name.isEmpty()) return@forEach
         map += Class.forName(name).protectionDomain.codeSource.location.getResources()
     }
+    // 扫描额外主类
+    val main = System.getProperty("taboolib.main")
+    if (main != null) {
+        map += Class.forName(main).protectionDomain.codeSource.location.getResources()
+    }
     map
 }
 
@@ -144,7 +154,7 @@ var extraLoadedResources = ConcurrentHashMap<String, ByteArray>()
 /**
  * 标记当前插件可以被注入的有效类
  */
-val classMarkers by lazy(LazyThreadSafetyMode.NONE) {
+val classMarkers by lazy {
     ClassMarkers(runningSignature)
 }
 

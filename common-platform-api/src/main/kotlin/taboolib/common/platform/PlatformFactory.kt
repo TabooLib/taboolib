@@ -51,7 +51,7 @@ object PlatformFactory {
             val time = System.currentTimeMillis()
             // 加载运行环境
             markedClasses.parallelStream().forEach {
-                if (classMarkers.match("env", it) {
+                if (classMarkers.match("env", it.name) {
                         try {
                             return@match RuntimeEnv.ENV.inject(it) > 0
                         } catch (_: NoClassDefFoundError) {
@@ -66,7 +66,7 @@ object PlatformFactory {
             // 加载接口
             markedClasses.parallelStream().forEach {
                 // 自唤醒类
-                if (classMarkers.match("awake", it) { it.hasAnnotation(Awake::class.java) }) {
+                if (classMarkers.match("awake", it.name) { it.hasAnnotation(Awake::class.java) }) {
                     val interfaces = it.interfaces
                     val instance = it.getInstance(newInstance = true)?.get()
                     if (instance != null) {
@@ -82,7 +82,7 @@ object PlatformFactory {
                     }
                 }
                 // 平台实现
-                if (classMarkers.match("platform-impl", it) { it.getAnnotationIfPresent(PlatformImplementation::class.java)?.platform == Platform.CURRENT }) {
+                if (classMarkers.match("platform-impl", it.name) { it.getAnnotationIfPresent(PlatformImplementation::class.java)?.platform == Platform.CURRENT }) {
                     val interfaces = it.interfaces
                     if (interfaces.isNotEmpty()) {
                         awokenMap[interfaces[0].name] = it.getInstance(newInstance = true)?.get() ?: return@forEach

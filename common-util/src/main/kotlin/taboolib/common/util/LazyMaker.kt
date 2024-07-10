@@ -26,6 +26,13 @@ fun <T> resettableLazy(vararg groups: String, synchronized: Boolean = false, ini
     }
 }
 
+/**
+ * 重制指定组的所有延迟加载对象
+ */
+fun resetLazy(vararg groups: String) {
+    ResettableLazy.reset(*groups)
+}
+
 abstract class ResettableLazy<T>(vararg val groups: String) : Lazy<T> {
 
     abstract fun reset()

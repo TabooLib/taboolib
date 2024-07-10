@@ -33,6 +33,9 @@ public class ClassVisitorHandler {
     private static final NavigableMap<Byte, VisitorGroup> propertyMap = Collections.synchronizedNavigableMap(new TreeMap<>());
     private static Set<Class<?>> classes = null;
 
+    /**
+     * 初始化函数
+     */
     static void init() {
         for (LifeCycle lifeCycle : LifeCycle.values()) {
             if (lifeCycle == LifeCycle.NONE) {
@@ -43,6 +46,61 @@ public class ClassVisitorHandler {
             // 注册任务
             TabooLib.registerLifeCycleTask(lifeCycle, priority, () -> ClassVisitorHandler.injectAll(lifeCycle));
         }
+        PrimitiveIO.dev("ClassVisitorHandler initialized.");
+    }
+
+    /**
+     * 检查指定类是否允许在当前平台运行
+     */
+    public static boolean checkPlatform(Class<?> cls) {
+        PlatformSide platformSide = JavaAnnotation.getAnnotationIfPresent(cls, PlatformSide.class);
+        if (platformSide == null) return true;
+        for (Platform platform : platformSide.value()) {
+            if (platform == Platform.CURRENT) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取能够被 ClassVisitor 访问到的所有类
+     */
+    public static Set<Class<?>> getClasses() {
+        if (classes == null) {
+            HashSet<Class<?>> cache = new LinkedHashSet<>();
+            long time = System.currentTimeMillis();
+            // 获取所有类
+            ProjectScannerKt.getRunningClassMap().entrySet().parallelStream().forEach(entry -> {
+                String key = entry.getKey();
+                // 有效注入判定
+                if (ProjectScannerKt.getClassMarkers().match("class-collect", key, () -> {
+                    // 只扫自己
+                    if (isProjectClass(key)) {
+                        // 排除第三方库
+                        if (isLibraryClass(key)) {
+                            return false;
+                        }
+                        // 排除匿名内部类
+                        if (isAnonymousInnerClass(key)) {
+                            return false;
+                        }
+                        // 排除属于 TabooLib 但没有 Inject 注解的类
+                        if (isTabooLibClass(key) && !JavaAnnotation.hasAnnotation(entry.getValue(), Inject.class)) {
+                            return false;
+                        }
+                        // 最后检测有效平台
+                        return checkPlatform(entry.getValue());
+                    }
+                    return false;
+                })) {
+                    cache.add(entry.getValue());
+                }
+            });
+            classes = cache;
+            PrimitiveIO.debug("ClassVisitor loaded %s classes. (%sms)", classes.size(), System.currentTimeMillis() - time);
+        }
+        return classes;
     }
 
     /**
@@ -87,35 +145,37 @@ public class ClassVisitorHandler {
      * @param lifeCycle 生命周期
      */
     public static void inject(@NotNull Class<?> clazz, @NotNull VisitorGroup group, @Nullable LifeCycle lifeCycle) {
-        // 跳过注入
-        if (JavaAnnotation.hasAnnotation(clazz, Ghost.class)) {
-            return;
-        }
-        // 检查 SkipTo
-        if (lifeCycle != null && JavaAnnotation.hasAnnotation(clazz, SkipTo.class)) {
-            int skip = clazz.getAnnotation(SkipTo.class).value().ordinal();
-            if (skip > lifeCycle.ordinal()) {
+        if (ProjectScannerKt.getClassMarkers().match("inject-" + lifeCycle, clazz.getName(), () -> {
+            // 跳过注入
+            if (JavaAnnotation.hasAnnotation(clazz, Ghost.class)) {
+                return false;
+            }
+            // 检查 SkipTo
+            if (lifeCycle != null && JavaAnnotation.hasAnnotation(clazz, SkipTo.class)) {
+                int skip = clazz.getAnnotation(SkipTo.class).value().ordinal();
+                return skip <= lifeCycle.ordinal();
+            }
+            return true;
+        })) {
+            // 获取实例
+            Supplier<?> instance = ProjectScannerKt.getInstance(clazz, false);
+            // 获取结构
+            ReflexClass rc;
+            try {
+                rc = ReflexClass.Companion.of(clazz, true);
+            } catch (Throwable ex) {
+                new ClassVisitException(clazz, ex).printStackTrace();
                 return;
             }
+            // 依赖注入
+            visitStart(clazz, group, lifeCycle, rc, instance);
+            visitField(clazz, group, lifeCycle, rc, instance);
+            visitMethod(clazz, group, lifeCycle, rc, instance);
+            visitEnd(clazz, group, lifeCycle, rc, instance);
         }
-        // 获取实例
-        Supplier<?> instance = ProjectScannerKt.getInstance(clazz, false);
-        // 获取结构
-        ReflexClass rc;
-        try {
-            rc = ReflexClass.Companion.of(clazz, true);
-        } catch (Throwable ex) {
-            new ClassVisitException(clazz, ex).printStackTrace();
-            return;
-        }
-        // 依赖注入
-        visitStart(clazz, group, lifeCycle, rc, instance);
-        visitField(clazz, group, lifeCycle, rc, instance);
-        visitMethod(clazz, group, lifeCycle, rc, instance);
-        visitEnd(clazz, group, lifeCycle, rc, instance);
     }
 
-    private static void visitStart(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
+    static void visitStart(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
         for (ClassVisitor visitor : group.get(lifeCycle)) {
             try {
                 visitor.visitStart(clazz, instance);
@@ -125,7 +185,7 @@ public class ClassVisitorHandler {
         }
     }
 
-    private static void visitField(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
+    static void visitField(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
         for (ClassVisitor visitor : group.get(lifeCycle)) {
             for (ClassField field : reflexClass.getStructure().getFields()) {
                 try {
@@ -137,7 +197,7 @@ public class ClassVisitorHandler {
         }
     }
 
-    private static void visitMethod(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
+    static void visitMethod(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
         for (ClassVisitor visitor : group.get(lifeCycle)) {
             for (ClassMethod method : reflexClass.getStructure().getMethods()) {
                 try {
@@ -149,7 +209,7 @@ public class ClassVisitorHandler {
         }
     }
 
-    private static void visitEnd(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
+    static void visitEnd(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ReflexClass reflexClass, Supplier<?> instance) {
         for (ClassVisitor visitor : group.get(lifeCycle)) {
             try {
                 visitor.visitEnd(clazz, instance);
@@ -157,66 +217,6 @@ public class ClassVisitorHandler {
                 new ClassVisitException(clazz, group, lifeCycle, ex).printStackTrace();
             }
         }
-    }
-
-    /**
-     * 获取能够被 ClassVisitor 访问到的所有类
-     * <p>
-     * TODO 此方法首次运行会耗费较长时间
-     */
-    public static Set<Class<?>> getClasses() {
-        if (classes == null) {
-            HashSet<Class<?>> cache = new LinkedHashSet<>();
-            long time = System.currentTimeMillis();
-            // 获取所有类
-            ProjectScannerKt.getRunningClassMap().entrySet().parallelStream().forEach(entry -> {
-                // 有效注入判定
-                if (ProjectScannerKt.getClassMarkers().match("inject", entry.getValue(), () -> {
-                    String key = entry.getKey();
-                    // 只扫自己
-                    if (key.startsWith(ProjectIdKt.getGroupId()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
-                        // 排除第三方库
-                        // 包名中含有 "library" 或 "libs" 不会被扫描
-                        if (key.contains(".library.") || key.contains(".libs.")) {
-                            return false;
-                        }
-                        // 排除匿名内部类
-                        if (isAnonymousInnerClass(key)) {
-                            return false;
-                        }
-                        // 属于 TabooLib 的类
-                        if (key.startsWith(ProjectIdKt.getTaboolibPath()) || key.startsWith(ProjectIdKt.getTaboolibId())) {
-                            // 没有 Inject 注解的类不会被扫描
-                            if (!JavaAnnotation.hasAnnotation(entry.getValue(), Inject.class)) {
-                                return false;
-                            }
-                        }
-                        // 平台检测
-                        return checkPlatform(entry.getValue());
-                    }
-                    return false;
-                })) {
-                    cache.add(entry.getValue());
-                }
-            });
-            classes = cache;
-            PrimitiveIO.debug("ClassVisitor loaded %s classes. (%sms)", classes.size(), System.currentTimeMillis() - time);
-        }
-        return classes;
-    }
-
-    /**
-     * 检查指定类是否允许在当前平台运行
-     */
-    public static boolean checkPlatform(Class<?> cls) {
-        PlatformSide platformSide = JavaAnnotation.getAnnotationIfPresent(cls, PlatformSide.class);
-        if (platformSide == null) return true;
-        for (Platform platform : platformSide.value()) {
-            if (platform == Platform.CURRENT) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -232,5 +232,27 @@ public class ClassVisitorHandler {
             }
         }
         return true;
+    }
+
+    /**
+     * 是否为本项目的类
+     */
+    static boolean isProjectClass(String name) {
+        return name.startsWith(ProjectIdKt.getGroupId()) || name.startsWith(ProjectIdKt.getTaboolibId());
+    }
+
+    /**
+     * 是否为 TabooLib 类
+     */
+    static boolean isTabooLibClass(String name) {
+        return name.startsWith(ProjectIdKt.getTaboolibPath()) || name.startsWith(ProjectIdKt.getTaboolibId());
+    }
+
+    /**
+     * 是否为可能的第三方库
+     * 通过包名判断
+     */
+    static boolean isLibraryClass(String name) {
+        return name.contains(".library.") || name.contains(".libs.");
     }
 }

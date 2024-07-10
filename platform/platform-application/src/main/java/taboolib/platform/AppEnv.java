@@ -1,5 +1,6 @@
 package taboolib.platform;
 
+import taboolib.common.PrimitiveIO;
 import taboolib.common.io.ProjectIdKt;
 
 /**
@@ -79,7 +80,7 @@ public class AppEnv {
      * 使用本地仓库
      */
     public AppEnv local() {
-        return repoSelf("file:/" + System.getProperty("user.home") + "/.m2/repository");
+        return repoSelf("file:" + System.getProperty("user.home") + "/.m2/repository");
     }
 
     public AppEnv group(String group) {

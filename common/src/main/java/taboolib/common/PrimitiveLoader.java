@@ -36,7 +36,7 @@ public class PrimitiveLoader {
 
     public static final String JR_GROUP = "!me.lucko.jarrelocator".substring(1);
 
-    private static String projectPackageName;
+    static String projectPackageName;
 
     static {
         try {
@@ -201,7 +201,7 @@ public class PrimitiveLoader {
         try (JarFile jarFile = new JarFile(jar)) {
             JarEntry extra = jarFile.getJarEntry("META-INF/taboolib/extra.properties");
             if (extra != null) {
-                PrimitiveIO.debug("[TabooLib] Loading extra properties from " + jar.getName());
+                PrimitiveIO.debug("Loading extra properties from " + jar.getName());
                 Properties extraProps = new Properties();
                 extraProps.load(jarFile.getInputStream(extra));
                 // 获取主类
@@ -214,6 +214,7 @@ public class PrimitiveLoader {
                         Method declaredMethod = mainClass.getDeclaredMethod(mainMethod);
                         declaredMethod.setAccessible(true);
                         declaredMethod.invoke(null);
+                        PrimitiveIO.debug(" = Invoke " + mainClass.getName() + "#" + mainMethod);
                     }
                 }
             }

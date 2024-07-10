@@ -56,6 +56,7 @@ public class RuntimeEnv {
         if (loadKotlin) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
         // 加载 Kotlin Coroutines 环境
         if (loadKotlinCoroutines) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
+        PrimitiveIO.dev("RuntimeEnv initialized.");
     }
 
     public int inject(@NotNull Class<?> clazz) throws Throwable {

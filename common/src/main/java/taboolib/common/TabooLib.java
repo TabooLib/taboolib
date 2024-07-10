@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * TabooLib
@@ -76,7 +77,7 @@ public class TabooLib {
             if (lifeCycleTask.containsKey(lifeCycle)) {
                 tasks = lifeCycleTask.get(lifeCycle);
             } else {
-                tasks = new ArrayList<>();
+                tasks = new CopyOnWriteArrayList<>();
                 lifeCycleTask.put(lifeCycle, tasks);
             }
             tasks.add(new LifeCycleTask() {

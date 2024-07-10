@@ -28,6 +28,7 @@ public class PrimitiveIO {
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
     private static final int BUFFER_SIZE = 8192;
     private static final ThreadLocal<MessageDigest> DIGEST_THREAD_LOCAL = ThreadLocal.withInitial(new Supplier<MessageDigest>() {
+
         @Override
         public MessageDigest get() {
             try {
