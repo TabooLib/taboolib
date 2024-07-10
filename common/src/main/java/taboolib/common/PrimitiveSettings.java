@@ -80,6 +80,11 @@ public class PrimitiveSettings {
     public static final String REPO_TABOOLIB = RUNTIME_PROPERTIES.getProperty("repo-taboolib", getProperty("taboolib.repo.self", "http://sacredcraft.cn:8081/repository/releases"));
 
     /**
+     * Reflex 仓库（一般不会修改）
+     */
+    public static final String REPO_REFLEX = RUNTIME_PROPERTIES.getProperty("repo-reflex", getProperty("taboolib.repo.reflex", "http://sacredcraft.cn:8081/repository/releases"));
+
+    /**
      * libs 位置
      */
     public static final String FILE_LIBS = RUNTIME_PROPERTIES.getProperty("file-libs", "libraries");
