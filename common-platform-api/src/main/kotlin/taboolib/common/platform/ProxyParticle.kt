@@ -274,7 +274,7 @@ enum class ProxyParticle(vararg val aliases: String) {
 
     class VibrationData(val origin: Location, val destination: Destination, val arrivalTime: Int) : Data {
 
-        interface Destination
+        sealed interface Destination
 
         class EntityDestination(val entity: UUID) : Destination
 

@@ -10,14 +10,12 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.material.MaterialData
 import org.tabooproject.reflex.Reflex.Companion.getProperty
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import org.tabooproject.reflex.Reflex.Companion.setProperty
 import taboolib.common.platform.ProxyGameMode
 import taboolib.common.platform.ProxyParticle
 import taboolib.common.platform.ProxyPlayer
 import taboolib.common.util.Location
 import taboolib.common.util.Vector
-import taboolib.common.util.unsafeLazy
+import taboolib.platform.util.LegacyPlayer
 import java.net.InetSocketAddress
 import java.util.*
 
@@ -28,32 +26,7 @@ import java.util.*
  * @author sky
  * @since 2021/6/17 10:33 下午
  */
-@Suppress("HasPlatformType")
 class BukkitPlayer(val player: Player) : ProxyPlayer {
-
-    val legacyVersion by unsafeLazy {
-        Bukkit.getServer().javaClass.name.split('.')[3]
-    }
-
-    val rChatCompoundText by unsafeLazy {
-        nmsClass("ChatComponentText").getDeclaredConstructor(String::class.java)
-    }
-
-    val rPacketPlayOutTitle by unsafeLazy {
-        nmsClass("PacketPlayOutTitle").getDeclaredConstructor()
-    }
-
-    val rEnumTitleAction by unsafeLazy {
-        nmsClass("PacketPlayOutTitle\$EnumTitleAction").enumConstants
-    }
-
-    val rPacketPlayOutChat by unsafeLazy {
-        nmsClass("PacketPlayOutChat").getDeclaredConstructor()
-    }
-
-    fun nmsClass(name: String): Class<*> {
-        return Class.forName("net.minecraft.server.$legacyVersion.$name")
-    }
 
     override val origin: Any
         get() = player
@@ -330,28 +303,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.sendTitle(title, subtitle, fadein, stay, fadeout)
         } catch (ex: NoSuchMethodError) {
-            val connection = player.getProperty<Any>("entity/playerConnection")!!
-            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                it.setProperty("a", rEnumTitleAction[4])
-            })
-            connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                it.setProperty("a", rEnumTitleAction[2])
-                it.setProperty("c", fadein)
-                it.setProperty("d", stay)
-                it.setProperty("e", fadeout)
-            })
-            if (title != null) {
-                connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                    it.setProperty("a", rEnumTitleAction[0])
-                    it.setProperty("b", rChatCompoundText.newInstance(title))
-                })
-            }
-            if (subtitle != null) {
-                connection.invokeMethod<Void>("sendPacket", rPacketPlayOutTitle.newInstance().also {
-                    it.setProperty("a", rEnumTitleAction[1])
-                    it.setProperty("b", rChatCompoundText.newInstance(subtitle))
-                })
-            }
+            LegacyPlayer.sendTitle(player, title, subtitle, fadein, stay, fadeout)
         }
     }
 
@@ -359,10 +311,7 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
         try {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, *TextComponent.fromLegacyText(message))
         } catch (ex: NoSuchMethodError) {
-            player.getProperty<Any>("entity/playerConnection")!!.invokeMethod<Void>("sendPacket", rPacketPlayOutChat.newInstance().also {
-                it.setProperty("b", 2.toByte())
-                it.setProperty("components", TextComponent.fromLegacyText(message))
-            })
+            LegacyPlayer.sendActionBar(player, message)
         }
     }
 
@@ -376,9 +325,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
 
     override fun sendParticle(particle: ProxyParticle, location: Location, offset: Vector, count: Int, speed: Double, data: ProxyParticle.Data?) {
         // 获取粒子
-        val bukkitParticle = runCatching { Particle.valueOf(particle.name) }.getOrNull() ?: error("Unsupported particle ${particle.name}")
+        val bukkitType = Particle.values().find { it.name == particle.name || it.name in particle.aliases } ?: error("Unsupported particle ${particle.name}")
+
         // 获取粒子数据
         val bukkitData: Any? = when (data) {
+            // 渐变红石
             is ProxyParticle.DustTransitionData -> {
                 Particle.DustTransition(
                     Color.fromRGB(data.color.red, data.color.green, data.color.blue),
@@ -386,11 +337,11 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                     data.size
                 )
             }
-
+            // 红石
             is ProxyParticle.DustData -> {
                 Particle.DustOptions(Color.fromRGB(data.color.red, data.color.green, data.color.blue), data.size)
             }
-
+            // 物品
             is ProxyParticle.ItemData -> {
                 val item = ItemStack(Material.valueOf(data.material))
                 val itemMeta = item.itemMeta!!
@@ -406,34 +357,33 @@ class BukkitPlayer(val player: Player) : ProxyPlayer {
                 }
                 item
             }
-
+            // 方块
             is ProxyParticle.BlockData -> {
-                if (bukkitParticle.dataType == MaterialData::class.java) {
+                if (bukkitType.dataType == MaterialData::class.java) {
                     MaterialData(Material.valueOf(data.material), data.data.toByte())
                 } else {
                     Material.valueOf(data.material).createBlockData()
                 }
             }
-
+            // 震动（不知道怎么翻译，来自 1.17+）
             is ProxyParticle.VibrationData -> {
                 Vibration(
                     data.origin.toBukkitLocation(), when (val destination = data.destination) {
+                        // 坐标
                         is ProxyParticle.VibrationData.LocationDestination -> {
                             Vibration.Destination.BlockDestination(destination.location.toBukkitLocation())
                         }
-
+                        // 实体
                         is ProxyParticle.VibrationData.EntityDestination -> {
                             Vibration.Destination.EntityDestination(Bukkit.getEntity(destination.entity)!!)
                         }
-
-                        else -> error("out of case")
-                    }, data.arrivalTime
+                    },
+                    data.arrivalTime
                 )
             }
-
             else -> null
         }
-        player.spawnParticle(bukkitParticle, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, bukkitData)
+        player.spawnParticle(bukkitType, location.toBukkitLocation(), count, offset.x, offset.y, offset.z, speed, bukkitData)
     }
 
     override fun performCommand(command: String): Boolean {
