@@ -10,7 +10,11 @@ val taboolibId: String
  * 组名（项目标识）
  * 例如：org.tabooproject
  */
-var groupId = "taboolib".substringBefore(".$taboolibId")
+val groupId = "taboolib".substringBefore(".$taboolibId")
+    get() {
+        if (field == "taboolib") return System.getProperty("taboolib.group", field)
+        return field
+    }
 
 /**
  * taboolib 路径

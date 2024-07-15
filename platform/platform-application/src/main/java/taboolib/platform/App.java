@@ -5,6 +5,8 @@ import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
 import taboolib.common.classloader.IsolatedClassLoader;
 
+import java.io.File;
+
 /**
  * TabooLib
  * taboolib.platform.App
@@ -34,6 +36,7 @@ public class App {
      * 启动
      */
     public static void init() {
+        setupEnv();
         long time = System.currentTimeMillis();
         // 初始化 IsolatedClassLoader
         IsolatedClassLoader.init(App.class);
@@ -51,5 +54,38 @@ public class App {
      */
     public static void shutdown() {
         TabooLib.lifeCycle(LifeCycle.DISABLE);
+    }
+
+    /**
+     * 初始化基本信息
+     */
+    static void setupEnv() {
+        String command = System.getProperty("sun.java.command", "").replace(File.separator, ".");
+        try {
+            // 通过 IDEA 直接运行
+            Class.forName(command);
+            System.setProperty("taboolib.main", command);
+            String group = matchGroup(command);
+            System.setProperty("taboolib.group", group);
+            PrimitiveIO.println("[TabooLib] Running in IDE mode. (main: %s, group: %s)", command, group);
+        } catch (Throwable ignored) {
+        }
+    }
+
+    /**
+     * 尝试从主类中获取 group 信息
+     */
+    static String matchGroup(String main) {
+        String[] args = main.split("\\.");
+        switch (args.length) {
+            case 1:
+                PrimitiveIO.error("[TabooLib] Unable to match group from main class. (main: " + main + ")");
+                PrimitiveIO.error("[TabooLib] Please use App.env().group(\"xxx\") to set the group.");
+                return args[0];
+            case 2:
+                return args[0];
+            default:
+                return args[0] + "." + args[1];
+        }
     }
 }
