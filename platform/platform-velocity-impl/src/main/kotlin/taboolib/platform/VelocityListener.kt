@@ -37,7 +37,7 @@ class VelocityListener : PlatformListener {
     }
 
     override fun unregisterListener(proxyListener: ProxyListener) {
-        plugin.server.eventManager.unregister(this, proxyListener as EventHandler<*>)
+        plugin.server.eventManager.unregister(plugin, proxyListener as EventHandler<*>)
     }
 
     class VelocityListener(private val clazz: Class<*>, val consumer: (Any) -> Unit) : ProxyListener, EventHandler<Any> {
