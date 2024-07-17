@@ -78,6 +78,11 @@ public class AppEnv {
         return this;
     }
 
+    public AppEnv module(String... module) {
+        System.setProperty("taboolib.module", String.join(",", module));
+        return this;
+    }
+
     /**
      * 使用本地仓库
      */

@@ -102,7 +102,7 @@ public class PrimitiveSettings {
     /**
      * 使用模块
      */
-    public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", "").split(",");
+    public static final String[] INSTALL_MODULES = RUNTIME_PROPERTIES.getProperty("module", getProperty("taboolib.module", "")).split(",");
 
     /**
      * 格式化版本号

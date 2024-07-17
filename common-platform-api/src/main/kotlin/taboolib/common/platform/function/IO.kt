@@ -2,6 +2,8 @@ package taboolib.common.platform.function
 
 import taboolib.common.PrimitiveIO
 import taboolib.common.io.isDevelopmentMode
+import taboolib.common.io.newFile
+import taboolib.common.io.runningResources
 import taboolib.common.platform.PlatformFactory
 import taboolib.common.platform.service.PlatformIO
 import java.io.File
@@ -62,6 +64,24 @@ fun warning(vararg message: Any?) {
  */
 fun releaseResourceFile(source: String, replace: Boolean = false, target: String = source): File {
     return PlatformFactory.getService<PlatformIO>().releaseResourceFile(source, target, replace)
+}
+
+/**
+ * 释放当前插件内特定目录下的所有资源文件
+ *
+ * @param prefix 资源文件目录前缀
+ * @param replace 是否覆盖文件
+ */
+fun releaseResourceFolder(prefix: String, replace: Boolean = false) {
+    runningResources.forEach { (path, bytes) ->
+        if (path.startsWith(prefix)) {
+            val file = File(getDataFolder(), path)
+            if (file.exists() && !replace) {
+                return@forEach
+            }
+            newFile(file).writeBytes(bytes)
+        }
+    }
 }
 
 /**
