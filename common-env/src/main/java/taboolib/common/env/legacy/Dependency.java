@@ -1,7 +1,8 @@
-package taboolib.common.env;
+package taboolib.common.env.legacy;
 
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
+import taboolib.common.env.DependencyScope;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +45,12 @@ public class Dependency extends AbstractXmlParser {
      * 要下载的版本，或者如果在 pom 中没有指定依赖项的最新版本，则设置依赖项的最新版本
      */
     private String version;
+
+    /**
+     * 类型（extension）
+     * 例如：jar, pom... 只有
+     */
+    private String type = "jar";
 
     /**
      * 是否外部库（不加入 loadedClasses）
@@ -190,6 +197,14 @@ public class Dependency extends AbstractXmlParser {
 
     public String getVersion() {
         return version.equals(LATEST_VERSION) ? null : version;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public boolean isExternal() {

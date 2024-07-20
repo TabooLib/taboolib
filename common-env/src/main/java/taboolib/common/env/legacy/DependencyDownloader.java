@@ -1,4 +1,4 @@
-package taboolib.common.env;
+package taboolib.common.env.legacy;
 
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
@@ -12,6 +12,8 @@ import taboolib.common.ClassAppender;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
+import taboolib.common.env.DependencyScope;
+import taboolib.common.env.JarRelocation;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -180,7 +182,10 @@ public class DependencyDownloader extends AbstractXmlParser {
         File jar = dependency.findFile(baseDir, "jar");
         File jar1 = new File(jar.getPath() + ".sha1");
         Set<Dependency> downloaded = new HashSet<>();
-        downloaded.add(dependency);
+        // 如果类型为 Type 才会下载自己
+        if (dependency.getType().equals("jar")) {
+            downloaded.add(dependency);
+        }
         // 检查文件的完整性
         if (PrimitiveIO.validation(pom, pom1) && PrimitiveIO.validation(jar, jar1)) {
             // 加载依赖项

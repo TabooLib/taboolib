@@ -6,7 +6,6 @@ package taboolib.common.env;
  * @author Zach Deibert, sky
  * @since 1.0.0
  */
-@RuntimeDependency(value = "!com.google.code.gson:gson:2.8.7", test = "!com.google.gson.JsonElement")
 public enum DependencyScope {
 
 	/**

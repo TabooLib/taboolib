@@ -8,7 +8,8 @@ import java.lang.annotation.*;
 public @interface RuntimeDependency {
 
     /**
-     * 依赖地址
+     * 依赖地址，格式为：
+     * <groupId>:<artifactId>[:<extension>[:<classifier>]]:<version>
      */
     String value();
 

@@ -1,4 +1,4 @@
-package taboolib.common.env;
+package taboolib.common.env.legacy;
 
 import java.io.File;
 import java.io.IOException;

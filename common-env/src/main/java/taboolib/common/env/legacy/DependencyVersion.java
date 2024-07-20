@@ -1,4 +1,4 @@
-package taboolib.common.env;
+package taboolib.common.env.legacy;
 
 import java.util.ArrayList;
 import java.util.Iterator;

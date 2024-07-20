@@ -1,4 +1,4 @@
-package taboolib.common.env;
+package taboolib.common.env.legacy;
 
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;

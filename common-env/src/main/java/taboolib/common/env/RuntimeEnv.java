@@ -6,6 +6,11 @@ import taboolib.common.ClassAppender;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.PrimitiveSettings;
 import taboolib.common.TabooLib;
+import taboolib.common.env.aether.AetherResolver;
+import taboolib.common.env.legacy.Artifact;
+import taboolib.common.env.legacy.Dependency;
+import taboolib.common.env.legacy.DependencyDownloader;
+import taboolib.common.env.legacy.Repository;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,6 +33,7 @@ import static taboolib.common.PrimitiveSettings.KOTLIN_VERSION;
  * @author sky
  * @since 2021/6/15 6:23 下午
  */
+@SuppressWarnings("CallToPrintStackTrace")
 public class RuntimeEnv {
 
     public static final String KOTLIN_ID = "!kotlin".substring(1);
@@ -39,6 +45,21 @@ public class RuntimeEnv {
     private final String defaultLibrary = PrimitiveSettings.FILE_LIBS;
     private final String defaultRepositoryCentral = PrimitiveSettings.REPO_CENTRAL;
 
+    private static boolean isAetherFound;
+
+    static {
+        try {
+            Class.forName("org.eclipse.aether.graph.Dependency");
+            isAetherFound = true;
+        } catch (ClassNotFoundException e) {
+            isAetherFound = false;
+        }
+    }
+
+    /**
+     * 初始化运行时环境，由 extra.properties 调用
+     * 用于初始化 Kotlin 环境
+     */
     static void init() throws Throwable {
         List<JarRelocation> rel = new ArrayList<>();
         boolean loadKotlin = !KOTLIN_VERSION.equals("null");
@@ -90,6 +111,14 @@ public class RuntimeEnv {
         return total;
     }
 
+    /**
+     * 下载资源文件到 assets 目录下
+     *
+     * @param name 文件名
+     * @param hash 文件的 SHA-1（如果是压缩包，则为原始文件的 SHA-1）
+     * @param url  文件下载地址
+     * @param zip  是否为压缩包格式
+     */
     public void loadAssets(String name, String hash, String url, boolean zip) throws IOException {
         File file;
         if (name.isEmpty()) {
@@ -213,32 +242,65 @@ public class RuntimeEnv {
             @NotNull DependencyScope[] scope,
             boolean external
     ) throws Throwable {
-        String[] args = url.split(":");
-        DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
         // 支持用户对源进行替换
         if (repository == null || repository.isEmpty()) {
             repository = defaultRepositoryCentral;
         } else if (PrimitiveSettings.RUNTIME_PROPERTIES.containsKey("repo-" + repository)) {
             repository = PrimitiveSettings.RUNTIME_PROPERTIES.getProperty("repo-" + repository);
         }
+        // 使用 Aether 处理依赖
+        if (isAetherFound) {
+            AetherResolver.of(repository).resolve(url, scope, transitive, ignoreOptional).forEach(file -> {
+                try {
+                    AetherResolver.inject(file, relocation, external);
+                } catch (Throwable ex) {
+                    if (!ignoreException) ex.printStackTrace();
+                }
+            });
+        } else {
+            loadDependencyLegacy(url, baseDir, relocation, repository, ignoreOptional, ignoreException, transitive, scope, external);
+        }
+    }
+
+    void loadDependencyLegacy(
+            @NotNull String url,
+            @NotNull File baseDir,
+            @NotNull List<JarRelocation> relocation,
+            String repository,
+            boolean ignoreOptional,
+            boolean ignoreException,
+            boolean transitive,
+            @NotNull DependencyScope[] scope,
+            boolean external
+    ) throws Throwable {
+        Artifact artifact = new Artifact(url);
+        DependencyDownloader downloader = new DependencyDownloader(baseDir, relocation);
         downloader.addRepository(new Repository(repository));
         downloader.setIgnoreOptional(ignoreOptional);
         downloader.setIgnoreException(ignoreException);
         downloader.setDependencyScopes(scope);
         downloader.setTransitive(transitive);
         // 解析依赖
-        File pomFile = new File(baseDir, String.format("%s/%s/%s/%s-%s.pom", args[0].replace('.', '/'), args[1], args[2], args[1], args[2]));
+        String pomPath = String.format(
+                "%s/%s/%s/%s-%s.pom",
+                artifact.getGroupId().replace('.', '/'),
+                artifact.getArtifactId(),
+                artifact.getVersion(),
+                artifact.getArtifactId(),
+                artifact.getVersion()
+        );
+        File pomFile = new File(baseDir, pomPath);
         File pomFile1 = new File(pomFile.getPath() + ".sha1");
         // 验证文件完整性
         if (PrimitiveIO.validation(pomFile, pomFile1)) {
             downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
         } else {
-            String pom = String.format("%s/%s/%s/%s/%s-%s.pom", repository, args[0].replace('.', '/'), args[1], args[2], args[1], args[2]);
-            PrimitiveIO.println("Downloading library %s:%s:%s %s", args[0], args[1], args[2], transitive ? "(transitive)" : "");
-            downloader.loadDependencyFromInputStream(new URL(pom).openStream());
+            PrimitiveIO.println("Downloading library %s:%s:%s %s", artifact, transitive ? "(transitive)" : "");
+            downloader.loadDependencyFromInputStream(new URL(repository + "/" + pomPath).openStream());
         }
         // 加载自身
-        Dependency dep = new Dependency(args[0], args[1], args[2], DependencyScope.RUNTIME);
+        Dependency dep = new Dependency(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), DependencyScope.RUNTIME);
+        dep.setType(artifact.getExtension());
         dep.setExternal(external);
         if (transitive) {
             downloader.injectClasspath(downloader.loadDependency(downloader.getRepositories(), dep));
