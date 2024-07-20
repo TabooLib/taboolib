@@ -5,7 +5,6 @@ import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 import org.tabooproject.reflex.Reflection
 import org.tabooproject.reflex.ReflexRemapper
-import taboolib.common.platform.function.info
 import taboolib.module.nms.LightReflection
 import taboolib.module.nms.MinecraftVersion
 import java.util.*
@@ -37,7 +36,7 @@ class RemapReflexPaper : ReflexRemapper {
             fieldRemapCacheMap[namespace]!!
         } else {
             val (spigotName, mojangName) = matchName(name)
-            if (spigotName == null && mojangName == null) {
+            if (spigotName == null || mojangName == null) {
                 fieldRemapCacheMap[namespace] = field
                 return field
             }
@@ -56,7 +55,7 @@ class RemapReflexPaper : ReflexRemapper {
             methodRemapCacheMap[namespace]!!
         } else {
             val (spigotName, mojangName) = matchName(name)
-            if (spigotName == null && mojangName == null) {
+            if (spigotName == null || mojangName == null) {
                 methodRemapCacheMap[namespace] = method
                 return method
             }
@@ -80,25 +79,20 @@ class RemapReflexPaper : ReflexRemapper {
      */
     fun matchName(name: String): Pair<String?, String?> {
         val className = name.replace('/', '.')
-        val spigotName: String
-        val mojangName: String
-        // 如果是 Spigot 名
-        if (spigotMapping.classLookupBySpigotMapping.containsKey(className)) {
-            spigotName = className
-            mojangName = paperMapping.classLookupByMojangMapping[spigotName]!!
-        }
-        // 如果是 Mojang 名
-        else if (paperMapping.classLookupByMojangMappingReversed.containsKey(className)) {
+        var spigotName = paperMapping.classMapMojangToSpigot[className]
+        var mojangName: String? = null
+        // 不为空说明 name 是 Mojang 名
+        if (spigotName != null) {
             mojangName = className
-            spigotName = paperMapping.classLookupByMojangMappingReversed[mojangName]!!
         } else {
-            return null to null
+            spigotName = className
+            mojangName = paperMapping.classMapSpigotToMojang[className]
         }
         return spigotName to mojangName
     }
 
     fun translate(key: String): String {
-        return MinecraftVersion.paperMapping.classLookupByMojangMapping[key.replace('/', '.')] ?: key
+        return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')] ?: key
     }
 
     fun checkParameterType(descriptor: String, vararg parameter: Any?): Boolean {

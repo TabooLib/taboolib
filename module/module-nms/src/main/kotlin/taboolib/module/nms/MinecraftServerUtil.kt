@@ -56,7 +56,7 @@ fun obcClass(name: String): Class<*> {
  */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        LightReflection.forName(MinecraftVersion.spigotMapping.classLookupBySpigotMapping[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
+        LightReflection.forName(MinecraftVersion.spigotMapping.classMapSpigotS2F[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
     } else {
         LightReflection.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }

@@ -103,6 +103,6 @@ class RemapTranslationTabooLib : Remapper() {
         if (key.startsWith("org/bukkit/craftbukkit")) {
             return key.replace(obc1, obc2)
         }
-        return MinecraftVersion.paperMapping.classLookupByMojangMapping[key.replace('/', '.')]?.replace('.', '/') ?: key
+        return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')]?.replace('.', '/') ?: key
     }
 }

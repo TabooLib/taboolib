@@ -18,9 +18,14 @@ import java.util.*
  */
 class Mapping {
 
-    val classLookupBySpigotMapping = HashMap<String, String>() // <Spigot.SimpleName, Spigot.FullName>
-    val classLookupByMojangMapping = HashMap<String, String>() // <Spigot.FullName, Mojang.FullName>
-    val classLookupByMojangMappingReversed = HashMap<String, String>() // <Mojang.FullName, Spigot.FullName>
+    // <Spigot.SimpleName, Spigot.FullName>
+    val classMapSpigotS2F = HashMap<String, String>()
+
+    // 内存换性能
+    // <Spigot.FullName, Mojang.FullName>
+    val classMapSpigotToMojang = HashMap<String, String>()
+    // <Mojang.FullName, Spigot.FullName>
+    val classMapMojangToSpigot = HashMap<String, String>()
 
     val fields = LinkedList<Field>()
     val methods = LinkedList<Method>() // 1.18 only
@@ -41,7 +46,7 @@ class Mapping {
                     }
                     if (line.contains(' ')) {
                         val name = line.substringAfterLast(' ')
-                        mapping.classLookupBySpigotMapping[name.substringAfterLast('/', "")] = name
+                        mapping.classMapSpigotS2F[name.substringAfterLast('/', "")] = name
                     }
                 }
             }
@@ -65,7 +70,7 @@ class Mapping {
                 }
             }
             PrimitiveIO.dev("Spigot Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
-            PrimitiveIO.dev("Classes: ${mapping.classLookupBySpigotMapping.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
+            PrimitiveIO.dev("Classes: ${mapping.classMapSpigotS2F.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
         }
 
@@ -89,8 +94,8 @@ class Mapping {
                     if (args[0] == "c") {
                         mojangName = args[1].replace('/', '.')
                         val spigotName = args[2].replace('/', '.')
-                        mapping.classLookupByMojangMapping[spigotName] = mojangName
-                        mapping.classLookupByMojangMappingReversed[mojangName] = spigotName
+                        mapping.classMapSpigotToMojang[spigotName] = mojangName
+                        mapping.classMapMojangToSpigot[mojangName] = spigotName
                     }
                     // 方法
                     // Paper 在运行时会将方法转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，方法名为 Mojang Obf 名）
@@ -114,7 +119,7 @@ class Mapping {
                 }
             }
             PrimitiveIO.dev("Paper Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
-            PrimitiveIO.dev("Classes: ${mapping.classLookupByMojangMapping.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
+            PrimitiveIO.dev("Classes: ${mapping.classMapSpigotToMojang.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
         }
     }

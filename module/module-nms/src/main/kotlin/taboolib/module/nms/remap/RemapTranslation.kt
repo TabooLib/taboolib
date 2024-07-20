@@ -5,7 +5,6 @@ import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureWriter
 import taboolib.module.nms.LightReflection
 import taboolib.module.nms.MinecraftVersion
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -89,7 +88,7 @@ open class RemapTranslation : Remapper() {
             // 将低版本包名替换为高版本包名
             // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
             if (key.startsWith("net/minecraft/server/v1_")) {
-                MinecraftVersion.spigotMapping.classLookupBySpigotMapping[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
+                MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
             } else {
                 key
             }
