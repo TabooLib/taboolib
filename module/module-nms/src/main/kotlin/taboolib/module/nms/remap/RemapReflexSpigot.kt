@@ -1,28 +1,32 @@
-package taboolib.module.nms
+package taboolib.module.nms.remap
 
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 import org.tabooproject.reflex.Reflection
 import org.tabooproject.reflex.ReflexRemapper
+import taboolib.module.nms.LightReflection
+import taboolib.module.nms.MinecraftVersion
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
- * taboolib.module.nms.RefRemapper
+ * taboolib.module.nms.remap.RefRemapper
  *
  * @author sky
  * @since 2021/6/18 5:43 下午
  */
-object RefRemapper : ReflexRemapper {
+@Suppress("DuplicatedCode")
+class RemapReflexSpigot : ReflexRemapper {
 
     var isUniversal = MinecraftVersion.isUniversal
     val major = MinecraftVersion.major
-    val mapping = MinecraftVersion.mapping
     val fieldRemapCacheMap = ConcurrentHashMap<String, String>()
     val methodRemapCacheMap = ConcurrentHashMap<String, String>()
     val descriptorTypeCacheMap = ConcurrentHashMap<String, List<Class<*>>>()
+
+    val spigotMapping = MinecraftVersion.spigotMapping
 
     override fun field(name: String, field: String): String {
         // 1.17 开始字段混淆
@@ -31,11 +35,10 @@ object RefRemapper : ReflexRemapper {
             return if (fieldRemapCacheMap.containsKey(namespace)) {
                 fieldRemapCacheMap[namespace]!!
             } else {
-                val value = mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName
-                if (value != null) {
-                    fieldRemapCacheMap[namespace] = value
-                }
-                value ?: field
+                // 还原
+                val value = spigotMapping.fields.find { it.path == name && it.translateName == field }?.mojangName ?: field
+                fieldRemapCacheMap[namespace] = value
+                value
             }
         }
         return field
@@ -48,15 +51,13 @@ object RefRemapper : ReflexRemapper {
             return if (methodRemapCacheMap.containsKey(namespace)) {
                 methodRemapCacheMap[namespace]!!
             } else {
-                val value = mapping.methods.firstOrNull {
+                // 还原
+                val value = spigotMapping.methods.find {
                     // 判断方法描述符获取准确方法
                     it.path == name && it.translateName == method && checkParameterType(it.descriptor, *parameter)
-                }?.mojangName
-                // 写入缓存
-                if (value != null) {
-                    methodRemapCacheMap[namespace] = value
-                }
-                value ?: method
+                }?.mojangName ?: method
+                methodRemapCacheMap[namespace] = value
+                value
             }
         }
         return method

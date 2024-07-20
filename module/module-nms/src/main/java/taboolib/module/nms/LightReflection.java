@@ -1,6 +1,5 @@
 package taboolib.module.nms;
 
-import org.bukkit.Bukkit;
 import taboolib.platform.BukkitPlugin;
 
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +16,7 @@ import java.lang.reflect.Method;
 public class LightReflection {
 
     private static final String PAPER_REFLECTION_HOLDER = "io.papermc.paper.pluginremap.reflect.PaperReflectionHolder";
+    private static final String PAPER_REFLECTION_REMAPPER = "io.papermc.paper.pluginremap.reflect.ReflectionRemapper";
 
     private static Class<?> paperReflectionHolder;
     private static Method forName;
@@ -39,7 +39,7 @@ public class LightReflection {
     }
 
     public static Class<?> forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
-        if (paperReflectionHolder != null) {
+        if (forName != null) {
             try {
                 return (Class<?>) forName.invoke(null, name, initialize, loader);
             } catch (IllegalAccessException e) {

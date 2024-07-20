@@ -6,7 +6,7 @@ object AsmClassLoader : ClassLoader(ClassAppender.getClassLoader()) {
 
     override fun findClass(name: String?): Class<*> {
         try {
-            return LightReflection.forName(name, false, AsmClassLoader::class.java.classLoader)
+            return Class.forName(name, false, AsmClassLoader::class.java.classLoader)
         } catch (e: Throwable) {
             e.printStackTrace()
         }

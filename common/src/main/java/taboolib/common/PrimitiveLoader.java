@@ -1,7 +1,9 @@
 package taboolib.common;
 
+import com.google.common.collect.Lists;
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
+import org.objectweb.asm.Opcodes;
 import taboolib.common.classloader.IsolatedClassLoader;
 
 import java.io.File;
@@ -38,6 +40,8 @@ public class PrimitiveLoader {
 
     static String projectPackageName;
 
+    static boolean isASM9 = isASM9();
+
     static {
         try {
             projectPackageName = "taboolib".substring(0, "taboolib".length() - 9);
@@ -49,25 +53,34 @@ public class PrimitiveLoader {
     /**
      * 基础依赖（隔离加载）
      */
-    public static final String[][] DEPS = {
-            {"me.lucko", "jar-relocator", "1.7"},
-            {"org.ow2.asm", "asm", "9.6"},
-            {"org.ow2.asm", "asm-util", "9.6"},
-            {"org.ow2.asm", "asm-commons", "9.6"}
-    };
+    static List<String[]> deps() {
+        List<String[]> deps = Lists.newArrayList();
+        deps.add(new String[]{"me.lucko", "jar-relocator", "1.7"});
+        // 非 ASM 9 环境下加载 ASM 9
+        if (!isASM9) {
+            deps.add(new String[]{"org.ow2.asm", "asm", "9.6"});
+            deps.add(new String[]{"org.ow2.asm", "asm-util", "9.6"});
+            deps.add(new String[]{"org.ow2.asm", "asm-commons", "9.6"});
+        }
+        return deps;
+    }
 
     /**
      * 默认的重定向规则
      */
-    static String[][] rule() {
-        String[][] rule = new String[][]{{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"}, {ASM_GROUP + ".", ASM_GROUP + "9."}, {JR_GROUP + ".", JR_GROUP + "15."}};
-        // 是否跳过 TabooLib 重定向
-        if (SKIP_TABOOLIB_RELOCATE) {
-            // 采用全局重定向规则
-            return rule;
-        } else {
-            return new String[][]{{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME}, rule[0], rule[1]};
+    static List<String[]> rule() {
+        ArrayList<String[]> rule = Lists.newArrayList();
+        rule.add(new String[]{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"});
+        rule.add(new String[]{JR_GROUP + ".", JR_GROUP + "15."});
+        // 非 ASM 9 环境下重定向 ASM 9
+        if (!isASM9) {
+            rule.add(new String[]{ASM_GROUP + ".", ASM_GROUP + "9."});
         }
+        // 不跳过 TabooLib 重定向
+        if (!SKIP_TABOOLIB_RELOCATE) {
+            rule.add(new String[]{PrimitiveSettings.ID, TABOOLIB_PACKAGE_NAME});
+        }
+        return rule;
     }
 
     /**
@@ -83,11 +96,11 @@ public class PrimitiveLoader {
         // 基础依赖是否隔离加载
         boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
         // 加载基础依赖
-        for (String[] i : DEPS) {
-            load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, new String[][]{});
+        for (String[] i : deps()) {
+            load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, Lists.newArrayList());
         }
         // 重新加载基础依赖用于正式使用
-        for (String[] i : DEPS) {
+        for (String[] i : deps()) {
             load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
         }
         // 加载反射模块
@@ -107,7 +120,7 @@ public class PrimitiveLoader {
      * @param isIsolated 是否进入沙盒
      * @param isExternal 是否属于外部库（不会扫描类）
      */
-    static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, String[][] relocate) throws Throwable {
+    static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, List<String[]> relocate) throws Throwable {
         if (name.isEmpty()) return false;
         boolean downloaded = false;
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
@@ -146,7 +159,7 @@ public class PrimitiveLoader {
             PrimitiveIO.println("[TabooLib] TabooLib version is not specified, skip loading.");
             return;
         }
-        String[][] rule = rule();
+        List<String[]> rule = rule();
         // 加载 env 启动 Kotlin 环境
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
         // 如果 Kotlin 环境启动失败
@@ -171,10 +184,10 @@ public class PrimitiveLoader {
      * @param relocate      重定向规则
      * @param forceRelocate 是否强制重定向
      */
-    static void loadFile(File file, boolean isIsolated, boolean isExternal, String[][] relocate, boolean forceRelocate) throws Throwable {
+    static void loadFile(File file, boolean isIsolated, boolean isExternal, List<String[]> relocate, boolean forceRelocate) throws Throwable {
         File jar = file;
         // 确保在 jar-relocator 加载后运行 >> java.lang.NoClassDefFoundError
-        if (relocate.length > 0) {
+        if (!relocate.isEmpty()) {
             List<Relocation> rel = new ArrayList<>();
             for (String[] r : relocate) {
                 rel.add(new Relocation(r[0], r[1]));
@@ -187,7 +200,7 @@ public class PrimitiveLoader {
                 rel.add(new Relocation(ktc + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
             }
             // 是否重定向
-            String hash = PrimitiveIO.getHash(file.getName() + Arrays.deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
+            String hash = PrimitiveIO.getHash(file.getName() + deepHashCode(relocate) + KOTLIN_VERSION + KOTLIN_COROUTINES_VERSION);
             String name = file.getName().substring(0, file.getName().lastIndexOf('.'));
             jar = new File(getCacheFile(), name + "-" + hash.substring(0, 8) + ".jar");
             // 文件为空 || 开发模式 || 强制重定向
@@ -241,5 +254,25 @@ public class PrimitiveLoader {
             file.mkdirs();
         }
         return file;
+    }
+
+    /**
+     * 当前是否正在运行为 ASM 9 版本
+     */
+    static boolean isASM9() {
+        try {
+            Opcodes.class.getDeclaredField("ASM9");
+            return true;
+        } catch (Throwable ignored) {
+        }
+        return false;
+    }
+
+    static int deepHashCode(List<String[]> array) {
+        int result = 1;
+        for (String[] element : array) {
+            result = 31 * result + Arrays.deepHashCode(element);
+        }
+        return result;
     }
 }

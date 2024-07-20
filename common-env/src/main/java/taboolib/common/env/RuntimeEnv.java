@@ -48,6 +48,8 @@ public class RuntimeEnv {
     private static boolean isAetherFound;
 
     static {
+        // 当服务端版本在 1.17+ 时，可借助服务端自带的 Aether 库完成依赖下载，兼容性更高。
+        // 同时停止对 Legacy 的支持。
         try {
             Class.forName("org.eclipse.aether.graph.Dependency");
             isAetherFound = true;

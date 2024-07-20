@@ -25,13 +25,6 @@ private val nmsProxyInstanceMap = ConcurrentHashMap<String, Any>()
 private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 
 /**
- * 是否为 universal obc 版本（paper 1.10.5+）
- */
-val isUniversalCraftBukkit by unsafeLazy {
-    runCatching { LightReflection.forName("org.bukkit.craftbukkit.CraftServer") }.getOrNull() != null
-}
-
-/**
  * 获取 MinecraftServer 实例
  */
 val minecraftServerObject: Any by unsafeLazy {
@@ -51,7 +44,7 @@ val minecraftServerObject: Any by unsafeLazy {
  * 获取 OBC 类
  */
 fun obcClass(name: String): Class<*> {
-    return if (isUniversalCraftBukkit) {
+    return if (MinecraftVersion.isUniversalCraftBukkit) {
         LightReflection.forName("org.bukkit.craftbukkit.$name")
     } else {
         LightReflection.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
@@ -63,7 +56,7 @@ fun obcClass(name: String): Class<*> {
  */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        LightReflection.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
+        LightReflection.forName(MinecraftVersion.spigotMapping.classLookupBySpigotMapping[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
     } else {
         LightReflection.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }
@@ -118,9 +111,11 @@ fun <T> nmsProxyClass(clazz: Class<T>, bind: String = "{name}Impl"): Class<T> {
     }
     // 生成代理类
     val bindClass = bind.replace("{name}", clazz.name)
-    val newClass = AsmClassTransfer(bindClass).createNewClass()
+    val newClass = AsmClassTranslation(bindClass).createNewClass()
     // 同时生成所有的内部类
-    runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$bindClass\$") }.forEach { (name, _) -> AsmClassTransfer(name).createNewClass() }
+    runningClassMapWithoutLibrary.filter { (name, _) -> name.startsWith("$bindClass\$") }.forEach { (name, _) ->
+        nmsProxyClassMap["$name:$bind"] = AsmClassTranslation(name).createNewClass()
+    }
     // 缓存代理类
     nmsProxyClassMap[key] = newClass
     return newClass as Class<T>

@@ -12,6 +12,8 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.disablePlugin
 import taboolib.common.platform.function.runningPlatform
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.remap.RemapReflexPaper
+import taboolib.module.nms.remap.RemapReflexSpigot
 import java.io.FileInputStream
 
 @Inject
@@ -49,6 +51,12 @@ object MinecraftVersion {
         val version = Bukkit.getServer().version.split("MC:")[1]
         version.substring(0, version.length - 1).trim()
     }
+
+    /**
+     * 是否为 universal obc 版本（一般表现为 Paper 1.10.6+ 环境）
+     */
+    val isUniversalCraftBukkit: Boolean
+        get() = minecraftVersion == "UNKNOWN"
 
     /**
      * 当前所有受支持的版本
@@ -135,23 +143,44 @@ object MinecraftVersion {
     }
 
     /**
-     * 获取当前运行版本的映射文件
+     * 当前运行版本的 Spigot 映射文件
      */
-    val mapping by unsafeLazy {
-        val mappingFile = if (isUniversal) {
-            MappingFile.files[runningVersion]
-        } else {
-            MappingFile.files["1.17"]!!
-        }
-        if (mappingFile == null) {
+    val spigotMapping by unsafeLazy {
+        val current = SpigotMapping.current
+        if (current == null) {
             disablePlugin()
             throw UnsupportedVersionException()
         }
-        Mapping(
-            FileInputStream("assets/${mappingFile.combined.substring(0, 2)}/${mappingFile.combined}"),
-            FileInputStream("assets/${mappingFile.fields.substring(0, 2)}/${mappingFile.fields}"),
+        Mapping.spigot(
+            FileInputStream("assets/${current.combined.substring(0, 2)}/${current.combined}"),
+            FileInputStream("assets/${current.fields.substring(0, 2)}/${current.fields}"),
         )
     }
+
+    /**
+     * 当前运行版本的 Paper 映射文件
+     * 仅用与对 TabooLib 本体的 NMSProxy Impl 进行二次转译（插件本体会自动转译）
+     *
+     * ```
+     * 方法/字段逻辑：
+     * Spigot Deobf -> Mojang Obf -> Mojang Deobf
+     * ^
+     * 还原为 Mojang Obf，逆向查找 Mojang Deobf，因为 Paper 环境采用的是 Mojang Deobf
+     * 以 SystemUtils 为例：
+     * net/minecraft/SystemUtils.ioPool() -> net/minecraft/SystemUtils.g() -> net/minecraft/Util.backgroundExecutor()
+     *                                                                     ^
+     *                                                      此时进入 reobf.tiny 文件检索
+     * 类逻辑：
+     * Spigot Deobf -> Mojang Deobf
+     * ^
+     * 根据 Paper 提供的 reobf.tiny 直接从 Spigot Deobf 转换为 Mojang Deobf
+     * 以 SystemUtils 为例：
+     * net/minecraft/SystemUtils -> net/minecraft/Util
+     * ```
+     *
+     * 这么做的原因是要保证 TabooLib 本体必须能够在 Spigot 环境下运行。
+     */
+    val paperMapping by unsafeLazy { Mapping.paper() }
 
     /**
      * 是否高于某个版本，使用方式如下：
@@ -214,7 +243,7 @@ object MinecraftVersion {
         }
         // 在 Bukkit 平台下，注册 Reflex 重定向实现
         if (runningPlatform == Platform.BUKKIT) {
-            Reflex.remapper.add(RefRemapper)
+            Reflex.remapper.add(if (isUniversalCraftBukkit) RemapReflexPaper() else RemapReflexSpigot())
         }
     }
 }
