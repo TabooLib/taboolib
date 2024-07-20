@@ -5,6 +5,7 @@ import org.objectweb.asm.signature.SignatureReader
 import org.objectweb.asm.signature.SignatureVisitor
 import org.tabooproject.reflex.Reflection
 import org.tabooproject.reflex.ReflexRemapper
+import taboolib.common.platform.function.info
 import taboolib.module.nms.LightReflection
 import taboolib.module.nms.MinecraftVersion
 import java.util.*
@@ -35,10 +36,15 @@ class RemapReflexPaper : ReflexRemapper {
         return if (fieldRemapCacheMap.containsKey(namespace)) {
             fieldRemapCacheMap[namespace]!!
         } else {
+            val (spigotName, mojangName) = matchName(name)
+            if (spigotName == null && mojangName == null) {
+                fieldRemapCacheMap[namespace] = field
+                return field
+            }
             // 还原
-            val obf = spigotMapping.fields.find { it.path == name && it.translateName == field }?.mojangName
+            val obf = spigotMapping.fields.find { it.path == spigotName && (it.translateName == field || it.mojangName == field) }?.mojangName
             // 重映射
-            val deobf = paperMapping.fields.find { it.path == name && it.mojangName == obf }?.translateName ?: field
+            val deobf = paperMapping.fields.find { it.path == mojangName && it.mojangName == obf }?.translateName ?: field
             fieldRemapCacheMap[namespace] = deobf
             deobf
         }
@@ -49,19 +55,50 @@ class RemapReflexPaper : ReflexRemapper {
         return if (methodRemapCacheMap.containsKey(namespace)) {
             methodRemapCacheMap[namespace]!!
         } else {
+            val (spigotName, mojangName) = matchName(name)
+            if (spigotName == null && mojangName == null) {
+                methodRemapCacheMap[namespace] = method
+                return method
+            }
             // 还原
             val obf = spigotMapping.methods.find {
                 // 判断方法描述符获取准确方法
-                // 这里存在一个潜在问题，与 NMSProxy 不同的是无法确认它来自何种对照表
-                it.path == name && it.translateName == method && checkParameterType(it.descriptor, *parameter)
+                it.path == spigotName && (it.translateName == method || it.mojangName == method) && checkParameterType(it.descriptor, *parameter)
             }?.mojangName ?: method
             // 重映射
             val deobf = paperMapping.methods.find {
-                it.path == name && it.mojangName == obf && checkParameterType(it.descriptor, *parameter)
+                it.path == mojangName && it.mojangName == obf && checkParameterType(it.descriptor, *parameter)
             }?.translateName ?: method
             methodRemapCacheMap[namespace] = deobf
             deobf
         }
+    }
+
+    /**
+     * 这里存在一个潜在问题，与 NMSProxy 不同的是无法确认它来自何种对照表
+     * 因此要从两边猜
+     */
+    fun matchName(name: String): Pair<String?, String?> {
+        val className = name.replace('/', '.')
+        val spigotName: String
+        val mojangName: String
+        // 如果是 Spigot 名
+        if (spigotMapping.classLookupBySpigotMapping.containsKey(className)) {
+            spigotName = className
+            mojangName = paperMapping.classLookupByMojangMapping[spigotName]!!
+        }
+        // 如果是 Mojang 名
+        else if (paperMapping.classLookupByMojangMappingReversed.containsKey(className)) {
+            mojangName = className
+            spigotName = paperMapping.classLookupByMojangMappingReversed[mojangName]!!
+        } else {
+            return null to null
+        }
+        return spigotName to mojangName
+    }
+
+    fun translate(key: String): String {
+        return MinecraftVersion.paperMapping.classLookupByMojangMapping[key.replace('/', '.')] ?: key
     }
 
     fun checkParameterType(descriptor: String, vararg parameter: Any?): Boolean {

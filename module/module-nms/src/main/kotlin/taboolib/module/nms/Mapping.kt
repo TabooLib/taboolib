@@ -20,6 +20,7 @@ class Mapping {
 
     val classLookupBySpigotMapping = HashMap<String, String>() // <Spigot.SimpleName, Spigot.FullName>
     val classLookupByMojangMapping = HashMap<String, String>() // <Spigot.FullName, Mojang.FullName>
+    val classLookupByMojangMappingReversed = HashMap<String, String>() // <Mojang.FullName, Spigot.FullName>
 
     val fields = LinkedList<Field>()
     val methods = LinkedList<Method>() // 1.18 only
@@ -77,38 +78,38 @@ class Mapping {
             val inputStream = obcClass("CraftServer").classLoader.getResourceAsStream("META-INF/mappings/reobf.tiny") ?: return mapping
             inputStream.use {
                 var i = 0
+                var mojangName = ""
                 it.bufferedReader().forEachLine { line ->
                     // 第一行忽略
                     if (i++ == 0) return@forEachLine
                     // 成员
                     val args = line.split('	')
-                    var mojangName = ""
-                    when {
-                        // 类
-                        // Paper 在运行时会将类转换为 Mojang Deobf 名
-                        args[0] == "c" -> {
-                            mojangName = args[1].replace('/', '.')
-                            mapping.classLookupByMojangMapping[args[2].replace('/', '.')] = mojangName
-                        }
-                        // 方法
-                        // Paper 在运行时会将方法转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，方法名为 Mojang Obf 名）
-                        args[1] == "m" -> {
-                            mapping.methods += Method(
-                                mojangName,
-                                args[4], // Mojang Deobf
-                                args[3], // Mojang Obf
-                                args[2]  // descriptor
-                            )
-                        }
-                        // 字段
-                        // Paper 在运行时会将字段转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，字段名为 Mojang Obf 名）
-                        args[1] == "f" -> {
-                            mapping.fields += Field(
-                                mojangName,
-                                args[4], // Mojang Deobf
-                                args[3]  // Mojang Obf
-                            )
-                        }
+                    // 类
+                    // Paper 在运行时会将类转换为 Mojang Deobf 名
+                    if (args[0] == "c") {
+                        mojangName = args[1].replace('/', '.')
+                        val spigotName = args[2].replace('/', '.')
+                        mapping.classLookupByMojangMapping[spigotName] = mojangName
+                        mapping.classLookupByMojangMappingReversed[mojangName] = spigotName
+                    }
+                    // 方法
+                    // Paper 在运行时会将方法转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，方法名为 Mojang Obf 名）
+                    else if (args[1] == "m") {
+                        mapping.methods += Method(
+                            mojangName,
+                            args[4], // Mojang Deobf
+                            args[3], // Mojang Obf
+                            args[2]  // descriptor
+                        )
+                    }
+                    // 字段
+                    // Paper 在运行时会将字段转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，字段名为 Mojang Obf 名）
+                    else if (args[1] == "f") {
+                        mapping.fields += Field(
+                            mojangName,
+                            args[4], // Mojang Deobf
+                            args[3]  // Mojang Obf
+                        )
                     }
                 }
             }
