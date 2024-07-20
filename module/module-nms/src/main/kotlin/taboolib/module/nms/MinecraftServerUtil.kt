@@ -28,7 +28,7 @@ private val packetPool = ConcurrentHashMap<String, ExecutorService>()
  * 是否为 universal obc 版本（paper 1.10.5+）
  */
 val isUniversalCraftBukkit by unsafeLazy {
-    runCatching { Class.forName("org.bukkit.craftbukkit.CraftServer") }.getOrNull() != null
+    runCatching { LightReflection.forName("org.bukkit.craftbukkit.CraftServer") }.getOrNull() != null
 }
 
 /**
@@ -52,9 +52,9 @@ val minecraftServerObject: Any by unsafeLazy {
  */
 fun obcClass(name: String): Class<*> {
     return if (isUniversalCraftBukkit) {
-        Class.forName("org.bukkit.craftbukkit.$name")
+        LightReflection.forName("org.bukkit.craftbukkit.$name")
     } else {
-        Class.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
+        LightReflection.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
     }
 }
 
@@ -63,9 +63,9 @@ fun obcClass(name: String): Class<*> {
  */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        Class.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
+        LightReflection.forName(MinecraftVersion.mapping.classMap[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
     } else {
-        Class.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
+        LightReflection.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }
 }
 

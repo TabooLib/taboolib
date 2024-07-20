@@ -75,7 +75,7 @@ object RefRemapper : ReflexRemapper {
                 override fun visitParameterType(): SignatureVisitor {
                     return object : SignatureVisitor(Opcodes.ASM7) {
                         override fun visitClassType(name: String) {
-                            classes += Class.forName(name.replace('/', '.'))
+                            classes += LightReflection.forName(name.replace('/', '.'))
                             super.visitClassType(name)
                         }
                     }

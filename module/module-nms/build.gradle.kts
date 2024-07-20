@@ -3,7 +3,7 @@ dependencies {
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
-    compileOnly(project(":module:module-bukkit-util"))
+//    compileOnly(project(":module:module-bukkit-util"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms.core:v12100:12100:mapped")

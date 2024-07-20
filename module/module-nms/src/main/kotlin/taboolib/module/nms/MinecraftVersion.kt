@@ -35,9 +35,11 @@ object MinecraftVersion {
 
     /**
      * 当前运行的版本（字符版本），例如：v1_8_R3
+     * 在 Paper 1.20.6+ 此方法失效，返回 "UNKNOWN"
      */
     val minecraftVersion by unsafeLazy {
-        Bukkit.getServer().javaClass.name.split('.')[3]
+        val version = Bukkit.getServer().javaClass.name.split('.')[3]
+        if (version.startsWith('v')) version else "UNKNOWN"
     }
 
     /**

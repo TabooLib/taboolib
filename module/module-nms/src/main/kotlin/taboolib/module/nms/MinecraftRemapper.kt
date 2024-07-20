@@ -110,7 +110,7 @@ open class MinecraftRemapper : Remapper() {
             try {
                 val find = hashSetOf<String>()
                 find += owner
-                val forName = Class.forName(owner)
+                val forName = LightReflection.forName(owner)
                 find += forName.interfaces.map { it.name }
                 val superclass = forName.superclass
                 if (superclass != null && superclass.name != "java.lang.Object") {

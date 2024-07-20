@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import taboolib.common.Inject
 import taboolib.common.env.RuntimeResource
 import taboolib.common.env.RuntimeResources
 
@@ -10,6 +11,7 @@ import taboolib.common.env.RuntimeResources
  * @author sky
  * @since 2021/7/17 9:04 下午
  */
+@Inject
 @RuntimeResources(
     // 1.17
     RuntimeResource(

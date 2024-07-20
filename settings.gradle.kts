@@ -14,7 +14,7 @@ include(
     "module:module-database",
     "module:module-effect",
 //    "module:module-kether",
-//    "module:module-nms",
+    "module:module-nms",
 //    "module:module-nms-util",
 //    "module:module-nms-util-legacy",
 //    "module:module-nms-util-stable",
