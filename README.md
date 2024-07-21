@@ -7,4 +7,4 @@
 ![](https://img.shields.io/github/contributors/taboolib/taboolib)
 ![](https://img.shields.io/github/languages/code-size/taboolib/taboolib)
 
-由于 Paper 1.20.5 的破坏性改动，TabooLib 正在进行调整。
+TabooLib 正在更新。
