@@ -29,6 +29,16 @@ object RemapHelper {
     }
 
     /**
+     * 根据「方法描述符」中的「返回值」检查与目标「方法描述符」中的「返回值」是否匹配
+     *
+     * @param check 方法描述符（例如：(Ljava/lang/String;I)V）
+     * @param to 目标方法描述符（例如：(Ljava/lang/String;I)V）
+     */
+    fun checkReturnType(check: String, to: String): Boolean {
+        return ClassHelper.getClass(Type.getReturnType(check).className, false) == ClassHelper.getClass(Type.getReturnType(to).className, false)
+    }
+
+    /**
      * 根据「参数实例」检查与目标「方法描述符」是否匹配
      *
      * @param check 参数实例（例如："字符串", 1）

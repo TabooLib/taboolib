@@ -19,3 +19,7 @@ dependencies {
     compileOnly("ink.ptms.core:v12100:12100-minimize:universal")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
 }
+
+tasks.named("compileJava") {
+    dependsOn(":module:bukkit-xseries-skull:jar")
+}

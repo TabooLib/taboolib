@@ -9,7 +9,6 @@ dependencies {
     compileOnly(project(":module:bukkit-util"))
     compileOnly(project(":module:bukkit-xseries"))
     compileOnly(project(":module:nms-util-tag"))
-    compileOnly(project(":module:nms-util-tag-legacy"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms:nms-all:1.0.0")

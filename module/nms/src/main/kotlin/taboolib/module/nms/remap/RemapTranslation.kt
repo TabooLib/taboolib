@@ -55,7 +55,9 @@ open class RemapTranslation : Remapper() {
             val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
             return MinecraftVersion.spigotMapping.methods.find {
                 // 根据复杂程度依次对比
-                it.translateName == name && it.path in findPath && RemapHelper.checkParameterType(descriptor, it.descriptor)
+                it.translateName == name
+                        && it.path in findPath
+                        && RemapHelper.checkParameterType(descriptor, it.descriptor)
             }?.mojangName ?: name
         }
         return name

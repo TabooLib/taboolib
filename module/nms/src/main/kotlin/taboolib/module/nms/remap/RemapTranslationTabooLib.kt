@@ -1,6 +1,7 @@
 package taboolib.module.nms.remap
 
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.remap.RemapHelper.checkParameterType
 
 /**
  * TabooLib
@@ -51,7 +52,7 @@ class RemapTranslationTabooLib : RemapTranslation() {
                 // 获取用于在 Mojang Mapping 中检索的名字（已还原为 Mojang Obf）
                 val obf = if (spigotMethod.translateName == name || spigotMethod.mojangName == name) {
                     // 与字段不同的是，方法需要额外判断描述符
-                    if (RemapHelper.checkParameterType(descriptor, spigotMethod.descriptor)) spigotMethod.mojangName
+                    if (checkParameterType(descriptor, spigotMethod.descriptor)) spigotMethod.mojangName
                     else continue
                 } else {
                     continue
@@ -60,7 +61,10 @@ class RemapTranslationTabooLib : RemapTranslation() {
                 val mojangName = translate(owner).replace('/', '.')
                 // 从 Mojang Mapping 中检索
                 for (mojangMethod in MinecraftVersion.paperMapping.methods) {
-                    if (mojangMethod.mojangName == obf && mojangMethod.path == mojangName && RemapHelper.checkParameterType(descriptor, mojangMethod.descriptor)) {
+                    if (mojangMethod.mojangName == obf
+                        && mojangMethod.path == mojangName
+                        && checkParameterType(descriptor, mojangMethod.descriptor)
+                    ) {
                         // 最终返回 Mojang Deobf 名
                         return mojangMethod.translateName
                     }

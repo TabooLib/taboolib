@@ -21,10 +21,17 @@ dependencies {
     compileOnly("org.apache.logging.log4j:log4j-api:2.14.1")
 }
 
+tasks.named("publishMavenPublicationToMavenRepository") {
+    dependsOn(tasks.jar)
+}
+
+tasks.named("publishMavenPublicationToMavenLocalRepository") {
+    dependsOn(tasks.jar)
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = listOf("-Xjvm-default=all")
     }
 }
 

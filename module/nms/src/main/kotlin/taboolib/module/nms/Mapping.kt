@@ -3,7 +3,9 @@ package taboolib.module.nms
 import com.google.gson.JsonParser
 import taboolib.common.PrimitiveIO
 import taboolib.common.env.RuntimeEnv
+import taboolib.common.io.newFile
 import taboolib.common.io.runningResources
+import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.warning
 import taboolib.common.util.unsafeLazy
 import java.io.InputStream
@@ -99,11 +101,11 @@ class Mapping {
                     }
                     // 方法
                     // Paper 在运行时会将方法转换为 Mojang Deobf 名，但 Spigot 不会（Spigot 环境时，方法名为 Mojang Obf 名）
-                    else if (args[1] == "m") {
+                    else if (args[1] == "m" && !args[3].startsWith("lambda\$")) {
                         mapping.methods += Method(
                             mojangName,
-                            args[4], // Mojang Deobf
-                            args[3], // Mojang Obf
+                            args[4], // Mojang obf
+                            args[3], // Mojang DeObf
                             args[2]  // descriptor
                         )
                     }
@@ -112,8 +114,8 @@ class Mapping {
                     else if (args[1] == "f") {
                         mapping.fields += Field(
                             mojangName,
-                            args[4], // Mojang Deobf
-                            args[3]  // Mojang Obf
+                            args[4], // Mojang obf
+                            args[3]  // Mojang DeObf
                         )
                     }
                 }
