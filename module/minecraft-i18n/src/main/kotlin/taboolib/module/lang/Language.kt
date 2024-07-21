@@ -79,6 +79,14 @@ object Language {
     /** 是否在语言文件中启用 SimpleComponent 格式化 */
     var enableSimpleComponent = false
 
+    /**
+     * 重设根目录
+     * 传入 "i18n" 会将语言文件写入 "i18n/{0}/{1}" 目录
+     */
+    fun setRoot(path: String) {
+        releasePath = "$path/{0}/{1}"
+    }
+
     /** 添加新的语言文件 */
     fun addLanguage(vararg code: String) {
         languageCode += code

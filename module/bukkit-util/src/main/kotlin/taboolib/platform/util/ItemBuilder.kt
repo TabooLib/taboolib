@@ -1,4 +1,4 @@
-@file:Suppress("DEPRECATION")
+@file:Suppress("DEPRECATION", "removal")
 
 package taboolib.platform.util
 
@@ -15,9 +15,14 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.platform.function.warning
 import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.XSkull
+import taboolib.library.xseries.profiles.builder.XSkull
+import taboolib.library.xseries.profiles.objects.ProfileInputType
+import taboolib.library.xseries.profiles.objects.Profileable
 import taboolib.module.chat.colored
+import java.util.*
+
 
 /**
  * 判定材质是否为空气
@@ -144,8 +149,9 @@ open class ItemBuilder {
 
     /**
      * 头颅材质信息
+     * 依赖 "bukkit-xseries-skull" 模块
      */
-    var skullTexture: XSkull.SkullTexture? = null
+    var skullTexture: SkullTexture? = null
 
     /**
      * 无法破坏
@@ -217,43 +223,57 @@ open class ItemBuilder {
      */
     open fun build(): ItemStack {
         val itemStack = ItemStack(material)
+        // 数量
         itemStack.amount = amount
-        if (damage != 0) {
-            itemStack.durability = damage.toShort()
-        }
+        // 耐久（附加值）
+        if (damage != 0) itemStack.durability = damage.toShort()
+
+        // 开始构建 ItemMeta
         val itemMeta = originMeta ?: itemStack.itemMeta ?: return itemStack
+        // 展示名称
         itemMeta.setDisplayName(name)
+        // 描述
         itemMeta.lore = lore
+        // 标签
         itemMeta.addItemFlags(*flags.toTypedArray())
+
+        // 附魔
+        // 对附魔书进行特殊处理
         if (itemMeta is EnchantmentStorageMeta) {
             enchants.forEach { (e, lvl) -> itemMeta.addStoredEnchant(e, lvl, true) }
         } else {
             enchants.forEach { (e, lvl) -> itemMeta.addEnchant(e, lvl, true) }
         }
+
+        // 处理特殊类型
         when (itemMeta) {
-            is LeatherArmorMeta -> {
-                itemMeta.setColor(color)
-            }
-
+            // 颜色
+            is LeatherArmorMeta -> itemMeta.setColor(color)
+            // 药水
             is PotionMeta -> {
+                // 自定义药水效果
                 potions.forEach { itemMeta.addCustomEffect(it, true) }
-                if (color != null) {
-                    itemMeta.color = color
-                }
-                if (potionData != null) {
-                    itemMeta.basePotionData = potionData!!
-                }
+                // 药水颜色
+                if (color != null) itemMeta.color = color
+                // 基础药水类型（过时）
+                if (potionData != null) itemMeta.basePotionData = potionData
             }
-
+            // 头
             is SkullMeta -> {
-                if (skullOwner != null) {
-                    itemMeta.owner = skullOwner
-                }
+                // 玩家头颅
+                if (skullOwner != null) itemMeta.owner = skullOwner
                 if (skullTexture != null) {
-                    XSkull.applySkin(itemMeta, skullTexture!!.texture)
+                    try {
+                        // TODO 这里需要兼容 UUID？因为和以前的逻辑不同，UUID 不同会导致物品无法堆叠
+                        XSkull.of(itemMeta).profile(Profileable.of(ProfileInputType.BASE64, skullTexture!!.texture)).apply()
+                    } catch (ex: NoClassDefFoundError) {
+                        warning("XSkull not found, module 'bukkit-xseries-skull' missing.")
+                    }
                 }
             }
         }
+
+        // 无法破坏
         try {
             itemMeta.isUnbreakable = isUnbreakable
         } catch (ex: NoSuchMethodError) {
@@ -262,24 +282,29 @@ open class ItemBuilder {
             } catch (ignored: NoSuchMethodException) {
             }
         }
+        // 蛋
         try {
             if (spawnType != null && itemMeta is SpawnEggMeta) {
                 itemMeta.spawnedType = spawnType
             }
         } catch (ignored: NoClassDefFoundError) {
         }
+        // 旗帜
         try {
             if (patterns.isNotEmpty() && itemMeta is BannerMeta) {
                 patterns.forEach { itemMeta.addPattern(it) }
             }
         } catch (ignored: NoClassDefFoundError) {
         }
+        // CustomModelData
         try {
             if (customModelData != -1) {
                 itemMeta.invokeMethod<Void>("setCustomModelData", customModelData)
             }
         } catch (ignored: NoSuchMethodException) {
         }
+
+        // 返回
         itemStack.itemMeta = itemMeta
         finishing(itemStack)
         return itemStack
@@ -303,39 +328,39 @@ open class ItemBuilder {
         material = item.type
         amount = item.amount
         damage = item.durability.toInt()
+
         // 如果物品没有 ItemMeta 则不进行后续操作
         val itemMeta = item.itemMeta ?: return
         originMeta = itemMeta
+
+        // 基本信息
         name = itemMeta.displayName
         lore += itemMeta.lore ?: emptyList()
         flags += itemMeta.itemFlags
-        enchants += if (itemMeta is EnchantmentStorageMeta) {
-            itemMeta.storedEnchants
-        } else {
-            itemMeta.enchants
-        }
-        when (itemMeta) {
-            is LeatherArmorMeta -> {
-                color = itemMeta.color
-            }
 
+        // 附魔
+        // 对附魔书进行特殊处理
+        enchants.putAll(if (itemMeta is EnchantmentStorageMeta) itemMeta.storedEnchants else itemMeta.enchants)
+
+        // 特殊类型
+        when (itemMeta) {
+            // 颜色
+            is LeatherArmorMeta -> color = itemMeta.color
+            // 药水
             is PotionMeta -> {
                 color = itemMeta.color
                 potions += itemMeta.customEffects
                 potionData = itemMeta.basePotionData
             }
-
+            // 头
             is SkullMeta -> {
-                if (itemMeta.owner != null) {
-                    skullOwner = itemMeta.owner
-                }
-                XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
+                // 玩家
+                skullOwner = itemMeta.owner
+                // TODO 新版 XSkull 不会用
+                // XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
             }
         }
-        try {
-            customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
-        } catch (ignored: NoSuchFieldException) {
-        }
+        // 无法破坏
         try {
             isUnbreakable = itemMeta.isUnbreakable
         } catch (ex: NoSuchMethodError) {
@@ -344,20 +369,35 @@ open class ItemBuilder {
             } catch (ignored: NoSuchMethodException) {
             }
         }
+        // 刷怪蛋
         try {
             if (itemMeta is SpawnEggMeta && itemMeta.spawnedType != null) {
                 spawnType = itemMeta.spawnedType
             }
         } catch (ignored: NoClassDefFoundError) {
         } catch (ignored: UnsupportedOperationException) {
-
         }
+        // 旗帜
         try {
             if (itemMeta is BannerMeta && itemMeta.patterns.isNotEmpty()) {
                 patterns += itemMeta.patterns
             }
         } catch (ignored: NoClassDefFoundError) {
         }
+        // CustomModelData
+        try {
+            customModelData = itemMeta.getProperty<Int>("customModelData") ?: -1
+        } catch (ignored: NoSuchFieldException) {
+        }
     }
+}
 
+data class SkullTexture(val texture: String, val uuid: UUID = UUID(0, 0)) {
+
+    /**
+     * 如果 UUID 不是 0 0
+     */
+    fun isUUIDSet(): Boolean {
+        return uuid != UUID(0, 0)
+    }
 }

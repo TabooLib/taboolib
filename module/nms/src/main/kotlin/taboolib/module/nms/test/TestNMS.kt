@@ -19,7 +19,7 @@ object TestNMS : Test() {
 
     override fun check(): List<Result> {
         val result = arrayListOf<Result>()
-        // 获取 MinecraftServer 实例
+        result += sandbox("NMS:isBukkitServerRunning") { isBukkitServerRunning }
         result += sandbox("NMS:minecraftServerObject") { minecraftServerObject }
         // 获取 OBC 类
         result += sandbox("NMS:obcClass") { obcClass("CraftServer") }

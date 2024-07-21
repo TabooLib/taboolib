@@ -26,6 +26,18 @@ private val nmsProxyInstanceMap = ConcurrentHashMap<String, Any>()
 private val packetPool = ConcurrentHashMap<String, ExecutorService>()
 
 /**
+ * 服务器是否在运行
+ */
+val isBukkitServerRunning: Boolean
+    get() {
+        return try {
+            !Bukkit.getServer().getProperty<Boolean>("console/stopped")!!
+        } catch (ex: NoSuchFieldException) {
+            !Bukkit.getServer().getProperty<Boolean>("console/hasStopped")!!
+        }
+    }
+
+/**
  * 获取 MinecraftServer 实例
  */
 val minecraftServerObject: Any by unsafeLazy {

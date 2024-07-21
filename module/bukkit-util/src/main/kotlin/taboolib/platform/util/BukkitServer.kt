@@ -5,18 +5,6 @@ import org.bukkit.entity.Player
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 
 /**
- * 服务器是否在运行
- */
-val isBukkitServerRunning: Boolean
-    get() {
-        return try {
-            !Bukkit.getServer().getProperty<Boolean>("console/stopped")!!
-        } catch (ex: NoSuchFieldException) {
-            !Bukkit.getServer().getProperty<Boolean>("console/hasStopped")!!
-        }
-    }
-
-/**
  * 获取所有在线玩家
  */
 val onlinePlayers: List<Player>

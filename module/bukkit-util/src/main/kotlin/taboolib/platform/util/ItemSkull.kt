@@ -1,7 +1,7 @@
 package taboolib.platform.util
 
 import org.bukkit.inventory.meta.SkullMeta
-import taboolib.library.xseries.XSkull
+import taboolib.library.xseries.profiles.builder.XSkull
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.regex.Pattern
@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 private val pattern = Pattern.compile("(http://.*?)\"")
 
 fun SkullMeta.getSkullValue(): String? {
-    return XSkull.getSkinValue(this)?.texture
+    return XSkull.of(this).profileValue
 }
 
 fun SkullMeta.getSkinUrl(): String? {
