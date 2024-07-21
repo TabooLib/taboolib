@@ -2,7 +2,6 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,27 @@ public class TabooLib {
      * 生命周期任务
      **/
     private static final ConcurrentHashMap<LifeCycle, List<LifeCycleTask>> lifeCycleTask = new ConcurrentHashMap<>();
+
+    /**
+     * 类查找器
+     */
+    private static ClassFinder classFinder = new ClassFinder() {
+
+        @Override
+        public Class<?> getClass(String name) throws ClassNotFoundException {
+            return Class.forName(name);
+        }
+
+        @Override
+        public Class<?> getClass(String name, boolean initialize) throws ClassNotFoundException {
+            return Class.forName(name, initialize, TabooLib.class.getClassLoader());
+        }
+
+        @Override
+        public Class<?> getClass(String name, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
+            return Class.forName(name, initialize, classLoader);
+        }
+    };
 
     /**
      * 执行生命周期任务
@@ -149,5 +169,43 @@ public class TabooLib {
      */
     public static Map<String, Object> getAwakenedClasses() {
         return awakenedClasses;
+    }
+
+    /**
+     * 获取类
+     * 由于 Paper 1.20.6+ 会在运行时修改字节码以接管插件的 Class.forName 调用，
+     * 因此 TabooLib 的外部模块均需要通过此方法获取类，以借助 Paper 的重定向机制。
+     */
+    public static Class<?> getClass(String name) throws ClassNotFoundException {
+        return classFinder.getClass(name);
+    }
+
+    /**
+     * 获取类
+     * 逆天 Paper，这俩玩意儿反而不接管，想不明白。
+     */
+    public static Class<?> getClass(String name, boolean initialize) throws ClassNotFoundException {
+        return classFinder.getClass(name, initialize);
+    }
+
+    public static Class<?> getClass(String name, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
+        return classFinder.getClass(name, initialize, classLoader);
+    }
+
+    public static void setClassFinder(ClassFinder classFinder) {
+        TabooLib.classFinder = classFinder;
+    }
+
+    public static ClassFinder getClassFinder() {
+        return classFinder;
+    }
+
+    public static abstract class ClassFinder {
+
+        public abstract Class<?> getClass(String name) throws ClassNotFoundException;
+
+        public abstract Class<?> getClass(String name, boolean initialize) throws ClassNotFoundException;
+
+        public abstract Class<?> getClass(String name, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException;
     }
 }

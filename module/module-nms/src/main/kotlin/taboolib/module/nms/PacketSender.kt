@@ -11,6 +11,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
+import taboolib.common.reflect.ClassHelper
 import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
 
@@ -33,7 +34,7 @@ object PacketSender {
 
     init {
         try {
-            val bundlePacketClass = LightReflection.forName("net.minecraft.network.protocol.game.ClientboundBundlePacket")
+            val bundlePacketClass = ClassHelper.getClass("net.minecraft.network.protocol.game.ClientboundBundlePacket")
             newPacketBundlePacket = bundlePacketClass.getDeclaredConstructor(Iterable::class.java)
             newPacketBundlePacket?.isAccessible = true
         } catch (ignored: Exception) {
@@ -52,7 +53,7 @@ object PacketSender {
      * 创建混合包（我也不知道这东西应该翻译成什么）
      */
     fun createBundlePacket(packets: List<Any>): Any? {
-         return newPacketBundlePacket?.newInstance(packets)
+        return newPacketBundlePacket?.newInstance(packets)
     }
 
     /**

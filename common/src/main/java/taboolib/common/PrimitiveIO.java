@@ -86,7 +86,7 @@ public class PrimitiveIO {
      * 调试模式输出
      */
     public static void debug(Object message, Object... args) {
-        if (PrimitiveSettings.IS_DEBUG_MODE) {
+        if (PrimitiveSettings.IS_DEV_MODE || PrimitiveSettings.IS_DEBUG_MODE) {
             println("[DEBUG] " + message, args);
         }
     }

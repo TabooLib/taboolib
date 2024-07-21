@@ -70,20 +70,6 @@ abstract class Test {
      */
     class Unsupported(reason: String) : Result(reason)
 
-    /**
-     * 运行测试
-     */
-    protected fun sandbox(reason: String, func: () -> Unit): Result {
-        return try {
-            func()
-            Success.of(reason)
-        } catch (ex: UnsupportedVersionException) {
-            Unsupported(reason)
-        } catch (ex: Throwable) {
-            Failure.of(reason, ex)
-        }
-    }
-
     companion object {
 
         /**
@@ -91,6 +77,20 @@ abstract class Test {
          */
         fun check(vararg tests: Test): BatchResult {
             return BatchResult(tests.flatMap { runCatching { it.check() }.getOrElse { ex -> listOf(Failure.of(ex)) } })
+        }
+
+        /**
+         * 运行测试
+         */
+        fun sandbox(reason: String, func: Runnable): Result {
+            return try {
+                func.run()
+                Success.of(reason)
+            } catch (ex: UnsupportedVersionException) {
+                Unsupported(reason)
+            } catch (ex: Throwable) {
+                Failure.of(reason, ex)
+            }
         }
 
         /**
@@ -119,6 +119,7 @@ abstract class Test {
                                 message += "[ FAILURE ] : ${it.reason}${" ".repeat(len - it.reason.length)} : ${it.error.message ?: "NULL"}"
                             }
                         }
+
                         is Unsupported -> message += "[ UNSUPPORTED ] : ${it.reason}"
                     }
                 }

@@ -1,14 +1,6 @@
 package taboolib.module.nms.remap
 
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.signature.SignatureReader
-import org.objectweb.asm.signature.SignatureVisitor
-import org.tabooproject.reflex.Reflection
-import org.tabooproject.reflex.ReflexRemapper
-import taboolib.module.nms.LightReflection
 import taboolib.module.nms.MinecraftVersion
-import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -20,15 +12,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @since 2021/6/18 5:43 下午
  */
 @Suppress("DuplicatedCode")
-class RemapReflexPaper : ReflexRemapper {
-
-    val major = MinecraftVersion.major
-    val fieldRemapCacheMap = ConcurrentHashMap<String, String>()
-    val methodRemapCacheMap = ConcurrentHashMap<String, String>()
-    val descriptorTypeCacheMap = ConcurrentHashMap<String, List<Class<*>>>()
-
-    val spigotMapping = MinecraftVersion.spigotMapping
-    val paperMapping = MinecraftVersion.paperMapping
+class RemapReflexPaper : RemapReflex() {
 
     override fun field(name: String, field: String): String {
         val namespace = "$name#$field"
@@ -37,14 +21,14 @@ class RemapReflexPaper : ReflexRemapper {
         } else {
             val (spigotName, mojangName) = matchName(name)
             if (spigotName == null || mojangName == null) {
-                fieldRemapCacheMap[namespace] = field
+                saveField(name, field, field)
                 return field
             }
             // 还原
             val obf = spigotMapping.fields.find { it.path == spigotName && (it.translateName == field || it.mojangName == field) }?.mojangName
             // 重映射
             val deobf = paperMapping.fields.find { it.path == mojangName && it.mojangName == obf }?.translateName ?: field
-            fieldRemapCacheMap[namespace] = deobf
+            saveField(name, field, deobf)
             deobf
         }
     }
@@ -56,19 +40,22 @@ class RemapReflexPaper : ReflexRemapper {
         } else {
             val (spigotName, mojangName) = matchName(name)
             if (spigotName == null || mojangName == null) {
-                methodRemapCacheMap[namespace] = method
+                saveMethod(name, method, method, null)
                 return method
             }
+            val pArray: Array<Any?> = arrayOf(*parameter)
             // 还原
-            val obf = spigotMapping.methods.find {
+            val findObf = spigotMapping.methods.find {
                 // 判断方法描述符获取准确方法
-                it.path == spigotName && (it.translateName == method || it.mojangName == method) && checkParameterType(it.descriptor, *parameter)
-            }?.mojangName ?: method
+                it.path == spigotName && (it.translateName == method || it.mojangName == method) && RemapHelper.checkParameterType(pArray, it.descriptor)
+            }
+            val obf = findObf?.mojangName ?: method
             // 重映射
-            val deobf = paperMapping.methods.find {
-                it.path == mojangName && it.mojangName == obf && checkParameterType(it.descriptor, *parameter)
-            }?.translateName ?: method
-            methodRemapCacheMap[namespace] = deobf
+            val findDeobf = paperMapping.methods.find {
+                it.path == mojangName && it.mojangName == obf && RemapHelper.checkParameterType(pArray, it.descriptor)
+            }
+            val deobf = findDeobf?.translateName ?: method
+            saveMethod(name, method, deobf, "${findObf?.descriptor}->${findDeobf?.descriptor} (${parameter.joinToString(",") { p -> p?.javaClass?.name.toString() }})")
             deobf
         }
     }
@@ -93,29 +80,5 @@ class RemapReflexPaper : ReflexRemapper {
 
     fun translate(key: String): String {
         return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')] ?: key
-    }
-
-    fun checkParameterType(descriptor: String, vararg parameter: Any?): Boolean {
-        return Reflection.isAssignableFrom(getParameterTypes(descriptor).toTypedArray(), parameter.map { p -> p?.javaClass }.toTypedArray())
-    }
-
-    fun getParameterTypes(descriptor: String): List<Class<*>> {
-        return if (descriptorTypeCacheMap.containsKey(descriptor)) {
-            descriptorTypeCacheMap[descriptor]!!
-        } else {
-            val classes = LinkedList<Class<*>>()
-            SignatureReader(descriptor).accept(object : SignatureVisitor(Opcodes.ASM7) {
-                override fun visitParameterType(): SignatureVisitor {
-                    return object : SignatureVisitor(Opcodes.ASM7) {
-                        override fun visitClassType(name: String) {
-                            classes += LightReflection.forName(name.replace('/', '.'))
-                            super.visitClassType(name)
-                        }
-                    }
-                }
-            })
-            descriptorTypeCacheMap[descriptor] = classes
-            classes
-        }
     }
 }

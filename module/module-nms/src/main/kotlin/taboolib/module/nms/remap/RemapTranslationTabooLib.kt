@@ -1,8 +1,5 @@
 package taboolib.module.nms.remap
 
-import org.objectweb.asm.commons.Remapper
-import org.objectweb.asm.signature.SignatureReader
-import org.objectweb.asm.signature.SignatureWriter
 import taboolib.module.nms.MinecraftVersion
 
 /**
@@ -15,10 +12,7 @@ import taboolib.module.nms.MinecraftVersion
  * @author 坏黑
  * @since 2024/7/21 04:13
  */
-class RemapTranslationTabooLib : Remapper() {
-
-    val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
-    val obc2 = "org/bukkit/craftbukkit/"
+class RemapTranslationTabooLib : RemapTranslation() {
 
     val descriptorCache = HashMap<String, String>()
 
@@ -54,21 +48,10 @@ class RemapTranslationTabooLib : Remapper() {
         for (spigotMethod in MinecraftVersion.spigotMapping.methods) {
             // 类名符合
             if (spigotMethod.path == ownerName) {
-                // 为什么这么做？
-                // 以 send(Packet) 函数为例，除了 send 需要转译之外，Packet 也需要。
-                val desc = descriptorCache.getOrPut(descriptor) {
-                    val signatureWriter = object : SignatureWriter() {
-                        override fun visitClassType(name: String) {
-                            super.visitClassType(translate(name))
-                        }
-                    }
-                    SignatureReader(descriptor).accept(signatureWriter)
-                    signatureWriter.toString()
-                }
                 // 获取用于在 Mojang Mapping 中检索的名字（已还原为 Mojang Obf）
                 val obf = if (spigotMethod.translateName == name || spigotMethod.mojangName == name) {
                     // 与字段不同的是，方法需要额外判断描述符
-                    if (spigotMethod.descriptor == desc) spigotMethod.mojangName
+                    if (RemapHelper.checkParameterType(descriptor, spigotMethod.descriptor)) spigotMethod.mojangName
                     else continue
                 } else {
                     continue
@@ -77,7 +60,7 @@ class RemapTranslationTabooLib : Remapper() {
                 val mojangName = translate(owner).replace('/', '.')
                 // 从 Mojang Mapping 中检索
                 for (mojangMethod in MinecraftVersion.paperMapping.methods) {
-                    if (mojangMethod.mojangName == obf && mojangMethod.path == mojangName && mojangMethod.descriptor == desc) {
+                    if (mojangMethod.mojangName == obf && mojangMethod.path == mojangName && RemapHelper.checkParameterType(descriptor, mojangMethod.descriptor)) {
                         // 最终返回 Mojang Deobf 名
                         return mojangMethod.translateName
                     }
@@ -87,21 +70,13 @@ class RemapTranslationTabooLib : Remapper() {
         return name
     }
 
-    override fun mapType(internalName: String): String {
-        return super.mapType(translate(internalName))
-    }
-
-    override fun map(internalName: String): String {
-        return translate(internalName)
-    }
-
     /**
      * 包名转换方法
      */
-    fun translate(key: String): String {
+    override fun translate(key: String): String {
         // obc
         if (key.startsWith("org/bukkit/craftbukkit")) {
-            return key.replace(obc1, obc2)
+            return key.replace(obc1, obc3)
         }
         return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')]?.replace('.', '/') ?: key
     }

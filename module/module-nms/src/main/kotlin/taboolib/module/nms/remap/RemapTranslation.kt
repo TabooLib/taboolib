@@ -1,10 +1,9 @@
 package taboolib.module.nms.remap
 
 import org.objectweb.asm.commons.Remapper
-import org.objectweb.asm.signature.SignatureReader
-import org.objectweb.asm.signature.SignatureWriter
-import taboolib.module.nms.LightReflection
+import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -28,7 +27,7 @@ open class RemapTranslation : Remapper() {
     /**
      * 缓存类的父类和接口
      */
-    val parentsCacheMap = HashMap<String, List<String>>()
+    val parentsCacheMap = ConcurrentHashMap<String, List<String>>()
 
     /**
      * 在 1.17 版本下进行字段转换
@@ -40,8 +39,9 @@ open class RemapTranslation : Remapper() {
         if (MinecraftVersion.isUniversal) {
             // 当前运行时的 Owner 名称
             val runningOwner = translate(owner).replace('/', '.')
+            // 追溯父类和接口
             val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.fields.find { it.path in findPath && it.translateName == name }?.mojangName ?: name
+            return MinecraftVersion.spigotMapping.fields.find { it.translateName == name && it.path in findPath }?.mojangName ?: name
         }
         return name
     }
@@ -49,19 +49,14 @@ open class RemapTranslation : Remapper() {
     override fun mapMethodName(owner: String, name: String, descriptor: String): String {
         // 1.18
         if (MinecraftVersion.major >= 10) {
-            // 为什么这么做？
-            // 以 send(Packet) 函数为例，除了 send 需要转译之外，Packet 也需要。
-            val signatureWriter = object : SignatureWriter() {
-                override fun visitClassType(name: String) {
-                    super.visitClassType(translate(name))
-                }
-            }
-            SignatureReader(descriptor).accept(signatureWriter)
-            val desc = signatureWriter.toString()
             // 当前运行时的 Owner 名称
             val runningOwner = translate(owner).replace('/', '.')
+            // 追溯父类和接口
             val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.methods.find { it.path in findPath && it.translateName == name && it.descriptor == desc }?.mojangName ?: name
+            return MinecraftVersion.spigotMapping.methods.find {
+                // 根据复杂程度依次对比
+                it.translateName == name && it.path in findPath && RemapHelper.checkParameterType(descriptor, it.descriptor)
+            }?.mojangName ?: name
         }
         return name
     }
@@ -77,7 +72,7 @@ open class RemapTranslation : Remapper() {
     /**
      * 包名转换方法
      */
-    fun translate(key: String): String {
+    open fun translate(key: String): String {
         // obc
         if (key.startsWith("org/bukkit/craftbukkit")) {
             // 若当前使用 Universal CraftBukkit 环境，则移除版本号
@@ -97,13 +92,14 @@ open class RemapTranslation : Remapper() {
 
     /**
      * 获取类的所有父类和接口
+     * 因为映射信息是以实际所在的类为准，如果不向上追溯，那么调用子类的方法时会找不到映射信息
      */
     fun findParents(owner: String): Set<String> {
         if (owner.startsWith("net.minecraft") || owner.startsWith("com.mojang")) {
             try {
                 val find = hashSetOf<String>()
                 find += owner
-                val forName = LightReflection.forName(owner)
+                val forName = ClassHelper.getClass(owner)
                 find += forName.interfaces.map { it.name }
                 val superclass = forName.superclass
                 if (superclass != null && superclass.name != "java.lang.Object") {

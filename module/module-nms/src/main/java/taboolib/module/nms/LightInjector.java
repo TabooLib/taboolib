@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import taboolib.common.PrimitiveIO;
+import taboolib.common.reflect.ClassHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -640,7 +641,7 @@ public abstract class LightInjector {
             clazz = "net.minecraft.server." + MinecraftVersion.INSTANCE.getMinecraftVersion() + '.' + name;
         }
         try {
-            return LightReflection.forName(clazz);
+            return ClassHelper.getClass(clazz);
         } catch (ClassNotFoundException exception) {
             throw new RuntimeException("[LightInjector] Cannot find NMS Class! (" + clazz + ')', exception);
         }
@@ -656,7 +657,7 @@ public abstract class LightInjector {
             clazz = "org.bukkit.craftbukkit." + version + "." + name;
         }
         try {
-            return LightReflection.forName(clazz);
+            return ClassHelper.getClass(clazz);
         } catch (ClassNotFoundException exception) {
             throw new RuntimeException("[LightInjector] Cannot find CB Class! (" + clazz + ')', exception);
         }

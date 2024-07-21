@@ -26,8 +26,14 @@ import java.util.jar.JarFile
 /**
  * 是否为开发模式
  */
-val isDevelopmentMode: Boolean
+val isDebugMode: Boolean
     get() = PrimitiveSettings.IS_DEBUG_MODE
+
+/**
+ * 是否为开发模式
+ */
+val isDevelopmentMode: Boolean
+    get() = PrimitiveSettings.IS_DEV_MODE
 
 /**
  * 当前插件的所有类（在本体中）

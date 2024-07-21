@@ -1,6 +1,7 @@
 package taboolib.module.nms;
 
-import taboolib.platform.BukkitPlugin;
+import taboolib.common.PrimitiveIO;
+import taboolib.common.TabooLib;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,13 +32,33 @@ public class LightReflection {
     }
 
     /**
+     * 由 "extra.properties" 启动，依赖加载后迅速接管 TabooLib 类查找器
+     */
+    static void init() {
+        TabooLib.setClassFinder(new TabooLib.ClassFinder() {
+
+            @Override
+            public Class<?> getClass(String name) throws ClassNotFoundException {
+                return forName(name, true, TabooLib.class.getClassLoader());
+            }
+
+            @Override
+            public Class<?> getClass(String name, boolean initialize) throws ClassNotFoundException {
+                return forName(name, initialize, TabooLib.class.getClassLoader());
+            }
+
+            @Override
+            public Class<?> getClass(String name, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
+                return forName(name, initialize, classLoader);
+            }
+        });
+        PrimitiveIO.dev("PaperClassFinder Injected");
+    }
+
+    /**
      * 在 Paper 1.20.6+ 采用了 Mojang Mapping，但同时也提供了动态 remap 以向下兼容。
      * 由于 TabooLib 采用外部加载，无法直接被 Paper 接管，因此需要手动调用相关函数。
      */
-    public static Class<?> forName(String name) throws ClassNotFoundException {
-        return forName(name, true, BukkitPlugin.class.getClassLoader());
-    }
-
     public static Class<?> forName(String name, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
         if (forName != null) {
             try {

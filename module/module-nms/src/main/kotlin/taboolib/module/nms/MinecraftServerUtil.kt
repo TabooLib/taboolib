@@ -12,6 +12,7 @@ import taboolib.common.io.runningClassMapWithoutLibrary
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.reflect.ClassHelper
 import taboolib.common.util.unsafeLazy
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -45,9 +46,9 @@ val minecraftServerObject: Any by unsafeLazy {
  */
 fun obcClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversalCraftBukkit) {
-        LightReflection.forName("org.bukkit.craftbukkit.$name")
+        ClassHelper.getClass("org.bukkit.craftbukkit.$name")
     } else {
-        LightReflection.forName("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
+        ClassHelper.getClass("org.bukkit.craftbukkit.${MinecraftVersion.minecraftVersion}.$name")
     }
 }
 
@@ -56,9 +57,9 @@ fun obcClass(name: String): Class<*> {
  */
 fun nmsClass(name: String): Class<*> {
     return if (MinecraftVersion.isUniversal) {
-        LightReflection.forName(MinecraftVersion.spigotMapping.classMapSpigotS2F[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
+        ClassHelper.getClass(MinecraftVersion.spigotMapping.classMapSpigotS2F[name]?.replace('/', '.') ?: throw ClassNotFoundException(name))
     } else {
-        LightReflection.forName("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
+        ClassHelper.getClass("net.minecraft.server.${MinecraftVersion.minecraftVersion}.$name")
     }
 }
 
