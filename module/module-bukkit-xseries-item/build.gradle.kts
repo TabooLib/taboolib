@@ -8,6 +8,8 @@ dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":module:module-chat"))
     compileOnly(project(":module:module-configuration"))
+    compileOnly(project(":module:module-bukkit-xseries"))
+    compileOnly(project(":module:module-bukkit-xseries-skull"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms.core:v12004:12004-minimize:mapped")

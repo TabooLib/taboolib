@@ -20,7 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 @Inject
 @PlatformSide(Platform.BUKKIT, Platform.BUNGEE)
-@RuntimeDependency("!com.google.guava:guava:21.0", test = "!com.google.common.base.Optional")
 object Porticus {
 
     val channelId by unsafeLazy {
@@ -35,6 +34,7 @@ object Porticus {
     /**
      * 获取 Porticus API
      */
+    @JvmStatic
     lateinit var API: API
         private set
 
