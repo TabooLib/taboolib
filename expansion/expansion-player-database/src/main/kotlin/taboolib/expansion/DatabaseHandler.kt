@@ -78,6 +78,10 @@ fun setupPlayerDatabase(file: File = newFile(getDataFolder(), "data.db"), tableN
     playerDatabase = Database(TypeSQLite(file, tableName))
 }
 
+fun buildPlayerDatabase(file: File = newFile(getDataFolder(), "data.db"), table: String): Database {
+    return Database(TypeSQLite(file, table))
+}
+
 fun ProxyPlayer.getDataContainer(): DataContainer {
     return playerDataContainer[uniqueId] ?: error("unavailable")
 }
