@@ -46,7 +46,7 @@ class Database(val type: Type, val dataSource: DataSource = type.host().createDa
     // 查询某个User的Key对应的Value
     fun select(user: String, key: String): String? {
         return type.tableVar().select(dataSource) {
-            rows("key", "value")
+            rows("value")
             where("user" eq user and ("key" eq key))
         }.firstOrNull {
             getString("value")
@@ -57,11 +57,20 @@ class Database(val type: Type, val dataSource: DataSource = type.host().createDa
     // return: Map<user, value>
     fun getList(name: String): MutableMap<String, String> {
         return type.tableVar().select(dataSource) {
-            rows("value")
+            rows("user", "value")
             where("key" eq name)
         }.map {
             getString("user") to getString("value")
         }.toMap(ConcurrentHashMap())
+    }
+
+    fun getList(name: String, value: String): List<String> {
+        return type.tableVar().select(dataSource) {
+            rows("user")
+            where("key" eq name and ("value" eq value))
+        }.map {
+            getString("user")
+        }
     }
 
     fun remove(user: String, name: String) {
