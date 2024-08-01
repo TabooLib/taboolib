@@ -15,6 +15,8 @@ var playerDatabase: Database? = null
 
 val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
 
+val playerReadOnlyDataContainer = ConcurrentHashMap<UUID, ReadOnlyDataContainer>()
+
 fun setupPlayerDatabase(
     conf: ConfigurationSection,
     table: String = conf.getString("table", "")!!,
@@ -49,8 +51,31 @@ fun setupPlayerDatabase(
     setupPlayerDatabase(conf, table, flags, clearFlags, ssl)
 }
 
+fun buildPlayerDatabase(
+    conf: ConfigurationSection,
+    table: String = conf.getString("table", "")!!,
+    flags: List<String> = emptyList(),
+    clearFlags: Boolean = false,
+    ssl: String? = null,
+): Database {
+    val hostSQL = HostSQL(conf)
+    if (clearFlags) {
+        hostSQL.flags.clear()
+    }
+    hostSQL.flags.addAll(flags)
+    if (ssl != null) {
+        hostSQL.flags -= "useSSL=false"
+        hostSQL.flags += "sslMode=$ssl"
+    }
+    return Database(TypeSQL(hostSQL, table))
+}
+
 fun setupPlayerDatabase(file: File = newFile(getDataFolder(), "data.db")) {
     playerDatabase = Database(TypeSQLite(file))
+}
+
+fun setupPlayerDatabase(file: File = newFile(getDataFolder(), "data.db"), tableName: String) {
+    playerDatabase = Database(TypeSQLite(file, tableName))
 }
 
 fun ProxyPlayer.getDataContainer(): DataContainer {
@@ -76,4 +101,16 @@ fun UUID.releasePlayerDataContainer() {
 
 fun ProxyPlayer.releaseDataContainer() {
     playerDataContainer.remove(uniqueId)
+}
+
+// 获取只读容器
+fun UUID.getReadOnlyDataContainer(): ReadOnlyDataContainer {
+    return playerReadOnlyDataContainer.computeIfAbsent(this) {
+        ReadOnlyDataContainer(this.toString(), playerDatabase!!)
+    }
+}
+
+// 释放只读容器
+fun UUID.releaseReadOnlyDataContainer() {
+    playerReadOnlyDataContainer.remove(this)
 }
