@@ -8,19 +8,19 @@ import taboolib.module.database.Table
 import taboolib.module.database.getHost
 import java.io.File
 
-class TypeSQLite(file: File) : Type() {
+class TypeSQLite(file: File, tableName: String? = null) : Type() {
 
     val host = newFile(file).getHost()
 
-    val tableVar = Table(pluginId, host) {
+    val tableVar = Table(tableName ?: pluginId, host) {
         add("user") {
-            type(ColumnTypeSQLite.TEXT, 36)
+            type(ColumnTypeSQLite.TEXT, 64)
         }
         add("key") {
             type(ColumnTypeSQLite.TEXT, 64)
         }
         add("value") {
-            type(ColumnTypeSQLite.TEXT, 128)
+            type(ColumnTypeSQLite.TEXT)
         }
     }
 

@@ -23,6 +23,11 @@ class DataContainer(val user: String, val database: Database) {
         save(key)
     }
 
+    // 穿透缓存的写数据库方法
+    operator fun set(targetUser: String, key: String, value: Any) {
+        database[targetUser, key] = value.toString()
+    }
+
     fun setDelayed(key: String, value: Any, delay: Long = 3L, timeUnit: TimeUnit = TimeUnit.SECONDS) {
         source[key] = value.toString()
         updateMap[key] = System.currentTimeMillis() - timeUnit.toMillis(delay)
