@@ -22,8 +22,9 @@ open class NMSItemTagImpl1 : NMSItemTag() {
     val nbtTagStringGetter = unreflectGetter<NBTTagString12>(if (MinecraftVersion.isUniversal) "A" else "data")
     val nbtTagByteArrayGetter = unreflectGetter<NBTTagByteArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongArrayGetter = unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
-
+    val nbtTagLongArrayGetter =
+        if (!MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) null
+        else unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
     private fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(itemStack)
     }
@@ -108,7 +109,7 @@ open class NMSItemTagImpl1 : NMSItemTag() {
             // 数组类型特殊处理
             is NBTTagByteArray12 -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTagByteArrayGetter.get<ByteArray>(nbtTag).copyOf())
             is NBTTagIntArray12 -> ItemTagData(ItemTagType.INT_ARRAY, nbtTagIntArrayGetter.get<IntArray>(nbtTag).copyOf())
-            is NBTTagLongArray12 -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
+            is NBTTagLongArray12 -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter!!.get<LongArray>(nbtTag).copyOf())
 
             // 列表类型特殊处理
             is NBTTagList12 -> {
