@@ -7,4 +7,5 @@
 ![](https://img.shields.io/github/contributors/taboolib/taboolib)
 ![](https://img.shields.io/github/languages/code-size/taboolib/taboolib)
 
-TabooLib 正在更新。
+TabooLib 正在进行底层重构，在新版本发布后，您可以从 `6.1` 无感升级。  
+在此之前，您可以使用 `6.1.2-beta10` 在最高 `1.20.4` 版本下开发。
