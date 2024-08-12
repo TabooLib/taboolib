@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.events.ExpansionUnregisterEvent
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -77,6 +78,7 @@ interface PlaceholderExpansion {
     }
 
     @Awake
+    @Inject
     class PlaceholderRegister : ClassVisitor(0) {
 
         val hooked by unsafeLazy {
