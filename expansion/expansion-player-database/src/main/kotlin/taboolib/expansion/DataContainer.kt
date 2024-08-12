@@ -7,11 +7,15 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
- * Zaphkiel
- * ink.ptms.zaphkiel.module.Vars
+ *  Zaphkiel
+ *  ink.ptms.zaphkiel.module.Vars
  *
- * @author sky
- * @since 2021/8/22 7:51 下午
+ *  缓存优先容器 Cache-First
+ *  用于缓存数据并在一定时间后写入数据库
+ *  数据库数据不同步给缓存
+ *
+ *  @author sky
+ *  @since 2021/8/22 7:51 下午
  */
 class DataContainer(val user: String, val database: Database) {
 
@@ -23,7 +27,9 @@ class DataContainer(val user: String, val database: Database) {
         save(key)
     }
 
-    // 穿透缓存的写数据库方法
+    /**
+     * 穿透缓存的写数据库方法
+     */
     operator fun set(targetUser: String, key: String, value: Any) {
         database[targetUser, key] = value.toString()
     }
@@ -69,7 +75,7 @@ class DataContainer(val user: String, val database: Database) {
 
         @Schedule(period = 20)
         private fun checkUpdate() {
-            playerDataContainer.values.forEach { it.checkUpdate() }
+            playerDataContainer.entries.forEach { it.value.checkUpdate() }
         }
     }
 }

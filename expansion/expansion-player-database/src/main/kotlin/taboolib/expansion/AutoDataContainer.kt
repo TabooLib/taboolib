@@ -5,13 +5,25 @@ import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.submitAsync
 
-// 只读数据容器
-class ReadOnlyDataContainer(val user: String, val database: Database) {
+/**
+ *  数据库优先容器 Database-First
+ *  定期从数据库取出数据同步给缓存
+ */
+class AutoDataContainer(val user: String, val database: Database) {
 
     var source = database[user]
 
     operator fun get(key: String): String? {
         return source[key]
+    }
+
+    /**
+     *  设置操作是穿透缓存直接写数据库，然后进行缓存同步
+     *  这里只操作单个 key 的缓存 是因为防止高频率set导致频繁读数据库
+     */
+    operator fun set(key: String, value: Any) {
+        database[user, key] = value.toString()
+        source[key] = value.toString()
     }
 
     fun keys(): Set<String> {
@@ -27,9 +39,12 @@ class ReadOnlyDataContainer(val user: String, val database: Database) {
     }
 
     override fun toString(): String {
-        return "ReadOnlyDataContainer(user='$user', source=$source)"
+        return "AutoDataContainer(user='$user', source=$source)"
     }
 
+    /**
+     *  手动更新数据 可以酌情使用
+     */
     fun update() {
         source = database[user]
     }
@@ -44,8 +59,8 @@ class ReadOnlyDataContainer(val user: String, val database: Database) {
         @Awake(LifeCycle.ACTIVE)
         private fun update() {
             submitAsync(period = syncTick) {
-                playerReadOnlyDataContainer.values.forEach {
-                    runCatching { it.update() }
+                playerAutoDataContainer.entries.forEach {
+                    runCatching { it.value.update() }
                 }
             }
         }

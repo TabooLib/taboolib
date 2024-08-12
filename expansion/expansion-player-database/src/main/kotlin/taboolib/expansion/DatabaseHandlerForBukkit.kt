@@ -15,10 +15,10 @@ fun Player.releaseDataContainer() {
     adaptPlayer(this).releaseDataContainer()
 }
 
-fun Player.getReadOnlyDataContainer(): ReadOnlyDataContainer {
-    return this.uniqueId.getReadOnlyDataContainer()
+fun Player.getAutoDataContainer(): AutoDataContainer {
+    return this.uniqueId.getAutoDataContainer()
 }
 
-fun Player.releaseReadOnlyDataContainer() {
-    this.uniqueId.releaseReadOnlyDataContainer()
+fun Player.releaseAutoDataContainer() {
+    this.uniqueId.releaseAutoDataContainer()
 }
