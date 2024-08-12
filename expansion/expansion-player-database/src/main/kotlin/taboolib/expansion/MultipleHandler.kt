@@ -83,8 +83,8 @@ class MultipleHandler(
     /**
      *  获取数据容器
      */
-    fun getDataContainer(user: String): DataContainer? {
-        return databaseContainer[user]
+    fun getDataContainer(user: String): DataContainer {
+        return databaseContainer[user] ?: error("unavailable database container ${user}")
     }
 
     /**
