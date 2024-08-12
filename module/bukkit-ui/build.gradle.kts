@@ -14,4 +14,6 @@ dependencies {
     compileOnly("ink.ptms.core:v10900:10900")
     // 低版本兼容
     implementation(project(":module:bukkit-ui-legacy"))
+    // 高版本兼容
+    implementation(project(":module:bukkit-ui-modern"))
 }

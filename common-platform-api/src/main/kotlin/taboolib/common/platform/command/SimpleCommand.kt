@@ -2,6 +2,7 @@ package taboolib.common.platform.command
 
 import org.tabooproject.reflex.ClassField
 import org.tabooproject.reflex.ReflexClass
+import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
@@ -65,6 +66,7 @@ class SimpleCommandBody(val func: CommandComponent.() -> Unit = {}) {
 }
 
 @Suppress("DuplicatedCode")
+@Inject
 @Awake
 class SimpleCommandRegister : ClassVisitor(0) {
 

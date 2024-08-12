@@ -7,6 +7,7 @@ include(
 //    "module:bukkit-navigation",
 //    "module:bukkit-ui",
 //    "module:bukkit-ui-legacy",
+//    "module:bukkit-ui-modern",
     "module:bukkit-util",
     "module:bukkit-xseries",
     "module:bukkit-xseries-item",
