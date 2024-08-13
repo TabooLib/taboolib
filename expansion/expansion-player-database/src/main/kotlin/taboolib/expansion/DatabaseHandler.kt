@@ -15,7 +15,7 @@ var playerDatabase: Database? = null
 
 val playerDataContainer = ConcurrentHashMap<UUID, DataContainer>()
 
-val playerReadOnlyDataContainer = ConcurrentHashMap<UUID, ReadOnlyDataContainer>()
+val playerAutoDataContainer = ConcurrentHashMap<UUID, AutoDataContainer>()
 
 fun setupPlayerDatabase(
     conf: ConfigurationSection,
@@ -107,14 +107,14 @@ fun ProxyPlayer.releaseDataContainer() {
     playerDataContainer.remove(uniqueId)
 }
 
-// 获取只读容器
-fun UUID.getReadOnlyDataContainer(): ReadOnlyDataContainer {
-    return playerReadOnlyDataContainer.computeIfAbsent(this) {
-        ReadOnlyDataContainer(this.toString(), playerDatabase!!)
+// 获取数据库优先容器
+fun UUID.getAutoDataContainer(): AutoDataContainer {
+    return playerAutoDataContainer.computeIfAbsent(this) {
+        AutoDataContainer(this.toString(), playerDatabase!!)
     }
 }
 
-// 释放只读容器
-fun UUID.releaseReadOnlyDataContainer() {
-    playerReadOnlyDataContainer.remove(this)
+// 释放数据库优先容器
+fun UUID.releaseAutoDataContainer() {
+    playerAutoDataContainer.remove(this)
 }
