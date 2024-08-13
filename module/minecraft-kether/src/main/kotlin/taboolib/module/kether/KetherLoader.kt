@@ -19,6 +19,7 @@ import java.util.function.Supplier
  * @since 2021/2/6 3:33 下午
  */
 @Awake
+@Inject
 class KetherLoader : ClassVisitor(0) {
 
     override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
