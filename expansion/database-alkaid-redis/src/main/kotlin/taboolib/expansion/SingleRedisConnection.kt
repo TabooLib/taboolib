@@ -67,20 +67,11 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    /**
-     * 关闭连接
-     */
     override fun close() {
         pool.destroy()
     }
 
-    /**
-     * 赋值
-     *
-     * @param key 键
-     * @param value 值
-     */
-    override operator fun set(key: String, value: String?) {
+    override fun set(key: String, value: String?) {
         exec { if (value == null) it.del(key) else it[key] = value }
     }
 
@@ -88,51 +79,22 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         exec { if (value == null) it.del(key) else it.setnx(key, value) }
     }
 
-    /**
-     * 取值
-     *
-     * @param key 键
-     * @return 值
-     */
-    override operator fun get(key: String): String? {
+    override fun get(key: String): String? {
         return exec { it[key] }
     }
 
-    /**
-     * 删除
-     *
-     * @param key 键
-     */
     override fun delete(key: String) {
         exec { it.del(key) }
     }
 
-    /**
-     * 赋值并设置过期时间
-     *
-     * @param key 键
-     * @param value 值
-     */
     override fun expire(key: String, value: Long, timeUnit: TimeUnit) {
         exec { it.expire(key, timeUnit.toSeconds(value)) }
     }
 
-    /**
-     * 是否存在
-     *
-     * @param key
-     * @return Boolean
-     */
     override fun contains(key: String): Boolean {
         return exec { it.exists(key) }
     }
 
-    /**
-     * 推送信息
-     *
-     * @param channel 频道
-     * @param message 消息
-     */
     override fun publish(channel: String, message: Any) {
         exec {
             if (message is String) {
@@ -143,13 +105,6 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    /**
-     * 订阅频道
-     *
-     * @param channel 频道
-     * @param patternMode 频道名称是否为正则模式
-     * @param func 信息处理函数
-     */
     override fun subscribe(vararg channel: String, patternMode: Boolean, func: RedisMessage.() -> Unit) {
         service.submit {
             try {
@@ -189,6 +144,26 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
+    // 实现 hset 方法
+    override fun hset(key: String, field: String, value: String) {
+        exec { it.hset(key, field, value) }
+    }
+
+    // 实现 hget 方法
+    override fun hget(key: String, field: String): String? {
+        return exec { it.hget(key, field) }
+    }
+
+    // 实现 hdel 方法
+    override fun hdel(key: String, vararg fields: String) {
+        exec { it.hdel(key, *fields) }
+    }
+
+    // 实现 hexists 方法
+    override fun hexists(key: String, field: String): Boolean {
+        return exec { it.hexists(key, field) }
+    }
+
     @Inject
     internal companion object {
 
@@ -200,3 +175,4 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 }
+

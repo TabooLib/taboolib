@@ -89,4 +89,39 @@ interface IRedisConnection {
     fun subscribe(vararg channel: String, patternMode: Boolean = false, func: RedisMessage.() -> Unit)
 
     fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub
+
+    /**
+     * 向哈希表设置值
+     *
+     * @param key 哈希表键
+     * @param field 哈希表字段
+     * @param value 字段值
+     */
+    fun hset(key: String, field: String, value: String)
+
+    /**
+     * 获取哈希表中的值
+     *
+     * @param key 哈希表键
+     * @param field 哈希表字段
+     * @return 字段值
+     */
+    fun hget(key: String, field: String): String?
+
+    /**
+     * 删除哈希表中的字段
+     *
+     * @param key 哈希表键
+     * @param fields 要删除的字段
+     */
+    fun hdel(key: String, vararg fields: String)
+
+    /**
+     * 检查哈希表中是否存在字段
+     *
+     * @param key 哈希表键
+     * @param field 哈希表字段
+     * @return 是否存在
+     */
+    fun hexists(key: String, field: String): Boolean
 }

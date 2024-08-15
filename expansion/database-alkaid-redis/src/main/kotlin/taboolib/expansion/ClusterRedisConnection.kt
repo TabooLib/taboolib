@@ -141,4 +141,20 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
             }
         }
     }
+
+    override fun hset(key: String, field: String, value: String) {
+        connector.cluster.hset(key, field, value)
+    }
+
+    override fun hget(key: String, field: String): String? {
+        return connector.cluster.hget(key, field)
+    }
+
+    override fun hdel(key: String, vararg fields: String) {
+        connector.cluster.hdel(key, *fields)
+    }
+
+    override fun hexists(key: String, field: String): Boolean {
+        return connector.cluster.hexists(key, field)
+    }
 }
