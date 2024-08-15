@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2022 Alkaid
  *
@@ -32,7 +31,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class SingleRedisConnection(internal var pool: JedisPool, internal val connector: SingleRedisConnector): Closeable, IRedisConnection {
+class SingleRedisConnection(internal var pool: JedisPool, internal val connector: SingleRedisConnector) : Closeable,
+    IRedisConnection {
 
     private val service: ExecutorService = Executors.newCachedThreadPool()
 
@@ -190,22 +190,47 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    // 实现 hset 方法
+
+    /**
+     * 设置哈希键值
+     *
+     * @param key 哈希键
+     * @param field 哈希字段
+     * @param value 哈希值
+     */
     override fun hset(key: String, field: String, value: String) {
         exec { it.hset(key, field, value) }
     }
 
-    // 实现 hget 方法
+    /**
+     * 获取哈希值
+     *
+     * @param key 哈希键
+     * @param field 哈希字段
+     * @return 哈希值
+     */
     override fun hget(key: String, field: String): String? {
         return exec { it.hget(key, field) }
     }
 
-    // 实现 hdel 方法
+    /**
+     * 删除哈希键值
+     *
+     * @param key 哈希键
+     * @param field 哈希字段
+     * @return 哈希值
+     */
     override fun hdel(key: String, vararg fields: String) {
         exec { it.hdel(key, *fields) }
     }
 
-    // 实现 hexists 方法
+    /**
+     * 查询哈希键是否存在
+     *
+     * @param key 哈希键
+     * @param field 哈希字段
+     * @return 布尔值
+     */
     override fun hexists(key: String, field: String): Boolean {
         return exec { it.hexists(key, field) }
     }
