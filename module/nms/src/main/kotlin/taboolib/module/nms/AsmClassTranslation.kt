@@ -6,6 +6,7 @@ import org.objectweb.asm.commons.ClassRemapper
 import taboolib.common.TabooLib
 import taboolib.common.io.taboolibPath
 import taboolib.module.nms.remap.RemapTranslation
+import taboolib.module.nms.remap.RemapTranslationLegacy
 import taboolib.module.nms.remap.RemapTranslationTabooLib
 
 /**
@@ -40,8 +41,16 @@ class AsmClassTranslation(val source: String) {
         }
         val classReader = ClassReader(inputStream)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        // 若转译对象为 TabooLib 类，且当前运行环境为 Paper 时，使用内部专用转译器
-        val remapper = if (MinecraftVersion.isUniversalCraftBukkit && source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+        // 若当前运行环境为 Paper 时
+        val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
+            // 若转译对象为 TabooLib 类
+            if (source.startsWith(taboolibPath)) {
+                RemapTranslationTabooLib()
+            } else {
+                // 若转译对象为插件本体内的类
+                RemapTranslation()
+            }
+        } else RemapTranslationLegacy() // 否则使用旧版本转译器
         classReader.accept(ClassRemapper(classWriter, remapper), 0)
         return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
     }

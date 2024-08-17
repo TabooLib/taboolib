@@ -3,14 +3,20 @@ package taboolib.module.nms.remap
 import org.objectweb.asm.commons.Remapper
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
-import java.util.concurrent.ConcurrentHashMap
 
 /**
- * TabooLib
- * taboolib.module.nms.remap.MinecraftRemapper
+ * 对于 TabooLib 内的类，
+ * 使用 RemapTranslationTabooLib 进行 Spigot Deobf -> Mojang Obf -> Mojang Deobf 转换。
  *
- * @author sky
- * @since 2021/7/17 2:02 上午
+ * 而插件内的类，已经由 Paper 进行转译了，所以不应该再使用 RemapTranslation (现在为 RemapTranslationLegacy) 进行转译，
+ * 应该只需要使用该 RemapTranslation 移除包名中的跨版本信息 (诸如 v1_20_R3) ，
+ * 而无需对字段名、方法名进行任何操作。
+ *
+ * 只有 Paper 1.20.5+ 才会启用该类用于转译插件本体里的类，一般使用其子类 RemapTranslationLegacy。
+ * 与 RemapTranslationTabooLib 不同的是，此实现不会对函数名和字段名进行检索转译，避免 Paper 对插件本体的转译失效。
+ *
+ * @author mical
+ * @since 2024/8/17 22:44
  */
 open class RemapTranslation : Remapper() {
 
@@ -23,45 +29,6 @@ open class RemapTranslation : Remapper() {
     val obc1 = "org/bukkit/craftbukkit/v1_.*?/".toRegex()
     val obc2 = "org/bukkit/craftbukkit/${MinecraftVersion.minecraftVersion}/"
     val obc3 = "org/bukkit/craftbukkit/"
-
-    /**
-     * 缓存类的父类和接口
-     */
-    val parentsCacheMap = ConcurrentHashMap<String, List<String>>()
-
-    /**
-     * 在 1.17 版本下进行字段转换
-     *
-     * $owner.$name
-     * net/minecraft/server/level/EntityPlayer.connection -> b
-     */
-    override fun mapFieldName(owner: String, name: String, descriptor: String): String {
-        if (MinecraftVersion.isUniversal) {
-            // 当前运行时的 Owner 名称
-            val runningOwner = translate(owner).replace('/', '.')
-            // 追溯父类和接口
-            val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.fields.find { it.translateName == name && it.path in findPath }?.mojangName ?: name
-        }
-        return name
-    }
-
-    override fun mapMethodName(owner: String, name: String, descriptor: String): String {
-        // 1.18
-        if (MinecraftVersion.major >= 10) {
-            // 当前运行时的 Owner 名称
-            val runningOwner = translate(owner).replace('/', '.')
-            // 追溯父类和接口
-            val findPath = parentsCacheMap.getOrPut(runningOwner) { findParents(runningOwner).reversed() }
-            return MinecraftVersion.spigotMapping.methods.find {
-                // 根据复杂程度依次对比
-                it.translateName == name
-                        && it.path in findPath
-                        && RemapHelper.checkParameterType(descriptor, it.descriptor)
-            }?.mojangName ?: name
-        }
-        return name
-    }
 
     override fun mapType(internalName: String): String {
         return super.mapType(translate(internalName))
