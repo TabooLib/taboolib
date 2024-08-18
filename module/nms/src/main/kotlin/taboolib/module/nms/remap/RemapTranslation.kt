@@ -52,7 +52,12 @@ open class RemapTranslation : Remapper() {
             // 将低版本包名替换为高版本包名
             // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
             if (key.startsWith("net/minecraft/server/v1_")) {
-                MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
+                // 如果为 Universal CraftBukkit 环境, 则应转译为 Mojang.FullName, 反之则为 Spigot.FullName
+                if (MinecraftVersion.isUniversalCraftBukkit) {
+                    MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')]?.replace('.', '/') ?: key
+                } else {
+                    MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")]?.replace('.', '/') ?: key
+                }
             } else {
                 key
             }
