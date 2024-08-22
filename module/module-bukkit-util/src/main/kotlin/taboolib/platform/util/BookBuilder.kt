@@ -104,8 +104,8 @@ open class BookBuilder : ItemBuilder(XMaterial.WRITTEN_BOOK) {
 
     override fun build(): ItemStack {
         return super.build().modifyMeta<BookMeta> {
-            title = "untitled"
-            author = "untitled"
+            title = this@BookBuilder.title
+            author = this@BookBuilder.author
             bookPages.forEach {
                 if (it.raw) {
                     var pages = getProperty<MutableList<Any>>("pages")
