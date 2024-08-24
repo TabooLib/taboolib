@@ -1,7 +1,6 @@
 package taboolib.common.platform;
 
 import org.jetbrains.annotations.Nullable;
-import taboolib.common.ClassAppender;
 
 import java.io.File;
 
@@ -13,6 +12,8 @@ import java.io.File;
  * @since 2021/6/15 6:19 下午
  */
 public abstract class Plugin {
+
+    private static Plugin impl = null;
 
     /**
      * 当加载插件时调用
@@ -55,15 +56,16 @@ public abstract class Plugin {
     }
 
     /**
-     * 获取实现
+     * 获取插件实例
      */
-    public static Plugin findImpl() {
-        try {
-            Class<?> scanner = Class.forName("taboolib.common.io.ProjectScannerKt", true, ClassAppender.getClassLoader());
-            Object impl = scanner.getDeclaredMethod("findPluginImpl").invoke(null);
-            return impl != null ? (Plugin) impl : null;
-        } catch (Throwable ex) {
-            throw new RuntimeException("Failed to find plugin implementation.", ex);
-        }
+    public static Plugin getImpl() {
+        return Plugin.impl;
+    }
+
+    /**
+     * 设置插件实例
+     */
+    public static void setImpl(Plugin impl) {
+        Plugin.impl = impl;
     }
 }

@@ -1,5 +1,6 @@
 package taboolib.common.env.legacy;
 
+import com.google.common.collect.Lists;
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +65,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     /**
      * 依赖范围
      */
-    private DependencyScope[] dependencyScopes = {DependencyScope.RUNTIME, DependencyScope.COMPILE};
+    private List<DependencyScope> dependencyScopes = Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE);
 
     /**
      * 忽略可选依赖
@@ -231,9 +232,9 @@ public class DependencyDownloader extends AbstractXmlParser {
     /**
      * 下载 pom 中指定的所有依赖项
      */
-    public Set<Dependency> loadDependencyFromPom(Document pom, DependencyScope... scopes) throws IOException {
+    public Set<Dependency> loadDependencyFromPom(Document pom, List<DependencyScope> scopes) throws IOException {
         List<Dependency> dependencies = new ArrayList<>();
-        Set<DependencyScope> scopeSet = new HashSet<>(Arrays.asList(scopes));
+        Set<DependencyScope> scopeSet = new HashSet<>(scopes);
         NodeList nodes = pom.getDocumentElement().getChildNodes();
         List<Repository> repos = new ArrayList<>(repositories);
         if (repos.isEmpty()) {
@@ -286,7 +287,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     /**
      * 下载 pom 中指定的所有依赖项
      */
-    public Set<Dependency> loadDependencyFromInputStream(InputStream pom, DependencyScope... scopes) throws IOException {
+    public Set<Dependency> loadDependencyFromInputStream(InputStream pom, List<DependencyScope> scopes) throws IOException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setFeature("http://xml.org/sax/features/validation", false);
@@ -310,11 +311,11 @@ public class DependencyDownloader extends AbstractXmlParser {
         return baseDir;
     }
 
-    public DependencyScope[] getDependencyScopes() {
+    public List<DependencyScope> getDependencyScopes() {
         return dependencyScopes;
     }
 
-    public DependencyDownloader setDependencyScopes(DependencyScope[] dependencyScopes) {
+    public DependencyDownloader setDependencyScopes(List<DependencyScope> dependencyScopes) {
         this.dependencyScopes = dependencyScopes;
         return this;
     }

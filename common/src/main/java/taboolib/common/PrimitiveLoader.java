@@ -92,7 +92,7 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        PrimitiveIO.dev("[TabooLib] \"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
+        PrimitiveIO.debug("\"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
         // 基础依赖是否隔离加载
         boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
         // 加载基础依赖
@@ -104,8 +104,8 @@ public class PrimitiveLoader {
             load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
         }
         // 加载反射模块
-        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.23", IS_ISOLATED_MODE, true, rule());
-        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.23", IS_ISOLATED_MODE, true, rule());
+        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.0.25-test-11", IS_ISOLATED_MODE, true, rule());
+        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.0.25-test-11", IS_ISOLATED_MODE, true, rule());
         // 加载完整模块
         loadAll();
     }
@@ -141,7 +141,7 @@ public class PrimitiveLoader {
             }
             // 检查合法性
             if (!PrimitiveIO.validation(envFile, shaFile)) {
-                PrimitiveIO.println("[TabooLib] Failed to download " + name + "-" + version + ".jar");
+                PrimitiveIO.println("Failed to download " + name + "-" + version + ".jar");
                 return false;
             }
         }
@@ -156,7 +156,7 @@ public class PrimitiveLoader {
     static void loadAll() throws Throwable {
         // 若未指定 TabooLib 版本，则跳过加载
         if (TABOOLIB_VERSION.equals("skip")) {
-            PrimitiveIO.println("[TabooLib] TabooLib version is not specified, skip loading.");
+            PrimitiveIO.println("TabooLib version is not specified, skip loading.");
             return;
         }
         List<String[]> rule = rule();
@@ -172,7 +172,9 @@ public class PrimitiveLoader {
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
         load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
         // 加载自选模块
-        for (String i : INSTALL_MODULES) load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+        for (String i : INSTALL_MODULES) {
+            load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+        }
     }
 
     /**

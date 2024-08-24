@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import taboolib.common.Inject
+import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -30,6 +31,7 @@ class VelocityExecutor : PlatformExecutor {
         VelocityPlugin.getInstance()
     }
 
+    @Awake(LifeCycle.ENABLE)
     override fun start() {
         started = true
         tasks.forEach { submit(it) }

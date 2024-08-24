@@ -1,7 +1,10 @@
 package taboolib.common.env;
 
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tabooproject.reflex.ClassAnnotation;
+import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.ClassAppender;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.PrimitiveSettings;
@@ -63,6 +66,7 @@ public class RuntimeEnv {
      * 用于初始化 Kotlin 环境
      */
     static void init() throws Throwable {
+        long time = System.currentTimeMillis();
         List<JarRelocation> rel = new ArrayList<>();
         boolean loadKotlin = !KOTLIN_VERSION.equals("null");
         boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");
@@ -79,36 +83,36 @@ public class RuntimeEnv {
         if (loadKotlin) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
         // 加载 Kotlin Coroutines 环境
         if (loadKotlinCoroutines) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
-        PrimitiveIO.dev("RuntimeEnv initialized.");
+        PrimitiveIO.debug("RuntimeEnv loaded in " + (System.currentTimeMillis() - time) + "ms.");
     }
 
-    public int inject(@NotNull Class<?> clazz) throws Throwable {
+    public int inject(@NotNull ReflexClass clazz) throws Throwable {
         int total = 0;
         total += loadAssets(clazz);
         total += loadDependency(clazz);
         return total;
     }
 
-    @Nullable
-    public RuntimeResource[] getAssets(@NotNull Class<?> clazz) {
-        RuntimeResource[] resources = JavaAnnotation.getAnnotationsIfPresent(clazz, RuntimeResource.class);
-        if (resources == null && JavaAnnotation.hasAnnotation(clazz, RuntimeResources.class)) {
-            RuntimeResources annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeResources.class);
-            if (annotation != null) {
-                resources = annotation.value();
-            }
+    @NotNull
+    public List<ParsedResource> getAssets(@NotNull ReflexClass clazz) {
+        List<ParsedResource> resourceList = new ArrayList<>();
+        ClassAnnotation runtimeResource = clazz.getAnnotationIfPresent(RuntimeResource.class);
+        if (runtimeResource != null) {
+            resourceList.add(new ParsedResource(runtimeResource.properties()));
         }
-        return resources;
+        ClassAnnotation runtimeResources = clazz.getAnnotationIfPresent(RuntimeResources.class);
+        if (runtimeResources != null) {
+            runtimeResources.mapList("value").forEach(map -> resourceList.add(new ParsedResource(map)));
+        }
+        return resourceList;
     }
 
-    public int loadAssets(@NotNull Class<?> clazz) throws IOException {
+    public int loadAssets(@NotNull ReflexClass clazz) throws IOException {
         int total = 0;
-        RuntimeResource[] resources = getAssets(clazz);
-        if (resources != null) {
-            for (RuntimeResource resource : resources) {
-                loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
-                total++;
-            }
+        List<ParsedResource> resources = getAssets(clazz);
+        for (ParsedResource resource : resources) {
+            loadAssets(resource.name(), resource.hash(), resource.value(), resource.zip());
+            total++;
         }
         return total;
     }
@@ -151,23 +155,26 @@ public class RuntimeEnv {
         }
     }
 
-    public RuntimeDependency[] getDependency(@NotNull Class<?> clazz) {
-        RuntimeDependency[] dependencies = JavaAnnotation.getAnnotationsIfPresent(clazz, RuntimeDependency.class);
-        if (dependencies == null && JavaAnnotation.hasAnnotation(clazz, RuntimeDependencies.class)) {
-            RuntimeDependencies annotation = JavaAnnotation.getAnnotationIfPresent(clazz, RuntimeDependencies.class);
-            if (annotation != null) {
-                dependencies = annotation.value();
-            }
+    public List<ParsedDependency> getDependency(@NotNull ReflexClass clazz) {
+        List<ParsedDependency> dependencyList = new ArrayList<>();
+        ClassAnnotation runtimeDependency = clazz.getAnnotationIfPresent(RuntimeDependency.class);
+        if (runtimeDependency != null) {
+            dependencyList.add(new ParsedDependency(runtimeDependency.properties()));
         }
-        return dependencies;
+        ClassAnnotation runtimeDependencies = clazz.getAnnotationIfPresent(RuntimeDependencies.class);
+        if (runtimeDependencies != null) {
+            runtimeDependencies.mapList("value").forEach(map -> dependencyList.add(new ParsedDependency(map)));
+        }
+        return dependencyList;
     }
 
-    public int loadDependency(@NotNull Class<?> clazz) throws Throwable {
+    public int loadDependency(@NotNull ReflexClass clazz) throws Throwable {
         int total = 0;
-        RuntimeDependency[] dependencies = getDependency(clazz);
+        List<ParsedDependency> dependencies = getDependency(clazz);
         if (dependencies != null) {
             File baseFile = new File(defaultLibrary);
-            for (RuntimeDependency dep : dependencies) {
+            for (ParsedDependency dep : dependencies) {
+                total++;
                 String allTest = dep.test();
                 List<String> tests = new ArrayList<>();
                 if (allTest.contains(",")) {
@@ -179,18 +186,20 @@ public class RuntimeEnv {
                     continue;
                 }
                 List<JarRelocation> relocation = new ArrayList<>();
-                String[] relocate = dep.relocate();
-                if (relocate.length % 2 != 0) {
+                List<String> relocate = dep.relocate();
+                if (relocate.size() % 2 != 0) {
                     throw new IllegalStateException("invalid relocate format");
                 }
-                for (int i = 0; i + 1 < relocate.length; i += 2) {
-                    String pattern = relocate[i].startsWith("!") ? relocate[i].substring(1) : relocate[i];
-                    String relocatePattern = relocate[i + 1].startsWith("!") ? relocate[i + 1].substring(1) : relocate[i + 1];
-                    relocation.add(new JarRelocation(pattern, relocatePattern));
+                for (int i = 0; i + 1 < relocate.size(); i += 2) {
+                    String from = relocate.get(i);
+                    String to = relocate.get(i + 1);
+                    // 移除前缀
+                    if (from.startsWith("!")) from = from.substring(1);
+                    if (to.startsWith("!")) to = to.substring(1);
+                    relocation.add(new JarRelocation(from, to));
                 }
                 String url = dep.value().startsWith("!") ? dep.value().substring(1) : dep.value();
                 loadDependency(url, baseFile, relocation, dep.repository(), dep.ignoreOptional(), dep.ignoreException(), dep.transitive(), dep.scopes(), dep.external());
-                total++;
             }
         }
         return total;
@@ -205,11 +214,11 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws Throwable {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(@NotNull String url, boolean transitive, @NotNull List<JarRelocation> relocation) throws Throwable {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, transitive, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, transitive, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws Throwable {
@@ -217,7 +226,7 @@ public class RuntimeEnv {
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir, @Nullable String repository) throws Throwable {
-        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, new DependencyScope[]{DependencyScope.RUNTIME, DependencyScope.COMPILE});
+        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(
@@ -228,7 +237,7 @@ public class RuntimeEnv {
             boolean ignoreOptional,
             boolean ignoreException,
             boolean transitive,
-            @NotNull DependencyScope[] scope
+            @NotNull List<DependencyScope> scope
     ) throws Throwable {
         loadDependency(url, baseDir, relocation, repository, ignoreOptional, ignoreException, transitive, scope, true);
     }
@@ -241,7 +250,7 @@ public class RuntimeEnv {
             boolean ignoreOptional,
             boolean ignoreException,
             boolean transitive,
-            @NotNull DependencyScope[] scope,
+            @NotNull List<DependencyScope> scope,
             boolean external
     ) throws Throwable {
         // 支持用户对源进行替换
@@ -272,7 +281,7 @@ public class RuntimeEnv {
             boolean ignoreOptional,
             boolean ignoreException,
             boolean transitive,
-            @NotNull DependencyScope[] scope,
+            @NotNull List<DependencyScope> scope,
             boolean external
     ) throws Throwable {
         Artifact artifact = new Artifact(url);

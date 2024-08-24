@@ -1,6 +1,7 @@
 package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveIO
@@ -51,8 +52,7 @@ import java.util.function.Supplier
 @Awake
 class ConfigLoader : ClassVisitor(1) {
 
-    @Suppress("DEPRECATION")
-    override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visit(field: ClassField, owner: ReflexClass) {
         if (field.isAnnotationPresent(Config::class.java)) {
             val configAnno = field.getAnnotation(Config::class.java)
             val name = configAnno.property("value", "config.yml")
@@ -60,7 +60,7 @@ class ConfigLoader : ClassVisitor(1) {
                 it.ifEmpty { name }
             }
             if (files.containsKey(name)) {
-                field.set(instance?.get(), files[name]!!.configuration)
+                field.set(findInstance(owner), files[name]!!.configuration)
             } else {
                 val file = releaseResourceFile(name, target = target)
                 // 兼容模式加载
@@ -70,7 +70,7 @@ class ConfigLoader : ClassVisitor(1) {
                     Configuration.loadFromFile(file, concurrent = configAnno.property("concurrent", true))
                 }
                 // 赋值
-                field.set(instance?.get(), conf)
+                field.set(findInstance(owner), conf)
                 // 自动重载
                 if (configAnno.property("autoReload", false) && isFileWatcherHook) {
                     FileWatcher.INSTANCE.addSimpleListener(file) {
@@ -82,7 +82,7 @@ class ConfigLoader : ClassVisitor(1) {
                 val configFile = ConfigNodeFile(conf, file)
                 conf.onReload {
                     val loader = PlatformFactory.getAPI<ConfigNodeLoader>()
-                    configFile.nodes.forEach { loader.visit(it, clazz, instance) }
+                    configFile.nodes.forEach { loader.visit(it, owner) }
                 }
                 files[name] = configFile
                 // 开发模式

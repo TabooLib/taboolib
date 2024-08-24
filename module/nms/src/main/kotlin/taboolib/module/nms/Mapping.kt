@@ -71,8 +71,8 @@ class Mapping {
                     }
                 }
             }
-            PrimitiveIO.dev("Spigot Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
-            PrimitiveIO.dev("Classes: ${mapping.classMapSpigotS2F.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
+            PrimitiveIO.debug("Spigot Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
+            PrimitiveIO.debug("Classes: ${mapping.classMapSpigotS2F.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
         }
 
@@ -120,8 +120,8 @@ class Mapping {
                     }
                 }
             }
-            PrimitiveIO.dev("Paper Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
-            PrimitiveIO.dev("Classes: ${mapping.classMapSpigotToMojang.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
+            PrimitiveIO.debug("Paper Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
+            PrimitiveIO.debug("Classes: ${mapping.classMapSpigotToMojang.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
         }
     }

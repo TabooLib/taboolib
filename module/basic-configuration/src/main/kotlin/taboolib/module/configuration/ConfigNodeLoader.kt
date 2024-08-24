@@ -1,6 +1,7 @@
 package taboolib.module.configuration
 
 import org.tabooproject.reflex.ClassField
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -15,13 +16,13 @@ import java.util.function.Supplier
 @Awake
 class ConfigNodeLoader : ClassVisitor(2) {
 
-    override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visit(field: ClassField, owner: ReflexClass) {
         if (field.isAnnotationPresent(ConfigNode::class.java)) {
             val node = field.getAnnotation(ConfigNode::class.java)
             var bind = node.property("bind", "")
             // 获取默认文件名称
             if (bind.isEmpty() || bind == "config.yml") {
-                bind = clazz.getAnnotationIfPresent(ConfigNode::class.java)?.bind ?: "config.yml"
+                bind = owner.getAnnotationIfPresent(ConfigNode::class.java)?.property("bind") ?: "config.yml"
             }
             // 自动补全后缀
             if (!bind.contains('.')) {
@@ -42,7 +43,7 @@ class ConfigNodeLoader : ClassVisitor(2) {
             }
             // 类型转换工具
             if (field.fieldType == ConfigNodeTransfer::class.java) {
-                val transfer = field.get(instance?.get()) as ConfigNodeTransfer<*, *>
+                val transfer = field.get(findInstance(owner)) as ConfigNodeTransfer<*, *>
                 transfer.reset(data)
             } else {
                 // 基本类型转换
@@ -57,7 +58,7 @@ class ConfigNodeLoader : ClassVisitor(2) {
                     JavaBoolean::class.java -> Coerce.toBoolean(data)
                     else -> data
                 }
-                field.set(instance?.get(), data)
+                field.set(findInstance(owner), data)
             }
         }
     }

@@ -3,6 +3,7 @@ package taboolib.platform
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask
 import org.bukkit.scheduler.BukkitRunnable
 import taboolib.common.Inject
+import taboolib.common.LifeCycle
 import taboolib.common.PrimitiveSettings
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -30,6 +31,7 @@ class BukkitExecutor : PlatformExecutor {
     val plugin: BukkitPlugin
         get() = BukkitPlugin.getInstance()
 
+    @Awake(LifeCycle.ENABLE)
     override fun start() {
         started = true
         // 提交列队中的任务

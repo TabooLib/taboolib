@@ -9,9 +9,6 @@ import taboolib.common.platform.Awake
 import taboolib.common.platform.command.component.CommandBase
 import taboolib.common.platform.command.component.CommandComponent
 import taboolib.common.platform.command.component.ExecuteContext
-import taboolib.common.reflect.getAnnotationIfPresent
-import taboolib.common.reflect.hasAnnotation
-import java.util.function.Supplier
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -73,14 +70,15 @@ class SimpleCommandRegister : ClassVisitor(0) {
     val main = HashMap<String, SimpleCommandMain>()
     val body = HashMap<String, MutableList<SimpleCommandBody>>()
 
-    fun loadBody(field: ClassField, instance: Supplier<*>?): SimpleCommandBody? {
+    fun loadBody(field: ClassField, owner: ReflexClass): SimpleCommandBody? {
         if (field.isAnnotationPresent(CommandBody::class.java)) {
             val annotation = field.getAnnotation(CommandBody::class.java)
-            val obj = field.get(instance?.get())
+            val obj = field.get(findInstance(owner))
             return when (field.fieldType) {
                 SimpleCommandMain::class.java -> {
                     null
                 }
+
                 SimpleCommandBody::class.java -> {
                     (obj as SimpleCommandBody).apply {
                         name = field.name
@@ -91,6 +89,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         hidden = annotation.property("hidden", false)
                     }
                 }
+
                 else -> {
                     SimpleCommandBody().apply {
                         name = field.name
@@ -101,7 +100,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                         hidden = annotation.property("hidden", false)
                         // 向下搜索字段
                         ReflexClass.of(field.fieldType).structure.fields.forEach {
-                            children += loadBody(it, instance) ?: return@forEach
+                            children += loadBody(it, owner) ?: return@forEach
                         }
                     }
                 }
@@ -110,27 +109,29 @@ class SimpleCommandRegister : ClassVisitor(0) {
         return null
     }
 
-    override fun visit(field: ClassField, clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visit(field: ClassField, owner: ReflexClass) {
         if (field.isAnnotationPresent(CommandBody::class.java) && field.fieldType == SimpleCommandMain::class.java) {
-            main[clazz.name] = field.get(instance?.get()) as SimpleCommandMain
+            main[owner.name!!] = field.get(findInstance(owner)) as SimpleCommandMain
         } else {
-            body.computeIfAbsent(clazz.name) { ArrayList() } += loadBody(field, instance) ?: return
+            body.computeIfAbsent(owner.name!!) { ArrayList() } += loadBody(field, owner) ?: return
         }
     }
 
-    override fun visitEnd(clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visitEnd(clazz: ReflexClass) {
         if (clazz.hasAnnotation(CommandHeader::class.java)) {
             val annotation = clazz.getAnnotationIfPresent(CommandHeader::class.java)!!
-            command(annotation.name,
-                annotation.aliases.toList(),
-                annotation.description,
-                annotation.usage,
-                annotation.permission,
-                annotation.permissionMessage,
-                annotation.permissionDefault,
-                body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap(),
-                annotation.newParser,
-            ) {
+            // 读取 CommandHeader 参数
+            val name = annotation.property("name", "")
+            val alias = annotation.list<String>("aliases")
+            val description = annotation.property("description", "")
+            val usage = annotation.property("usage", "")
+            val permission = annotation.property("permission", "")
+            val permissionMessage = annotation.property("permissionMessage", "")
+            val permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
+            val permissionChildren = body[clazz.name]?.filter { it.permission.isNotEmpty() }?.associate { it.permission to it.permissionDefault } ?: emptyMap()
+            val newParser = annotation.property("newParser", false)
+            // 注册命令
+            command(name, alias, description, usage, permission, permissionMessage, permissionDefault, permissionChildren, newParser) {
                 main[clazz.name]?.func?.invoke(this)
                 body[clazz.name]?.forEach { body ->
                     fun register(body: SimpleCommandBody, component: CommandComponent) {

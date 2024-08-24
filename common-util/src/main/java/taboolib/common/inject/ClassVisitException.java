@@ -2,6 +2,7 @@ package taboolib.common.inject;
 
 import org.tabooproject.reflex.ClassField;
 import org.tabooproject.reflex.ClassMethod;
+import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
 
 /**
@@ -17,15 +18,15 @@ public class ClassVisitException extends RuntimeException {
         super(clazz.toString(), cause);
     }
 
-    public ClassVisitException(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, Throwable cause) {
+    public ClassVisitException(ReflexClass clazz, VisitorGroup group, LifeCycle lifeCycle, Throwable cause) {
         super(clazz + ": " + group + " (" + lifeCycle + ")", cause);
     }
 
-    public ClassVisitException(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ClassField field, Throwable cause) {
+    public ClassVisitException(ReflexClass clazz, VisitorGroup group, LifeCycle lifeCycle, ClassField field, Throwable cause) {
         super(clazz + "#" + field.getName() + ": " + group + " (" + lifeCycle + ")", cause);
     }
 
-    public ClassVisitException(Class<?> clazz, VisitorGroup group, LifeCycle lifeCycle, ClassMethod method, Throwable cause) {
+    public ClassVisitException(ReflexClass clazz, VisitorGroup group, LifeCycle lifeCycle, ClassMethod method, Throwable cause) {
         super(clazz + "#" + method.getName() + ": " + group + " (" + lifeCycle + ")", cause);
     }
 }

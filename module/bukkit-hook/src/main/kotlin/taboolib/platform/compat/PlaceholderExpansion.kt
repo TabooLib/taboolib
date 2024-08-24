@@ -4,6 +4,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.events.ExpansionUnregisterEvent
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -85,9 +86,9 @@ interface PlaceholderExpansion {
             runCatching { Class.forName("me.clip.placeholderapi.expansion.PlaceholderExpansion") }.isSuccess
         }
 
-        override fun visitStart(clazz: Class<*>, instance: Supplier<*>?) {
-            if (hooked && clazz.interfaces.contains(PlaceholderExpansion::class.java)) {
-                val expansion = instance?.get() as? PlaceholderExpansion ?: error("PlaceholderExpansion must have an instance")
+        override fun visitStart(clazz: ReflexClass) {
+            if (hooked && clazz.structure.interfaces.any { it.name == PlaceholderExpansion::class.java.name }) {
+                val expansion = findInstance(clazz) as? PlaceholderExpansion ?: error("PlaceholderExpansion must have an instance")
                 if (!expansion.enabled) {
                     return
                 }

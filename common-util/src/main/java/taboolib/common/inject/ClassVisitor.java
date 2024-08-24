@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tabooproject.reflex.ClassField;
 import org.tabooproject.reflex.ClassMethod;
+import org.tabooproject.reflex.ReflexClass;
 import taboolib.common.LifeCycle;
-
-import java.util.function.Supplier;
+import taboolib.common.TabooLib;
 
 /**
  * TabooLib
@@ -38,39 +38,35 @@ public abstract class ClassVisitor {
     /**
      * 当类开始加载时
      *
-     * @param clazz    类
-     * @param instance 实例
+     * @param clazz 类
      */
-    public void visitStart(@NotNull Class<?> clazz, @Nullable Supplier<?> instance) {
+    public void visitStart(@NotNull ReflexClass clazz) {
     }
 
     /**
      * 当类结束加载时
      *
-     * @param clazz    类
-     * @param instance 实例
+     * @param clazz 类
      */
-    public void visitEnd(@NotNull Class<?> clazz, @Nullable Supplier<?> instance) {
+    public void visitEnd(@NotNull ReflexClass clazz) {
     }
 
     /**
      * 当字段加载时
      *
-     * @param field    字段
-     * @param clazz    类
-     * @param instance 实例
+     * @param field 字段
+     * @param owner 所属类
      */
-    public void visit(@NotNull ClassField field, @NotNull Class<?> clazz, @Nullable Supplier<?> instance) {
+    public void visit(@NotNull ClassField field, @NotNull ReflexClass owner) {
     }
 
     /**
      * 当方法加载时
      *
-     * @param method   方法
-     * @param clazz    类
-     * @param instance 实例
+     * @param method 方法
+     * @param owner  所属类
      */
-    public void visit(@NotNull ClassMethod method, @NotNull Class<?> clazz, @Nullable Supplier<?> instance) {
+    public void visit(@NotNull ClassMethod method, @NotNull ReflexClass owner) {
     }
 
     /**
@@ -80,5 +76,16 @@ public abstract class ClassVisitor {
      */
     public byte getPriority() {
         return this.priority;
+    }
+
+    /**
+     * 查找 ReflexClass 的实例
+     * 1. 从 TabooLib.getAwakenedClasses() 中查找
+     * 2. 从 Kotlin 伴生类和单例类中查找
+     */
+    public static @Nullable Object findInstance(@NotNull ReflexClass rClass) {
+        Object instance = TabooLib.getAwakenedClasses().get(rClass.getName());
+        if (instance != null) return instance;
+        return rClass.getInstance();
     }
 }

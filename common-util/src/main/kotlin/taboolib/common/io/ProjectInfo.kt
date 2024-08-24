@@ -1,5 +1,19 @@
 package taboolib.common.io
 
+import taboolib.common.PrimitiveSettings
+
+/**
+ * 是否为开发模式
+ */
+val isDebugMode: Boolean
+    get() = PrimitiveSettings.IS_DEBUG_MODE
+
+/**
+ * 是否为开发模式
+ */
+val isDevelopmentMode: Boolean
+    get() = PrimitiveSettings.IS_DEV_MODE
+
 /**
  * taboolib 字符串
  */

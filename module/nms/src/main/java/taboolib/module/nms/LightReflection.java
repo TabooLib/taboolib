@@ -52,7 +52,7 @@ public class LightReflection {
                 return forName(name, initialize, classLoader);
             }
         });
-        PrimitiveIO.dev("PaperClassFinder Injected");
+        PrimitiveIO.debug("PaperClassFinder Injected");
     }
 
     /**

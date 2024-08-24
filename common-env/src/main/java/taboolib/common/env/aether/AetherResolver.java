@@ -74,7 +74,7 @@ public class AetherResolver {
         ));
     }
 
-    public List<File> resolve(@NotNull String library, @Nullable DependencyScope[] scope, boolean isTransitive, boolean ignoreOptional) {
+    public List<File> resolve(@NotNull String library, List<DependencyScope> scope, boolean isTransitive, boolean ignoreOptional) {
         Dependency dependency = new Dependency(new DefaultArtifact(library), null);
         DependencyResult result;
         try {
@@ -86,7 +86,7 @@ public class AetherResolver {
         return result.getArtifactResults().stream().map(it -> it.getArtifact().getFile()).collect(Collectors.toList());
     }
 
-    private @NotNull DependencyRequest getDependencyRequest(Dependency dependency, @Nullable DependencyScope[] scope, boolean isTransitive, boolean ignoreOptional) {
+    private @NotNull DependencyRequest getDependencyRequest(Dependency dependency, List<DependencyScope> scope, boolean isTransitive, boolean ignoreOptional) {
         return new DependencyRequest(new CollectRequest(dependency, null, repositories), new DependencyFilter() {
             boolean self = true;
 

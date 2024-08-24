@@ -40,24 +40,21 @@ public class VelocityPlugin {
     private static VelocityPlugin instance;
 
     static {
-        long time = System.currentTimeMillis();
         // 初始化 IsolatedClassLoader
+        long time = System.currentTimeMillis();
         try {
             IsolatedClassLoader.init(VelocityPlugin.class);
         } catch (Throwable ex) {
-            // 关闭插件
             TabooLib.setStopped(true);
-            // 提示信息
-            PrimitiveIO.error("[TabooLib] Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            // 重抛错误
+            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
             throw ex;
         }
         // 生命周期任务
         TabooLib.lifeCycle(LifeCycle.CONST);
         // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.findImpl();
+        pluginInstance = Plugin.getImpl();
         // 调试模式显示加载耗时
-        PrimitiveIO.dev("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
     }
 
     private final ProxyServer server;
@@ -90,27 +87,17 @@ public class VelocityPlugin {
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
             }
-            // 启动调度器
-            try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.VelocityExecutor");
-                o.getClass().getDeclaredMethod("start").invoke(o);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-            }
         }
         // 再次判断插件是否关闭
         // 因为插件可能在 onEnable() 下关闭
         if (!TabooLib.isStopped()) {
             // 创建调度器，执行 onActive() 方法
-            server.getScheduler().buildTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    // 生命周期任务
-                    TabooLib.lifeCycle(LifeCycle.ACTIVE);
-                    // 调用 Plugin 实现的 onActive() 方法
-                    if (pluginInstance != null) {
-                        pluginInstance.onActive();
-                    }
+            server.getScheduler().buildTask(this, () -> {
+                // 生命周期任务
+                TabooLib.lifeCycle(LifeCycle.ACTIVE);
+                // 调用 Plugin 实现的 onActive() 方法
+                if (pluginInstance != null) {
+                    pluginInstance.onActive();
                 }
             }).schedule();
         }

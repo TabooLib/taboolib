@@ -24,7 +24,7 @@ fun <T> server(): T {
  */
 fun dev(vararg message: Any?) {
     if (isDevelopmentMode) {
-        message.filterNotNull().forEach { PrimitiveIO.dev(it) }
+        message.filterNotNull().forEach { PrimitiveIO.debug(it) }
     }
 }
 

@@ -1,5 +1,6 @@
 package taboolib.platform
 
+import taboolib.common.LifeCycle
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -19,9 +20,9 @@ import java.util.concurrent.TimeUnit
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerExecutor : PlatformExecutor {
 
-    private val tasks = ArrayList<PlatformExecutor.PlatformRunnable>()
     private val executor = Executors.newScheduledThreadPool(16)
 
+    @Awake(LifeCycle.ENABLE)
     override fun start() {
     }
 

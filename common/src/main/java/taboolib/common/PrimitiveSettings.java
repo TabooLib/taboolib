@@ -55,7 +55,8 @@ public class PrimitiveSettings {
     public static final boolean SKIP_TABOOLIB_RELOCATE = VERSION_PROPERTIES.getProperty("skip-taboolib-relocate", getProperty("taboolib.skip-relocate.self", "false")).equals("true");
 
     /**
-     * 调试模式
+     * 开发模式
+     * 开发模式会强制下载依赖
      */
     public static final boolean IS_DEV_MODE = TABOOLIB_VERSION.endsWith("-dev") || getProperty("taboolib.dev", "false").equals("true");
 

@@ -449,7 +449,7 @@ public abstract class LightInjector {
 
         @EventHandler(priority = EventPriority.LOWEST)
         private void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
-            PrimitiveIO.dev("[LightInjector] AsyncPlayerPreLoginEvent: %s", event.getName());
+            PrimitiveIO.debug("[LightInjector] AsyncPlayerPreLoginEvent: %s", event.getName());
             if (isClosed()) {
                 return;
             }
@@ -480,7 +480,7 @@ public abstract class LightInjector {
                     for (int i = networkManagers.size() - 1; i >= 0; i--) {
                         Object networkManager = networkManagers.get(i);
                         injectNetworkManager(networkManager);
-                        PrimitiveIO.dev("[LightInjector] injectNetworkManager in RandomAccess");
+                        PrimitiveIO.debug("[LightInjector] injectNetworkManager in RandomAccess");
                     }
                 } else {
                     // Using standard foreach to avoid any potential performance issues
@@ -489,7 +489,7 @@ public abstract class LightInjector {
                     //（networkManagers 应该是一个 ArrayList，但由于分叉我们不能确定这一点）
                     for (Object networkManager : networkManagers) {
                         injectNetworkManager(networkManager);
-                        PrimitiveIO.dev("[LightInjector] injectNetworkManager in else");
+                        PrimitiveIO.debug("[LightInjector] injectNetworkManager in else");
                     }
                 }
 
@@ -502,7 +502,7 @@ public abstract class LightInjector {
                     synchronized (pendingNetworkManagers) {
                         for (Object networkManager : pendingNetworkManagers) {
                             injectNetworkManager(networkManager);
-                            PrimitiveIO.dev("[LightInjector] injectNetworkManager in pendingNetworkManagers");
+                            PrimitiveIO.debug("[LightInjector] injectNetworkManager in pendingNetworkManagers");
                         }
                     }
                 }

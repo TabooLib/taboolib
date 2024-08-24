@@ -35,16 +35,16 @@ public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
             IsolatedClassLoader.init(AfyBrokerPlugin.class);
         } catch (Throwable ex) {
             // 提示信息
-            PrimitiveIO.error("[TabooLib] Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
+            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
             // 重抛错误
             throw ex;
         }
         // 生命周期任务
         TabooLib.lifeCycle(LifeCycle.CONST);
         // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.findImpl();
+        pluginInstance = Plugin.getImpl();
         // 调试模式显示加载耗时
-        PrimitiveIO.dev("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
     }
 
     public AfyBrokerPlugin() {

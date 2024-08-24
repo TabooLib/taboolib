@@ -47,8 +47,8 @@ object RemapHelper {
     fun checkParameterType(check: Array<Any?>, to: String): Boolean {
         // 不再使用 Reflex 的判断方式
         // 相比 Reflex 的 Reflection.isAssignableFrom，此方法是反向的：
-        // 左侧（cls）为检查类：表示想要分配的类
-        // 右侧（toClass）为目标类：表示想要分配的类
+        // 左侧（cls）为检查类（想要分配的类）
+        // 右侧（toClass）为目标类
         // 因此，如果 cls 可以分配给 toClass，则返回 true
         return ClassHelper.isAssignable(check.map { p -> p?.javaClass }.toTypedArray(), getParameterTypes(to), autoboxing)
     }

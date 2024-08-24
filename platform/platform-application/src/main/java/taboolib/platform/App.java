@@ -46,7 +46,7 @@ public class App {
         TabooLib.lifeCycle(LifeCycle.LOAD);
         TabooLib.lifeCycle(LifeCycle.ENABLE);
         // 调试模式显示加载耗时
-        PrimitiveIO.dev("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
     }
 
     /**
@@ -67,7 +67,7 @@ public class App {
             System.setProperty("taboolib.main", command);
             String group = matchGroup(command);
             System.setProperty("taboolib.group", group);
-            PrimitiveIO.println("[TabooLib] Running in IDE mode. (main: %s, group: %s)", command, group);
+            PrimitiveIO.println("Running in IDE mode. (main: %s, group: %s)", command, group);
         } catch (Throwable ignored) {
         }
     }
@@ -79,8 +79,8 @@ public class App {
         String[] args = main.split("\\.");
         switch (args.length) {
             case 1:
-                PrimitiveIO.error("[TabooLib] Unable to match group from main class. (main: " + main + ")");
-                PrimitiveIO.error("[TabooLib] Please use App.env().group(\"xxx\") to set the group.");
+                PrimitiveIO.error("Unable to match group from main class. (main: " + main + ")");
+                PrimitiveIO.error("Please use App.env().group(\"xxx\") to set the group.");
                 return args[0];
             case 2:
                 return args[0];

@@ -2,6 +2,7 @@ package taboolib.common.platform.event
 
 import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassMethod
+import org.tabooproject.reflex.ReflexClass
 import org.tabooproject.reflex.Unknown
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
@@ -20,7 +21,7 @@ import java.util.function.Supplier
 class EventBus : ClassVisitor(-1) {
 
     @Suppress("UNCHECKED_CAST")
-    override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visit(method: ClassMethod, owner: ReflexClass) {
         if (method.isAnnotationPresent(SubscribeEvent::class.java) && method.parameter.size == 1) {
             val anno = method.getAnnotation(SubscribeEvent::class.java)
             val bind = anno.property("bind", "")
@@ -34,7 +35,7 @@ class EventBus : ClassVisitor(-1) {
                 null
             }
             if (method.parameterTypes.size != 1) {
-                error("$clazz#${method.name} must have 1 parameter and must be an event type")
+                error("${owner.name}#${method.name} must have 1 parameter and must be an event type")
             }
             // 未找到事件类
             if (method.parameterTypes[0] == Unknown::class.java) {
@@ -45,11 +46,11 @@ class EventBus : ClassVisitor(-1) {
                 return
             }
             optional(anno) {
-                val obj = instance?.get()
+                val obj = findInstance(owner)
                 val listenType = method.parameterTypes[0]
                 // 内部事件处理
                 if (InternalEvent::class.java.isAssignableFrom(listenType)) {
-                    val priority = anno.enum<EventPriority>("priority", EventPriority.NORMAL)
+                    val priority = anno.enum("priority", EventPriority.NORMAL)
                     val ignoreCancelled = anno.property("ignoreCancelled", false)
                     InternalEventBus.listen(listenType as Class<InternalEvent>, priority.level, ignoreCancelled) { invoke(obj, method, it) }
                     return
@@ -66,7 +67,7 @@ class EventBus : ClassVisitor(-1) {
     }
 
     private fun registerBukkit(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
-        val priority = event.enum<EventPriority>("priority", EventPriority.NORMAL)
+        val priority = event.enum("priority", EventPriority.NORMAL)
         val ignoreCancelled = event.property("ignoreCancelled", false)
         val listenType = method.parameterTypes[0]
         if (listenType == OptionalEvent::class.java) {
@@ -80,7 +81,7 @@ class EventBus : ClassVisitor(-1) {
 
     private fun registerBungee(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
         val annoLevel = event.property("level", -1)
-        val level = if (annoLevel != 0) annoLevel else event.enum<EventPriority>("priority", EventPriority.NORMAL).level
+        val level = if (annoLevel != 0) annoLevel else event.enum("priority", EventPriority.NORMAL).level
         val ignoreCancelled = event.property("ignoreCancelled", false)
         val listenType = method.parameterTypes[0]
         if (listenType == OptionalEvent::class.java) {
@@ -93,7 +94,7 @@ class EventBus : ClassVisitor(-1) {
     }
 
     private fun registerVelocity(method: ClassMethod, optionalBind: Class<*>?, event: ClassAnnotation, obj: Any?) {
-        val postOrder = event.enum<PostOrder>("postOrder", PostOrder.NORMAL)
+        val postOrder = event.enum("postOrder", PostOrder.NORMAL)
         val listenType = method.parameterTypes[0]
         if (listenType == OptionalEvent::class.java) {
             if (optionalBind != null) {

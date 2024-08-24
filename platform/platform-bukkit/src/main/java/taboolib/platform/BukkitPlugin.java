@@ -43,17 +43,16 @@ public class BukkitPlugin extends JavaPlugin {
             IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitWorldGenerator");
             IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitBiomeProvider");
         } catch (Throwable ex) {
-            // 提示信息
-            PrimitiveIO.error("[TabooLib] Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            // 重抛错误
+            TabooLib.setStopped(true);
+            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
             throw ex;
         }
         // 生命周期任务
         TabooLib.lifeCycle(LifeCycle.CONST);
         // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.findImpl();
+        pluginInstance = Plugin.getImpl();
         // 调试模式显示加载耗时
-        PrimitiveIO.dev("[TabooLib] \"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
     }
 
     public BukkitPlugin() {
@@ -83,13 +82,6 @@ public class BukkitPlugin extends JavaPlugin {
             // 调用 Plugin 实现的 onEnable() 方法
             if (pluginInstance != null) {
                 pluginInstance.onEnable();
-            }
-            // 启动调度器
-            try {
-                Object o = TabooLib.getAwakenedClasses().get("taboolib.platform.BukkitExecutor");
-                o.getClass().getDeclaredMethod("start").invoke(o);
-            } catch (Throwable ex) {
-                ex.printStackTrace();
             }
         }
         // 再次判断插件是否关闭
@@ -166,15 +158,17 @@ public class BukkitPlugin extends JavaPlugin {
     @SuppressWarnings("DataFlowIssue")
     public static void injectIllegalAccess() {
         try {
-            PluginDescriptionFile description = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "description", false, true, false);
-            Set<String> accessSelf = Reflex.Companion.getProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess", false, true, false);
+            long time = System.currentTimeMillis();
+            PluginDescriptionFile description = Reflex.Companion.getLocalProperty(BukkitPlugin.class.getClassLoader(), "description");
+            Set<String> accessSelf = Reflex.Companion.getLocalProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess");
             for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
                 if (plugin.getClass().getName().endsWith("platform.BukkitPlugin")) {
-                    Set<String> accessOther = Reflex.Companion.getProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess", false, true, false);
+                    Set<String> accessOther = Reflex.Companion.getLocalProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess");
                     accessOther.add(description.getName());
                     accessSelf.add(plugin.getName());
                 }
             }
+            PrimitiveIO.debug("Injected illegal access warning. (%sms)", System.currentTimeMillis() - time);
         } catch (Throwable ignored) {
         }
     }
