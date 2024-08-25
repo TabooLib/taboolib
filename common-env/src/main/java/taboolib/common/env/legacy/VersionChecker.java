@@ -23,12 +23,16 @@ public class VersionChecker {
         return System.currentTimeMillis() - getLatestCheckTime() > TimeUnit.DAYS.toMillis(7);
     }
 
-    /** 获取最后一次检查的时间 */
+    /**
+     * 获取最后一次检查的时间
+     */
     public static long getLatestCheckTime() {
         return checkFile.lastModified();
     }
 
-    /** 更新最后一次检查的时间 */
+    /**
+     * 更新最后一次检查的时间
+     */
     public static void updateCheckTime() {
         if (checkFile.exists()) {
             checkFile.setLastModified(System.currentTimeMillis());

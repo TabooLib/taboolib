@@ -62,6 +62,18 @@ public class ParsedDependency {
      */
     private final boolean external;
 
+    public ParsedDependency(String value, String test, String repository, boolean transitive, boolean ignoreOptional, boolean ignoreException, List<DependencyScope> scopes, List<String> relocate, boolean external) {
+        this.value = value;
+        this.test = test;
+        this.repository = repository;
+        this.transitive = transitive;
+        this.ignoreOptional = ignoreOptional;
+        this.ignoreException = ignoreException;
+        this.scopes = scopes;
+        this.relocate = relocate;
+        this.external = external;
+    }
+
     @SuppressWarnings("unchecked")
     public ParsedDependency(Map<String, Object> map) {
         this.value = (String) map.get("value");

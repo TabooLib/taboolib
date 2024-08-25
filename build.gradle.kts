@@ -19,7 +19,7 @@ subprojects {
         maven("https://repo1.maven.org/maven2")
         maven("https://maven.aliyun.com/repository/central")
         maven("https://repo.codemc.io/repository/nms/")
-        maven("https://repo.sacredcraft.cn/repository/releases")
+        maven("http://sacredcraft.cn:8081/repository/releases") { isAllowInsecureProtocol = true }
         mavenLocal()
         mavenCentral()
     }
@@ -35,7 +35,7 @@ subprojects {
     }
 
     java {
-         withSourcesJar()
+        withSourcesJar()
     }
 
     tasks.withType<ShadowJar> {
@@ -73,7 +73,7 @@ subprojects
 
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
-        maven("https://repo.sacredcraft.cn/repository/releases") {
+        maven("http://sacredcraft.cn:8081/repository/releases") {
             isAllowInsecureProtocol = true
             credentials {
                 username = project.findProperty("taboolibUsername").toString()

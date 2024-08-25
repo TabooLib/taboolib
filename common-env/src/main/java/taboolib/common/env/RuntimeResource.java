@@ -7,7 +7,9 @@ import java.lang.annotation.*;
 @Repeatable(RuntimeResources.class)
 public @interface RuntimeResource {
 
-    /** 资源地址 */
+    /**
+     * 资源地址
+     */
     String value();
 
     /**
@@ -22,7 +24,9 @@ public @interface RuntimeResource {
      */
     String name() default "";
 
-    /** 标签（标识用） */
+    /**
+     * 标签（标识用）
+     */
     String tag() default "";
 
     /**

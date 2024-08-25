@@ -1,0 +1,21 @@
+[
+  {
+    "value": "org.yaml:snakeyaml:2.2",
+    "test": [
+      "org.yaml.snakeyaml_2_2.Yaml"
+    ],
+    "repository": "https://maven.aliyun.com/repository/central",
+    "transitive": true,
+    "ignoreOptional": true,
+    "ignoreException": true,
+    "scopes": [
+      "compile",
+      "runtime"
+    ],
+    "relocate": [
+      "org.yaml.snakeyaml",
+      "org.yaml.snakeyaml_2_2"
+    ],
+    "external": true
+  }
+]
