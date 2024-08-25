@@ -19,9 +19,7 @@ subprojects {
         maven("https://repo1.maven.org/maven2")
         maven("https://maven.aliyun.com/repository/central")
         maven("https://repo.codemc.io/repository/nms/")
-        maven("http://sacredcraft.cn:8081/repository/releases") {
-            isAllowInsecureProtocol = true
-        }
+        maven("https://repo.sacredcraft.cn/repository/releases")
         mavenLocal()
         mavenCentral()
     }
@@ -32,8 +30,8 @@ subprojects {
         compileOnly("com.google.guava:guava:21.0")
         compileOnly("com.google.code.gson:gson:2.8.7")
         compileOnly("org.apache.commons:commons-lang3:3.5")
-        compileOnly("org.tabooproject.reflex:reflex:1.1.0-test1")
-        compileOnly("org.tabooproject.reflex:analyser:1.1.0-test1")
+        compileOnly("org.tabooproject.reflex:reflex:1.1.1")
+        compileOnly("org.tabooproject.reflex:analyser:1.1.1")
     }
 
     java {
@@ -75,7 +73,7 @@ subprojects
 
 fun PublishingExtension.applyToSub(subProject: Project) {
     repositories {
-        maven("http://sacredcraft.cn:8081/repository/releases") {
+        maven("https://repo.sacredcraft.cn/repository/releases") {
             isAllowInsecureProtocol = true
             credentials {
                 username = project.findProperty("taboolibUsername").toString()

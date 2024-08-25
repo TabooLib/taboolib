@@ -92,7 +92,7 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        PrimitiveIO.debug("\"{0}\" is running in development mode.", PrimitiveIO.getRunningFileName());
+        PrimitiveIO.debug("Running in development mode.", PrimitiveIO.getRunningFileName());
         long time = TabooLib.execution(() -> {
             // 基础依赖是否隔离加载
             boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
@@ -105,8 +105,8 @@ public class PrimitiveLoader {
                 load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
             }
             // 加载反射模块
-            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.1.0-test1", IS_ISOLATED_MODE, true, rule());
-            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.1.0-test1", IS_ISOLATED_MODE, true, rule());
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.1.1", IS_ISOLATED_MODE, true, rule());
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.1.1", IS_ISOLATED_MODE, true, rule());
         });
         PrimitiveIO.debug("Base dependencies loaded in {0} ms.", time);
         // 加载完整模块
