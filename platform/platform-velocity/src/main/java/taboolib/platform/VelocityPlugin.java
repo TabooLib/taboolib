@@ -26,7 +26,7 @@ import java.nio.file.Path;
  * @author sky
  * @since 2021/6/26 8:22 下午
  */
-@SuppressWarnings({"Convert2Lambda", "DuplicatedCode", "CallToPrintStackTrace"})
+@SuppressWarnings({"DuplicatedCode", "CallToPrintStackTrace"})
 @PlatformSide(Platform.VELOCITY)
 @com.velocitypowered.api.plugin.Plugin(
         id = "@plugin_id@",
@@ -36,25 +36,24 @@ import java.nio.file.Path;
 public class VelocityPlugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static VelocityPlugin instance;
 
     static {
-        // 初始化 IsolatedClassLoader
-        long time = System.currentTimeMillis();
-        try {
-            IsolatedClassLoader.init(VelocityPlugin.class);
-        } catch (Throwable ex) {
-            TabooLib.setStopped(true);
-            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            throw ex;
-        }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.CONST);
-        // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.getImpl();
-        // 调试模式显示加载耗时
-        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+            try {
+                // 初始化 IsolatedClassLoader
+                IsolatedClassLoader.init(VelocityPlugin.class);
+            } catch (Throwable ex) {
+                TabooLib.setStopped(true);
+                PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"{0}\" will be disabled!", PrimitiveIO.getRunningFileName());
+                throw ex;
+            }
+            // 生命周期任务
+            TabooLib.lifeCycle(LifeCycle.CONST);
+            // 检索 TabooLib Plugin 实现
+            pluginInstance = Plugin.getInstance();
+        }));
     }
 
     private final ProxyServer server;

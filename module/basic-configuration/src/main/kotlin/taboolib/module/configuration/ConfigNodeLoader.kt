@@ -7,10 +7,8 @@ import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.warning
-import taboolib.common.reflect.getAnnotationIfPresent
 import taboolib.common.util.*
 import taboolib.common5.Coerce
-import java.util.function.Supplier
 
 @Inject
 @Awake

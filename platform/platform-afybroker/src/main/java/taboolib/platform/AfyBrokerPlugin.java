@@ -25,26 +25,25 @@ import java.util.concurrent.TimeUnit;
 public class AfyBrokerPlugin extends net.afyer.afybroker.server.plugin.Plugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static AfyBrokerPlugin instance;
 
     static {
-        long time = System.currentTimeMillis();
-        // 初始化 IsolatedClassLoader
-        try {
-            IsolatedClassLoader.init(AfyBrokerPlugin.class);
-        } catch (Throwable ex) {
-            // 提示信息
-            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            // 重抛错误
-            throw ex;
-        }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.CONST);
-        // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.getImpl();
-        // 调试模式显示加载耗时
-        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+            try {
+                // 初始化 IsolatedClassLoader
+                IsolatedClassLoader.init(AfyBrokerPlugin.class);
+            } catch (Throwable ex) {
+                // 提示信息
+                PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"{0}\" will be disabled!", PrimitiveIO.getRunningFileName());
+                // 重抛错误
+                throw ex;
+            }
+            // 生命周期任务
+            TabooLib.lifeCycle(LifeCycle.CONST);
+            // 检索 TabooLib Plugin 实现
+            pluginInstance = Plugin.getInstance();
+        }));
     }
 
     public AfyBrokerPlugin() {

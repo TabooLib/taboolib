@@ -5,6 +5,7 @@ import org.tabooproject.reflex.ReflexClass
 import taboolib.common.ClassAppender
 import taboolib.common.PrimitiveIO
 import taboolib.common.TabooLib
+import taboolib.common.util.execution
 import java.io.File
 import java.net.JarURLConnection
 import java.net.URISyntaxException
@@ -18,19 +19,21 @@ import java.util.jar.JarFile
  * 当前插件的所有类（在本体中）
  */
 val runningClassMapInJar by lazy(LazyThreadSafetyMode.NONE) {
-    val time = System.currentTimeMillis()
-    val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
-    // 额外扫描入口
-    System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
-        if (name.isEmpty()) return@forEach
-        map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
+    val (map, time) = execution {
+        val map = TabooLib::class.java.protectionDomain.codeSource.location.getClasses()
+        // 额外扫描入口
+        System.getProperty("taboolib.scan")?.split(',')?.forEach { name ->
+            if (name.isEmpty()) return@forEach
+            map += Class.forName(name).protectionDomain.codeSource.location.getClasses()
+        }
+        // 扫描额外主类
+        val main = System.getProperty("taboolib.main")
+        if (main != null) {
+            map += Class.forName(main).protectionDomain.codeSource.location.getClasses()
+        }
+        map
     }
-    // 扫描额外主类
-    val main = System.getProperty("taboolib.main")
-    if (main != null) {
-        map += Class.forName(main).protectionDomain.codeSource.location.getClasses()
-    }
-    PrimitiveIO.debug("Loaded %s classes in (%sms).", map.size, System.currentTimeMillis() - time)
+    PrimitiveIO.debug("Loaded {0} classes in ({1}ms).", map.size, time)
     map
 }
 
@@ -78,20 +81,22 @@ val runningExactClasses: List<ReflexClass>
  * 当前插件的所有资源文件（在本体中）
  */
 val runningResourcesInJar by lazy(LazyThreadSafetyMode.NONE) {
-    val time = System.currentTimeMillis()
-    val map = TabooLib::class.java.protectionDomain.codeSource.location.getResources()
-    // 额外扫描入口
-    System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
-        if (name.isEmpty()) return@forEach
-        PrimitiveIO.println("Scanning $name")
-        map += Class.forName(name).protectionDomain.codeSource.location.getResources()
+    val (map, time) = execution {
+        val map = TabooLib::class.java.protectionDomain.codeSource.location.getResources()
+        // 额外扫描入口
+        System.getProperty("taboolib.scan")?.split(",")?.forEach { name ->
+            if (name.isEmpty()) return@forEach
+            PrimitiveIO.println("Scanning $name")
+            map += Class.forName(name).protectionDomain.codeSource.location.getResources()
+        }
+        // 扫描额外主类
+        val main = System.getProperty("taboolib.main")
+        if (main != null) {
+            map += Class.forName(main).protectionDomain.codeSource.location.getResources()
+        }
+        map
     }
-    // 扫描额外主类
-    val main = System.getProperty("taboolib.main")
-    if (main != null) {
-        map += Class.forName(main).protectionDomain.codeSource.location.getResources()
-    }
-    PrimitiveIO.debug("Loaded %s resources in (%sms).", map.size, System.currentTimeMillis() - time)
+    PrimitiveIO.debug("Loaded {0} resources in ({1}ms).", map.size, time)
     map
 }
 

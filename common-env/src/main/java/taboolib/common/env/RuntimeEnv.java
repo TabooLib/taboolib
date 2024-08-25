@@ -65,25 +65,38 @@ public class RuntimeEnv {
      * 初始化运行时环境，由 extra.properties 调用
      * 用于初始化 Kotlin 环境
      */
-    static void init() throws Throwable {
-        long time = System.currentTimeMillis();
-        List<JarRelocation> rel = new ArrayList<>();
-        boolean loadKotlin = !KOTLIN_VERSION.equals("null");
-        boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");
-        // 在非隔离模式下检查 Kotlin 环境
-        if (!PrimitiveSettings.IS_ISOLATED_MODE) {
-            // 非隔离模式下的重定向规则
-            rel.add(new JarRelocation(KOTLIN_ID + ".", PrimitiveSettings.getRelocatedKotlinVersion() + "."));
-            rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
-            // 环境检查
-            if (TabooLib.isKotlinEnvironment()) loadKotlin = false;
-            if (TabooLib.isKotlinCoroutinesEnvironment()) loadKotlinCoroutines = false;
-        }
-        // 加载 Kotlin 环境
-        if (loadKotlin) ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
-        // 加载 Kotlin Coroutines 环境
-        if (loadKotlinCoroutines) ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
-        PrimitiveIO.debug("RuntimeEnv loaded in " + (System.currentTimeMillis() - time) + "ms.");
+    static void init() {
+        long time = TabooLib.execution(() -> {
+            List<JarRelocation> rel = new ArrayList<>();
+            boolean loadKotlin = !KOTLIN_VERSION.equals("null");
+            boolean loadKotlinCoroutines = !KOTLIN_COROUTINES_VERSION.equals("null");
+            // 在非隔离模式下检查 Kotlin 环境
+            if (!PrimitiveSettings.IS_ISOLATED_MODE) {
+                // 非隔离模式下的重定向规则
+                rel.add(new JarRelocation(KOTLIN_ID + ".", PrimitiveSettings.getRelocatedKotlinVersion() + "."));
+                rel.add(new JarRelocation(KOTLIN_COROUTINES_ID + ".", PrimitiveSettings.getRelocatedKotlinCoroutinesVersion() + "."));
+                // 环境检查
+                if (TabooLib.isKotlinEnvironment()) loadKotlin = false;
+                if (TabooLib.isKotlinCoroutinesEnvironment()) loadKotlinCoroutines = false;
+            }
+            // 加载 Kotlin 环境
+            if (loadKotlin) {
+                try {
+                    ENV.loadDependency("org.jetbrains.kotlin:kotlin-stdlib:" + KOTLIN_VERSION, rel);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            // 加载 Kotlin Coroutines 环境
+            if (loadKotlinCoroutines) {
+                try {
+                    ENV.loadDependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:" + KOTLIN_COROUTINES_VERSION, false, rel);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        PrimitiveIO.debug("RuntimeEnv loaded in {0}ms.", time);
     }
 
     public int inject(@NotNull ReflexClass clazz) throws Throwable {
@@ -306,7 +319,7 @@ public class RuntimeEnv {
         if (PrimitiveIO.validation(pomFile, pomFile1)) {
             downloader.loadDependencyFromInputStream(pomFile.toPath().toUri().toURL().openStream());
         } else {
-            PrimitiveIO.println("Downloading library %s:%s:%s %s", artifact, transitive ? "(transitive)" : "");
+            PrimitiveIO.println("Downloading library {0}:{1}:{2} {3}", artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), transitive ? "(transitive)" : "");
             downloader.loadDependencyFromInputStream(new URL(repository + "/" + pomPath).openStream());
         }
         // 加载自身

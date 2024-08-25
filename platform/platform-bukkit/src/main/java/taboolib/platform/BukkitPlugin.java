@@ -3,11 +3,9 @@ package taboolib.platform;
 import org.bukkit.Bukkit;
 import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.ChunkGenerator;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tabooproject.reflex.Reflex;
 import taboolib.common.LifeCycle;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.TabooLib;
@@ -17,7 +15,6 @@ import taboolib.common.platform.PlatformSide;
 import taboolib.common.platform.Plugin;
 
 import java.io.File;
-import java.util.Set;
 
 /**
  * TabooLib
@@ -31,34 +28,33 @@ import java.util.Set;
 public class BukkitPlugin extends JavaPlugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static BukkitPlugin instance;
 
     static {
-        // 初始化 IsolatedClassLoader
-        long time = System.currentTimeMillis();
-        try {
-            IsolatedClassLoader.init(BukkitPlugin.class);
-            // 排除两个接口
-            IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitWorldGenerator");
-            IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitBiomeProvider");
-        } catch (Throwable ex) {
-            TabooLib.setStopped(true);
-            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            throw ex;
-        }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.CONST);
-        // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.getImpl();
-        // 调试模式显示加载耗时
-        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+            try {
+                // 初始化 IsolatedClassLoader
+                IsolatedClassLoader.init(BukkitPlugin.class);
+                // 排除两个接口
+                IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitWorldGenerator");
+                IsolatedClassLoader.INSTANCE.addExcludedClass("taboolib.platform.BukkitBiomeProvider");
+            } catch (Throwable ex) {
+                TabooLib.setStopped(true);
+                PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"{0}\" will be disabled!", PrimitiveIO.getRunningFileName());
+                throw ex;
+            }
+            // 生命周期任务
+            TabooLib.lifeCycle(LifeCycle.CONST);
+            // 检索 TabooLib Plugin 实现
+            pluginInstance = Plugin.getInstance();
+        }));
     }
 
     public BukkitPlugin() {
         instance = this;
         // 修改访问提示（似乎有用）
-        injectIllegalAccess();
+        IllegalAccess.inject();
         // 生命周期任务
         TabooLib.lifeCycle(LifeCycle.INIT);
     }
@@ -148,28 +144,6 @@ public class BukkitPlugin extends JavaPlugin {
         // 调用 Plugin 实现的 onActive() 方法
         if (pluginInstance != null) {
             pluginInstance.onActive();
-        }
-    }
-
-    /**
-     * 移除 Spigot 的访问警告：
-     * Loaded class {0} from {1} which is not a depend, softdepend or loadbefore of this plugin
-     */
-    @SuppressWarnings("DataFlowIssue")
-    public static void injectIllegalAccess() {
-        try {
-            long time = System.currentTimeMillis();
-            PluginDescriptionFile description = Reflex.Companion.getLocalProperty(BukkitPlugin.class.getClassLoader(), "description");
-            Set<String> accessSelf = Reflex.Companion.getLocalProperty(BukkitPlugin.class.getClassLoader(), "seenIllegalAccess");
-            for (org.bukkit.plugin.Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-                if (plugin.getClass().getName().endsWith("platform.BukkitPlugin")) {
-                    Set<String> accessOther = Reflex.Companion.getLocalProperty(plugin.getClass().getClassLoader(), "seenIllegalAccess");
-                    accessOther.add(description.getName());
-                    accessSelf.add(plugin.getName());
-                }
-            }
-            PrimitiveIO.debug("Injected illegal access warning. (%sms)", System.currentTimeMillis() - time);
-        } catch (Throwable ignored) {
         }
     }
 }

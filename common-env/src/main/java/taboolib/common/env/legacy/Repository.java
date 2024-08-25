@@ -48,7 +48,7 @@ public class Repository extends AbstractXmlParser {
         // 构建 URL
         URL url = dep.getURL(this, ext);
         // 提示信息
-        PrimitiveIO.println("Downloading ... %s", url);
+        PrimitiveIO.println("Downloading ... {0}", url);
         // 下载文件
         PrimitiveIO.downloadFile(url, out);
         PrimitiveIO.downloadFile(dep.getURL(this, ext + ".sha1"), new File(out.getPath() + ".sha1"));

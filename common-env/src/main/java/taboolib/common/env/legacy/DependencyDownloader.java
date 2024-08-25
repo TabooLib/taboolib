@@ -119,7 +119,7 @@ public class DependencyDownloader extends AbstractXmlParser {
             // 如果文件存在
             if (file.exists()) {
                 // 提示信息
-                PrimitiveIO.println("Loading library %s:%s:%s", dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
+                PrimitiveIO.println("Loading library {0}:{1}:{2}", dep.getGroupId(), dep.getArtifactId(), dep.getVersion());
                 // 如果没有重定向规则，直接注入
                 if (relocation.isEmpty()) {
                     ClassLoader loader = ClassAppender.addPath(file.toPath(), PrimitiveSettings.IS_ISOLATED_MODE, dep.isExternal());

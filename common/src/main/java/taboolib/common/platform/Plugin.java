@@ -1,5 +1,6 @@
 package taboolib.common.platform;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import java.io.File;
  */
 public abstract class Plugin {
 
-    private static Plugin impl = null;
+    private static Plugin instance = null;
 
     /**
      * 当加载插件时调用
@@ -58,14 +59,18 @@ public abstract class Plugin {
     /**
      * 获取插件实例
      */
-    public static Plugin getImpl() {
-        return Plugin.impl;
+    @Nullable
+    public static Plugin getInstance() {
+        return Plugin.instance;
     }
 
     /**
      * 设置插件实例
      */
-    public static void setImpl(Plugin impl) {
-        Plugin.impl = impl;
+    public static void setInstance(@NotNull Plugin instance) {
+        if (Plugin.instance != null) {
+            throw new IllegalStateException("Plugin instance already set.");
+        }
+        Plugin.instance = instance;
     }
 }

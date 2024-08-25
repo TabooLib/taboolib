@@ -36,10 +36,11 @@ fun newFile(path: String, create: Boolean = true, folder: Boolean = false): File
  * @return 该文件自身
  */
 fun newFile(file: File, create: Boolean = true, folder: Boolean = false): File {
-    if (!file.parentFile.exists()) {
-        file.parentFile.mkdirs()
+    val parentFile = file.parentFile
+    if (parentFile != null && parentFile.notfound()) {
+        parentFile.mkdirs()
     }
-    if (!file.exists() && create) {
+    if (file.notfound() && create) {
         if (folder) {
             file.mkdirs()
         } else {

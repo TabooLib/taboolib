@@ -51,27 +51,28 @@ public class ClassVisitorHandler {
     public static Set<ReflexClass> getClasses() {
         if (classes == null) {
             HashSet<ReflexClass> cache = new LinkedHashSet<>();
-            long time = System.currentTimeMillis();
-            // 获取所有类
-            // 这里会首次触发 runningClassMapInJar 的初始化
-            for (Map.Entry<String, ReflexClass> entry : ProjectScannerKt.getRunningClassMap().entrySet()) {
-                String key = entry.getKey();
-                ReflexClass value = entry.getValue();
-                // 排除非本项目 && 排除第三方库 && 排除匿名内部类
-                if (!isProjectClass(key) || isLibraryClass(key) || isAnonymousInnerClass(key)) {
-                    continue;
+            long time = TabooLib.execution(() -> {
+                // 获取所有类
+                // 这里会首次触发 runningClassMapInJar 的初始化
+                for (Map.Entry<String, ReflexClass> entry : ProjectScannerKt.getRunningClassMap().entrySet()) {
+                    String key = entry.getKey();
+                    ReflexClass value = entry.getValue();
+                    // 排除非本项目 && 排除第三方库 && 排除匿名内部类
+                    if (!isProjectClass(key) || isLibraryClass(key) || isAnonymousInnerClass(key)) {
+                        continue;
+                    }
+                    // 排除属于 TabooLib 但没有 Inject 注解的类
+                    if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
+                        continue;
+                    }
+                    // 检测有效平台
+                    if (checkPlatform(value)) {
+                        cache.add(value);
+                    }
                 }
-                // 排除属于 TabooLib 但没有 Inject 注解的类
-                if (isTabooLibClass(key) && !value.getStructure().isAnnotationPresent(Inject.class)) {
-                    continue;
-                }
-                // 检测有效平台
-                if (checkPlatform(value)) {
-                    cache.add(value);
-                }
-            }
-            classes = cache;
-            PrimitiveIO.debug("ClassVisitor loaded %s classes. (%sms)", classes.size(), System.currentTimeMillis() - time);
+                classes = cache;
+            });
+            PrimitiveIO.debug("ClassVisitor loaded {0} classes. ({1}ms)", classes.size(), time);
         }
         return classes;
     }

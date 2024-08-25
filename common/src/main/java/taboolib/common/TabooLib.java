@@ -70,17 +70,18 @@ public class TabooLib {
             isStopped = true;
             throw new RuntimeException("Runtime environment setup failed, please feedback! (Kotlin Environment Not Found)");
         }
-        // 开发者模式下打印生命周期
-        PrimitiveIO.debug("LifeCycle: " + lifeCycle);
-        // 记录生命周期
-        currentLifeCycle = lifeCycle;
-        // 运行生命周期任务
-        List<LifeCycleTask> taskList = lifeCycleTask.remove(lifeCycle);
-        if (taskList != null) {
-            for (LifeCycleTask task : taskList) {
-                task.run();
+        long time = execution(() -> {
+            // 记录生命周期
+            currentLifeCycle = lifeCycle;
+            // 运行生命周期任务
+            List<LifeCycleTask> taskList = lifeCycleTask.remove(lifeCycle);
+            if (taskList != null) {
+                for (LifeCycleTask task : taskList) {
+                    task.run();
+                }
             }
-        }
+        });
+        PrimitiveIO.debug("LifeCycle \"{0}\" completed in {1} ms.", lifeCycle, time);
     }
 
     /**
@@ -207,5 +208,20 @@ public class TabooLib {
         public abstract Class<?> getClass(String name, boolean initialize) throws ClassNotFoundException;
 
         public abstract Class<?> getClass(String name, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException;
+    }
+
+    /**
+     * 执行给定的代码块，并返回所用时间（以毫秒为单位）。
+     *
+     * @param task 要执行的代码块
+     * @return 执行代码块所用的时间（以毫秒为单位）
+     */
+    public static long execution(Runnable task) {
+        long startTime = System.nanoTime();
+        // 执行传入的代码块
+        task.run();
+        long endTime = System.nanoTime();
+        // 计算执行时间（以毫秒为单位）
+        return (endTime - startTime) / 1_000_000;
     }
 }

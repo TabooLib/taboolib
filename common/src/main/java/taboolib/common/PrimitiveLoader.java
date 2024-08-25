@@ -92,20 +92,23 @@ public class PrimitiveLoader {
      */
     public static void init() throws Throwable {
         // 开发版本
-        PrimitiveIO.debug("\"%s\" is running in development mode.", PrimitiveIO.getRunningFileName());
-        // 基础依赖是否隔离加载
-        boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
-        // 加载基础依赖
-        for (String[] i : deps()) {
-            load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, Lists.newArrayList());
-        }
-        // 重新加载基础依赖用于正式使用
-        for (String[] i : deps()) {
-            load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
-        }
-        // 加载反射模块
-        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.1.0", IS_ISOLATED_MODE, true, rule());
-        load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.1.0", IS_ISOLATED_MODE, true, rule());
+        PrimitiveIO.debug("\"{0}\" is running in development mode.", PrimitiveIO.getRunningFileName());
+        long time = TabooLib.execution(() -> {
+            // 基础依赖是否隔离加载
+            boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
+            // 加载基础依赖
+            for (String[] i : deps()) {
+                load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, Lists.newArrayList());
+            }
+            // 重新加载基础依赖用于正式使用
+            for (String[] i : deps()) {
+                load(REPO_CENTRAL, i[0], i[1], i[2], IS_ISOLATED_MODE, true, rule());
+            }
+            // 加载反射模块
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "reflex", "1.1.0-test1", IS_ISOLATED_MODE, true, rule());
+            load(REPO_REFLEX, TABOOPROJECT_GROUP + ".reflex", "analyser", "1.1.0-test1", IS_ISOLATED_MODE, true, rule());
+        });
+        PrimitiveIO.debug("Base dependencies loaded in {0} ms.", time);
         // 加载完整模块
         loadAll();
     }
@@ -120,7 +123,7 @@ public class PrimitiveLoader {
      * @param isIsolated 是否进入沙盒
      * @param isExternal 是否属于外部库（不会扫描类）
      */
-    static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, List<String[]> relocate) throws Throwable {
+    static boolean load(String repo, String group, String name, String version, boolean isIsolated, boolean isExternal, List<String[]> relocate) {
         if (name.isEmpty()) return false;
         boolean downloaded = false;
         File envFile = new File(getLibraryFile(), String.format("%s/%s/%s/%s-%s.jar", group.replace(".", "/"), name, version, name, version));
@@ -128,7 +131,7 @@ public class PrimitiveLoader {
         // 检查文件有效性
         if (!PrimitiveIO.validation(envFile, shaFile) || (IS_FORCE_DOWNLOAD_IN_DEV_MODE && IS_DEV_MODE && group.equals(TABOOLIB_GROUP))) {
             try {
-                PrimitiveIO.println("Downloading library %s:%s:%s", group, name, version);
+                PrimitiveIO.println("Downloading library {0}:{1}:{2}", group, name, version);
                 // 获取地址
                 String url = String.format("%s/%s/%s/%s/%s-%s.jar", repo, group.replace(".", "/"), name, version, name, version);
                 // 下载资源
@@ -146,7 +149,11 @@ public class PrimitiveLoader {
             }
         }
         // 加载
-        loadFile(envFile, isIsolated, isExternal, relocate, downloaded);
+        try {
+            loadFile(envFile, isIsolated, isExternal, relocate, downloaded);
+        } catch (Throwable ex) {
+            throw new IllegalStateException(ex);
+        }
         return true;
     }
 
@@ -159,22 +166,25 @@ public class PrimitiveLoader {
             PrimitiveIO.println("TabooLib version is not specified, skip loading.");
             return;
         }
-        List<String[]> rule = rule();
-        // 加载 env 启动 Kotlin 环境
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
-        // 如果 Kotlin 环境启动失败
-        if (!TabooLib.isKotlinEnvironment()) {
-            throw new IllegalStateException("Failed to setup Kotlin environment.");
-        }
-        // 加载 util 注册 ClassAppender Callback 回调函数
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
-        // 加载剩余模块 >> 此时 isExternal 参数才有实际作用
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
-        load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
-        // 加载自选模块
-        for (String i : INSTALL_MODULES) {
-            load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
-        }
+        long time = TabooLib.execution(() -> {
+            List<String[]> rule = rule();
+            // 加载 env 启动 Kotlin 环境
+            load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
+            // 如果 Kotlin 环境启动失败
+            if (!TabooLib.isKotlinEnvironment()) {
+                throw new IllegalStateException("Failed to setup Kotlin environment.");
+            }
+            // 加载 util 注册 ClassAppender Callback 回调函数
+            load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
+            // 加载剩余模块 >> 此时 isExternal 参数才有实际作用
+            load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-legacy-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+            load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-platform-api", TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+            // 加载自选模块
+            for (String i : INSTALL_MODULES) {
+                load(REPO_TABOOLIB, TABOOLIB_GROUP, i, TABOOLIB_VERSION, IS_ISOLATED_MODE, false, rule);
+            }
+        });
+        PrimitiveIO.debug("All dependencies loaded in {0} ms.", time);
     }
 
     /**
@@ -229,7 +239,7 @@ public class PrimitiveLoader {
                         Method declaredMethod = mainClass.getDeclaredMethod(mainMethod);
                         declaredMethod.setAccessible(true);
                         declaredMethod.invoke(null);
-                        PrimitiveIO.debug(" = Invoke " + mainClass.getName() + "#" + mainMethod);
+                        PrimitiveIO.debug(" = Invoke {0}.{1}()", mainClass.getName(), mainMethod);
                     }
                 }
             }

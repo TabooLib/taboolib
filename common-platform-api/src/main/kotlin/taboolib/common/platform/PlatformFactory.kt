@@ -39,17 +39,17 @@ object PlatformFactory {
             val includedClasses = ClassVisitorHandler.getClasses()
 
             // 开发环境
-            if (PrimitiveSettings.IS_DEV_MODE) {
-                val time = System.currentTimeMillis()
-                PrimitiveIO.debug("RunningClasses = ${runningClasses.size}")
-                PrimitiveIO.debug("RunningClasses (Jar) = ${runningClassMapInJar.size}")
-                PrimitiveIO.debug("RunningClasses (Exact) = ${runningExactClasses.size}")
-                PrimitiveIO.debug("RunningClasses (WithoutLibrary) = ${runningClassesWithoutLibrary.size}")
-                PrimitiveIO.debug("RunningClasses (Included) = ${includedClasses.size}")
-                PrimitiveIO.debug("${System.currentTimeMillis() - time}ms")
+            if (PrimitiveSettings.IS_DEBUG_MODE) {
+                PrimitiveIO.debug("{0}ms", TabooLib.execution {
+                    PrimitiveIO.debug("RunningClasses (All)            : {0}", runningClasses.size)
+                    PrimitiveIO.debug("RunningClasses (Jar)            : {0}", runningClassMapInJar.size)
+                    PrimitiveIO.debug("RunningClasses (Exact)          : {0}", runningExactClasses.size)
+                    PrimitiveIO.debug("RunningClasses (WithoutLibrary) : {0}", runningClassesWithoutLibrary.size)
+                    PrimitiveIO.debug("RunningClasses (Included)       : {0}", includedClasses.size)
+                })
             }
 
-            val time = System.currentTimeMillis()
+            val time = System.nanoTime()
             var injected = 0
             // 加载运行环境
             for (cls in includedClasses) {
@@ -65,7 +65,7 @@ object PlatformFactory {
             for (cls in includedClasses) {
                 // 插件实例
                 if (cls.structure.superclass?.name == Plugin::class.java.name) {
-                    Plugin.setImpl((cls.getInstance() ?: cls.newInstance()) as Plugin)
+                    Plugin.setInstance((cls.getInstance() ?: cls.newInstance()) as Plugin)
                 }
                 // 自唤醒
                 if (cls.hasAnnotation(Awake::class.java)) {
@@ -87,12 +87,14 @@ object PlatformFactory {
             }
 
             // 调试信息
-            PrimitiveIO.debug("PlatformFactory initialized. (%sms)", System.currentTimeMillis() - time)
-            PrimitiveIO.debug("Awakened = ${awokenMap.size}")
-            PrimitiveIO.debug("Injected = $injected")
-            PrimitiveIO.debug("Service = ${serviceMap.size}")
-            serviceMap.forEach { (k, v) ->
-                PrimitiveIO.debug(" = $k -> $v")
+            if (PrimitiveSettings.IS_DEBUG_MODE) {
+                PrimitiveIO.debug("PlatformFactory initialized. ({0}ms)", (System.nanoTime() - time) / 1_000_000)
+                PrimitiveIO.debug("Awakened: {0}", awokenMap.size)
+                PrimitiveIO.debug("Injected: {0}", injected)
+                PrimitiveIO.debug("Service : {0}", serviceMap.size)
+                serviceMap.forEach { (k, v) ->
+                    PrimitiveIO.debug(" = {0} ({1})", k.substringAfterLast('.'), v.javaClass.simpleName)
+                }
             }
         }
 

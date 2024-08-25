@@ -9,7 +9,7 @@ include(
 //    "module:bukkit-ui-legacy",
 //    "module:bukkit-ui-modern",
 //    "module:bukkit-util",
-//    "module:bukkit-xseries",
+    "module:bukkit-xseries",
 //    "module:bukkit-xseries-item",
 //    "module:bukkit-xseries-skull",
     "module:database-sql",

@@ -62,8 +62,9 @@ public class PrimitiveSettings {
 
     /**
      * 调试模式
+     * 开发模式下默认开启调试模式
      */
-    public static final boolean IS_DEBUG_MODE = RUNTIME_PROPERTIES.getProperty("debug", getProperty("taboolib.debug", "false")).equals("true");
+    public static final boolean IS_DEBUG_MODE = IS_DEV_MODE || RUNTIME_PROPERTIES.getProperty("debug", getProperty("taboolib.debug", "false")).equals("true");
 
     /**
      * 是否在开发模式强制下载依赖

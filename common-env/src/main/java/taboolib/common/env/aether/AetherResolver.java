@@ -65,7 +65,7 @@ public class AetherResolver {
         this.session.setTransferListener(new AbstractTransferListener() {
             @Override
             public void transferStarted(@NotNull TransferEvent event) {
-                PrimitiveIO.println("Downloading %s", event.getResource().getRepositoryUrl() + event.getResource().getResourceName());
+                PrimitiveIO.println("Downloading {0}", event.getResource().getRepositoryUrl() + event.getResource().getResourceName());
             }
         });
         this.session.setReadOnly();

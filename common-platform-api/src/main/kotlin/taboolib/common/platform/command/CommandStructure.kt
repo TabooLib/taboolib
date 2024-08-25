@@ -16,6 +16,7 @@ class CommandStructure(
     val permissionMessage: String,
     val permissionDefault: PermissionDefault,
     val permissionChildren: Map<String, PermissionDefault>,
+    val newParser: Boolean,
 ) {
 
     val name = name.lowercase()

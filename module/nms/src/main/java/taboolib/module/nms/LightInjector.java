@@ -449,7 +449,7 @@ public abstract class LightInjector {
 
         @EventHandler(priority = EventPriority.LOWEST)
         private void onAsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent event) {
-            PrimitiveIO.debug("[LightInjector] AsyncPlayerPreLoginEvent: %s", event.getName());
+            PrimitiveIO.debug("[LightInjector] AsyncPlayerPreLoginEvent: {0}", event.getName());
             if (isClosed()) {
                 return;
             }

@@ -31,7 +31,7 @@ fun command(
 ) {
     registerCommand(
         // 创建命令结构
-        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
+        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren, newParser),
         // 创建执行器
         object : CommandExecutor {
 
@@ -80,7 +80,7 @@ fun simpleCommand(
 ) {
     registerCommand(
         // 创建命令结构
-        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren),
+        CommandStructure(name, aliases, description, usage, permission, permissionMessage, permissionDefault, permissionChildren, false),
         // 创建执行器
         object : CommandExecutor {
 

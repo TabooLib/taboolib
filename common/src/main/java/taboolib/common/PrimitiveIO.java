@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -44,10 +45,7 @@ public class PrimitiveIO {
      **/
     private static String runningFileName = "TabooLib";
 
-    /**
-     * 是否再用 Logger 输出
-     **/
-    private static boolean useJavaLogger = false;
+    private static final Logger logger;
 
     static {
         // 获取插件文件
@@ -56,52 +54,42 @@ public class PrimitiveIO {
             // 如果这个玩意叫 Common
             if (runningFileName.startsWith("common-")) {
                 runningFileName = "App";
+            } else {
+                // 移除后缀
+                runningFileName = runningFileName.substring(0, runningFileName.lastIndexOf("."));
             }
         } catch (Throwable ignored) {
         }
-        // 检查 Paper 核心控制台拦截工具
-        try {
-            Class.forName("io.papermc.paper.logging.SysoutCatcher");
-            useJavaLogger = true;
-        } catch (ClassNotFoundException ignored) {
-        }
-        // 检查 BungeeCord 环境
-        try {
-            Class.forName("net.md_5.bungee.BungeeCord");
-            useJavaLogger = true;
-        } catch (ClassNotFoundException ignored) {
-        }
+        // 初始化日志
+        logger = Logger.getLogger(runningFileName);
     }
 
     /**
      * 调试模式输出
      */
     public static void debug(Object message, Object... args) {
-        if (PrimitiveSettings.IS_DEV_MODE || PrimitiveSettings.IS_DEBUG_MODE) {
-            println("[DEV] " + message, args);
-        }
+        if (PrimitiveSettings.IS_DEBUG_MODE) logger.log(Level.INFO, "[DEBUG] " + message, args);
     }
 
     /**
      * 控制台输出
      */
     public static void println(Object message, Object... args) {
-        if (useJavaLogger) {
-            Logger.getLogger(runningFileName).info(String.format(Objects.toString(message), args));
-        } else {
-            System.out.printf(message + "%n", args);
-        }
+        logger.log(Level.INFO, Objects.toString(message), args);
+    }
+
+    /**
+     * 控制台输出
+     */
+    public static void warning(Object message, Object... args) {
+        logger.log(Level.WARNING, Objects.toString(message), args);
     }
 
     /**
      * 控制台输出
      */
     public static void error(Object message, Object... args) {
-        if (useJavaLogger) {
-            Logger.getLogger(runningFileName).severe(String.format(Objects.toString(message), args));
-        } else {
-            System.err.printf(message + "%n", args);
-        }
+        logger.log(Level.SEVERE, Objects.toString(message), args);
     }
 
     /**

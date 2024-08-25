@@ -36,17 +36,18 @@ public class App {
      * 启动
      */
     public static void init() {
+        // 初始化环境参数
         setupEnv();
-        long time = System.currentTimeMillis();
-        // 初始化 IsolatedClassLoader
-        IsolatedClassLoader.init(App.class);
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.CONST);
-        TabooLib.lifeCycle(LifeCycle.INIT);
-        TabooLib.lifeCycle(LifeCycle.LOAD);
-        TabooLib.lifeCycle(LifeCycle.ENABLE);
-        // 调试模式显示加载耗时
-        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        // 启动 TabooLib
+        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+            // 初始化 IsolatedClassLoader
+            IsolatedClassLoader.init(App.class);
+            // 生命周期任务
+            TabooLib.lifeCycle(LifeCycle.CONST);
+            TabooLib.lifeCycle(LifeCycle.INIT);
+            TabooLib.lifeCycle(LifeCycle.LOAD);
+            TabooLib.lifeCycle(LifeCycle.ENABLE);
+        }));
     }
 
     /**
@@ -67,7 +68,7 @@ public class App {
             System.setProperty("taboolib.main", command);
             String group = matchGroup(command);
             System.setProperty("taboolib.group", group);
-            PrimitiveIO.println("Running in IDE mode. (main: %s, group: %s)", command, group);
+            PrimitiveIO.println("Running in IDE mode. (main: {0}, group: {1})", command, group);
         } catch (Throwable ignored) {
         }
     }

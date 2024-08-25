@@ -9,3 +9,10 @@ import taboolib.common.platform.ProxyPlayer
 fun ProxyCommandSender?.isConsole(): Boolean {
     return this !is ProxyPlayer
 }
+
+/**
+ * 是否为玩家对象
+ */
+fun ProxyCommandSender?.isPlayer(): Boolean {
+    return this is ProxyPlayer
+}

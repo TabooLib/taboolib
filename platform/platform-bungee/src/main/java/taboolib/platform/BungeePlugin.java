@@ -26,25 +26,24 @@ import java.util.concurrent.TimeUnit;
 public class BungeePlugin extends net.md_5.bungee.api.plugin.Plugin {
 
     @Nullable
-    private static final Plugin pluginInstance;
+    private static Plugin pluginInstance;
     private static BungeePlugin instance;
 
     static {
-        // 初始化 IsolatedClassLoader
-        long time = System.currentTimeMillis();
-        try {
-            IsolatedClassLoader.init(BungeePlugin.class);
-        } catch (Throwable ex) {
-            TabooLib.setStopped(true);
-            PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"%s\" will be disabled!", PrimitiveIO.getRunningFileName());
-            throw ex;
-        }
-        // 生命周期任务
-        TabooLib.lifeCycle(LifeCycle.CONST);
-        // 检索 TabooLib Plugin 实现
-        pluginInstance = Plugin.getImpl();
-        // 调试模式显示加载耗时
-        PrimitiveIO.debug("\"%s\" Initialization completed. (%sms)", PrimitiveIO.getRunningFileName(), System.currentTimeMillis() - time);
+        PrimitiveIO.debug("Initialization completed. ({0}ms)", TabooLib.execution(() -> {
+            // 初始化 IsolatedClassLoader
+            try {
+                IsolatedClassLoader.init(BungeePlugin.class);
+            } catch (Throwable ex) {
+                TabooLib.setStopped(true);
+                PrimitiveIO.error("Failed to initialize primitive loader, the plugin \"{0}\" will be disabled!", PrimitiveIO.getRunningFileName());
+                throw ex;
+            }
+            // 生命周期任务
+            TabooLib.lifeCycle(LifeCycle.CONST);
+            // 检索 TabooLib Plugin 实现
+            pluginInstance = Plugin.getInstance();
+        }));
     }
 
     public BungeePlugin() {
