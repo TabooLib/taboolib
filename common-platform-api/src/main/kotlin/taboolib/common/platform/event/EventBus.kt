@@ -14,7 +14,6 @@ import taboolib.common.platform.Ghost
 import taboolib.common.platform.Platform
 import taboolib.common.platform.function.*
 import taboolib.common.util.optional
-import java.util.function.Supplier
 
 @Awake
 @Inject
