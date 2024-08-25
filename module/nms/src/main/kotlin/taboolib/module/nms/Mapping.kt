@@ -120,8 +120,8 @@ class Mapping {
                     }
                 }
             }
-            PrimitiveIO.debug("Paper Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
-            PrimitiveIO.debug("Classes: ${mapping.classMapSpigotToMojang.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
+            PrimitiveIO.debug("Paper Mapping Loaded. ({0}ms)", System.currentTimeMillis() - time)
+            PrimitiveIO.debug("Classes: {0}, Fields: {1}, Methods: {2}", mapping.classMapSpigotToMojang.size, mapping.fields.size, mapping.methods.size)
             return mapping
         }
     }
@@ -170,8 +170,8 @@ class SpigotMapping(val combined: String, val fields: String) {
                     val fields = obj["fields"].asJsonObject
                     val fieldsHash = fields["hash"].asString
                     // 下载资源文件
-                    RuntimeEnv.ENV.loadAssets("", combinedHash, "$OSS_URL${combined["file"].asString}", true)
-                    RuntimeEnv.ENV.loadAssets("", fieldsHash, "$OSS_URL${fields["file"].asString}", true)
+                    RuntimeEnv.ENV_ASSETS.loadAssets("", combinedHash, "$OSS_URL${combined["file"].asString}", true)
+                    RuntimeEnv.ENV_ASSETS.loadAssets("", fieldsHash, "$OSS_URL${fields["file"].asString}", true)
                     return@unsafeLazy SpigotMapping(combinedHash, fieldsHash)
                 }
             }

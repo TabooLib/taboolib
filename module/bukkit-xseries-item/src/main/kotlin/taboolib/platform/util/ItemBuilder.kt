@@ -15,24 +15,12 @@ import org.bukkit.potion.PotionData
 import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
-import taboolib.common.platform.function.warning
 import taboolib.library.xseries.XMaterial
 import taboolib.library.xseries.profiles.builder.XSkull
 import taboolib.library.xseries.profiles.objects.ProfileInputType
 import taboolib.library.xseries.profiles.objects.Profileable
 import taboolib.module.chat.colored
 import java.util.*
-
-
-/**
- * 判定材质是否为空气
- */
-val XMaterial.isAir get() = this == XMaterial.AIR || this == XMaterial.CAVE_AIR || this == XMaterial.VOID_AIR
-
-/**
- * 判定物品是否为空气
- */
-val ItemStack?.isAir get() = isAir()
 
 /**
  * 通过现有物品构建新的物品
@@ -43,9 +31,6 @@ val ItemStack?.isAir get() = isAir()
  * @throws IllegalArgumentException 如果物品为空气
  */
 fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    if (itemStack.isAir) {
-        error("air")
-    }
     return ItemBuilder(itemStack).also(builder).build()
 }
 
@@ -58,9 +43,6 @@ fun buildItem(itemStack: ItemStack, builder: ItemBuilder.() -> Unit = {}): ItemS
  * @throws IllegalArgumentException 如果材质为空气
  */
 fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    if (material.isAir) {
-        error("air")
-    }
     return ItemBuilder(material).also(builder).build()
 }
 
@@ -73,10 +55,6 @@ fun buildItem(material: XMaterial, builder: ItemBuilder.() -> Unit = {}): ItemSt
  * @throws IllegalArgumentException 如果材质为空气
  */
 fun buildItem(material: Material, builder: ItemBuilder.() -> Unit = {}): ItemStack {
-    // 在低版本, 并没有 Material.isAir() 方法
-    if (material == Material.AIR) {
-        error("air")
-    }
     return ItemBuilder(material).also(builder).build()
 }
 
@@ -256,19 +234,15 @@ open class ItemBuilder {
                 // 药水颜色
                 if (color != null) itemMeta.color = color
                 // 基础药水类型（过时）
-                if (potionData != null) itemMeta.basePotionData = potionData
+                if (potionData != null) itemMeta.basePotionData = potionData!!
             }
             // 头
             is SkullMeta -> {
                 // 玩家头颅
                 if (skullOwner != null) itemMeta.owner = skullOwner
                 if (skullTexture != null) {
-                    try {
-                        // TODO 这里需要兼容 UUID？因为和以前的逻辑不同，UUID 不同会导致物品无法堆叠
-                        XSkull.of(itemMeta).profile(Profileable.of(ProfileInputType.BASE64, skullTexture!!.texture)).apply()
-                    } catch (ex: NoClassDefFoundError) {
-                        warning("XSkull not found, module 'bukkit-xseries-skull' missing.")
-                    }
+                    // TODO 这里需要兼容 UUID？因为和以前的逻辑不同，UUID 不同会导致物品无法堆叠
+                    XSkull.of(itemMeta).profile(Profileable.of(ProfileInputType.BASE64, skullTexture!!.texture)).apply()
                 }
             }
         }
@@ -357,7 +331,7 @@ open class ItemBuilder {
                 // 玩家
                 skullOwner = itemMeta.owner
                 // TODO 新版 XSkull 不会用
-                // XSkull.getSkinValue(itemMeta)?.let { skullTexture = it }
+                itemMeta.getSkullValue()?.let { skullTexture = SkullTexture(it) }
             }
         }
         // 无法破坏

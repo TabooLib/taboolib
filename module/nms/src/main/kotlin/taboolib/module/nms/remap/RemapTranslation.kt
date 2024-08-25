@@ -53,16 +53,16 @@ open class RemapTranslation : Remapper() {
             // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
             if (key.startsWith("net/minecraft/server/v1_")) {
                 // 先转译为 Spigot.FullName
-                MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")]?.let { spigotFull ->
-                    // 如果为 Universal CraftBukkit 环境, 则应进一步转译为 Mojang.FullName
-                    if (MinecraftVersion.isUniversalCraftBukkit) {
-                        MinecraftVersion.paperMapping.classMapSpigotToMojang[spigotFull] ?: spigotFull
-                    } else spigotFull
-                }?.replace('.', '/') ?: key
+                var spigotName = MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")] ?: return key
+                // 如果为 Universal CraftBukkit 环境, 则应进一步转译为 Mojang.FullName
+                spigotName = if (MinecraftVersion.isUniversalCraftBukkit) MinecraftVersion.paperMapping.classMapSpigotToMojang[spigotName] ?: spigotName else spigotName
+                spigotName.replace('.', '/')
             } else {
                 key
             }
-        } else key.replace(nms1, nms2)
+        } else {
+            key.replace(nms1, nms2)
+        }
     }
 
     /**

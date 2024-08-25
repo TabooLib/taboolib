@@ -1,5 +1,8 @@
 @file:Suppress("SpellCheckingInspection")
+
 package taboolib.common5
+
+import java.math.RoundingMode
 
 inline val Any?.cint: Int
     get() = Coerce.toInteger(this)
@@ -25,8 +28,12 @@ inline val Any?.cchar: Char
 inline val Any?.cbool: Boolean
     get() = Coerce.toBoolean(this)
 
-fun Double.format(digits: Int = 2): Double {
-    return Coerce.format(this, digits)
+fun Double.format(digits: Int = 2, roundingMode: RoundingMode = RoundingMode.HALF_UP): Double {
+    return Coerce.format(this, digits, roundingMode)
+}
+
+fun Float.format(digits: Int = 2, roundingMode: RoundingMode = RoundingMode.HALF_UP): Float {
+    return Coerce.format(this, digits, roundingMode)
 }
 
 infix fun String.eqic(other: String): Boolean {

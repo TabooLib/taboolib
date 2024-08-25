@@ -41,16 +41,15 @@ class AsmClassTranslation(val source: String) {
         }
         val classReader = ClassReader(inputStream)
         val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        // 若当前运行环境为 Paper 时
+        // 若当前运行环境为 Paper 时使用新版转换器
         val remapper = if (MinecraftVersion.isUniversalCraftBukkit) {
-            // 若转译对象为 TabooLib 类
-            if (source.startsWith(taboolibPath)) {
-                RemapTranslationTabooLib()
-            } else {
-                // 若转译对象为插件本体内的类
-                RemapTranslation()
-            }
-        } else RemapTranslationLegacy() // 否则使用旧版本转译器
+            // 若转译对象为 TabooLib 类，需要特殊处理
+            if (source.startsWith(taboolibPath)) RemapTranslationTabooLib() else RemapTranslation()
+        }
+        // 使用旧版本转译器
+        else {
+            RemapTranslationLegacy()
+        }
         classReader.accept(ClassRemapper(classWriter, remapper), 0)
         return AsmClassLoader.createNewClass(source, classWriter.toByteArray())
     }

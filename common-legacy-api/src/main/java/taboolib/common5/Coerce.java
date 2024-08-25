@@ -61,7 +61,15 @@ public final class Coerce {
     }
 
     public static double format(double value, int scale) {
-        return BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_UP).doubleValue();
+        return format(value, scale, RoundingMode.HALF_UP);
+    }
+
+    public static double format(double value, int scale, RoundingMode roundingMode) {
+        return BigDecimal.valueOf(value).setScale(scale, roundingMode).doubleValue();
+    }
+
+    public static float format(float value, int scale, RoundingMode roundingMode) {
+        return BigDecimal.valueOf(value).setScale(scale, roundingMode).floatValue();
     }
 
     /**

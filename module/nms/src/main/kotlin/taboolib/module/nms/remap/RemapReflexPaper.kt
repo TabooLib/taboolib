@@ -67,7 +67,7 @@ class RemapReflexPaper : RemapReflex() {
     fun matchName(name: String): Pair<String?, String?> {
         val className = name.replace('/', '.')
         var spigotName = paperMapping.classMapMojangToSpigot[className]
-        var mojangName: String? = null
+        val mojangName: String?
         // 不为空说明 name 是 Mojang 名
         if (spigotName != null) {
             mojangName = className

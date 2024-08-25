@@ -3,12 +3,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 dependencies {
+    compileOnly(project(":common"))
+    compileOnly(project(":common-platform-api"))
+    compileOnly(project(":common-util"))
     compileOnly(project(":module:basic-configuration"))
+    compileOnly(project(":module:bukkit-util"))
     compileOnly(project(":module:minecraft-chat"))
     // 本体
     compileOnly(project(":module:bukkit-xseries"))
     // 服务端
     compileOnly("ink.ptms.core:v12004:12004-minimize:mapped")
+    compileOnly("net.md-5:bungeecord-chat:1.20")
     compileOnly("com.mojang:authlib:5.0.51")
     // XSeries
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")

@@ -61,10 +61,7 @@ class RemapTranslationTabooLib : RemapTranslation() {
                 val mojangName = translate(owner).replace('/', '.')
                 // 从 Mojang Mapping 中检索
                 for (mojangMethod in MinecraftVersion.paperMapping.methods) {
-                    if (mojangMethod.mojangName == obf
-                        && mojangMethod.path == mojangName
-                        && checkParameterType(descriptor, mojangMethod.descriptor)
-                    ) {
+                    if (mojangMethod.mojangName == obf && mojangMethod.path == mojangName && checkParameterType(descriptor, mojangMethod.descriptor)) {
                         // 最终返回 Mojang Deobf 名
                         return mojangMethod.translateName
                     }

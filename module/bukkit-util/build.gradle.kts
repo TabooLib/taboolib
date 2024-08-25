@@ -13,13 +13,8 @@ dependencies {
     compileOnly(project(":module:minecraft-chat"))
     compileOnly(project(":module:minecraft-i18n")) // 注册 TypeBossBar
     compileOnly(project(":module:bukkit-xseries"))
-    compileOnly(project(":module:bukkit-xseries-skull"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms.core:v12100:12100-minimize:universal")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
-}
-
-tasks.named("compileJava") {
-    dependsOn(":module:bukkit-xseries-skull:jar")
 }
