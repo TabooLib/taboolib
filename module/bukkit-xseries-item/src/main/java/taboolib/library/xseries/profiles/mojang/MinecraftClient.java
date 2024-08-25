@@ -1,5 +1,6 @@
 package taboolib.library.xseries.profiles.mojang;
 
+import taboolib.library.xseries.profiles.ProfileLogger;
 import taboolib.library.xseries.profiles.ProfilesCore;
 import taboolib.library.xseries.profiles.exceptions.MojangAPIException;
 import taboolib.library.xseries.profiles.exceptions.MojangAPIRetryException;
@@ -89,7 +90,7 @@ public class MinecraftClient {
 
         private void debug(String message, Object... vars) {
             Object[] variables = XReflection.concatenate(new Object[]{sessionId, append}, vars);
-            ProfilesCore.debug("[MinecraftClient-{}][{}] " + message, variables);
+            ProfileLogger.debug("[MinecraftClient-{}][{}] " + message, variables);
         }
 
         public Session exceptionally(BiFunction<Session, Throwable, Boolean> errorHandler) {

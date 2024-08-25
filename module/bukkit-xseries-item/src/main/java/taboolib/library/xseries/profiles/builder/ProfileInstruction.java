@@ -1,6 +1,6 @@
 package taboolib.library.xseries.profiles.builder;
 
-import taboolib.library.xseries.profiles.ProfilesCore;
+import taboolib.library.xseries.profiles.ProfileLogger;
 import taboolib.library.xseries.profiles.exceptions.InvalidProfileException;
 import taboolib.library.xseries.profiles.exceptions.ProfileChangeException;
 import taboolib.library.xseries.profiles.exceptions.ProfileException;
@@ -181,7 +181,7 @@ public final class ProfileInstruction<T> implements Profileable {
         }
 
         if (exception != null) {
-            if (success || lenient) ProfilesCore.debug("apply() silenced exception {}", exception);
+            if (success || lenient) ProfileLogger.debug("apply() silenced exception {}", exception);
             else throw exception;
         }
 

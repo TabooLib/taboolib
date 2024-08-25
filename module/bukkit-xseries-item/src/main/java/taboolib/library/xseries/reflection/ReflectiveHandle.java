@@ -38,8 +38,8 @@ public interface ReflectiveHandle<T> extends Cloneable {
      * Catches any {@link ReflectiveOperationException} thrown by {@link #reflect()}
      * @deprecated I don't think there's going to be any practical use for this method.
      */
-    @Nullable
     @Deprecated
+    @Nullable
     default ReflectiveOperationException catchError() {
         try {
             reflect();

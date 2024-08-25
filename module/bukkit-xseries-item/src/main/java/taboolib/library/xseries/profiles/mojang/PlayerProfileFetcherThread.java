@@ -1,6 +1,6 @@
 package taboolib.library.xseries.profiles.mojang;
 
-import taboolib.library.xseries.profiles.ProfilesCore;
+import taboolib.library.xseries.profiles.ProfileLogger;
 import org.jetbrains.annotations.ApiStatus;
 
 import javax.annotation.Nonnull;
@@ -23,7 +23,7 @@ public final class PlayerProfileFetcherThread implements ThreadFactory {
         final Thread thread = new Thread(run);
         thread.setName("Profile Lookup Executor #" + COUNT.getAndIncrement());
         thread.setUncaughtExceptionHandler((t, throwable) ->
-                ProfilesCore.LOGGER.error("Uncaught exception in thread {}", t.getName(), throwable));
+                ProfileLogger.LOGGER.error("Uncaught exception in thread {}", t.getName(), throwable));
         return thread;
     }
 }

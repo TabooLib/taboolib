@@ -1,24 +1,27 @@
 @file:Suppress("GradlePackageUpdate", "VulnerableLibrariesLocal")
 
-repositories {
-    maven { url = uri("https://jitpack.io") }
-}
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 dependencies {
-    compileOnly(project(":common"))
-    compileOnly(project(":module:minecraft-chat"))
     compileOnly(project(":module:basic-configuration"))
+    compileOnly(project(":module:minecraft-chat"))
+    // 本体
     compileOnly(project(":module:bukkit-xseries"))
-    compileOnly(project(":module:bukkit-xseries-skull"))
-    compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("ink.ptms.core:v12004:12004-minimize:mapped")
-    compileOnly("ink.ptms.core:v11701:11701-minimize:universal")
+    compileOnly("com.mojang:authlib:5.0.51")
     // XSeries
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("org.apache.logging.log4j:log4j-api:2.14.1")
 }
 
-tasks.named("compileJava") {
-    dependsOn(":module:bukkit-xseries-skull:jar")
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+}
+
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }

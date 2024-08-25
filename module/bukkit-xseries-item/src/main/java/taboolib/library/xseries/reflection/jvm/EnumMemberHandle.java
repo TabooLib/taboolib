@@ -24,7 +24,7 @@ public class EnumMemberHandle extends NamedMemberHandle {
         return this;
     }
 
-    public EnumMemberHandle named(String... names) {
+    public EnumMemberHandle named(@Pattern(PackageHandle.JAVA_IDENTIFIER_PATTERN) String... names) {
         super.named(names);
         return this;
     }
