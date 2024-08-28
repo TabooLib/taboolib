@@ -1,6 +1,5 @@
 package taboolib.common.env;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class RuntimeEnvDependency {
 
@@ -104,11 +105,11 @@ public class RuntimeEnvDependency {
     }
 
     public void loadDependency(@NotNull String url, @NotNull List<JarRelocation> relocation) throws Throwable {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, true, Arrays.asList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(@NotNull String url, boolean transitive, @NotNull List<JarRelocation> relocation) throws Throwable {
-        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, transitive, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
+        loadDependency(url, new File(defaultLibrary), relocation, null, true, false, transitive, Arrays.asList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir) throws Throwable {
@@ -116,7 +117,7 @@ public class RuntimeEnvDependency {
     }
 
     public void loadDependency(@NotNull String url, @NotNull File baseDir, @Nullable String repository) throws Throwable {
-        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
+        loadDependency(url, baseDir, new ArrayList<>(), repository, true, false, true, Arrays.asList(DependencyScope.RUNTIME, DependencyScope.COMPILE));
     }
 
     public void loadDependency(

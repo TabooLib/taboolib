@@ -65,7 +65,7 @@ public class DependencyDownloader extends AbstractXmlParser {
     /**
      * 依赖范围
      */
-    private List<DependencyScope> dependencyScopes = Lists.newArrayList(DependencyScope.RUNTIME, DependencyScope.COMPILE);
+    private List<DependencyScope> dependencyScopes = Arrays.asList(DependencyScope.RUNTIME, DependencyScope.COMPILE);
 
     /**
      * 忽略可选依赖

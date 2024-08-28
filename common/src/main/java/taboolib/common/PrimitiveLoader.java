@@ -1,6 +1,5 @@
 package taboolib.common;
 
-import com.google.common.collect.Lists;
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
 import org.objectweb.asm.Opcodes;
@@ -54,7 +53,7 @@ public class PrimitiveLoader {
      * 基础依赖（隔离加载）
      */
     static List<String[]> deps() {
-        List<String[]> deps = Lists.newArrayList();
+        List<String[]> deps = new ArrayList<>();
         deps.add(new String[]{"me.lucko", "jar-relocator", "1.7"});
         // 非 ASM 9 环境下加载 ASM 9
         if (!isASM9) {
@@ -69,7 +68,7 @@ public class PrimitiveLoader {
      * 默认的重定向规则
      */
     static List<String[]> rule() {
-        ArrayList<String[]> rule = Lists.newArrayList();
+        ArrayList<String[]> rule = new ArrayList<>();
         rule.add(new String[]{TABOOPROJECT_GROUP, TABOOLIB_PACKAGE_NAME + ".library"});
         rule.add(new String[]{JR_GROUP + ".", JR_GROUP + "15."});
         // 非 ASM 9 环境下重定向 ASM 9
@@ -98,7 +97,7 @@ public class PrimitiveLoader {
             boolean isIsolated = PrimitiveLoader.class.getClassLoader() instanceof IsolatedClassLoader;
             // 加载基础依赖
             for (String[] i : deps()) {
-                load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, Lists.newArrayList());
+                load(REPO_CENTRAL, i[0], i[1], i[2], isIsolated, true, new ArrayList<>());
             }
             // 重新加载基础依赖用于正式使用
             for (String[] i : deps()) {
