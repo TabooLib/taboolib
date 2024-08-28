@@ -4,6 +4,8 @@ import net.md_5.bungee.api.ChatColor
 import taboolib.common.platform.function.warning
 import kotlin.math.ceil
 
+const val EMPTY_TEXT = "{\"text\":\"\"}"
+
 val Int.red: Int
     get() = (this shr 16) and 0xFF
 
