@@ -171,7 +171,8 @@ public class PrimitiveLoader {
             load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-env", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
             // 如果 Kotlin 环境启动失败
             if (!TabooLib.isKotlinEnvironment()) {
-                throw new IllegalStateException("Failed to setup Kotlin environment.");
+                String kotlinClass = "kotlin.Lazy";
+                throw new IllegalStateException("Failed to setup Kotlin environment. (" + kotlinClass + " not found)");
             }
             // 加载 util 注册 ClassAppender Callback 回调函数
             load(REPO_TABOOLIB, TABOOLIB_GROUP, "common-util", TABOOLIB_VERSION, IS_ISOLATED_MODE, true, rule);
