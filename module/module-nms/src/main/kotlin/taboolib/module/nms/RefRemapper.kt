@@ -20,23 +20,17 @@ object RefRemapper : ReflexRemapper {
     var isUniversal = MinecraftVersion.isUniversal
     val major = MinecraftVersion.major
     val mapping = MinecraftVersion.mapping
-    val fieldRemapCacheMap = ConcurrentHashMap<String, String>()
-    val methodRemapCacheMap = ConcurrentHashMap<String, String>()
+    val fieldRemapCacheMap = ConcurrentHashMap<String, Optional<String>>()
+    val methodRemapCacheMap = ConcurrentHashMap<String, Optional<String>>()
     val descriptorTypeCacheMap = ConcurrentHashMap<String, List<Class<*>>>()
 
     override fun field(name: String, field: String): String {
         // 1.17 开始字段混淆
         if (isUniversal) {
             val namespace = "$name#$field"
-            return if (fieldRemapCacheMap.containsKey(namespace)) {
-                fieldRemapCacheMap[namespace]!!
-            } else {
-                val value = mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName
-                if (value != null) {
-                    fieldRemapCacheMap[namespace] = value
-                }
-                value ?: field
-            }
+            return fieldRemapCacheMap.getOrPut(namespace) {
+                Optional.ofNullable(mapping.fields.firstOrNull { it.path == name && it.translateName == field }?.mojangName)
+            }.orElse(field)
         }
         return field
     }
@@ -45,19 +39,14 @@ object RefRemapper : ReflexRemapper {
         // 1.18 开始方法混淆
         if (major >= 10) {
             val namespace = "$name#$method(${parameter.joinToString(",") { it?.javaClass?.name.toString() }})"
-            return if (methodRemapCacheMap.containsKey(namespace)) {
-                methodRemapCacheMap[namespace]!!
-            } else {
-                val value = mapping.methods.firstOrNull {
-                    // 判断方法描述符获取准确方法
-                    it.path == name && it.translateName == method && checkParameterType(it.descriptor, *parameter)
-                }?.mojangName
-                // 写入缓存
-                if (value != null) {
-                    methodRemapCacheMap[namespace] = value
-                }
-                value ?: method
-            }
+            return methodRemapCacheMap.getOrPut(namespace) {
+                Optional.ofNullable(
+                    mapping.methods.firstOrNull {
+                        // 判断方法描述符获取准确方法
+                        it.path == name && it.translateName == method && checkParameterType(it.descriptor, *parameter)
+                    }?.mojangName
+                )
+            }.orElse(method)
         }
         return method
     }

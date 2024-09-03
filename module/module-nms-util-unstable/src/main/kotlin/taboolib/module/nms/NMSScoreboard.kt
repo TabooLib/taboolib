@@ -462,6 +462,16 @@ class NMSScoreboardImpl : NMSScoreboard() {
                     player.sendPacket(PacketPlayOutScoreboardScore::class.java.invokeConstructor(uniqueOwner[i], objectiveName, i, null, null))
                     return@forEach
                 }
+                // 1.20.1, 1.20.2
+                if (MinecraftVersion.majorLegacy > 12000) {
+                    player.sendPacket(net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
+                        net.minecraft.server.v1_16_R3.ScoreboardServer.Action.CHANGE,
+                        objectiveName,
+                        uniqueOwner[i], // 麻将小天才
+                        i
+                    ))
+                    return@forEach
+                }
                 // 1.13+ 直接实例化
                 if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
                     player.sendPacket(net.minecraft.server.v1_16_R3.PacketPlayOutScoreboardScore(
@@ -477,9 +487,7 @@ class NMSScoreboardImpl : NMSScoreboard() {
                 packet.setProperty("a", uniqueOwner[i])
                 packet.setProperty("b", objectiveName)
                 packet.setProperty("c", i)
-                packet.setProperty(
-                    "d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE
-                )
+                packet.setProperty("d", net.minecraft.server.v1_12_R1.PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE)
                 player.sendPacket(packet)
             }
         } else {
