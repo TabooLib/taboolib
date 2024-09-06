@@ -58,27 +58,31 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
  * 移除背包中特定数量的符合特定规则的物品
  *
  * @param matcher   规则
+ * @param savedItemStack 记录拿取物品的列表
  * @param amount    实例
  * @return boolean
  */
-fun Inventory.takeItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolean): Boolean {
+fun Inventory.takeItem(amount: Int = 1, savedItemStack:MutableList<ItemStack> = mutableListOf(), matcher: (itemStack: ItemStack) -> Boolean): Boolean {
     var takeAmount = amount
     contents.forEachIndexed { index, itemStack ->
         if (itemStack.isNotAir() && matcher(itemStack)) {
             takeAmount -= itemStack.amount
             if (takeAmount < 0) {
-                itemStack.amount = itemStack.amount - (takeAmount + itemStack.amount)
-                return true
+                savedItemStack.add(itemStack.clone().apply { this.amount = takeAmount + itemStack.amount })
+                itemStack.amount -= takeAmount + itemStack.amount
+                return savedItemStack.isNotEmpty()
             } else {
+                savedItemStack.add(itemStack.clone())
                 setItem(index, null)
                 if (takeAmount == 0) {
-                    return true
+                    return savedItemStack.isNotEmpty()
                 }
             }
         }
     }
-    return false
+    return savedItemStack.isNotEmpty()
 }
+
 
 /**
  * 获取背包中符合特定规则的物品的数量
