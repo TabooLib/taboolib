@@ -21,6 +21,22 @@ fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
 }
 
 /**
+ * 1.20.5+ 获取物品的完整 [ItemTag]
+ * 在 1.20.4 及以下版本该函数与 [getItemTag] 无异
+ */
+fun ItemStack.getItemTagGeneral(): ItemTag {
+    return NMSItemTag.instance.getItemTagGeneral(validation())
+}
+
+/**
+ * 1.20.5+ 将完整的 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品
+ * 在 1.20.4 及以下版本该函数与 [setItemTag] 无异
+ */
+fun ItemStack.setItemTagGeneral(itemTag: ItemTag): ItemStack {
+    return NMSItemTag.instance.setItemTagGeneral(validation(), itemTag)
+}
+
+/**
  * 将 [ItemTagData] 转换为字符串
  */
 fun ItemTagData.saveToString(): String {
@@ -39,8 +55,14 @@ abstract class NMSItemTag {
     /** 获取物品 [ItemTag] */
     abstract fun getItemTag(itemStack: ItemStack): ItemTag
 
+    /** 1.20.5+ 获取物品完整 [ItemTag] */
+    abstract fun getItemTagGeneral(itemStack: ItemStack): ItemTag
+
     /** 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
     abstract fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack
+
+    /** 1.20.5+ 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
+    abstract fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack
 
     /** 将 [ItemTag] 转换为字符串 */
     abstract fun itemTagToString(itemTagData: ItemTagData): String

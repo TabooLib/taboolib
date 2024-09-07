@@ -37,10 +37,18 @@ open class NMSItemTagImpl1 : NMSItemTag() {
         return if (nmsItem.hasTag()) itemTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
     }
 
+    override fun getItemTagGeneral(itemStack: ItemStack): ItemTag {
+        return getItemTag(itemStack)
+    }
+
     override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
         val nmsItem = getNMSCopy(itemStack)
         nmsItem.tag = itemTagToNMSCopy(itemTag) as NBTTagCompound12
         return getBukkitCopy(nmsItem)
+    }
+
+    override fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack {
+        return setItemTag(itemStack, itemTagGeneral)
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {
