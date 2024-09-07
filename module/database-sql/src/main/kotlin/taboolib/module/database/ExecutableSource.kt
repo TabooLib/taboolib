@@ -44,31 +44,31 @@ open class ExecutableSource(val table: Table<*, *>, var dataSource: DataSource, 
     }
 
     /** 查询数据 */
-    open fun select(func: ActionSelect.() -> Unit):ResultProcessor {
+    open fun select(func: ActionSelect.() -> Unit): ResultProcessor {
         val action = ActionSelect(table.name).also(func)
         return executeQuery(action.query, action)
     }
 
     /** 更新数据 */
-    open fun update(func: ActionUpdate.() -> Unit = {}):ResultProcessor {
+    open fun update(func: ActionUpdate.() -> Unit = {}): ResultProcessor {
         val action = ActionUpdate(table.name).also(func)
         return executeUpdate(action.query, action)
     }
 
     /** 删除数据 */
-    open fun delete(func: ActionDelete.() -> Unit = {}):ResultProcessor {
+    open fun delete(func: ActionDelete.() -> Unit = {}): ResultProcessor {
         val action = ActionDelete(table.name).also(func)
         return executeUpdate(action.query, action)
     }
 
     /** 插入数据 */
-    open fun insert(vararg keys: String, func: ActionInsert.() -> Unit = {}):ResultProcessor {
+    open fun insert(vararg keys: String, func: ActionInsert.() -> Unit = {}): ResultProcessor {
         val action = ActionInsert(table.name, arrayOf(*keys)).also(func)
         return executeUpdate(action.query, action)
     }
 
     /** 插入数据 */
-    open fun insert(keys: List<String>, func: ActionInsert.() -> Unit = {}):ResultProcessor {
+    open fun insert(keys: List<String>, func: ActionInsert.() -> Unit = {}): ResultProcessor {
         val action = ActionInsert(table.name, keys.toTypedArray()).also(func)
         return executeUpdate(action.query, action)
     }
