@@ -11,6 +11,7 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.ui.ClickEvent
 import taboolib.module.ui.ClickType
 import taboolib.module.ui.type.Basic
@@ -80,7 +81,28 @@ fun <T : ChestImpl> RemoteInventory.inject(menu: T) {
  * 生成 InventoryView
  */
 fun RemoteInventory.createInventoryView(): InventoryView {
-    return try {
+    return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_21)) {
+        VirtualInventoryViewModern.newInstance(object : RemoteInventoryModern {
+
+            val bottomInventory = VirtualStorageInventory(inventory)
+
+            override fun inventory(): Inventory {
+                return inventory
+            }
+
+            override fun bottomInventory(): Inventory {
+                return bottomInventory
+            }
+
+            override fun viewer(): Player {
+                return viewer
+            }
+
+            override fun title(): String {
+                return this@createInventoryView.title
+            }
+        })
+    } else try {
         VirtualInventoryView(this)
     } catch (_: LinkageError) {
         VirtualInventoryViewLegacy(object : RemoteInventoryLegacy {

@@ -74,7 +74,7 @@ abstract class InventoryHandler {
         private fun onReceive(e: PacketReceiveEvent) {
             when (e.packet.name) {
                 // 关闭窗口
-                "PacketPlayInCloseWindow" -> {
+                "PacketPlayInCloseWindow", "ServerboundContainerClosePacket" -> {
                     // 如果没有正在开启的页面则不处理
                     if (playerRemoteInventoryMap.isEmpty()) {
                         return
@@ -92,7 +92,7 @@ abstract class InventoryHandler {
                     }
                 }
                 // 点击
-                "PacketPlayInWindowClick" -> {
+                "PacketPlayInWindowClick", "ServerboundContainerClickPacket" -> {
                     // 如果没有正在开启的页面则不处理
                     if (playerRemoteInventoryMap.isEmpty()) {
                         return
@@ -105,8 +105,8 @@ abstract class InventoryHandler {
                     }
                 }
                 // 重命名
-                "PacketPlayInItemName" -> {
-                    val text = e.packet.read<String?>("a") ?: return
+                "PacketPlayInItemName", "ServerboundRenameItemPacket" -> {
+                    val text = e.packet.read<String?>(if (MinecraftVersion.isUniversal) "name" else "a") ?: return
                     val player = e.player
                     // 虚拟容器处理
                     val virtualInventory = playerRemoteInventoryMap[player.name]?.inventory
