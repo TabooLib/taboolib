@@ -68,7 +68,7 @@ fun Inventory.takeItem(amount: Int = 1, takeList: MutableList<ItemStack> = mutab
         if (itemStack.isNotAir() && matcher(itemStack)) {
             takeAmount -= itemStack.amount
             if (takeAmount < 0) {
-                takeList.add(itemStack.clone().apply { amount = takeAmount + itemStack.amount })
+                takeList.add(itemStack.clone().apply { this.amount = takeAmount + itemStack.amount })
                 itemStack.amount -= takeAmount + itemStack.amount
                 return takeList.isNotEmpty()
             } else {

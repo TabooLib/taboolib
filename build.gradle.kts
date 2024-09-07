@@ -66,6 +66,10 @@ subprojects {
     }
 }
 
+gradle.buildFinished {
+    buildDir.deleteRecursively()
+}
+
 subprojects
     .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" }
     .forEach { proj ->

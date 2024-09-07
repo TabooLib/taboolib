@@ -32,23 +32,15 @@ open class NMSItemTagImpl1 : NMSItemTag() {
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack)
     }
 
-    override fun getItemTag(itemStack: ItemStack): ItemTag {
+    override fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag {
         val nmsItem = getNMSCopy(itemStack)
         return if (nmsItem.hasTag()) itemTagToBukkitCopy(nmsItem.tag!!).asCompound() else ItemTag()
     }
 
-    override fun getItemTagGeneral(itemStack: ItemStack): ItemTag {
-        return getItemTag(itemStack)
-    }
-
-    override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
+    override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag, onlyCustom: Boolean): ItemStack {
         val nmsItem = getNMSCopy(itemStack)
         nmsItem.tag = itemTagToNMSCopy(itemTag) as NBTTagCompound12
         return getBukkitCopy(nmsItem)
-    }
-
-    override fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack {
-        return setItemTag(itemStack, itemTagGeneral)
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {

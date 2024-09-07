@@ -1,0 +1,3 @@
+gradle.buildFinished {
+    buildDir.deleteRecursively()
+}

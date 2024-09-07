@@ -2,38 +2,25 @@ package taboolib.module.nms
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import org.tabooproject.reflex.UnsafeAccess
 import taboolib.common.util.unsafeLazy
-import java.lang.invoke.MethodHandle
 
 /**
  * 获取物品 [ItemTag]
+ *
+ * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.getItemTag(): ItemTag {
-    return NMSItemTag.instance.getItemTag(validation())
+fun ItemStack.getItemTag(onlyCustom: Boolean = false): ItemTag {
+    return NMSItemTag.instance.getItemTag(validation(), onlyCustom)
 }
 
 /**
  * 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品
+ *
+ * @param itemTag 要写入的 [ItemTag]
+ * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.setItemTag(itemTag: ItemTag): ItemStack {
-    return NMSItemTag.instance.setItemTag(validation(), itemTag)
-}
-
-/**
- * 1.20.5+ 获取物品的完整 [ItemTag]
- * 在 1.20.4 及以下版本该函数与 [getItemTag] 无异
- */
-fun ItemStack.getItemTagGeneral(): ItemTag {
-    return NMSItemTag.instance.getItemTagGeneral(validation())
-}
-
-/**
- * 1.20.5+ 将完整的 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品
- * 在 1.20.4 及以下版本该函数与 [setItemTag] 无异
- */
-fun ItemStack.setItemTagGeneral(itemTag: ItemTag): ItemStack {
-    return NMSItemTag.instance.setItemTagGeneral(validation(), itemTag)
+fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = false): ItemStack {
+    return NMSItemTag.instance.setItemTag(validation(), itemTag, onlyCustom)
 }
 
 /**
@@ -53,16 +40,10 @@ fun ItemTagData.saveToString(): String {
 abstract class NMSItemTag {
 
     /** 获取物品 [ItemTag] */
-    abstract fun getItemTag(itemStack: ItemStack): ItemTag
-
-    /** 1.20.5+ 获取物品完整 [ItemTag] */
-    abstract fun getItemTagGeneral(itemStack: ItemStack): ItemTag
+    abstract fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag
 
     /** 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
-    abstract fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack
-
-    /** 1.20.5+ 将 [ItemTag] 写入物品（不会改变该物品）并返回一个新的物品 */
-    abstract fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack
+    abstract fun setItemTag(itemStack: ItemStack, itemTag: ItemTag, onlyCustom: Boolean): ItemStack
 
     /** 将 [ItemTag] 转换为字符串 */
     abstract fun itemTagToString(itemTagData: ItemTagData): String

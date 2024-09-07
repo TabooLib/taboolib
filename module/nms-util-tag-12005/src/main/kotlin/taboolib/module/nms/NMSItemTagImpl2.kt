@@ -20,28 +20,26 @@ class NMSItemTagImpl2 : NMSItemTag() {
         return CraftItemStack.asBukkitCopy(itemStack)
     }
 
-    override fun getItemTag(itemStack: ItemStack): ItemTag {
+    override fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag {
         val nmsItem = getNMSCopy(itemStack)
-        val tag = nmsItem.get(DataComponents.CUSTOM_DATA)?.copyTag()
-        return if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag()
+        return if (onlyCustom) {
+            val tag = nmsItem.get(DataComponents.CUSTOM_DATA)?.copyTag()
+            if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag()
+        } else {
+            val tag = nmsItem.save(CraftRegistry.getMinecraftRegistry())
+            if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12005() // 返回一个特殊的 ItemTag
+        }
     }
 
-    override fun getItemTagGeneral(itemStack: ItemStack): ItemTag {
-        val nmsItem = getNMSCopy(itemStack)
-        val tag = nmsItem.save(CraftRegistry.getMinecraftRegistry())
-        return if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12005()
-    }
-
-    override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
-        val nmsItem = getNMSCopy(itemStack)
-        nmsItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemTagToNMSCopy(itemTag) as NBTTagCompound))
-        return getBukkitCopy(nmsItem)
-    }
-
-    override fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack {
-        val nmsItem = net.minecraft.world.item.ItemStack.parse(CraftRegistry.getMinecraftRegistry(), itemTagToNMSCopy(itemTagGeneral))
-        if (!nmsItem.isPresent) return itemStack
-        return getBukkitCopy(nmsItem.get())
+    override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag, onlyCustom: Boolean): ItemStack {
+        return if (onlyCustom) {
+            val nmsItem = getNMSCopy(itemStack)
+            nmsItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemTagToNMSCopy(itemTag) as NBTTagCompound))
+            getBukkitCopy(nmsItem)
+        } else {
+            val nmsItem = net.minecraft.world.item.ItemStack.parse(CraftRegistry.getMinecraftRegistry(), itemTagToNMSCopy(itemTag))
+            if (nmsItem.isPresent) getBukkitCopy(nmsItem.get()) else itemStack
+        }
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {
