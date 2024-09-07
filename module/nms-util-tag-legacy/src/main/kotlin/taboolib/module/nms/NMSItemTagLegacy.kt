@@ -8,7 +8,7 @@ import java.lang.invoke.MethodHandle
  * [NMSItemTag] 的实现类
  */
 @Suppress("SpellCheckingInspection", "UNCHECKED_CAST")
-open class NMSItemTagImpl1 : NMSItemTag() {
+open class NMSItemTagLegacy : NMSItemTag() {
 
     val nbtTagCompoundGetter = unreflectGetter<NBTTagCompound12>(if (MinecraftVersion.isUniversal) "x" else "map")
     val nbtTagListGetter = unreflectGetter<NBTTagList12>(if (MinecraftVersion.isUniversal) "c" else "list")

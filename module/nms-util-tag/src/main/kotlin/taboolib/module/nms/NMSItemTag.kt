@@ -9,7 +9,7 @@ import taboolib.common.util.unsafeLazy
  *
  * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.getItemTag(onlyCustom: Boolean = false): ItemTag {
+fun ItemStack.getItemTag(onlyCustom: Boolean = true): ItemTag {
     return NMSItemTag.instance.getItemTag(validation(), onlyCustom)
 }
 
@@ -19,7 +19,7 @@ fun ItemStack.getItemTag(onlyCustom: Boolean = false): ItemTag {
  * @param itemTag 要写入的 [ItemTag]
  * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = false): ItemStack {
+fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = true): ItemStack {
     return NMSItemTag.instance.setItemTag(validation(), itemTag, onlyCustom)
 }
 
@@ -58,9 +58,9 @@ abstract class NMSItemTag {
 
         val instance by unsafeLazy {
             if (MinecraftVersion.majorLegacy >= 12005) {
-                nmsProxy<NMSItemTag>("{name}Impl2")
+                nmsProxy<NMSItemTag>("{name}12005")
             } else {
-                nmsProxy<NMSItemTag>("{name}Impl1")
+                nmsProxy<NMSItemTag>("{name}Legacy")
             }
         }
     }

@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * [NMSItemTag] 的实现类
  */
-class NMSItemTagImpl2 : NMSItemTag() {
+class NMSItemTag12005 : NMSItemTag() {
 
     private fun getNMSCopy(itemStack: ItemStack): net.minecraft.world.item.ItemStack {
         return CraftItemStack.asNMSCopy(itemStack)
@@ -121,5 +121,22 @@ class NMSItemTagImpl2 : NMSItemTag() {
             // 不支持的类型
             else -> error("Unsupported type: ${nbtTag::class.java}}")
         }
+    }
+}
+
+class ItemTag12005 : ItemTag {
+
+    constructor() : super()
+    constructor(map: Map<String, ItemTagData>) : super(map)
+
+    /**
+     * 在 1.20.5 上将完整的 [ItemTag]（包含类型、数量等之前没有的信息）写入物品
+     */
+    override fun saveTo(item: ItemStack) {
+        val newItem = item.setItemTag(this)
+        item.type = newItem.type
+        item.amount = newItem.amount
+        item.durability = newItem.durability
+        item.itemMeta = newItem.itemMeta
     }
 }
