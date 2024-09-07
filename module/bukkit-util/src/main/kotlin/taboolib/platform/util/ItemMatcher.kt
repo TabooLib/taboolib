@@ -62,25 +62,25 @@ fun Inventory.hasItem(amount: Int = 1, matcher: (itemStack: ItemStack) -> Boolea
  * @param amount    实例
  * @return boolean
  */
-fun Inventory.takeItem(amount: Int = 1, savedItemStack:MutableList<ItemStack> = mutableListOf(), matcher: (itemStack: ItemStack) -> Boolean): Boolean {
+fun Inventory.takeItem(amount: Int = 1, takeList: MutableList<ItemStack> = mutableListOf(), matcher: (itemStack: ItemStack) -> Boolean): Boolean {
     var takeAmount = amount
     contents.forEachIndexed { index, itemStack ->
         if (itemStack.isNotAir() && matcher(itemStack)) {
             takeAmount -= itemStack.amount
             if (takeAmount < 0) {
-                savedItemStack.add(itemStack.clone().apply { this.amount = takeAmount + itemStack.amount })
+                takeList.add(itemStack.clone().apply { amount = takeAmount + itemStack.amount })
                 itemStack.amount -= takeAmount + itemStack.amount
-                return savedItemStack.isNotEmpty()
+                return takeList.isNotEmpty()
             } else {
-                savedItemStack.add(itemStack.clone())
+                takeList.add(itemStack.clone())
                 setItem(index, null)
                 if (takeAmount == 0) {
-                    return savedItemStack.isNotEmpty()
+                    return takeList.isNotEmpty()
                 }
             }
         }
     }
-    return savedItemStack.isNotEmpty()
+    return takeList.isNotEmpty()
 }
 
 
