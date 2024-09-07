@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @author 坏黑
  * @since 2023/8/9 01:40
  */
-class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
+open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
 
     private val value = ConcurrentHashMap<String, ItemTagData>()
 
@@ -29,7 +29,7 @@ class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     /**
      * 将 [ItemTag] 写入物品
      */
-    fun saveTo(item: ItemStack) {
+    open fun saveTo(item: ItemStack) {
         item.setItemMeta(item.setItemTag(this).itemMeta)
     }
 

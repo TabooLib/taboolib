@@ -3,6 +3,7 @@ package taboolib.module.nms
 import net.minecraft.core.component.DataComponents
 import net.minecraft.nbt.*
 import net.minecraft.world.item.component.CustomData
+import org.bukkit.craftbukkit.v1_20_R4.CraftRegistry
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 
@@ -25,10 +26,22 @@ class NMSItemTagImpl2 : NMSItemTag() {
         return if (tag != null) itemTagToBukkitCopy(tag).asCompound() else ItemTag()
     }
 
+    override fun getItemTagGeneral(itemStack: ItemStack): ItemTag {
+        val nmsItem = getNMSCopy(itemStack)
+        val tag = nmsItem.save(CraftRegistry.getMinecraftRegistry())
+        return if (tag != null) itemTagToBukkitCopy(tag, true).asCompound() else ItemTag12005()
+    }
+
     override fun setItemTag(itemStack: ItemStack, itemTag: ItemTag): ItemStack {
         val nmsItem = getNMSCopy(itemStack)
         nmsItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemTagToNMSCopy(itemTag) as NBTTagCompound))
         return getBukkitCopy(nmsItem)
+    }
+
+    override fun setItemTagGeneral(itemStack: ItemStack, itemTagGeneral: ItemTag): ItemStack {
+        val nmsItem = net.minecraft.world.item.ItemStack.parse(CraftRegistry.getMinecraftRegistry(), itemTagToNMSCopy(itemTagGeneral))
+        if (!nmsItem.isPresent) return itemStack
+        return getBukkitCopy(nmsItem.get())
     }
 
     override fun itemTagToString(itemTagData: ItemTagData): String {
@@ -76,6 +89,10 @@ class NMSItemTagImpl2 : NMSItemTag() {
     }
 
     override fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData {
+        return itemTagToBukkitCopy(nbtTag, false)
+    }
+
+    private fun itemTagToBukkitCopy(nbtTag: Any, general: Boolean = false): ItemTagData {
         return when (nbtTag) {
             // 基本类型
             is NBTTagByte -> ItemTagData(ItemTagType.BYTE, nbtTag.asByte)
@@ -98,7 +115,9 @@ class NMSItemTagImpl2 : NMSItemTag() {
 
             // 复合类型特殊处理
             is NBTTagCompound -> {
-                ItemTag(nbtTag.allKeys.associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!) })
+                nbtTag.allKeys.associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!) }.let {
+                    if (general) ItemTag12005(it) else ItemTag(it)
+                }
             }
 
             // 不支持的类型
