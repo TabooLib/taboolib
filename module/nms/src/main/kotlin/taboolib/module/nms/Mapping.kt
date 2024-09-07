@@ -18,26 +18,62 @@ import java.util.*
  * @author sky
  * @since 2021/6/17 10:59 下午
  */
-class Mapping {
-
+class Mapping(
     // <Spigot.SimpleName, Spigot.FullName>
-    val classMapSpigotS2F = HashMap<String, String>()
-
+    val classMapSpigotS2F: MutableMap<String, String> = HashMap(),
     // 内存换性能
     // <Spigot.FullName, Mojang.FullName>
-    val classMapSpigotToMojang = HashMap<String, String>()
+    val classMapSpigotToMojang: MutableMap<String, String> = HashMap(),
     // <Mojang.FullName, Spigot.FullName>
-    val classMapMojangToSpigot = HashMap<String, String>()
+    val classMapMojangToSpigot: MutableMap<String, String> = HashMap(),
+    // 字段
+    val fields: MutableList<Field> = LinkedList(),
+    // 函数 1.18+
+    val methods: MutableList<Method> = LinkedList(),
+) {
 
-    val fields = LinkedList<Field>()
-    val methods = LinkedList<Method>() // 1.18 only
+    /**
+     * 是否为空
+     */
+    val isEmpty = classMapSpigotS2F.isEmpty() && classMapSpigotToMojang.isEmpty() && classMapMojangToSpigot.isEmpty() && fields.isEmpty() && methods.isEmpty()
 
+    /**
+     * 将数据写入 Exchanges 空间
+     */
+    fun exchange(id: String): Mapping {
+        Exchanges["$id#classMapSpigotS2F"] = classMapSpigotS2F
+        Exchanges["$id#classMapSpigotToMojang"] = classMapSpigotToMojang
+        Exchanges["$id#classMapMojangToSpigot"] = classMapMojangToSpigot
+        Exchanges["$id#fields"] = fields.map { arrayOf(it.path, it.mojangName, it.translateName) }
+        Exchanges["$id#methods"] = methods.map { arrayOf(it.path, it.mojangName, it.translateName, it.descriptor) }
+        Exchanges[id] = true
+        return this
+    }
+
+    /**
+     * 字段映射
+     */
+    data class Field(val path: String, val mojangName: String, val translateName: String) {
+
+        val className = path.substringAfterLast('.', "")
+    }
+
+    /**
+     * 方法映射，1.18+
+     */
+    data class Method(val path: String, val mojangName: String, val translateName: String, val descriptor: String) {
+
+        val className = path.substringAfterLast('.', "")
+    }
+
+    // region spigot/paper/exchange 读取逻辑
     companion object {
 
         /**
          * 读取 Spigot 格式的映射文件
          */
         fun spigot(inputStreamCombined: InputStream, inputStreamFields: InputStream): Mapping {
+            // region
             val time = System.currentTimeMillis()
             val mapping = Mapping()
             // 解析类名映射
@@ -74,12 +110,14 @@ class Mapping {
             PrimitiveIO.debug("Spigot Mapping Loaded. (${System.currentTimeMillis() - time}ms)")
             PrimitiveIO.debug("Classes: ${mapping.classMapSpigotS2F.size}, Fields: ${mapping.fields.size}, Methods: ${mapping.methods.size}")
             return mapping
+            // endregion
         }
 
         /**
          * 读取 Paper 格式 (reobf.tiny) 的映射文件
          */
         fun paper(): Mapping {
+            // region
             val time = System.currentTimeMillis()
             val mapping = Mapping()
             val inputStream = obcClass("CraftServer").classLoader.getResourceAsStream("META-INF/mappings/reobf.tiny") ?: return mapping
@@ -123,24 +161,23 @@ class Mapping {
             PrimitiveIO.debug("Paper Mapping Loaded. ({0}ms)", System.currentTimeMillis() - time)
             PrimitiveIO.debug("Classes: {0}, Fields: {1}, Methods: {2}", mapping.classMapSpigotToMojang.size, mapping.fields.size, mapping.methods.size)
             return mapping
+            // endregion
+        }
+
+        /**
+         * 从 Exchanges 空间中读取数据
+         */
+        fun exchange(id: String): Mapping {
+            return Mapping(
+                Exchanges["$id#classMapSpigotS2F"],
+                Exchanges["$id#classMapSpigotToMojang"],
+                Exchanges["$id#classMapMojangToSpigot"],
+                Exchanges.get<List<Array<String>>>("$id#fields").mapTo(LinkedList()) { Field(it[0], it[1], it[2]) },
+                Exchanges.get<List<Array<String>>>("$id#methods").mapTo(LinkedList()) { Method(it[0], it[1], it[2], it[3]) }
+            )
         }
     }
-
-    /**
-     * 字段映射
-     */
-    data class Field(val path: String, val mojangName: String, val translateName: String) {
-
-        val className = path.substringAfterLast('.', "")
-    }
-
-    /**
-     * 方法映射，1.18+
-     */
-    data class Method(val path: String, val mojangName: String, val translateName: String, val descriptor: String) {
-
-        val className = path.substringAfterLast('.', "")
-    }
+    // endregion
 }
 
 class SpigotMapping(val combined: String, val fields: String) {

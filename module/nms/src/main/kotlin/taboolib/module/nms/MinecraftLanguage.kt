@@ -14,6 +14,7 @@ import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
+import taboolib.common.util.MatrixList
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -21,42 +22,13 @@ import java.util.*
 /**
  * 获取玩家对应的语言文件
  */
-fun Player.getLocaleFile(): LocaleFile? {
+fun Player.getMinecraftLanguageFile(): MinecraftLanguage.LanguageFile? {
     val locale = try {
         locale
     } catch (_: NoSuchMethodError) {
         getProperty("handle/locale")!!
     }
-    return LocaleI18n.getLocaleFile(locale) ?: LocaleI18n.getDefaultLocaleFile()
-}
-
-/**
- * 语言文件
- */
-interface LocaleFile {
-
-    /** 获取文件 */
-    fun sourceFile(): File
-
-    /** 获取语言文件值 */
-    operator fun get(path: String): String?
-
-    /** 获取语言文件值 */
-    operator fun get(localeKey: LocaleKey) = if (localeKey.extra != null) get(localeKey.path) + " " + get(localeKey.extra) else get(localeKey.path)
-}
-
-/**
- * 语言文件节点
- *
- * @param type 类型（N=正常，S=特殊处理，D=缺省）
- * @param path 节点
- * @param extra 额外信息（在低版本中表现为生成蛋的类型）
- */
-data class LocaleKey(val type: String, val path: String, val extra: String? = null) {
-
-    override fun toString(): String {
-        return "[$type] " + if (extra == null) path else "$path ($extra)"
-    }
+    return MinecraftLanguage.getLanguageFile(locale) ?: MinecraftLanguage.getDefaultLanguageFile()
 }
 
 /**
@@ -68,7 +40,75 @@ data class LocaleKey(val type: String, val path: String, val extra: String? = nu
  */
 @Inject
 @PlatformSide(Platform.BUKKIT)
-object LocaleI18n {
+object MinecraftLanguage {
+
+    /**
+     * 语言文件
+     */
+    interface LanguageFile {
+
+        /** 原始文件 */
+        val sourceFile: File
+
+        /** 容器 */
+        val container: Any
+
+        /** 获取语言文件值 */
+        operator fun get(path: String): String?
+
+        /** 获取语言文件值 */
+        operator fun get(localeKey: LanguageKey) = if (localeKey.extra != null) get(localeKey.path) + " " + get(localeKey.extra) else get(localeKey.path)
+
+        /**
+         * 1.8 .. 1.12 版本语言文件格式
+         */
+        class FormatProperties(override val sourceFile: File, override val container: Properties) : LanguageFile {
+
+            constructor(file: File) : this(file, Properties().apply { load(file.reader()) })
+
+            override operator fun get(path: String): String? {
+                return container.getProperty(path)
+            }
+        }
+
+        /**
+         * 1.13 至今语言文件格式
+         */
+        class FormatJson(override val sourceFile: File, override val container: JsonObject) : LanguageFile {
+
+            constructor(file: File) : this(file, JsonParser().parse(file.readText()).asJsonObject)
+
+            override operator fun get(path: String): String? {
+                return container[path]?.asString
+            }
+        }
+    }
+
+    /**
+     * 语言文件节点
+     *
+     * @param type 类型
+     * @param path 节点
+     * @param extra 额外信息（在低版本中表现为生成蛋的类型）
+     */
+    data class LanguageKey(val type: Type, val path: String, val extra: String? = null) {
+
+        enum class Type {
+
+            /** 正常的 */
+            NORMAL,
+
+            /** 特殊的 */
+            SPECIAL,
+
+            /** 默认的 */
+            DEFAULT
+        }
+
+        override fun toString(): String {
+            return "[$type] " + if (extra == null) path else "$path ($extra)"
+        }
+    }
 
     /** 资源文件地址 */
     var resourceUrl = "https://resources.download.minecraft.net"
@@ -77,38 +117,65 @@ object LocaleI18n {
     val supportedLanguage = arrayListOf("zh_cn", "zh_tw", "en_gb")
 
     /** 语言文件 */
-    val localeFiles = hashMapOf<String, LocaleFile>()
+    val files = hashMapOf<String, LanguageFile>()
 
     /**
      * 获取语言文件
      */
-    fun getLocaleFile(locale: String): LocaleFile? {
-        return localeFiles[locale]
+    fun getLanguageFile(locale: String): LanguageFile? {
+        return files[locale]
     }
 
     /**
      * 获取默认语言文件
      */
-    fun getDefaultLocaleFile(): LocaleFile? {
-        return localeFiles["zh_cn"]
+    fun getDefaultLanguageFile(): LanguageFile? {
+        return files["zh_cn"]
     }
 
     @Awake(LifeCycle.INIT)
     private fun init() {
-        if (!checkLocaleFile()) {
-            info("Downloading language files ...")
-            downloadLocaleFile()
+        // 访问内存中的共享文件
+        if (loadFilesFromExchange()) {
+            return
         }
-        loadLocaleFile()
+        // 检查本地文件是否有效
+        if (!checkFiles()) {
+            info("Downloading Minecraft language files ...")
+            downloadFiles()
+        }
+        // 加载本地文件
+        loadFiles()
+        saveExchanges()
+    }
+
+    /** 从 Exchanges 空间中获取语言文件，跳过 I/O 过程 */
+    private fun loadFilesFromExchange(): Boolean {
+        if (Exchanges.MINECRAFT_LANGUAGE in Exchanges) {
+            val map = Exchanges.get<MatrixList<Any>>(Exchanges.MINECRAFT_LANGUAGE)
+            if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
+                map.forEach { files[it[0] as String] = LanguageFile.FormatJson(it[1] as File, it[2] as JsonObject) }
+            } else {
+                map.forEach { files[it[0] as String] = LanguageFile.FormatProperties(it[1] as File, it[2] as Properties) }
+            }
+            return true
+        }
+        return false
+    }
+
+    /** 将已加载的语言文件写入到 Exchange 空间 */
+    private fun saveExchanges() {
+        Exchanges[Exchanges.MINECRAFT_LANGUAGE] = files.map { (k, v) -> listOf(k, v.sourceFile, v.container) }
     }
 
     /** 检查语言文件 */
-    private fun checkLocaleFile(): Boolean {
+    private fun checkFiles(): Boolean {
         return getFiles().size == supportedLanguage.size
     }
 
     /** 下载语言文件 */
-    private fun downloadLocaleFile() {
+    private fun downloadFiles() {
+        // region
         val manifest = readJson("https://launchermeta.mojang.com/mc/game/version_manifest.json")
         for (ver in manifest.getAsJsonArray("versions")) {
             if (ver.asJsonObject["id"].asString == MinecraftVersion.runningVersion) {
@@ -146,12 +213,13 @@ object LocaleI18n {
                 return
             }
         }
-        warning("No language file found.")
+        warning("Minecraft language not found.")
+        // endregion
     }
 
     /** 加载语言文件 */
-    private fun loadLocaleFile() {
-        localeFiles += getFiles().mapValues { (_, v) -> if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) LocaleJson(v) else LocaleProperties(v) }
+    private fun loadFiles() {
+        files += getFiles().mapValues { (_, v) -> if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) LanguageFile.FormatJson(v) else LanguageFile.FormatProperties(v) }
     }
 
     private fun readJson(url: String): JsonObject {
@@ -172,38 +240,5 @@ object LocaleI18n {
             }
         }
         return map
-    }
-
-    /**
-     * 1.8 .. 1.12 版本语言文件格式
-     */
-    class LocaleProperties(val file: File) : LocaleFile {
-
-        val lang = Properties().apply { load(file.reader()) }
-
-        override fun sourceFile(): File {
-            return file
-        }
-
-        override operator fun get(path: String): String? {
-            return lang.getProperty(path)
-        }
-
-    }
-
-    /**
-     * 1.13 至今语言文件格式
-     */
-    class LocaleJson(val file: File) : LocaleFile {
-
-        val lang: JsonObject = JsonParser().parse(file.readText()).asJsonObject
-
-        override fun sourceFile(): File {
-            return file
-        }
-
-        override operator fun get(path: String): String? {
-            return lang[path]?.asString
-        }
     }
 }

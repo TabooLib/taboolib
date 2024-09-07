@@ -7,23 +7,21 @@ dependencies {
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":module:minecraft-chat"))
     compileOnly(project(":module:nms"))
-    implementation(project(":module:nms-util-legacy"))
-    implementation(project(":module:nms-util-stable"))
-    implementation(project(":module:nms-util-unstable"))
-    implementation(project(":module:nms-util-tag"))
-    implementation(project(":module:nms-util-tag-12005"))
-    implementation(project(":module:nms-util-tag-legacy"))
-    compileOnly(project(":module:bukkit-util"))
-    compileOnly(project(":module:bukkit-xseries"))
-    compileOnly(project(":platform:platform-bukkit"))
+
+//    implementation(project(":module:nms-util-legacy"))
+//    implementation(project(":module:nms-util-stable"))
+//    implementation(project(":module:nms-util-unstable"))
+//    implementation(project(":module:nms-util-tag"))
+//    implementation(project(":module:nms-util-tag-12005"))
+//    implementation(project(":module:nms-util-tag-legacy"))
+
     // 服务端
-    compileOnly("net.md-5:bungeecord-chat:1.17")
-    compileOnly("ink.ptms:nms-all:1.0.0")
-    compileOnly("ink.ptms.core:v12002:12002-minimize:mapped")
-    compileOnly("ink.ptms.core:v12002:12002-minimize:universal")
-    compileOnly("ink.ptms.core:v12004:12004-minimize:universal")
+    compileOnly("ink.ptms.core:v12100:12100:mapped")
+    compileOnly("ink.ptms.core:v12004:12004:mapped")
+    compileOnly("ink.ptms.core:v11604:11604")
     // Mojang
     compileOnly("com.mojang:brigadier:1.0.18")
+    // compileOnly("com.mojang:authlib:5.0.51")
     // DataSerializer
     compileOnly("io.netty:netty-all:4.1.73.Final")
 }

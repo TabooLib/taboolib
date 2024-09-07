@@ -12,12 +12,16 @@ import org.bukkit.inventory.ItemStack
  */
 class NMSItemTag12005 : NMSItemTag() {
 
-    private fun getNMSCopy(itemStack: ItemStack): net.minecraft.world.item.ItemStack {
+    override fun toString(itemStack: ItemStack): String {
+        return getNMSCopy(itemStack).save(CraftRegistry.getMinecraftRegistry()).toString()
+    }
+
+    override fun getNMSCopy(itemStack: ItemStack): net.minecraft.world.item.ItemStack {
         return CraftItemStack.asNMSCopy(itemStack)
     }
 
-    private fun getBukkitCopy(itemStack: net.minecraft.world.item.ItemStack): ItemStack {
-        return CraftItemStack.asBukkitCopy(itemStack)
+    override fun getBukkitCopy(itemStack: Any): ItemStack {
+        return CraftItemStack.asBukkitCopy(itemStack as net.minecraft.world.item.ItemStack)
     }
 
     override fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag {

@@ -81,9 +81,13 @@ object MinecraftVersion {
     )
 
     /**
-     * 老版本格式
+     * 版本 ID，使用 TabooLib 格式
+     * 例如：
+     * + 1.8.8  -> 1 08 08 -> 10808
+     * + 1.12.2 -> 1 12 02 -> 11202
+     * + 1.21.1 -> 1 21 01 -> 12101
      */
-    val majorLegacy by unsafeLazy {
+    val versionId by unsafeLazy {
         when (major) {
             V1_8 -> 10800
             V1_9 -> 10900
@@ -102,6 +106,10 @@ object MinecraftVersion {
             else -> 0
         } + minor
     }
+
+    @Deprecated("Use versionId instead.", ReplaceWith("versionId"))
+    val majorLegacy: Int
+        get() = versionId
 
     /**
      * 主版本号
@@ -146,15 +154,20 @@ object MinecraftVersion {
      * 当前运行版本的 Spigot 映射文件
      */
     val spigotMapping by unsafeLazy {
-        val current = SpigotMapping.current
-        if (current == null) {
-            disablePlugin()
-            throw UnsupportedVersionException()
+        // 如果已被其他插件加载，直接从内存中读取
+        if (Exchanges.MAPPING_SPIGOT in Exchanges) {
+            Mapping.exchange(Exchanges.MAPPING_SPIGOT)
+        } else {
+            val current = SpigotMapping.current
+            if (current == null) {
+                disablePlugin()
+                throw UnsupportedVersionException()
+            }
+            Mapping.spigot(
+                FileInputStream("assets/${current.combined.substring(0, 2)}/${current.combined}"),
+                FileInputStream("assets/${current.fields.substring(0, 2)}/${current.fields}"),
+            ).exchange(Exchanges.MAPPING_SPIGOT)
         }
-        Mapping.spigot(
-            FileInputStream("assets/${current.combined.substring(0, 2)}/${current.combined}"),
-            FileInputStream("assets/${current.fields.substring(0, 2)}/${current.fields}"),
-        )
     }
 
     /**
@@ -180,7 +193,14 @@ object MinecraftVersion {
      *
      * 这么做的原因是要保证 TabooLib 本体必须能够在 Spigot 环境下运行。
      */
-    val paperMapping by unsafeLazy { Mapping.paper() }
+    val paperMapping by unsafeLazy {
+        // 如果已被其他插件加载，直接从内存中读取
+        if (Exchanges.MAPPING_PAPER in Exchanges) {
+            Mapping.exchange(Exchanges.MAPPING_PAPER)
+        } else {
+            Mapping.paper().exchange(Exchanges.MAPPING_PAPER)
+        }
+    }
 
     /**
      * 是否高于某个版本，使用方式如下：

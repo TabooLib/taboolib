@@ -24,6 +24,13 @@ fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = true): ItemStac
 }
 
 /**
+ * 将 [ItemStack] 转换为字符串
+ */
+fun ItemStack.saveToString(): String {
+    return NMSItemTag.instance.toString(this)
+}
+
+/**
  * 将 [ItemTagData] 转换为字符串
  */
 fun ItemTagData.saveToString(): String {
@@ -38,6 +45,15 @@ fun ItemTagData.saveToString(): String {
  * @since 2023/8/5 03:47
  */
 abstract class NMSItemTag {
+
+    /** 获取物品的字符串形式 */
+    abstract fun toString(itemStack: ItemStack): String
+
+    /** 将 Bukkit [ItemStack] 转换为 NMS [ItemStack] */
+    abstract fun getNMSCopy(itemStack: ItemStack): Any
+
+    /** 将 NMS [ItemStack] 转换为 Bukkit [ItemStack] */
+    abstract fun getBukkitCopy(itemStack: Any): ItemStack
 
     /** 获取物品 [ItemTag] */
     abstract fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag

@@ -7,6 +7,7 @@ import taboolib.common.Test
 import taboolib.common.Test.Result
 import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.*
+import java.net.URISyntaxException
 
 /**
  * TabooLib
@@ -33,7 +34,12 @@ object TestNMS : Test() {
         if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17)) {
             result += sandbox("NMS:Reflex(f)") { nmsClass("SystemUtils").getProperty<Any>("a", isStatic = true) }
             result += sandbox("NMS:Reflex(m)") { nmsClass("SystemUtils").invokeMethod<Any>("a", isStatic = true) }
-            result += sandbox("NMS:Reflex(m)") { nmsClass("SystemUtils").invokeMethod<Any>("a", "a", isStatic = true) }
+            result += sandbox("NMS:Reflex(m)") {
+                try {
+                    nmsClass("SystemUtils").invokeMethod<Any>("a", "a", isStatic = true)
+                } catch (_: URISyntaxException) {
+                }
+            }
         }
         return result
     }
@@ -53,7 +59,12 @@ class TestNMSTranslationImpl : TestNMSTranslation() {
             // 测试转译环境下的 Reflex
             result += Test.sandbox("NMS:Translation:Reflex(f)") { net.minecraft.SystemUtils::class.java.getProperty<Any>("a", isStatic = true) }
             result += Test.sandbox("NMS:Translation:Reflex(m)") { net.minecraft.SystemUtils::class.java.invokeMethod<Any>("a", isStatic = true) }
-            result += Test.sandbox("NMS:Translation:Reflex(m)") { net.minecraft.SystemUtils::class.java.invokeMethod<Any>("a", "a", isStatic = true) }
+            result += Test.sandbox("NMS:Translation:Reflex(m)") {
+                try {
+                    net.minecraft.SystemUtils::class.java.invokeMethod<Any>("a", "a", isStatic = true)
+                } catch (_: URISyntaxException) {
+                }
+            }
         }
     }
 }

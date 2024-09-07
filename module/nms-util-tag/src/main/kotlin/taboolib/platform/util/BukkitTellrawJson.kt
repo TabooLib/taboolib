@@ -7,9 +7,10 @@ import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.util.unsafeLazy
 import taboolib.module.chat.ComponentText
 import taboolib.module.chat.RawMessage
+import taboolib.module.nms.NMSItemTag
 
 fun ItemStack.toNMSKeyAndItemData(): Pair<String, String> {
-    val nmsItemStack = classCraftItemStack.invokeMethod<Any>("asNMSCopy", this, isStatic = true)!!
+    val nmsItemStack = NMSItemTag.instance.getNMSCopy(this)
     val nmsKey = try {
         type.key.key
     } catch (ex: NoSuchMethodError) {
@@ -30,7 +31,7 @@ fun ItemStack.toNMSKeyAndItemData(): Pair<String, String> {
         val nmsKey = classNMSItem.getProperty<Any>("REGISTRY", isStatic = true)!!.invokeMethod<Any>("b", nmsItem)!!
         nmsKey.invokeMethod<String>("getKey")!!
     }
-    return nmsKey to (nmsItemStack.invokeMethod<Any>("getTag")?.toString() ?: "{}")
+    return nmsKey to NMSItemTag.instance.toString(this)
 }
 
 fun ComponentText.hoverItem(itemStack: ItemStack): ComponentText {
@@ -43,20 +44,8 @@ fun RawMessage.hoverItem(itemStack: ItemStack): RawMessage {
     return hoverItem(key, data)
 }
 
-private val classCraftItemStack by unsafeLazy {
-    obcClassLegacy("inventory.CraftItemStack")
-}
-
-private val classCraftMagicNumbers by unsafeLazy {
-    obcClassLegacy("util.CraftMagicNumbers")
-}
-
 private val classNMSItem by unsafeLazy {
     nmsClassLegacy("Item")
-}
-
-private fun obcClassLegacy(name: String): Class<*> {
-    return Class.forName("org.bukkit.craftbukkit.${Bukkit.getServer().javaClass.name.split('.')[3]}.$name")
 }
 
 private fun nmsClassLegacy(name: String): Class<*> {
