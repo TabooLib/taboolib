@@ -3,6 +3,7 @@ package taboolib.module.nms
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
+import taboolib.module.nms.MinecraftVersion.versionId
 
 /**
  * 通过 [Particle] 创建粒子数据包
@@ -30,19 +31,17 @@ abstract class NMSParticle {
     abstract fun createParticlePacket(particle: Particle, location: Location, offset: Vector = Vector(), speed: Double = 0.0, count: Int = 1, data: Any? = null): Any
 }
 
-/**
- * [NMSParticle] 的实现类
- */
+// region NMSParticleImpl
 class NMSParticleImpl : NMSParticle() {
 
-    val version = MinecraftVersion.majorLegacy
+    val version = versionId
 
     override fun createParticlePacket(particle: Particle, location: Location, offset: Vector, speed: Double, count: Int, data: Any?): Any {
         if (data != null && !particle.dataType.isInstance(data)) {
             error("data should be ${particle.dataType} (${data.javaClass})")
         }
         return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
-            val param = if (MinecraftVersion.majorLegacy >= 12002) {
+            val param = if (versionId >= 12002) {
                 try {
                     org.bukkit.craftbukkit.v1_21_R1.CraftParticle.createParticleParam(particle, data)
                 } catch (e: NoSuchMethodError) {
@@ -79,3 +78,4 @@ class NMSParticleImpl : NMSParticle() {
         }
     }
 }
+// endregion

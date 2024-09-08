@@ -1,26 +1,30 @@
 package taboolib.module.nms
 
+import org.bukkit.Keyed
 import org.bukkit.Location
+import org.bukkit.Translatable
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Villager
 import org.bukkit.event.entity.CreatureSpawnEvent
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.MinecraftLanguage.LanguageKey.Type
 import java.util.function.Consumer
 
 /**
  *  在坐标处中生成实体，并在生成前执行回调函数
  */
 fun <T : Entity> Location.spawnEntity(entity: Class<T>, prepare: Consumer<T> = Consumer { }): T {
-    return nmsProxy<NMSEntity>().spawnEntity(this, entity, prepare)
+    return NMSEntity.instance.spawnEntity(this, entity, prepare)
 }
 
 /**
  * 获取实体的语言文件节点
  */
-fun Entity.getLocaleKey(): LocaleKey {
-    return nmsProxy<NMSEntity>().getLocaleKey(this)
+fun Entity.getLanguageKey(): MinecraftLanguage.LanguageKey {
+    return NMSEntity.instance.getLanguageKey(this)
 }
 
 /**
@@ -36,13 +40,21 @@ abstract class NMSEntity {
     abstract fun <T : Entity> spawnEntity(location: Location, entity: Class<T>, callback: Consumer<T>): T
 
     /** 获取实体语言文件节点 */
-    abstract fun getLocaleKey(entity: Entity): LocaleKey
+    abstract fun getLanguageKey(entity: Entity): MinecraftLanguage.LanguageKey
+
+    companion object {
+
+        val instance by unsafeLazy { nmsProxy<NMSEntity>() }
+    }
 }
 
-/**
- * [NMSEntity] 的实现类
- */
+// region NMSEntityImpl
 class NMSEntityImpl : NMSEntity() {
+
+    /**
+     * 是否支持 Translatable
+     */
+    val isTranslatableSupported = runCatching { Translatable::class.java }.isSuccess
 
     /**
      * 1.19.3, 1.20 -> BuiltInRegistries.VILLAGER_PROFESSION
@@ -71,25 +83,34 @@ class NMSEntityImpl : NMSEntity() {
     }
 
     @Suppress("SpellCheckingInspection")
-    override fun getLocaleKey(entity: Entity): LocaleKey {
+    override fun getLanguageKey(entity: Entity): MinecraftLanguage.LanguageKey {
         val key = when (MinecraftVersion.major) {
-            // 1.17 .. 1.20
-            in MinecraftVersion.V1_17..MinecraftVersion.V1_20 -> {
-                entity as org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity
-                val nmsEntity = entity.handle
-                // 1.17 版本特殊处理
-                var key = if (MinecraftVersion.isEqual(MinecraftVersion.V1_17)) {
-                    nmsEntity.type.invokeMethod<String>("g", remap = true)!!
+            // region 1.17 .. 1.21
+            in MinecraftVersion.V1_17..MinecraftVersion.V1_21 -> {
+                // 使用 Translatable 接口
+                if (isTranslatableSupported) {
+                    var key = entity.type.translationKey
+                    if (entity is Villager) {
+                        key += "." + entity.invokeMethod<Keyed>("getProfession")!!.key.key
+                    }
+                    key
                 } else {
-                    nmsEntity.type.descriptionId
+                    entity as org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity
+                    val nmsEntity = entity.handle
+                    var key = when {
+                        // 1.17 版本特殊处理
+                        MinecraftVersion.isEqual(MinecraftVersion.V1_17) -> nmsEntity.type.invokeMethod<String>("g", remap = true)!!
+                        else -> nmsEntity.type.descriptionId
+                    }
+                    // 对村民特殊处理
+                    if (nmsEntity is net.minecraft.world.entity.npc.EntityVillager) {
+                        key += "." + getVillagerLocaleKey3(nmsEntity)
+                    }
+                    key
                 }
-                // 对村民特殊处理
-                if (nmsEntity is net.minecraft.world.entity.npc.EntityVillager) {
-                    key += "." + getVillagerLocaleKey3(nmsEntity)
-                }
-                key
             }
-            // 1.14 .. 1.16
+            // endregion
+            // region 1.14 .. 1.16
             in MinecraftVersion.V1_14..MinecraftVersion.V1_16 -> {
                 entity as org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity
                 val nmsEntity = entity.handle
@@ -100,7 +121,8 @@ class NMSEntityImpl : NMSEntity() {
                     else -> nmsEntity.entityType.f()
                 }
             }
-            // 1.13
+            // endregion
+            // region 1.13
             MinecraftVersion.V1_13 -> {
                 entity as org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity
                 val nmsEntity = entity.handle
@@ -111,7 +133,8 @@ class NMSEntityImpl : NMSEntity() {
                     else -> nmsEntity.P().d()
                 }
             }
-            // 1.8 .. 1.12
+            // endregion
+            // region 1.8 .. 1.12
             in MinecraftVersion.V1_8..MinecraftVersion.V1_12 -> {
                 entity as org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity
                 val nmsEntity = entity.handle
@@ -131,10 +154,11 @@ class NMSEntityImpl : NMSEntity() {
                     else -> "entity.${net.minecraft.server.v1_8_R3.EntityTypes.b(nmsEntity) ?: "generic"}.name"
                 }
             }
+            // endregion
             // 不支持的版本
             else -> throw UnsupportedVersionException()
         }
-        return LocaleKey("N", key)
+        return MinecraftLanguage.LanguageKey(Type.NORMAL, key)
     }
 
     /**
@@ -146,6 +170,7 @@ class NMSEntityImpl : NMSEntity() {
         val export = net.minecraft.server.v1_8_R3.NBTTagCompound()
         nmsEntity.b(export)
         val career = export.getInt("Career")
+        // region 职业获取
         // 在马的逆天写法移除后，村民的这种写法竟然一直用到 1.13 版本结束
         val type = when (nmsEntity.profession) {
             0 -> when (career) {
@@ -155,10 +180,12 @@ class NMSEntityImpl : NMSEntity() {
                 4 -> "fletcher"
                 else -> null
             }
+
             1 -> when (career) {
                 2 -> "cartographer" // 1.11+ 制图师
                 else -> "librarian"
             }
+
             2 -> "cleric"
             3 -> when (career) {
                 1 -> "armor"
@@ -166,19 +193,22 @@ class NMSEntityImpl : NMSEntity() {
                 3 -> "tool"
                 else -> null
             }
+
             4 -> when (career) {
                 1 -> "butcher"
                 2 -> "leather"
                 else -> null
             }
+
             5 -> "nitwit" // 1.11+ 傻子
             else -> null
         }
+        // endregion
         return "entity.Villager.${type ?: "name"}"
     }
 
     /**
-     * 1.3 获取村民的语言文件节点
+     * 1.13 获取村民的语言文件节点
      */
     @Suppress("SpellCheckingInspection")
     private fun getVillagerLocaleKey1(nmsEntity: Any): String {
@@ -186,6 +216,7 @@ class NMSEntityImpl : NMSEntity() {
         val export = net.minecraft.server.v1_13_R2.NBTTagCompound()
         nmsEntity.b(export)
         val career = export.getInt("Career")
+        // region 职业获取
         val type = when (nmsEntity.profession) {
             0 -> when (career) {
                 1 -> "farmer"
@@ -194,11 +225,13 @@ class NMSEntityImpl : NMSEntity() {
                 4 -> "fletcher"
                 else -> null
             }
+
             1 -> when (career) {
                 1 -> "librarian"
                 2 -> "cartographer"
                 else -> null
             }
+
             2 -> "cleric"
             3 -> when (career) {
                 1 -> "armorer"
@@ -206,19 +239,18 @@ class NMSEntityImpl : NMSEntity() {
                 3 -> "tool_smith"
                 else -> null
             }
+
             4 -> when (career) {
                 1 -> "butcher"
                 2 -> "leatherworker"
                 else -> null
             }
+
             5 -> "nitwit"
             else -> null
         }
-        return if (type != null) {
-            "entity.minecraft.villager.$type"
-        } else {
-            "entity.minecraft.villager"
-        }
+        // endregion
+        return if (type != null) "entity.minecraft.villager.$type" else "entity.minecraft.villager"
     }
 
     /**
@@ -241,3 +273,4 @@ class NMSEntityImpl : NMSEntity() {
         return registry.getKey(nmsEntity.villagerData.profession)!!.getProperty<String>("path")!!
     }
 }
+// endregion

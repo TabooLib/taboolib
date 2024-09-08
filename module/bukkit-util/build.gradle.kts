@@ -15,6 +15,6 @@ dependencies {
     compileOnly(project(":module:bukkit-xseries"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
-    compileOnly("ink.ptms.core:v12100:12100-minimize:universal")
+    compileOnly("ink.ptms.core:v12101:12101-minimize:universal")
     compileOnly("ink.ptms.core:v11200:11200-minimize")
 }

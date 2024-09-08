@@ -1,4 +1,4 @@
-package taboolib.test
+package taboolib.module.nms.test
 
 import org.bukkit.Bukkit
 import org.bukkit.Location

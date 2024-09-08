@@ -16,7 +16,7 @@ dependencies {
 //    implementation(project(":module:nms-util-tag-legacy"))
 
     // 服务端
-    compileOnly("ink.ptms.core:v12100:12100:mapped")
+    compileOnly("ink.ptms.core:v12101:12101:mapped")
     compileOnly("ink.ptms.core:v12004:12004:mapped")
     compileOnly("ink.ptms.core:v11604:11604")
     // Mojang

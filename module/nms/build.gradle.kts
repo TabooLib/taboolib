@@ -5,7 +5,7 @@ dependencies {
     compileOnly(project(":common-platform-api"))
     compileOnly(project(":platform:platform-bukkit"))
     // 服务端
-    compileOnly("ink.ptms.core:v12100:12100:mapped")
+    compileOnly("ink.ptms.core:v12101:12101:mapped")
     compileOnly("ink.ptms.core:v11604:11604")
     // 数据包
     compileOnly("io.netty:netty-all:5.0.0.Alpha2")

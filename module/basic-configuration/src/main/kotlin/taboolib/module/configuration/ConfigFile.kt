@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override var file: File? = null
+    override var name: String = ""
 
     private val reloadCallback = ArrayList<Runnable>()
 
@@ -38,6 +39,7 @@ open class ConfigFile(root: Config) : ConfigSection(root), Configuration {
 
     override fun loadFromFile(file: File) {
         this.file = file
+        this.name = file.nameWithoutExtension
         try {
             clear()
             parser().parse(file, root, ParsingMode.REPLACE, FileNotFoundAction.THROW_ERROR)

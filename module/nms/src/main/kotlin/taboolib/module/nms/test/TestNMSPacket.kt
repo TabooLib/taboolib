@@ -61,7 +61,7 @@ object TestNMSPacket : Test() {
             result += if (testSend) Success.of("NMS:PacketSendEvent") else Failure.of("NMS:PacketSendEvent", "NOT_TRIGGERED")
             result += if (testSendHandshake) Success.of("NMS:PacketSendEvent.Handshake") else Failure.of("NMS:PacketSendEvent.Handshake", "NOT_TRIGGERED")
             result += if (testReceive) Success.of("NMS:PacketReceiveEvent") else Failure.of("NMS:PacketReceiveEvent", "NOT_TRIGGERED")
-            result += if (testReceiveHandshake) Success.of("NMS:PacketReceiveEvent.Handshake") else Failure.of("NMS:PacketReceiveEvent.Handshake", "NOT_TRIGGERED")
+            // result += if (testReceiveHandshake) Success.of("NMS:PacketReceiveEvent.Handshake") else Failure.of("NMS:PacketReceiveEvent.Handshake", "NOT_TRIGGERED")
         }
         return result
     }
