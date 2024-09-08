@@ -104,7 +104,7 @@ class NMSImpl : NMS() {
                     .getValue(net.minecraft.world.level.block.BlockDoor.OPEN)
             }
             isHigherOrEqual(MinecraftVersion.V1_17) -> {
-                (block.world as org.bukkit.craftbukkit.v1_17_R1.CraftWorld).handle
+                (block.world as org.bukkit.craftbukkit.v1_16_R3.CraftWorld).handle
                     .invokeMethod<IBlockData>("getType", net.minecraft.core.BlockPosition(block.x, block.y, block.z))!!
                     .invokeMethod("get", net.minecraft.world.level.block.BlockDoor::class.java.getProperty<Any>("OPEN", isStatic = true))!!
             }

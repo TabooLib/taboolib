@@ -3,6 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 dependencies {
     compileOnly(project(":common-util"))
     compileOnly(project(":module:bukkit-nms"))
+    compileOnly(project(":module:bukkit-nms:nms-data-serializer"))
     // 服务端
     compileOnly("ink.ptms.core:v12101:12101-minimize:mapped")
     // DataSerializer

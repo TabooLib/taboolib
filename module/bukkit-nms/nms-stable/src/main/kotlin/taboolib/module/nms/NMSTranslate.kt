@@ -365,9 +365,6 @@ class NMSTranslateImpl : NMSTranslate() {
 // endregion NMSItemImpl
 
 // region Typealias
-private typealias Craft21Enchantment = org.bukkit.craftbukkit.v1_21_R1.enchantments.CraftEnchantment
-private typealias Craft20EnchantmentR4 = org.bukkit.craftbukkit.v1_20_R4.enchantments.CraftEnchantment
-private typealias Craft20EnchantmentR2 = org.bukkit.craftbukkit.v1_20_R2.enchantments.CraftEnchantment
 private typealias Craft16Enchantment = org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment
 private typealias Craft12Enchantment = org.bukkit.craftbukkit.v1_12_R1.enchantments.CraftEnchantment
 // endregion

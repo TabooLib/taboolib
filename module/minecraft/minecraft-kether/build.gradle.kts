@@ -2,10 +2,6 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-repositories {
-    maven("https://repo.spongepowered.org/maven")
-}
-
 dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-env"))
@@ -15,9 +11,9 @@ dependencies {
     compileOnly(project(":module:minecraft:minecraft-chat"))
     compileOnly(project(":module:minecraft:minecraft-i18n"))
     compileOnly(project(":module:bukkit-nms"))
-    compileOnly(project(":module:bukkit-nms:nms-unstable"))
+    compileOnly(project(":module:bukkit-nms:nms-stable"))
     compileOnly(project(":module:basic:basic-configuration"))
-    compileOnly(project(":expansion:expansion-javascript"))
+    compileOnly(project(":module:script:script-javascript"))
     // 扩展
     compileOnly("public:PlaceholderAPI:2.10.9")
     // 解析
@@ -30,6 +26,11 @@ dependencies {
 
 tasks {
     withType<ShadowJar> {
+        archiveClassifier.set("")
+        relocate("org.tabooproject", "taboolib.library")
         relocate("org.apache.commons.jexl3", "org.apache.commons.jexl3_3_2_1")
+    }
+    build {
+        dependsOn(shadowJar)
     }
 }

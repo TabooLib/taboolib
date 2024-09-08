@@ -1,3 +1,3 @@
 dependencies {
-    compileOnly("ink.ptms.core:v12101:12101:mapped")
+    compileOnly("ink.ptms.core:v12101:12101-minimize:mapped")
 }

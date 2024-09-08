@@ -95,7 +95,7 @@ class NMSEntityImpl : NMSEntity() {
                     }
                     key
                 } else {
-                    entity as org.bukkit.craftbukkit.v1_20_R4.entity.CraftEntity
+                    entity as org.bukkit.craftbukkit.v1_20_R2.entity.CraftEntity
                     val nmsEntity = entity.handle
                     var key = when {
                         // 1.17 版本特殊处理

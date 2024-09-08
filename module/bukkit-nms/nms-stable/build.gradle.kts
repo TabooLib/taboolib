@@ -14,9 +14,9 @@ dependencies {
     compileOnly(project(":module:bukkit-nms"))
     // 服务端
     compileOnly("net.md-5:bungeecord-chat:1.17")
-    compileOnly("ink.ptms.core:v12101:12101:mapped")
+    compileOnly("ink.ptms.core:v12101:12101-minimize:mapped")
     compileOnly("ink.ptms.core:v12005:12005:mapped")
-    compileOnly("ink.ptms.core:v12002:12002:mapped")
+    compileOnly("ink.ptms.core:v12002:12002-minimize:mapped")
     compileOnly("ink.ptms.core:v11604:11604")
     compileOnly("ink.ptms:nms-all:1.0.0")
     // Mojang

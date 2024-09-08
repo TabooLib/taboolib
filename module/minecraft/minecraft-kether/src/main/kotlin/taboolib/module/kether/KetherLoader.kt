@@ -1,6 +1,7 @@
 package taboolib.module.kether
 
 import org.tabooproject.reflex.ClassMethod
+import org.tabooproject.reflex.ReflexClass
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.inject.ClassVisitor
@@ -22,15 +23,17 @@ import java.util.function.Supplier
 @Inject
 class KetherLoader : ClassVisitor(0) {
 
-    override fun visit(method: ClassMethod, clazz: Class<*>, instance: Supplier<*>?) {
+    override fun visit(method: ClassMethod, owner: ReflexClass) {
         if (method.isAnnotationPresent(KetherParser::class.java) && method.returnType == ScriptActionParser::class.java) {
-            val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptActionParser<*>
+            val instance = findInstance(owner)
+            val parser = (if (instance == null) method.invokeStatic() else method.invoke(instance)) as ScriptActionParser<*>
             val annotation = method.getAnnotation(KetherParser::class.java)
             val value = annotation.property<Any>("value")?.asList()?.toTypedArray() ?: arrayOf()
             val namespace = annotation.property("namespace", "kether")
             registerParser(parser, value, namespace, annotation.property("shared", false))
         } else if (method.isAnnotationPresent(KetherProperty::class.java) && method.returnType == ScriptProperty::class.java) {
-            val property = (if (instance == null) method.invokeStatic() else method.invoke(instance.get())) as ScriptProperty<*>
+            val instance = findInstance(owner)
+            val property = (if (instance == null) method.invokeStatic() else method.invoke(instance)) as ScriptProperty<*>
             val annotation = method.getAnnotation(KetherProperty::class.java)
             val bind = annotation.property<Class<*>>("bind") ?: error("KetherProperty bind is null")
             registerProperty(property, bind, annotation.property("shared", false))

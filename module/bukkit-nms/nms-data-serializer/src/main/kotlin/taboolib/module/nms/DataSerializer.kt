@@ -32,8 +32,6 @@ interface DataSerializer {
 
     fun writeBoolean(boolean: Boolean): DataSerializer
 
-    fun writeMetadata(meta: List<Any>): DataSerializer
-
     fun writeUUID(uuid: UUID): DataSerializer {
         writeLong(uuid.mostSignificantBits)
         writeLong(uuid.leastSignificantBits)
@@ -133,7 +131,7 @@ interface DataSerializer {
         return this
     }
 
-    fun writeComponent(json: String)
+    fun writeComponent(json: String): DataSerializer
 
     fun build(): Any
 

@@ -7,6 +7,7 @@ include(
     "module:basic:basic-sql",
 
     // 针对 Bukkit 平台的常规工具
+    "module:bukkit:bukkit-fake-op",
     "module:bukkit:bukkit-hook",
     "module:bukkit:bukkit-navigation",
     "module:bukkit:bukkit-ui",
@@ -20,7 +21,7 @@ include(
     "module:bukkit-nms",
     "module:bukkit-nms:nms-ai",
     "module:bukkit-nms:nms-data-serializer",
-    "module:bukkit-nms:nms-data-serializer:nms-data-serializer-12100",
+    "module:bukkit-nms:nms-data-serializer:nms-data-serializer-12005",
     "module:bukkit-nms:nms-data-serializer:nms-data-serializer-legacy",
     "module:bukkit-nms:nms-legacy",
     "module:bukkit-nms:nms-stable",
@@ -33,10 +34,25 @@ include(
     "module:minecraft:minecraft-command-helper",
     "module:minecraft:minecraft-effect",
     "module:minecraft:minecraft-i18n",
+    "module:minecraft:minecraft-kether",
     "module:minecraft:minecraft-metrics",
     "module:minecraft:minecraft-porticus",
-)
-include(
+
+    // 数据库工具
+    "module:database",
+    "module:database:database-alkaid-redis",
+    "module:database:database-ioc",
+    "module:database:database-lettuce-redis",
+    "module:database:database-player",
+    "module:database:database-ptc",
+    "module:database:database-ptc-object",
+
+    // 脚本环境
+    "module:script:script-javascript",
+    "module:script:script-jexl",
+
+    // 用户空间
+    "userspace:geek-tool"
 )
 include(
     "platform:platform-application",

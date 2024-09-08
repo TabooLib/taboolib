@@ -3,7 +3,6 @@ dependencies {
     compileOnly(project(":module:bukkit-nms"))
     // 服务端
     compileOnly("ink.ptms.core:v12101:12101-minimize:mapped")
-    compileOnly("paper:v11701:11701:core")
     // getBlockHeight 用到
     compileOnly("ink.ptms.core:v11200:11200-minimize")
     compileOnly("ink.ptms.core:v11100:11100")
