@@ -35,7 +35,7 @@ class KetherLoader : ClassVisitor(0) {
             val instance = findInstance(owner)
             val property = (if (instance == null) method.invokeStatic() else method.invoke(instance)) as ScriptProperty<*>
             val annotation = method.getAnnotation(KetherProperty::class.java)
-            val bind = annotation.property<Class<*>>("bind") ?: error("KetherProperty bind is null")
+            val bind = annotation.type("bind").instance ?: error("KetherProperty bind is null")
             registerProperty(property, bind, annotation.property("shared", false))
         }
     }
