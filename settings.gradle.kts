@@ -8,6 +8,7 @@ include(
 
     // 针对 Bukkit 平台的常规工具
     "module:bukkit:bukkit-hook",
+    "module:bukkit:bukkit-navigation",
     "module:bukkit:bukkit-ui",
     "module:bukkit:bukkit-ui:bukkit-ui-12100",
     "module:bukkit:bukkit-ui:bukkit-ui-legacy",
