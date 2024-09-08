@@ -71,7 +71,7 @@ gradle.buildFinished {
 }
 
 subprojects
-    .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" }
+    .filter { it.name != "module" && it.name != "platform" && it.name != "expansion" && !it.name.startsWith("impl") }
     .forEach { proj ->
         proj.publishing { applyToSub(proj) }
     }
@@ -92,15 +92,17 @@ fun PublishingExtension.applyToSub(subProject: Project) {
     }
     publications {
         create<MavenPublication>("maven") {
-            artifactId = subProject.name
+            // 构件名
+            artifactId = if (subProject.ext.has("publishId")) subProject.ext.get("publishId").toString() else subProject.name
+            // 组
             groupId = "io.izzel.taboolib"
-            version = (if (project.hasProperty("devLocal")) {
-                "${project.version}-local-dev"
-            } else if (project.hasProperty("dev")) {
-                "${project.version}-dev"
-            } else {
-                "${project.version}"
-            })
+            // 版本号
+            version = when {
+                project.hasProperty("devLocal") -> "${project.version}-local-dev"
+                project.hasProperty("dev") -> "${project.version}-dev"
+                else -> "${project.version}"
+            }
+            // 构件
             artifact(subProject.tasks["kotlinSourcesJar"])
             artifact(subProject.tasks["shadowJar"])
             println("> Apply \"$groupId:$artifactId:$version\"")

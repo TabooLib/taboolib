@@ -10,7 +10,7 @@ dependencies {
     compileOnly(project(":common-env"))
     compileOnly(project(":common-util"))
     compileOnly(project(":common-platform-api"))
-    compileOnly(project(":module:basic-configuration"))
+    compileOnly(project(":module:basic:basic-configuration"))
 }
 
 tasks {
