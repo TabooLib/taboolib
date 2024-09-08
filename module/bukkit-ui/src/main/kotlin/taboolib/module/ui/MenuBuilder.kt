@@ -10,6 +10,7 @@ import taboolib.common.OpenResult
 import taboolib.common.event.InternalEventBus
 import taboolib.common.platform.Awake
 import taboolib.common.platform.function.getOpenContainers
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
 import taboolib.module.ui.type.impl.ChestImpl
 import taboolib.module.ui.virtual.InventoryHandler
@@ -41,11 +42,12 @@ fun enableRawTitleInVanillaInventory() {
     isRawTitleInVanillaInventoryEnabled = true
     // 监听数据包
     InternalEventBus.listen<PacketSendEvent> { e ->
-        if (e.packet.name == "PacketPlayOutOpenWindow") {
-            // 全版本都是 c，不错
-            val plain = InventoryHandler.instance.craftChatMessageToPlain(e.packet.read("c", remap = false)!!)
+        if (e.packet.name == "PacketPlayOutOpenWindow" || e.packet.name == "ClientboundOpenScreenPacket") {
+            // 1.20.5 -> d, 不再是 c
+            val field = if (MinecraftVersion.isUniversal) "title" else "c"
+            val plain = InventoryHandler.instance.craftChatMessageToPlain(e.packet.read(field)!!)
             if (plain.startsWith('{') && plain.endsWith('}')) {
-                e.packet.write("c", InventoryHandler.instance.parseToCraftChatMessage(plain))
+                e.packet.write(field, InventoryHandler.instance.parseToCraftChatMessage(plain))
             }
         }
     }

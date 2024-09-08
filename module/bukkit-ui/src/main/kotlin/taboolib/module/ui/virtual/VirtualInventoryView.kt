@@ -6,7 +6,8 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryView
 
 /**
- * FIXME 该类将在 1.21 中失效, 1.21 中 InventoryView 类由抽象类变为接口
+ * TabooLib
+ * taboolib.module.ui.virtual.VirtualInventoryView
  *
  * @author 坏黑
  * @since 2023/1/16 04:11

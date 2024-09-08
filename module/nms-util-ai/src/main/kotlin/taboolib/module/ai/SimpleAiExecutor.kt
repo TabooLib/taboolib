@@ -3,11 +3,12 @@ package taboolib.module.ai
 import org.bukkit.Location
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.nmsProxy
 
-val pathfinderCreator = nmsProxy(PathfinderCreator::class.java)
+val pathfinderCreator = nmsProxy(PathfinderCreator::class.java, bind = "{name}Impl" + if (MinecraftVersion.isUniversal) "17" else "")
 
-val pathfinderExecutor = nmsProxy(PathfinderExecutor::class.java)
+val pathfinderExecutor = nmsProxy(PathfinderExecutor::class.java, bind = "{name}Impl" + if (MinecraftVersion.isUniversal) "17" else "")
 
 /**
  * 注册一个 Goal AI
