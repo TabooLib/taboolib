@@ -2,8 +2,9 @@ package taboolib.module.nms
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.platform.function.warning
 import taboolib.common.util.orNull
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -22,9 +23,17 @@ class PacketImpl(override var source: Any) : Packet() {
     override val nameInSpigot: String?
         get() {
             // 如果不是 Paper 服务器则直接返回原名称
-            if (MinecraftVersion.paperMapping.isEmpty) return name
+            if (!MinecraftVersion.isUniversalCraftBukkit) return name
             // 借助映射表获取并缓存译名
-            return spigotNameCache.getOrPut(fullyName) { Optional.ofNullable(MinecraftVersion.paperMapping.classMapMojangToSpigot[fullyName]?.substringAfterLast('.')) }.orNull()
+            if (spigotNameCache.containsKey(fullyName)) {
+                return spigotNameCache[fullyName]!!.orNull()
+            }
+            val find = MinecraftVersion.paperMapping.classMapMojangToSpigot[fullyName]?.substringAfterLast('.')
+            if (find == null) {
+                warning("Cannot find spigot name for $fullyName.")
+            }
+            spigotNameCache[fullyName] = Optional.ofNullable(find)
+            return find
         }
 
     /** 数据包完整名称 */

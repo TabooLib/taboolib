@@ -3,9 +3,7 @@ package taboolib.module.nms
 import com.google.gson.JsonParser
 import taboolib.common.PrimitiveIO
 import taboolib.common.env.RuntimeEnv
-import taboolib.common.io.newFile
 import taboolib.common.io.runningResources
-import taboolib.common.platform.function.getDataFolder
 import taboolib.common.platform.function.warning
 import taboolib.common.util.unsafeLazy
 import java.io.InputStream
@@ -31,11 +29,6 @@ class Mapping(
     // 函数 1.18+
     val methods: MutableList<Method> = LinkedList(),
 ) {
-
-    /**
-     * 是否为空
-     */
-    val isEmpty = classMapSpigotS2F.isEmpty() && classMapSpigotToMojang.isEmpty() && classMapMojangToSpigot.isEmpty() && fields.isEmpty() && methods.isEmpty()
 
     /**
      * 将数据写入 Exchanges 空间
@@ -84,7 +77,7 @@ class Mapping(
                     }
                     if (line.contains(' ')) {
                         val name = line.substringAfterLast(' ')
-                        mapping.classMapSpigotS2F[name.substringAfterLast('/', "")] = name
+                        mapping.classMapSpigotS2F[name.substringAfterLast('/', "")] = name.replace('/', '.')
                     }
                 }
             }

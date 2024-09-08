@@ -79,6 +79,16 @@ class RemapTranslationTabooLib : RemapTranslation() {
         if (key.startsWith("org/bukkit/craftbukkit")) {
             return key.replace(obc1, obc3)
         }
-        return MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')]?.replace('.', '/') ?: key
+        // 将低版本包名替换为高版本包名
+        // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
+        return if (key.startsWith("net/minecraft/server/v1_")) {
+            // 先转为 Spigot.FullName
+            var spigotName = MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/')] ?: return key
+            // 在转为 Mojang.FullName
+            spigotName = MinecraftVersion.paperMapping.classMapSpigotToMojang[spigotName] ?: spigotName
+            spigotName.replace('.', '/')
+        } else {
+            MinecraftVersion.paperMapping.classMapSpigotToMojang[key.replace('/', '.')]?.replace('.', '/') ?: key
+        }
     }
 }

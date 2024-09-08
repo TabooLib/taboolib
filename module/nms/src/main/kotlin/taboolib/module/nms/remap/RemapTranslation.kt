@@ -8,11 +8,11 @@ import taboolib.module.nms.MinecraftVersion
  * 对于 TabooLib 内的类，
  * 使用 RemapTranslationTabooLib 进行 Spigot Deobf -> Mojang Obf -> Mojang Deobf 转换。
  *
- * 而插件内的类，已经由 Paper 进行转译了，所以不应该再使用 RemapTranslation (现在为 RemapTranslationLegacy) 进行转译，
+ * 而插件内的类，已经由 Paper 进行转译了，所以不应该再使用 RemapTranslation (现在为 RemapTranslationPlugin) 进行转译，
  * 应该只需要使用该 RemapTranslation 移除包名中的跨版本信息 (诸如 v1_20_R3) ，
  * 而无需对字段名、方法名进行任何操作。
  *
- * 只有 Paper 1.20.5+ 才会启用该类用于转译插件本体里的类，一般使用其子类 RemapTranslationLegacy。
+ * 只有 Paper 1.20.5+ 才会启用该类用于转译插件本体里的类，一般使用其子类 RemapTranslationPlugin。
  * 与 RemapTranslationTabooLib 不同的是，此实现不会对函数名和字段名进行检索转译，避免 Paper 对插件本体的转译失效。
  *
  * @author mical
@@ -52,8 +52,8 @@ open class RemapTranslation : Remapper() {
             // 将低版本包名替换为高版本包名
             // net/minecraft/server/v1_17_R1/EntityPlayer -> net/minecraft/server/level/EntityPlayer
             if (key.startsWith("net/minecraft/server/v1_")) {
-                // 先转译为 Spigot.FullName
-                var spigotName = MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/', "")] ?: return key
+                // 先转为 Spigot.FullName
+                var spigotName = MinecraftVersion.spigotMapping.classMapSpigotS2F[key.substringAfterLast('/')] ?: return key
                 // 如果为 Universal CraftBukkit 环境, 则应进一步转译为 Mojang.FullName
                 spigotName = if (MinecraftVersion.isUniversalCraftBukkit) MinecraftVersion.paperMapping.classMapSpigotToMojang[spigotName] ?: spigotName else spigotName
                 spigotName.replace('.', '/')

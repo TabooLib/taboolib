@@ -1,13 +1,9 @@
 package taboolib.module.nms.remap
 
-import org.apache.commons.lang3.JavaVersion
-import org.apache.commons.lang3.SystemUtils
-import org.objectweb.asm.Type
 import org.tabooproject.reflex.ReflexRemapper
 import taboolib.common.io.isDevelopmentMode
 import taboolib.common.io.newFile
 import taboolib.common.platform.function.getDataFolder
-import taboolib.common.reflect.ClassHelper
 import taboolib.module.nms.MinecraftVersion
 import java.util.concurrent.ConcurrentHashMap
 
