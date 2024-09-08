@@ -11,7 +11,7 @@ dependencies {
     compileOnly(project(":module:minecraft:minecraft-chat"))
     compileOnly(project(":module:minecraft:minecraft-i18n"))
     compileOnly(project(":module:bukkit-nms"))
-    compileOnly(project(":module:bukkit-nms:nms-stable"))
+    compileOnly(project(":module:bukkit-nms:bukkit-nms-stable"))
     compileOnly(project(":module:basic:basic-configuration"))
     compileOnly(project(":module:script:script-javascript"))
     // 扩展

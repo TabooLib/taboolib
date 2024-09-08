@@ -19,15 +19,15 @@ include(
 
     // 针对 Bukkit 平台的 NMS 工具
     "module:bukkit-nms",
-    "module:bukkit-nms:nms-ai",
-    "module:bukkit-nms:nms-data-serializer",
-    "module:bukkit-nms:nms-data-serializer:nms-data-serializer-12005",
-    "module:bukkit-nms:nms-data-serializer:nms-data-serializer-legacy",
-    "module:bukkit-nms:nms-legacy",
-    "module:bukkit-nms:nms-stable",
-    "module:bukkit-nms:nms-tag",
-    "module:bukkit-nms:nms-tag:nms-tag-12005",
-    "module:bukkit-nms:nms-tag:nms-tag-legacy",
+    "module:bukkit-nms:bukkit-nms-ai",
+    "module:bukkit-nms:bukkit-nms-data-serializer",
+    "module:bukkit-nms:bukkit-nms-data-serializer:nms-data-serializer-12005",
+    "module:bukkit-nms:bukkit-nms-data-serializer:nms-data-serializer-legacy",
+    "module:bukkit-nms:bukkit-nms-legacy",
+    "module:bukkit-nms:bukkit-nms-stable",
+    "module:bukkit-nms:bukkit-nms-tag",
+    "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-12005",
+    "module:bukkit-nms:bukkit-nms-tag:bukkit-nms-tag-legacy",
 
     // 针对 Minecraft 的多平台工具
     "module:minecraft:minecraft-chat",
