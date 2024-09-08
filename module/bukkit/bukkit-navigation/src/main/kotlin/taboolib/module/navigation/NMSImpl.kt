@@ -2,11 +2,15 @@ package taboolib.module.navigation
 
 import net.minecraft.server.v1_12_R1.BlockDoor
 import net.minecraft.server.v1_12_R1.BlockPosition
+import net.minecraft.world.level.block.state.IBlockData
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity
 import org.bukkit.entity.Entity
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.module.nms.MinecraftVersion
+import taboolib.module.nms.MinecraftVersion.isHigherOrEqual
 
 /**
  * Navigation
@@ -15,11 +19,11 @@ import taboolib.module.nms.MinecraftVersion
  * @author sky
  * @since 2021/2/21 11:57 下午
  */
-@Suppress("DuplicatedCode")
+@Suppress("DuplicatedCode", "MemberVisibilityCanBePrivate", "unused")
 class NMSImpl : NMS() {
 
     val version = MinecraftVersion.major
-    val majorLegacy = MinecraftVersion.majorLegacy
+    val majorLegacy = MinecraftVersion.versionId
 
     override fun getBoundingBox(entity: Entity): BoundingBox {
         return if (version >= 5) {
@@ -46,7 +50,7 @@ class NMSImpl : NMS() {
     }
 
     override fun getBlockHeight(block: Block): Double {
-        return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
+        return if (isHigherOrEqual(MinecraftVersion.V1_13)) {
             if (block.type.isSolid) {
                 (block.boundingBox.maxY - block.y).coerceAtLeast(0.0)
             } else {
@@ -92,6 +96,28 @@ class NMSImpl : NMS() {
         }
     }
     override fun isDoorOpened(block: Block): Boolean {
-        return (block.world as CraftWorld).handle.getType(BlockPosition(block.x, block.y, block.z)).get(BlockDoor.OPEN)
+        return when {
+            // 1.18 起函数名发生变动: getType -> getBlockState
+            isHigherOrEqual(MinecraftVersion.V1_18) -> {
+                (block.world as org.bukkit.craftbukkit.v1_21_R1.CraftWorld).handle
+                    .getBlockState(net.minecraft.core.BlockPosition(block.x, block.y, block.z))
+                    .getValue(net.minecraft.world.level.block.BlockDoor.OPEN)
+            }
+            isHigherOrEqual(MinecraftVersion.V1_17) -> {
+                (block.world as org.bukkit.craftbukkit.v1_17_R1.CraftWorld).handle
+                    .invokeMethod<IBlockData>("getType", net.minecraft.core.BlockPosition(block.x, block.y, block.z))!!
+                    .invokeMethod("get", net.minecraft.world.level.block.BlockDoor::class.java.getProperty<Any>("OPEN", isStatic = true))!!
+            }
+            // 1.14 (v1_14_R1) 中该 IBlockData 类由 interface 变为 class
+            isHigherOrEqual(MinecraftVersion.V1_14) -> {
+                (block.world as org.bukkit.craftbukkit.v1_14_R1.CraftWorld).handle
+                    .getType(net.minecraft.server.v1_14_R1.BlockPosition(block.x, block.y, block.z))
+                    .get(net.minecraft.server.v1_14_R1.BlockDoor.OPEN)
+            }
+            // 1.13 及以下版本
+            else -> {
+                (block.world as CraftWorld).handle.getType(BlockPosition(block.x, block.y, block.z)).get(BlockDoor.OPEN)
+            }
+        }
     }
 }
