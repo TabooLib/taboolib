@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerQuitEvent
@@ -9,7 +10,6 @@ import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.event.SubscribeEvent
 import taboolib.common.platform.function.submit
 import taboolib.common.util.unsafeLazy
-import taboolib.library.xseries.XMaterial
 import java.lang.reflect.Constructor
 import java.util.concurrent.ConcurrentHashMap
 
@@ -30,9 +30,9 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), callback: (lines: Array<S
     }
     // 发送虚拟牌子
     try {
-        sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!.createBlockData())
+        sendBlockChange(location, sign().createBlockData())
     } catch (t: NoSuchMethodError) {
-        sendBlockChange(location, XMaterial.OAK_WALL_SIGN.parseMaterial()!!, 0.toByte())
+        sendBlockChange(location, sign(), 0.toByte())
     }
     // 设置牌子内容
     try {
@@ -51,6 +51,14 @@ fun Player.inputSign(lines: Array<String> = arrayOf(), callback: (lines: Array<S
         }
     }
     nmsProxy<NMSSign>().openSignEditor(this, location.block)
+}
+
+private fun sign(): Material {
+    return try {
+        Material.valueOf("OAK_WALL_SIGN")
+    } catch (ex: Throwable) {
+        Material.valueOf("WALL_SIGN")
+    }
 }
 
 private fun Array<String>.formatSign(line: Int): Array<String> {
@@ -95,16 +103,12 @@ class NMSSignImpl : NMSSign() {
     }
 
     override fun openSignEditor(player: Player, block: Block) {
-        try {
-            val blockPosition = net.minecraft.server.v1_12_R1.BlockPosition(block.x, block.y, block.z)
-            // 1.20 -> 正反牌子
-            if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20)) {
-                player.sendPacket(constructorPacketOutSignEditor.newInstance(blockPosition, true))
-            } else {
-                player.sendPacket(net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition))
-            }
-        } catch (ex: Throwable) {
-            ex.printStackTrace()
+        val blockPosition = net.minecraft.server.v1_12_R1.BlockPosition(block.x, block.y, block.z)
+        // 1.20 -> 正反牌子
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_20)) {
+            player.sendPacket(constructorPacketOutSignEditor.newInstance(blockPosition, true))
+        } else {
+            player.sendPacket(net.minecraft.server.v1_12_R1.PacketPlayOutOpenSignEditor(blockPosition))
         }
     }
 }
@@ -123,7 +127,7 @@ private object NMSSignListener {
 
     @SubscribeEvent
     fun onReceive(e: PacketReceiveEvent) {
-        if (e.packet.name == "PacketPlayInUpdateSign" && callback.containsKey(e.player.name)) {
+        if (e.packet.nameInSpigot == "PacketPlayInUpdateSign" && callback.containsKey(e.player.name)) {
             val function = callback.remove(e.player.name) ?: return
             val lines = when {
                 MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_17) -> e.packet.read<Array<String>>("lines")!!

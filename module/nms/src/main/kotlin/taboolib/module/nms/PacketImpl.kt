@@ -2,6 +2,9 @@ package taboolib.module.nms
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.setProperty
+import taboolib.common.util.orNull
+import java.util.Optional
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * TabooLib
@@ -14,6 +17,15 @@ class PacketImpl(override var source: Any) : Packet() {
 
     /** 数据包名称 */
     override var name = source.javaClass.simpleName.toString()
+
+    /** 数据包名称（强制 Spigot 译名）*/
+    override val nameInSpigot: String?
+        get() {
+            // 如果不是 Paper 服务器则直接返回原名称
+            if (MinecraftVersion.paperMapping.isEmpty) return name
+            // 借助映射表获取并缓存译名
+            return spigotNameCache.getOrPut(fullyName) { Optional.ofNullable(MinecraftVersion.paperMapping.classMapMojangToSpigot[fullyName]?.substringAfterLast('.')) }.orNull()
+        }
 
     /** 数据包完整名称 */
     override var fullyName = source.javaClass.name.toString()
@@ -33,5 +45,10 @@ class PacketImpl(override var source: Any) : Packet() {
         source = newPacket
         name = newPacket.javaClass.simpleName.toString()
         fullyName = newPacket.javaClass.name.toString()
+    }
+
+    companion object {
+
+        val spigotNameCache = ConcurrentHashMap<String, Optional<String>>()
     }
 }

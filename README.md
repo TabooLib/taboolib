@@ -28,4 +28,6 @@ TabooLib 正在进行底层重构，在新版本发布后，您可以参考迁�
    2. 移除顶层函数 `Class.getInstance(newInstance)`。
    3. 移除顶层函数 `checkPlatform(Class)`。
 3. 移除 `@PlatformImplementation` 注解及相关 API。
-   
+
+**哪些 API 被改名了？**
+1. `LocalFile` 更名为 `MinecraftLanguage`。

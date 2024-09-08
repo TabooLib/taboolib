@@ -15,6 +15,9 @@ abstract class Packet {
     /** 数据包名称 */
     abstract val name: String
 
+    /** 数据包名称（强制 Spigot 译名）*/
+    abstract val nameInSpigot: String?
+
     /** 数据包完整名称 */
     abstract val fullyName: String
 

@@ -8,7 +8,7 @@ import java.lang.invoke.MethodHandle
  * [NMSItemTag] 的实现类
  */
 @Suppress("SpellCheckingInspection", "UNCHECKED_CAST")
-open class NMSItemTagImpl1 : NMSItemTag() {
+open class NMSItemTagLegacy : NMSItemTag() {
 
     val nbtTagCompoundGetter = unreflectGetter<NBTTagCompound12>(if (MinecraftVersion.isUniversal) "x" else "map")
     val nbtTagListGetter = unreflectGetter<NBTTagList12>(if (MinecraftVersion.isUniversal) "c" else "list")
@@ -24,12 +24,16 @@ open class NMSItemTagImpl1 : NMSItemTag() {
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagLongArrayGetter = unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
 
-    private fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {
+    override fun toString(itemStack: ItemStack): String {
+        return getNMSCopy(itemStack).tag?.toString() ?: "{}"
+    }
+
+    override fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(itemStack)
     }
 
-    private fun getBukkitCopy(itemStack: net.minecraft.server.v1_12_R1.ItemStack): ItemStack {
-        return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack)
+    override fun getBukkitCopy(itemStack: Any): ItemStack {
+        return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack as net.minecraft.server.v1_12_R1.ItemStack)
     }
 
     override fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag {

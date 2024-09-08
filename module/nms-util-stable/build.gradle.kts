@@ -3,19 +3,16 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":common-util"))
-    compileOnly(project(":common-legacy-api"))
     compileOnly(project(":common-platform-api"))
+    // ItemRaw
     compileOnly(project(":module:minecraft-chat"))
     compileOnly(project(":module:nms"))
-    compileOnly(project(":module:bukkit-util"))
-    compileOnly(project(":module:bukkit-xseries"))
-    compileOnly(project(":platform:platform-bukkit"))
     // 服务端
     compileOnly("net.md-5:bungeecord-chat:1.17")
+    compileOnly("ink.ptms.core:v12100:12100:mapped")
+    compileOnly("ink.ptms.core:v12100:12100:universal")
+    compileOnly("ink.ptms.core:v11604:11604")
     compileOnly("ink.ptms:nms-all:1.0.0")
-    compileOnly("ink.ptms.core:v12002:12002-minimize:mapped")
-    compileOnly("ink.ptms.core:v12002:12002-minimize:universal")
-    compileOnly("ink.ptms.core:v12004:12004-minimize:universal")
     // Mojang
     compileOnly("com.mojang:brigadier:1.0.18")
     // DataSerializer

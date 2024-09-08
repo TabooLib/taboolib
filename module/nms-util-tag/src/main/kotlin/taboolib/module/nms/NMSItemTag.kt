@@ -9,7 +9,7 @@ import taboolib.common.util.unsafeLazy
  *
  * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.getItemTag(onlyCustom: Boolean = false): ItemTag {
+fun ItemStack.getItemTag(onlyCustom: Boolean = true): ItemTag {
     return NMSItemTag.instance.getItemTag(validation(), onlyCustom)
 }
 
@@ -19,8 +19,15 @@ fun ItemStack.getItemTag(onlyCustom: Boolean = false): ItemTag {
  * @param itemTag 要写入的 [ItemTag]
  * @param onlyCustom 是否仅包含自定义数据（详见 1.20.5+ NBT 改动，在 1.20.4 及以下版本此参数无效）
  */
-fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = false): ItemStack {
+fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = true): ItemStack {
     return NMSItemTag.instance.setItemTag(validation(), itemTag, onlyCustom)
+}
+
+/**
+ * 将 [ItemStack] 转换为字符串
+ */
+fun ItemStack.saveToString(): String {
+    return NMSItemTag.instance.toString(this)
 }
 
 /**
@@ -38,6 +45,15 @@ fun ItemTagData.saveToString(): String {
  * @since 2023/8/5 03:47
  */
 abstract class NMSItemTag {
+
+    /** 获取物品的字符串形式 */
+    abstract fun toString(itemStack: ItemStack): String
+
+    /** 将 Bukkit [ItemStack] 转换为 NMS [ItemStack] */
+    abstract fun getNMSCopy(itemStack: ItemStack): Any
+
+    /** 将 NMS [ItemStack] 转换为 Bukkit [ItemStack] */
+    abstract fun getBukkitCopy(itemStack: Any): ItemStack
 
     /** 获取物品 [ItemTag] */
     abstract fun getItemTag(itemStack: ItemStack, onlyCustom: Boolean): ItemTag
@@ -58,9 +74,9 @@ abstract class NMSItemTag {
 
         val instance by unsafeLazy {
             if (MinecraftVersion.majorLegacy >= 12005) {
-                nmsProxy<NMSItemTag>("{name}Impl2")
+                nmsProxy<NMSItemTag>("{name}12005")
             } else {
-                nmsProxy<NMSItemTag>("{name}Impl1")
+                nmsProxy<NMSItemTag>("{name}Legacy")
             }
         }
     }

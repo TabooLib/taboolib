@@ -1,7 +1,10 @@
 package taboolib.module.nms
 
-import com.mojang.authlib.properties.PropertyMap
+import com.google.common.base.Charsets
+import com.google.common.collect.ForwardingMultimap
 import io.netty.handler.codec.EncoderException
+import org.tabooproject.reflex.Reflex.Companion.getProperty
+import java.io.DataOutput
 import java.util.*
 
 /**
@@ -114,14 +117,15 @@ interface DataSerializer {
         return this
     }
 
-    fun writeGameProfileProperties(map: PropertyMap): DataSerializer {
+    fun writeGameProfileProperties(map: ForwardingMultimap<String, Any>): DataSerializer {
         writeVarInt(map.size())
         map.values().forEach { property ->
-            writeUtf(property.name)
-            writeUtf(property.value)
-            if (property.hasSignature()) {
+            writeUtf(property.getProperty<String>("name")!!)
+            writeUtf(property.getProperty<String>("value")!!)
+            val signature = property.getProperty<String>("signature")
+            if (signature != null) {
                 writeBoolean(true)
-                writeUtf(property.signature)
+                writeUtf(signature)
             } else {
                 writeBoolean(false)
             }
@@ -129,5 +133,9 @@ interface DataSerializer {
         return this
     }
 
+    fun writeComponent(json: String)
+
     fun build(): Any
+
+    fun dataOutput(): DataOutput
 }

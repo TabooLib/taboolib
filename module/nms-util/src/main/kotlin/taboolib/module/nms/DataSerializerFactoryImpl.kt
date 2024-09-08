@@ -1,9 +1,9 @@
 package taboolib.module.nms
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
-import net.minecraft.server.v1_9_R2.DataWatcher
-import net.minecraft.server.v1_9_R2.PacketDataSerializer
+import java.io.DataOutput
 
 /**
  * Adyeshach
@@ -50,14 +50,29 @@ class DataSerializerFactoryImpl(val buf: ByteBuf) : DataSerializerFactory, DataS
 
     @Suppress("UNCHECKED_CAST")
     override fun writeMetadata(meta: List<Any>): DataSerializer {
-        return DataWatcher.a(meta.map { it } as List<DataWatcher.Item<*>>, buf as PacketDataSerializer).let { this }
+        return NMS16DataWatcher.a(meta.map { it } as List<NMS16DataWatcherItem<*>>, buf as NMS16PacketDataSerializer).let { this }
+    }
+
+    override fun writeComponent(json: String) {
+        // 1.20.2 没有 ComponentSerialization, 23w40a (1.20.3的快照) 之后加的
+        if (MinecraftVersion.majorLegacy >= 12003) {
+            // val component = ChatSerializer.fromJson(json)
+            // val nbt = SystemUtils.getOrThrow(ComponentSerialization.CODEC.encodeStart(DynamicOpsNBT.INSTANCE, component)) { err -> EncoderException("Failed to encode: $err $component") }
+            // NBTCompressedStreamTools.writeAnyTag(nbt, ByteBufOutputStream(buf))
+        } else {
+            writeUtf(json, 262144)
+        }
     }
 
     override fun build(): Any {
         return buf
     }
 
+    override fun dataOutput(): DataOutput {
+        return ByteBufOutputStream(buf)
+    }
+
     override fun newSerializer(): DataSerializer {
-        return DataSerializerFactoryImpl(PacketDataSerializer(Unpooled.buffer()))
+        return DataSerializerFactoryImpl(NMS16PacketDataSerializer(Unpooled.buffer()))
     }
 }

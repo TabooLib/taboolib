@@ -3,7 +3,6 @@ package taboolib.module.nms
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
-import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 
 /**
  * 通过 [Particle] 创建粒子数据包
@@ -45,7 +44,7 @@ class NMSParticleImpl : NMSParticle() {
         return if (MinecraftVersion.isHigher(MinecraftVersion.V1_12)) {
             val param = if (MinecraftVersion.majorLegacy >= 12002) {
                 try {
-                    org.bukkit.craftbukkit.v1_20_R3.CraftParticle.createParticleParam(particle, data)
+                    org.bukkit.craftbukkit.v1_21_R1.CraftParticle.createParticleParam(particle, data)
                 } catch (e: NoSuchMethodError) {
                     org.bukkit.craftbukkit.v1_16_R1.CraftParticle.toNMS(particle, data)
                 }

@@ -12,7 +12,7 @@ fun ItemMeta.setDisplayName(source: Source): ItemMeta {
     if (MinecraftVersion.isLower(MinecraftVersion.V1_17)) {
         throw UnsupportedVersionException()
     }
-    setProperty("displayName", source.toRawMessage())
+    setProperty("displayName", NMSMessage.instance.fromJson(source.toRawMessage()))
     return this
 }
 
@@ -23,6 +23,6 @@ fun ItemMeta.setLore(source: List<Source>): ItemMeta {
     if (MinecraftVersion.isLower(MinecraftVersion.V1_17)) {
         throw UnsupportedVersionException()
     }
-    setProperty("lore", source.map { it.toRawMessage() })
+    setProperty("lore", source.map { NMSMessage.instance.fromJson(it.toRawMessage()) })
     return this
 }
