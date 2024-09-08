@@ -21,7 +21,7 @@ include(
     "module:minecraft-porticus",
     "module:nms",
 //    "module:nms-util",
-//    "module:nms-util-ai",
+    "module:nms-util-ai",
 //    "module:nms-util-legacy",
     "module:nms-util-tag",
     "module:nms-util-tag-12005",
