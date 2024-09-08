@@ -1,92 +1,123 @@
 package taboolib.module.nms
 
 import org.bukkit.Material
+import org.bukkit.Translatable
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.potion.PotionEffectType
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.UnsupportedVersionException
 import taboolib.common.util.unsafeLazy
+import taboolib.module.nms.MinecraftLanguage.LanguageKey.Type
+import taboolib.module.nms.legacy.NMSPotionEffect
 import java.lang.reflect.Method
+
+/**
+ * 获取物品的名称（若存在 displayName 则返回 displayName，反之获取译名）
+ */
+fun ItemStack.getName(player: Player? = null): String {
+    return if (itemMeta?.hasDisplayName() == true) itemMeta!!.displayName else getI18nName(player)
+}
+
+/**
+ * 获取物品的译名
+ */
+fun ItemStack.getI18nName(player: Player? = null): String {
+    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
+    return file[getLanguageKey()] ?: getLanguageKey().path
+}
+
+/**
+ * 获取实体的译名
+ */
+fun Entity.getI18nName(player: Player? = null): String {
+    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
+    return file[getLanguageKey()] ?: getLanguageKey().path
+}
+
+/**
+ * 获取附魔的译名
+ */
+fun Enchantment.getI18nName(player: Player? = null): String {
+    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
+    return file[getLanguageKey()] ?: getLanguageKey().path
+}
+
+/**
+ * 获取药水效果的译名
+ */
+fun PotionEffectType.getI18nName(player: Player? = null): String {
+    val file = player?.getMinecraftLanguageFile() ?: MinecraftLanguage.getDefaultLanguageFile() ?: return "NO_LOCALE"
+    return file[getLanguageKey()] ?: getLanguageKey().path
+}
 
 /**
  * 获取物品的 Key，例如 `diamond_sword`
  */
 fun ItemStack.getKey(): String {
-    return nmsProxy<NMSItem>().getKey(this)
+    return NMSTranslate.instance.getKey(this)
 }
 
 /**
  * 获取物品的语言文件节点，例如 `item.minecraft.diamond_sword`
  */
-fun ItemStack.getLocaleKey(): LocaleKey {
-    return nmsProxy<NMSItem>().getLocaleKey(this)
+fun ItemStack.getLanguageKey(): MinecraftLanguage.LanguageKey {
+    return NMSTranslate.instance.getLanguageKey(this)
 }
 
 /**
  * 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness`
  */
-fun Enchantment.getLocaleKey(): LocaleKey {
-    return nmsProxy<NMSItem>().getLocaleKey(this)
+fun Enchantment.getLanguageKey(): MinecraftLanguage.LanguageKey {
+    return NMSTranslate.instance.getLanguageKey(this)
 }
 
 /**
  * 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration`
  */
-fun PotionEffectType?.getLocaleKey(): LocaleKey {
-    return nmsProxy<NMSItem>().getLocaleKey(this)
+fun PotionEffectType?.getLanguageKey(): MinecraftLanguage.LanguageKey {
+    return NMSTranslate.instance.getLanguageKey(this)
 }
 
 /**
  * TabooLib
- * taboolib.module.nms.NMSItem
+ * taboolib.module.nms.NMSTranslate
  *
  * @author 坏黑
  * @since 2023/8/5 03:48
  */
-abstract class NMSItem {
-
-    /** 将 [ItemStack] 转换为 [net.minecraft.server] 下的 ItemStack */
-    abstract fun getNMSCopy(itemStack: ItemStack): Any
-
-    /** 将 [net.minecraft.server] 下的 ItemStack 转换为 [ItemStack] */
-    abstract fun getBukkitCopy(itemStack: Any): ItemStack
+abstract class NMSTranslate {
 
     /** 获取物品的 Key，例如 `diamond_sword` */
     abstract fun getKey(itemStack: ItemStack): String
 
     /** 获取物品的语言文件节点，例如 `item.minecraft.diamond_sword` */
-    abstract fun getLocaleKey(itemStack: ItemStack): LocaleKey
+    abstract fun getLanguageKey(itemStack: ItemStack): MinecraftLanguage.LanguageKey
 
     /** 获取附魔的语言文件节点，例如 `enchantment.minecraft.sharpness` */
-    abstract fun getLocaleKey(enchantment: Enchantment): LocaleKey
+    abstract fun getLanguageKey(enchantment: Enchantment): MinecraftLanguage.LanguageKey
 
     /** 获取药水效果的语言文件节点，例如 `effect.minecraft.regeneration` */
-    abstract fun getLocaleKey(potionEffectType: PotionEffectType?): LocaleKey
+    abstract fun getLanguageKey(potionEffectType: PotionEffectType?): MinecraftLanguage.LanguageKey
 
     companion object {
 
-        /**
-         * 获取 [ItemStack] 的 NMS 副本
-         */
-        fun asNMSCopy(item: ItemStack): Any {
-            return nmsProxy<NMSItem>().getNMSCopy(item)
-        }
-
-        /**
-         * 获取 NMS 物品的 Bukkit 副本
-         */
-        fun asBukkitCopy(item: Any): ItemStack {
-            return nmsProxy<NMSItem>().getBukkitCopy(item)
-        }
+        val instance by unsafeLazy { nmsProxy<NMSTranslate>() }
     }
 }
 
-/**
- * [NMSItem] 的实现类
- */
-class NMSItemImpl : NMSItem() {
+// region NMSTranslateImpl
+class NMSTranslateImpl : NMSTranslate() {
+
+    /**
+     * 是否支持 Translatable
+     */
+    val isTranslatableSupported = runCatching { Translatable::class.java }.isSuccess
+
+    // region Reflection Cache
 
     /**
      * 用于获取物品的语言文件名称的方法
@@ -118,12 +149,13 @@ class NMSItemImpl : NMSItem() {
         itemLocaleNameMethod?.isAccessible = true
         itemLocaleKeyMethod?.isAccessible = true
     }
+    // endregion
 
-    override fun getNMSCopy(itemStack: ItemStack): Any {
+    fun getNMSCopy(itemStack: ItemStack): Any {
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(itemStack)
     }
 
-    override fun getBukkitCopy(itemStack: Any): ItemStack {
+    fun getBukkitCopy(itemStack: Any): ItemStack {
         return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asBukkitCopy(itemStack as net.minecraft.server.v1_12_R1.ItemStack)
     }
 
@@ -179,16 +211,21 @@ class NMSItemImpl : NMSItem() {
      *
      * 这种逆天的语言文件拼接在 1.13 版本后被移除。
      */
-    override fun getLocaleKey(itemStack: ItemStack): LocaleKey {
+    override fun getLanguageKey(itemStack: ItemStack): MinecraftLanguage.LanguageKey {
+        // 使用 Translatable 接口
+        if (isTranslatableSupported) {
+            return MinecraftLanguage.LanguageKey(Type.NORMAL, itemStack.translationKey)
+        }
+        // region Legacy Version
         // 1.11 以下版本没有针对空物品的译名，因此直接返回 "air"
         if (MinecraftVersion.isLower(MinecraftVersion.V1_11) && itemStack.type == Material.AIR) {
-            return LocaleKey("D", "air")
+            return MinecraftLanguage.LanguageKey(Type.DEFAULT, "air")
         }
         val nmsItemStack = getNMSCopy(itemStack) as net.minecraft.server.v1_12_R1.ItemStack
         val nmsItem = nmsItemStack.item
         return if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_13)) {
             itemLocaleKeyMethod ?: throw UnsupportedVersionException()
-            LocaleKey("N", itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack).toString())
+            MinecraftLanguage.LanguageKey(Type.NORMAL, itemLocaleKeyMethod.invoke(nmsItem, nmsItemStack).toString())
         } else {
             // 对 ItemMonsterEgg 进行特殊处理
             if (nmsItem is net.minecraft.server.v1_12_R1.ItemMonsterEgg) {
@@ -206,7 +243,7 @@ class NMSItemImpl : NMSItem() {
                     // ItemMonsterEgg.h 返回值为 MinecraftKey
                     else -> net.minecraft.server.v1_12_R1.EntityTypes.a(net.minecraft.server.v1_12_R1.ItemMonsterEgg.h(nmsItemStack))
                 }
-                LocaleKey("S", "${nmsItem.name}.name", if (entityKey != null) "entity.$entityKey.name" else null)
+                MinecraftLanguage.LanguageKey(Type.SPECIAL, "${nmsItem.name}.name", if (entityKey != null) "entity.$entityKey.name" else null)
             } else {
                 itemLocaleNameMethod ?: throw UnsupportedVersionException()
                 // 获取译名
@@ -223,12 +260,13 @@ class NMSItemImpl : NMSItem() {
                     if (!name.endsWith(".name")) {
                         name += ".name"
                     }
-                    LocaleKey("S", name)
+                    MinecraftLanguage.LanguageKey(Type.SPECIAL, name)
                 } else {
-                    LocaleKey("N", localeKey)
+                    MinecraftLanguage.LanguageKey(Type.NORMAL, localeKey)
                 }
             }
         }
+        // endregion
     }
 
     /**
@@ -262,14 +300,15 @@ class NMSItemImpl : NMSItem() {
      * }
      * ```
      */
-    override fun getLocaleKey(enchantment: Enchantment): LocaleKey {
+    override fun getLanguageKey(enchantment: Enchantment): MinecraftLanguage.LanguageKey {
+        // 1.12 及以下版本
         if (MinecraftVersion.isLowerOrEqual(MinecraftVersion.V1_12)) {
-            return LocaleKey("N", org.bukkit.craftbukkit.v1_12_R1.enchantments.CraftEnchantment.getRaw(enchantment).a())
+            return MinecraftLanguage.LanguageKey(Type.NORMAL, Craft12Enchantment.getRaw(enchantment).a())
         }
         return try {
-            LocaleKey("N", org.bukkit.craftbukkit.v1_20_R2.enchantments.CraftEnchantment.getRaw(enchantment).descriptionId)
+            MinecraftLanguage.LanguageKey(Type.NORMAL, enchantment.translationKey)
         } catch (_: NoSuchMethodError) {
-            LocaleKey("N", org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment.getRaw(enchantment).g())
+            MinecraftLanguage.LanguageKey(Type.NORMAL, Craft16Enchantment.getRaw(enchantment).g())
         }
     }
 
@@ -277,38 +316,32 @@ class NMSItemImpl : NMSItem() {
      * 表现形式与 [Enchantment] 接近，仅转换为 NMS 类型的方法不同。
      */
     @Suppress("UNCHECKED_CAST")
-    override fun getLocaleKey(potionEffectType: PotionEffectType?): LocaleKey {
+    override fun getLanguageKey(potionEffectType: PotionEffectType?): MinecraftLanguage.LanguageKey {
         if (potionEffectType == null) {
-            return LocaleKey("D", "null")
+            return MinecraftLanguage.LanguageKey(Type.DEFAULT, "null")
         }
-        val descriptionId = if (MinecraftVersion.isUniversal) {
-            // 1.17
-            // 继续使用 fromId
-            if (MinecraftVersion.isEqual(MinecraftVersion.V1_17)) {
-                val registry = mobEffectIRegistry as net.minecraft.server.v1_16_R1.Registry<Any>
-                registry.fromId(potionEffectType.id)!!.invokeMethod<String>("c", remap = false)
+        return if (MinecraftVersion.isUniversal) {
+            val descriptionId = when {
+                // 使用 Translatable 接口
+                isTranslatableSupported -> potionEffectType.translationKey
+                // 1.17
+                // 继续使用 fromId
+                MinecraftVersion.isEqual(MinecraftVersion.V1_17) -> {
+                    val registry = mobEffectIRegistry as net.minecraft.server.v1_16_R1.Registry<Any>
+                    registry.fromId(potionEffectType.id)!!.invokeMethod<String>("c", remap = false)
+                }
+                // 1.18 ... 1.20
+                // fromId -> byId
+                else -> {
+                    val registry = runCatching { mobEffectBuiltInRegistries }.getOrElse { mobEffectIRegistry }
+                    registry as net.minecraft.core.Registry<Any>
+                    registry.byId(potionEffectType.id)!!.invokeMethod<String>("getDescriptionId")
+                }
             }
-            // 1.18 ... 1.20
-            // fromId -> byId
-            else {
-                val registry = runCatching { mobEffectBuiltInRegistries }.getOrElse { mobEffectIRegistry }
-                registry as net.minecraft.core.Registry<Any>
-                registry.byId(potionEffectType.id)!!.invokeMethod<String>("getDescriptionId")
-            }
+            MinecraftLanguage.LanguageKey(Type.NORMAL, descriptionId!!)
+        } else {
+            NMSPotionEffect.instance.getLanguageKey(potionEffectType)
         }
-        // 1.13+ 开始使用 SystemUtils.a("effect", IRegistry.MOB_EFFECT.getKey(this)) 获取 key
-        else if (MinecraftVersion.isIn(MinecraftVersion.V1_13..MinecraftVersion.V1_16)) {
-            net.minecraft.server.v1_13_R2.MobEffectList.fromId(potionEffectType.id)!!.c()
-        }
-        // 1.13- 方法相对原始
-        else if (MinecraftVersion.isIn(MinecraftVersion.V1_9..MinecraftVersion.V1_12)) {
-            net.minecraft.server.v1_12_R1.MobEffectList.fromId(potionEffectType.id)!!.a()
-        }
-        // 1.8
-        else {
-            net.minecraft.server.v1_8_R3.MobEffectList.byId[potionEffectType.id].a()
-        }
-        return LocaleKey("N", descriptionId!!)
     }
 
     /** 获取物品「译名」的方法名称 */
@@ -329,3 +362,12 @@ class NMSItemImpl : NMSItem() {
         }
     }
 }
+// endregion NMSItemImpl
+
+// region Typealias
+private typealias Craft21Enchantment = org.bukkit.craftbukkit.v1_21_R1.enchantments.CraftEnchantment
+private typealias Craft20EnchantmentR4 = org.bukkit.craftbukkit.v1_20_R4.enchantments.CraftEnchantment
+private typealias Craft20EnchantmentR2 = org.bukkit.craftbukkit.v1_20_R2.enchantments.CraftEnchantment
+private typealias Craft16Enchantment = org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment
+private typealias Craft12Enchantment = org.bukkit.craftbukkit.v1_12_R1.enchantments.CraftEnchantment
+// endregion

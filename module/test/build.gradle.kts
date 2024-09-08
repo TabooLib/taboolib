@@ -17,5 +17,5 @@ dependencies {
     compileOnly(project(":module:nms-util-tag-legacy"))
     compileOnly(project(":module:bukkit-ui"))
     compileOnly(project(":module:bukkit-ui-legacy"))
-    compileOnly("ink.ptms.core:v12100:12100-minimize:universal")
+    compileOnly("ink.ptms.core:v12101:12101-minimize:universal")
 }

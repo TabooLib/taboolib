@@ -86,9 +86,7 @@ abstract class NMSSign {
     abstract fun openSignEditor(player: Player, block: Block)
 }
 
-/**
- * [NMSSign] 的实现类
- */
+// region NMSSignImpl
 class NMSSignImpl : NMSSign() {
 
     val constructorPacketOutSignEditor: Constructor<*> by unsafeLazy {
@@ -112,7 +110,9 @@ class NMSSignImpl : NMSSign() {
         }
     }
 }
+// endregion
 
+// region NMSSignListener
 @Inject
 @PlatformSide(Platform.BUKKIT)
 private object NMSSignListener {
@@ -138,3 +138,4 @@ private object NMSSignListener {
         }
     }
 }
+// endregion

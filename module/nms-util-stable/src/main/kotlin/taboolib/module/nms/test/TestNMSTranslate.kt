@@ -1,4 +1,4 @@
-package taboolib.test
+package taboolib.module.nms.test
 
 import org.bukkit.Bukkit
 import org.bukkit.enchantments.Enchantment
@@ -21,13 +21,13 @@ import taboolib.platform.util.modifyMeta
  * @author 坏黑
  * @since 2023/8/5 00:56
  */
-object TestNMSI18n : Test() {
+object TestNMSTranslate : Test() {
 
     @Suppress("removal")
     override fun check(): List<Result> {
         val worlds = Bukkit.getWorlds()
         if (worlds.isEmpty()) {
-            return listOf(Failure.of("AI:NO_WORLD"))
+            return listOf(Failure.of("NMSTranslate:NO_WORLD"))
         }
         val items = listOf(
             XMaterial.AIR.parseItem()!!, // 空气
@@ -54,16 +54,16 @@ object TestNMSI18n : Test() {
         )
         val world = worlds[0]
         return listOf(
-            sandbox("NMSI18n:getI18nName(ItemStack)") {
+            sandbox("NMSTranslate:getI18nName(ItemStack)") {
                 assert(items.count { it.getI18nName() == "NO_LOCALE" })
             },
-            sandbox("NMSI18n:getI18nName(Enchantment)") {
+            sandbox("NMSTranslate:getI18nName(Enchantment)") {
                 assert(Enchantment.values().count { it.getI18nName() == "NO_LOCALE" })
             },
-            sandbox("NMSI18n:getI18nName(PotionEffectType)") {
+            sandbox("NMSTranslate:getI18nName(PotionEffectType)") {
                 assert(PotionEffectType.values().filterNotNull().count { it.getI18nName() == "NO_LOCALE" })
             },
-            sandbox("NMSI18n:getI18nName(Entity)") {
+            sandbox("NMSTranslate:getI18nName(Entity)") {
                 val entity1 = world.spawnEntity(world.spawnLocation, EntityType.ZOMBIE)
                 val entity2 = world.spawnEntity(world.spawnLocation, EntityType.VILLAGER) as Villager
                 val entity3 = world.spawnEntity(world.spawnLocation, EntityType.VILLAGER) as Villager

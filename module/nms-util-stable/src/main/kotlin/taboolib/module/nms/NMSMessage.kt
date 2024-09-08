@@ -54,9 +54,7 @@ abstract class NMSMessage {
     }
 }
 
-/**
- * [NMSMessage] 的实现类
- */
+// region NMSMessageImpl
 class NMSMessageImpl : NMSMessage() {
 
     override fun fromJson(json: String): Any {
@@ -130,7 +128,9 @@ class NMSMessageImpl : NMSMessage() {
         }
     }
 }
+// endregion
 
+// region Typealias
 private typealias NMSChatSerializer = net.minecraft.network.chat.IChatBaseComponent.ChatSerializer
 // title
 private typealias NMSClientboundSetTitlesAnimationPacket = net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket
@@ -153,3 +153,4 @@ private typealias CraftBossBar12 = org.bukkit.craftbukkit.v1_12_R1.boss.CraftBos
 private typealias NMSChatSerializer8 = net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer
 private typealias NMSEnumTitleAction8 = net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction
 private typealias NMSPacketPlayOutTitle8 = net.minecraft.server.v1_8_R3.PacketPlayOutTitle
+// endregion

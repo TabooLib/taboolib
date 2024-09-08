@@ -27,7 +27,6 @@ include(
     "module:nms-util-tag",
     "module:nms-util-tag-12005",
     "module:nms-util-tag-legacy",
-//    "module:nms-util-unstable",
 //    "module:test",
 )
 include(

@@ -31,9 +31,7 @@ abstract class NMSParticle {
     abstract fun createParticlePacket(particle: Particle, location: Location, offset: Vector = Vector(), speed: Double = 0.0, count: Int = 1, data: Any? = null): Any
 }
 
-/**
- * [NMSParticle] 的实现类
- */
+// region NMSParticleImpl
 class NMSParticleImpl : NMSParticle() {
 
     val version = versionId
@@ -80,3 +78,4 @@ class NMSParticleImpl : NMSParticle() {
         }
     }
 }
+// endregion
