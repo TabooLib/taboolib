@@ -14,3 +14,7 @@ dependencies {
     compileOnly("org.ow2.asm:asm-util:9.6")
     compileOnly("org.ow2.asm:asm-commons:9.6")
 }
+
+gradle.buildFinished {
+    buildDir.deleteRecursively()
+}
