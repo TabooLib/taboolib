@@ -3,7 +3,6 @@ package taboolib.common.platform.event
 import org.tabooproject.reflex.ClassAnnotation
 import org.tabooproject.reflex.ClassMethod
 import org.tabooproject.reflex.ReflexClass
-import org.tabooproject.reflex.Unknown
 import taboolib.common.Inject
 import taboolib.common.LifeCycle
 import taboolib.common.event.InternalEvent
@@ -27,17 +26,22 @@ class EventBus : ClassVisitor(-1) {
             val optionalEvent = if (bind.isNotEmpty()) {
                 try {
                     Class.forName(bind)
-                } catch (ex: Throwable) {
+                } catch (ex: ClassNotFoundException) {
                     null
                 }
             } else {
                 null
             }
-            if (method.parameterTypes.size != 1) {
+            if (method.parameter.size != 1) {
                 error("${owner.name}#${method.name} must have 1 parameter and must be an event type")
             }
+            val listenType = try {
+                method.parameter[0].instance
+            } catch (_: ClassNotFoundException) {
+                null
+            }
             // 未找到事件类
-            if (method.parameterTypes[0] == Unknown::class.java) {
+            if (listenType == null) {
                 // 忽略警告
                 if (!method.isAnnotationPresent(Ghost::class.java)) {
                     warning("${method.parameter[0].name} not found, use @Ghost to turn off this warning")
@@ -46,7 +50,6 @@ class EventBus : ClassVisitor(-1) {
             }
             optional(anno) {
                 val obj = findInstance(owner)
-                val listenType = method.parameterTypes[0]
                 // 内部事件处理
                 if (InternalEvent::class.java.isAssignableFrom(listenType)) {
                     val priority = anno.enum("priority", EventPriority.NORMAL)
