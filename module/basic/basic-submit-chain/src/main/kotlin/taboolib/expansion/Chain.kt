@@ -22,14 +22,14 @@ enum class DurationType {
 object SyncDispatcher : CoroutineDispatcher() {
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        submit(now = true) { block.run() }
+        submit { block.run() }
     }
 }
 
 object AsyncDispatcher : CoroutineDispatcher() {
 
     override fun dispatch(context: CoroutineContext, block: Runnable) {
-        submit(now = true, async = true) { block.run() }
+        submit(async = true) { block.run() }
     }
 }
 
@@ -52,7 +52,7 @@ open class Chain<R>(val chain: suspend Chain<R>.() -> R) {
             when (type) {
                 // 50ms = 1 tick in Minecraft
                 MINECRAFT_TICK -> delay(value * 50)
-                MILLIS -> value
+                MILLIS -> delay(value)
             }
         }
     }
