@@ -89,4 +89,33 @@ interface IRedisConnection {
     fun subscribe(vararg channel: String, patternMode: Boolean = false, func: RedisMessage.() -> Unit)
 
     fun createPubSub(patternMode: Boolean, func: RedisMessage.() -> Unit): JedisPubSub
+
+    /**
+     * 向集合中添加一个或多个元素
+     * @param key 集合名
+     * @param value 一个或多个元素
+     */
+    fun sadd(key: String, vararg value: String)
+
+    /**
+     * 获取集合中元素的数量
+     * @param key 集合名
+     * @return 该集合的元素数量
+     */
+    fun scard(key: String): Long
+
+    /**
+     * 获取集合中所有的元素
+     * @param key 集合名
+     * @return 集合中的所有元素
+     */
+    fun smembers(key: String): Set<String>
+
+    /**
+     * 判断元素是否存在于集合中
+     * @param key 集合名
+     * @param value 元素名
+     * @return 是否存在
+     */
+    fun sismember(key: String, value: String): Boolean
 }

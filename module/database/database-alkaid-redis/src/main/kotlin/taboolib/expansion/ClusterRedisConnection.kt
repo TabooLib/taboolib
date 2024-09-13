@@ -141,4 +141,20 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
             }
         }
     }
+
+    override fun sadd(key: String, vararg value: String) {
+        connector.cluster.sadd(key, *value)
+    }
+
+    override fun scard(key: String): Long {
+        return connector.cluster.scard(key)
+    }
+
+    override fun smembers(key: String): Set<String> {
+        return connector.cluster.smembers(key)
+    }
+
+    override fun sismember(key: String, value: String): Boolean {
+        return connector.cluster.sismember(key, value)
+    }
 }
