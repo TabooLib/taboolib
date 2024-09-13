@@ -94,8 +94,17 @@ interface IRedisConnection {
      * 向集合中添加一个或多个元素
      * @param key 集合名
      * @param value 一个或多个元素
+     * @return 返回添加成功的元素数量
      */
-    fun sadd(key: String, vararg value: String)
+    fun sadd(key: String, vararg value: String): Long
+
+    /**
+     * 向集合中移除一个或多个元素
+     * @param key 集合名
+     * @param value 一个或多个元素
+     * @return 返回移除成功的元素数量
+     */
+    fun srem(key: String, vararg value: String): Long
 
     /**
      * 获取集合中元素的数量

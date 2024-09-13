@@ -189,8 +189,12 @@ class SingleRedisConnection(internal var pool: JedisPool, internal val connector
         }
     }
 
-    override fun sadd(key: String, vararg value: String) {
-        exec { it.sadd(key, *value) }
+    override fun sadd(key: String, vararg value: String): Long {
+        return exec { it.sadd(key, *value) }
+    }
+
+    override fun srem(key: String, vararg value: String): Long {
+        return exec { it.srem(key, *value) }
     }
 
     override fun scard(key: String): Long {

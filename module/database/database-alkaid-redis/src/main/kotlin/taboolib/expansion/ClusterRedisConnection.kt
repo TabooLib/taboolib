@@ -142,8 +142,12 @@ class ClusterRedisConnection(val connector: ClusterRedisConnector) : Closeable, 
         }
     }
 
-    override fun sadd(key: String, vararg value: String) {
-        connector.cluster.sadd(key, *value)
+    override fun sadd(key: String, vararg value: String): Long {
+        return connector.cluster.sadd(key, *value)
+    }
+
+    override fun srem(key: String, vararg value: String): Long {
+        return connector.cluster.srem(key, *value)
     }
 
     override fun scard(key: String): Long {
