@@ -4,7 +4,6 @@ import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
 import org.objectweb.asm.Opcodes;
 import taboolib.common.classloader.IsolatedClassLoader;
-import taboolib.common.platform.Platform;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +55,8 @@ public class PrimitiveLoader {
     static List<String[]> deps() {
         List<String[]> deps = new ArrayList<>();
         deps.add(new String[]{"me.lucko", "jar-relocator", "1.7"});
-        // 非 ASM 9 环境下, 或非 Bukkit 环境下加载 ASM 9
-        if (!isASM9 || Platform.CURRENT != Platform.BUKKIT) {
+        // 非 ASM 9 环境下加载 ASM 9
+        if (!isASM9) {
             deps.add(new String[]{"org.ow2.asm", "asm", "9.6"});
             deps.add(new String[]{"org.ow2.asm", "asm-util", "9.6"});
             deps.add(new String[]{"org.ow2.asm", "asm-commons", "9.6"});
@@ -275,6 +274,8 @@ public class PrimitiveLoader {
     static boolean isASM9() {
         try {
             Opcodes.class.getDeclaredField("ASM9");
+            Class.forName("org.objectweb.asm.util.Printer");
+            Class.forName("org.objectweb.asm.commons.Remapper");
             return true;
         } catch (Throwable ignored) {
         }
