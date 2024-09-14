@@ -15,6 +15,7 @@ import taboolib.common.util.unsafeLazy
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketReceiveEvent
 import taboolib.module.nms.nmsProxy
+import taboolib.module.ui.InventoryViewProxy
 import taboolib.module.ui.MenuHolder
 import taboolib.module.ui.type.AnvilCallback
 import java.util.concurrent.ConcurrentHashMap
@@ -118,7 +119,7 @@ abstract class InventoryHandler {
                     }
                     // 普通容器处理
                     else {
-                        val openInventory = player.openInventory.topInventory
+                        val openInventory = InventoryViewProxy.getTopInventory(player.openInventory)
                         val builder = MenuHolder.fromInventory(openInventory)
                         if (builder is AnvilCallback) {
                             builder.invoke(player, text, openInventory)
