@@ -31,7 +31,7 @@ fun ItemStack.toNMSKeyAndItemData(): Pair<String, String> {
         val nmsKey = classNMSItem.getProperty<Any>("REGISTRY", isStatic = true)!!.invokeMethod<Any>("b", nmsItem)!!
         nmsKey.invokeMethod<String>("getKey")!!
     }
-    return nmsKey to NMSItemTag.instance.toString(this)
+    return nmsKey to NMSItemTag.instance.toMinecraftJson(this)
 }
 
 fun ComponentText.hoverItem(itemStack: ItemStack): ComponentText {

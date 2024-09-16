@@ -24,17 +24,18 @@ fun ItemStack.setItemTag(itemTag: ItemTag, onlyCustom: Boolean = true): ItemStac
 }
 
 /**
- * 将 [ItemStack] 转换为字符串
- */
-fun ItemStack.saveToString(): String {
-    return NMSItemTag.instance.toString(this)
-}
-
-/**
  * 将 [ItemTagData] 转换为字符串
  */
 fun ItemTagData.saveToString(): String {
     return NMSItemTag.instance.itemTagToString(this)
+}
+
+/**
+ * 将物品转换为原版 Json 形式
+ * @return 转换后的 Json 字符串，可插入 Tellraw 信息中
+ */
+fun ItemStack.toMinecraftJson(): String {
+    return NMSItemTag.instance.toMinecraftJson(this)
 }
 
 /**
@@ -48,9 +49,6 @@ abstract class NMSItemTag {
 
     /** 生成适配版本的 [ItemTag] **/
     abstract fun newItemTag(): ItemTag
-
-    /** 获取物品的字符串形式 */
-    abstract fun toString(itemStack: ItemStack): String
 
     /** 将 Bukkit [ItemStack] 转换为 NMS [ItemStack] */
     abstract fun getNMSCopy(itemStack: ItemStack): Any
@@ -72,6 +70,22 @@ abstract class NMSItemTag {
 
     /** 将 [net.minecraft.server] 下的 NBTTag 转换为 [ItemTagData] */
     abstract fun itemTagToBukkitCopy(nbtTag: Any): ItemTagData
+
+    /**
+     * 将物品转换为原版 Json 形式，可插入 Tellraw 信息中。
+     * 和 ItemTag#toJson 不同，不含类型信息。
+     *
+     * 在 1.20.5 以下的版本，不含物品基本信息。
+     */
+    abstract fun toMinecraftJson(itemStack: ItemStack): String
+
+    /**
+     * 将原版 Json 转换为物品。
+     * 此方法不能接受 ItemTag#toJson 的结果。
+     *
+     * 在 1.20.5 以下的版本，由于 [toMinecraftJson] 不含物品基本信息，因此默认为 STONE 类型。
+     */
+    abstract fun fromMinecraftJson(json: String): ItemStack?
 
     companion object {
 

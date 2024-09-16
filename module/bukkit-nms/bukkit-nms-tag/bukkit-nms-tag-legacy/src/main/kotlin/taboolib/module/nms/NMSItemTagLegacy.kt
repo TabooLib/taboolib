@@ -28,8 +28,12 @@ open class NMSItemTagLegacy : NMSItemTag() {
         return ItemTag()
     }
 
-    override fun toString(itemStack: ItemStack): String {
+    override fun toMinecraftJson(itemStack: ItemStack): String {
         return getNMSCopy(itemStack).tag?.toString() ?: "{}"
+    }
+
+    override fun fromMinecraftJson(json: String): ItemStack {
+        TODO("不会")
     }
 
     override fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {

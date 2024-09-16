@@ -6,6 +6,7 @@ import net.minecraft.world.item.component.CustomData
 import org.bukkit.craftbukkit.v1_20_R4.CraftRegistry
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * [NMSItemTag] 的实现类
@@ -16,8 +17,13 @@ class NMSItemTag12005 : NMSItemTag() {
         return ItemTag12005()
     }
 
-    override fun toString(itemStack: ItemStack): String {
+    override fun toMinecraftJson(itemStack: ItemStack): String {
         return getNMSCopy(itemStack).save(CraftRegistry.getMinecraftRegistry()).toString()
+    }
+
+    override fun fromMinecraftJson(json: String): ItemStack? {
+        val nmsItem = net.minecraft.world.item.ItemStack.parse(CraftRegistry.getMinecraftRegistry(), MojangsonParser.parseTag(json)).getOrNull()
+        return if (nmsItem != null) getBukkitCopy(nmsItem) else null
     }
 
     override fun getNMSCopy(itemStack: ItemStack): net.minecraft.world.item.ItemStack {
