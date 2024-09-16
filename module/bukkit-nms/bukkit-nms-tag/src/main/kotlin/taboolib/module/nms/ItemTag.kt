@@ -1,6 +1,7 @@
 package taboolib.module.nms
 
 import com.google.gson.*
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import taboolib.module.nms.ItemTagSerializer.serializeData
 import taboolib.module.nms.ItemTagSerializer.serializeTag
@@ -28,20 +29,27 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
 
     /**
      * 将 [ItemTag] 写入物品
+     * 注意，此方法会修改传入的物品
+     *
+     * @param item 要写入的物品
+     * @return 写入 [ItemTag] 后的物品（等价于传入的物品）
      */
-    open fun saveTo(item: ItemStack) {
+    open fun saveTo(item: ItemStack): ItemStack {
         item.setItemMeta(item.setItemTag(this).itemMeta)
+        return item
     }
 
     /**
-     * 转换为 Json（可逆向）
+     * 转换为 Json 字符串（可逆向）
+     * @return Json 字符串
      */
     fun toJson(): String {
         return serializeData(this).toString()
     }
 
     /**
-     * 转换为格式化的 Json（可逆向）
+     * 转换为格式化的 Json 字符串（可逆向）
+     * @return 格式化的 Json 字符串
      */
     fun toJsonFormatted(): String {
         return GsonBuilder().setPrettyPrinting().create().toJson(serializeTag(this))
@@ -96,7 +104,13 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     }
 
     /**
-     * 深度删除，以 "." 作为分层符
+     * 深度删除指定键对应的数据
+     *
+     * 使用 "." 作为分层符来指定嵌套结构中的键
+     * 例如 "a.b.c" 表示删除 a 对象中 b 对象中的 c 键
+     *
+     * @param key 要删除的键,可以包含 "." 来指定嵌套路径
+     * @return 被删除的数据,如果键不存在则返回 null
      */
     fun removeDeep(key: String): ItemTagData? {
         return if (key.contains('.')) {
@@ -123,7 +137,14 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     }
 
     /**
-     * 深度写入，以 "." 作为分层符
+     * 深度写入指定键对应的数据
+     *
+     * 使用 "." 作为分层符来指定嵌套结构中的键
+     * 例如 "a.b.c" 表示在 a 对象中的 b 对象中写入 c 键
+     *
+     * @param key 要写入的键，可以包含 "." 来指定嵌套路径
+     * @param value 要写入的值，如果为 null 则删除该键
+     * @return 被替换的原有数据，如果是新增键则返回 null
      */
     fun putDeep(key: String, value: Any?): ItemTagData? {
         return if (value == null) {
@@ -144,7 +165,13 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     }
 
     /**
-     * 深度获取，以 "." 作为分层符
+     * 深度获取指定键对应的数据
+     *
+     * 使用 "." 作为分层符来指定嵌套结构中的键
+     * 例如 "a.b.c" 表示获取 a 对象中的 b 对象中的 c 键对应的值
+     *
+     * @param key 要获取的键，可以包含 "." 来指定嵌套路径
+     * @return 指定键对应的数据，如果不存在则返回 null
      */
     fun getDeep(key: String): ItemTagData? {
         return if (key.contains('.')) {
@@ -155,7 +182,14 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     }
 
     /**
-     * 针对 getDeep, putDeep, removeDeep 的重复代码做出的优化
+     * 针对 getDeep、putDeep 和 removeDeep 方法的内部辅助函数。
+     *
+     * 该函数通过递归遍历嵌套的 ItemTag 结构，找到或创建指定路径的 ItemTag，然后执行给定的操作。
+     *
+     * @param key 以点号分隔的键路径，例如 "a.b.c"
+     * @param create 如果为 true，在路径不存在时会创建新的 ItemTag；如果为 false，遇到不存在的路径会返回 null
+     * @param action 在找到或创建的最终 ItemTag 上执行的操作
+     * @return 执行 action 后的结果，可能为 null
      */
     fun getDeepWith(key: String, create: Boolean, action: (ItemTag) -> ItemTagData?): ItemTagData? {
         val keys = key.split('.').dropLast(1)
@@ -167,7 +201,7 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
             var next = find[element]
             if (next == null) {
                 if (create) {
-                    next = ItemTag()
+                    next = empty()
                     find[element] = next
                 } else {
                     return null
@@ -183,7 +217,13 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
     }
 
     /**
-     * 深度获取，以 "." 作为分层符，并支持默认值
+     * 深度获取指定键对应的值，支持使用 "." 作为分层符来指定嵌套结构中的键。
+     *
+     * 如果指定的键不存在，则返回提供的默认值。
+     *
+     * @param key 要获取的键，可以包含 "." 来指定嵌套路径，例如 "a.b.c"
+     * @param base 当指定的键不存在时返回的默认值
+     * @return 指定键对应的数据，如果不存在则返回默认值
      */
     fun getDeepOrElse(key: String, base: ItemTagData): ItemTagData {
         return getDeep(key) ?: base
@@ -219,21 +259,116 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
 
     companion object {
 
+        fun empty(): ItemTag {
+            return NMSItemTag.instance.newItemTag()
+        }
+
+        /**
+         * 将物品转换为 JSON 字符串。
+         *
+         * 此方法将给定的 [ItemStack] 对象转换为 JSON 格式的字符串表示。
+         * 转换后的 JSON 字符串可以用于存储或传输物品数据。
+         *
+         * 在 1.20.5+，此方法会包含物品的材质、数量等基础信息。
+         *
+         * @param item 要转换的物品堆
+         * @return 表示物品的 JSON 字符串
+         */
+        @JvmStatic
+        fun toJson(item: ItemStack): String {
+            return item.getItemTag(onlyCustom = false).toJson()
+        }
+
+        /**
+         * 从 JSON 字符串创建物品堆。
+         *
+         * 此方法将给定的 JSON 格式字符串解析并创建对应的 [ItemStack] 对象。
+         * 它是 [toJson] 方法的逆操作。
+         *
+         * 在 1.20.5+，此方法要求 JSON 字符串中包含物品的材质、数量等基础信息。
+         * 在低版本，此方法产出的物品默认为 STONE 类型。
+         *
+         * @param json 表示物品的 JSON 字符串
+         * @return 从 JSON 创建的 [ItemStack] 对象
+         */
+        @JvmStatic
+        fun toItem(json: String): ItemStack {
+            return fromJson(json).saveTo(ItemStack(Material.STONE))
+        }
+
+        /**
+         * 从 JSON 字符串创建 [ItemTag] 对象。
+         *
+         * @param json 要解析的 JSON 字符串
+         * @return 解析后的 [ItemTag] 对象
+         */
         @JvmStatic
         fun fromJson(json: String): ItemTag {
             return fromJson(JsonParser().parse(json)).asCompound()
         }
 
+        /**
+         * 从 [JsonElement] 创建 [ItemTagData] 对象。
+         *
+         * @param element 要解析的 [JsonElement]
+         * @return 解析后的 [ItemTagData] 对象
+         */
         @JvmStatic
         fun fromJson(element: JsonElement): ItemTagData {
             return ItemTagSerializer.deserializeData(element)
         }
 
+        // region Legacy Version
+
+        /**
+         * 从旧版 JSON 字符串创建 [ItemTag] 对象。
+         *
+         * 旧版 JSON 格式示例：
+         * ```json
+         * {
+         *   "type": "INT",
+         *   "data": 42
+         * }
+         * ```
+         * 或
+         * ```json
+         * {
+         *   "key1": {"type": "STRING", "data": "value1"},
+         *   "key2": {"type": "INT", "data": 10}
+         * }
+         * ```
+         *
+         * @param json 要解析的旧版 JSON 字符串
+         * @return 解析后的 [ItemTag] 对象
+         */
         @JvmStatic
         fun fromLegacyJson(json: String): ItemTag {
             return fromLegacyJson(JsonParser().parse(json)).asCompound()
         }
 
+        /**
+         * 从旧版 JSON 格式的 [JsonElement] 创建 [ItemTagData] 对象。
+         *
+         * 此方法用于解析旧版 JSON 格式的数据，支持基本类型和复合类型。
+         * 基本类型的 JSON 格式示例：
+         * ```json
+         * {
+         *   "type": "INT",
+         *   "data": 42
+         * }
+         * ```
+         * 复合类型的 JSON 格式示例：
+         * ```json
+         * {
+         *   "key1": {"type": "STRING", "data": "value1"},
+         *   "key2": {"type": "INT", "data": 10}
+         * }
+         * ```
+         *
+         * @param element 要解析的 [JsonElement]
+         * @return 解析后的 [ItemTagData] 对象
+         * @throws IllegalArgumentException 当遇到不支持的 NBT 类型时
+         */
         @JvmStatic
         fun fromLegacyJson(element: JsonElement): ItemTagData {
             return if (element is JsonObject) {
@@ -280,7 +415,7 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
                     }
                 } else {
                     // 复合类型
-                    val compound = ItemTag()
+                    val compound = empty()
                     for ((key, value) in json.entrySet()) {
                         compound[key] = fromLegacyJson(value)
                     }
@@ -296,5 +431,7 @@ open class ItemTag : ItemTagData, MutableMap<String, ItemTagData> {
                 error("Not JsonObject")
             }
         }
+
+        // endregion
     }
 }

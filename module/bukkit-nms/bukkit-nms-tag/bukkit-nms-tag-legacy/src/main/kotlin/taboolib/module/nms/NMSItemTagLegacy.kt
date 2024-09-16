@@ -24,6 +24,10 @@ open class NMSItemTagLegacy : NMSItemTag() {
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagLongArrayGetter = unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
 
+    override fun newItemTag(): ItemTag {
+        return ItemTag()
+    }
+
     override fun toString(itemStack: ItemStack): String {
         return getNMSCopy(itemStack).tag?.toString() ?: "{}"
     }

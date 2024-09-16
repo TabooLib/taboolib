@@ -46,6 +46,9 @@ fun ItemTagData.saveToString(): String {
  */
 abstract class NMSItemTag {
 
+    /** 生成适配版本的 [ItemTag] **/
+    abstract fun newItemTag(): ItemTag
+
     /** 获取物品的字符串形式 */
     abstract fun toString(itemStack: ItemStack): String
 

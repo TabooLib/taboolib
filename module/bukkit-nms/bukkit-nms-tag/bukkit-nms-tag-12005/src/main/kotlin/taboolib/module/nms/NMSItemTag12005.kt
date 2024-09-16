@@ -12,6 +12,10 @@ import org.bukkit.inventory.ItemStack
  */
 class NMSItemTag12005 : NMSItemTag() {
 
+    override fun newItemTag(): ItemTag {
+        return ItemTag12005()
+    }
+
     override fun toString(itemStack: ItemStack): String {
         return getNMSCopy(itemStack).save(CraftRegistry.getMinecraftRegistry()).toString()
     }
@@ -94,7 +98,7 @@ class NMSItemTag12005 : NMSItemTag() {
         return itemTagToBukkitCopy(nbtTag, false)
     }
 
-    private fun itemTagToBukkitCopy(nbtTag: Any, general: Boolean = false): ItemTagData {
+    private fun itemTagToBukkitCopy(nbtTag: Any, onlyCustom: Boolean): ItemTagData {
         return when (nbtTag) {
             // 基本类型
             is NBTTagByte -> ItemTagData(ItemTagType.BYTE, nbtTag.asByte)
@@ -118,7 +122,7 @@ class NMSItemTag12005 : NMSItemTag() {
             // 复合类型特殊处理
             is NBTTagCompound -> {
                 nbtTag.allKeys.associateWith { itemTagToBukkitCopy(nbtTag.get(it)!!) }.let {
-                    if (general) ItemTag12005(it) else ItemTag(it)
+                    if (onlyCustom) ItemTag(it) else ItemTag12005(it)
                 }
             }
 
@@ -136,11 +140,12 @@ class ItemTag12005 : ItemTag {
     /**
      * 在 1.20.5 上将完整的 [ItemTag]（包含类型、数量等之前没有的信息）写入物品
      */
-    override fun saveTo(item: ItemStack) {
+    override fun saveTo(item: ItemStack): ItemStack {
         val newItem = item.setItemTag(this)
         item.type = newItem.type
         item.amount = newItem.amount
         item.durability = newItem.durability
         item.itemMeta = newItem.itemMeta
+        return item
     }
 }

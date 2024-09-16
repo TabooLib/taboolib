@@ -135,7 +135,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
             ItemTagType.INT_ARRAY -> ItemTagData(type, asIntArray().copyOf())
             ItemTagType.LONG_ARRAY -> ItemTagData(type, asLongArray().copyOf())
             ItemTagType.LIST -> ItemTagList().also { list -> asList().forEach { list.add(it.clone()) } }
-            ItemTagType.COMPOUND -> ItemTag().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
+            ItemTagType.COMPOUND -> ItemTag.empty().also { compound -> asCompound().forEach { (k, v) -> compound[k] = v.clone() } }
         }
     }
 
@@ -167,8 +167,8 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
                 is IntArray -> ItemTagData(obj)
                 is LongArray -> ItemTagData(obj)
                 is List<*> -> translateList(ItemTagList(), obj)
-                is Map<*, *> -> ItemTag(obj.map { (k, v) -> k.toString() to toNBT(v) }.toMap())
-                is ConfigurationSection -> translateSection(ItemTag(), obj)
+                is Map<*, *> -> ItemTag.empty().also { compound -> obj.forEach { (k, v) -> compound[k.toString()] = toNBT(v) } }
+                is ConfigurationSection -> translateSection(ItemTag.empty(), obj)
                 else -> error("Unsupported nbt: $obj (${obj.javaClass})")
             }
         }
@@ -184,7 +184,7 @@ open class ItemTagData(val type: ItemTagType, protected var data: Any) {
             bukkitSection.getKeys(false).forEach { key ->
                 val value = bukkitSection[key]!!
                 if (value is ConfigurationSection) {
-                    itemTag[key] = translateSection(ItemTag(), bukkitSection.getConfigurationSection(key)!!)
+                    itemTag[key] = translateSection(ItemTag.empty(), bukkitSection.getConfigurationSection(key)!!)
                 } else {
                     itemTag[key] = toNBT(value)
                 }

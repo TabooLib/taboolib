@@ -22,7 +22,7 @@ object TestNMSTag : Test() {
         val result = arrayListOf<Result>()
         var itemTag: ItemTag? = null
         result += sandbox("NMS:getItemTag") { itemTag = item().getItemTag() }
-        result += sandbox("NMS:setItemTag") { item().setItemTag(itemTag ?: ItemTag()) }
+        result += sandbox("NMS:setItemTag") { item().setItemTag(itemTag ?: ItemTag.empty()) }
         return result
     }
 
