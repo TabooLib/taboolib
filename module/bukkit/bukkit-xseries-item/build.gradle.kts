@@ -14,7 +14,7 @@ dependencies {
     // 服务端
     compileOnly("ink.ptms.core:v12004:12004-minimize:mapped")
     compileOnly("net.md-5:bungeecord-chat:1.20")
-    compileOnly("com.mojang:authlib:5.0.51")
+     compileOnly("com.mojang:authlib:5.0.51")
     // XSeries
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("org.apache.logging.log4j:log4j-api:2.14.1")
@@ -28,5 +28,5 @@ tasks.withType<KotlinCompile> {
 
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

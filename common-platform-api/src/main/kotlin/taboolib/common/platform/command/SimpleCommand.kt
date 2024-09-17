@@ -82,7 +82,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 SimpleCommandBody::class.java -> {
                     (obj as SimpleCommandBody).apply {
                         name = field.name
-                        aliases = annotation.property("aliases", emptyArray())
+                        aliases = annotation.list<String>("aliases").toTypedArray()
                         optional = annotation.property("optional", false)
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
@@ -93,7 +93,7 @@ class SimpleCommandRegister : ClassVisitor(0) {
                 else -> {
                     SimpleCommandBody().apply {
                         name = field.name
-                        aliases = annotation.property("aliases", emptyArray())
+                        aliases = annotation.list<String>("aliases").toTypedArray()
                         optional = annotation.property("optional", false)
                         permission = annotation.property("permission", "")
                         permissionDefault = annotation.enum("permissionDefault", PermissionDefault.OP)
