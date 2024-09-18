@@ -1,5 +1,6 @@
 package taboolib.module.nms
 
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.tabooproject.reflex.UnsafeAccess
 import java.lang.invoke.MethodHandle
@@ -22,7 +23,9 @@ open class NMSItemTagLegacy : NMSItemTag() {
     val nbtTagStringGetter = unreflectGetter<NBTTagString12>(if (MinecraftVersion.isUniversal) "A" else "data")
     val nbtTagByteArrayGetter = unreflectGetter<NBTTagByteArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
     val nbtTagIntArrayGetter = unreflectGetter<NBTTagIntArray12>(if (MinecraftVersion.isUniversal) "c" else "data")
-    val nbtTagLongArrayGetter = unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
+    val nbtTagLongArrayGetter =
+        if (MinecraftVersion.isLower(MinecraftVersion.V1_12)) null
+        else unreflectGetter<NBTTagLongArray12>(if (MinecraftVersion.isUniversal) "c" else "b")
 
     override fun newItemTag(): ItemTag {
         return ItemTag()
@@ -33,7 +36,15 @@ open class NMSItemTagLegacy : NMSItemTag() {
     }
 
     override fun fromMinecraftJson(json: String): ItemStack {
-        TODO("不会")
+        val empty = ItemStack(Material.STONE)
+        if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_18)) {
+            val nmsItem = org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack.asNMSCopy(empty)
+            nmsItem.tag = net.minecraft.nbt.MojangsonParser.parseTag(json)
+            return org.bukkit.craftbukkit.v1_20_R2.inventory.CraftItemStack.asBukkitCopy(nmsItem)
+        }
+        val nmsItem = getNMSCopy(empty)
+        nmsItem.tag = net.minecraft.server.v1_12_R1.MojangsonParser.parse(json)
+        return getBukkitCopy(empty)
     }
 
     override fun getNMSCopy(itemStack: ItemStack): NMSItemStack12 {
@@ -74,7 +85,8 @@ open class NMSItemTagLegacy : NMSItemTag() {
             // 数组类型特殊处理
             ItemTagType.BYTE_ARRAY -> NBTTagByteArray12(itemTagData.asByteArray().copyOf())
             ItemTagType.INT_ARRAY -> NBTTagIntArray12(itemTagData.asIntArray().copyOf())
-            ItemTagType.LONG_ARRAY -> NBTTagLongArray12(itemTagData.asLongArray().copyOf())
+            // 1.11 及以下版本无此类型
+            // ItemTagType.LONG_ARRAY -> NBTTagLongArray12(itemTagData.asLongArray().copyOf())
 
             // 列表类型特殊处理
             ItemTagType.LIST -> {
@@ -101,8 +113,15 @@ open class NMSItemTagLegacy : NMSItemTag() {
                 }
             }
 
-            // 不支持的类型
-            else -> error("Unsupported type: ${itemTagData.type}}")
+            // 其他类型
+            else -> {
+                // 1.12 及以上版本出现该类型, 要做特殊处理
+                if (itemTagData.type == ItemTagType.LONG_ARRAY && MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+                    NBTTagLongArray12(itemTagData.asLongArray().copyOf())
+                }
+                // 不支持的类型
+                error("Unsupported type: ${itemTagData.type}}")
+            }
         }
     }
 
@@ -120,7 +139,8 @@ open class NMSItemTagLegacy : NMSItemTag() {
             // 数组类型特殊处理
             is NBTTagByteArray12 -> ItemTagData(ItemTagType.BYTE_ARRAY, nbtTagByteArrayGetter.get<ByteArray>(nbtTag).copyOf())
             is NBTTagIntArray12 -> ItemTagData(ItemTagType.INT_ARRAY, nbtTagIntArrayGetter.get<IntArray>(nbtTag).copyOf())
-            is NBTTagLongArray12 -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
+            // 1.11 及以下版本无此类型
+            // is NBTTagLongArray12 -> ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter.get<LongArray>(nbtTag).copyOf())
 
             // 列表类型特殊处理
             is NBTTagList12 -> {
@@ -132,8 +152,18 @@ open class NMSItemTagLegacy : NMSItemTag() {
                 ItemTag().apply { nbtTagCompoundGetter.get<Map<String, Any>>(nbtTag).forEach { put(it.key, itemTagToBukkitCopy(it.value)) } }
             }
 
-            // 不支持的类型
-            else -> error("Unsupported type: ${nbtTag::class.java}}")
+            // 其他类型
+            else -> {
+                // 1.12 及以上版本出现该类型, 要做特殊处理
+                if (MinecraftVersion.isHigherOrEqual(MinecraftVersion.V1_12)) {
+                    // 我怕直接 && 也会报错
+                    if (nbtTag is NBTTagLongArray12) {
+                        ItemTagData(ItemTagType.LONG_ARRAY, nbtTagLongArrayGetter!!.get<LongArray>(nbtTag).copyOf())
+                    }
+                }
+                // 不支持的类型
+                error("Unsupported type: ${nbtTag::class.java}}")
+            }
         }
     }
 
