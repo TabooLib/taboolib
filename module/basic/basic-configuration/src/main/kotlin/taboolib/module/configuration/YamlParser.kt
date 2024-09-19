@@ -20,7 +20,9 @@ import java.io.Reader
 import java.nio.charset.StandardCharsets
 
 /**
- * @author 坏黑
+ * YAML 解析器类，实现了 ConfigParser<CommentedConfig> 接口
+ *
+ * @property configFormat 配置格式
  */
 class YamlParser(val configFormat: ConfigFormat<CommentedConfig>) : ConfigParser<CommentedConfig> {
 
@@ -59,6 +61,12 @@ class YamlParser(val configFormat: ConfigFormat<CommentedConfig>) : ConfigParser
         }
     }
 
+    /**
+     * 从字符串加载 YAML 内容
+     *
+     * @param contents YAML 内容字符串
+     * @param section 目标配置部分
+     */
     fun loadFromString(contents: String, section: ConfigurationSection) {
         if (contents.isEmpty()) {
             return

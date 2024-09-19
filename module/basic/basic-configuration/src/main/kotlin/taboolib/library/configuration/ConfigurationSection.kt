@@ -7,530 +7,500 @@ import taboolib.module.configuration.Type
  */
 interface ConfigurationSection {
 
-    /** 原始类型 */
+    /** 原始配置对象 */
     val primitiveConfig: Any
 
     /** 父节点 */
     val parent: ConfigurationSection?
 
-    /** 节点名 */
+    /** 节点名称 */
     val name: String
 
     /** 节点类型 */
     val type: Type
 
     /**
-     * Gets a set containing all keys in this section.
+     * 获取此节点中所有键的集合。
      *
+     * 如果 deep 设置为 true，则将包含任何子 [ConfigurationSection] 中的所有键
+     * （以及它们的子键等）。这些键将以有效的路径表示法呈现，以供使用。
      *
-     * If deep is set to true, then this will contain all the keys within any
-     * child [ConfigurationSection]s (and their children, etc). These
-     * will be in a valid path notation for you to use.
+     * 如果 deep 设置为 false，则只包含直接子节点的键，而不包括它们自己的子节点。
      *
-     *
-     * If deep is set to false, then this will contain only the keys of any
-     * direct children, and not their own children.
-     *
-     * @param deep Whether or not to get a deep list, as opposed to a shallow
-     * list.
-     * @return Set of keys contained within this ConfigurationSection.
+     * @param deep 是否获取深层列表，而不是浅层列表。
+     * @return 包含在此 ConfigurationSection 中的键集合。
      */
     fun getKeys(deep: Boolean): Set<String>
 
     /**
-     * Checks if this [ConfigurationSection] contains the given path.
+     * 检查此 [ConfigurationSection] 是否包含给定路径。
      *
+     * 如果请求路径的值不存在但已指定默认值，则此方法将返回 true。
      *
-     * If the value for the requested path does not exist but a default value
-     * has been specified, this will return true.
-     *
-     * @param path Path to check for existence.
-     * @return True if this section contains the requested path, either via
-     * default or being set.
-     * @throws IllegalArgumentException Thrown when path is null.
+     * @param path 要检查存在性的路径。
+     * @return 如果此节点包含请求的路径（通过默认值或已设置），则返回 true。
+     * @throws IllegalArgumentException 当路径为 null 时抛出。
      */
     operator fun contains(path: String): Boolean
 
     /**
-     * Gets the requested Object by path.
+     * 通过路径获取请求的对象。
      *
+     * 如果对象不存在但已指定默认值，则将返回默认值。
+     * 如果对象不存在且未指定默认值，则返回 null。
      *
-     * If the Object does not exist but a default value has been specified,
-     * this will return the default value. If the Object does not exist and no
-     * default value was specified, this will return null.
-     *
-     * @param path Path of the Object to get.
-     * @return Requested Object.
+     * @param path 要获取的对象的路径。
+     * @return 请求的对象。
      */
     operator fun get(path: String): Any?
 
     /**
-     * Gets the requested Object by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的对象，如果未找到则返回默认值。
      *
-     * @param path Path of the Object to get.
-     * @param def  The default value to return if the path is not found.
-     * @return Requested Object.
+     * @param path 要获取的对象的路径。
+     * @param def 如果未找到路径时要返回的默认值。
+     * @return 请求的对象。
      */
     operator fun get(path: String, def: Any?): Any?
 
     /**
-     * Sets the specified path to the given value.
+     * 将指定路径设置为给定值。
      *
+     * 如果值为 null，则会删除该条目。任何现有条目都将被替换，无论新值是什么。
      *
-     * If value is null, the entry will be removed. Any existing entry will be
-     * replaced, regardless of what the new value is.
-     *
-     * @param path Path of the object to set.
-     * @param value New value to set the path to.
+     * @param path 要设置的对象的路径。
+     * @param value 要设置的新值。
      */
     operator fun set(path: String, value: Any?)
 
     /**
-     * Gets the requested String by path.
+     * 通过路径获取请求的字符串。
      *
+     * 如果字符串不存在但已指定默认值，则将返回默认值。
+     * 如果字符串不存在且未指定默认值，则返回 null。
      *
-     * If the String does not exist but a default value has been specified,
-     * this will return the default value. If the String does not exist and no
-     * default value was specified, this will return null.
-     *
-     * @param path Path of the String to get.
-     * @return Requested String.
+     * @param path 要获取的字符串的路径。
+     * @return 请求的字符串。
      */
     fun getString(path: String): String?
 
     /**
-     * Gets the requested String by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的字符串，如果未找到则返回默认值。
      *
-     * @param path Path of the String to get.
-     * @param def The default value to return if the path is not found or is
-     * not a String.
-     * @return Requested String.
+     * @param path 要获取的字符串的路径。
+     * @param def 如果未找到路径或不是字符串时要返回的默认值。
+     * @return 请求的字符串。
      */
     fun getString(path: String, def: String?): String?
 
     /**
-     * Checks if the specified path is a String.
+     * 检查指定路径是否为字符串。
      *
+     * 如果路径存在但不是字符串，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为字符串并相应返回。
      *
-     * If the path exists but is not a String, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a String and return appropriately.
-     *
-     * @param path Path of the String to check.
-     * @return Whether or not the specified path is a String.
+     * @param path 要检查的字符串的路径。
+     * @return 指定路径是否为字符串。
      */
     fun isString(path: String): Boolean
 
     /**
-     * Gets the requested int by path.
+     * 通过路径获取请求的整数。
      *
+     * 如果整数不存在但已指定默认值，则将返回默认值。
+     * 如果整数不存在且未指定默认值，则返回 0。
      *
-     * If the int does not exist but a default value has been specified, this
-     * will return the default value. If the int does not exist and no default
-     * value was specified, this will return 0.
-     *
-     * @param path Path of the int to get.
-     * @return Requested int.
+     * @param path 要获取的整数的路径。
+     * @return 请求的整数。
      */
     fun getInt(path: String): Int
 
     /**
-     * Gets the requested int by path, returning a default value if not found.
+     * 通过路径获取请求的整数，如果未找到则返回默认值。
      *
-     * @param path Path of the int to get.
-     * @param def The default value to return if the path is not found or is
-     * not an int.
-     * @return Requested int.
+     * @param path 要获取的整数的路径。
+     * @param def 如果未找到路径或不是整数时要返回的默认值。
+     * @return 请求的整数。
      */
     fun getInt(path: String, def: Int): Int
 
     /**
-     * Checks if the specified path is an int.
+     * 检查指定路径是否为整数。
      *
+     * 如果路径存在但不是整数，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为整数并相应返回。
      *
-     * If the path exists but is not a int, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a int and return appropriately.
-     *
-     * @param path Path of the int to check.
-     * @return Whether or not the specified path is an int.
+     * @param path 要检查的整数的路径。
+     * @return 指定路径是否为整数。
      */
     fun isInt(path: String): Boolean
 
     /**
-     * Gets the requested boolean by path.
+     * 通过路径获取请求的布尔值。
      *
+     * 如果布尔值不存在但已指定默认值，则将返回默认值。
+     * 如果布尔值不存在且未指定默认值，则返回 false。
      *
-     * If the boolean does not exist but a default value has been specified,
-     * this will return the default value. If the boolean does not exist and
-     * no default value was specified, this will return false.
-     *
-     * @param path Path of the boolean to get.
-     * @return Requested boolean.
+     * @param path 要获取的布尔值的路径。
+     * @return 请求的布尔值。
      */
     fun getBoolean(path: String): Boolean
 
     /**
-     * Gets the requested boolean by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的布尔值，如果未找到则返回默认值。
      *
-     * @param path Path of the boolean to get.
-     * @param def The default value to return if the path is not found or is
-     * not a boolean.
-     * @return Requested boolean.
+     * @param path 要获取的布尔值的路径。
+     * @param def 如果未找到路径或不是布尔值时要返回的默认值。
+     * @return 请求的布尔值。
      */
     fun getBoolean(path: String, def: Boolean): Boolean
 
     /**
-     * Checks if the specified path is a boolean.
+     * 检查指定路径是否为布尔值。
      *
+     * 如果路径存在但不是布尔值，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为布尔值并相应返回。
      *
-     * If the path exists but is not a boolean, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a boolean and return appropriately.
-     *
-     * @param path Path of the boolean to check.
-     * @return Whether or not the specified path is a boolean.
+     * @param path 要检查的布尔值的路径。
+     * @return 指定路径是否为布尔值。
      */
     fun isBoolean(path: String): Boolean
 
     /**
-     * Gets the requested double by path.
+     * 通过路径获取请求的双精度浮点数。
      *
+     * 如果双精度浮点数不存在但已指定默认值，则将返回默认值。
+     * 如果双精度浮点数不存在且未指定默认值，则返回 0。
      *
-     * If the double does not exist but a default value has been specified,
-     * this will return the default value. If the double does not exist and no
-     * default value was specified, this will return 0.
-     *
-     * @param path Path of the double to get.
-     * @return Requested double.
+     * @param path 要获取的双精度浮点数的路径。
+     * @return 请求的双精度浮点数。
      */
     fun getDouble(path: String): Double
 
     /**
-     * Gets the requested double by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的双精度浮点数，如果未找到则返回默认值。
      *
-     * @param path Path of the double to get.
-     * @param def The default value to return if the path is not found or is
-     * not a double.
-     * @return Requested double.
+     * @param path 要获取的双精度浮点数的路径。
+     * @param def 如果未找到路径或不是双精度浮点数时要返回的默认值。
+     * @return 请求的双精度浮点数。
      */
     fun getDouble(path: String, def: Double): Double
 
     /**
-     * Checks if the specified path is a double.
+     * 检查指定路径是否为双精度浮点数。
      *
+     * 如果路径存在但不是双精度浮点数，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为双精度浮点数并相应返回。
      *
-     * If the path exists but is not a double, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a double and return appropriately.
-     *
-     * @param path Path of the double to check.
-     * @return Whether or not the specified path is a double.
+     * @param path 要检查的双精度浮点数的路径。
+     * @return 指定路径是否为双精度浮点数。
      */
     fun isDouble(path: String): Boolean
 
     /**
-     * Gets the requested long by path.
+     * 通过路径获取请求的长整数。
      *
+     * 如果长整数不存在但已指定默认值，则将返回默认值。
+     * 如果长整数不存在且未指定默认值，则返回 0。
      *
-     * If the long does not exist but a default value has been specified, this
-     * will return the default value. If the long does not exist and no
-     * default value was specified, this will return 0.
-     *
-     * @param path Path of the long to get.
-     * @return Requested long.
+     * @param path 要获取的长整数的路径。
+     * @return 请求的长整数。
      */
     fun getLong(path: String): Long
 
     /**
-     * Gets the requested long by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的长整数，如果未找到则返回默认值。
      *
-     * @param path Path of the long to get.
-     * @param def The default value to return if the path is not found or is
-     * not a long.
-     * @return Requested long.
+     * @param path 要获取的长整数的路径。
+     * @param def 如果未找到路径或不是长整数时要返回的默认值。
+     * @return 请求的长整数。
      */
     fun getLong(path: String, def: Long): Long
 
     /**
-     * Checks if the specified path is a long.
+     * 检查指定路径是否为长整数。
      *
+     * 如果路径存在但不是长整数，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为长整数并相应返回。
      *
-     * If the path exists but is not a long, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a long and return appropriately.
-     *
-     * @param path Path of the long to check.
-     * @return Whether or not the specified path is a long.
+     * @param path 要检查的长整数的路径。
+     * @return 指定路径是否为长整数。
      */
     fun isLong(path: String): Boolean
 
     /**
-     * Gets the requested List by path.
+     * 通过路径获取请求的列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回 null。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return null.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List.
+     * @param path 要获取的列表的路径。
+     * @return 请求的列表。
      */
     fun getList(path: String): List<*>?
 
     /**
-     * Gets the requested List by path, returning a default value if not
-     * found.
+     * 通过路径获取请求的列表，如果未找到则返回默认值。
      *
-     * @param path Path of the List to get.
-     * @param def The default value to return if the path is not found or is
-     * not a List.
-     * @return Requested List.
+     * @param path 要获取的列表的路径。
+     * @param def 如果未找到路径或不是列表时要返回的默认值。
+     * @return 请求的列表。
      */
     fun getList(path: String, def: List<*>?): List<*>?
 
     /**
-     * Checks if the specified path is a List.
+     * 检查指定路径是否为列表。
      *
+     * 如果路径存在但不是列表，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为列表并相应返回。
      *
-     * If the path exists but is not a List, this will return false. If the
-     * path does not exist, this will return false. If the path does not exist
-     * but a default value has been specified, this will check if that default
-     * value is a List and return appropriately.
-     *
-     * @param path Path of the List to check.
-     * @return Whether or not the specified path is a List.
+     * @param path 要检查的列表的路径。
+     * @return 指定路径是否为列表。
      */
     fun isList(path: String): Boolean
 
     /**
-     * Gets the requested List of String by path.
+     * 通过路径获取请求的字符串列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为字符串（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a String if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of String.
+     * @param path 要获取的列表的路径。
+     * @return 请求的字符串列表。
      */
     fun getStringList(path: String): List<String>
 
     /**
-     * Gets the requested List of Integer by path.
+     * 通过路径获取请求的整数列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为整数（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Integer if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Integer.
+     * @param path 要获取的列表的路径。
+     * @return 请求的整数列表。
      */
     fun getIntegerList(path: String): List<Int>
 
     /**
-     * Gets the requested List of Boolean by path.
+     * 通过路径获取请求的布尔值列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为布尔值（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Boolean if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Boolean.
+     * @param path 要获取的列表的路径。
+     * @return 请求的布尔值列表。
      */
     fun getBooleanList(path: String): List<Boolean>
 
     /**
-     * Gets the requested List of Double by path.
+     * 通过路径获取请求的双精度浮点数列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为双精度浮点数（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Double if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Double.
+     * @param path 要获取的列表的路径。
+     * @return 请求的双精度浮点数列表。
      */
     fun getDoubleList(path: String): List<Double>
 
     /**
-     * Gets the requested List of Float by path.
+     * 通过路径获取请求的浮点数列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为浮点数（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Float if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Float.
+     * @param path 要获取的列表的路径。
+     * @return 请求的浮点数列表。
      */
     fun getFloatList(path: String): List<Float>
 
     /**
-     * Gets the requested List of Long by path.
+     * 通过路径获取请求的长整数列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为长整数（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Long if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Long.
+     * @param path 要获取的列表的路径。
+     * @return 请求的长整数列表。
      */
     fun getLongList(path: String): List<Long>
 
     /**
-     * Gets the requested List of Byte by path.
+     * 通过路径获取请求的字节列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为字节（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Byte if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Byte.
+     * @param path 要获取的列表的路径。
+     * @return 请求的字节列表。
      */
     fun getByteList(path: String): List<Byte>
 
     /**
-     * Gets the requested List of Character by path.
+     * 通过路径获取请求的字符列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为字符（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Character if
-     * possible, but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Character.
+     * @param path 要获取的列表的路径。
+     * @return 请求的字符列表。
      */
     fun getCharacterList(path: String): List<Char>
 
     /**
-     * Gets the requested List of Short by path.
+     * 通过路径获取请求的短整数列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为短整数（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Short if possible,
-     * but may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Short.
+     * @param path 要获取的列表的路径。
+     * @return 请求的短整数列表。
      */
     fun getShortList(path: String): List<Short>
 
     /**
-     * Gets the requested List of Maps by path.
+     * 通过路径获取请求的映射列表。
      *
+     * 如果列表不存在但已指定默认值，则将返回默认值。
+     * 如果列表不存在且未指定默认值，则返回空列表。
      *
-     * If the List does not exist but a default value has been specified, this
-     * will return the default value. If the List does not exist and no
-     * default value was specified, this will return an empty List.
+     * 此方法将尝试将任何值转换为映射（如果可能），但如果不兼容，可能会遗漏一些值。
      *
-     *
-     * This method will attempt to cast any values into a Map if possible, but
-     * may miss any values out if they are not compatible.
-     *
-     * @param path Path of the List to get.
-     * @return Requested List of Maps.
+     * @param path 要获取的列表的路径。
+     * @return 请求的映射列表。
      */
     fun getMapList(path: String): List<Map<*, *>>
 
     /**
-     * Gets the requested ConfigurationSection by path.
+     * 通过路径获取请求的 ConfigurationSection。
      *
+     * 如果 ConfigurationSection 不存在但已指定默认值，则将返回默认值。
+     * 如果 ConfigurationSection 不存在且未指定默认值，则返回 null。
      *
-     * If the ConfigurationSection does not exist but a default value has been
-     * specified, this will return the default value. If the
-     * ConfigurationSection does not exist and no default value was specified,
-     * this will return null.
-     *
-     * @param path Path of the ConfigurationSection to get.
-     * @return Requested ConfigurationSection.
+     * @param path 要获取的 ConfigurationSection 的路径。
+     * @return 请求的 ConfigurationSection。
      */
     fun getConfigurationSection(path: String): ConfigurationSection?
 
     /**
-     * Checks if the specified path is a ConfigurationSection.
+     * 检查指定路径是否为 ConfigurationSection。
      *
+     * 如果路径存在但不是 ConfigurationSection，则返回 false。
+     * 如果路径不存在，则返回 false。
+     * 如果路径不存在但已指定默认值，则检查该默认值是否为 ConfigurationSection 并相应返回。
      *
-     * If the path exists but is not a ConfigurationSection, this will return
-     * false. If the path does not exist, this will return false. If the path
-     * does not exist but a default value has been specified, this will check
-     * if that default value is a ConfigurationSection and return
-     * appropriately.
-     *
-     * @param path Path of the ConfigurationSection to check.
-     * @return Whether or not the specified path is a ConfigurationSection.
+     * @param path 要检查的 ConfigurationSection 的路径。
+     * @return 指定路径是否为 ConfigurationSection。
      */
     fun isConfigurationSection(path: String): Boolean
 
+    /**
+     * 通过路径获取请求的枚举值。
+     *
+     * @param path 要获取的枚举值的路径。
+     * @param type 枚举类的 Class 对象。
+     * @return 请求的枚举值，如果未找到则返回 null。
+     */
     fun <T : Enum<T>> getEnum(path: String, type: Class<T>): T?
 
+    /**
+     * 通过路径获取请求的枚举值列表。
+     *
+     * @param path 要获取的枚举值列表的路径。
+     * @param type 枚举类的 Class 对象。
+     * @return 请求的枚举值列表。
+     */
     fun <T : Enum<T>> getEnumList(path: String, type: Class<T>): List<T>
 
+    /**
+     * 在指定路径创建一个新的 ConfigurationSection。
+     *
+     * @param path 要创建的 ConfigurationSection 的路径。
+     * @return 新创建的 ConfigurationSection。
+     */
     fun createSection(path: String): ConfigurationSection
 
+    /**
+     * 将当前 ConfigurationSection 转换为 Map。
+     *
+     * @return 包含当前 ConfigurationSection 所有键值对的 Map。
+     */
     fun toMap(): Map<String, Any?>
 
+    /**
+     * 获取指定路径的注释。
+     *
+     * @param path 要获取注释的路径。
+     * @return 指定路径的注释，如果没有注释则返回 null。
+     */
     fun getComment(path: String): String?
 
+    /**
+     * 获取指定路径的注释列表。
+     *
+     * @param path 要获取注释的路径。
+     * @return 指定路径的注释列表。
+     */
     fun getComments(path: String): List<String>
 
+    /**
+     * 设置指定路径的注释。
+     *
+     * @param path 要设置注释的路径。
+     * @param comment 要设置的注释，如果为 null 则删除现有注释。
+     */
     fun setComment(path: String, comment: String?)
 
+    /**
+     * 设置指定路径的注释列表。
+     *
+     * @param path 要设置注释的路径。
+     * @param comments 要设置的注释列表。
+     */
     fun setComments(path: String, comments: List<String>)
 
+    /**
+     * 向指定路径添加注释。
+     *
+     * @param path 要添加注释的路径。
+     * @param comments 要添加的注释列表。
+     */
     fun addComments(path: String, comments: List<String>)
 
+    /**
+     * 获取当前 ConfigurationSection 的所有值。
+     *
+     * @param deep 是否包含子节点的值。
+     * @return 包含所有值的 Map。
+     */
     fun getValues(deep: Boolean): Map<String, Any?>
 
+    /**
+     * 清除当前 ConfigurationSection 中的所有值。
+     */
     fun clear()
 }

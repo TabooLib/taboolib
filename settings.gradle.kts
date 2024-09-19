@@ -15,7 +15,6 @@ include(
     "module:bukkit:bukkit-ui:bukkit-ui-legacy",
     "module:bukkit:bukkit-util",
     "module:bukkit:bukkit-xseries",
-    "module:bukkit:bukkit-xseries-item",
 
     // 针对 Bukkit 平台的 NMS 工具
     "module:bukkit-nms",

@@ -14,7 +14,7 @@ import java.io.StringWriter
 import java.io.Writer
 
 /**
- * @author 坏黑
+ * YAML 写入器类，实现了 ConfigWriter 接口
  */
 class YamlWriter : ConfigWriter {
 

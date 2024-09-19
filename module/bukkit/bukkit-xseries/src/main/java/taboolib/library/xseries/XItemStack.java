@@ -51,10 +51,10 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.SpawnEgg;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
+import org.tabooproject.reflex.AnalyseMode;
+import org.tabooproject.reflex.Reflex;
 import taboolib.library.configuration.ConfigurationSection;
-import taboolib.library.xseries.profiles.builder.XSkull;
-import taboolib.library.xseries.profiles.objects.Profileable;
-import taboolib.library.xseries.reflection.XReflection;
 import taboolib.module.configuration.Configuration;
 import taboolib.module.configuration.Type;
 
@@ -82,10 +82,10 @@ import static taboolib.library.xseries.XMaterial.supports;
  * @version 7.5.1
  * @see XMaterial
  * @see XPotion
- * @see XSkull
  * @see XEnchantment
  * @see ItemStack
  */
+@SuppressWarnings("ALL")
 public final class XItemStack {
     public static final ItemFlag[] ITEM_FLAGS = ItemFlag.values();
     public static final boolean SUPPORTS_CUSTOM_MODEL_DATA;
@@ -122,13 +122,18 @@ public final class XItemStack {
 
     private static Object supportsRegistry(String name) {
         try {
-            Class<?> registryClass = XReflection.ofMinecraft().inPackage("org.bukkit").named("Registry").reflect();
-            return XReflection.of(registryClass)
-                    .field().asStatic().getter().named(name).returns(registryClass)
-                    .reflect().invoke();
+            return Reflex.Companion.getProperty(Class.forName("org.bukkit.Registry"), name, true, false, false, AnalyseMode.REFLECTION_ONLY);
         } catch (Throwable ex) {
             return null;
         }
+//        try {
+//            Class<?> registryClass = XReflection.ofMinecraft().inPackage("org.bukkit").named("Registry").reflect();
+//            return XReflection.of(registryClass)
+//                    .field().asStatic().getter().named(name).returns(registryClass)
+//                    .reflect().invoke();
+//        } catch (Throwable ex) {
+//            return null;
+//        }
     }
 
     @SuppressWarnings("unchecked")
@@ -162,7 +167,7 @@ public final class XItemStack {
         return type;
     }
 
-    @Nonnull
+    @NotNull
     private static PatternType getPatternType(@Nullable String name) {
         return getRegistryOrEnum(
                 PatternType.class, REGISTRY_BANNER_PATTERN,
@@ -298,8 +303,9 @@ public final class XItemStack {
                 config.set(entry, enchant.getValue());
             }
         } else if (meta instanceof SkullMeta) {
-            String skull = XSkull.of(meta).getProfileString();
-            if (skull != null) config.set("skull", skull);
+            // TODO 不处理头颅
+            // String skull = ItemSkullKt.getSkullValue((SkullMeta) meta);
+            // if (skull != null) config.set("skull", skull);
         } else if (meta instanceof BannerMeta) {
             BannerMeta banner = (BannerMeta) meta;
             ConfigurationSection patterns = config.createSection("patterns");
@@ -330,7 +336,7 @@ public final class XItemStack {
                     NamespacedKey type = x.getType().getKey();
                     String typeStr = type.getNamespace() + ':' + type.getKey();
                     return typeStr + ", " + x.getDuration() + ", " + x.getAmplifier();
-                }));
+                }).collect(Collectors.toList()));
 
                 if (SUPPORTS_POTION_COLOR && potion.hasColor()) config.set("color", potion.getColor().asRGB());
             } else {
@@ -720,8 +726,9 @@ public final class XItemStack {
             if (skull != null) {
                 // Since this is also an editing method, allow empty strings to
                 // represent the instruction to completely remove an existing profile.
-                if (skull.isEmpty()) XSkull.of(meta).profile(Profileable.detect(skull)).removeProfile();
-                else XSkull.of(meta).profile(Profileable.detect(skull)).lenient().apply();
+                // if (skull.isEmpty()) XSkull.of(meta).profile(Profileable.detect(skull)).removeProfile();
+                // else XSkull.of(meta).profile(Profileable.detect(skull)).lenient().apply();
+                // TODO 不做处理
             }
         } else if (meta instanceof BannerMeta) {
             BannerMeta banner = (BannerMeta) meta;

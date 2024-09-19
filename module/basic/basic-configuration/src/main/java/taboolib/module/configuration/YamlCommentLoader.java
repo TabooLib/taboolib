@@ -16,11 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TabooLib
- * taboolib.module.configuration.YamlCommentLoader
- *
- * @author 坏黑
- * @since 2022/10/3 01:13
+ * YAML 注释加载器
+ * <p>
+ * 该类负责处理 YAML 文件中的注释，包括加载、调整和保存注释。
+ * 它使用 SnakeYAML 库来解析和操作 YAML 结构。
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class YamlCommentLoader {

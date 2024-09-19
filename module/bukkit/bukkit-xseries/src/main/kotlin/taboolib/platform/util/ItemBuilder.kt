@@ -16,9 +16,6 @@ import org.bukkit.potion.PotionEffect
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.library.xseries.XMaterial
-import taboolib.library.xseries.profiles.builder.XSkull
-import taboolib.library.xseries.profiles.objects.ProfileInputType
-import taboolib.library.xseries.profiles.objects.Profileable
 import taboolib.module.chat.colored
 import java.util.*
 
@@ -200,7 +197,7 @@ open class ItemBuilder {
      * 构建物品
      */
     open fun build(): ItemStack {
-        val itemStack = ItemStack(material)
+        var itemStack = ItemStack(material)
         // 数量
         itemStack.amount = amount
         // 耐久（附加值）
@@ -240,10 +237,6 @@ open class ItemBuilder {
             is SkullMeta -> {
                 // 玩家头颅
                 if (skullOwner != null) itemMeta.owner = skullOwner
-                if (skullTexture != null) {
-                    // TODO 这里需要兼容 UUID？因为和以前的逻辑不同，UUID 不同会导致物品无法堆叠
-                    XSkull.of(itemMeta).profile(Profileable.of(ProfileInputType.BASE64, skullTexture!!.texture)).apply()
-                }
             }
         }
 
@@ -280,6 +273,10 @@ open class ItemBuilder {
 
         // 返回
         itemStack.itemMeta = itemMeta
+        // 基于 BukkitSkull 工具设置头
+        if (itemMeta is SkullMeta && skullTexture != null) {
+            itemStack = BukkitSkull.applySkull(itemStack, skullTexture!!.texture)
+        }
         finishing(itemStack)
         return itemStack
     }
@@ -330,7 +327,7 @@ open class ItemBuilder {
             is SkullMeta -> {
                 // 玩家
                 skullOwner = itemMeta.owner
-                // TODO 新版 XSkull 不会用
+                // 皮肤信息
                 itemMeta.getSkullValue()?.let { skullTexture = SkullTexture(it) }
             }
         }
