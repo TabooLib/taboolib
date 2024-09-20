@@ -10,7 +10,6 @@ dependencies {
     compileOnly(project(":module:bukkit:bukkit-util"))
     // 测试用
     compileOnly(project(":module:bukkit:bukkit-xseries"))
-    compileOnly(project(":module:bukkit:bukkit-xseries-item"))
     compileOnly(project(":module:bukkit-nms"))
     // 服务端
     compileOnly("net.md-5:bungeecord-chat:1.17")
