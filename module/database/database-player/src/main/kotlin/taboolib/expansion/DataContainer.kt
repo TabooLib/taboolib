@@ -3,6 +3,7 @@ package taboolib.expansion
 import taboolib.common.Inject
 import taboolib.common.platform.Schedule
 import taboolib.common.platform.function.submitAsync
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -39,9 +40,16 @@ class DataContainer(val user: String, val database: Database) {
      * @param targetUser 目标用户
      * @param key 键
      * @param value 值
+     * @param sync 是否同步给内存，要求targetUser为UUID
      */
-    operator fun set(targetUser: String, key: String, value: Any) {
+    fun forcedSet(targetUser: String, key: String, value: Any, sync: Boolean = false) {
         database[targetUser, key] = value.toString()
+        // 因为 targetUser 不一定是UUID
+        if (sync) {
+            UUID.fromString(targetUser)?.let {
+                playerDataContainer[it]?.source?.set(key, value.toString())
+            }
+        }
     }
 
     /**
