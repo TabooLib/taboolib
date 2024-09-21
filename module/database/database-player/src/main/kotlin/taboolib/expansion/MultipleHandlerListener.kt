@@ -1,6 +1,7 @@
 package taboolib.expansion
 
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import taboolib.common.Inject
 import taboolib.common.platform.event.SubscribeEvent
 
@@ -17,7 +18,7 @@ object MultipleHandlerListener {
     }
 
     @SubscribeEvent
-    fun onPlayerQuit(event: PlayerJoinEvent) {
+    fun onPlayerQuit(event: PlayerQuitEvent) {
         hooks.forEach {
             it.removeDataContainer(event.player.uniqueId.toString())
         }
