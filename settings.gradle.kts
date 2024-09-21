@@ -4,7 +4,6 @@ include(
     // 基础工具
     "module:basic:basic-configuration",
     "module:basic:basic-submit-chain",
-    "module:basic:basic-sql",
 
     // 针对 Bukkit 平台的常规工具
     "module:bukkit:bukkit-fake-op",

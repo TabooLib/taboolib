@@ -1,7 +1,7 @@
 package taboolib.common.platform.function
 
 import taboolib.common.PrimitiveIO
-import taboolib.common.io.isDevelopmentMode
+import taboolib.common.io.isDebugMode
 import taboolib.common.io.newFile
 import taboolib.common.io.runningResources
 import taboolib.common.platform.PlatformFactory
@@ -18,14 +18,12 @@ fun <T> server(): T {
 }
 
 /**
- * 打印开发者日志
+ * 打印调试信息
  *
  * @param message 日志内容
  */
-fun dev(vararg message: Any?) {
-    if (isDevelopmentMode) {
-        message.filterNotNull().forEach { PrimitiveIO.debug(it) }
-    }
+fun debug(vararg message: Any?) {
+    if (isDebugMode) message.filterNotNull().forEach { PrimitiveIO.debug(it) }
 }
 
 /**

@@ -58,6 +58,6 @@ class PacketImpl(override var source: Any) : Packet() {
 
     companion object {
 
-        val spigotNameCache = ConcurrentHashMap<String, Optional<String>>()
+        val spigotNameCache = Exchanges.getOrPut("packet_spigot_name_cache") { ConcurrentHashMap<String, Optional<String>>() }
     }
 }

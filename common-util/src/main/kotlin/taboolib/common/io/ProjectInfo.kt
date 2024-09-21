@@ -39,6 +39,8 @@ val taboolibPath: String
 
 /**
  * 特定类的组名
+ * 传入：org.tabooproject.taboolib.platform.BukkitPlugin
+ * 传出：org.tabooproject
  */
 val Class<*>.groupId: String
     get() = name.substringBefore(taboolibId).dropLast(1)

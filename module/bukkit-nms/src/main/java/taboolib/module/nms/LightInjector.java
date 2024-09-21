@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Range;
 import taboolib.common.PrimitiveIO;
 import taboolib.common.reflect.ClassHelper;
 
+import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -61,7 +62,7 @@ import java.util.logging.Level;
  *
  * @author fren_gor
  */
-public abstract class LightInjector {
+public abstract class LightInjector implements Closeable {
 
     private static final Class<?> SERVER_CLASS = getNMSClass("MinecraftServer", "server");
     private static final Class<?> SERVER_CONNECTION_CLASS = getNMSClass("ServerConnection", "server.network");
@@ -337,6 +338,7 @@ public abstract class LightInjector {
      * If this injector is already closed then invoking this method has no effect.
      * 如果此注入器已经关闭，则调用此方法无效。
      */
+    @Override
     public final void close() {
         if (closed.getAndSet(true)) {
             return;

@@ -23,8 +23,13 @@ import java.util.logging.Logger
 @Suppress("UNCHECKED_CAST")
 object Exchanges {
 
+    // Minecraft 语言文件缓存
     const val MINECRAFT_LANGUAGE = "minecraft_language"
+
+    // Spigot 映射表
     const val MAPPING_SPIGOT = "mapping_spigot"
+
+    // Paper 映射表
     const val MAPPING_PAPER = "mapping_paper"
 
     private val map: MutableMap<String, Any>
@@ -51,6 +56,13 @@ object Exchanges {
      */
     operator fun <T> get(key: String): T {
         return map[key] as T
+    }
+
+    /**
+     * 读取数据，如果不存在则写入默认值
+     */
+    fun <T> getOrPut(key: String, defaultValue: () -> T): T {
+        return map.getOrPut(key) { defaultValue()!! } as T
     }
 
     /**
@@ -151,7 +163,7 @@ object Exchanges {
         }
 
         override fun getName(): String {
-            return "TabooLibExchange"
+            return "TabooLibExchange/v1"
         }
     }
     // endregion

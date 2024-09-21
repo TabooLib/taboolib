@@ -75,13 +75,6 @@ fun nmsClass(name: String): Class<*> {
     }
 }
 
-/**
- * 禁用数据包监听器
- */
-fun disablePacketListener() {
-    ProtocolHandler.disable()
-}
-
 @Synchronized
 fun <T> nmsProxy(clazz: Class<T>, bind: String = "{name}Impl", vararg parameter: Any): T {
     return nmsProxy(clazz, bind, emptyList(), *parameter)

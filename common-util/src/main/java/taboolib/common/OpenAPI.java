@@ -15,10 +15,12 @@ public class OpenAPI {
 
     @NotNull
     public static OpenResult call(String name, Object[] data) {
+        // PrimitiveIO.debug("OpenAPI call {0}", name);
         for (Map.Entry<String, Object> entry : TabooLib.getAwakenedClasses().entrySet()) {
             if (entry.getValue() instanceof OpenListener) {
                 OpenResult result = ((OpenListener) entry.getValue()).call(name, data);
                 if (result.isSuccessful()) {
+                    // PrimitiveIO.debug("  Handle by {0}", entry.getKey());
                     return result;
                 }
             }

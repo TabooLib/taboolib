@@ -1,9 +1,13 @@
 package taboolib.platform.type
 
 import net.afyer.afybroker.server.plugin.Plugin
+import org.tabooproject.reflex.Reflex.Companion.invokeLocalMethod
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
 import taboolib.common.OpenContainer
 import taboolib.common.OpenResult
+import taboolib.common.io.groupId
+import taboolib.common.io.isDebugMode
+import taboolib.common.io.taboolibId
 
 /**
  * TabooLib
@@ -12,24 +16,26 @@ import taboolib.common.OpenResult
  * @author Ling556
  * @since 2024/5/09 23:51
  */
-class AfyBrokerContainer(plugin: Plugin) : OpenContainer {
+class AfyBrokerContainer(val plugin: Plugin) : OpenContainer {
 
-    private val name = plugin.description.name
-    private val main = plugin.description.main!!
-    private val clazz = try {
-        Class.forName(main.substring(0, main.length - "platform.AfyBrokerPlugin".length) + "common.OpenAPI")
-    } catch (ignored: Throwable) {
+    // 获取目标插件的 OpenAPI 类
+    private val api = try {
+        Class.forName("${plugin::class.java.groupId}.$taboolibId.common.OpenAPI")
+    } catch (ex: ClassNotFoundException) {
+        // 在调试模式下输出错误信息
+        if (isDebugMode) ex.printStackTrace()
         null
     }
 
     override fun getName(): String {
-        return name
+        return plugin.description.name
     }
 
     override fun call(name: String, args: Array<Any>): OpenResult {
         return try {
-            OpenResult.deserialize(clazz?.invokeMethod<Any>("call", name, args, isStatic = true, remap = false) ?: return OpenResult.failed())
-        } catch (ignored: NoSuchMethodException) {
+            OpenResult.cast(api?.invokeMethod<Any>("call", name, args, isStatic = true, remap = false) ?: error("OpenAPI not found in ${getName()}"))
+        } catch (ex: NoSuchMethodException) {
+            if (isDebugMode) ex.printStackTrace()
             OpenResult.failed()
         }
     }

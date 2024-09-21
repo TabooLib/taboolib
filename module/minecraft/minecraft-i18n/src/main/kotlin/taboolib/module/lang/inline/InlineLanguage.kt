@@ -1,6 +1,5 @@
 package taboolib.module.lang.inline
 
-import taboolib.common.platform.function.dev
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.util.getStringColored
 import taboolib.module.configuration.util.getStringListColored

@@ -34,12 +34,18 @@ public class LightInjectorImpl extends LightInjector {
     protected @Nullable Object onPacketReceiveAsync(@Nullable Player sender, @NotNull Channel channel, @NotNull Object packet) {
         if (sender != null) {
             PacketReceiveEvent event = new PacketReceiveEvent(sender, new PacketImpl(packet));
-            event.call();
-            return event.getPacket().getSource();
+            if (event.callIf()) {
+                return ProtocolHandler.INSTANCE.handlePacket(ProtocolHandler.PACKET_RECEIVE, sender, channel, event.getPacket().getSource());
+            } else {
+                return null;
+            }
         } else {
             PacketReceiveEvent.Handshake event = new PacketReceiveEvent.Handshake(channel, new PacketImpl(packet));
-            event.call();
-            return event.getPacket().getSource();
+            if (event.callIf()) {
+                return ProtocolHandler.INSTANCE.handlePacket(ProtocolHandler.PACKET_RECEIVE, null, channel, event.getPacket().getSource());
+            } else {
+                return null;
+            }
         }
     }
 
@@ -47,12 +53,18 @@ public class LightInjectorImpl extends LightInjector {
     protected @Nullable Object onPacketSendAsync(@Nullable Player receiver, @NotNull Channel channel, @NotNull Object packet) {
         if (receiver != null) {
             PacketSendEvent event = new PacketSendEvent(receiver, new PacketImpl(packet));
-            event.call();
-            return event.getPacket().getSource();
+            if (event.callIf()) {
+                return ProtocolHandler.INSTANCE.handlePacket(ProtocolHandler.PACKET_SEND, receiver, channel, event.getPacket().getSource());
+            } else {
+                return null;
+            }
         } else {
             PacketSendEvent.Handshake event = new PacketSendEvent.Handshake(channel, new PacketImpl(packet));
-            event.call();
-            return event.getPacket().getSource();
+            if (event.callIf()) {
+                return ProtocolHandler.INSTANCE.handlePacket(ProtocolHandler.PACKET_SEND, null, channel, event.getPacket().getSource());
+            } else {
+                return null;
+            }
         }
     }
 }

@@ -2,7 +2,6 @@ package taboolib.common;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tabooproject.reflex.AnalyseMode;
 import org.tabooproject.reflex.Reflex;
 
 public class OpenResult {
@@ -74,7 +73,10 @@ public class OpenResult {
         return new OpenResult(false, null);
     }
 
-    public static OpenResult deserialize(Object source) {
+    /**
+     * 从其他插件的 OpenResult 转换为当前插件的 OpenResult
+     */
+    public static OpenResult cast(Object source) {
         Object successful = Reflex.Companion.getLocalProperty(source, "successful");
         Object value = Reflex.Companion.getLocalProperty(source, "value");
         return new OpenResult(Boolean.TRUE.equals(successful), value);

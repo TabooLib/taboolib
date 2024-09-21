@@ -25,5 +25,5 @@ public interface OpenContainer {
      * @param args 参数
      */
     @NotNull
-    OpenResult call(String name, @NotNull Object[] args);
+    OpenResult call(String name, Object[] args);
 }

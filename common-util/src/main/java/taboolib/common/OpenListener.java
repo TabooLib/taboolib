@@ -18,5 +18,5 @@ public interface OpenListener {
      * @param data 数据
      * @return boolean 是否注册成功
      */
-    OpenResult call(@NotNull String name, @NotNull Object[] data);
+    OpenResult call(@NotNull String name, Object[] data);
 }
