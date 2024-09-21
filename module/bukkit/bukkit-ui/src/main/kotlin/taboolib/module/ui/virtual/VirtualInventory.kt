@@ -211,4 +211,13 @@ class VirtualInventory(val bukkitInventory: Inventory, storageContents: List<Ite
     override fun getLocation(): Location? {
         return bukkitInventory.location
     }
+
+    /**
+     * 对于老版本, Inventory 下有 getTitle 函数
+     * 部分插件监听 InventoryCloseEvent 时调用, 所以得给个标题给他们玩
+     */
+    fun getTitle(): String {
+        return remoteInventory?.title ?: ""
+    }
+
 }
