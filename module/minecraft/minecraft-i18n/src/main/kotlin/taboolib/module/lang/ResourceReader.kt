@@ -4,8 +4,9 @@ package taboolib.module.lang
 
 import taboolib.common.io.newFile
 import taboolib.common.io.runningResourcesInJar
+import taboolib.common.platform.function.debug
 import taboolib.common.platform.function.pluginId
-import taboolib.common.platform.function.submit
+import taboolib.common.platform.function.submitAsync
 import taboolib.common.platform.function.warning
 import taboolib.common.util.replaceWithOrder
 import taboolib.common5.FileWatcher
@@ -76,14 +77,19 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    /**
+     * 从配置文件中加载语言节点
+     *
+     * @param file 配置文件对象
+     * @param nodesMap 用于存储加载的节点的映射
+     * @param code 语言代码
+     */
     fun loadNodes(file: Configuration, nodesMap: HashMap<String, Type>, code: String) {
+        // 迁移旧版本
         migrateLegacyVersion(file)
+        // 加载节点
         file.getKeys(false).forEach { node ->
             when (val obj = file[node]) {
-                // 标准文本
-                is String -> {
-                    nodesMap[node] = TypeText(obj)
-                }
                 // 列表
                 is List<*> -> {
                     nodesMap[node] = TypeList(obj.mapNotNull { sub ->
@@ -102,11 +108,26 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                     }
                 }
                 // 其他
-                else -> warning("Unsupported language node: $node ($code)")
+                else -> nodesMap[node] = TypeText(obj.toString())
             }
         }
     }
 
+    /**
+     * 获取所有有效的语言文件节点
+     */
+    private fun ConfigurationSection.getLanguageNodes(): Map<String, Any?> {
+        return getValues(true).filter { it.key.endsWith(".==") || it.key.endsWith(".type") }
+    }
+
+    /**
+     * 从映射中加载语言节点
+     *
+     * @param map 包含节点信息的映射
+     * @param code 语言代码
+     * @param node 节点名称（可为空）
+     * @return 加载的语言类型实例，如果加载失败则返回 null
+     */
     private fun loadNode(map: Map<String, Any>, code: String, node: String?): Type? {
         return if (map.containsKey("type") || map.containsKey("==")) {
             val type = (map["type"] ?: map["=="]).toString().lowercase()
@@ -123,9 +144,16 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    /**
+     * 迁移文件，将缺失的键值对添加到目标文件中
+     *
+     * @param missing 缺失的键列表
+     * @param source 源配置对象，包含所有键值对
+     * @param file 目标文件，用于追加缺失的键值对
+     */
     @Suppress("DEPRECATION")
     private fun migrateFile(missing: List<String>, source: Configuration, file: File) {
-        submit(async = true) {
+        submitAsync {
             val append = ArrayList<String>()
             append += "# ------------------------- #"
             append += "#  UPDATE ${dateFormat.format(System.currentTimeMillis())}  #"
@@ -141,18 +169,30 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         }
     }
 
+    /**
+     * 迁移旧版本的配置文件格式
+     *
+     * 此函数用于处理旧版本的配置文件，将其转换为新的格式。主要进行以下操作：
+     * 1. 将包含点号的键名替换为使用连字符的键名
+     * 2. 处理特殊的值类型，如 ConfigurationSection 和 List
+     * 3. 对空字符串进行特殊处理
+     *
+     * @param file 需要迁移的配置文件对象
+     */
     private fun migrateLegacyVersion(file: Configuration) {
         if (file.file == null) {
             return
         }
         var fixed = false
-        val values = file.getValues(HashMap(), "").toSortedMap()
+        val values = file.getLanguageNodes().toSortedMap()
         values.forEach {
             if (it.key.contains('.')) {
                 fixed = true
                 file[it.key.substringBefore('.')] = null
                 file[it.key.replace('.', '-')] = when (val obj = it.value) {
+                    // 处理 ConfigurationSection
                     is ConfigurationSection -> migrateLegacyJsonType(obj)
+                    // 处理列表
                     is List<*> -> {
                         obj.map { element ->
                             when (element) {
@@ -162,8 +202,10 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
                             }
                         }
                     }
+                    // 跳过
                     else -> obj
                 }
+                debug("Migrate language: ${it.key}: ${it.key.substringBefore('.')} -> ${it.key.replace('.', '-')}: ${file[it.key.replace('.', '-')]}")
             }
         }
         if (fixed) {
@@ -173,6 +215,9 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
 
     /**
      * 对老版本的 Json 写法进行迁移更新
+     *
+     * @param section 需要迁移的 ConfigurationSection 对象
+     * @return 迁移后的 ConfigurationSection 对象
      */
     private fun migrateLegacyJsonType(section: ConfigurationSection): ConfigurationSection {
         val type = section.getString("==", section.getString("type")) ?: return section
@@ -201,36 +246,6 @@ class ResourceReader(val clazz: Class<*>, val migrate: Boolean = true) {
         section["text"] = text
         section["args"] = newArgs
         return section
-    }
-
-    /**
-     * 获取所有键值对，同 getValues 方法。
-     * 在经过 == 或是 type 时停止
-     */
-    private fun ConfigurationSection.getValues(collect: HashMap<String, Any?>, node: String): HashMap<String, Any?> {
-        var key = node
-        if (node.isNotEmpty()) {
-            key += "."
-        }
-        key += name
-        if (contains("==") || contains("type")) {
-            collect[key] = this
-        } else {
-            getKeys(false).forEach {
-                when (val obj = get(it)) {
-                    is ConfigurationSection -> obj.getValues(collect, key)
-                    else -> {
-                        var nextKey = key
-                        if (key.isNotEmpty()) {
-                            nextKey += "."
-                        }
-                        nextKey += it
-                        collect[nextKey] = obj
-                    }
-                }
-            }
-        }
-        return collect
     }
 
     private fun Map<*, *>.toSection(root: ConfigurationSection): ConfigurationSection {
