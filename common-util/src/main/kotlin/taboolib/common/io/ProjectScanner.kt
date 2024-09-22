@@ -149,9 +149,11 @@ fun URL.getClasses(classLoader: ClassLoader = ClassAppender.getClassLoader()): M
                     classes[className] = ReflexClass.of(lc, jar.getInputStream(it))
                 }
         }
-    } else {
+    }
+    // 是目录
+    else {
         srcFile.walk().filter { it.extension == "class" }.forEach {
-            val className = it.path.substringAfter(srcFile.path).drop(1).replace('/', '.').substringBeforeLast(".class")
+            val className = it.path.substringAfter(srcFile.path).drop(1).replace('/', '.').replace('\\', '.').substringBeforeLast(".class")
             val lc = LazyClass.of(className) { Class.forName(className, false, classLoader) }
             classes[className] = ReflexClass.of(lc, it.inputStream())
         }
