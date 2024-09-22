@@ -2,6 +2,7 @@ package taboolib.platform
 
 import net.afyer.afybroker.server.Broker
 import net.afyer.afybroker.server.proxy.BrokerPlayer
+import taboolib.common.Inject
 import taboolib.common.platform.*
 import taboolib.common.platform.service.PlatformAdapter
 import taboolib.common.util.Location
@@ -16,6 +17,7 @@ import taboolib.platform.type.AfyBrokerPlayer
  * @since 2024/5/09 23:51
  */
 @Awake
+@Inject
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerAdapter : PlatformAdapter {
 

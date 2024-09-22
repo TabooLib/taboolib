@@ -1,16 +1,21 @@
 package taboolib.module.kether
 
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Inject
 import taboolib.common.OpenListener
 import taboolib.common.OpenResult
 import taboolib.common.io.groupId
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.getOpenContainer
 import taboolib.common.util.asList
 import taboolib.library.kether.ExitStatus
 import taboolib.library.kether.ParsedAction
 
 @Awake
+@Inject
+@PlatformSide(Platform.BUKKIT)
 object StandardChannel : OpenListener {
 
     const val REMOTE_RESOLVE = "kether_remote_resolve"

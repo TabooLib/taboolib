@@ -4,6 +4,7 @@ import net.afyer.afybroker.server.Broker
 import net.afyer.afybroker.server.plugin.Command
 import net.afyer.afybroker.server.plugin.TabExecutor
 import org.tabooproject.reflex.Reflex.Companion.getProperty
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -25,6 +26,7 @@ import taboolib.platform.type.AfyBrokerCommandSender
  * @since 2024/5/09 23:51
  */
 @Awake
+@Inject
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerCommand : PlatformCommand {
 

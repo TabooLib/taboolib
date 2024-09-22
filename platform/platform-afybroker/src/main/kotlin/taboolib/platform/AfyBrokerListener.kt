@@ -6,6 +6,7 @@ import net.afyer.afybroker.server.plugin.EventBus
 import net.afyer.afybroker.server.plugin.Listener
 import org.tabooproject.reflex.Reflex.Companion.getProperty
 import org.tabooproject.reflex.Reflex.Companion.invokeMethod
+import taboolib.common.Inject
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
 import taboolib.common.platform.PlatformSide
@@ -17,6 +18,7 @@ import java.lang.reflect.Method
 
 
 @Awake
+@Inject
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerListener : PlatformListener {
 

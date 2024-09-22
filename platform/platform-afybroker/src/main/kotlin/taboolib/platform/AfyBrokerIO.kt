@@ -3,6 +3,7 @@ package taboolib.platform
 import org.apache.commons.lang3.time.DateFormatUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import taboolib.common.Inject
 import taboolib.common.env.RuntimeDependency
 import taboolib.common.io.newFile
 import taboolib.common.platform.Awake
@@ -20,6 +21,7 @@ import java.io.File
  * @since 2024/5/09 23:51
  */
 @Awake
+@Inject
 @PlatformSide(Platform.AFYBROKER)
 @RuntimeDependency(
     value = "!org.apache.commons:commons-lang3:3.5",

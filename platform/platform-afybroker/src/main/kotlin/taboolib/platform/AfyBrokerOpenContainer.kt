@@ -1,6 +1,7 @@
 package taboolib.platform
 
 import net.afyer.afybroker.server.Broker
+import taboolib.common.Inject
 import taboolib.common.OpenContainer
 import taboolib.common.platform.Awake
 import taboolib.common.platform.Platform
@@ -17,6 +18,7 @@ import taboolib.platform.type.AfyBrokerContainer
  * @since 2021/6/21 14:28
  */
 @Awake
+@Inject
 @PlatformSide(Platform.AFYBROKER)
 class AfyBrokerOpenContainer : PlatformOpenContainer {
 

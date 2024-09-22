@@ -5,10 +5,13 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import taboolib.common.Inject
 import taboolib.common.OpenListener
 import taboolib.common.OpenResult
 import taboolib.common.event.InternalEventBus
 import taboolib.common.platform.Awake
+import taboolib.common.platform.Platform
+import taboolib.common.platform.PlatformSide
 import taboolib.common.platform.function.getOpenContainers
 import taboolib.module.nms.MinecraftVersion
 import taboolib.module.nms.PacketSendEvent
@@ -56,6 +59,8 @@ fun enableRawTitleInVanillaInventory() {
 }
 
 @Awake
+@Inject
+@PlatformSide(Platform.BUKKIT)
 class RawTitleOpenListener : OpenListener {
 
     override fun call(name: String, data: Array<out Any>?): OpenResult {
