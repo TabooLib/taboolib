@@ -42,7 +42,7 @@ class VelocityPlayer(val player: Player) : ProxyPlayer {
         get() = player.ping.toInt()
 
     override val locale: String
-        get() = error("Unsupported")
+        get() = (player.effectiveLocale ?: Locale.getDefault()).displayName
 
     override val world: String
         get() = error("Unsupported")
